@@ -18,11 +18,11 @@ namespace: wcsites-ns
 # Persistent volume type for the persistent storage.
 # The value must be 'HOST_PATH' or 'NFS'. 
 # If using 'NFS', weblogicDomainStorageNFSServer must be specified.
-weblogicDomainStorageType: HOST_PATH
+weblogicDomainStorageType: NFS 
 
 # The server name or ip address of the NFS server to use for the persistent storage.
 # The following line must be uncomment and customized if weblogicDomainStorateType is NFS:
-#weblogicDomainStorageNFSServer: nfsServer
+weblogicDomainStorageNFSServer: %NFS_SERVER%
 
 # Physical path of the persistent storage.
 # When weblogicDomainStorageType is set to HOST_PATH, this value should be set the to path to the
@@ -40,4 +40,3 @@ weblogicDomainStorageReclaimPolicy: Retain
 
 # Total storage allocated to the persistent storage.
 weblogicDomainStorageSize: 10Gi
-

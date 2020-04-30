@@ -48,7 +48,7 @@ following limitations currently exist for WebCenter Sites domain:
 * We do not currently support running WebCenter Sites in non-Linux containers.
 * Deploying and running a WebCenter Sites domain is supported only in Operator versions 2.4.0 and later.
 * The [WebLogic Logging Exporter](https://github.com/oracle/weblogic-logging-exporter)
-  currently supports WebLogic Server logs only.  Other logs will not be sent to Elasticsearch.  Note, however, that you can use a sidecar with a log handling tool like Logstash or fluentd to get logs.
+  currently supports WebLogic Server logs only.  Other logs will not be sent to Elasticsearch.  Note, however, that you can use a sidecar with a log handling tool like Logstash or Fluentd to get logs.
 * The [WebLogic Monitoring Exporter](https://github.com/oracle/weblogic-monitoring-exporter)
   currently supports the WebLogic MBean trees only.  Support for JRF MBeans has not been added yet.
 

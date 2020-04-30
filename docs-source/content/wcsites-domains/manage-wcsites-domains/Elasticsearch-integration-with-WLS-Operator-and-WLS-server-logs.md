@@ -150,3 +150,10 @@ kibana          NodePort    10.97.205.0     <none>        5601:31884/TCP      4m
 kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP             71d
 ```
 You can access the Kibana dashboard at `http://mycompany.com:kibana-nodeport/`. In our example, the node port would be 31884.
+
+##### Create an Index Pattern in Kibana  
+Create an index pattern `logstash*` in **Kibana > Management**. After the servers are started, you will see the log data in the Kibana dashboard:
+
+![WLE-Kibana-Dashboard](images/logstash-kibana-1.png)
+
+![WLE-Kibana-Dashboard](images/logstash-kibana-2.png)
