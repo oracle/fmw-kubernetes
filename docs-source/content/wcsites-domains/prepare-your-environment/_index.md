@@ -29,7 +29,6 @@ After creating Kubernetes clusters, you can optionally:
 * Create load balancers to direct traffic to backend domains.
 * Configure Kibana and Elasticsearch for your operator logs.
 
-
 #### Build Oracle WebCenter Sites Image
 
 Build Oracle WebCenter Sites 12.2.1.4.0 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4).
@@ -263,7 +262,7 @@ $ cd <work directory>/weblogic-kubernetes-operator-2.4.0
 	{"timestamp":"03-14-2020T06:49:57.910+0000","thread":21,"fiber":"fiber-1","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.rest.RestServer","method":"start","timeInMillis":1584168597910,"message":"Started the internal ssl REST server on https://0.0.0.0:8082/operator","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:57.913+0000","thread":21,"fiber":"fiber-1","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"markReadyAndStartLivenessThread","timeInMillis":1584168597913,"message":"Starting Operator Liveness Thread","exception":"","code":"","headers":{},"body":""}
     ```
 
-#### Configure NFS(Network File System) Server
+#### Configure NFS (Network File System) Server
 To configure NFS server, install the nfs-utils package preferably on Master node:
 
 ```bash
@@ -284,7 +283,9 @@ $ sudo mkdir -p /scratch/K8SVolume
 $ sudo chown -R 1000:1000 /scratch/K8SVolume
 ```
 
-Note: NFS Server host name or IP address and NFS Share path which is used when you create PV/PVC in further sections.
+host name or IP address of the NFS Server
+
+Note: Host name or IP address of the NFS Server and NFS Share path which is used when you create PV/PVC in further sections.
 
 #### Prepare the Environment for the WebCenter Sites Domain
 1. Unless you would like to use the default namespace, create a Kubernetes namespace that can host one or more domains:
