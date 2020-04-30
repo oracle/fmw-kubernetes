@@ -255,7 +255,7 @@ To deploy the service monitor, use the above wls-exporter.yaml deployment YAML a
 $ kubectl create -f kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter/wls-exporter.yaml
 ```
 
-#### Additional Setup For Load Balancer Voyager
+#### Additional Setup For Voyager Load Balancer
 
 In step 2 of [Configure Voyager to Manage Ingresses]({{< relref "/wcsites-domains/manage-wcsites-domains/loadbalancer-voyager-setup-for-wcsites-domain-setup-on-k8s#configure-voyager-to-manage-ingresses">}}), for wcsites-cluster, enable the last rule for path ‘wls-exporter’ and then re-deploy Voyager Load Balancer.
 
