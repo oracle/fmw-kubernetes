@@ -14,6 +14,7 @@ This document describes the steps to set up the environment that includes settin
 * [Set Up the Code Repository to Deploy Oracle WebCenter Sites Domain](#set-up-the-code-repository-to-deploy-oracle-webcenter-sites-domain)
 * [Grant Roles and Clear Stale Resources](#grant-roles-and-clear-stale-resources)
 * [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
+* [Configure NFS Server](#configure-nfs-server)
 * [Prepare the Environment for the WebCenter Sites Domain](#prepare-the-environment-for-the-webcenter-sites-domain)
 * [Set Up the Database](#set-up-the-database)
 
@@ -21,7 +22,7 @@ This document describes the steps to set up the environment that includes settin
 
 #### Set Up your Kubernetes Cluster
 
-If you need help in setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup/).
+If you need help in setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup).
 
 After creating Kubernetes clusters, you can optionally:
 
@@ -262,6 +263,29 @@ $ cd <work directory>/weblogic-kubernetes-operator-2.4.0
 	{"timestamp":"03-14-2020T06:49:57.910+0000","thread":21,"fiber":"fiber-1","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.rest.RestServer","method":"start","timeInMillis":1584168597910,"message":"Started the internal ssl REST server on https://0.0.0.0:8082/operator","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:57.913+0000","thread":21,"fiber":"fiber-1","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"markReadyAndStartLivenessThread","timeInMillis":1584168597913,"message":"Starting Operator Liveness Thread","exception":"","code":"","headers":{},"body":""}
     ```
 
+#### Configure NFS(Network File System) Server
+To configure NFS server, install the nfs-utils package preferably on Master node:
+
+```bash
+$ sudo yum install nfs-utils
+```
+
+To start the nfs-server service, and configure the service to start following a system reboot:
+
+```bash
+$ sudo systemctl start nfs-server
+$ sudo systemctl enable nfs-server
+```
+
+Create the directory you want to export as the NFS share, for example `/scratch/K8SVolume`:
+
+```bash
+$ sudo mkdir -p /scratch/K8SVolume
+$ sudo chown -R 1000:1000 /scratch/K8SVolume
+```
+
+Note: NFS Server host name or IP address and NFS Share path which is used when you create PV/PVC in further sections.
+
 #### Prepare the Environment for the WebCenter Sites Domain
 1. Unless you would like to use the default namespace, create a Kubernetes namespace that can host one or more domains:
 
@@ -382,15 +406,18 @@ $ cd <work directory>/weblogic-kubernetes-operator-2.4.0
 
 4. Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim):
 
-    a. Update the `weblogicDomainStoragePath` paramter in `kubernetes/samples/scripts/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml`.
-    
-    Use network location prefferably similar to: ```/net/$(hostname)/scratch/K8SVolume/WCSites```
-    
-    Make sure permissions are granted correctly as given below:
+    a. Update the `kubernetes/samples/scripts/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml`.
+	
+	Replace the token `%NFS_SERVER%` with the host name/IP of NFS Server created in [Configure NFS Server](#configure-nfs-server) section.   
+	
+	In the NFS Server, create a folder and grant permissions as given below:
     
     ```bash
     $ sudo rm -rf /scratch/K8SVolume/WCSites && sudo mkdir -p /scratch/K8SVolume/WCSites && sudo chown 1000:1000 /scratch/K8SVolume/WCSites
     ```
+	
+	Update the `weblogicDomainStoragePath` paramter with `/scratch/K8SVolume/WCSites`.
+	
     
     b. Execute the `create-pv-pvc.sh` script to create the PV and PVC configuration files:
     
@@ -459,16 +486,16 @@ You must set up the database before you create your domain. For testing and deve
 * Database Creation with PV: (Recommended)
 
     For testing and development of ```heavy``` usage, you may choose to run your database inside Kubernetes or outside of Kubernetes.
-
-    Use network location for Persistent Volume prefferably similar to: ```/net/$(hostname)/scratch/K8SVolume/WCSitesDB```
-    
-    Make sure Persistent Volume permissions are granted correctly as given below:
+	
+	Replace the token `%NFS_SERVER%` with the host name/IP of NFS Server created in [Configure NFS Server](#configure-nfs-server) section.   
+	
+	In the NFS Server, create a folder and grant permissions as given below:
     
     ```bash
     $ sudo rm -rf /scratch/K8SVolume/WCSitesDB && sudo mkdir -p /scratch/K8SVolume/WCSitesDB && sudo chown 54321 /scratch/K8SVolume/WCSitesDB
     ```
-    
-    Update the above Persistent Volume created value for the `path` parameter in `kubernetes/samples/scripts/create-wcsites-domain/create-database/db-with-pv.yaml`
+	
+	Update the above Persistent Volume created value for the `path` parameter in `kubernetes/samples/scripts/create-wcsites-domain/create-database/db-with-pv.yaml`
 	
 	Create a Kubernetes namespace for database.
 
@@ -538,7 +565,7 @@ You must set up the database before you create your domain. For testing and deve
       -h Help
     ```
     
-    To create and start the database, execute the below command and then monitor the status till the database is ready for use:
+    To create and start the database, run the below command and then monitor the status till the database is ready for use:
     ```bash 
     -bash-4.2$ sh kubernetes/samples/scripts/create-oracle-db-service/start-db-service.sh -n wcsitesdb-ns
      
@@ -588,5 +615,3 @@ You must set up the database before you create your domain. For testing and deve
     ``` 
      
     Now, for creating a Fusion Middleware domain, you can use the database connection string, `oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s`, as an `rcuDatabaseURL` parameter in the `domain.input.yaml` file.
-    
-

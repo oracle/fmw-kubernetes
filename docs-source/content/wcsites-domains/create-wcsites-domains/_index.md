@@ -425,10 +425,10 @@ to create the domain home for other use cases. You can modify the generated doma
 
 To start the domain, apply the above `domain.yaml`:
 
-	```bash
-	$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
-	domain.weblogic.oracle/wcsitesinfra created
-	```
+```bash
+$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+domain.weblogic.oracle/wcsitesinfra created
+```
 
 #### Verify the WebCenter Sites Domain        
 Verify that the domain and servers pods and services are created and in the READY state:

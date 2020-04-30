@@ -221,7 +221,7 @@ RoleBinding is required for Prometheus to access the endpoints provided by the W
   subjects:
   - kind: ServiceAccount
     name: prometheus-k8s
- namespace: monitoring
+    namespace: monitoring
 ```
 Similarly, add the `Role` for the namespace under which the WebLogic Servers pods are running in the Kubernetes cluster. Edit `kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml` in the Prometheus Operator deployment manifests and add the `Role` for the namespace (`wcsites-ns`) similar to the following example:
 ```
@@ -254,6 +254,11 @@ To deploy the service monitor, use the above wls-exporter.yaml deployment YAML a
 ```
 $ kubectl create -f kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter/wls-exporter.yaml
 ```
+
+#### Additional Setup For LoadBalancer Voyager
+
+In step 2 of [Configure voyager to manage ingresses]({{< relref "/wcsites-domains/manage-wcsites-domains/loadbalancer-voyager-setup-for-wcsites-domain-setup-on-k8s#configure-voyager-to-manage-ingresses">}}), for wcsites-cluster, enable the last rule for path ‘wls-exporter’ and then redeploy voyager LoadBalancer.
+
 #### Enable Prometheus to Discover the Service
 
 After the deployment of the service monitor, Prometheus should be able to discover wls-exporter and export metrics.
@@ -261,7 +266,6 @@ After the deployment of the service monitor, Prometheus should be able to discov
 You can access the Prometheus dashboard at `http://mycompany.com:32101/`. 
 
 ![Wme-Service-Discovery](images/wme-service-discovery.png)   
-
 
 #### Deploy Grafana Dashboard
 
