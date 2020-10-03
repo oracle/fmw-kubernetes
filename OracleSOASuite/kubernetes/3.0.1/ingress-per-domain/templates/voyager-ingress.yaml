@@ -1,0 +1,108 @@
+# Copyright 2020, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+#https://oss.oracle.com/licenses/upl.
+{{- if eq .Values.type "VOYAGER" }}
+---
+apiVersion: voyager.appscode.com/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-voyager
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    ingress.appscode.com/type: 'NodePort'
+    ingress.appscode.com/stats: 'true'
+    ingress.appscode.com/affinity: 'cookie'
+    ingress.appscode.com/default-timeout: '{"connect": "1800s", "server": "1800s"}'
+spec:
+{{- if eq .Values.tls "SSL" }}
+  frontendRules:
+  - port: 443
+    rules:
+    - http-request set-header WL-Proxy-SSL true
+  tls:
+  - secretName: domain1-tls-cert
+    hosts:
+    - '*'
+{{- end }}
+  rules:
+  - host: '*'
+    http:
+      nodePort: '{{ .Values.voyager.webPort }}'
+      paths:
+      - path: /console
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /weblogic/ready
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /
+        backend:
+        {{- if eq .Values.domainType "osb" }}
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.osbManagedServerPort  }}
+        {{- else }}
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+        {{- end }}
+{{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaess") (eq .Values.domainType "soaessosb")}}
+      - path: /soa-infra
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+      - path: /soa/composer
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+      - path: /integration/worklistapp
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.soaManagedServerPort }}
+{{- end }}
+
+{{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaessosb") }}
+      - path: /servicebus
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /lwpfconsole
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+{{- end }}
+
+{{- if or (eq .Values.domainType "soaess") (eq .Values.domainType "soaessosb") }}
+      - path: /ess
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+      - path: /EssHealthCheck
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+{{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-voyager-stats
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: NodePort
+  ports:
+    - name: client
+      protocol: TCP
+      port: 56789
+      targetPort: 56789
+      nodePort: {{ .Values.voyager.statsPort }}
+  selector:
+    origin: voyager
+    origin-name: {{ .Values.wlsDomain.domainUID }}-voyager
+{{- end }}
+
