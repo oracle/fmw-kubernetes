@@ -7,6 +7,7 @@ In addition, we've provided the deployment scripts in this repository to assist 
 
 ### Oracle Fusion Middleware Products Container deployment scripts
  - [Oracle WebCenter Sites](/OracleWebCenterSites)
+ - [Oracle SOA Suite](/OracleSOASuite)
 
 ## Support
 For support and certification information, please consult the documentation for each product.
