@@ -12,7 +12,7 @@ This section provides information about the system requirements and limitations 
 
 For the current production release 20.3.3:
 
-* Kubernetes 1.14.8+, 1.15.7+, 1.1.6.0+, 1.17.0+, and 1.18.0+ (check with `kubectl version`).
+* Kubernetes 1.14.8+, 1.15.7+, 1.16.0+, 1.17.0+, and 1.18.0+ (check with `kubectl version`).
 * Docker 18.09.1ce+, 19.03.1+ (check with `docker version`) or CRI-O 1.14.7 (check with `crictl version | grep RuntimeVersion`).
 * Flannel networking v0.9.1-amd64 or later (check with `docker images | grep flannel`).
 * Helm 3.1.3+ (check with `helm version --client --short`).

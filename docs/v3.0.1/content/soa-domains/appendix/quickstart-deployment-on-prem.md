@@ -469,7 +469,7 @@ Follow [these steps]({{< relref "/soa-domains/installguide/prepare-your-environm
     c. Find and then pull the prebuilt Oracle SOA Suite image 12.2.1.4 install image:
 
      ```
-     $ docker pull container-registry.oracle.com/middleware/soasuite:12.2.1.4-dev
+     $ docker pull container-registry.oracle.com/middleware/soasuite:12.2.1.4
      ```
      > Note: This image does not contain any Oracle SOA Suite product patches and can only be used for test and development purposes.
 
@@ -662,14 +662,14 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
       *  -s \<RCU PREFIX\>   Here: SOA1
       *  -t \<SOA domain type\>  Here: soaessosb
-      *  -i \<SOASuite image\>   Here: container-registry.oracle.com/middleware/soasuite:12.2.1.4-dev
+      *  -i \<SOASuite image\>   Here: container-registry.oracle.com/middleware/soasuite:12.2.1.4
 
       ```
       $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-schema
       $ ./create-rcu-schema.sh \
          -s SOA1 \
          -t soaessosb \
-         -i container-registry.oracle.com/middleware/soasuite:12.2.1.4-dev \
+         -i container-registry.oracle.com/middleware/soasuite:12.2.1.4 \
          -q Oradoc_db1 \
          -r Oradoc_db1
       ```
@@ -693,7 +693,7 @@ Now the environment is ready to start the Oracle SOA Suite domain creation.
 
     $ sed -i -e "s:domainType\: soa:domainType\: soaessosb:g" create-domain-inputs.yaml
     $ sed -i -e "s:initialManagedServerReplicas\: 2:initialManagedServerReplicas\: 1:g" create-domain-inputs.yaml
-    $ sed -i -e "s:image\: soasuite\:12.2.1.4:image\: container-registry.oracle.com/middleware/soasuite\:12.2.1.4-dev:g" create-domain-inputs.yaml
+    $ sed -i -e "s:image\: soasuite\:12.2.1.4:image\: container-registry.oracle.com/middleware/soasuite\:12.2.1.4:g" create-domain-inputs.yaml
     ```
 
 1. Run the `create-domain.sh` script to create a domain:
