@@ -37,7 +37,7 @@ If you need help setting up a Kubernetes environment, check the [cheat sheet](ht
 
 ### Install Helm
 
-The operator uses Helm to create and deploy the necessary resources and then run the operator in a Kubernetes cluster. For Helm installation and usage information, see [here](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-operators/#install-helm-and-tiller).
+The operator uses Helm to create and deploy the necessary resources and then run the operator in a Kubernetes cluster. For Helm installation and usage information, see [here](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-operators/#install-helm).
 
 ### Get dependent images
 
@@ -77,7 +77,7 @@ Oracle SOA Suite domain deployment on Kubernetes leverages the WebLogic Kubernet
 1. Download the Oracle SOA Suite Kubernetes deployment scripts from the SOA [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them to the WebLogic Kubernetes operator samples location:
 
     ``` bash
-    $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/3.0.1
+    $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/20.3.3
 
     $ mv -f ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-soa-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-soa-domain_backup
     $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/3.0.1/create-soa-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
