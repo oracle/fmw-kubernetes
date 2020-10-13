@@ -80,22 +80,22 @@ Oracle SOA Suite domain deployment on Kubernetes leverages the WebLogic Kubernet
     $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/20.3.3
 
     $ mv -f ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-soa-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-soa-domain_backup
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/create-soa-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/create-soa-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
      $ mv -f ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/common  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/common_backup
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/common  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/common  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/create-database  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/create-database  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
     $ mv -f ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-schema  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-schema_backup
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/create-rcu-schema  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/create-rcu-schema  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
     $ mv -f ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/
 
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/20.3.3/charts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleSOASuite/kubernetes/charts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
     ```
 
