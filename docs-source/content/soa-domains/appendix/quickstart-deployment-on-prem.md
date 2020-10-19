@@ -13,7 +13,7 @@ refer to the [Install Guide]({{< relref "/soa-domains/installguide/_index.md" >}
 
 #### Hardware requirements
 
-Supported Linux kernel for deploying and running Oracle SOA Suite domains with the operator is Oracle Linux 7 UL6+ and Red Hat Enterprise Linux 7 (UL3+). Refer to the [prerequisites]({{< relref "/soa-domains/installguide/prerequisites/_index.md" >}}) for more details.
+Supported Linux kernel for deploying and running Oracle SOA Suite domains with the operator is Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes). Refer to the [prerequisites]({{< relref "/soa-domains/installguide/prerequisites/_index.md" >}}) for more details.
 
 For this exercise the minimum hardware requirement to create a single node Kubernetes cluster and then deploy `soaessosb` (domain with SOA, OSB, and ESS) domain type with one managed server for SOA and one for OSB Cluster running along with Oracle Database running as a container
 
@@ -52,7 +52,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ export docker_dir=/u01/docker
     $ export kubelet_dir=/u01/kubelet
     $ mkdir -p $docker_dir $kubelet_dir
-    $ ln -s kubelet_dir /var/lib/kubelet
+    $ ln -s $kubelet_dir /var/lib/kubelet
     ```
 
 1. Verify that IPv4 forwarding is enabled on your host.

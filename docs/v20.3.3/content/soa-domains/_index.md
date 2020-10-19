@@ -20,7 +20,7 @@ The operator has several key features to assist you with deploying and managing 
 * Create Oracle SOA Suite instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.
 * Start servers based on declarative startup parameters and desired states.
 * Expose the Oracle SOA Suite services and composites for external access.
-* Scale Oracle SOA Suite domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.
+* Scale Oracle SOA Suite domains by starting and stopping Managed Servers on demand, or by integrating with a REST API.
 * Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.
 * Monitor the Oracle SOA Suite instance using Prometheus and Grafana.
 
