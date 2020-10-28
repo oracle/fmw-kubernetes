@@ -1,0 +1,49 @@
+<!-- Copyright (c) 2020, Oracle and/or its affiliates. -->
+<!-- Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl. -->
+<Configuration>
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server1/host">@OAM_SERVER@1</Setting>
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server2/host">@OAM_SERVER@2</Setting>
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server3/host">@OAM_SERVER@3</Setting>
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server4/host">@OAM_SERVER@4</Setting>
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server5/host">@OAM_SERVER@5</Setting>
+<Setting Name="Port" Type="xsd:integer" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server1/oamproxy/Port">@OAP_PORT@</Setting>
+<Setting Name="Port" Type="xsd:integer" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server2/oamproxy/Port">@OAP_PORT@</Setting>
+<Setting Name="Port" Type="xsd:integer" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server3/oamproxy/Port">@OAP_PORT@</Setting>
+<Setting Name="Port" Type="xsd:integer" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server4/oamproxy/Port">@OAP_PORT@</Setting>
+<Setting Name="Port" Type="xsd:integer" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server5/oamproxy/Port">@OAP_PORT@</Setting>
+<Setting Name="serverhost" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/OAMServerProfile/OAMSERVER/serverhost">@LBR_HOST@</Setting>
+<Setting Name="serverport" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/OAMServerProfile/OAMSERVER/serverport">@LBR_PORT@</Setting>
+<Setting Name="serverprotocol" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/OAMServerProfile/OAMSERVER/serverprotocol">@LBR_PROTOCOL@</Setting>
+<Setting Name="serverhost" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/OAMServerProfile/OAMServerBackChannel/serverhost">@LBR_HOST@</Setting>
+<Setting Name="serverport" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/OAMServerProfile/OAMServerBackChannel/serverport">@LBR_PORT@</Setting>
+<Setting Name="serverprotocol" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/OAMServerProfile/OAMServerBackChannel/serverprotocol">@LBR_PROTOCOL@</Setting>
+<Setting Name="OAMRestEndPointHostName" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/UserDefinedParameters/OAMRestEndPointHostName">@LBR_HOST@</Setting>
+<Setting Name="providerid" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/STS/fedserverconfig/providerid">@LBR_PROTOCOL@://@LBR_HOST@:@LBR_PORT@/oam/fed</Setting>
+<Setting Name="Value" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server1/CoherenceConfiguration/LocalHost/Value">@OAM_SERVER@1</Setting>
+<Setting Name="Value" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server2/CoherenceConfiguration/LocalHost/Value">@OAM_SERVER@2</Setting>
+<Setting Name="Value" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server3/CoherenceConfiguration/LocalHost/Value">@OAM_SERVER@3</Setting>
+<Setting Name="Value" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server4/CoherenceConfiguration/LocalHost/Value">@OAM_SERVER@4</Setting>
+<Setting Name="Value" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Instance/oam_server5/CoherenceConfiguration/LocalHost/Value">@OAM_SERVER@5</Setting>
+<Setting Name="assertionissuer" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/STS/issuancetemplates/saml11-issuance-template/assertionissuer">@LBR_HOST@</Setting>
+<Setting Name="assertionissuer" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/STS/issuancetemplates/saml20-issuance-template/assertionissuer">@LBR_HOST@</Setting>
+<Setting Name="openid20realm" Type="xsd:string" Path="/DeployedComponent/Server/NGAMServer/Profile/STS/spglobal/openid20realm">@LBR_PROTOCOL@://@LBR_HOST@:@LBR_PORT@</Setting>
+<Setting Name="logoutRedirectUrl" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/logoutRedirectUrl">@LBR_PROTOCOL@://@LBR_HOST@:@LBR_PORT@/oam/server/logout</Setting>
+<Setting Name="logoutRedirectUrl" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/IAMSuiteAgent/UserDefinedParameters/logoutRedirectUrl">@LBR_PROTOCOL@://@LBR_HOST@:@LBR_PORT@/oam/server/logout</Setting>
+
+<Setting Name="PrimaryServerList" Type="htf:list" Path="/DeployedComponent/Agent/WebGate/Instance/IAMSuiteAgent/PrimaryServerList">
+<Setting Name="0" Type="htf:map" Path="/DeployedComponent/Agent/WebGate/Instance/IAMSuiteAgent/PrimaryServerList/0">
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0/host">@LBR_HOST@</Setting>
+<Setting Name="port" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0/port">@OAP_SERVICEPORT@</Setting>
+<Setting Name="numOfConnections" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0/numOfConnections">8</Setting>
+</Setting>
+</Setting>
+
+<Setting Name="PrimaryServerList" Type="htf:list" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList">
+<Setting Name="0" Type="htf:map" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0">
+<Setting Name="port" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0/port">@OAP_SERVICEPORT@</Setting>
+<Setting Name="numOfConnections" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0/numOfConnections">8</Setting>
+<Setting Name="host" Type="xsd:string" Path="/DeployedComponent/Agent/WebGate/Instance/accessgate-oic/PrimaryServerList/0/host">@LBR_HOST@</Setting>
+</Setting>
+</Setting>
+</Configuration>
+
