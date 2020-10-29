@@ -63,6 +63,18 @@ Follow these steps to set up Traefik as a load balancer for an Oracle SOA Suite 
     </item>
     
     <item>
+      <title>Domain Life Cycle</title>
+      <link>/fmw-kubernetes/oam/manage-oam-domains/domain-lifecycle/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/manage-oam-domains/domain-lifecycle/</guid>
+      <description>As OAM domains use the Oracle WebLogic Server Kubernetes Operator, domain lifecyle operations are managed using the WLS operator itself.
+This document shows the basic operations for starting, stopping and scaling servers in the OAM domain.
+For more detailed information refer to Domain Life Cycle in the Oracle WebLogic Server Kubernetes Operator documentation.
+Do not use the WebLogic Server Administration Console or Oracle Enterprise Manager Console to start or stop servers.</description>
+    </item>
+    
+    <item>
       <title>Quick start deployment on-premise</title>
       <link>/fmw-kubernetes/soa-domains/appendix/quickstart-deployment-on-prem/</link>
       <pubDate>Thu, 18 Jun 2020 15:27:38 -0500</pubDate>
@@ -115,6 +127,18 @@ $ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operato
     </item>
     
     <item>
+      <title>WLST Administration Operations</title>
+      <link>/fmw-kubernetes/oam/manage-oam-domains/wlst-admin-operations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/manage-oam-domains/wlst-admin-operations/</guid>
+      <description>To use WLST to administer the OAM domain, use the helper pod in the same Kubernetes cluster as the OAM Domain.
+  Run the following command to start a bash shell in the helper pod (if one is not already running):
+$ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash For example:
+$ kubectl exec -it helper -n accessns -- /bin/bash This will take you into a bash shell in the running helper pod:</description>
+    </item>
+    
+    <item>
       <title>Monitor a domain and publish logs</title>
       <link>/fmw-kubernetes/soa-domains/adminguide/monitoring-soa-domains/</link>
       <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
@@ -157,6 +181,17 @@ Follow these steps to set up Voyager as a load balancer for an Oracle SOA Suite 
     </item>
     
     <item>
+      <title>Logging and Visualization</title>
+      <link>/fmw-kubernetes/oam/manage-oam-domains/logging-and-visualization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/manage-oam-domains/logging-and-visualization/</guid>
+      <description>After the OAM domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
+In Prepare your environment if you decided to use the Elasticsearch and Kibana by setting the parameter elkIntegrationEnabled to true, then the steps below must be followed to complete the setup.
+If you did not set elkIntegrationEnabled to true and want to do so post configuration, run the following command:</description>
+    </item>
+    
+    <item>
       <title>Apache webtier</title>
       <link>/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/apache/</link>
       <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
@@ -176,6 +211,29 @@ Follow these steps to set up Apache webtier as a load balancer for an Oracle SOA
       <description>Oracle strongly recommends that you do not expose non-HTTPS traffic (T3/T3s/LDAP/IIOP/IIOPs) outside of the external firewall. You can control this access using a combination of network channels and firewalls.
  You can create T3/T3S channels and the corresponding Kubernetes service to expose the T3/T3S protocol for the Administration Server and Managed Servers in an Oracle SOA Suite domain.
 The WebLogic Kubernetes operator provides an option to expose a T3 channel for the Administration Server using the exposeAdminT3Channel setting during domain creation, then the matching T3 service can be used to connect.</description>
+    </item>
+    
+    <item>
+      <title>Monitoring an OAM domain</title>
+      <link>/fmw-kubernetes/oam/manage-oam-domains/monitoring-oam-domains/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/manage-oam-domains/monitoring-oam-domains/</guid>
+      <description>After the OAM domain is set up you can monitor the OAM instance using Prometheus and Grafana. See Monitoring a domain.
+The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape runtime information and then exports Prometheus-compatible metrics. It is deployed as a web application in a WebLogic Server (WLS) instance, version 12.2.1 or later, typically, in the instance from which you want to get metrics.
+Deploy the Prometheus operator   Clone Prometheus by running the following commands:</description>
+    </item>
+    
+    <item>
+      <title>Delete the OAM domain home</title>
+      <link>/fmw-kubernetes/oam/manage-oam-domains/delete-domain-home/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/manage-oam-domains/delete-domain-home/</guid>
+      <description>Sometimes in production, but most likely in testing environments, you might want to remove the domain home that is generated using the create-domain.sh script.
+  Run the following command to delete the jobs, domain, and configmaps:
+$ kubectl delete jobs &amp;lt;domain_job&amp;gt; -n &amp;lt;domain_namespace&amp;gt; $ kubectl delete domain &amp;lt;domain_uid&amp;gt; -n &amp;lt;domain_namespace&amp;gt; $ kubectl delete configmaps &amp;lt;domain_job&amp;gt;-cm -n &amp;lt;domain_namespace&amp;gt; For example:
+$ kubectl delete jobs accessinfra-create-oam-infra-domain-job -n accessns $ kubectl delete domain accessinfra -n accessns $ kubectl delete configmaps accessinfra-create-oam-infra-domain-job-cm -n accessns   Drop the RCU schemas as follows:</description>
     </item>
     
     <item>
@@ -224,6 +282,28 @@ File location: /u01/oracle/soa/soa/connectors/DbAdapter.rar
     </item>
     
     <item>
+      <title>a. Patch an image</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/patch_an_image/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/patch_an_image/</guid>
+      <description>To update your OAM Kubernetes cluster with a new OAM Docker image, first install the new Docker image on all nodes in your Kubernetes cluster.
+Once the new image is installed, choose one of the following options to update your OAM kubernetes cluster to use the new image:
+ Run the kubectl edit domain command Run the kubectl patch domain command  In all of the above cases, the Oracle WebLogic Server Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.</description>
+    </item>
+    
+    <item>
+      <title>a. Using an Ingress with NGINX</title>
+      <link>/fmw-kubernetes/oam/configure-ingress/ingress-nginx-setup-for-oam-domain-setup-on-k8s/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/configure-ingress/ingress-nginx-setup-for-oam-domain-setup-on-k8s/</guid>
+      <description>Setting up an ingress for NGINX for the OAM Domain The instructions below explain how to to set up NGINX as an ingress for the OAM domain with SSL termination.
+Note: All the steps below should be performed on the master node.
+ Generate a SSL Certificate Install NGINX Create an Ingress for the Domain Verify that You can Access the Domain URL  Generate a SSL Certificate   Generate a private key and certificate signing request (CSR) using a tool of your choice.</description>
+    </item>
+    
+    <item>
       <title>a. Using Traefik Loadbalancer</title>
       <link>/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/loadbalancer-traefik-setup-for-wcsites-domain-setup-on-k8s/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -231,6 +311,28 @@ File location: /u01/oracle/soa/soa/connectors/DbAdapter.rar
       <guid>/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/loadbalancer-traefik-setup-for-wcsites-domain-setup-on-k8s/</guid>
       <description>Setting Up Loadbalancer Traefik for the WebCenter Sites Domain on K8S The Oracle WebLogic Server Kubernetes Operator supports three load balancers: Traefik, Voyager, and Apache. Follow these steps to set up Traefik as a loadbalancer for the WebCenter Sites domain:
  Install the Traefik Load Balancer Configure Traefik to Manage Ingresses Create an Ingress for the Domain Verify that You can Access the Domain URL  Install the Traefik Load Balancer   Use helm to install the Traefik load balancer.</description>
+    </item>
+    
+    <item>
+      <title>b. Upgrade an operator release</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/upgrade_an_operator_release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/upgrade_an_operator_release/</guid>
+      <description>These instructions apply to upgrading the operator within the 3.x release family as additional versions are released.
+The new Oracle WebLogic Server Kubernetes Operator Docker image must be installed on the master node AND each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
+   Pull the Oracle WebLogic Server Kubernetes Operator 3.X.X image by running the following command on the master node:</description>
+    </item>
+    
+    <item>
+      <title>b. Using an Ingress with Voyager</title>
+      <link>/fmw-kubernetes/oam/configure-ingress/ingress-voyager-setup-for-oam-domain-setup-on-k8s/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/configure-ingress/ingress-voyager-setup-for-oam-domain-setup-on-k8s/</guid>
+      <description>Setting Up an Ingress for Voyager for the OAM Domain on K8S The instructions below explain how to to set up Voyager as an Ingress for the OAM domain with SSL termination.
+Note: All the steps below should be performed on the master node.
+ Generate a SSL Certificate Install Voyager Create an Ingress for the Domain Verify that You can Access the Domain URL  Generate a SSL Certificate   Generate a private key and certificate signing request (CSR) using a tool of your choice.</description>
     </item>
     
     <item>
@@ -252,6 +354,17 @@ File location: /u01/oracle/soa/soa/connectors/DbAdapter.rar
       <description>1. Integrate Elasticsearch to WebLogic Kubernetes Operator For reference information, see Elasticsearch integration for the WebLogic Kubernetes Operator.
 To enable elasticsearch integration, you must edit file kubernetes/charts/weblogic-operator/values.yaml before deploying the WebLogic Kubernetes Operator.
 # elkIntegrationEnabled specifies whether or not ELK integration is enabled. elkIntegrationEnabled: true # logStashImage specifies the docker image containing logstash. # This parameter is ignored if &#39;elkIntegrationEnabled&#39; is false. logStashImage: &amp;quot;logstash:6.6.0&amp;quot; # elasticSearchHost specifies the hostname of where Elasticsearch is running.</description>
+    </item>
+    
+    <item>
+      <title>c. Upgrade a Kubernetes cluster</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/upgrade_a_kubernetes_cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/upgrade_a_kubernetes_cluster/</guid>
+      <description>These instructions describe how to upgrade a Kubernetes cluster created using kubeadm on which an OAM domain is deployed. A rolling upgrade approach is used to upgrade nodes (master and worker) of the Kubernetes cluster.
+It is expected that there will be a down time during the upgrade of the Kubernetes cluster as the nodes need to be drained as part of the upgrade process.
+ Prerequisites  Review Prerequisites and ensure that your Kubernetes cluster is ready for upgrade.</description>
     </item>
     
     <item>

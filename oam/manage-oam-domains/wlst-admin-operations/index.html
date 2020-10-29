@@ -1,0 +1,3126 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Describes the steps for WLST administration using helper pod running in the same Kubernetes Cluster as OAM Domain.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
+
+    <title>WLST Administration Operations :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/css/nucleus.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1603962152" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1603962152" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1603962152"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/oam/manage-oam-domains/wlst-admin-operations/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/">
+  <img src="/fmw-kubernetes//images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1603962152"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1603962152"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1603962152"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/jms-asm-migration/" title="Configure Automatic Service Migration" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/jms-asm-migration/">
+        <b></b>Configure Automatic Service Migration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcsites-domains/">
+          Oracle WebCenter Sites
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcsites-domains/pre-requisites/" title="Pre-requisites " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcsites-domains/pre-requisites/">
+          <b>1. </b>Pre-requisites 
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcsites-domains/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcsites-domains/prepare-your-environment/">
+          <b>2. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcsites-domains/create-wcsites-domains/" title="Create WebCenter Sites domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcsites-domains/create-wcsites-domains/">
+          <b>3. </b>Create WebCenter Sites domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/" title="Manage WebCenter Sites domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/">
+          <b>4. </b>Manage WebCenter Sites domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/loadbalancer-traefik-setup-for-wcsites-domain-setup-on-k8s/" title="a. Using Traefik Loadbalancer" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/loadbalancer-traefik-setup-for-wcsites-domain-setup-on-k8s/">
+        a. Using Traefik Loadbalancer
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/loadbalancer-voyager-setup-for-wcsites-domain-setup-on-k8s/" title="b. Using Voyager Loadbalancer" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/loadbalancer-voyager-setup-for-wcsites-domain-setup-on-k8s/">
+        b. Using Voyager Loadbalancer
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/elasticsearch-integration-with-wls-operator-and-wls-server-logs/" title="c. ELK Integration for Logs" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/elasticsearch-integration-with-wls-operator-and-wls-server-logs/">
+        c. ELK Integration for Logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/weblogic-logging-exporter-setup/" title="d. Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/weblogic-logging-exporter-setup/">
+        d. Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/weblogic-monitoring-exporter-setup/" title="e. Monitor a WebCenter Sites domain" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/weblogic-monitoring-exporter-setup/">
+        e. Monitor a WebCenter Sites domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcsites-domains/known-issues/" title="Known Issues in WCSites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcsites-domains/known-issues/">
+          <b>5. </b>Known Issues in WCSites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/release-notes/">
+        Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/" title="Oracle Access Management" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/">
+          Oracle Access Management
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/prerequisites/">
+          <b>1. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/prepare-your-environment/">
+          <b>2. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/create-oam-domains/" title="Create OAM domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/create-oam-domains/">
+          <b>3. </b>Create OAM domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/configure-ingress/" title="Configure an Ingress for an OAM domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/configure-ingress/">
+          <b>4. </b>Configure an Ingress for an OAM domain
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/configure-ingress/ingress-nginx-setup-for-oam-domain-setup-on-k8s/" title="a. Using an Ingress with NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/configure-ingress/ingress-nginx-setup-for-oam-domain-setup-on-k8s/">
+        a. Using an Ingress with NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/configure-ingress/ingress-voyager-setup-for-oam-domain-setup-on-k8s/" title="b. Using an Ingress with Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/configure-ingress/ingress-voyager-setup-for-oam-domain-setup-on-k8s/">
+        b. Using an Ingress with Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/validate-domain-urls/" title="Validate Domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/validate-domain-urls/">
+          <b>5. </b>Validate Domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/post-install-config/" title="Post Install Configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/post-install-config/">
+          <b>6. </b>Post Install Configuration
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/validate-sso-using-webgate/" title="Validate a Basic SSO Flow using WebGate Registration " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/validate-sso-using-webgate/">
+          <b>7. </b>Validate a Basic SSO Flow using WebGate Registration 
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/manage-oam-domains/" title="Manage OAM Domains" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/manage-oam-domains/">
+          <b>8. </b>Manage OAM Domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/manage-oam-domains/domain-lifecycle/" title="Domain Life Cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/manage-oam-domains/domain-lifecycle/">
+        <b>1. </b>Domain Life Cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/manage-oam-domains/wlst-admin-operations/" title="WLST Administration Operations" class="dd-item active">
+        <a href="/fmw-kubernetes/oam/manage-oam-domains/wlst-admin-operations/">
+        <b>2. </b>WLST Administration Operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/manage-oam-domains/logging-and-visualization/" title="Logging and Visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/manage-oam-domains/logging-and-visualization/">
+        <b>3. </b>Logging and Visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/manage-oam-domains/monitoring-oam-domains/" title="Monitoring an OAM domain" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/manage-oam-domains/monitoring-oam-domains/">
+        <b>4. </b>Monitoring an OAM domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/manage-oam-domains/delete-domain-home/" title="Delete the OAM domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/manage-oam-domains/delete-domain-home/">
+        <b>5. </b>Delete the OAM domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/patch-and-upgrade/">
+          <b>9. </b>Patch and Upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/patch-and-upgrade/patch_an_image/" title="a. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/patch-and-upgrade/patch_an_image/">
+        a. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/patch-and-upgrade/upgrade_an_operator_release/" title="b. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/patch-and-upgrade/upgrade_an_operator_release/">
+        b. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/oam/patch-and-upgrade/upgrade_a_kubernetes_cluster/" title="c. Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/oam/patch-and-upgrade/upgrade_a_kubernetes_cluster/">
+        c. Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/security-hardening/" title="Security Hardening" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/security-hardening/">
+          <b>10. </b>Security Hardening
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/oam/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/oam/troubleshooting/">
+          <b>11. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/oam/'>Oracle Access Management</a> > <a href='/fmw-kubernetes/oam/manage-oam-domains/'>Manage OAM Domains</a> > WLST Administration Operations
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#sample-operations">Sample operations</a></li>
+        <li><a href="#performing-wlst-administration-via-ssl">Performing WLST Administration via SSL</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              WLST Administration Operations
+            </h1>
+          
+
+        
+
+
+
+<p>To use WLST to administer the OAM domain, use the helper pod in the same Kubernetes cluster as the OAM Domain.</p>
+<ol>
+<li>
+<p>Run the following command to start a bash shell in the helper pod (if one is not already running):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl exec -it helper -n &lt;domain_namespace&gt; -- /bin/bash
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -it helper -n accessns -- /bin/bash
+</code></pre></div><p>This will take you into a bash shell in the running helper pod:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@helper ~<span style="color:#f92672">]</span>$
+</code></pre></div></li>
+<li>
+<p>Connect to WLST using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd $ORACLE_HOME/oracle_common/common/bin
+./wlst.sh
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Initializing WebLogic Scripting Tool <span style="color:#f92672">(</span>WLST<span style="color:#f92672">)</span> ...
+
+Jython scans all the jar files it can find at first startup. Depending on the system, this process may take a few minutes to complete, and WLST may not <span style="color:#66d9ef">return</span> a prompt right away.
+
+Welcome to WebLogic Server Administration Scripting Shell
+
+Type help<span style="color:#f92672">()</span> <span style="color:#66d9ef">for</span> help on available commands
+
+wls:/offline&gt;
+</code></pre></div></li>
+<li>
+<p>To access t3 for the Administration Server connect as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connect<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;weblogic&#39;</span>,<span style="color:#e6db74">&#39;&lt;password&gt;&#39;</span>,<span style="color:#e6db74">&#39;t3://accessinfra-adminserver:7001&#39;</span><span style="color:#f92672">)</span>
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Connecting to t3://accessinfra-adminserver:7001 with userid weblogic ...
+Successfully connected to Admin Server <span style="color:#e6db74">&#34;AdminServer&#34;</span> that belongs to domain <span style="color:#e6db74">&#34;accessinfra&#34;</span>.
+
+Warning: An insecure protocol was used to connect to the server.
+To ensure on-the-wire security, the SSL port or Admin port should be used instead.
+
+wls:/accessinfra/serverConfig/&gt;
+</code></pre></div><p>Or to access t3 for the OAM Cluster service, connect as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connect<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;weblogic&#39;</span>,<span style="color:#e6db74">&#39;&lt;password&gt;&#39;</span>,<span style="color:#e6db74">&#39;t3://accessinfra-cluster-oam-cluster:14100&#39;</span><span style="color:#f92672">)</span>
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Connecting to t3://accessinfra-cluster-oam-cluster:14100 with userid weblogic ...
+Successfully connected to managed Server <span style="color:#e6db74">&#34;oam_server1&#34;</span> that belongs to domain <span style="color:#e6db74">&#34;accessinfra&#34;</span>.
+
+Warning: An insecure protocol was used to connect to the server.
+To ensure on-the-wire security, the SSL port or Admin port should be used instead.
+
+wls:/accessinfra/serverConfig/&gt;
+</code></pre></div></li>
+</ol>
+<h3 id="sample-operations">Sample operations</h3>
+<p>For a full list of WLST operations refer to <a href="https://docs.oracle.com/pls/topic/lookup?ctx=en/middleware/fusion-middleware/weblogic-server/12.2.1.4/wlstc&amp;id=GUID-B6001303-FF2D-4EE7-8BB6-354E6D7C1692">WebLogic Server WLST Online and Offline Command Reference</a>.</p>
+<h4 id="display-servers">Display servers</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wls:/accessinfra/serverConfig/&gt; cd<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;/Servers&#39;</span><span style="color:#f92672">)</span>
+wls:/accessinfra/serverConfig/Servers&gt; ls<span style="color:#f92672">()</span>
+   
+dr--   AdminServer
+dr--   oam_policy_mgr1
+dr--   oam_policy_mgr2
+dr--   oam_policy_mgr3
+dr--   oam_policy_mgr4
+dr--   oam_policy_mgr5
+dr--   oam_server1
+dr--   oam_server2
+dr--   oam_server3
+dr--   oam_server4
+dr--   oam_server5
+
+wls:/accessinfra/serverConfig/Servers&gt;
+</code></pre></div><h4 id="configure-logging-for-managed-servers">Configure logging for managed servers</h4>
+<p>Connect to the Administration Server and run the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wls:/accessinfra/serverConfig/&gt; domainRuntime<span style="color:#f92672">()</span>
+Location changed to domainRuntime tree. This is a read-only tree
+with DomainMBean as the root MBean.
+For more help, use help<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;domainRuntime&#39;</span><span style="color:#f92672">)</span>
+   
+wls:/accessinfra/domainRuntime/&gt;
+   
+wls:/accessinfra/domainRuntime/&gt; listLoggers<span style="color:#f92672">(</span>pattern<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle.oam.*&#34;</span>,target<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oam_server1&#34;</span><span style="color:#f92672">)</span>
+------------------------------------------+-----------------
+Logger                                    | Level
+------------------------------------------+-----------------
+oracle.oam                                | &lt;Inherited&gt;
+oracle.oam.admin.foundation.configuration | &lt;Inherited&gt;
+oracle.oam.admin.service.config           | &lt;Inherited&gt;
+oracle.oam.agent                          | &lt;Inherited&gt;
+oracle.oam.agent-default                  | &lt;Inherited&gt;
+oracle.oam.audit                          | &lt;Inherited&gt;
+oracle.oam.binding                        | &lt;Inherited&gt;
+oracle.oam.certvalidation                 | &lt;Inherited&gt;
+oracle.oam.certvalidation.mbeans          | &lt;Inherited&gt;
+oracle.oam.common.healthcheck             | &lt;Inherited&gt;
+oracle.oam.common.runtimeent              | &lt;Inherited&gt;
+oracle.oam.commonutil                     | &lt;Inherited&gt;
+oracle.oam.config                         | &lt;Inherited&gt;
+oracle.oam.controller                     | &lt;Inherited&gt;
+oracle.oam.credcollector                  | &lt;Inherited&gt;
+oracle.oam.default                        | &lt;Inherited&gt;
+oracle.oam.diagnostic                     | &lt;Inherited&gt;
+oracle.oam.engine.authn                   | &lt;Inherited&gt;
+oracle.oam.engine.authz                   | &lt;Inherited&gt;
+oracle.oam.engine.policy                  | &lt;Inherited&gt;
+oracle.oam.engine.ptmetadata              | &lt;Inherited&gt;
+oracle.oam.engine.session                 | &lt;Inherited&gt;
+oracle.oam.engine.sso                     | &lt;Inherited&gt;
+oracle.oam.engine.token                   | &lt;Inherited&gt;
+oracle.oam.esso                           | &lt;Inherited&gt;
+oracle.oam.extensibility.lifecycle        | &lt;Inherited&gt;
+oracle.oam.foundation.access              | &lt;Inherited&gt;
+oracle.oam.idm                            | &lt;Inherited&gt;
+oracle.oam.install                        | &lt;Inherited&gt;
+oracle.oam.install.bootstrap              | &lt;Inherited&gt;
+oracle.oam.install.mbeans                 | &lt;Inherited&gt;
+oracle.oam.ipf.rest.api                   | &lt;Inherited&gt;
+oracle.oam.oauth                          | &lt;Inherited&gt;
+oracle.oam.plugin                         | &lt;Inherited&gt;
+oracle.oam.proxy.oam                      | &lt;Inherited&gt;
+oracle.oam.proxy.oam.workmanager          | &lt;Inherited&gt;
+oracle.oam.proxy.opensso                  | &lt;Inherited&gt;
+oracle.oam.proxy.osso                     | &lt;Inherited&gt;
+oracle.oam.pswd.service.provider          | &lt;Inherited&gt;
+oracle.oam.replication                    | &lt;Inherited&gt;
+oracle.oam.user.identity.provider         | &lt;Inherited&gt;
+wls:/accessinfra/domainRuntime/&gt;
+</code></pre></div><p>Set the log level to <code>TRACE:32</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wls:/accessinfra/domainRuntime/&gt; setLogLevel<span style="color:#f92672">(</span>target<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;oam_server1&#39;</span>,logger<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;oracle.oam&#39;</span>,level<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;TRACE:32&#39;</span>,persist<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>,addLogger<span style="color:#f92672">=</span>1<span style="color:#f92672">)</span>
+wls:/accessinfra/domainRuntime/&gt;
+
+wls:/accessinfra/domainRuntime/&gt; listLoggers<span style="color:#f92672">(</span>pattern<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle.oam.*&#34;</span>,target<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oam_server1&#34;</span><span style="color:#f92672">)</span>
+------------------------------------------+-----------------
+Logger                                    | Level
+------------------------------------------+-----------------
+oracle.oam                                | TRACE:32
+oracle.oam.admin.foundation.configuration | &lt;Inherited&gt;
+oracle.oam.admin.service.config           | &lt;Inherited&gt;
+oracle.oam.agent                          | &lt;Inherited&gt;
+oracle.oam.agent-default                  | &lt;Inherited&gt;
+oracle.oam.audit                          | &lt;Inherited&gt;
+oracle.oam.binding                        | &lt;Inherited&gt;
+oracle.oam.certvalidation                 | &lt;Inherited&gt;
+oracle.oam.certvalidation.mbeans          | &lt;Inherited&gt;
+oracle.oam.common.healthcheck             | &lt;Inherited&gt;
+oracle.oam.common.runtimeent              | &lt;Inherited&gt;
+oracle.oam.commonutil                     | &lt;Inherited&gt;
+oracle.oam.config                         | &lt;Inherited&gt;
+oracle.oam.controller                     | &lt;Inherited&gt;
+oracle.oam.credcollector                  | &lt;Inherited&gt;
+oracle.oam.default                        | &lt;Inherited&gt;
+oracle.oam.diagnostic                     | &lt;Inherited&gt;
+oracle.oam.engine.authn                   | &lt;Inherited&gt;
+oracle.oam.engine.authz                   | &lt;Inherited&gt;
+oracle.oam.engine.policy                  | &lt;Inherited&gt;
+oracle.oam.engine.ptmetadata              | &lt;Inherited&gt;
+oracle.oam.engine.session                 | &lt;Inherited&gt;
+oracle.oam.engine.sso                     | &lt;Inherited&gt;
+oracle.oam.engine.token                   | &lt;Inherited&gt;
+oracle.oam.esso                           | &lt;Inherited&gt;
+oracle.oam.extensibility.lifecycle        | &lt;Inherited&gt;
+oracle.oam.foundation.access              | &lt;Inherited&gt;
+oracle.oam.idm                            | &lt;Inherited&gt;
+oracle.oam.install                        | &lt;Inherited&gt;
+oracle.oam.install.bootstrap              | &lt;Inherited&gt;
+oracle.oam.install.mbeans                 | &lt;Inherited&gt;
+oracle.oam.ipf.rest.api                   | &lt;Inherited&gt;
+oracle.oam.oauth                          | &lt;Inherited&gt;
+oracle.oam.plugin                         | &lt;Inherited&gt;
+oracle.oam.proxy.oam                      | &lt;Inherited&gt;
+oracle.oam.proxy.oam.workmanager          | &lt;Inherited&gt;
+oracle.oam.proxy.opensso                  | &lt;Inherited&gt;
+oracle.oam.proxy.osso                     | &lt;Inherited&gt;
+oracle.oam.pswd.service.provider          | &lt;Inherited&gt;
+oracle.oam.replication                    | &lt;Inherited&gt;
+oracle.oam.user.identity.provider         | &lt;Inherited&gt;
+wls:/accessinfra/domainRuntime/&gt;
+</code></pre></div><p>Verify that <code>TRACE:32</code> log level is set by connecting to the Administration Server and viewing the logs:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
+<span style="color:#f92672">[</span>oracle@accessinfra-adminserver oracle<span style="color:#f92672">]</span>$
+
+<span style="color:#f92672">[</span>oracle@accessinfra-adminserver oracle<span style="color:#f92672">]</span>$ cd /u01/oracle/user_projects/domains/accessinfra/servers/oam_server1/logs
+<span style="color:#f92672">[</span>oracle@accessinfra-adminserver logs<span style="color:#f92672">]</span>$ tail oam_server1-diagnostic.log
+<span style="color:#f92672">[</span>2020-09-25T09:02:19.492+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>TRACE:32<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.oam.config<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: Configuration Store Observer<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: &lt;anonymous&gt;<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1062<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: oam_server<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_METHOD: getSelectSQL<span style="color:#f92672">]</span> SELECT SQL:SELECT  version  from  IDM_OBJECT_STORE  where id <span style="color:#f92672">=</span> ? and version <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">select</span> max<span style="color:#f92672">(</span>version<span style="color:#f92672">)</span> from  IDM_OBJECT_STORE  where id <span style="color:#f92672">=</span> ?<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>2020-09-25T09:02:19.494+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>TRACE<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.oam.config<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: Configuration Store Observer<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: &lt;anonymous&gt;<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1062<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: oam_server<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_METHOD: load<span style="color:#f92672">]</span> Time <span style="color:#f92672">(</span>ms<span style="color:#f92672">)</span> to load key CONFIG:-1<span style="color:#f92672">{</span>FIELD_TYPES<span style="color:#f92672">=</span>INT, SELECT_FIELDS<span style="color:#f92672">=</span>SELECT  version  from  IDM_OBJECT_STORE <span style="color:#f92672">}</span>:3
+<span style="color:#f92672">[</span>2020-09-25T09:02:19.494+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>TRACE:16<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.oam.config<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: Configuration Store Observer<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: &lt;anonymous&gt;<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1062<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: oam_server<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_METHOD: load<span style="color:#f92672">]</span> RETURN
+<span style="color:#f92672">[</span>2020-09-25T09:02:20.050+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>TRACE:16<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.oam.engine.session<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: OAM SME Service - 2<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: &lt;anonymous&gt;<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1777<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: oam_server<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_CLASS: oracle.security.am.engines.sme.mgrdb.SessionManagerImpl$3<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_METHOD: run<span style="color:#f92672">]</span> ENTRY
+<span style="color:#f92672">[</span>2020-09-25T09:02:20.057+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>TRACE<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.oam.engine.session<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: OAM SME Service - 2<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: &lt;anonymous&gt;<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1777<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: oam_server<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_CLASS: oracle.security.am.engines.sme.mgrdb.SessionManagerImpl$3<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_METHOD: run<span style="color:#f92672">]</span> Session Store Current status: UP, at time: Fri Sep <span style="color:#ae81ff">25</span> 09:02:20 GMT 2020. Previous known status: UP. Polling Interval: <span style="color:#ae81ff">15000</span> milliseconds
+<span style="color:#f92672">[</span>2020-09-25T09:02:20.057+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>TRACE:16<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.oam.engine.session<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: OAM SME Service - 2<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: &lt;anonymous&gt;<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1777<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: oam_server<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_CLASS: oracle.security.am.engines.sme.mgrdb.SessionManagerImpl$3<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>SRC_METHOD: run<span style="color:#f92672">]</span> RETURN
+<span style="color:#f92672">[</span>2020-09-25T09:02:22.602+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>NOTIFICATION<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.wsm.agent.handler.jaxrs.RESTJeeResourceFilter<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: <span style="color:#f92672">[</span>ACTIVE<span style="color:#f92672">]</span>.ExecuteThread: <span style="color:#e6db74">&#39;9&#39;</span> <span style="color:#66d9ef">for</span> queue: <span style="color:#e6db74">&#39;weblogic.kernel.Default (self-tuning)&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: weblogic<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-000000c8,0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: wls-management-services<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> Tenant: default,  ProcessResponse is set to false
+<span style="color:#f92672">[</span>2020-09-25T09:02:27.608+00:00<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>oam_server1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>NOTIFICATION<span style="color:#f92672">]</span> <span style="color:#f92672">[]</span> <span style="color:#f92672">[</span>oracle.wsm.agent.handler.jaxrs.RESTJeeResourceFilter<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tid: <span style="color:#f92672">[</span>ACTIVE<span style="color:#f92672">]</span>.ExecuteThread: <span style="color:#e6db74">&#39;43&#39;</span> <span style="color:#66d9ef">for</span> queue: <span style="color:#e6db74">&#39;weblogic.kernel.Default (self-tuning)&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">[</span>userId: weblogic<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-000000c9,0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>APP: wls-management-services<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>partition-name: DOMAIN<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>tenant-name: GLOBAL<span style="color:#f92672">]</span> Tenant: default,  ProcessResponse is set to false
+</code></pre></div><h3 id="performing-wlst-administration-via-ssl">Performing WLST Administration via SSL</h3>
+<ol>
+<li>
+<p>By default the SSL port is not enabled for the Administration Server or OAM Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WLS console <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console</code> and navigate to <strong>Lock &amp; Edit</strong> -&gt; <strong>Environment</strong> -&gt;<strong>Servers</strong> -&gt; <strong>server_name</strong> -&gt;<strong>Configuration</strong> -&gt; <strong>General</strong> -&gt; <strong>SSL Listen Port Enabled</strong> -&gt; <strong>Provide SSL Port</strong> ( For Administration Server: 7002 and for OAM Managed Server (oam_server1): 14101) - &gt; <strong>Save</strong> -&gt; <strong>Activate Changes</strong>.</p>
+<p><strong>Note</strong>: If configuring the OAM Managed Servers for SSL you must enable SSL on the same port for all servers (oam_server1 through oam_server5)</p>
+</li>
+<li>
+<p>Create a <code>myscripts</code> directory as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;work directory&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts
+$ mkdir myscripts
+$ cd myscripts
+</code></pre></div></li>
+<li>
+<p>Create a sample yaml template file in the <code>myscripts</code> directory called <code>&lt;domain_uid&gt;-adminserver-ssl.yaml</code> to create a Kubernetes service for the Administration Server:</p>
+<p><strong>Note</strong>: Update the <code>domainName</code>, <code>domainUID</code> and <code>namespace</code> based on your environment. For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    serviceType: SERVER
+    weblogic.domainName: accessinfra
+    weblogic.domainUID: accessinfra
+    weblogic.resourceVersion: domain-v2
+    weblogic.serverName: AdminServer
+  name: accessinfra-adminserverssl
+  namespace: accessns
+spec:
+  clusterIP: None
+  ports:
+  - name: default
+    port: <span style="color:#ae81ff">7002</span>
+    protocol: TCP
+    targetPort: <span style="color:#ae81ff">7002</span>
+  selector:
+    weblogic.createdByOperator: <span style="color:#e6db74">&#34;true&#34;</span>
+    weblogic.domainUID: accessinfra
+    weblogic.serverName: AdminServer
+  type: ClusterIP
+</code></pre></div><p>and the following sample yaml template file <code>&lt;domain_uid&gt;-oamcluster-ssl.yaml</code> for the OAM Managed Server:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    serviceType: SERVER
+    weblogic.domainName: accessinfra
+    weblogic.domainUID: accessinfra
+    weblogic.resourceVersion: domain-v2
+  name: accessinfra-oamcluster-ssl
+  namespace: accessns
+spec:
+  clusterIP: None
+  ports:
+  - name: default
+    port: <span style="color:#ae81ff">14101</span>
+    protocol: TCP
+    targetPort: <span style="color:#ae81ff">14101</span>
+  selector:
+    weblogic.clusterName: oam_cluster
+    weblogic.createdByOperator: <span style="color:#e6db74">&#34;true&#34;</span>
+    weblogic.domainUID: accessinfra
+  type: ClusterIP
+</code></pre></div></li>
+<li>
+<p>Apply the template using the following command for the AdminServer:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f &lt;domain_uid&gt;-adminserver-ssl.yaml
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f accessinfra-adminserver-ssl.yaml
+service/accessinfra-adminserverssl created
+</code></pre></div><p>and using the following command for the OAM Managed Server:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f &lt;domain_uid&gt;-oamcluster-ssl.yaml
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f accessinfra-oamcluster-ssl.yaml
+service/accessinfra-oamcluster-ssl created
+</code></pre></div></li>
+<li>
+<p>Validate that the Kubernetes Services to access SSL ports are created successfully:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get svc -n &lt;domain_namespace&gt; |grep ssl
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get svc -n accessns |grep ssl
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">accessinfra-adminserverssl           ClusterIP   None             &lt;none&gt;        7002/TCP                     102s
+accessinfra-oamcluster-ssl           ClusterIP   None             &lt;none&gt;        14101/TCP                    35s
+</code></pre></div></li>
+<li>
+<p>Inside the bash shell of the running helper pod, run the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@helper bin<span style="color:#f92672">]</span>$ export WLST_PROPERTIES<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.security.TrustKeyStore=DemoTrust&#34;</span>
+<span style="color:#f92672">[</span>oracle@helper bin<span style="color:#f92672">]</span>$ cd /u01/oracle/oracle_common/common/bin
+<span style="color:#f92672">[</span>oracle@helper bin<span style="color:#f92672">]</span>$ ./wlst.sh
+Initializing WebLogic Scripting Tool <span style="color:#f92672">(</span>WLST<span style="color:#f92672">)</span> ...
+
+Welcome to WebLogic Server Administration Scripting Shell
+   
+Type help<span style="color:#f92672">()</span> <span style="color:#66d9ef">for</span> help on available commands
+wls:/offline&gt;
+</code></pre></div><p>To connect to the Administration Server t3s service:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wls:/offline&gt; connect<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;weblogic&#39;</span>,<span style="color:#e6db74">&#39;&lt;password&gt;&#39;</span>,<span style="color:#e6db74">&#39;t3s://accessinfra-adminserverssl:7002&#39;</span><span style="color:#f92672">)</span>
+Connecting to t3s://accessinfra-adminserverssl:7002 with userid weblogic ...
+&lt;Sep 25, <span style="color:#ae81ff">2020</span> 9:11:24 AM GMT&gt; &lt;Info&gt; &lt;Security&gt; &lt;BEA-090905&gt; &lt;Disabling the CryptoJ JCE Provider self-integrity check <span style="color:#66d9ef">for</span> better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification<span style="color:#f92672">=</span>true.&gt;
+&lt;Sep 25, <span style="color:#ae81ff">2020</span> 9:11:24 AM GMT&gt; &lt;Info&gt; &lt;Security&gt; &lt;BEA-090906&gt; &lt;Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG<span style="color:#f92672">=</span>true.&gt;
+&lt;Sep 25, <span style="color:#ae81ff">2020</span> 9:11:24 AM GMT&gt; &lt;Info&gt; &lt;Security&gt; &lt;BEA-090909&gt; &lt;Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.&gt;
+Successfully connected to Admin Server <span style="color:#e6db74">&#34;AdminServer&#34;</span> that belongs to domain <span style="color:#e6db74">&#34;accessinfra&#34;</span>.
+
+wls:/accessinfra/serverConfig/&gt;
+</code></pre></div><p>To connect to the OAM Managed Server t3s service:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wls:/offline&gt; connect<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;weblogic&#39;</span>,<span style="color:#e6db74">&#39;&lt;password&gt;&#39;</span>,<span style="color:#e6db74">&#39;t3s://accessinfra-oamcluster-ssl:14101&#39;</span><span style="color:#f92672">)</span>   
+Connecting to t3s://accessinfra-oamcluster-ssl:14101 with userid weblogic ...
+Successfully connected to managed Server <span style="color:#e6db74">&#34;oam_server1&#34;</span> that belongs to domain <span style="color:#e6db74">&#34;accessinfra&#34;</span>.
+</code></pre></div></li>
+</ol>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/oam/manage-oam-domains/domain-lifecycle/" title="Domain Life Cycle"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/oam/manage-oam-domains/logging-and-visualization/" title="Logging and Visualization" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1603962152"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1603962152"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1603962152"></script>
+
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1603962152" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1603962152"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
