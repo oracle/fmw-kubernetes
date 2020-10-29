@@ -5,7 +5,7 @@ description: "Steps to set up an Ingress for NGINX to direct traffic to the OAM 
 
 ### Setting up an ingress for NGINX for the OAM Domain
 
-The instructions below explain how to to set up NGINX as an ingress for the OAM domain with SSL termination.
+The instructions below explain how to set up NGINX as an ingress for the OAM domain with SSL termination.
 
 **Note**: All the steps below should be performed on the **master** node.
 

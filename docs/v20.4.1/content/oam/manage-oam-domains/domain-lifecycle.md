@@ -6,7 +6,7 @@ pre : "<b>1. </b>"
 description: "Learn about the domain life cyle of an OAM domain."
 ---
 
-As OAM domains use the Oracle WebLogic Server Kubernetes Operator, domain lifecyle operations are managed using the WLS operator itself.
+As OAM domains use the Oracle WebLogic Server Kubernetes Operator, domain lifecyle operations are managed using the Oracle WebLogic Server Kubernetes Operator itself.
 
 This document shows the basic operations for starting, stopping and scaling servers in the OAM domain. 
 

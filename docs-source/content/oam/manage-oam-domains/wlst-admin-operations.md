@@ -243,7 +243,7 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
 
 ### Performing WLST Administration via SSL
 
-1. By default the SSL port is not enabled for the Administration Server or OAM Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WLS console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` and navigate to **Lock & Edit** -> **Environment** ->**Servers** -> **server_name** ->**Configuration** -> **General** -> **SSL Listen Port Enabled** -> **Provide SSL Port** ( For Administration Server: 7002 and for OAM Managed Server (oam_server1): 14101) - > **Save** -> **Activate Changes**.
+1. By default the SSL port is not enabled for the Administration Server or OAM Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WebLogic Administration console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` and navigate to **Lock & Edit** -> **Environment** ->**Servers** -> **server_name** ->**Configuration** -> **General** -> **SSL Listen Port Enabled** -> **Provide SSL Port** ( For Administration Server: 7002 and for OAM Managed Server (oam_server1): 14101) - > **Save** -> **Activate Changes**.
 
    **Note**: If configuring the OAM Managed Servers for SSL you must enable SSL on the same port for all servers (oam_server1 through oam_server5)
 

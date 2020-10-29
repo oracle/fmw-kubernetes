@@ -213,7 +213,7 @@ generated artifacts:
    
    The command creates a `domain.yaml` file required for domain creation. 
    
-1. Navigate to the `/output_access/weblogic-domains/accessinfra` directory:
+1. Navigate to the `/output_access/weblogic-domains/<domain_uid>` directory:
 
    ```bash
    $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output_access/weblogic-domains/<domain_uid>

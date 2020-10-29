@@ -57,7 +57,7 @@ In all the examples below, change the directory path as appropriate for your ins
    /scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8s/httpd.conf has been backed up as /scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8s/httpd.conf.ORIG   
    ```
 
-1. Launch a browser, and access the OAM console. Navigate to **Application Security** → **Quick Start Wizards** → **SSO Agent Registration**. Register the agent in the usual way, download the configuration zip file and copy to the OHS WebGate server, for example: `/scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8/webgate/config`. Extract the zip file
+1. Launch a browser, and access the OAM console. Navigate to **Application Security** → **Quick Start Wizards** → **SSO Agent Registration**. Register the agent in the usual way, download the configuration zip file and copy to the OHS WebGate server, for example: `/scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8/webgate/config`. Extract the zip file.
 
 1. Copy the Certificate Authority (CA) certificate (`cacert.pem`) for the load balancer/ingress certificate to the same directory e.g: `/scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8/webgate/config`.
 
@@ -77,7 +77,7 @@ In all the examples below, change the directory path as appropriate for your ins
 
 To change the WebGate agent to use OAP:
 
-1. In the OAM Console click **Application Security** and then **Agents**
+1. In the OAM Console click **Application Security** and then **Agents**.
 
 1. Search for the agent you want modify and select it.
 

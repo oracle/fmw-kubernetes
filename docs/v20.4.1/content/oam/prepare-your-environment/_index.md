@@ -70,14 +70,14 @@ As per the [prerequisites](../prerequisites) an installation of Helm is required
 
 You can deploy OAM Docker images in the following ways:
 
-1. Download a pre-built OAM Docker image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU.
+1. Download a prebuilt OAM Docker image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU.
 
 1. Build your own OAM image using the WebLogic Image Tool or by using the dockerfile, scripts and base images from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. For more information about the various ways in which you can build your own container image, see [Building the OAM Image](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement/#building-the-oam-image).
 
 Choose one of these options based on your requirements.
 
 {{% notice note %}}
-For OAM on Kubernetes you must include the mandatory patch [30571576](http://support.oracle.com)
+If building your own image for OAM, you must include the mandatory patch [30571576](http://support.oracle.com).
 {{% /notice %}}
 
 {{% notice note %}}

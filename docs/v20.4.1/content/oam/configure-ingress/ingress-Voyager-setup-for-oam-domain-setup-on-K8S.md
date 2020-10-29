@@ -5,7 +5,7 @@ description: "Steps to set up an Ingress for Voyager to direct traffic to the OA
 
 ### Setting Up an Ingress for Voyager for the OAM Domain on K8S
 
-The instructions below explain how to to set up Voyager as an Ingress for the OAM domain with SSL termination.
+The instructions below explain how to set up Voyager as an Ingress for the OAM domain with SSL termination.
 
 **Note**: All the steps below should be performed on the **master** node.
 
@@ -339,7 +339,7 @@ Use helm to install Voyager.
    < Content-Length: 0
    < Strict-Transport-Security: max-age=15768000
    <
-   * Connection #0 to host 10.196.4.112 left intact
+   * Connection #0 to host 12.345.67.89 left intact
    ```
    
 #### Verify that You can Access the Domain URL
