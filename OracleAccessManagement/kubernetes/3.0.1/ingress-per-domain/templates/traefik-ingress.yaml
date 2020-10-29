@@ -1,0 +1,73 @@
+# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+{{- if eq .Values.type "TRAEFIK" }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    weblogic.resourceVersion: domain-v2
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+   - host: '{{ .Values.traefik.hostname }}'
+     http:
+       paths:
+       - path: /console
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /rreg/rreg
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /dms
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /oamconsole
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /oam/services/rest
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /iam/admin/config
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /oam/admin/api
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /iam/admin/diag
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /iam/access
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.oamManagedServerPort }}
+       - path: /em
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /access
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.policyClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.policyServerPort }}
+       - path: /oam/services/rest/access/api
+         backend: 
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.oamManagedServerPort }}
+       - path: /
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.oamManagedServerPort }}
+{{- end }}
+
