@@ -1,16 +1,16 @@
 ---
 title: "a. Patch an image"
-description: "Instructions on how to update your OAM K8S cluster with a new OAM docker image."
+description: "Instructions on how to update your OAM Kubernetes cluster with a new OAM Docker image."
 ---
 
-To update your OAM Kubernetes cluster with a new OAM docker image, first install the new docker image on all nodes in your Kubernetes cluster. 
+To update your OAM Kubernetes cluster with a new OAM Docker image, first install the new Docker image on all nodes in your Kubernetes cluster. 
 
 Once the new image is installed, choose one of the following options to update your OAM kubernetes cluster to use the new image:
 
 1. Run the `kubectl edit domain` command
 2. Run the `kubectl patch domain` command
 
-In all of the above cases, the Oracle WebLogic Server Kubernetes Operator will restart the AdminServer pod first and then perform a rolling restart on the OAM Managed Servers.
+In all of the above cases, the Oracle WebLogic Server Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
 
 
 ### Run the kubectl edit domain command

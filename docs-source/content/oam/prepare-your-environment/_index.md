@@ -10,7 +10,7 @@ PVC, and the domain resource YAML file for deploying the generated OAM domain."
 1. [Set up your Kubernetes cluster](#set-up-your-kubernetes-cluster)
 1. [Install Helm](#install-helm)
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
-1. [Install the OAM docker image](#install-the-oam-docker-image)
+1. [Install the OAM Docker image](#install-the-oam-docker-image)
 1. [Install the Oracle WebLogic Server Kubernetes Operator docker image](#install-the-oracle-weblogic-server-kubernetes-operator-docker-image)
 1. [Set up the code repository to deploy OAM domains](#set-up-the-code-repository-to-deploy-oam-domains)
 1. [Install the Oracle WebLogic Server Kubernetes Operator](#install-the-oracle-weblogic-server-kubernetes-operator)
@@ -46,7 +46,6 @@ As per the [prerequisites](../prerequisites) an installation of Helm is required
     The output will look similar to the following:
 
 	```bash
-	bash-4.2$ kubectl get nodes,pods -n kube-system
     NAME                  STATUS   ROLES    AGE   VERSION
     node/worker-node1     Ready    <none>   17h   v1.18.4
     node/worker-node2     Ready    <none>   17h   v1.18.4
@@ -67,15 +66,13 @@ As per the [prerequisites](../prerequisites) an installation of Helm is required
     pod/kube-scheduler-master                1/1     Running   0          21
     ```
 	
-### Install the OAM docker image
+### Install the OAM Docker image
 
-You can deploy [OAM docker images](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement) in the following ways:
+You can deploy OAM Docker images in the following ways:
 
-1. Download a pre-built OAM Docker image from [My Oracle Support](https://support.oracle.com).  This image contains the latest bundle patch and one-off patches for Oracle Access Management 12.2.1.4.0.
+1. Download a pre-built OAM Docker image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU.
 
-1. Build your own OAM Docker image using the WebLogic Image Tool. Oracle recommends using the WebLogic Image tool to build your own OAM 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an OAM Docker Image using Image Tool](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement/imagetool/12.2.1.4.0).
-
-1. Build your own OAM image using the dockerfile samples. To customize the image for specific use-cases, Oracle provides dockerfile samples and build scripts. For more information, see [Building an Oracle Access Management Image using Dockerfile Samples](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement/dockerfiles/12.2.1.4.0).
+1. Build your own OAM image using the WebLogic Image Tool or by using the dockerfile, scripts and base images from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. For more information about the various ways in which you can build your own container image, see [Building the OAM Image](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement/#building-the-oam-image).
 
 Choose one of these options based on your requirements.
 
@@ -84,10 +81,10 @@ For OAM on Kubernetes you must include the mandatory patch [30571576](http://sup
 {{% /notice %}}
 
 {{% notice note %}}
-The OAM docker image must be installed on the master node AND each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a docker registry that your cluster can access.
+The OAM Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
 {{% /notice %}}
 
-After installing the OAM docker image run the following command to make sure the image is installed correctly on the master and worker nodes:
+After installing the OAM Docker image run the following command to make sure the image is installed correctly on the master and worker nodes:
  
 ```bash
 $ docker images
@@ -109,12 +106,12 @@ The output will look similar to the following:
 
 
 
-### Install the Oracle WebLogic Server Kubernetes Operator docker image
+### Install the Oracle WebLogic Server Kubernetes Operator Docker image
 
 In this release only Oracle WebLogic Server Kubernetes Operator 3.0.1 is supported.
 
 {{% notice note %}}
-The Oracle WebLogic Server Kubernetes Operator docker image must be installed on the master node AND each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a docker registry that your cluster can access.
+The Oracle WebLogic Server Kubernetes Operator Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
 {{% /notice %}}
 
 1. Pull the Oracle WebLogic Server Kubernetes Operator 3.0.1 image by running the following command on the master node:
@@ -143,10 +140,10 @@ The Oracle WebLogic Server Kubernetes Operator docker image must be installed on
 1. Run the docker tag command as follows:
 
    ```bash
-   docker tag oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
+   $ docker tag oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
    ```
 
-   After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 docker image, repeat the above on the worker nodes.
+   After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.
 
 
 ### Set up the code repository to deploy OAM domains
@@ -929,21 +926,21 @@ In this section you prepare the environment for the OAM domain creation. This in
 1. Run the following commands to verify the PV and PVC were created successfully:
 
    ```bash
-   $ kubectl describe pv <pv_name> -n <domain_namespace>
+   $ kubectl describe pv <pv_name>
    $ kubectl describe pvc <pvc_name> -n <domain_namespace>
    ```
 	
    For example:
    
    ```bash
-   $ kubectl describe pv accessinfra-domain-pv -n accessns
+   $ kubectl describe pv accessinfra-domain-pv
    $ kubectl describe pvc accessinfra-domain-pvc -n accessns
    ```
    
    The output will look similar to the following:
 
    ```bash
-   $ kubectl describe pv accessinfra-domain-pv -n accessns
+   $ kubectl describe pv accessinfra-domain-pv
    
    Name:           accessinfra-domain-pv
    Labels:         weblogic.domainUID=accessinfra

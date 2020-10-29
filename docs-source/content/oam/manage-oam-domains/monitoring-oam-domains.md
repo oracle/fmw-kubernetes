@@ -244,7 +244,7 @@ The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape r
    $ wget https://github.com/oracle/weblogic-monitoring-exporter/releases/download/v1.2.0/get1.2.0.sh
    ```
 
-1. Create a configuration file `config-admin.yaml` in the `<work_directory>/wls_exporter` directory that contains the following. Modify the `restPort` to match the server port for the OAM AdminServer:
+1. Create a configuration file `config-admin.yaml` in the `<work_directory>/wls_exporter` directory that contains the following. Modify the `restPort` to match the server port for the OAM Administration Server:
 
    ```
    metricsNameSnakeCase: true
@@ -423,7 +423,7 @@ The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape r
          key: name
    ```
    
-1. Generate the deployment package for the OAM AdminServer:
+1. Generate the deployment package for the OAM Administration Server:
 
    ```bash
    $ chmod 777 get<version>.sh

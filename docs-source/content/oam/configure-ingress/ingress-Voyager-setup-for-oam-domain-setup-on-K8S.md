@@ -191,8 +191,9 @@ Use helm to install Voyager.
    Edit the `voyager-ingress.yaml` and change the `secretName` to the value created earlier, for example:
    
    ```bash
-   # Copyright (c) 2018, 2019, Oracle Corporation and/or its affiliates. All rights reserved.
+   # Copyright (c) 2020, Oracle Corporation and/or its affiliates. 
    # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 
    {{- if eq .Values.type "VOYAGER" }}
    ---

@@ -49,7 +49,7 @@ To use WLST to administer the OAM domain, use the helper pod in the same Kuberne
    wls:/offline>
    ```
  
-1. To access t3 for the AdminServer connect as follows:
+1. To access t3 for the Administration Server connect as follows:
 
    ```bash
    connect('weblogic','<password>','t3://accessinfra-adminserver:7001')
@@ -111,7 +111,7 @@ wls:/accessinfra/serverConfig/Servers>
    
 #### Configure logging for managed servers   
 
-Connect to the AdminServer and run the following:
+Connect to the Administration Server and run the following:
 
 ```bash
 wls:/accessinfra/serverConfig/> domainRuntime()
@@ -223,7 +223,7 @@ oracle.oam.user.identity.provider         | <Inherited>
 wls:/accessinfra/domainRuntime/>
 ```
 
-Verify that `TRACE:32` log level is set by connecting to the AdminServer and viewing the logs:
+Verify that `TRACE:32` log level is set by connecting to the Administration Server and viewing the logs:
 
 ```bash
 $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
@@ -243,7 +243,7 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
 
 ### Performing WLST Administration via SSL
 
-1. By default the SSL port is not enabled for the AdminServer or OAM Managed Servers. To configure the SSL port for the AdminServer and Managed Servers login to WLS console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` and navigate to **Lock & Edit** -> **Environment** ->**Servers** -> **server_name** ->**Configuration** -> **General** -> **SSL Listen Port Enabled** -> **Provide SSL Port** ( For AdminServer: 7002 and for OAM Managed Server (oam_server1): 14101) - > **Save** -> **Activate Changes**.
+1. By default the SSL port is not enabled for the Administration Server or OAM Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WLS console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` and navigate to **Lock & Edit** -> **Environment** ->**Servers** -> **server_name** ->**Configuration** -> **General** -> **SSL Listen Port Enabled** -> **Provide SSL Port** ( For Administration Server: 7002 and for OAM Managed Server (oam_server1): 14101) - > **Save** -> **Activate Changes**.
 
    **Note**: If configuring the OAM Managed Servers for SSL you must enable SSL on the same port for all servers (oam_server1 through oam_server5)
 
@@ -255,7 +255,7 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    $ cd myscripts
    ```
 
-1. Create a sample yaml template file in the `myscripts` directory called `<domain_uid>-adminserver-ssl.yaml` to create a Kubernetes service for the AdminServer:
+1. Create a sample yaml template file in the `myscripts` directory called `<domain_uid>-adminserver-ssl.yaml` to create a Kubernetes service for the Administration Server:
 
    **Note**: Update the `domainName`, `domainUID` and `namespace` based on your environment. For example:
 
@@ -371,7 +371,7 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    wls:/offline>
    ```
    
-   To connect to the AdminServer t3s service:
+   To connect to the Administration Server t3s service:
 
    ```bash
    wls:/offline> connect('weblogic','<password>','t3s://accessinfra-adminserverssl:7002')
