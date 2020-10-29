@@ -1,0 +1,72 @@
+# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: access-ingress
+  namespace: accessns
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "2000k"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
+    nginx.ingress.kubernetes.io/ingress.allow-http: "false"
+spec:
+  rules:
+   - http:
+      paths:
+      - path: /console
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /rreg/rreg
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /em
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /oamconsole
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /dms
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /oam/services/rest
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /iam/admin/config
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /oam/admin/api
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /iam/admin/diag 
+        backend:
+          serviceName: accessinfra-adminserver
+          servicePort: 7001
+      - path: /iam/access
+        backend:
+          serviceName: accessinfra-cluster-oam-cluster
+          servicePort: 14100
+      - path: /oam/services/rest/access/api
+        backend:
+          serviceName: accessinfra-cluster-oam-cluster
+          servicePort: 14100
+      - path: /access
+        backend:
+          serviceName: accessinfra-cluster-policy-cluster
+          servicePort: 15100
+      - path: /
+        backend:
+          serviceName: accessinfra-cluster-oam-cluster
+          servicePort: 14100
