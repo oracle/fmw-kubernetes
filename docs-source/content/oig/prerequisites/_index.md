@@ -18,7 +18,7 @@ In this release, OIG domains are supported using the “domain on a persistent v
 * Kubernetes 1.14.8+, 1.15.7+, 1.16.0+, 1.17.0+, and 1.18.0+ (check with `kubectl version`).
 * Flannel networking v0.9.1-amd64 or later (check with `docker images | grep flannel`).
 * Docker 18.9.1 or 19.03.1 (check with `docker version`).
-* Helm 3.0.3+ (check with `helm version`).
+* Helm 3.1.3+ (check with `helm version`).
 * You must have the `cluster-admin` role to install the operator.
 * We do not currently support running OIG in non-Linux containers.
 * A running Oracle Database 12.2.0.1 or later. The database must be a supported version for OIG as outlined in [Oracle Fusion Middleware 12c certifications](https://www.oracle.com/technetwork/middleware/fmw-122140-certmatrix-5763476.xlsx), and must meet the requirements as outlined in [About Database Requirements for an Oracle Fusion Middleware Installation](http://www.oracle.com/pls/topic/lookup?ctx=fmw122140&id=GUID-4D3068C8-6686-490A-9C3C-E6D2A435F20A).
