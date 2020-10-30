@@ -1,0 +1,46 @@
+# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+{{- if eq .Values.type "TRAEFIK" }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    weblogic.resourceVersion: domain-v2
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+ rules:
+   - http:
+       paths:
+       - path: /console
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /em
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+       - path: /soa
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.soaManagedServerPort }}
+       - path: /integration
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.soaManagedServerPort }}
+       - path: /soa-infra
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.soaManagedServerPort }}
+       - path:
+         backend:
+           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+           servicePort: {{ .Values.wlsDomain.oimManagedServerPort }}
+    {{- if .Values.traefik }}
+    host: {{ .Values.traefik.hostname }}
+    {{- end }}
+{{- end }}
