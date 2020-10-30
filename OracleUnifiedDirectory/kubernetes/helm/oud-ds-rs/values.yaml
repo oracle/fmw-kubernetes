@@ -1,0 +1,400 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+# Default values for oud-ds-rs.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Number of DS+RS instances/pods/services to be created with replication enabled against a base OUD instance/pod
+replicaCount: 2
+
+restartPolicyName: OnFailure
+
+image:
+  repository: oracle/oud
+  tag: 12.2.1.4.0
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # Type of Service to be created for OUD Interfaces (like LDAP, HTTP, Admin)
+  type: ClusterIP
+  # Service Type for loadbalancer services exposing LDAP, HTTP interfaces from available/accessible OUD pods.
+  lbrtype: ClusterIP
+  # Service with all OUD ports associated
+  allSvcEnabled: false
+  # Type of Service having all OUD ports associated with it
+  allSvcType: ClusterIP
+
+ingress:
+  enabled: true
+  # Supported values: nginx or voyager
+  type: nginx
+  # Configuration for Ingress rules about Data HTTP/HTTPS interfaces
+  http:
+    nginxAnnotations: 
+      kubernetes.io/ingress.class: "nginx"
+      # Server-side HTTPS enforcement through redirect - for specific ingress resources
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      # Required to be set if backendPort is configured as https
+      # nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginxAnnotationsTLS: 
+      kubernetes.io/ingress.class: "nginx"
+      # Server-side HTTPS enforcement through redirect - for specific ingress resources
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      # Required to be set if backendPort is configured as https
+      # nginx.ingress.kubernetes.io/backend-protocol: "https"
+      # For Forcing TLS/HTTPS
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ingress.allow-http: "false"
+      # nginx.ingress.kubernetes.io/x-forwarded-proto: "https"
+      # nginx.ingress.kubernetes.io/x-forwarded-port: "https"
+    # Hostname to be used with Ingress Rules.
+    # If not set, hostname would be configured according to fullname
+    #   Hosts would be configured as <fullname>-http.<domain>, <fullname>-http-0.<domain>, <fullname>-http-1.<domain>, etc.
+    host:
+    # domain name to be used with Ingress Rules.
+    # In ingress rules, hosts would be configured as <host>.<domain>, <host>-0.<domain>, <host>-1.<domain>, etc.
+    domain:
+    # Backend Port to be used. Either http or https
+    backendPort: http
+  # Configuration for Ingress rules about Admin HTTPS interface
+  admin:
+    nginxAnnotations:
+      kubernetes.io/ingress.class: "nginx"
+      # Backend Port is always HTTPS only
+      nginx.ingress.kubernetes.io/backend-protocol: "https"
+      # Server-side HTTPS enforcement through redirect - for specific ingress resources
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginxAnnotationsTLS:
+      kubernetes.io/ingress.class: "nginx"
+      # Backend Port is always HTTPS only
+      nginx.ingress.kubernetes.io/backend-protocol: "https"
+      # For Forcing TLS/HTTPS
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ingress.allow-http: "false"
+      # nginx.ingress.kubernetes.io/x-forwarded-proto: "https"
+      # nginx.ingress.kubernetes.io/x-forwarded-port: "https"
+    # Hostname to be used with Ingress Rules.
+    # If not set, hostname would be configured according to fullname
+    # Hosts would be configured as <fullname>-admin.<domain>, <fullname>-admin-0.<domain>, <fullname>-admin-1.<domain>, etc.
+    host:
+    # domain name to be used with Ingress Rules.
+    # In ingress rules, hosts would be configured as <host>.<domain>, <host>-0.<domain>, <host>-1.<domain>, etc.
+    domain:
+  # SSL/TLS configuration for the Ingress
+  # Flag to decide whether to force TLS/HTTPS or not
+  tlsEnabled: true
+  # Secret name to use an already created TLS Secret. If such secret is not provided, one would be created with name <fullname>-tls-cert
+  # If the TLS Secret is in different namespace, name can be mentioned as <namespace>/<tlsSecretName>
+  tlsSecret:
+  # Parameters for generation of SelfSigned Cert
+  # Subject's common name (cn) for SelfSigned Cert. Default Value <fullname>
+  certCN:
+  # Validity of Self-Signed Cert in days
+  certValidityDays: 365
+  # Voyager specific configuration
+  voyagerAnnotations:
+    kubernetes.io/ingress.class: "voyager"
+    ingress.appscode.com/type: "NodePort"
+    # To ensure that HAProxy matches against the NodePort
+    # ingress.appscode.com/use-node-port: "true"
+    # Yet to explore
+    # ingress.appscode.com/stats: "true"
+  voyagerAnnotationsTLS:
+    kubernetes.io/ingress.class: "voyager"
+    ingress.appscode.com/type: "NodePort"
+    # To ensure that HAProxy matches against the NodePort
+    # ingress.appscode.com/use-node-port: "true"
+    # Yet to explore
+    # ingress.appscode.com/stats: "true"
+  voyagerNodePortHttp: 30080
+  voyagerNodePortHttps: 30443
+  voyagerHttpPort: 80
+  voyagerHttpsPort: 443
+  voyagerExternalIPs:
+#  - a.b.c.d
+  voyagerTcpPortPrefix:
+    ldap: 389
+    ldaps: 636
+    adminldaps: 444
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Configuration for Persistent Volume and Persistent Volume Claim for user_projects
+# PV/PVC associated with this configuration would be mounted inside containers at /u01/oracle/user_projects
+persistence:
+  # If enabled, it will use the persistent volume. if value is false, PV and PVC would not be used and pods would be using the default emptyDir mount volume
+  enabled: true
+  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  pvname: 
+  # provided the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+  pvcname: 
+  accessMode: ReadWriteMany
+  size: 20Gi
+  storageClass: manual
+  reclaimPolicy: "Delete"
+# default supported values: either filesystem or networkstorage or custom
+  type: filesystem
+  networkstorage:
+    nfs:
+      path: /scratch/shared/oud_user_projects
+      server: 0.0.0.0
+  filesystem:
+    hostPath:
+      # The path location mentioned should be created and made accessible with necessary privileges for access from pods/containers. 
+      path: /scratch/shared/oud_user_projects
+  custom:
+    # YAML content to be included in PersistenceVolume Object
+  annotations: {}
+
+# Configuration for Persistent Volume and Persistent Volume Claim for mounting volume in containers for configuration files like ldif, schema, jks, java.security, etc.
+# PV/PVC associated with this configuration would be mounted inside containers at /u01/oracle/user_projects
+configVolume:
+  # If enabled, it will use the persistent volume.
+  # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+  enabled: false
+  # Path at which the volume would be mounted inside containers
+  mountPath: /u01/oracle/config-input
+  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  pvname: 
+  # provided the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+  pvcname: 
+  accessMode: ReadWriteMany
+  size: 10Gi
+  storageClass: manual
+  reclaimPolicy: "Retain"
+# default supported values: either filesystem or networkstorage or custom
+  type: networkstorage
+  networkstorage:
+    nfs:
+      path: /scratch/shared/oud_config/
+      server: 0.0.0.0
+  filesystem:
+    hostPath:
+      # The path location mentioned should be created and made accessible with necessary privileges for access from pods/containers. 
+      path: /scratch/shared/oud_config
+  custom:
+    # YAML content to be included in PersistenceVolume Object
+  annotations: {}
+
+secret:
+  # If enabled it will use the secret created with base64 encoding. if value is false, secret would not be used and input values (through --set, --values, etc.) would be used while creation of pods.
+  enabled: true
+  # provided the secret name to use an already created Secret
+  name:
+  type: opaque
+
+# Ports to be configured in each OUD instance/pod. Ideally, it would not be required to change these ports.
+oudPorts:
+  adminldaps: 1444
+  adminhttps: 1888
+  ldap: 1389
+  ldaps: 1636
+  http: 1080
+  https: 1081
+  replication: 1898
+
+# Configuration Parameters related to deployment of OUD instances on Kubernetes Cluster
+deploymentConfig:
+  # Based on the value for this parameter, initialization/configuration of each OUD replica would be delayed and
+  # readiness probes would be configured.
+  # initialDelaySeconds would be configured as sleepBeforeConfig + startupTime
+  startupTime: 180
+
+  # Paramter to decide livenessProbe initialDelaySeconds
+  livenessProbeInitialDelay: 900
+
+# Generic configuration parameters for OUD Instances
+oudConfig:
+  # BaseDN for OUD Instances
+  baseDN: dc=example,dc=com
+
+  # Root User DN for OUD Instances.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  rootUserDN:
+
+  # Password for Root User DN.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  rootUserPassword:
+
+  # AdminUID to be configured with each replicated OUD instance.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  adminUID:
+
+  # Password for AdminUID. If the value is not passed, value of rootUserPassword would be used as password for AdminUID.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  adminPassword:
+
+  # Value for bindDN1 which is to be used with 'dsreplication enable' command.
+  # If the value is not passed, value of rootUserDN would be used.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  bindDN1:
+
+  # Value for bindPassword1 which is to be used with 'dsreplication enable' command through bindPasswordFile1  parameter.
+  # If the value is not passed, value of rootUserPassword would be used.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  bindPassword1:
+
+  # Value for bindDN2 which is to be used with 'dsreplication enable' command.
+  # If the value is not passed, value of rootUserDN would be used.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  bindDN2:
+
+  # Value for bindPassword2 which is to be used with 'dsreplication enable' command  command through bindPasswordFile2  parameter.
+  # If the value is not passed, value of rootUserPassword would be used.
+  # Value would be added to Secret and Pod(s) would be using the Secret
+  bindPassword2:
+
+  # To specify that the database should be populated with the specified number of sample entries.
+  # When the parameter is having non-numeric value or 0, --addBaseEntry would be added in the oud-setup command instead of --sampleData.
+  sampleData: "0"
+
+  # Based on the value for this parameter, initialization/configuration of each OUD replica would be delayed and
+  # readiness probes would be configured.
+  # This it to  make sure that replicas are initialized in sequence. 
+  sleepBeforeConfig: 300
+
+# Configuration for Base OUD instance (oud-ds-rs-0)
+baseOUD:
+  # Reference to ConfigMap which can contain additional environment variables to be passed on to POD for Base OUD Instance
+  # Following are the environment variables which would not be honored from the ConfigMap
+  # instanceType, sleepBeforeConfig, OUD_INSTANCE_NAME, hostname, baseDN, rootUserDN, rootUserDN, rootUserPassword,
+  # adminConnectorPort, httpAdminConnectorPort, ldapPort, ldapsPort, httpPort, httpsPort, replicationPort, sampleData
+  envVarsConfigMap:
+  # Environment variables in Yaml Map format. This is helpful when its requried to pass environment variables through --values file
+  # List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap
+  envVars:
+
+# Configuration for Replicated OUD instances (oud-ds-rs-N)
+replOUD:
+  # Group ID to be used/configured with each OUD instance in replicated topology.
+  groupId: 1
+  # Reference to ConfigMap which can contain additional environment variables to be passed on to PODs for Replicated OUD Instances
+  # Following are the environment variables which would not be honored from the ConfigMap
+  # instanceType, sleepBeforeConfig, OUD_INSTANCE_NAME, hostname, baseDN, rootUserDN, rootUserDN, rootUserPassword,
+  # adminConnectorPort, httpAdminConnectorPort, ldapPort, ldapsPort, httpPort, httpsPort, replicationPort, sampleData
+  # sourceHost, sourceServerPorts, sourceAdminConnectorPort, sourceReplicationPort, dsreplication_1, dsreplication_2, dsreplication_3, dsreplication_4,
+  # post_dsreplication_dsconfig_1, post_dsreplication_dsconfig_2 
+  envVarsConfigMap:
+  # Environment variables in Yaml Map format. This is helpful when its requried to pass environment variables through --values file
+  # List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap
+  envVars:
+
+elk:
+  elasticsearch:
+    enabled: false
+    image:
+      repository: docker.elastic.co/elasticsearch/elasticsearch
+      tag: 6.4.3
+      pullPolicy: IfNotPresent
+
+    esreplicas: 1
+    minimumMasterNodes: 1
+    esJAVAOpts: "-Xms512m -Xmx512m"
+    sysctlVmMaxMapCount: 262144
+    resources:
+      requests:
+        cpu: "100m"
+      limits:
+        cpu: "1000m"
+    
+    esService:
+  # Type of Service to be created for OUD Interfaces (like LDAP, HTTP, Admin)
+      type: ClusterIP
+  # Service Type for loadbalancer services exposing LDAP, HTTP interfaces from available/accessible OUD pods.
+      lbrtype: ClusterIP
+    
+  kibana:
+    enabled: false
+    image:
+      repository: docker.elastic.co/kibana/kibana
+      tag: 6.4.3
+      pullPolicy: IfNotPresent
+    kibanaReplicas : 1
+    service:
+      type: NodePort
+      targetPort: 5601
+      nodePort: 31199
+    
+
+  logstash:
+    enabled: false
+    image:
+      repository: logstash
+      tag: 6.6.0
+      pullPolicy: IfNotPresent
+    containerPort : 5044
+    service:
+      type: NodePort
+      targetPort: 9600
+      nodePort: 32222
+  # If logstashConfigMap is empty, Then default logstashConfigMap will be created and used.
+    logstashConfigMap: 
+
+  elkPorts:
+    rest: 9200
+    internode: 9300
+
+  busybox:
+    image: busybox 
+
+
+elkVolume:
+  # If enabled, it will use the persistent volume.
+  # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+  enabled: false
+  # Path at which the volume would be mounted
+  mountPath: /usr/share/elasticsearch/data
+  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  pvname: 
+  accessMode: ReadWriteMany
+  size: 20Gi
+  storageClass: elk
+# default supported values: either filesystem or networkstorage or custom
+  type: filesystem
+  networkstorage:
+    nfs:
+      path: /scratch/shared/oud_elk/data
+      server: 0.0.0.0
+  filesystem:
+    hostPath:
+      # The path location mentioned should be created and made accessible with necessary privileges for access from pods/containers. 
+      path: /scratch/shared/oud_elk/data
+  custom:
+    # YAML content to be included in PersistenceVolume Object
+  annotations: {}

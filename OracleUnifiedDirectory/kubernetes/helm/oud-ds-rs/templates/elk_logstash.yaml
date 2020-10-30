@@ -1,0 +1,59 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+{{- if .Values.elk.logstash.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      volumes:
+      - name: {{ include "oud-ds-rs.fullname" . }}-pv
+        persistentVolumeClaim:
+          claimName: {{ include "oud-ds-rs.fullname" . }}-pvc
+      - name: shared-logs
+        emptyDir: {}
+      containers:
+      - name: {{ include "oud-ds-rs.fullname" . }}-logstash
+        image: {{ .Values.elk.logstash.image.repository }}:{{ .Values.elk.logstash.image.tag }}
+        ports:
+          - containerPort: {{ .Values.elk.logstash.containerPort }}
+            name: logstash
+        command:
+        - logstash
+        #command: ["/bin/sh"]
+        #args: ["/usr/share/logstash/bin/logstash", "-f", /srv/nfs/oudelk/oud_user_projects/logstash/config/logstash-config.conf ]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: {{ include "oud-ds-rs.fullname" . }}-pipeline
+          mountPath: /usr/share/logstash/pipeline/
+        - name : {{ include "oud-ds-rs.fullname" . }}-pv
+          mountPath: /u01/oracle/user_projects
+      volumes:
+      - name: {{ include "oud-ds-rs.fullname" . }}-pipeline
+        configMap:
+      {{- if .Values.elk.logstash.logstashConfigMap }}
+          name: {{ .Values.elk.logstash.logstashConfigMap }}
+      {{- else }}
+          name: {{ include "oud-ds-rs.fullname" . }}-logstash-configmap
+          items:
+          - key: logstash-config.conf
+            path: logstash-config.conf
+      {{- end }}
+      - name: {{ include "oud-ds-rs.fullname" . }}-pv
+        persistentVolumeClaim:
+          claimName: {{ include "oud-ds-rs.fullname" . }}-pvc
+{{- end }} 

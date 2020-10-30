@@ -1,0 +1,122 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oud-ds-proxy-svc
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-proxy
+spec:
+  ports:
+  - port: 1444
+    name: admin-ldaps
+    targetPort: 1444
+  - port: 1888
+    name: admin-https
+    targetPort: 1888
+  - port: 1389
+    name: ldap
+    targetPort: 1389
+  - port: 1636
+    name: ldaps
+    targetPort: 1636
+  - port: 1080
+    name: data-http
+    targetPort: 1080
+  - port: 1081
+    name: data-https
+    targetPort: 1081
+  - port: 1898
+    name: replication
+    targetPort: 1898
+  type: NodePort
+  selector:
+    app: oud-ds-proxy
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oudp1
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-proxy
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: oudp
+    image: %IMAGE%
+    ports:
+    - containerPort: 1444
+    - containerPort: 1888
+    - containerPort: 1389
+    - containerPort: 1636
+    - containerPort: 1080
+    - containerPort: 1081
+    env:
+    - name: sleepBeforeConfig
+      value: "3"
+    - name: instanceType
+      value: Proxy
+    - name: OUD_INSTANCE_NAME
+      value: oudp1
+    - name: hostname
+      value: oud-ds-proxy-svc
+    - name: rootUserDN
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserDN
+    - name: rootUserPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserPassword
+    - name: sourceServerPorts
+      value: oud-dir-svc-1:1389,oud-dir-svc-2:1389
+    - name: dsconfig_1
+      value: create-extension --set enabled:true --set remote-ldap-server-address:oud-dir-svc-1 --set remote-ldap-server-port:1389 --set remote-ldap-server-ssl-port:1636 --extension-name ldap_extn_1 --type ldap-server
+    - name: dsconfig_2
+      value: create-workflow-element --set client-cred-mode:use-client-identity --set enabled:true --set ldap-server-extension:ldap_extn_1 --type proxy-ldap --element-name proxy_ldap_wfe_1
+    - name: dsconfig_3
+      value: create-workflow --set base-dn:dc=example1,dc=com --set enabled:true --set workflow-element:proxy_ldap_wfe_1 --type generic --workflow-name wf_1
+    - name: dsconfig_4
+      value: set-network-group-prop --group-name network-group --add workflow:wf_1
+    - name: dsconfig_5
+      value: create-extension --set enabled:true --set remote-ldap-server-address:oud-dir-svc-2 --set remote-ldap-server-port:1389 --set remote-ldap-server-ssl-port:1636 --extension-name ldap_extn_2 --type ldap-server
+    - name: dsconfig_6
+      value: create-workflow-element --set client-cred-mode:use-client-identity --set enabled:true --set ldap-server-extension:ldap_extn_2 --type proxy-ldap --element-name proxy_ldap_wfe_2
+    - name: dsconfig_7
+      value: create-workflow --set base-dn:dc=example2,dc=com --set enabled:true --set workflow-element:proxy_ldap_wfe_2 --type generic --workflow-name wf_2
+    - name: dsconfig_8
+      value: set-network-group-prop --group-name network-group --add workflow:wf_2
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      tcpSocket:
+        port: 1444
+      initialDelaySeconds: 240
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1389
+      initialDelaySeconds: 240
+      periodSeconds: 30
+    readinessProbe:
+      exec:
+        command:
+          - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+      initialDelaySeconds: 240
+      periodSeconds: 60
+  imagePullSecrets:
+  - name: regcred
+  volumes:
+       - name: %PV_NAME%
+         persistentVolumeClaim:
+           claimName: %PVC_NAME%
