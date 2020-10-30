@@ -1,5 +1,5 @@
-Helm Chart: oudsm: For deployment of Oracle Unified Directory Service Manager instance(s)
-=========================================================================================
+Helm Chart: oudsm: For deployment of Oracle Unified Directory Services Manager instance(s)
+==========================================================================================
 
 ## Contents
 1. [Introduction](#1-introduction)

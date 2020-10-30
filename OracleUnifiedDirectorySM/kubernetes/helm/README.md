@@ -1,5 +1,5 @@
-Deploying Oracle Unified Directory Service Manager (OUDSM) on Kubernetes using Helm Chart
-=========================================================================================
+Deploying Oracle Unified Directory Services Manager (OUDSM) on Kubernetes using Helm Chart
+==========================================================================================
 
 ## Contents
 1. [Introduction](#1-introduction)
@@ -11,12 +11,12 @@ Deploying Oracle Unified Directory Service Manager (OUDSM) on Kubernetes using H
 7. [Copyright](#copyright)
 
 # 1. Introduction
-This project demonstrates how to deploy Oracle Unified Directory Service Manager 12c (OUDSM) instance(s) using the Helm package manager for Kubernetes. Helm Chart(s) described here can be used to facilitate installation, configuration, and environment setup for DevOps users.
+This project demonstrates how to deploy Oracle Unified Directory Services Manager 12c (OUDSM) instance(s) using the Helm package manager for Kubernetes. Helm Chart(s) described here can be used to facilitate installation, configuration, and environment setup for DevOps users.
 
 The Docker Image used here refers to released binaries for OUDSM and it has the capability to create container(s) targeted for development and testing.
 
 # 2. Hardware and Software Requirements
-Oracle Unified Directory Service Manager Docker Image has been tested and is known to run on following hardware and software:
+Oracle Unified Directory Services Manager Docker Image has been tested and is known to run on following hardware and software:
 
 ## 2.1 Hardware Requirements
 
@@ -31,7 +31,7 @@ Oracle Unified Directory Service Manager Docker Image has been tested and is kno
 | :---: | :----------------------------: | :-----------------------: |
 | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
 | Docker| Docker version 18.03 or higher | docker version            |
-| K8s   | Kubernetes version 1.13.5-0    | kubectl version           |
+| K8s   | Kubernetes version 1.16.0+     | kubectl version           |
 | Helm  | Helm 3.0.2+                    | helm version              |
 
 # 3. Prerequisites
@@ -50,7 +50,7 @@ Docker version should be 18.03 or higher.  To check this, issue the following co
          Version:           18.09.8-ol
          ...
 
-The Oracle Unified Directory Service Manager Image for 12c should be loaded into Docker.  Verify this by running the following:
+The Oracle Unified Directory Services Manager Image for 12c should be loaded into Docker.  Verify this by running the following:
 
         # docker images
         REPOSITORY        TAG                 IMAGE ID            CREATED             SIZE
@@ -58,11 +58,11 @@ The Oracle Unified Directory Service Manager Image for 12c should be loaded into
         ...
 
 ## 3.3 Verify Kubernetes Version
-Kubernetes version should be 1.13.5-0 or higher.  Verify by running the following:
+Kubernetes version should be 1.16.0 or higher.  Verify by running the following:
 
         # kubectl version
-        Client Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.5", GitCommit:"2166946f41b36dea2c4626f90a77706f426cdea2", GitTreeState:"clean", BuildDate:"2019-03-25T15:26:52Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
-        Server Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.12", GitCommit:"a8b52209ee172232b6db7a6e0ce2adc77458829f", GitTreeState:"clean", BuildDate:"2019-10-15T12:04:30Z", GoVersion:"go1.11.13", Compiler:"gc", Platform:"linux/amd64"}
+        Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:41:22Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
+        Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:33:59Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 
 ## 3.4 Verify Helm Version
 Helm version should be 3.0.2 or higher.  To verify, run the following command:
@@ -143,7 +143,7 @@ For example:
 
 Details about each Helm Chart can be found from README.md file of individual Chart.
 
-* [oudsn](oudsm/README.md) : A Helm chart for deployment of Oracle Unified Directory Service Manager instance(s) on Kubernetes.
+* [oudsn](oudsm/README.md) : A Helm chart for deployment of Oracle Unified Directory Services Manager instance(s) on Kubernetes.
 
 #
 # Copyright

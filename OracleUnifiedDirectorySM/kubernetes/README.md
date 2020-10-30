@@ -5,9 +5,9 @@ Oracle Unified Directory Oracle Unified Directory Services Manager (OUDSM) on Ku
 1. [Introduction](#1-introduction)
 2. [Hardware and Software Requirements](#2-hardware-and-software-requirements)
 3. [Prerequisites](#3-prerequisites)
-4. [Example 1 : OUDSM POD](#4-example-1-oudsm-pod)
-5. [Example 2 : OUDSM Deployment](#5-example-2-oudsm-deployment)
-6. [Appendix A : Reference](#appendix-a-reference)
+4. [Example 1 : OUDSM POD](#4-example-1--oudsm-pod)
+5. [Example 2 : OUDSM Deployment](#5-example-2--oudsm-deployment)
+6. [Appendix A : Reference](#appendix-a--reference)
 
 # 1. Introduction
 This project offers YAML files and scripts to build Oracle Unified Directory Services Manager (OUDSM) Docker images based on 12cPS4 (12.2.1.4.0) release within a Kubernetes environment. Use these YAML files to facilitate installation, configuration, and environment setup for DevOps users. 
@@ -32,7 +32,7 @@ Oracle Unified Directory Docker Image has been tested and is known to run on fol
 | :---: | :----------------------------: | :-----------------------: |
 | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
 | Docker| Docker version 18.03 or higher | docker version            |
-| K8s   | Kubernetes version 1.13.5-0    | kubectl version
+| K8s   | Kubernetes version 1.16.0+     | kubectl version
 
 # 3. Prerequisites
 
@@ -59,11 +59,11 @@ The Oracle Unified Directory Image for 12cPS4 (12.2.1.4.0) should be loaded into
         ...
 
 ## 3.3 Verify Kubernetes Version
-Kubernetes version should be 1.13.5-0 or higher.  Verify by running the following:
+Kubernetes version should be 1.16.0 or higher.  Verify by running the following:
 
         # kubectl version
-        Client Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.5", GitCommit:"2166946f41b36dea2c4626f90a77706f426cdea2", GitTreeState:"clean", BuildDate:"2019-03-25T15:26:52Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
-        Server Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.12", GitCommit:"a8b52209ee172232b6db7a6e0ce2adc77458829f", GitTreeState:"clean", BuildDate:"2019-10-15T12:04:30Z", GoVersion:"go1.11.13", Compiler:"gc", Platform:"linux/amd64"}
+	Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:41:22Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
+	Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:33:59Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 
 ## 3.4 Create Kubernetes Namespace
 You should create a Kubernetes namespace to provide a scope for other objects such as pods and services that you create in the environment.  To create your namespace you should refer to the samples/oudsmns.yaml file.
@@ -218,7 +218,7 @@ Verify the PersistentVolumeClaim:
         
 # 4 Example 1 : OUDSM POD
 
-In this example you create a POD (oudsmpod) which holds a single container based on an Oracle Unified Directory 12c PS4 (12.2.1.4.0) image.  This container is configured to run Oracle Unified Directory Services Manager (OUDSM).  You also create a service (oudsm) through which you can access the OUDSM GUI.
+In this example you create a POD (oudsmpod) which holds a single container based on an Oracle Unified Directory Services Manager 12c PS4 (12.2.1.4.0) image.  This container is configured to run Oracle Unified Directory Services Manager (OUDSM).  You also create a service (oudsm) through which you can access the OUDSM GUI.
 
 To create the POD update the samples/oudsm-pod.yaml file.
 
@@ -331,7 +331,7 @@ For example:
         
 For example:
 
-        kubectl --namespace oudsmns get all,pv,pvc,secret
+        # kubectl --namespace oudsmns get all,pv,pvc,secret
         NAME                                  READY   STATUS    RESTARTS   AGE
         pod/oudsmdeploypod-7bb67b685c-78sq5   1/1     Running   0          12m
         pod/oudsmdeploypod-7bb67b685c-xssbq   1/1     Running   0          12m
@@ -382,7 +382,7 @@ If you have a requirement to add additional PODs to your cluster you can update 
         service/oudsm unchanged
         deployment.apps/oudsmdeploypod configured
 
-<pre>   kubectl --namespace oudsmns get all,pv,pvc,secret
+<pre>   # kubectl --namespace oudsmns get all,pv,pvc,secret
     NAME                                  READY   STATUS    RESTARTS   AGE
     pod/oudsmdeploypod-7bb67b685c-78sq5   1/1     Running   0          105m
     <strong>pod/oudsmdeploypod-7bb67b685c-sv9ms   1/1     Running   0          76m</strong>
@@ -411,7 +411,7 @@ If you have a requirement to add additional PODs to your cluster you can update 
 ## License<br>
 To download and run Oracle Fusion Middleware products, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.<br><br>
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectorySM](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.<br><br>
+All scripts and files hosted in this project and GitHub [fmw-kubernetes/OracleUnifiedDirectorySM](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.<br><br>
 
 ## Copyright<br>
 Copyright (c) 2020, Oracle and/or its affiliates.<br>
