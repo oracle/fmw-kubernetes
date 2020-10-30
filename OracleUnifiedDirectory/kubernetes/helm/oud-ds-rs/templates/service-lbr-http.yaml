@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  annotations:
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "voyager") (eq .Values.ingress.http.backendPort "https") }}
+    ingress.appscode.com/backend-tls: "ssl verify none"
+{{- end }}
+spec:
+  type: {{ .Values.service.lbrtype }}
+  ports:
+    - port: {{ .Values.oudPorts.http }}
+      name: http
+      targetPort: http
+      protocol: TCP
+    - port: {{ .Values.oudPorts.https }}
+      name: https
+      targetPort: https
+      protocol: TCP
+  selector:
+    {{- include "oud-ds-rs.selectorLabels" . | nindent 4 }}

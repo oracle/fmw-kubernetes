@@ -1,0 +1,33 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- if and .Values.configVolume.enabled (not .Values.configVolume.pvcname) }}
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "oud-ds-rs.fullname" . }}-pvc-config
+{{- with .Values.configVolume.annotations  }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+    type: {{ template "oud-ds-rs.fullname" . }}-pvc-config
+spec:
+{{- if .Values.configVolume.storageClass }}
+  storageClassName: {{ .Values.configVolume.storageClass }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "oud-ds-rs.labels" . | nindent 6 }}
+      type: {{ template "oud-ds-rs.fullname" . }}-pv-config
+  accessModes:
+    - {{ .Values.configVolume.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.configVolume.size | quote }}
+{{- end }}

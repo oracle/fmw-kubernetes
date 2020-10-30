@@ -1,0 +1,431 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oud-dsrs-svc-1
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-plus-rs-1
+spec:
+  ports:
+  - port: 1444
+    name: admin-ldaps
+    targetPort: 1444
+  - port: 1888
+    name: admin-https
+    targetPort: 1888
+  - port: 1389
+    name: ldap
+    targetPort: 1389
+  - port: 1636
+    name: ldaps
+    targetPort: 1636
+  - port: 1080
+    name: data-http
+    targetPort: 1080
+  - port: 1081
+    name: data-https
+    targetPort: 1081
+  - port: 1898
+    name: replication
+    targetPort: 1898
+  type: NodePort
+  selector:
+    app: oud-ds-plus-rs-1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ouddsrs1
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-plus-rs-1
+spec:
+  restartPolicy: OnFailure
+  hostname: oud-dsrs-svc-1
+  containers:
+  - name: ouddsrs
+    image: %IMAGE%
+    ports:
+    - containerPort: 1444
+    - containerPort: 1888
+    - containerPort: 1389
+    - containerPort: 1636
+    - containerPort: 1080
+    - containerPort: 1081
+    - containerPort: 1898
+    env:
+    - name: sleepBeforeConfig
+      value: "3"
+    - name: instanceType
+      value: AddDS2RS
+    - name: OUD_INSTANCE_NAME
+      value: ouddsrs1
+    - name: hostname
+      value: oud-dsrs-svc-1
+    - name: baseDN
+      value: dc=oracle,dc=com
+    - name: rootUserDN
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserDN
+    - name: rootUserPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserPassword
+    - name: adminUID
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminUID
+    - name: adminPassword 
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminPassword 
+    - name: bindDN1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN1
+    - name: bindPassword1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword1
+    - name: bindDN2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN2
+    - name: bindPassword2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword2
+    - name: serverTuning
+      value: -Xms1024m -Xmx2048m -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
+# Changing limits
+    - name: dsconfig_1
+      value: set-global-configuration-prop --set lookthrough-limit:75000
+    - name: dsconfig_2
+      value: set-global-configuration-prop --set size-limit:75000
+    - name: dsconfig_3
+      value: set-workflow-element-prop --element-name userRoot --set index-entry-limit:75000
+# Creating indexes
+# Creating equality type index on ou attribute
+    - name: dsconfig_4
+      value: create-local-db-index --element-name userRoot  --index-name ou --set index-type:equality
+# Adding substring to index on ou attribute
+    - name: dsconfig_5
+      value: set-local-db-index-prop --element-name userRoot  --index-name ou --add index-type:substring
+# Creating equality type index on c attribute
+    - name: dsconfig_6
+      value: create-local-db-index --element-name userRoot  --index-name c --set index-type:equality
+# Adding substring to index on c attribute
+    - name: dsconfig_7
+      value: set-local-db-index-prop --element-name userRoot  --index-name c --add index-type:substring
+# Creating equality type index on mobile attribute
+    - name: dsconfig_8
+      value: create-local-db-index --element-name userRoot  --index-name mobile --set index-type:equality
+# Adding substring to index on mobile attribute
+    - name: dsconfig_9
+      value: set-local-db-index-prop --element-name userRoot  --index-name mobile --add index-type:substring
+# Creating equality type index on title attribute
+    - name: dsconfig_10
+      value: create-local-db-index --element-name userRoot  --index-name title --set index-type:equality
+# Adding substring to index on title attribute
+    - name: dsconfig_11
+      value: set-local-db-index-prop --element-name userRoot  --index-name title --add index-type:substring
+# Enabling entry cache preloading...
+    - name: dsconfig_12
+      value: set-global-configuration-prop --set entry-cache-preload:true
+# Entry Cache and Group Cache
+    - name: dsconfig_13
+      value: delete-entry-cache --cache-name "Group Cache"
+# Creating Entry Cache...
+    - name: dsconfig_14
+      value: create-entry-cache --set cache-level:1 --set enabled:true --type fifo --set max-entries:1100000 --set max-memory-percent:70 --cache-name FIFO_Entry_Cache_1
+# Creating Group Entry Cache...
+    - name: dsconfig_15
+      value: create-entry-cache --set cache-level:2 --set enabled:true --type fifo-group --set max-entries:1000 --set max-memory-percent:10 --cache-name FIFO_Group_Entry_Cache_2
+# Access control handlers
+    - name: dsconfig_16
+      value: set-access-control-handler-prop --add 'global-aci:(targetattr="*")(version 3.0; acl "All read and write access"; allow (read,search,compare,add,write,delete,import,export) userdn="ldap:///all"; )' --no-prompt
+# Logs disabling
+    - name: dsconfig_17
+      value: set-log-publisher-prop --publisher-name "Oracle Error Logger" --set enabled:false
+    - name: dsconfig_18
+      value: set-log-publisher-prop --publisher-name "Oracle Access Logger" --set enabled:false
+    - name: dsconfig_19
+      value: set-log-publisher-prop --publisher-name "Oracle Admin Access Logger" --set enabled:false
+# Rebuilding index(es) for attributes ou, c, mobile and title
+    - name: rebuildIndex_1
+      value: --index ou --index c --index mobile --index title
+    - name: sourceHost
+      value: oud-dir-svc-2
+    - name: dsreplication_1
+      value: verify --hostname ${sourceHost} --port ${adminConnectorPort} --baseDN ${baseDN} --serverToRemove ${hostname}:${adminConnectorPort}
+    - name: dsreplication_2
+      value: enable --host1 ${sourceHost} --port1 ${adminConnectorPort} --replicationPort1 ${replicationPort} --host2 ${hostname} --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --baseDN ${baseDN}
+    - name: dsreplication_3
+      value: initialize --hostSource ${initializeFromHost} --portSource ${adminConnectorPort} --hostDestination ${hostname} --portDestination ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_4
+      value: verify --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_5
+      value: status --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN} --dataToDisplay compat-view
+    - name: post_dsreplication_dsconfig_1
+      value: set-replication-domain-prop --domain-name ${baseDN} --set group-id:2
+    - name: post_dsreplication_dsconfig_2
+      value: set-replication-server-prop --set group-id:2
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      tcpSocket:
+        port: 1389
+      initialDelaySeconds: 900
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1444
+      initialDelaySeconds: 900
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1080
+      initialDelaySeconds: 900
+      periodSeconds: 30
+    readinessProbe:
+      exec:
+        command:
+          - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+      initialDelaySeconds: 900
+      periodSeconds: 60
+  imagePullSecrets:
+  - name: regcred
+  volumes:
+       - name: %PV_NAME%
+         persistentVolumeClaim:
+           claimName: %PVC_NAME%
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oud-dsrs-svc-2
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-plus-rs-2
+spec:
+  ports:
+  - port: 1444
+    name: admin-ldaps
+    targetPort: 1444
+  - port: 1888
+    name: admin-https
+    targetPort: 1888
+  - port: 1389
+    name: ldap
+    targetPort: 1389
+  - port: 1636
+    name: ldaps
+    targetPort: 1636
+  - port: 1080
+    name: data-http
+    targetPort: 1080
+  - port: 1081
+    name: data-https
+    targetPort: 1081
+  - port: 1898
+    name: replication
+    targetPort: 1898
+  type: NodePort
+  selector:
+    app: oud-ds-plus-rs-2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ouddsrs2
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-plus-rs-2
+spec:
+  restartPolicy: OnFailure
+  hostname: oud-dsrs-svc-2
+  containers:
+  - name: ouddsrs
+    image: %IMAGE%
+    ports:
+    - containerPort: 1444
+    - containerPort: 1888
+    - containerPort: 1389
+    - containerPort: 1636
+    - containerPort: 1080
+    - containerPort: 1081
+    - containerPort: 1898
+    env:
+    - name: sleepBeforeConfig
+      value: "1200"
+    - name: instanceType
+      value: AddDS2RS
+    - name: OUD_INSTANCE_NAME
+      value: ouddsrs2
+    - name: hostname
+      value: oud-dsrs-svc-2
+    - name: baseDN
+      value: dc=oracle,dc=com
+    - name: rootUserDN
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserDN
+    - name: rootUserPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserPassword
+    - name: adminUID
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminUID
+    - name: adminPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminPassword
+    - name: bindDN1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN1
+    - name: bindPassword1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword1
+    - name: bindDN2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN2
+    - name: bindPassword2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword2
+    - name: serverTuning
+      value: -Xms1024m -Xmx2048m -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
+# Changing limits
+    - name: dsconfig_1
+      value: set-global-configuration-prop --set lookthrough-limit:75000
+    - name: dsconfig_2
+      value: set-global-configuration-prop --set size-limit:75000
+    - name: dsconfig_3
+      value: set-workflow-element-prop --element-name userRoot --set index-entry-limit:75000
+# Creating indexes
+# Creating equality type index on ou attribute
+    - name: dsconfig_4
+      value: create-local-db-index --element-name userRoot  --index-name ou --set index-type:equality
+# Adding substring to index on ou attribute
+    - name: dsconfig_5
+      value: set-local-db-index-prop --element-name userRoot  --index-name ou --add index-type:substring
+# Creating equality type index on c attribute
+    - name: dsconfig_6
+      value: create-local-db-index --element-name userRoot  --index-name c --set index-type:equality
+# Adding substring to index on c attribute
+    - name: dsconfig_7
+      value: set-local-db-index-prop --element-name userRoot  --index-name c --add index-type:substring
+# Creating equality type index on mobile attribute
+    - name: dsconfig_8
+      value: create-local-db-index --element-name userRoot  --index-name mobile --set index-type:equality
+# Adding substring to index on mobile attribute
+    - name: dsconfig_9
+      value: set-local-db-index-prop --element-name userRoot  --index-name mobile --add index-type:substring
+# Creating equality type index on title attribute
+    - name: dsconfig_10
+      value: create-local-db-index --element-name userRoot  --index-name title --set index-type:equality
+# Adding substring to index on title attribute
+    - name: dsconfig_11
+      value: set-local-db-index-prop --element-name userRoot  --index-name title --add index-type:substring
+# Enabling entry cache preloading...
+    - name: dsconfig_12
+      value: set-global-configuration-prop --set entry-cache-preload:true
+# Entry Cache and Group Cache
+    - name: dsconfig_13
+      value: delete-entry-cache --cache-name "Group Cache"
+# Creating Entry Cache...
+    - name: dsconfig_14
+      value: create-entry-cache --set cache-level:1 --set enabled:true --type fifo --set max-entries:1100000 --set max-memory-percent:70 --cache-name FIFO_Entry_Cache_1
+# Creating Group Entry Cache...
+    - name: dsconfig_15
+      value: create-entry-cache --set cache-level:2 --set enabled:true --type fifo-group --set max-entries:1000 --set max-memory-percent:10 --cache-name FIFO_Group_Entry_Cache_2
+# Access control handlers
+    - name: dsconfig_16
+      value: set-access-control-handler-prop --add 'global-aci:(targetattr="*")(version 3.0; acl "All read and write access"; allow (read,search,compare,add,write,delete,import,export) userdn="ldap:///all"; )' --no-prompt
+# Logs disabling
+    - name: dsconfig_17
+      value: set-log-publisher-prop --publisher-name "Oracle Error Logger" --set enabled:false
+    - name: dsconfig_18
+      value: set-log-publisher-prop --publisher-name "Oracle Access Logger" --set enabled:false
+    - name: dsconfig_19
+      value: set-log-publisher-prop --publisher-name "Oracle Admin Access Logger" --set enabled:false
+# Rebuilding index(es) for attributes ou, c, mobile and title
+    - name: rebuildIndex_1
+      value: --index ou --index c --index mobile --index title
+    - name: sourceHost
+      value: oud-dir-svc-2
+    - name: dsreplication_1
+      value: verify --hostname ${sourceHost} --port ${adminConnectorPort} --baseDN ${baseDN} --serverToRemove ${hostname}:${adminConnectorPort}
+    - name: dsreplication_2
+      value: enable --host1 ${sourceHost} --port1 ${adminConnectorPort} --replicationPort1 ${replicationPort} --host2 ${hostname} --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --baseDN ${baseDN}
+    - name: dsreplication_3
+      value: initialize --hostSource ${initializeFromHost} --portSource ${adminConnectorPort} --hostDestination ${hostname} --portDestination ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_4
+      value: verify --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_5
+      value: status --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN} --dataToDisplay compat-view
+    - name: post_dsreplication_dsconfig_1
+      value: set-replication-domain-prop --domain-name ${baseDN} --set group-id:2
+    - name: post_dsreplication_dsconfig_2
+      value: set-replication-server-prop --set group-id:2
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      tcpSocket:
+        port: 1389
+      initialDelaySeconds: 1800
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1444
+      initialDelaySeconds: 1800
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1080
+      initialDelaySeconds: 1800
+      periodSeconds: 30
+    readinessProbe:
+      exec:
+        command:
+          - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+      initialDelaySeconds: 1800
+      periodSeconds: 60
+  imagePullSecrets:
+  - name: regcred
+  volumes:
+       - name: %PV_NAME%
+         persistentVolumeClaim:
+           claimName: %PVC_NAME%
+---
