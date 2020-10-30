@@ -1,0 +1,37 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- if and .Values.persistence.enabled (not .Values.persistence.pvname) }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "oudsm.fullname" . }}-pv
+  labels:
+    {{- include "oudsm.labels" . | nindent 4 }}
+    type: {{ include "oudsm.fullname" . }}-pv
+spec:
+{{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass }}
+{{- end }}
+  capacity:
+    storage: {{ .Values.persistence.size | quote }}
+  persistentVolumeReclaimPolicy: {{ .Values.persistence.reclaimPolicy | quote }}
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+{{- if (eq "networkstorage" .Values.persistence.type) }}
+  {{- with .Values.persistence.networkstorage }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- else if (eq "filesystem" .Values.persistence.type) }}
+  {{- with .Values.persistence.filesystem }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- else if (eq "custom" .Values.persistence.type) }}
+  {{- with .Values.persistence.custom }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}
+{{- end }}

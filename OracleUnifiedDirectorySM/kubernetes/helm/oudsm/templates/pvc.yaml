@@ -1,0 +1,33 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- if and .Values.persistence.enabled (not .Values.persistence.pvcname) }}
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "oudsm.fullname" . }}-pvc
+{{- with .Values.persistence.annotations  }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "oudsm.labels" . | nindent 4 }}
+    type: {{ template "oudsm.fullname" . }}-pvc
+spec:
+{{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "oudsm.labels" . | nindent 6 }}
+      type: {{ template "oudsm.fullname" . }}-pv
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | quote }}
+{{- end }}

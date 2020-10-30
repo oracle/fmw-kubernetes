@@ -1,0 +1,39 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: %PV_NAME%
+  namespace: %NAMESPACE%
+  labels:
+    type: oud-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  persistentVolumeReclaimPolicy: "Delete"
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "%PV_HOST_PATH%"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: %PVC_NAME%
+  namespace: %NAMESPACE%
+spec:
+  storageClassName: manual
+  selector:
+    matchLabels:
+      type: oud-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
