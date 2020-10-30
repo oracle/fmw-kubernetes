@@ -1,0 +1,56 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if (.Values.service.allSvcEnabled) -}}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) -}}
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oud-ds-rs.fullname" $root }}-all-{{ $replicaIndx }}
+  labels:
+    {{- include "oud-ds-rs.labels" $root | nindent 4 }}
+    oud/instance: {{ include "oud-ds-rs.fullname" $root }}-all-{{ $replicaIndx }}
+  annotations:
+spec:
+  type: {{ $root.Values.service.allSvcType }}
+  ports:
+    - port: {{ $root.Values.oudPorts.adminldaps }}
+      name: adminldaps
+      targetPort: adminldaps
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.adminhttps }}
+      name: adminhttps
+      targetPort: adminhttps
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.replication }}
+      name: replication
+      targetPort: replication
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.http }}
+      name: http
+      targetPort: http
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.https }}
+      name: https
+      targetPort: https
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.ldap }}
+      name: ldap
+      targetPort: ldap
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.ldaps }}
+      name: ldaps
+      targetPort: ldaps
+      protocol: TCP
+  selector:
+    {{- include "oud-ds-rs.selectorLabels" $root | nindent 4 }}
+    oud/instance: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+---
+{{- end }}
+{{- end }}
