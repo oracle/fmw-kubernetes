@@ -31,7 +31,7 @@ Oracle Unified Directory Docker Image has been tested and is known to run on fol
 | :---: | :----------------------------: | :-----------------------: |
 | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
 | Docker| Docker version 18.03 or higher | docker version            |
-| K8s   | Kubernetes version 1.13.5-0    | kubectl version           |
+| K8s   | Kubernetes version 1.16.0+     | kubectl version           |
 | Helm  | Helm 3.0.2+                    | helm version              |
 
 # 3. Prerequisites
@@ -58,11 +58,11 @@ The Oracle Unified Directory Image for 12cPS4 (12.2.1.4.0) should be loaded into
         ...
 
 ## 3.3 Verify Kubernetes Version
-Kubernetes version should be 1.13.5-0 or higher.  Verify by running the following:
+Kubernetes version should be 1.16.0 or higher.  Verify by running the following:
 
         # kubectl version
-        Client Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.5", GitCommit:"2166946f41b36dea2c4626f90a77706f426cdea2", GitTreeState:"clean", BuildDate:"2019-03-25T15:26:52Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
-        Server Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.12", GitCommit:"a8b52209ee172232b6db7a6e0ce2adc77458829f", GitTreeState:"clean", BuildDate:"2019-10-15T12:04:30Z", GoVersion:"go1.11.13", Compiler:"gc", Platform:"linux/amd64"}
+        Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:41:22Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
+        Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:33:59Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 
 ## 3.4 Verify Helm Version
 Helm version should be 3.0.2 or higher.  To verify, run the following command:
