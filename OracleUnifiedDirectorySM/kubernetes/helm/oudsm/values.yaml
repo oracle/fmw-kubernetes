@@ -1,0 +1,258 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+# Default values for oudsm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: oracle/oudsm
+  tag: 12.2.1.4.0
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 7001
+  sslPort: 7002
+
+ingress:
+  enabled: true
+  type: nginx
+  # Hostname to be used with Ingress Rules.
+  # If not set, hostname would be configured according to fullname
+  # Hosts would be configured as <fullname>-admin.<domain>, <fullname>-admin-0.<domain>, <fullname>-admin-1.<domain>, etc.
+  host:
+  # domain name to be used with Ingress Rules.
+  # In ingress rules, hosts would be configured as <host>.<domain>, <host>-0.<domain>, <host>-1.<domain>, etc.
+  domain:
+  # Backend Port to be used. Either http or https
+  backendPort: http
+  # SSL/TLS configuration for the Ingress
+  # Flag to decide whether to force TLS/HTTPS or not
+  tlsEnabled: true
+  # Secret name to use an already created TLS Secret. If such secret is not provided, one would be created with name <fullname>-tls-cert
+  # If the TLS Secret is in different namespace, name can be mentioned as <namespace>/<tlsSecretName>
+  tlsSecret:
+  # Parameters for generation of SelfSigned Cert
+  # Subject's common name (cn) for SelfSigned Cert. Default Value <fullname>
+  certCN:
+  # Validity of Self-Signed Cert in days
+  certValidityDays: 365
+  nginxAnnotations:
+    kubernetes.io/ingress.class: nginx
+    # Following two annotations are for session stickyness
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    # Server-side HTTPS enforcement through redirect - for specific ingress resources
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Required to be set if backendPort is configured as https
+    # nginx.ingress.kubernetes.io/backend-protocol: "https"
+  nginxAnnotationsTLS:
+    kubernetes.io/ingress.class: nginx
+    # Following two annotations are for session stickyness
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    # Required to be set if backendPort is configured as https
+    # nginx.ingress.kubernetes.io/backend-protocol: "https"
+    # For Forcing TLS/HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
+    # nginx.ingress.kubernetes.io/x-forwarded-proto: "https"
+    # nginx.ingress.kubernetes.io/x-forwarded-port: "https"
+  voyagerAnnotations:
+    kubernetes.io/ingress.class: "voyager"
+    ingress.appscode.com/affinity: "cookie"
+    ingress.appscode.com/type: "NodePort"
+    # To ensure that HAProxy matches against the NodePort
+    # ingress.appscode.com/use-node-port: "true"
+    # Yet to explore
+    # ingress.appscode.com/stats: "true"
+  voyagerAnnotationsTLS:
+    kubernetes.io/ingress.class: "voyager"
+    ingress.appscode.com/affinity: "cookie"
+    ingress.appscode.com/type: "NodePort"
+    # To ensure that HAProxy matches against the NodePort
+    # ingress.appscode.com/use-node-port: "true"
+    # Yet to explore
+    # ingress.appscode.com/stats: "true"
+  voyagerNodePortHttp: 31080
+  voyagerNodePortHttps: 31443
+  voyagerHttpPort: 80
+  voyagerHttpsPort: 443
+  voyagerExternalIPs:
+#  - a.b.c.d
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+secret:
+  # If enabled it will use the secret created with base64 encoding. if value is false, secret would not be used and input values (through --set, --values, etc.) would be used while creation of pods.
+  enabled: true
+  # provided the secret name  to use an already created Secret
+  name:
+  type: opaque
+
+persistence:
+  # If enabled, it will use the persistent volume.
+  # if value is false, PV and PVC would not be used and pods would be using the default emptyDir mount volume
+  enabled: true
+  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  pvname: 
+  # provided the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+  pvcname: 
+  accessMode: ReadWriteMany
+  size: 20Gi
+  reclaimPolicy: "Delete"
+  storageClass: manual
+# default supported values: either filesystem or networkstorage or custom
+  type: filesystem
+  networkstorage:
+    nfs:
+      path: /scratch/shared/oudsm_user_projects
+      server: 0.0.0.0
+  filesystem:
+    hostPath:
+      # The path location mentioned should be created and made accessible with necessary privileges for access from pods/containers. 
+      path: /scratch/shared/oudsm_user_projects
+  custom:
+    # YAML content to be included in PersistenceVolume Object
+  annotations: {}
+
+# Parameters/Configurations for OUDSM Deployment
+oudsm:
+  # Weblogic Administration User
+  adminUser:
+  # Password for Weblogic Administration User
+  adminPass:
+  # Expected startup time. After specified seconds readinessProbe would start
+  startupTime: 900
+  # Paramter to decide livenessProbe initialDelaySeconds
+  livenessProbeInitialDelay: 1200
+  # Whether to invoke setWeblogicPluginEnabled or not
+  weblogicPluginEnabled: "true"
+
+
+elk:
+  elasticsearch:
+    enabled: false
+    image:
+      repository: docker.elastic.co/elasticsearch/elasticsearch
+      tag: 6.4.3
+      pullPolicy: IfNotPresent
+
+    esreplicas: 1
+    minimumMasterNodes: 1
+    esJAVAOpts: "-Xms512m -Xmx512m"
+    sysctlVmMaxMapCount: 262144
+    resources:
+      requests:
+        cpu: "100m"
+      limits:
+        cpu: "1000m"
+    
+    esService:
+  # Type of Service to be created for OUD Interfaces (like LDAP, HTTP, Admin)
+      type: ClusterIP
+  # Service Type for loadbalancer services exposing LDAP, HTTP interfaces from available/accessible OUD pods.
+      lbrtype: ClusterIP
+    
+  kibana:
+    enabled: false
+    image:
+      repository: docker.elastic.co/kibana/kibana
+      tag: 6.4.3
+      pullPolicy: IfNotPresent
+    kibanaReplicas : 1
+    service:
+      type: NodePort
+      targetPort: 5601
+      nodePort: 31199
+    
+
+  logstash:
+    enabled: false
+    image:
+      repository: logstash
+      tag: 6.6.0
+      pullPolicy: IfNotPresent
+    containerPort : 5044
+    service:
+      type: NodePort
+      targetPort: 9600
+      nodePort: 32222
+  # If logstashConfigMap is empty, Then default logstashConfigMap will be created and used.
+    logstashConfigMap: 
+
+  elkPorts:
+    rest: 9200
+    internode: 9300
+
+  busybox:
+    image: busybox 
+
+
+elkVolume:
+  # If enabled, it will use the persistent volume.
+  # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+  enabled: false
+  # Path at which the volume would be mounted
+  mountPath: /usr/share/elasticsearch/data
+  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  pvname: 
+  # provided the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+  #pvcname: 
+  accessMode: ReadWriteMany
+  size: 20Gi
+  #storageClass: nfs-client
+  storageClass: elk
+# default supported values: either filesystem or networkstorage or custom
+  type: filesystem
+  networkstorage:
+    nfs:
+      path: /scratch/shared/oudsm_elk/data
+      server: 0.0.0.0
+  filesystem:
+    hostPath:
+      # The path location mentioned should be created and made accessible with necessary privileges for access from pods/containers. 
+      path: /scratch/shared/oudsm_user_projects/data
+  custom:
+    # YAML content to be included in PersistenceVolume Object
+  annotations: {}

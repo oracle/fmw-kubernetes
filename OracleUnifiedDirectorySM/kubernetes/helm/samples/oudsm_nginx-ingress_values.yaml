@@ -1,0 +1,33 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+controller:
+  extraArgs:
+    default-ssl-certificate: %NAMESPACE%/%DEPLOYMENT_NAME%-tls-cert
+# In case, specific image of nginx is requried to be used, following attributes can be changed.
+#   image:
+#     repository: %NGINX-INGRESS-CONTROLLER_IMAGE_REPO%
+#     tag: "%NGINX-INGRESS-CONTROLLER_IMAGE_TAG%"
+  service:
+    # To configure Ingress Controller Service as LoadBalancer type of Service
+    # Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service
+    type: LoadBalancer
+    # Configuration for NodePort to be used for Ports exposed through Ingress
+    # If NodePorts are not defied/configured, Node Port would be assigend automatically by Kubernetes
+    # These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.
+# To avoid port conflicts, through sample values file, let's have these NodePorts assigned automatically
+#     nodePorts:
+#       # For HTTP Interface exposed through LoadBalancer/Ingress
+#       http: 30080
+#       # For HTTPS Interface exposed through LoadBalancer/Ingress
+#       https: 30443
+
+# In case, specific image of nginx is requried to be used, following attributes can be changed.
+# defaultBackend:
+#   image:
+#     repository: %NGINX-INGRESS-BACKEND_IMAGE_REPO%
+#     tag: "%NGINX-INGRESS-BACKEND_IMAGE_TAG%"

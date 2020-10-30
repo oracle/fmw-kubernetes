@@ -1,0 +1,37 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- if and .Values.configVolume.enabled (not .Values.configVolume.pvname) }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-pv-config
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+    type: {{ include "oud-ds-rs.fullname" . }}-pv-config
+spec:
+{{- if .Values.configVolume.storageClass }}
+  storageClassName: {{ .Values.configVolume.storageClass }}
+{{- end }}
+  capacity:
+    storage: {{ .Values.configVolume.size | quote }}
+  persistentVolumeReclaimPolicy: {{ .Values.configVolume.reclaimPolicy | quote }}
+  accessModes:
+    - {{ .Values.configVolume.accessMode | quote }}
+{{- if (eq "networkstorage" .Values.configVolume.type) }}
+  {{- with .Values.configVolume.networkstorage }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- else if (eq "filesystem" .Values.configVolume.type) }}
+  {{- with .Values.configVolume.filesystem }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- else if (eq "custom" .Values.configVolume.type) }}
+  {{- with .Values.configVolume.custom }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,51 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+{{- if and .Values.elk.logstash.enabled (not .Values.elk.logstash.logstashConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-logstash-configmap
+data:
+  logstash-config.conf: | 
+    input {
+      file {
+        path => "/u01/oracle/user_projects/{{ include "oud-ds-rs.fullname" . }}-*/logs/*.log"
+        type => "setup-logs"
+        start_position => beginning
+        sincedb_path => "/dev/null"
+      }
+      file {
+        path => "/u01/oracle/user_projects/{{ include "oud-ds-rs.fullname" . }}-*/OUD/logs/*.log"
+        type => "access-logs"
+        start_position => beginning
+        sincedb_path => "/dev/null"
+      }
+    }
+    filter {
+      if [type] == "setup-logs" {
+        grok {
+          match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}> <%{DATA:log_number}> <%{DATA:log_message}>" ]
+          }
+        }
+      if [type] == "access-logs" {
+        grok {
+          match => [ "message", "\[%{TIMESTAMP_ISO8601:timestamp}\] \[%{DATA:component}\] \[%{LOGLEVEL:loglevel}\] \[%{DATA:misc}\] \[%{DATA:logtype}\] \[%{DATA:host}\] \[%{DATA:nwaddr}\] %{GREEDYDATA:message}" ]
+          }
+        }
+      if "_grokparsefailure" in [tags] {
+        mutate {
+          remove_tag => [ "_grokparsefailure" ]
+          }
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => ["{{ include "oud-ds-rs.fullname" . }}-elasticsearch:9200"]
+        }
+      }
+{{- end -}}

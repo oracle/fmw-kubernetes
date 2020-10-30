@@ -1,0 +1,78 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oudsm-svc
+  namespace: %NAMESPACE%
+  labels:
+    app: oudsmpod
+spec:
+  ports:
+  - port: 7001
+    name: admin-http
+    targetPort: 7001
+  - port: 7002
+    name: admin-https
+    targetPort: 7002
+  type: NodePort
+  sessionAffinity: "ClientIP"
+  selector:
+    app: oudsmpod
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oudsmpod
+  namespace: %NAMESPACE%
+  labels:
+    app: oudsmpod
+spec:
+  restartPolicy: Never
+  containers:
+  - name: oudsm
+    image: %IMAGE%
+    env: 
+     - name: DOMAIN_NAME
+       value: "oudsm_domain"
+     - name: ADMIN_USER
+       valueFrom:
+         secretKeyRef:
+           name: %SECRET_NAME%
+           key: adminUser
+     - name: ADMIN_PASS
+       valueFrom:
+         secretKeyRef:
+           name: %SECRET_NAME%
+           key: adminPass       
+     - name: ADMIN_PORT
+       value: "7001"
+     - name: ADMIN_SSL_PORT
+       value: "7002"
+    ports:
+     - containerPort: 7001
+     - containerPort: 7002
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      httpGet:
+        path: /console
+        port: 7001
+      initialDelaySeconds: 660
+      periodSeconds: 5       
+      httpGet:
+        path: /oudsm
+        port: 7001
+      initialDelaySeconds: 660
+      periodSeconds: 5
+    imagePullPolicy: IfNotPresent
+  volumes:
+      - name: %PV_NAME%
+        persistentVolumeClaim:
+          claimName: %PVC_NAME%

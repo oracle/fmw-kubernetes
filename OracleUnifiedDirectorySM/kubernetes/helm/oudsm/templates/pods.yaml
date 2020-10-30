@@ -1,0 +1,143 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) -}}
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+  labels:
+    {{- include "oudsm.labels" $root | nindent 4 }}
+    oudsm/instance: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+spec:
+  restartPolicy: {{ $root.Values.restartPolicyName }}
+  {{- with $root.Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  serviceAccountName: {{ include "oudsm.serviceAccountName" $root }}
+  securityContext:
+    {{- toYaml $root.Values.podSecurityContext | nindent 4 }}
+  containers:
+    - name: {{ $root.Chart.Name }}
+      securityContext:
+        {{- toYaml $root.Values.securityContext | nindent 8 }}
+      image: "{{ $root.Values.image.repository }}:{{ $root.Values.image.tag }}"
+      imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+      ports:
+        - name: http
+          containerPort: {{ $root.Values.service.port }}
+          protocol: TCP
+        - name: https
+          containerPort: {{ $root.Values.service.sslPort }}
+          protocol: TCP
+      env:
+        - name: DOMAIN_NAME
+          value: oudsmdomain-{{ $replicaIndx }}
+        {{- if $root.Values.secret.enabled }}
+        - name: ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              {{- if $root.Values.secret.name }}
+              name: {{ $root.Values.secret.name }}
+              key: adminUser
+              {{- else }}
+              name:  {{ include "oudsm.fullname" $root }}-creds
+              key: adminUser
+              {{- end }}
+        {{- else }}
+        - name: ADMIN_USER
+          value: {{ $root.Values.oudsm.adminUser }}
+        {{- end }}
+        {{- if $root.Values.secret.enabled }}
+        - name: ADMIN_PASS
+          valueFrom:
+            secretKeyRef:
+              {{- if $root.Values.secret.name }}
+              name: {{ $root.Values.secret.name }}
+              key: adminPass
+              {{- else }}
+              name:  {{ include "oudsm.fullname" $root }}-creds
+              key: adminPass
+              {{- end }}
+        {{- else }}
+        - name: ADMIN_PASS
+          value: {{ $root.Values.oudsm.adminPass }}
+        {{- end }}
+        - name: ADMIN_PORT
+          value: {{ $root.Values.service.port | quote }}
+        - name: ADMIN_SSL_PORT
+          value: {{ $root.Values.service.sslPort | quote }}
+        - name: WLS_PLUGIN_ENABLED
+          value: {{ $root.Values.oudsm.weblogicPluginEnabled | quote }}
+      volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+        {{- if $root.Values.persistence.enabled }}
+          {{- if $root.Values.persistence.pvname }}
+          name: {{ $root.Values.persistence.pvname }}
+          {{ else }}
+          name: {{ include "oudsm.fullname" $root }}-pv
+          {{- end }}
+        {{- else }}
+          name: oud-storage
+          subPath: user_projects
+        {{- end }}
+      readinessProbe:
+        httpGet:
+          path: /console
+          port: {{ $root.Values.service.port }}
+        initialDelaySeconds: {{ ($root.Values.oudsm.startupTime|int) }}
+        periodSeconds: 30
+        timeoutSeconds: 15
+      readinessProbe:
+        httpGet:
+          path: /oudsm
+          port: {{ $root.Values.service.port }}
+        initialDelaySeconds: {{ ($root.Values.oudsm.startupTime|int) }}
+        periodSeconds: 30
+        timeoutSeconds: 15
+      livenessProbe:
+        httpGet:
+          path: /oudsm
+          port: {{ $root.Values.service.port }}
+        initialDelaySeconds: {{ ($root.Values.oudsm.livenessProbeInitialDelay|int) }}
+        periodSeconds: 60
+        timeoutSeconds: 15
+        failureThreshold: 3
+  volumes:
+    {{- if $root.Values.persistence.enabled }}
+      {{- if $root.Values.persistence.pvname }}
+    - name: {{ $root.Values.persistence.pvname }}
+      {{ else }}
+    - name: {{ include "oudsm.fullname" $root }}-pv
+      {{- end }}
+      persistentVolumeClaim:
+        {{- if $root.Values.persistence.pvcname }}
+        claimName: {{ $root.Values.persistence.pvcname }}
+        {{ else }}
+        claimName: {{ include "oudsm.fullname" $root }}-pvc
+        {{- end }}
+    {{- else }}
+    - name: oud-storage
+      emptyDir: {}
+    {{- end }}
+  {{- with $root.Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $root.Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $root.Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- end }}

@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  annotations:
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "voyager") }}
+    ingress.appscode.com/backend-tls: "ssl verify none"
+{{- end }}
+spec:
+  type:  {{ .Values.service.lbrtype }}
+  ports:
+    - port: {{ .Values.oudPorts.adminhttps }}
+      name: adminhttps
+      targetPort: adminhttps
+      protocol: TCP
+    - port: {{ .Values.oudPorts.adminldaps }}
+      name: adminldaps
+      targetPort: adminldaps
+      protocol: TCP
+  selector:
+    {{- include "oud-ds-rs.selectorLabels" . | nindent 4 }}

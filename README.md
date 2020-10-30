@@ -7,8 +7,11 @@ In addition, we've provided the deployment scripts in this repository to assist 
 
 ### Oracle Fusion Middleware Products Container deployment scripts
  - [Oracle Access Management](/OracleAccessManagement)
- - [Oracle WebCenter Sites](/OracleWebCenterSites)
+ - [Oracle Identity Governance](/OracleIdentityGovernance)
  - [Oracle SOA Suite](/OracleSOASuite)
+ - [Oracle Unified Directory](/OracleUnifiedDirectory)
+ - [Oracle Unified Directory Services Manager](/OracleUnifiedDirectorySM)
+ - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
 ## Support
 For support and certification information, please consult the documentation for each product.
