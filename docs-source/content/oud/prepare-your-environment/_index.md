@@ -112,4 +112,4 @@ From the directory you created, download the Oracle Unified Directory deployment
 $ git clone https://github.com/oracle/fmw-kubernetes.git
 ```
 
-You can now use the deployment scripts from <Work Directory>/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/samples to set up the Oracle Unified Directory environments as further described in this document.
+You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/samples/` to set up the Oracle Unified Directory environments as further described in this document.
