@@ -2,31 +2,31 @@ Oracle Unified Directory Oracle Unified Directory Services Manager (OUDSM) on Ku
 ============================================================
 
 ## Contents
-1. [Introduction](#1-introduction)
-2. [Hardware and Software Requirements](#2-hardware-and-software-requirements)
-3. [Prerequisites](#3-prerequisites)
-4. [Example 1 : OUDSM POD](#4-example-1--oudsm-pod)
-5. [Example 2 : OUDSM Deployment](#5-example-2--oudsm-deployment)
-6. [Appendix A : Reference](#appendix-a--reference)
+1. [Introduction](#introduction)
+1. [Hardware and Software Requirements](#hardware-and-software-requirements)
+1. [Prerequisites](#prerequisites)
+1. [Example 1 OUDSM POD](#example-1-oudsm-pod)
+1. [Example 2 OUDSM Deployment](#example-2-oudsm-deployment)
+1. [Appendix Reference](#appendix-reference)
 
-# 1. Introduction
+# Introduction
 This project offers YAML files and scripts to build Oracle Unified Directory Services Manager (OUDSM) Docker images based on 12cPS4 (12.2.1.4.0) release within a Kubernetes environment. Use these YAML files to facilitate installation, configuration, and environment setup for DevOps users. 
 
 The Docker Image refers to binaries for OUD Release 12.2.1.4.0.
 
 ***Image***: oracle/oudsm:12.2.1.4.0
 
-# 2. Hardware and Software Requirements
+# Hardware and Software Requirements
 Oracle Unified Directory Docker Image has been tested and is known to run on following hardware and software:
 
-## 2.1 Hardware Requirements
+## Hardware Requirements
 
 | Hardware  | Size  |
 | :-------: | :---: |
 | RAM       | 16GB  |
 | Disk Space| 200GB+|
 
-## 2.2 Software Requirements
+## Software Requirements
 
 |       | Version                        | Command to verify version |
 | :---: | :----------------------------: | :-----------------------: |
@@ -34,16 +34,16 @@ Oracle Unified Directory Docker Image has been tested and is known to run on fol
 | Docker| Docker version 18.03 or higher | docker version            |
 | K8s   | Kubernetes version 1.16.0+     | kubectl version
 
-# 3. Prerequisites
+# Prerequisites
 
 
-## 3.1 Verify OS Version
+## Verify OS Version
 OS version should be Oracle Linux 7.3 or higher.  To check this, issue the following command:
 
         # more /etc/oracle-release
         Oracle Linux Server release 7.5
 
-## 3.2 Verify Docker Version and OUD Image
+## Verify Docker Version and OUD Image
 Docker version should be 18.03 or higher.  To check this, issue the following command:
 
          # docker version
@@ -58,14 +58,14 @@ The Oracle Unified Directory Image for 12cPS4 (12.2.1.4.0) should be loaded into
         oracle/oudsm                         12.2.1.4.0          4aefb2e19cd6        2 days ago          2.6GB
         ...
 
-## 3.3 Verify Kubernetes Version
+## Verify Kubernetes Version
 Kubernetes version should be 1.16.0 or higher.  Verify by running the following:
 
         # kubectl version
 	Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:41:22Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 	Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:33:59Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 
-## 3.4 Create Kubernetes Namespace
+## Create Kubernetes Namespace
 You should create a Kubernetes namespace to provide a scope for other objects such as pods and services that you create in the environment.  To create your namespace you should refer to the samples/oudsmns.yaml file.
 
 Update the samples/oudsmns.yaml file and replace %NAMESPACE% with the value of the namespace you would like to create.  In the example below the value 'oudsmns' is used.
@@ -84,7 +84,7 @@ Confirm that the namespace is created:
     kube-system   Active   8d
     <strong>oudsmns</strong>       Active   87s</pre>
         
-## 3.5 Create Secrets for User IDs and Passwords
+## Create Secrets for User IDs and Passwords
 
 To protect sensitive information, namely user IDs and passwords, you should create Kubernetes Secrets for the key-value pairs with following keys. The Secret with key-value pairs will be used to pass values to containers created through OUDSM image:
 
@@ -93,7 +93,7 @@ To protect sensitive information, namely user IDs and passwords, you should crea
 
 There are two ways by which Secret object can be created with required key-value pairs.
 
-### 3.5.1 Using samples/secrets.yaml file
+### Using samples/secrets.yaml file
 
 To do this you should update the samples/secrets.yaml file with the value for %SECRET_NAME% and %NAMESPACE%, together with the Base64 value for each secret.
 
@@ -133,7 +133,7 @@ Verify that the secret has been created:
         default-token-l5nwd   kubernetes.io/service-account-token   3      7m10s
         oudsecret             Opaque                                2      27s
 
-### 3.5.2 Using `kubectl create secret` command
+### Using `kubectl create secret` command
 
 Kubernetes Secret can be created using following command:
 
@@ -155,7 +155,7 @@ After executing `kubectl create secret ...` command, verify that the secret has 
         default-token-l5nwd   kubernetes.io/service-account-token   3      7m10s
         oudsecret             Opaque                                2      27s
 
-## 3.6 Create PersistentVolume (PV) and PersistentVolumeClaim (PVC) for your Namespace
+## Create PersistentVolume (PV) and PersistentVolumeClaim (PVC) for your Namespace
 A PV is storage resource, while PVC is a request for that resource.  To provide storage for your namespace, update the samples/persistent-volume.yaml file.
 
 Update the following to values specific to your environment:
@@ -216,7 +216,7 @@ Verify the PersistentVolumeClaim:
         Events:        <none>
         Mounted By:    <none>
         
-# 4 Example 1 : OUDSM POD
+# Example 1 OUDSM POD
 
 In this example you create a POD (oudsmpod) which holds a single container based on an Oracle Unified Directory Services Manager 12c PS4 (12.2.1.4.0) image.  This container is configured to run Oracle Unified Directory Services Manager (OUDSM).  You also create a service (oudsm) through which you can access the OUDSM GUI.
 
@@ -299,7 +299,7 @@ In the case here:
 
     http://<myhost>:31421/oudsm
 
-# 5 Example 2 : OUDSM Deployment
+# Example 2 OUDSM Deployment
 
 In this example you create multiple OUDSM PODs/Services using Kubernetes deployments.
 
@@ -401,7 +401,7 @@ If you have a requirement to add additional PODs to your cluster you can update 
     secret/default-token-clzx7   kubernetes.io/service-account-token   3      161m
     secret/oudsecret             Opaque                                2      160m</pre>
 
-# Appendix A : Reference
+# Appendix Reference
 
 1. **samples/oudsm-pod.yaml** : This yaml file is use to create the pod and bring up the OUDSM services
 2. **samples/oudsm-deployment.yaml** : This yaml file is used to create replicas of OUDSM and bring up the OUDSM services based on the deployment
