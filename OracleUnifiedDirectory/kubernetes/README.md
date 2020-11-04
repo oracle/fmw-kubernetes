@@ -2,34 +2,34 @@ Oracle Unified Directory (OUD) on Kubernetes
 ============================================
 
 ## Contents
-1. [Introduction](#1-introduction)
-2. [Hardware and Software Requirements](#2-hardware-and-software-requirements)
-3. [Prerequisites](#3-prerequisites)
-4. [Example 1 : Directory Server](#4-example-1--directory-server-instancetypedirectory)
-5. [Example 2 : Directory Server as a Kubernetes Service](#5-example-2--directory-server-instancetypedirectory-as-a-kubernetes-service)
-6. [Example 3 : Proxy Server as a Kubernetes Service](#6-example-3--proxy-server-instancetypeproxy-as-a-kubernetes-service)
-7. [Example 4 : Replication Server (instanceType=Replication) as a Kubernetes Service](#7-example-4--replication-server-instancetypereplication-as-a-kubernetes-service)
-8. [Example 5 : Directory Server/Service added to existing Replication Server/Service (instanceType=AddDS2RS)](#7-example-5--directory-serverservice-added-to-existing-replication-serverservice-instancetypeaddds2rs)
-9. [Appendix A : Reference](#8-appendix-a--reference)
+1. [Introduction](#introduction)
+1. [Hardware and Software Requirements](#hardware-and-software-requirements)
+1. [Prerequisites](#prerequisites)
+1. [Example 1 Directory Server](#example-1-directory-server-instancetypedirectory)
+1. [Example 2 Directory Server as a Kubernetes Service](#example-2-directory-server-instancetypedirectory-as-a-kubernetes-service)
+1. [Example 3 Proxy Server as a Kubernetes Service](#example-3-proxy-server-instancetypeproxy-as-a-kubernetes-service)
+1. [Example 4 Replication Server (instanceType=Replication) as a Kubernetes Service](#example-4-replication-server-instancetypereplication-as-a-kubernetes-service)
+1. [Example 5 Directory Server/Service added to existing Replication Server/Service (instanceType=AddDS2RS)](#example-5-directory-serverservice-added-to-existing-replication-serverservice-instancetypeaddds2rs)
+1. [Appendix Reference](#appendix-reference)
 
-# 1. Introduction
+# Introduction
 This project offers Sample YAML files and scripts to deploy Oracle Unified Directory Docker images based on 12cPS4 (12.2.1.4.0) release within a Kubernetes environment. Use these YAML files to facilitate installation, configuration, and environment setup for DevOps users. 
 
 The Docker Image refers to binaries for OUD Release 12.2.1.4.0 and it has the capability to create different types of OUD Instances (Directory Service, Proxy, Replication) on containers targeted for development and testing.
 
 ***Image***: oracle/oud:12.2.1.4.0
 
-# 2. Hardware and Software Requirements
+# Hardware and Software Requirements
 Oracle Unified Directory Docker Image has been tested and is known to run on following hardware and software:
 
-## 2.1 Hardware Requirements
+## Hardware Requirements
 
 | Hardware  | Size  |
 | :-------: | :---: |
 | RAM       | 16GB  |
 | Disk Space| 200GB+|
 
-## 2.2 Software Requirements
+## Software Requirements
 
 |       | Version                        | Command to verify version |
 | :---: | :----------------------------: | :-----------------------: |
@@ -37,15 +37,15 @@ Oracle Unified Directory Docker Image has been tested and is known to run on fol
 | Docker| Docker version 18.03 or higher | docker version            |
 | K8s   | Kubernetes version 1.16.0+     | kubectl version
 
-# 3. Prerequisites
+# Prerequisites
 
-## 3.1 Verify OS Version
+## Verify OS Version
 OS version should be Oracle Linux 7.3 or higher.  To check this, issue the following command:
 
         # more /etc/oracle-release
         Oracle Linux Server release 7.5
 
-## 3.2 Verify Docker Version and OUD Image
+## Verify Docker Version and OUD Image
 Docker version should be 18.03 or higher.  To check this, issue the following command:
 
          # docker version
@@ -60,14 +60,14 @@ The Oracle Unified Directory Image for 12cPS4 (12.2.1.4.0) should be loaded into
         oracle/oud                                     12.2.1.4.0          1855f331f5ef        10 days ago         945MB
         ...
 
-## 3.3 Verify Kubernetes Version
+## Verify Kubernetes Version
 Kubernetes version should be 1.16.0 or higher.  Verify by running the following:
 
         # kubectl version
 	Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:41:22Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 	Server Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.4", GitCommit:"c96aede7b5205121079932896c4ad89bb93260af", GitTreeState:"clean", BuildDate:"2020-06-17T11:33:59Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 
-## 3.4 Create Kubernetes Namespace
+## Create Kubernetes Namespace
 You should create a Kubernetes namespace to provide a scope for other objects such as pods and services that you create in the environment.  To create your namespace you should refer to the samples/oudns.yaml file.
 
 Update the samples/oudns.yaml file and replace %NAMESPACE% with the value of the namespace you would like to create.  In the example below the value 'myoudns' is used.
@@ -86,7 +86,7 @@ Confirm that the namespace is created:
     kube-system   Active   4d
     <strong>myoudns       Active   53s</strong></pre>
 
-## 3.5 Create Secrets for User IDs and Passwords
+## Create Secrets for User IDs and Passwords
 
 To protect sensitive information, namely user IDs and passwords, you should create Kubernetes Secrets for the key-value pairs with following keys. The Secret with key-value pairs will be used to pass values to containers created through OUD image:
 
@@ -101,7 +101,7 @@ To protect sensitive information, namely user IDs and passwords, you should crea
 
 There are two ways by which Secret object can be created with required key-value pairs.
 
-### 3.5.1 Using samples/secrets.yaml file
+### Using samples/secrets.yaml file
 
 To do this you should update the samples/secrets.yaml file with the value for %SECRET_NAME% and %NAMESPACE%, together with the Base64 value for each secret.
 
@@ -155,7 +155,7 @@ Verify that the secret has been created:
     default-token-fztcb   kubernetes.io/service-account-token   3      15m
     <strong>oudsecret             Opaque                                8      99s</strong></pre>
 
-### 3.5.2 Using `kubectl create secret` command
+### Using `kubectl create secret` command
 
 Kubernetes Secret can be created using following command:
 
@@ -189,7 +189,7 @@ After executing `kubectl create secret ...` command, verify that the secret has 
     default-token-fztcb   kubernetes.io/service-account-token   3      15m
     <strong>oudsecret             Opaque                                8      99s</strong></pre>
 
-## 3.6 Prepare a host directory to be used for Filesystem based PersistentVolume
+## Prepare a host directory to be used for Filesystem based PersistentVolume
 
 It's required to prepare directory on Host filesystem to store OUD Instances and other configuration outside container filesystem. That directory from host filesystem would be associated with PersistentVolume.
 **In case of multi-node Kubernetes cluster, directory to be associated with PersistentVolume should be accessible on all the nodes at the same path.**
@@ -210,7 +210,7 @@ All container operations are performed as **'oracle'** user.
 
 **Note**: If a user already exist with **'-u 1000 -g 1000'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 1000'**
 
-## 3.7 Create PersistentVolume (PV) and PersistentVolumeClaim (PVC) for your Namespace
+## Create PersistentVolume (PV) and PersistentVolumeClaim (PVC) for your Namespace
 A PV is storage resource, while PVC is a request for that resource.  To provide storage for your namespace, update the samples/persistent-volume.yaml file.
 
 Update the following to values specific to your environment:
@@ -272,7 +272,7 @@ Verify the PersistentVolumeClaim:
         Events:        <none>
         Mounted By:    <none>
 
-# 4 Example 1 : Directory Server (instanceType=Directory)
+# Example 1 Directory Server (instanceType=Directory)
 
 In this example you create a POD (oudpod1) which holds a single container based on an Oracle Unified Directory 12c PS4 (12.2.1.4.0) image.
 
@@ -335,7 +335,7 @@ In the container, run ldapsearch to return entries from the directory server:
         ...
         dn: uid=user.99,ou=People,dc=example1,dc=com
 
-# 5 Example 2 : Directory Server (instanceType=Directory) as a Kubernetes Service
+# Example 2 Directory Server (instanceType=Directory) as a Kubernetes Service
 
 In this example you will create two pods and 2 associated containers, both running OUD 12s directory server instances.  This demonstrates how you can expose OUD 12c as a network service.  This provides a way of abstracting access to the backend service independent of the pod details.
 
@@ -421,7 +421,7 @@ From outside the cluster, you can invoke curl commands like following for access
 	'https://<HOSTNAME>:<Https NodePort mapped to 1081>/iam/directory/oud/scim/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:Schema' \
 	--header 'Authorization: Basic Y249RGlyZWN0b3J5IE1hbmFnZXI6T3JhY2xlMTIz' | json_pp
 
-# 6 Example 3 : Proxy Server (instanceType=Proxy) as a Kubernetes Service
+# Example 3 Proxy Server (instanceType=Proxy) as a Kubernetes Service
 
 In this example you will create a service, pod and associated container, in which an OUD 12c Proxy Server instance is deployed.  This acts as a proxy to the 2 services you created in the previous example.
 
@@ -497,7 +497,7 @@ From outside the cluster, you can invoke curl commands like following for access
 	'https://<HOSTNAME>:<Https NodePort mapped to 1081>/iam/directory/oud/scim/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:Schema' \
 	--header 'Authorization: Basic Y249RGlyZWN0b3J5IE1hbmFnZXI6T3JhY2xlMTIz' | json_pp
 
-# 7 Example 4 : Replication Server (instanceType=Replication) as a Kubernetes Service
+# Example 4 Replication Server (instanceType=Replication) as a Kubernetes Service
 
 In this example you will create a service, pod and associated container, in which an OUD 12 Replication Server instance is deployed.  This creates a single Replication Server which has 2 Directory Servers as its replication group.
 
@@ -594,7 +594,7 @@ From outside the cluster, you can invoke curl commands like following for access
 	'https://<HOSTNAME>:<Https NodePort mapped to 1081>/iam/directory/oud/scim/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:Schema' \
 	--header 'Authorization: Basic Y249RGlyZWN0b3J5IE1hbmFnZXI6T3JhY2xlMTIz' | json_pp
 
-# 7 Example 5 : Directory Server/Service added to existing Replication Server/Service (instanceType=AddDS2RS)
+# Example 5 Directory Server/Service added to existing Replication Server/Service (instanceType=AddDS2RS)
 
 In this example you will create services, pods and containers, in which OUD 12 Replication Server instances are deployed.  In this case, 2 Replication/Directory Server Services are added, in addition the Directory Server created in Example 2 (oud-dir-svc-2) is added to the replication group.
 
@@ -697,7 +697,7 @@ From outside the cluster, you can invoke curl commands like following for access
 	--header 'Authorization: Basic Y249RGlyZWN0b3J5IE1hbmFnZXI6T3JhY2xlMTIz' | json_pp
 
 
-# 8 Appendix A : Reference
+# Appendix Reference
 
 Before using these sample yaml files, following variables are requried to be updated
 *  %NAMESPACE% - with value for Kubernetes namespace of your choice
@@ -716,15 +716,15 @@ Before using these sample yaml files, following variables are requried to be upd
 *  %bindPassword2% - With Base64 encoded value for bindPassword2 parameter.
 
 
-# samples/oudns.yaml
+## samples/oudns.yaml
 
 This is a sample file to create Kubernetes namespace.
 
-# samples/persistent-volume.yaml
+## samples/persistent-volume.yaml
 
 This is a sample file to create Persistent volume and persistent volume claim
 
-# samples/secrets.yaml
+## samples/secrets.yaml
 
 This is a sample file to create the secrets which can be used to create secrets for the pods.
 
@@ -746,15 +746,15 @@ TXlQYXNzd29yZA==
 
 **Note**: Please make sure to use -n with echo command. Without that, Base64 values would be generated with new-line character included. 
 
-# samples/oud-dir-svc.yaml
+## samples/oud-dir-svc.yaml
 
 This is a sample file to create 2 set of PODs and Services for OUD Instances
 
-# samples/oud-dir-pod.yaml
+## samples/oud-dir-pod.yaml
 
 This is a sample file to create POD (oudpod1) with container for OUD Directory Instance.
 
-# samples/oud-ds_proxy-svc.yaml
+## samples/oud-ds_proxy-svc.yaml
 
 This is a sample file to create:
 * POD (oudds1) with container for OUD Directory Instance (dc=example1,dc=com)
@@ -762,7 +762,7 @@ This is a sample file to create:
 * POD (oudp1) with container for OUD Directory Proxy referring to OUD Directory Instances (oudds1 and oudds2) for dc=example1,dc=com and dc=example2,dc=com
 * Service (oud-ds-proxy-svc) referring to POD with OUD Directory Proxy (oudp1) 
 
-# samples/oud-ds_rs_ds-svc.yaml
+## samples/oud-ds_rs_ds-svc.yaml
 
 This is a sample file to create:
 * POD (oudpodrs1) with container for OUD Replication Server Instance connected to OUD Directory Instance (oudpodds1)
@@ -778,7 +778,7 @@ With execution of following kind of command in container, status can be checked 
     --trustAll --hostname oudpodrs1.oud-ds-rs-ds-svc.myoudns.svc.cluster.local --port 1444 \
     --dataToDisplay compat-view
 
-# samples/oud-ds-plus-rs-svc.yaml
+## samples/oud-ds-plus-rs-svc.yaml
 
 This is a sample file to create 3 replicated DS+RS Instances:
 * POD (ouddsrs1) with container for OUD Directory Server (dc=example1,dc=com) and Replication Server
@@ -802,4 +802,3 @@ All scripts and files hosted in this project and GitHub [fmw-kubernetes/OracleUn
 ## Copyright<br>
 Copyright (c) 2020, Oracle and/or its affiliates.<br>
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl<br><br>
-
