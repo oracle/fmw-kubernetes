@@ -1,6 +1,7 @@
 ---
 title: "Oracle Identity Governance"
 description: "The Oracle WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance. Follow the instructions in this guide to set up Oracle Identity Governance domains on Kubernetes."
+weight: 2
 ---
 
 The Oracle WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance (OIG).

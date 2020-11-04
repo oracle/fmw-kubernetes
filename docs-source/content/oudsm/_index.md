@@ -2,6 +2,7 @@
 title: "Oracle Unified Directory Services Manager"
 date: 2019-02-23T16:43:45-05:00
 description: "Oracle Unified Directory Services Manager provides an interface for managing instances of Oracle Unified Directory"
+weight: 5
 ---
 
 Oracle Unified Directory Services Manager is an interface for managing instances of Oracle Unified Directory. Oracle Unified Directory Services Manager enables you to configure the structure of the directory, define objects in the directory, add and configure users, groups, and other entries. Oracle Unified Directory Services Manager is also the interface you use to manage entries, schema, security, and other directory features.

@@ -2,6 +2,7 @@
 title: "Oracle WebCenter Sites"
 date: 2019-02-23T16:43:45-05:00
 description: "The WebLogic Kubernetes operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes."
+weight: 6
 ---
 
 The WebLogic Kubernetes operator supports deployment of Oracle WebCenter Sites.
