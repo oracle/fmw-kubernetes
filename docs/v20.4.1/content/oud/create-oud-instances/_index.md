@@ -698,11 +698,11 @@ oud-dir-svc-2:1444   : 102     : 0        : 0            : 1898     : Disabled  
 oud-dsrs-svc-1:1444  : 102     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 2            : oud-dsrs-svc-1:1898 (GID=2)
 oud-dsrs-svc-2:1444  : 102     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 2            : oud-dsrs-svc-2:1898 (GID=2)
 
-Replication Server [11]   : RS #1 : RS #2 : RS #3 : RS #4 : RS #5
---------------------------:-------:-------:-------:-------:------
-oud-dir-svc-2:1898 (#1)   : --    : Yes   : Yes   : Yes   : Yes
-oud-dsrs-svc-1:1898 (#2)  : Yes   : --    : Yes   : Yes   : Yes
-oud-dsrs-svc-2:1898 (#3)  : Yes   : Yes   : --    : Yes   : Yes
+Replication Server [11]   : RS #1 : RS #2 : RS #3 
+--------------------------:-------:-------:-------
+oud-dir-svc-2:1898 (#1)   : --    : Yes   : Yes   
+oud-dsrs-svc-1:1898 (#2)  : Yes   : --    : Yes   
+oud-dsrs-svc-2:1898 (#3)  : Yes   : Yes   : --    
 ```
 
 From outside the cluster, you can invoke curl commands like following for accessing interfaces exposed through NodePort. In this example, there are two services (service/oud-dsrs-svc-1 and service/oud-dsrs-svc-2) exposing set of ports. Following curl commands can be executed against ports exposed through each service.
