@@ -236,10 +236,10 @@ wls:/oimcluster/serverConfig/Servers>
    oimcluster-cluster-oim-cluster-ssl   ClusterIP   None             <none>        14101/TCP                    21s
    ```
 
-1. Connect to a bash shell for the pod running your Administration Server:
+1. Connect to a bash shell for the helper pod:
 
    ```
-   $ kubectl exec -it oimcluster-adminserver -n oimcluster -- /bin/bash
+   $ kubectl exec -it helper -n oimcluster -- /bin/bash
    ```
 
 1. In the bash shell run the following:
