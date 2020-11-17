@@ -236,7 +236,7 @@ wls:/oimcluster/serverConfig/Servers>
    oimcluster-cluster-oim-cluster-ssl   ClusterIP   None             <none>        14101/TCP                    21s
    ```
 
-1. Connect to a bash shell for the helper pod:
+1. Connect to a bash shell of the helper pod:
 
    ```
    $ kubectl exec -it helper -n oimcluster -- /bin/bash
