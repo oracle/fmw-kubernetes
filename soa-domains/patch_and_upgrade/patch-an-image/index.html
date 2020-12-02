@@ -12,18 +12,18 @@
     <title>Patch an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1606123239" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1606890366" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1606890366" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1606123239"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1606890366"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1606123239"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1606123239"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1606890366"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1606890366"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1606123239"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1606890366"></script>
 
     
   </div>
@@ -3086,16 +3086,17 @@
 <h4 id="apply-the-patched-image">Apply the patched image</h4>
 <ol>
 <li>
-<p>Update the <code>image:</code> field in <code>domain.yaml</code> configuration file with the patched image.</p>
+<p>Shut down the domain, by updating the <code>spec.serverStartPolicy:</code> field value to <code>NEVER</code> in <code>domain.yaml</code> configuration file and apply the updated <code>domain.yaml</code> file.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f domain.yaml
+</code></pre></div></li>
+<li>
+<p>In <code>domain.yaml</code> configuration file, update the <code>image:</code> field value with the patched image and also update the <code>spec.serverStartPolicy:</code> field value to <code>IF_NEEDED</code>.</p>
 </li>
 <li>
-<p>Apply the updated <code>domain.yaml</code> configuration file:</p>
+<p>Apply the updated <code>domain.yaml</code> configuration file, to start up the domain.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f domain.yaml
 </code></pre></div></li>
 </ol>
-<blockquote>
-<p>Note: The server pods will be automatically restarted (rolling restart).</p>
-</blockquote>
 
 
 <footer class=" footline" >
@@ -5135,19 +5136,19 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1606123239"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1606890366"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1606123239"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1606890366"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1606890366"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1606123239" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1606123239"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1606890366" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1606890366"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

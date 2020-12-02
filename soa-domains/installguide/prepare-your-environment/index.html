@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1606123239" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1606123239" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1606890367" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1606890367" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1606123239"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1606890367"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1606123239"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1606123239"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1606890367"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1606890367"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1606123239"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1606890367"></script>
 
     
   </div>
@@ -3140,7 +3140,7 @@ and accept the license agreement for the <a href="https://hub.docker.com/_/oracl
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_20.3.3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_20.4.2
 $ mkdir <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
 </code></pre></div></li>
 <li>
@@ -3149,15 +3149,13 @@ $ mkdir <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">
 </code></pre></div></li>
 <li>
 <p>Download the Oracle SOA Suite Kubernetes deployment scripts from the SOA <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a> and copy them to the WebLogic Kubernetes operator samples location:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/20.3.3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/20.4.2
 
 $ mv -f <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-soa-domain  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-soa-domain_backup
 $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/fmw-kubernetes/OracleSOASuite/kubernetes/create-soa-domain  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
- $ mv -f <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/common  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/common_backup
+$ mv -f <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/common  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/common_backup
 $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/fmw-kubernetes/OracleSOASuite/kubernetes/common  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-
-$ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/fmw-kubernetes/OracleSOASuite/kubernetes/create-database  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 
 $ mv -f <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-schema  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-schema_backup
 $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/fmw-kubernetes/OracleSOASuite/kubernetes/create-rcu-schema  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
@@ -3176,7 +3174,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <p>The Oracle SOA Suite image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle SOA Suite image from My Oracle Support.</p>
 <ol>
 <li>
-<p>Download the patch <code>31966923</code> from My Oracle Support (MOS).</p>
+<p>Download the patch <code>32215749</code> from My Oracle Support (MOS).</p>
 </li>
 <li>
 <p>Unzip the downloaded patch zip file.</p>
@@ -3184,8 +3182,8 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <li>
 <p>Load the image archive using <code>docker load</code> command:</p>
 <p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker load &lt; soasuite.12214.tar
-Loaded image: soasuite:12.2.1.4
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker load &lt; soasuite.12214.2042.tar
+Loaded image: soasuite:12.2.1.4-20.4.2
 $
 </code></pre></div></li>
 </ol>
@@ -5512,19 +5510,19 @@ You must specify one of these using the <code>-t</code> flag.</li>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1606123239"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1606890367"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1606123239"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1606123239"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1606890367"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1606890367"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1606123239" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1606123239"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1606890367" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1606890367"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
