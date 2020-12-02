@@ -1342,7 +1342,6 @@
       
               
     </li>
-     
   
  
 
@@ -1591,6 +1590,15 @@
 
             
           
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
             
             
 
@@ -1724,16 +1732,14 @@
         <a href="/fmw-kubernetes/soa-domains/faq/">
         <b>7. </b>Frequently Asked Questions
         
-        </a>
+        </ul>
+              
     </li>
-     
   
  
 
-            
           
-            
-            
+          
 
 
  
@@ -1753,6 +1759,8 @@
         <ul>
           
           
+            
+          
           
           
         
@@ -1768,9 +1776,16 @@
         <a href="/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/">
         <b> </b>Domain resource sizing
         
-        </a>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/prerequisites/">
+          <b>1. </b>Prerequisites
+          
+      </a>
+      
+              
     </li>
-     
   
  
 
@@ -1827,8 +1842,23 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances Using Samples" class="dd-item 
         
-        </ul>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/">
+          <b>3. </b>Create Oracle Unified Directory Services Manager Instances Using Samples
+          
+      </a>
+      
               
     </li>
   
@@ -1995,12 +2025,13 @@
           
       </a>
       
-              
-    </li>
-  
- 
-
-            
+      
+        <ul>
+          
+          
+          
+          
+        
           
             
             
@@ -2355,9 +2386,15 @@ wls:/oimcluster/serverConfig/&gt;
                 
                 
 
-                    
-                    
-                    
+wls:/offline&gt;
+</code></pre></li>
+<li>
+<p>To access t3 for the Administration Server connect as follows:</p>
+<pre><code>connect('weblogic','&lt;password&gt;','t3://oimcluster-adminserver:7001')
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://oimcluster-adminserver:7001')
+Connecting to t3://oimcluster-adminserver:7001 with userid weblogic ...
+Successfully connected to Admin Server &quot;AdminServer&quot; that belongs to domain &quot;oimcluster&quot;.
 
                     
             
@@ -2390,56 +2427,151 @@ wls:/oimcluster/serverConfig/&gt;
                 
                     
                 
-                
+                
+
+wls:/oimcluster/serverConfig/&gt;
+</code></pre></li>
+</ol>
+<h3 id="sample-operations">Sample operations</h3>
+<p>For a full list of WLST operations refer to <a href="https://docs.oracle.com/pls/topic/lookup?ctx=en/middleware/fusion-middleware/weblogic-server/12.2.1.4/wlstc&amp;id=GUID-B6001303-FF2D-4EE7-8BB6-354E6D7C1692">WebLogic Server WLST Online and Offline Command Reference</a>.</p>
+<h4 id="display-servers">Display servers</h4>
+<pre><code>wls:/oimcluster/serverConfig/&gt; cd('/Servers')
+wls:/oimcluster/serverConfig/Servers&gt; ls ()
+dr--   AdminServer
+dr--   oim_server1
+dr--   oim_server2
+dr--   oim_server3
+dr--   oim_server4
+dr--   oim_server5
+dr--   soa_server1
+dr--   soa_server2
+dr--   soa_server3
+dr--   soa_server4
+dr--   soa_server5
+
+wls:/oimcluster/serverConfig/Servers&gt;
+</code></pre><h3 id="performing-wlst-administration-via-ssl">Performing WLST Administration via SSL</h3>
+<ol>
+<li>
+<p>By default the SSL port is not enabled for the Administration Server or OIG Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WebLogic Administration console <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console</code> and navigate to <strong>Lock &amp; Edit</strong> -&gt; <strong>Environment</strong> -&gt;<strong>Servers</strong> -&gt; <strong>server_name</strong> -&gt;<strong>Configuration</strong> -&gt; <strong>General</strong> -&gt; <strong>SSL Listen Port Enabled</strong> -&gt; <strong>Provide SSL Port</strong> ( For Administration Server: 7002 and for OIG Managed Server (oim_server1): 14101) - &gt; <strong>Save</strong> -&gt; <strong>Activate Changes</strong>.</p>
+<p><strong>Note</strong>: If configuring the OIG Managed Servers for SSL you must enable SSL on the same port for all servers (oim_server1 through oim_server4)</p>
+</li>
+<li>
+<p>Create a <code>myscripts</code> directory as follows:</p>
+<pre><code>$ cd &lt;work directory&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts
+$ mkdir myscripts
+$ cd myscripts
+</code></pre></li>
+<li>
+<p>Create a sample yaml template file in the <code>myscripts</code> directory called <code>&lt;domain_uid&gt;-adminserver-ssl.yaml</code> to create a Kubernetes service for the Administration Server:</p>
+<p><strong>Note</strong>: Update the <code>domainName</code>, <code>domainUID</code> and <code>namespace</code> based on your environment.</p>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    serviceType: SERVER
+    weblogic.domainName: oimcluster
+    weblogic.domainUID: oimcluster
+    weblogic.resourceVersion: domain-v2
+    weblogic.serverName: AdminServer
+  name: oimcluster-adminserver-ssl
+  namespace: oimcluster
+spec:
+  clusterIP: None
+  ports:
+  - name: default
+    port: 7002
+    protocol: TCP
+    targetPort: 7002
+  selector:
+    weblogic.createdByOperator: &quot;true&quot;
+    weblogic.domainUID: oimcluster
+    weblogic.serverName: AdminServer
+  type: ClusterIP
+</code></pre><p>and create the following sample yaml template file <code>&lt;domain_uid&gt;-oim-cluster-ssl.yaml</code> for the OIG Managed Server:</p>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    serviceType: SERVER
+    weblogic.domainName: oimcluster
+    weblogic.domainUID: oimcluster
+    weblogic.resourceVersion: domain-v2
+  name: oimcluster-cluster-oim-cluster-ssl
+  namespace: oimcluster
+spec:
+  clusterIP: None
+  ports:
+  - name: default
+    port: 14101
+    protocol: TCP
+    targetPort: 14101
+  selector:
+    weblogic.clusterName: oim_cluster
+    weblogic.createdByOperator: &quot;true&quot;
+    weblogic.domainUID: oimcluster
+  type: ClusterIP
+</code></pre></li>
+<li>
+<p>Apply the template using the following command for the Administration Server:</p>
+<pre><code>$ kubectl apply -f oimcluster-adminserver-ssl.yaml
+service/oimcluster-adminserver-ssl created
+</code></pre><p>or using the following command for the OIG Managed Server:</p>
+<pre><code>$ kubectl apply -f oimcluster-oim-cluster-ssl.yaml
+service/oimcluster-cluster-oim-cluster-ssl created
+</code></pre></li>
+<li>
+<p>Validate that the Kubernetes Services to access SSL ports are created successfully:</p>
+<pre><code>$ kubectl get svc -n &lt;domain_namespace&gt; |grep ssl
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl get svc -n oimcluster |grep ssl
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>oimcluster-adminserver-ssl           ClusterIP   None             &lt;none&gt;        7002/TCP                     74s
+oimcluster-cluster-oim-cluster-ssl   ClusterIP   None             &lt;none&gt;        14101/TCP                    21s
+</code></pre></li>
+<li>
+<p>Connect to a bash shell of the helper pod:</p>
+<pre><code>$ kubectl exec -it helper -n oimcluster -- /bin/bash
+</code></pre></li>
+<li>
+<p>In the bash shell run the following:</p>
+<pre><code>[oracle@oimcluster-adminserver oracle]$ export WLST_PROPERTIES=&quot;-Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.security.TrustKeyStore=DemoTrust&quot;
+[oracle@oimcluster-adminserver oracle]$ cd /u01/oracle/oracle_common/common/bin
+[oracle@oimcluster-adminserver oracle]$ ./wlst.sh
+Initializing WebLogic Scripting Tool (WLST) ...
+   
+Welcome to WebLogic Server Administration Scripting Shell
+   
+Type help() for help on available commands
+wls:/offline&gt;
+</code></pre><p>Connect to the Administration Server t3s service:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3s://oimcluster-adminserver-ssl:7002')
+&lt;Sep 30, 2020 3:16:48 PM GMT&gt; &lt;Info&gt; &lt;Security&gt; &lt;BEA-090905&gt; &lt;Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.&gt;
+&lt;Sep 30, 2020 3:16:48 PM GMT&gt; &lt;Info&gt; &lt;Security&gt; &lt;BEA-090906&gt; &lt;Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.&gt;
+&lt;Sep 30, 2020 3:16:48 PM GMT&gt; &lt;Info&gt; &lt;Security&gt; &lt;BEA-090909&gt; &lt;Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.&gt;
+Successfully connected to Admin Server &quot;AdminServer&quot; that belongs to domain &quot;oimcluster&quot;.
 
-                    
-                    
-                    
+wls:/oimcluster/serverConfig/&gt;
+</code></pre><p>To connect to the OIG Managed Server t3s service:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3s://oimcluster-cluster-oim-cluster-ssl:14101')
+Connecting to t3s://oimcluster-cluster-oim-cluster-ssl:14101 with userid weblogic ...
+Successfully connected to managed Server &quot;oim_server1&quot; that belongs to domain &quot;oimcluster&quot;.
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
+wls:/oimcluster/serverConfig/&gt;
+</code></pre></li>
+</ol>
 
-                    
-                    
-                    
 
-                    
-                        
-            
-            
-                
-                    
-                
-                
+<footer class=" footline" >
+	
+</footer>
 
-                    
-                    
-                    
 
-                    
-            
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
+        </div> 
+        
 
-                    
-                    
-                    
+      </div>
 
                     
                         
@@ -2494,7 +2626,6 @@ wls:/oimcluster/serverConfig/&gt;
             
             
                 
-                    
                     
                 
                 
@@ -2508,9 +2639,6 @@ wls:/oimcluster/serverConfig/&gt;
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -2528,7 +2656,6 @@ wls:/oimcluster/serverConfig/&gt;
             
                 
                     
-                    
                 
                 
 
@@ -2539,23 +2666,7 @@ wls:/oimcluster/serverConfig/&gt;
                     
             
         
-                    
-                        
-            
-            
-                
                     
-                        
-                        
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
             
         
                     
@@ -2695,9 +2806,7 @@ wls:/oimcluster/serverConfig/&gt;
                 
                 
 
-                    
                     
-                        
                     
                     
 
@@ -2727,12 +2836,13 @@ wls:/oimcluster/serverConfig/&gt;
                 
                 
 
-                    
                     
-                        
                     
                     
 
+                    
+            
+        
                     
                         
             
@@ -2749,6 +2859,9 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -2793,6 +2906,7 @@ wls:/oimcluster/serverConfig/&gt;
             
                 
                     
+                    
                 
                 
 
@@ -2806,20 +2920,10 @@ wls:/oimcluster/serverConfig/&gt;
                         
             
             
-                
-                    
                 
-                
-
-                    
-                    
-                    
-
                     
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -2956,9 +3060,6 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -2989,18 +3090,8 @@ wls:/oimcluster/serverConfig/&gt;
                     
 
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -3076,6 +3167,7 @@ wls:/oimcluster/serverConfig/&gt;
             
                 
                     
+                    
                 
                 
 
@@ -3083,14 +3175,14 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
-                    
-            
-        
                     
                         
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -3108,6 +3200,7 @@ wls:/oimcluster/serverConfig/&gt;
             
                 
                     
+                    
                 
                 
 
@@ -3115,12 +3208,6 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
-                    
-            
-        
-                    
-            
-        
                     
             
         
@@ -3130,20 +3217,8 @@ wls:/oimcluster/serverConfig/&gt;
             
                 
                     
-                
-                
-
-                    
-                    
                         
-                    
-                    
-
-                    
                         
-            
-            
-                
                     
                 
                 
@@ -3187,21 +3262,6 @@ wls:/oimcluster/serverConfig/&gt;
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
                     
                         
             
@@ -3263,26 +3323,10 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
-                    
-            
-        
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
                     
-
-                    
                         
             
             
@@ -3539,7 +3583,9 @@ wls:/oimcluster/serverConfig/&gt;
 
                     
                     
+                        
                     
+                    
 
                     
                         
@@ -3554,6 +3600,9 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -3599,9 +3648,25 @@ wls:/oimcluster/serverConfig/&gt;
                     
                     
 
+                    
+            
+        
                     
             
         
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
                         
             

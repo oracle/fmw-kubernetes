@@ -1591,6 +1591,15 @@
 
             
           
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
             
             
 
@@ -1670,7 +1679,6 @@
       
               
     </li>
-     
   
  
 
@@ -1707,10 +1715,8 @@
   
  
 
-            
           
-            
-            
+          
 
 
  
@@ -1729,6 +1735,8 @@
       
         <ul>
           
+          
+            
           
           
           
@@ -1783,6 +1791,10 @@
  
 
             
+          
+          
+          
+        
           
             
             
@@ -2009,20 +2021,19 @@
         <a href="/fmw-kubernetes/20.4.1/oudsm/patch-and-upgrade/upgrade_a_kubernetes_cluster/">
         b) Upgrade a Kubernetes cluster
         
-        </a>
+        </ul>
+              
     </li>
-     
   
  
 
-            
           
-            
-            
+         
+    </ul>
 
+    
+    
 
- 
-  
     
       <li data-nav-id="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/weblogic-logging-exporter-setup/" title="d. Publish logs to Elasticsearch" class="dd-item ">
         <a href="/fmw-kubernetes/wcsites-domains/manage-wcsites-domains/weblogic-logging-exporter-setup/">
@@ -2034,14 +2045,6 @@
   
  
 
-            
-          
-        
-        </ul>
-              
-    </li>
-  
- 
 
             
           
@@ -2063,11 +2066,24 @@
         
         </ul>
               
-    </li>
-  
- 
-
-            
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
           
             
             
@@ -2084,14 +2100,6 @@
       <a href="/fmw-kubernetes/20.4.1/oudsm/troubleshooting/">
           <b>8. </b>Troubleshooting
           
-      </a>
-      
-              
-    </li>
-  
- 
-
-            
           
             
             
@@ -2134,21 +2142,33 @@
       <a href="/fmw-kubernetes/oam/">
           Oracle Access Management
           
-      </a>
-      
-      
-        <ul>
           
+            <a href='/fmw-kubernetes/20.4.1/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/20.4.1/oam/'>Oracle Access Management</a> > <a href='/fmw-kubernetes/20.4.1/oam/configure-ingress/'>Configure an Ingress for an OAM domain</a> > a. Using an Ingress with NGINX
           
-            
+         
           
+         
           
+         
           
         
-          
-            
-            
-
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#setting-up-an-ingress-for-nginx-for-the-oam-domain">Setting up an ingress for NGINX for the OAM Domain</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
 
  
   
@@ -2156,19 +2176,16 @@
     <li data-nav-id="/fmw-kubernetes/oam/prerequisites/" title="Prerequisites" class="dd-item 
         
         
+        </div>
         
         ">
       <a href="/fmw-kubernetes/oam/prerequisites/">
           <b>1. </b>Prerequisites
           
-      </a>
-      
+            <h1>
               
-    </li>
-  
- 
-
-            
+              a. Using an Ingress with NGINX
+            </h1>
           
             <a href='/fmw-kubernetes/20.4.1/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/20.4.1/oam/'>Oracle Access Management</a> > <a href='/fmw-kubernetes/20.4.1/oam/configure-ingress/'>Configure an Ingress for an OAM domain</a> > a. Using an Ingress with NGINX
           
@@ -2183,10 +2200,6 @@
   
  
 
-            
-          
-            
-            
 
 
  
@@ -3904,9 +3917,16 @@ Events:
                 
                 
 
-                    
-                    
-                    
+NAMESPACE: default
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+NOTES:
+The nginx-ingress controller has been installed.
+Get the application URL by running these commands:
+  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
+  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
+  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
 
                     
             
@@ -3921,9 +3941,7 @@ Events:
                 
                 
 
-                    
-                    
-                    
+An example Ingress that makes use of the controller:
 
                     
             
@@ -3940,9 +3958,6 @@ Events:
                 
                 
 
-                    
-                    
-                    
 
                     
             
@@ -3959,9 +3974,6 @@ Events:
                 
                 
 
-                    
-                    
-                    
 
                     
                         
@@ -3972,9 +3984,6 @@ Events:
                 
                 
 
-                    
-                    
-                    
 
                     
             
@@ -3988,15 +3997,13 @@ Events:
                 
                 
 
-                    
-                    
-                    
+      </div>
 
-                    
-            
+    <div id="navigation">
         
-                    
-                        
+        
+        
+        
             
             
                 
@@ -4018,29 +4025,12 @@ Events:
                     
                 
                 
-
-                    
-                    
-                    
 
                     
-            
-        
-                    
-            
-        
                     
                         
-            
-            
-                
-                    
-                
-                
-
                     
                     
-                    
 
                     
                         
@@ -4099,6 +4089,7 @@ Events:
             
                 
                     
+                    
                 
                 
 
@@ -4114,6 +4105,7 @@ Events:
             
             
                 
+                    
                     
                 
                 
@@ -4131,6 +4123,9 @@ Events:
             
                 
                     
+                        
+                        
+                    
                 
                 
 
@@ -4141,19 +4136,6 @@ Events:
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
                     
             
         
@@ -4316,9 +4298,7 @@ Events:
                 
                 
 
-                    
                     
-                        
                     
                     
 
@@ -4348,12 +4328,13 @@ Events:
                 
 
                     
-                    
-                        
                     
                     
 
                     
+            
+        
+                    
                         
             
             
@@ -4366,6 +4347,9 @@ Events:
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -4515,18 +4499,8 @@ Events:
                     
 
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -4565,9 +4539,6 @@ Events:
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -4598,18 +4569,8 @@ Events:
                     
 
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
                         
             
@@ -4638,9 +4599,6 @@ Events:
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -4693,18 +4651,8 @@ Events:
             
         
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -4724,9 +4672,6 @@ Events:
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -4756,31 +4701,10 @@ Events:
                     
                     
 
-                    
-            
-        
-                    
-            
-        
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
                     
-
-                    
                         
             
             
@@ -4831,22 +4755,7 @@ Events:
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
                     
-
-                    
                         
             
             
@@ -5241,7 +5150,9 @@ Events:
 
                     
                     
+                        
                     
+                    
 
                     
                         
@@ -5256,6 +5167,9 @@ Events:
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -5272,9 +5186,6 @@ Events:
                     
                     
 
-                    
-            
-        
                     
                         
             

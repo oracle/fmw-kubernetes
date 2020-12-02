@@ -1342,7 +1342,6 @@
       
               
     </li>
-     
   
  
 
@@ -1362,33 +1361,6 @@
         ">
       <a href="/fmw-kubernetes/20.4.1/oud/prepare-your-environment/">
           <b>2. </b>Prepare Your Environment
-          
-      </a>
-      
-      
-        <ul>
-          
-          
-            
-          
-          
-          
-        
-          
-            
-            
-
-
- 
-  
-    
-    <li data-nav-id="/fmw-kubernetes/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
-        
-        
-        
-        ">
-      <a href="/fmw-kubernetes/soa-domains/installguide/prerequisites/">
-          <b>  </b>Requirements and limitations
           
       </a>
       
@@ -1422,6 +1394,33 @@
  
 
             
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.1/oud/create-oud-instances/" title="Create Oracle Unified Directory Instances Using Samples" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oud/create-oud-instances/">
+          <b>3. </b>Create Oracle Unified Directory Instances Using Samples
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
           
             
             
@@ -1618,6 +1617,15 @@
 
             
           
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
             
             
 
@@ -1751,16 +1759,14 @@
         <a href="/fmw-kubernetes/soa-domains/faq/">
         <b>7. </b>Frequently Asked Questions
         
-        </a>
+        </ul>
+              
     </li>
-     
   
  
 
-            
           
-            
-            
+          
 
 
  
@@ -1780,6 +1786,8 @@
         <ul>
           
           
+            
+          
           
           
         
@@ -1795,9 +1803,16 @@
         <a href="/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/">
         <b> </b>Domain resource sizing
         
-        </a>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/prerequisites/">
+          <b>1. </b>Prerequisites
+          
+      </a>
+      
+              
     </li>
-     
   
  
 
@@ -1820,8 +1835,23 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances Using Samples" class="dd-item 
         
-        </ul>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/">
+          <b>3. </b>Create Oracle Unified Directory Services Manager Instances Using Samples
+          
+      </a>
+      
               
     </li>
   
@@ -2010,16 +2040,13 @@
         <a href="/fmw-kubernetes/20.4.1/oudsm/patch-and-upgrade/upgrade_a_kubernetes_cluster/">
         b) Upgrade a Kubernetes cluster
         
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
         
-        </ul>
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/troubleshooting/">
+          <b>8. </b>Troubleshooting
+          
+      </a>
+      
               
     </li>
   
@@ -2031,8 +2058,6 @@
             
 
 
- 
-  
     
     <li data-nav-id="/fmw-kubernetes/20.4.1/oudsm/security-hardening/" title="Security Hardening" class="dd-item 
         
@@ -2049,11 +2074,10 @@
   
  
 
-            
-          
-            
-            
 
+    </section>
+  </div>
+</nav>
 
  
   
@@ -2249,17 +2273,42 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
+	<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#install-helm">Install Helm</a></li>
+<li><a href="#deploy-an-application-using-the-helm-chart">Deploy an Application using the Helm Chart</a></li>
+<li><a href="#undeploy-an-application-using-the-helm-chart">Undeploy an Application using the Helm Chart</a></li>
+<li><a href="#helm-charts-for-oracle-unified-directory">Helm Chart(s) for Oracle Unified Directory</a></li>
+</ol>
+<h3 id="introduction">Introduction</h3>
+<p>This chapter demonstrates how to deploy Oracle Unified Directory 12c instance(s) using the Helm package manager for Kubernetes. Helm Chart(s) described here can be used to facilitate installation, configuration, and environment setup within a Kubernetes environment.</p>
+<h3 id="install-helm">Install Helm</h3>
+<p>Helm can be used to create and deploy the Oracle Unified Directory resources in a Kubernetes cluster. For Helm installation and usage information, refer to the <a href="https://github.com/helm/helm">README</a>.</p>
+<h4 id="deploy-an-application-using-the-helm-chart">Deploy an Application using the Helm Chart</h4>
+<p>The <code>helm install</code> command is used to deploy applications to a Kubernetes environment, using the Helm Chart supplied.</p>
+<pre><code>$ helm install [Deployment NAME] [CHART Reference] [flags]
+</code></pre><p>For example:</p>
+<pre><code>$ helm install my-oud-ds-rs oud-ds-rs --namespace myhelmns
+</code></pre><h4 id="undeploy-an-application-using-the-helm-chart">Undeploy an Application using the Helm Chart</h4>
+<p>To uninstall an application deployed using a Helm chart you need to identify the release name and then issue a delete command:</p>
+<p>To get the release name:</p>
+<pre><code>$ helm --namespace &lt;namespace&gt; list
+</code></pre><p>For example:</p>
+<pre><code>$ helm --namespace myhelmns list
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+my-oud-ds-rs-           myhelmns        1               2020-03-31 10:37:30.616927678 -0700 PDT deployed        oud-ds-rs-12.2.1.4.0    12.2.1.4.0
+</code></pre><p>To delete the chart:</p>
+<pre><code>$ helm uninstall --namespace &lt;namespace&gt; &lt;release&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ helm uninstall --namespace myhelmns my-oud-ds-rs
+release &quot;my-oud-ds-rs&quot; uninstalled
+</code></pre><h4 id="helm-charts-for-oracle-unified-directory">Helm Chart(s) for Oracle Unified Directory</h4>
+<p>The following list provides Helm charts for deploying Oracle Unified Directory in a Kubernetes environment. Helm charts provided can be found in the project at the following location:</p>
+<p><code>https://github.com/oracle/fmw-kubernetes/tree/master/OracleUnifiedDirectory/kubernetes/helm</code></p>
+<p>Details about each Helm Chart can be found in the relevant README listed below:</p>
+<ul>
+<li><a href="/fmw-kubernetes/20.4.1/oud/create-oud-instances-helm/oud-ds-rs/">oud-ds-rs</a> : A Helm chart for deployment of Oracle Unified Directory Directory (DS+RS) instances on Kubernetes.</li>
+</ul>
 
                     
                     
@@ -2267,34 +2316,18 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
-                    
-                        
-            
-            
-                
-                    
-                
-                
 
-                    
-                    
-                    
 
-                    
-            
+
+<footer class=" footline" >
+	
+</footer>
+
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
+        </div> 
+        
 
-                    
-                    
-                    
+      </div>
 
                     
                         
@@ -2302,10 +2335,13 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
                 
                     
+                    
                 
                 
 
+                    
                     
+                        
                     
                     
 
@@ -2317,14 +2353,17 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
             
                 
+                    
+                        
+                        
                     
                 
                 
 
                     
                     
+                        
                     
-
                     
                         
             
@@ -2419,19 +2458,6 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
             
         
                     
@@ -2571,9 +2597,7 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                 
                 
 
-                    
                     
-                        
                     
                     
 
@@ -2603,12 +2627,13 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                 
 
                     
-                    
-                        
                     
                     
 
                     
+            
+        
+                    
                         
             
             
@@ -2621,6 +2646,9 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -2688,19 +2716,6 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
 
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
             
         
                     
@@ -2768,18 +2783,8 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
 
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -2796,9 +2801,6 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -2835,18 +2837,8 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
 
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -2864,9 +2856,6 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
 
                     
-            
-        
-                    
                         
             
             
@@ -2879,9 +2868,6 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -2931,18 +2917,8 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
         
                     
-                        
-            
             
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
                         
             
@@ -2956,9 +2932,6 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -2988,39 +2961,14 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
-                    
-            
-        
-                    
-            
-        
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                    
-                
-                
-
-                    
-                    
-                        
                     
-                    
-
-                    
                         
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -3064,30 +3012,11 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
             
         
-                    
-                        
-            
-            
-                
-                    
                     
-                
-                
-
-                    
-                    
                         
-                    
-                    
-
-                    
-                        
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -3172,6 +3101,7 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
             
                 
+                    
                     
                     
                 
@@ -3221,6 +3151,7 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
                 
                     
+                    
                 
                 
 
@@ -3235,6 +3166,9 @@ release &quot;my-oud-ds-rs&quot; uninstalled
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -3428,6 +3362,8 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                 
 
                     
+                    
+                        
                     
                     
 
@@ -3444,6 +3380,9 @@ release &quot;my-oud-ds-rs&quot; uninstalled
                     
                     
 
+                    
+            
+        
                     
             
         

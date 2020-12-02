@@ -1342,7 +1342,6 @@
       
               
     </li>
-     
   
  
 
@@ -1591,6 +1590,15 @@
 
             
           
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
             
             
 
@@ -1724,16 +1732,14 @@
         <a href="/fmw-kubernetes/soa-domains/faq/">
         <b>7. </b>Frequently Asked Questions
         
-        </a>
+        </ul>
+              
     </li>
-     
   
  
 
-            
           
-            
-            
+          
 
 
  
@@ -1753,6 +1759,8 @@
         <ul>
           
           
+            
+          
           
           
         
@@ -1768,9 +1776,16 @@
         <a href="/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/">
         <b> </b>Domain resource sizing
         
-        </a>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/prerequisites/">
+          <b>1. </b>Prerequisites
+          
+      </a>
+      
+              
     </li>
-     
   
  
 
@@ -1827,8 +1842,23 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances Using Samples" class="dd-item 
         
-        </ul>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/">
+          <b>3. </b>Create Oracle Unified Directory Services Manager Instances Using Samples
+          
+      </a>
+      
               
     </li>
   
@@ -2019,12 +2049,13 @@
           
       </a>
       
-              
-    </li>
-  
- 
-
-            
+      
+        <ul>
+          
+          
+          
+          
+        
           
         
         </ul>
@@ -2053,7 +2084,8 @@
 
 
 
-
+    
+    
 
         <section id="body">
         <div id="overlay"></div>
@@ -2451,37 +2483,84 @@ Events:
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
+# Voyager specific values
+voyager:
+  # web port
+  webPort: 30320
+  # stats port
+  statsPort: 30321
+</code></pre></li>
+</ol>
+<h3 id="create-the-ingress">Create the ingress</h3>
+<ol>
+<li>
+<p>Run the following command to create the ingress:</p>
+<pre><code>$ cd &lt;work directory&gt;/weblogic-kubernetes-operator
+$ helm install oimcluster-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+</code></pre><p>For example:</p>
+<pre><code>$ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
+$ helm install oimcluster-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME: oimcluster-nginx-designconsole
+LAST DEPLOYED: Tue Oct 20 08:01:47 2020
+NAMESPACE: oimcluster
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+</code></pre></li>
+<li>
+<p>Run the following command to show the ingress is created successfully:</p>
+<pre><code>$ kubectl describe ing oimcluster-nginx-designconsole -n &lt;domain_namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl describe ing oimcluster-nginx-designconsole -n oimcluster
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>Name:             oimcluster-nginx-designconsole
+Namespace:        oimcluster
+Address:          10.99.240.21
+Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *
+                 oimcluster-cluster-oim-cluster:14001 ()
+Annotations:  kubernetes.io/ingress.class: nginx-designconsole
+              meta.helm.sh/release-name: oimcluster-nginx-designconsole
+              meta.helm.sh/release-namespace: oimcluster
+              nginx.ingress.kubernetes.io/affinity: cookie
+              nginx.ingress.kubernetes.io/enable-access-log: false
+Events:
+  Type    Reason  Age   From                      Message
+  ----    ------  ----  ----                      -------
+  Normal  CREATE  117s  nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx-designconsole
+  Normal  UPDATE  64s   nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx-designconsole
+</code></pre></li>
+</ol>
+<h3 id="login-to-the-design-console">Login to the Design Console</h3>
+<ol>
+<li>
+<p>Launch the Design Console and in the Oracle Identity Manager Design Console login page enter the following details:</p>
+<p>Enter the following details and click Login:</p>
+<ul>
+<li><code>Server URL</code>: <code>&lt;url&gt;</code></li>
+<li><code>User ID</code>: <code>xelsysadm</code></li>
+<li><code>Password</code>: <code>&lt;password&gt;</code>.</li>
+</ul>
+<p>where <code>&lt;url&gt;</code> is as per the following:</p>
+<p>a) For NodePort: <code>http://&lt;masternode.example.com&gt;:&lt;NodePort&gt;</code></p>
+<p>where <code>&lt;NodePort&gt;</code> is the value passed in the command earlier, for example: <code>--set controller.service.nodePorts.http=30315</code></p>
+<p>b) For LoadBalancer: <code>http://&lt;loadbalancer.example.com&gt;:&lt;LBRPort&gt;</code></p>
+</li>
+<li>
+<p>If successful the Design Console will be displayed. If the VNC session disappears then the connection failed so double check the connection details and try again.</p>
+</li>
+</ol>
 
-                    
-                    
-                    
 
-                    
-                        
-            
-            
-                
-                    
-                
-                
+<footer class=" footline" >
+	
+</footer>
 
-                    
-                    
-                    
 
-                    
-            
         
                     
                         
@@ -2493,7 +2572,9 @@ Events:
                 
                 
 
+                    
                     
+                        
                     
                     
 
@@ -2503,25 +2584,23 @@ Events:
             
                 
                     
+                        
+                        
                     
                 
                 
 
                     
                     
+                        
                     
-
                     
-            
-        
+
                     
                         
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -2594,19 +2673,6 @@ Events:
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
                     
             
         
@@ -2748,8 +2814,6 @@ Events:
                 
 
                     
-                    
-                        
                     
                     
 
@@ -2781,10 +2845,11 @@ Events:
 
                     
                     
-                        
                     
-                    
 
+                    
+            
+        
                     
                         
             
@@ -2801,6 +2866,9 @@ Events:
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -2844,6 +2912,7 @@ Events:
             
             
                 
+                    
                     
                 
                 
@@ -2859,19 +2928,9 @@ Events:
             
             
                 
-                    
-                
-                
-
-                    
-                    
                     
-
-                    
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -3010,9 +3069,6 @@ Events:
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -3030,18 +3086,8 @@ Events:
                     
 
                     
-                        
-            
             
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -3051,6 +3097,7 @@ Events:
             
                 
                     
+                    
                 
                 
 
@@ -3058,9 +3105,6 @@ Events:
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -3072,6 +3116,9 @@ Events:
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -3113,18 +3160,8 @@ Events:
             
         
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
                         
             
@@ -3139,9 +3176,6 @@ Events:
                     
 
                     
-            
-        
-                    
                         
             
             
@@ -3170,31 +3204,10 @@ Events:
                     
                     
 
-                    
-            
-        
                     
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
                         
             
             
@@ -3242,23 +3255,8 @@ Events:
                     
             
         
-                    
-                        
-            
-            
-                
                     
-                
-                
-
-                    
-                    
                         
-                    
-                    
-
-                    
-                        
             
             
                 
@@ -3318,26 +3316,10 @@ Events:
                     
                     
 
-                    
-            
-        
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
                     
-                    
-
-                    
                         
             
             
@@ -3594,7 +3576,9 @@ Events:
 
                     
                     
+                        
                     
+                    
 
                     
                         
@@ -3609,6 +3593,9 @@ Events:
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -3654,9 +3641,25 @@ Events:
                     
                     
 
+                    
+            
+        
                     
             
         
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
                         
             

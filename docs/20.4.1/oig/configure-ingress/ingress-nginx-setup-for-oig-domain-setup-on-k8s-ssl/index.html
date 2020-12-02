@@ -1342,7 +1342,6 @@
       
               
     </li>
-     
   
  
 
@@ -1591,6 +1590,15 @@
 
             
           
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
             
             
 
@@ -1724,16 +1732,14 @@
         <a href="/fmw-kubernetes/soa-domains/faq/">
         <b>7. </b>Frequently Asked Questions
         
-        </a>
+        </ul>
+              
     </li>
-     
   
  
 
-            
           
-            
-            
+          
 
 
  
@@ -1753,6 +1759,8 @@
         <ul>
           
           
+            
+          
           
           
         
@@ -1768,9 +1776,16 @@
         <a href="/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/">
         <b> </b>Domain resource sizing
         
-        </a>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/prerequisites/">
+          <b>1. </b>Prerequisites
+          
+      </a>
+      
+              
     </li>
-     
   
  
 
@@ -1827,8 +1842,23 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances Using Samples" class="dd-item 
         
-        </ul>
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.1/oudsm/create-oudsm-instances/">
+          <b>3. </b>Create Oracle Unified Directory Services Manager Instances Using Samples
+          
+      </a>
+      
               
     </li>
   
@@ -1995,12 +2025,13 @@
           
       </a>
       
-              
-    </li>
-  
- 
-
-            
+      
+        <ul>
+          
+          
+          
+          
+        
           
             
             
@@ -2561,24 +2592,128 @@ namespace &quot;nginxssl&quot; deleted
                 
                 
 
-                    
-                    
-                    
+# Voyager specific values
+voyager:
+  # web port
+  webPort: 30305
+  # stats port
+  statsPort: 30315
+</code></pre></li>
+</ol>
+<h4 id="create-an-ingress-for-the-domain">Create an Ingress for the Domain</h4>
+<ol>
+<li>
+<p>Create an Ingress for the domain (<code>oimcluster-nginx</code>), in the domain namespace by using the sample Helm chart:</p>
+<pre><code>$ cd &lt;work directory&gt;/weblogic-kubernetes-operator
+$ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace oimcluster --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+</code></pre><p><strong>Note</strong>: The <code>&lt;work directory&gt;/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml</code> has <code>nginx.ingress.kubernetes.io/enable-access-log</code> set to <code>false</code>. If you want to enable access logs then set this value to <code>true</code> before executing the command. Enabling access-logs can cause issues with disk space if not regularly maintained.</p>
+<p>For example:</p>
+<pre><code>$ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
+$ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace oimcluster --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME: oimcluster-nginx
+LAST DEPLOYED: Tue Sep 29 08:56:38 2020
+NAMESPACE: oimcluster
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+</code></pre></li>
+<li>
+<p>Run the following command to show the ingress is created successfully:</p>
+<pre><code>$ kubectl get ing -n &lt;namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl get ing -n oimcluster
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME               CLASS    HOSTS   ADDRESS   PORTS   AGE
+oimcluster-nginx   &lt;none&gt;   *                 80      49s
+</code></pre></li>
+<li>
+<p>Find the node port of NGINX using the following command:</p>
+<pre><code>$ kubectl get services -n nginxssl -o jsonpath=&quot;{.spec.ports[1].nodePort}&quot; nginx-ingress-ingress-nginx-controller
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>32033$
+</code></pre></li>
+<li>
+<p>Run the following command to check the ingress:</p>
+<pre><code>$ kubectl describe ing oimcluster-nginx -n &lt;namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl describe ing oimcluster-nginx -n oimcluster
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>Name:             oimcluster-nginx
+Namespace:        oimcluster
+Address:          10.103.131.225
+Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *
+              /console       oimcluster-adminserver:7001 (10.244.1.42:7001)
+              /em            oimcluster-adminserver:7001 (10.244.1.42:7001)
+              /soa           oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
+              /integration   oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
+              /soa-infra     oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                             oimcluster-cluster-oim-cluster:14000 (10.244.1.44:14000)
+Annotations:  kubernetes.io/ingress.class: nginx
+              meta.helm.sh/release-name: oimcluster-nginx
+              meta.helm.sh/release-namespace: oimcluster
+              nginx.ingress.kubernetes.io/configuration-snippet:
+                more_set_input_headers &quot;X-Forwarded-Proto: https&quot;;
+                more_set_input_headers &quot;WL-Proxy-SSL: true&quot;;
+              nginx.ingress.kubernetes.io/ingress.allow-http: false
+              nginx.ingress.kubernetes.io/proxy-buffer-size: 2000k
+Events:
+  Type    Reason  Age   From                      Message
+  ----    ------  ----  ----                      -------
+  Normal  CREATE  5m4s  nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx
+  Normal  UPDATE  4m9s  nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx
+</code></pre></li>
+<li>
+<p>To confirm that the new Ingress is successfully routing to the domain&rsquo;s server pods, run the following command to send a request to the URL for the &ldquo;WebLogic ReadyApp framework&rdquo;:</p>
+<pre><code>$ curl -v -k https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/weblogic/ready
+</code></pre><p>For example:</p>
+<pre><code>$ curl -v -k  https://masternode.example.com:32033/weblogic/ready
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>$ curl -v https://masternode.example.com:32033/weblogic/ready
+* About to connect() to 12.345.678.9 port 32033 (#0)
+*   Trying 12.345.678.9...
+* Connected to 12.345.678.9 (12.345.678.9) port 32033 (#0)
+* Initializing NSS with certpath: sql:/etc/pki/nssdb
+* skipping SSL peer certificate verification
+* SSL connection using TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+* Server certificate:
+*       subject: CN=masternode.example.com
+*       start date: Sep 29 14:52:35 2020 GMT
+*       expire date: Sep 29 14:52:35 2021 GMT
+*       common name: masternode.example.com
+*       issuer: CN=masternode.example.com
+&gt; GET /weblogic/ready HTTP/1.1
+&gt; User-Agent: curl/7.29.0
+&gt; Host: 12.345.678.9:32033
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; Server: nginx/1.19.1
+&lt; Date: Tue, 29 Sep 2020 16:10:10 GMT
+&lt; Content-Length: 0
+&lt; Connection: keep-alive
+&lt; Strict-Transport-Security: max-age=15724800; includeSubDomains
+&lt;
+* Connection #0 to host 12.345.678.9 left intact
+</code></pre></li>
+</ol>
+<h4 id="verify-that-you-can-access-the-domain-url">Verify that You can Access the Domain URL</h4>
+<p>After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 32033) as per <a href="/fmw-kubernetes/20.4.1/oig/validate-domain-urls/">Validate Domain URLs </a></p>
+<h4 id="cleanup">Cleanup</h4>
+<p>If you need to remove the NGINX Ingress then remove the ingress with the following commands:</p>
+<pre><code>$ helm delete oimcluster-nginx -n oimcluster
+$ helm delete nginx-ingress -n nginxssl
+$ kubectl delete namespace nginxssl
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>$ helm delete oimcluster-nginx -n oimcluster
+release &quot;oimcluster-nginx&quot; uninstalled
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                        
-                        
-                    
-                
-                
+$ helm delete nginx-ingress -n nginxssl
+release &quot;nginx-ingress&quot; uninstalled
 
                     
                     
@@ -2586,8 +2721,6 @@ namespace &quot;nginxssl&quot; deleted
                     
                     
 
-                    
-            
         
                     
                         
@@ -2598,42 +2731,27 @@ namespace &quot;nginxssl&quot; deleted
                 
                 
 
-                    
-                    
-                    
+      </div>
 
-                    
-            
+    <div id="navigation">
         
-                    
-                        
+        
+        
+        
             
             
                 
                     
+                    
                 
                 
 
-                    
                     
                     
-
-                    
                         
-            
-            
-                
                     
-                
-                
-
                     
-                    
-                    
 
-                    
-            
-        
                     
                         
             
@@ -2740,19 +2858,6 @@ namespace &quot;nginxssl&quot; deleted
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
                     
             
         
@@ -2895,9 +3000,7 @@ namespace &quot;nginxssl&quot; deleted
 
                     
                     
-                        
                     
-                    
 
                     
                         
@@ -2925,12 +3028,13 @@ namespace &quot;nginxssl&quot; deleted
                 
                 
 
-                    
                     
-                        
                     
                     
 
+                    
+            
+        
                     
                         
             
@@ -2947,6 +3051,9 @@ namespace &quot;nginxssl&quot; deleted
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -3045,6 +3152,7 @@ namespace &quot;nginxssl&quot; deleted
                     
                         
                         
+                    
                     
                 
                 
@@ -3081,6 +3189,7 @@ namespace &quot;nginxssl&quot; deleted
             
                 
                     
+                    
                 
                 
 
@@ -3095,20 +3204,10 @@ namespace &quot;nginxssl&quot; deleted
                         
             
             
-                
-                    
                 
-                
-
                     
-                    
-                    
-
-                    
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -3200,6 +3299,9 @@ namespace &quot;nginxssl&quot; deleted
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -3217,12 +3319,6 @@ namespace &quot;nginxssl&quot; deleted
                     
 
                     
-            
-        
-                    
-            
-        
-                    
                         
             
             
@@ -3281,18 +3377,8 @@ namespace &quot;nginxssl&quot; deleted
                     
 
                     
-                        
             
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
+        
                     
             
         
@@ -3309,9 +3395,6 @@ namespace &quot;nginxssl&quot; deleted
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -3328,27 +3411,6 @@ namespace &quot;nginxssl&quot; deleted
                     
             
         
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
                     
                         
             
@@ -3408,10 +3470,11 @@ namespace &quot;nginxssl&quot; deleted
 
                     
                     
-                        
-                    
                     
 
+                    
+            
+        
                     
                         
             
@@ -3476,22 +3539,6 @@ namespace &quot;nginxssl&quot; deleted
                     
             
         
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
                     
                         
             
@@ -3744,6 +3791,8 @@ namespace &quot;nginxssl&quot; deleted
 
                     
                     
+                        
+                    
                     
 
                     
@@ -3759,6 +3808,9 @@ namespace &quot;nginxssl&quot; deleted
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -3807,6 +3859,22 @@ namespace &quot;nginxssl&quot; deleted
                     
             
         
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
                         
             
