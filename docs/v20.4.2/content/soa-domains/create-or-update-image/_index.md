@@ -120,35 +120,44 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 You must download the required Oracle SOA Suite installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
 
-{{%expand "Click here to see the sample list of installation binaries and patches:" %}}
+{{%expand "Click here to see the list of installation binaries and patches required for 20.4.2 release:" %}}
+
 * JDK:  
-    * jdk-8u241-linux-x64.tar.gz
+    * jdk-8u271-linux-x64.tar.gz
 
 * Fusion MiddleWare Infrastructure installer:  
     * fmw_12.2.1.4.0_infrastructure.jar
-
-* Fusion MiddleWare Infrastructure patches:  
-    * p28186730_139422_Generic.zip (Opatch)
-    * p30432881_122140_Generic.zip (OWSM)
-    * p30513324_122140_Linux-x86-64.zip (OSS)
-    * p30581253_122140_Generic.zip (ADF)
-    * p30689820_122140_Generic.zip (WLS)
-    * p30729380_122140_Generic.zip (COH)
 
 * SOA and OSB installers:  
     * fmw_12.2.1.4.0_soa.jar
     * fmw_12.2.1.4.0_osb.jar
 
+* Fusion MiddleWare Infrastructure patches:  
+    * p28186730_139424_Generic.zip (Opatch)
+    * p31960985_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.201001)
+    * p32097167_12214201001_Generic.zip (WLS OVERLAY PATCH)
+    * p31544353_122140_Linux-x86-64.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 JULY CPU 2020)
+    * p31762739_122140_Generic.zip (ADF BUNDLE PATCH 12.2.1.4.200817)
+    * p31666198_122140_Generic.zip (OPSS Bundle Patch 12.2.1.4.200724)
+    * p31806259_122140_Generic.zip (Bundle patch for Oracle Coherence Version 12.2.1.4.6)
+    * p31918617_122140_Generic.zip (One-off WLS)
+
 * SOA and OSB patches:   
-    * p30749990_122140_Generic.zip (SOA)
-    * p30779352_122140_Generic.zip (OSB)
+    * p31903409_122140_Generic.zip (SOA Bundle Patch 12.2.1.4.200917)
+    * p31700519_122140_Generic.zip (OSB Bundle Patch 12.2.1.4.200731)
+    * p31869446_122140_Generic.zip (One-off SOA)
+    * p31734213_122140_Generic.zip (One-off SOA)
+    * p31287540_122140_Generic.zip (One-off SOA)
+    * p31628564_122140_Generic.zip (One-off SOA)
+    * p31534880_122140_Generic.zip (One-off SOA)
+    * p31857456_122140_Generic.zip (One-off OSB)
+
 {{% /expand %}}
 
->Note: This is a sample list of patches. You must get the appropriate list of patches for your Oracle SOA Suite image.
 
 ##### Update required build files
 
-The following files available in the code repository location `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts` are used for creating the image.
+The following files available in the code repository location `<imagetool-setup-location>/docker-images/OracleSOASuite/imagetool/12.2.1.4.0` are used for creating the image.
 
 * `additionalBuildCmds.txt`
 * `buildArgs`
@@ -165,13 +174,15 @@ The following files available in the code repository location `${WORKDIR}/weblog
 
 1. Similarly, update the placeholders `%JDK_VERSION%` and `%BUILDTAG%` with appropriate values.
 
+1. Update the response file `<imagetool-setup-location>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file`, to add the parameter `INSTALL_TYPE="Fusion Middleware Infrastructure"` in the `[GENERIC]` section. 
+
 
 ##### Create the image
 
 1. Add a JDK package to the WebLogic Image Tool cache:
 
     ``` bash
-    $ imagetool cache addInstaller --type jdk --version 8u241 --path <download location>/jdk-8u241-linux-x64.tar.gz
+    $ imagetool cache addInstaller --type jdk --version 8u271 --path <download location>/jdk-8u271-linux-x64.tar.gz
     ```
 
 1. Add the downloaded installation binaries to the WebLogic Image Tool cache:
@@ -188,22 +199,37 @@ The following files available in the code repository location `${WORKDIR}/weblog
 
     {{%expand "Click here to see the commands to add patches in to the cache:" %}}
     ``` bash
-    $ imagetool cache addEntry --key 28186730_13.9.4.2.2 --path <download location>/p28186730_139422_Generic.zip
+    $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value <download location>/p28186730_139424_Generic.zip
 
-    $ imagetool cache addEntry --key 30432881_12.2.1.4.0 --path <download location>/p30432881_122140_Generic.zip
+    $  imagetool cache addEntry --key 31960985_12.2.1.4.0 --value <download location>/p31960985_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 30513324_12.2.1.4.0 --path <download location>/p30513324_122140_Linux-x86-64.zip
+    $  imagetool cache addEntry --key 32097167_12.2.1.4.0 --value <download location>/p32097167_12214201001_Generic.zip
 
-    $ imagetool cache addEntry --key 30581253_12.2.1.4.0 --path <download location>/p30581253_122140_Generic.zip
+    $  imagetool cache addEntry --key 31544353_12.2.1.4.0 --value <download location>/p31544353_122140_Linux-x86-64.zip
 
-    $ imagetool cache addEntry --key 30689820_12.2.1.4.0 --path <download location>/p30689820_122140_Generic.zip
+    $  imagetool cache addEntry --key 31762739_12.2.1.4.0 --value <download location>/p31762739_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 30729380_12.2.1.4.0 --path <download location>/p30729380_122140_Generic.zip
+    $  imagetool cache addEntry --key 31666198_12.2.1.4.0 --value <download location>/p31666198_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 30749990_12.2.1.4.0 --path <download location>/p30749990_122140_Generic.zip
+    $  imagetool cache addEntry --key 31806259_12.2.1.4.0 --value <download location>/p31806259_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 30779352_12.2.1.4.0 --path <download location>/p30779352_122140_Generic.zip
+    $  imagetool cache addEntry --key 31903409_12.2.1.4.0 --value <download location>/p31903409_122140_Generic.zip
 
+    $  imagetool cache addEntry --key 31700519_12.2.1.4.0 --value <download location>/p31700519_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31918617_12.2.1.4.0 --value <download location>/p31918617_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31869446_12.2.1.4.0 --value <download location>/p31869446_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31734213_12.2.1.4.0 --value <download location>/p31734213_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31287540_12.2.1.4.0 --value <download location>/p31287540_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31628564_12.2.1.4.0 --value <download location>/p31628564_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31534880_12.2.1.4.0 --value <download location>/p31534880_122140_Generic.zip
+
+    $  imagetool cache addEntry --key 31857456_12.2.1.4.0 --value <download location>/p31857456_122140_Generic.zip
     ```
    {{% /expand  %}}
 
@@ -212,169 +238,187 @@ The following files available in the code repository location `${WORKDIR}/weblog
     To the `create` command in the `buildArgs` file, append the Oracle SOA Suite and Oracle Service Bus patches list using the `--patches` flag and Opatch patch using the `--opatchBugNumber` flag. Sample options for the list of patches above are:
 
     ```
-    --patches 30432881_12.2.1.4.0,30513324_12.2.1.4.0,30581253_12.2.1.4.0,30689820_12.2.1.4.0,30729380_12.2.1.4.0,30749990_12.2.1.4.0,30779352_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.2
+    --patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
+    --opatchBugNumber=28186730_13.9.4.2.4
     ```
 
    Example `buildArgs` file after appending product's list of patches and Opatch patch:
 
     ```
     create
-    --jdkVersion=8u241
+    --jdkVersion=8u271
     --type soa_osb
     --version=12.2.1.4.0
-    --tag=localhost/oracle/soasuite:12.2.1.4
+    --tag=oracle/soasuite:12.2.1.4
     --pull
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
-    --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4.0/container-scripts
-    --patches 30432881_12.2.1.4.0,30513324_12.2.1.4.0,30581253_12.2.1.4.0,30689820_12.2.1.4.0,30729380_12.2.1.4.0,30749990_12.2.1.4.0,30779352_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.2
+    --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
+    --installerResponseFile <imagetool-setup-location>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response
+    --patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
+    --opatchBugNumber=28186730_13.9.4.2.4
     ```
 
      Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Enter the following command to create the Oracle SOA Suite image:
 
-      ```bash
-      $ imagetool @<absolute path to `buildargs` file>"
-      ```
+    ```bash
+    $ imagetool @<absolute path to `buildargs` file>"
+    ```
+
+    For example:
+
+    ```bash
+    $ imagetool @<imagetool-setup-location>/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/buildArgs
+    ```
 
     {{%expand "Click here to see the sample Dockerfile generated with the imagetool command." %}}
 
-      ```bash
-      ########## BEGIN DOCKERFILE ##########
-      #
-      # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
-      #
-      # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-      #
-      #
-      FROM oraclelinux:7-slim as OS_UPDATE
-      LABEL com.oracle.weblogic.imagetool.buildid="ee25d9b6-7656-41c2-ad9d-a7ed80ef1e91"
-      USER root
+    ```bash
+    ########## BEGIN DOCKERFILE ##########
+    #
+    # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+    #
+    # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+    #
+    #
+    FROM oraclelinux:7-slim as OS_UPDATE
+    LABEL com.oracle.weblogic.imagetool.buildid="8d5c806d-650d-49b7-8797-70c2c7fee8a2"
+    USER root
 
-      RUN yum -y --downloaddir= install gzip tar unzip libaio \
-      && yum -y --downloaddir= clean all \
+    RUN yum -y --downloaddir=/tmp/imagetool install gzip tar unzip libaio \
+      && yum -y --downloaddir=/tmp/imagetool clean all \
       && rm -rf /var/cache/yum/* \
-      && rm -rf
-
-      ## Create user and group
-      RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
-      && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
-      && mkdir /u01 \
-      && chown oracle:oracle /u01
-
-      # Install Java
-      FROM OS_UPDATE as JDK_BUILD
-      LABEL com.oracle.weblogic.imagetool.buildid="ee25d9b6-7656-41c2-ad9d-a7ed80ef1e91"
-
-      ENV JAVA_HOME=/u01/jdk
-
-      COPY --chown=oracle:oracle jdk-8u231-linux-x64.tar.gz /tmp/imagetool/
-
-      USER oracle
-
-
-      RUN tar xzf /tmp/imagetool/jdk-8u231-linux-x64.tar.gz -C /u01 \
-      && mv /u01/jdk* /u01/jdk \
       && rm -rf /tmp/imagetool
 
+    ## Create user and group
+    RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
+      && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
+      && mkdir /u01 \
+      && chown oracle:oracle /u01 \
+      && chmod 775 /u01
 
-      # Install Middleware
-      FROM OS_UPDATE as WLS_BUILD
-      LABEL com.oracle.weblogic.imagetool.buildid="ee25d9b6-7656-41c2-ad9d-a7ed80ef1e91"
+    # Install Java
+    FROM OS_UPDATE as JDK_BUILD
+    LABEL com.oracle.weblogic.imagetool.buildid="8d5c806d-650d-49b7-8797-70c2c7fee8a2"
 
-      ENV JAVA_HOME=/u01/jdk \
-          ORACLE_HOME=/u01/oracle \
-          OPATCH_NO_FUSER=true
+    ENV JAVA_HOME=/u01/jdk
 
-      RUN mkdir -p /u01/oracle \
+    COPY --chown=oracle:oracle jdk-8u271-linux-x64.tar.gz /tmp/imagetool/
+
+    USER oracle
+
+
+    RUN tar xzf /tmp/imagetool/jdk-8u271-linux-x64.tar.gz -C /u01 \
+      && $(test -d /u01/jdk* && mv /u01/jdk* /u01/jdk || mv /u01/graal* /u01/jdk) \
+      && rm -rf /tmp/imagetool \
+      && rm -f /u01/jdk/javafx-src.zip /u01/jdk/src.zip
+
+
+    # Install Middleware
+    FROM OS_UPDATE as WLS_BUILD
+    LABEL com.oracle.weblogic.imagetool.buildid="8d5c806d-650d-49b7-8797-70c2c7fee8a2"
+
+    ENV JAVA_HOME=/u01/jdk \
+        ORACLE_HOME=/u01/oracle \
+        OPATCH_NO_FUSER=true
+
+    RUN mkdir -p /u01/oracle \
       && mkdir -p /u01/oracle/oraInventory \
       && chown oracle:oracle /u01/oracle/oraInventory \
       && chown oracle:oracle /u01/oracle
 
-      COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
+    COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
 
-      COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure.jar fmw.rsp /tmp/imagetool/
-      COPY --chown=oracle:oracle fmw_12.2.1.4.0_soa.jar soa.rsp /tmp/imagetool/
-      COPY --chown=oracle:oracle fmw_12.2.1.4.0_osb.jar osb.rsp /tmp/imagetool/
-      COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
+    COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
+    COPY --chown=oracle:oracle fmw_12.2.1.4.0_soa.jar soasuite.response /tmp/imagetool/
+    COPY --chown=oracle:oracle fmw_12.2.1.4.0_osb.jar osb.response /tmp/imagetool/
+    COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
 
-          COPY --chown=oracle:oracle p28186730_139422_Generic.zip /tmp/imagetool/opatch/
+        COPY --chown=oracle:oracle p28186730_139424_Generic-23574493.zip /tmp/imagetool/opatch/
 
-          COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
+        COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
 
-      USER oracle
+    USER oracle
 
 
-      RUN  \
-      /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure.jar -silent ORACLE_HOME=/u01/oracle \
-          -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-      RUN  \
-      /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_soa.jar -silent ORACLE_HOME=/u01/oracle \
-          -responseFile /tmp/imagetool/soa.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-      RUN  \
-      /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_osb.jar -silent ORACLE_HOME=/u01/oracle \
-          -responseFile /tmp/imagetool/osb.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+    RUN echo "INSTALLING MIDDLEWARE" \
+      && echo "INSTALLING fmw" \
+      &&  \
+        /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure.jar -silent ORACLE_HOME=/u01/oracle \
+        -responseFile /tmp/imagetool/install.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
+      && echo "INSTALLING soa" \
+      &&  \
+        /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_soa.jar -silent ORACLE_HOME=/u01/oracle \
+        -responseFile /tmp/imagetool/soasuite.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
+      && echo "INSTALLING osb" \
+      &&  \
+        /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_osb.jar -silent ORACLE_HOME=/u01/oracle \
+        -responseFile /tmp/imagetool/osb.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
+      && chmod -R g+r /u01/oracle
 
-      RUN cd /tmp/imagetool/opatch \
-      && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139422_Generic.zip \
+    RUN cd /tmp/imagetool/opatch \
+      && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139424_Generic-23574493.zip \
       && /u01/jdk/bin/java -jar /tmp/imagetool/opatch/6880880/opatch_generic.jar -silent -ignoreSysPrereqs -force -novalidation oracle_home=/u01/oracle
 
-      RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
-      && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle
+    RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
+      && test $? -eq 0 \
+      && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle \
+      || (cat /u01/oracle/cfgtoollogs/opatch/opatch*.log && exit 1)
 
 
 
-      FROM OS_UPDATE as FINAL_BUILD
+    FROM OS_UPDATE as FINAL_BUILD
 
-      ARG ADMIN_NAME
-      ARG ADMIN_HOST
-      ARG ADMIN_PORT
-      ARG MANAGED_SERVER_PORT
+    ARG ADMIN_NAME
+    ARG ADMIN_HOST
+    ARG ADMIN_PORT
+    ARG MANAGED_SERVER_PORT
 
-      ENV ORACLE_HOME=/u01/oracle \
-          JAVA_HOME=/u01/jdk \
-          LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
-          PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
+    ENV ORACLE_HOME=/u01/oracle \
+        JAVA_HOME=/u01/jdk \
+        LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
+        PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
 
-      LABEL com.oracle.weblogic.imagetool.buildid="ee25d9b6-7656-41c2-ad9d-a7ed80ef1e91"
+    LABEL com.oracle.weblogic.imagetool.buildid="8d5c806d-650d-49b7-8797-70c2c7fee8a2"
 
-          COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
+        COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
 
-      COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
-
-
-
-      USER oracle
-      WORKDIR /u01/oracle
-
-      #ENTRYPOINT /bin/bash
+    COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
 
 
-          ENV ORACLE_HOME=/u01/oracle \
-              VOLUME_DIR=/u01/oracle/user_projects \
-              SCRIPT_FILE=/u01/oracle/container-scripts/* \
-              JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
-              PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
-          USER root
-          RUN mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
-              mkdir -p /u01/oracle/container-scripts && \
-              yum install -y hostname ant && \
-              rm -rf /var/cache/yum
+    USER oracle
+    WORKDIR /u01/oracle
 
-          #COPY container-scripts/* /u01/oracle/container-scripts/
-          COPY --chown=oracle:oracle files/build.xml files/createDomainAndStart.sh files/createDomain.py files/soaExtFun.sh files/startAS.sh files/startMS.sh files/updListenAddress.py /u01/oracle/container-scripts/
-          RUN chmod +xr $SCRIPT_FILE
+    #ENTRYPOINT /bin/bash
 
-          USER oracle
-          WORKDIR ${ORACLE_HOME}
-          CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
+        
+        ENV ORACLE_HOME=/u01/oracle \
+            VOLUME_DIR=/u01/oracle/user_projects \
+            SCRIPT_FILE=/u01/oracle/container-scripts/* \
+            HEALTH_SCRIPT_FILE=/u01/oracle/container-scripts/get_healthcheck_url.sh \
+            JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
+            PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+        
+        USER root
+        RUN mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
+            mkdir -p /u01/oracle/container-scripts && \
+            yum install -y hostname ant && \
+            rm -rf /var/cache/yum
+        
+        #COPY container-scripts/* /u01/oracle/container-scripts/
+        COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
+        RUN chmod +xr $SCRIPT_FILE
+        
+        USER oracle
+        HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+        WORKDIR ${ORACLE_HOME}
+        CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
 
-      ########## END DOCKERFILE ##########
-      ```
-      {{% /expand %}}
+    ########## END DOCKERFILE ##########
+    ```
+    {{% /expand %}}
 
 1. Check the created image using the `docker images` command:
 

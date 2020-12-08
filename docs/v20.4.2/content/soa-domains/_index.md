@@ -60,7 +60,7 @@ please consult this table of contents:
 
 If you wish to view documentation for an older version, please see 
 
-* [Version 20.3.3]({{< relref "/20.3.3/soa-domains/" >}})
+* [Version 20.3.3](https://oracle.github.io/fmw-kubernetes/20.3.3/soa-domains/)
 
 #### Additional reading
 

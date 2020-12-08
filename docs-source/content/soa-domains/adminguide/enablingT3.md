@@ -15,7 +15,7 @@ You can create T3/T3S channels and the corresponding Kubernetes service to expos
 
 The WebLogic Kubernetes operator provides an option to expose a T3 channel for the Administration Server using the `exposeAdminT3Channel` setting during domain creation, then the matching T3 service can be used to connect. By default, when `exposeAdminT3Channel` is set, the WebLogic Kubernetes operator environment exposes the  `NodePort` for the T3 channel of the `NetworkAccessPoint` at `30012` (use `t3ChannelPort` to configure the port to a different value).
 
-If you miss enabling `exposeAdminT3Channel` during domain creation, follow these steps to create a T3 channel for Managed Servers manually.
+If you miss enabling `exposeAdminT3Channel` during domain creation, follow these steps to create a T3 channel for Administration Server manually.
 
 ![Exposing SOA Managed Server T3 Ports](/fmw-kubernetes/images/soa-domains/ExposeSOAMST3.png)
 
