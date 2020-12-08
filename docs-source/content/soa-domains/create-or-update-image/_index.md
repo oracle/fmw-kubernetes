@@ -281,7 +281,6 @@ The following files in the code repository location `<imagetool-setup-location>/
 
     {{%expand "Click here to see the sample Dockerfile generated with the `imagetool` command." %}}
 
-
     ########## BEGIN DOCKERFILE ##########
     #
     # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
@@ -393,6 +392,10 @@ The following files in the code repository location `<imagetool-setup-location>/
 
     COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
 
+    ARG ADMIN_NAME
+    ARG ADMIN_HOST
+    ARG ADMIN_PORT
+    ARG MANAGED_SERVER_PORT
 
 
     USER oracle
