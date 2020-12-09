@@ -11,7 +11,7 @@ Learn how to deploy Oracle SOA Suite and Oracle Service Bus composite applicatio
 
 Before deploying composite applications, we need to create a Kubernetes pod in the same cluster where the Oracle SOA Suite domain is running, so that composite applications can be deployed using the internal Kubernetes Service for the Administration Server URL.
 
-Place the SOA/OSB composite project at a share location (for example at `/share/soa-deploy`) mounted at `/soacomposites` inside container.
+Place the SOA/OSB composite project at a share location (for example at `/share/soa-deploy`) mounted at `/composites` inside container.
 Make sure to provide `oracle` user *( uid: 1000 and gid: 1000)* permission to directory `/share/soa-deploy`, so that it is accessible and writable inside the container.
 
 ```
@@ -75,7 +75,7 @@ Before creating a Kubernetes pod, make sure that the Oracle SOA Suite Docker ima
 
    d) Apply the YAML:
       ```
-      $ kubectl apply apply -f soadeploy-pvc.yaml
+      $ kubectl apply -f soadeploy-pvc.yaml
       ```
 
 
@@ -98,7 +98,7 @@ Before creating a Kubernetes pod, make sure that the Oracle SOA Suite Docker ima
           - name: M2_HOME
             value: /u01/oracle/oracle_common/modules/org.apache.maven_3.2.5
           command: ["/bin/bash", "-c", "echo 'export PATH=$PATH:$M2_HOME/bin' >> $HOME/.bashrc; sleep infinity"]
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           volumeMounts:
           - name: mycomposite
             mountPath: /composites
@@ -127,20 +127,20 @@ Set up proxy details for Maven to pull dependencies from the internet.
    If your environment is not running behind a proxy, then skip this step. Otherwise, replace `REPLACE-WITH-PROXY-HOST`, `REPLACE-WITH-PROXY-PORT` and the value for `nonProxyHosts` attribute per your environment and create the `settings.xml`:
 
    ```
-      $ mkdir $HOME/.m2
-      $ cat <<EOF > $HOME/.m2/settings.xml
-      <settings>
-      <proxies>
-      <proxy>
-      <active>true</active>
-      <protocol>http</protocol>
-      <host>REPLACE-WITH-PROXY-HOST</host>
-      <port>REPLACE-WITH-PROXY-PORT</port>
-      <nonProxyHosts>soainfra-cluster-soa-cluster|soainfra-adminserver</nonProxyHosts>
-      </proxy>
-      </proxies>
-      </settings>
-      EOF
+   $ mkdir $HOME/.m2
+   $ cat <<EOF > $HOME/.m2/settings.xml
+   <settings>
+   <proxies>
+   <proxy>
+   <active>true</active>
+   <protocol>http</protocol>
+   <host>REPLACE-WITH-PROXY-HOST</host>
+   <port>REPLACE-WITH-PROXY-PORT</port>
+   <nonProxyHosts>soainfra-cluster-soa-cluster|soainfra-adminserver</nonProxyHosts>
+   </proxy>
+   </proxies>
+   </settings>
+   EOF
    ```
 
 #### For Oracle SOA Suite composite applications
