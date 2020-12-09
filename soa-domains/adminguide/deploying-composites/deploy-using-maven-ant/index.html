@@ -3084,7 +3084,7 @@
 
 <p>Learn how to deploy Oracle SOA Suite and Oracle Service Bus composite applications using the Maven and Ant based approach in an Oracle SOA Suite in WebLogic Kubernetes operator environment.</p>
 <p>Before deploying composite applications, we need to create a Kubernetes pod in the same cluster where the Oracle SOA Suite domain is running, so that composite applications can be deployed using the internal Kubernetes Service for the Administration Server URL.</p>
-<p>Place the SOA/OSB composite project at a share location (for example at <code>/share/soa-deploy</code>) mounted at <code>/soacomposites</code> inside container.
+<p>Place the SOA/OSB composite project at a share location (for example at <code>/share/soa-deploy</code>) mounted at <code>/composites</code> inside container.
 Make sure to provide <code>oracle</code> user <em>( uid: 1000 and gid: 1000)</em> permission to directory <code>/share/soa-deploy</code>, so that it is accessible and writable inside the container.</p>
 <pre><code>$ sudo chown -R 1000:1000 /share/soa-deploy
 </code></pre><p>Follow the steps in this section to create a container and then use it to deploy Oracle SOA Suite and Oracle Service Bus composite applications using Maven or Ant.</p>
@@ -3130,7 +3130,7 @@ spec:
     requests:
       storage: 10Gi      
 </code></pre><p>d) Apply the YAML:</p>
-<pre><code>$ kubectl apply apply -f soadeploy-pvc.yaml
+<pre><code>$ kubectl apply -f soadeploy-pvc.yaml
 </code></pre></li>
 <li>
 <p>Create a composite deploy pod using <code>soadeploy.yaml</code> to mount the composites inside pod at <code>/composites</code>:</p>
@@ -3151,7 +3151,7 @@ spec:
     - name: M2_HOME
       value: /u01/oracle/oracle_common/modules/org.apache.maven_3.2.5
     command: [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;echo 'export PATH=$PATH:$M2_HOME/bin' &gt;&gt; $HOME/.bashrc; sleep infinity&quot;]
-    imagePullPolicy: Always
+    imagePullPolicy: IfNotPresent
     volumeMounts:
     - name: mycomposite
       mountPath: /composites
@@ -3175,20 +3175,20 @@ spec:
 </blockquote>
 <p>Set up proxy details for Maven to pull dependencies from the internet.</p>
 <p>If your environment is not running behind a proxy, then skip this step. Otherwise, replace <code>REPLACE-WITH-PROXY-HOST</code>, <code>REPLACE-WITH-PROXY-PORT</code> and the value for <code>nonProxyHosts</code> attribute per your environment and create the <code>settings.xml</code>:</p>
-<pre><code>   $ mkdir $HOME/.m2
-   $ cat &lt;&lt;EOF &gt; $HOME/.m2/settings.xml
-   &lt;settings&gt;
-   &lt;proxies&gt;
-   &lt;proxy&gt;
-   &lt;active&gt;true&lt;/active&gt;
-   &lt;protocol&gt;http&lt;/protocol&gt;
-   &lt;host&gt;REPLACE-WITH-PROXY-HOST&lt;/host&gt;
-   &lt;port&gt;REPLACE-WITH-PROXY-PORT&lt;/port&gt;
-   &lt;nonProxyHosts&gt;soainfra-cluster-soa-cluster|soainfra-adminserver&lt;/nonProxyHosts&gt;
-   &lt;/proxy&gt;
-   &lt;/proxies&gt;
-   &lt;/settings&gt;
-   EOF
+<pre><code>$ mkdir $HOME/.m2
+$ cat &lt;&lt;EOF &gt; $HOME/.m2/settings.xml
+&lt;settings&gt;
+&lt;proxies&gt;
+&lt;proxy&gt;
+&lt;active&gt;true&lt;/active&gt;
+&lt;protocol&gt;http&lt;/protocol&gt;
+&lt;host&gt;REPLACE-WITH-PROXY-HOST&lt;/host&gt;
+&lt;port&gt;REPLACE-WITH-PROXY-PORT&lt;/port&gt;
+&lt;nonProxyHosts&gt;soainfra-cluster-soa-cluster|soainfra-adminserver&lt;/nonProxyHosts&gt;
+&lt;/proxy&gt;
+&lt;/proxies&gt;
+&lt;/settings&gt;
+EOF
 </code></pre><h4 id="for-oracle-soa-suite-composite-applications">For Oracle SOA Suite composite applications</h4>
 <ol>
 <li>
