@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1607426122" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1607426122" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1607682568" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1607682568" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1607426122"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1607682568"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1607426122"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1607426122"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1607682568"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1607682568"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1607426122"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1607682568"></script>
 
     
   </div>
@@ -3165,23 +3165,15 @@ $ cd imagetool-setup/docker-images/OracleSOASuite/imagetool/12.2.1.4.0
 $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts/* .
 </code></pre></div></li>
 </ol>
+<blockquote>
+<p>Note: If you want to create the image continue with the following steps, otherwise to update the image see <a href="#update-an-image">update an image</a>.</p>
+</blockquote>
 <h4 id="create-an-image">Create an image</h4>
 <p>After <a href="/fmw-kubernetes/soa-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, follow these steps to use the WebLogic Image Tool to <code>create</code> a new Oracle SOA Suite Docker image.</p>
 <h5 id="download-the-oracle-soa-suite-installation-binaries-and-patches">Download the Oracle SOA Suite installation binaries and patches</h5>
 <p>You must download the required Oracle SOA Suite installation binaries and patches as listed below from the <a href="https://edelivery.oracle.com/">Oracle Software Delivery Cloud</a> and save them in a directory of your choice. In these steps, this directory is <code>download location</code>.</p>
-
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the list of installation binaries and patches required for 20.4.2 release:
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <ul>
+<p>Following is the list of installation binaries and patches required for 20.4.2 release:</p>
+<ul>
 <li>
 <p>JDK:</p>
 <ul>
@@ -3204,7 +3196,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <li>
 <p>Fusion MiddleWare Infrastructure patches:</p>
 <ul>
-<li>p28186730_139424_Generic.zip (Opatch)</li>
+<li>p28186730_139424_Generic.zip (OPatch)</li>
 <li>p31960985_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.201001)</li>
 <li>p32097167_12214201001_Generic.zip (WLS OVERLAY PATCH)</li>
 <li>p31544353_122140_Linux-x86-64.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 JULY CPU 2020)</li>
@@ -3228,9 +3220,6 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 </ul>
 </li>
 </ul>
-
-    </div>
-</div>
 <h5 id="update-required-build-files">Update required build files</h5>
 <p>The following files available in the code repository location <code>&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/imagetool/12.2.1.4.0</code> are used for creating the image.</p>
 <ul>
@@ -3239,7 +3228,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 </ul>
 <ol>
 <li>
-<p>In the <code>buildArgs</code> file, update all the occurrences of <code>%DOCKER_REPO%</code> with the <code>docker-images</code> repository location, which is the complete path of <code>imagetool-setup/docker-images</code>.</p>
+<p>In the <code>buildArgs</code> file, update all the occurrences of <code>%DOCKER_REPO%</code> with the <code>docker-images</code> repository location, which is the complete path of <code>&lt;imagetool-setup-location&gt;/docker-images</code>.</p>
 <p>For example, update:</p>
 <p><code>%DOCKER_REPO%/OracleSOASuite/imagetool/12.2.1.4.0/</code></p>
 <p>to:<br>
@@ -3268,23 +3257,17 @@ $ imagetool cache addInstaller --type osb --version 12.2.1.4.0 --path &lt;downlo
 
 </code></pre></div></li>
 <li>
-<p>Add the downloaded patches to the WebLogic Image Tool cache:</p>
-
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the commands to add patches in to the cache:
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <pre><code>``` bash
-$ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value &lt;download location&gt;/p28186730_139424_Generic.zip
-
-$  imagetool cache addEntry --key 31960985_12.2.1.4.0 --value &lt;download location&gt;/p31960985_122140_Generic.zip
+<p>Add the downloaded OPatch patch to the WebLogic Image Tool cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value &lt;download location&gt;/p28186730_139424_Generic.zip
+</code></pre></div></li>
+<li>
+<p>Append the <code>--opatchBugNumber</code> flag and the OPatch patch key, to the create command in <code>buildArgs</code> file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--opatchBugNumber 28186730_13.9.4.2.4
+</code></pre></div></li>
+<li>
+<p>Add the downloaded product patches to the WebLogic Image Tool cache:</p>
+<p>Following are the commands to add product patches in to the cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  imagetool cache addEntry --key 31960985_12.2.1.4.0 --value &lt;download location&gt;/p31960985_122140_Generic.zip
 
 $  imagetool cache addEntry --key 32097167_12.2.1.4.0 --value &lt;download location&gt;/p32097167_12214201001_Generic.zip
 
@@ -3313,18 +3296,11 @@ $  imagetool cache addEntry --key 31628564_12.2.1.4.0 --value &lt;download locat
 $  imagetool cache addEntry --key 31534880_12.2.1.4.0 --value &lt;download location&gt;/p31534880_122140_Generic.zip
 
 $  imagetool cache addEntry --key 31857456_12.2.1.4.0 --value &lt;download location&gt;/p31857456_122140_Generic.zip
-```
-</code></pre>
-
-    </div>
-</div>
-</li>
+</code></pre></div></li>
 <li>
-<p>Update the patches list to <code>buildArgs</code>.</p>
-<p>To the <code>create</code> command in the <code>buildArgs</code> file, append the Oracle SOA Suite and Oracle Service Bus patches list using the <code>--patches</code> flag and Opatch patch using the <code>--opatchBugNumber</code> flag. Sample options for the list of patches above are:</p>
+<p>Append the <code>--patches</code> flag and the product patch keys, to the create command in <code>buildArgs</code> file. The <code>--patches</code> list must be a comma seperated collection of patch <code>--key</code> values used in the above <code>imagetool cache addEntry</code> commands. Sample <code>--patches</code> list for the product patches added in to the cache:</p>
 <pre><code>--patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
---opatchBugNumber=28186730_13.9.4.2.4
-</code></pre><p>Example <code>buildArgs</code> file after appending product&rsquo;s list of patches and Opatch patch:</p>
+</code></pre><p>Example <code>buildArgs</code> file after appending the OPatch patch and product patches:</p>
 <pre><code>create
 --jdkVersion=8u271
 --type soa_osb
@@ -3334,14 +3310,25 @@ $  imagetool cache addEntry --key 31857456_12.2.1.4.0 --value &lt;download locat
 --additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
 --installerResponseFile &lt;imagetool-setup-location&gt;/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response
+--opatchBugNumber 28186730_13.9.4.2.4
 --patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
---opatchBugNumber=28186730_13.9.4.2.4
-</code></pre><p>Refer to <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
+</code></pre><blockquote>
+<p>Note: In <code>buildArgs</code> file:</p>
+<ul>
+<li><code>--jdkVersion</code> value must match the <code>--version</code> value used in the <code>imagetool cache addInstaller</code> command for <code>--type</code> jdk.</li>
+<li><code>--version</code> value must match the <code>--version</code> value used in the <code>imagetool cache addInstaller</code> command for <code>--type</code> soa.</li>
+<li><code>--pull</code> always pulls the latest base Linux image <code>oraclelinux:7-slim</code> from Docker registry. This flag can be removed, if you want to use the Linux image <code>oraclelinux:7-slim</code> which is already available on the host where the SOA image is being created.</li>
+</ul>
+</blockquote>
+<p>Refer to <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
 </li>
 <li>
 <p>Enter the following command to create the Oracle SOA Suite image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool @&lt;absolute path to <span style="color:#e6db74">`</span>buildargs<span style="color:#e6db74">`</span> file&gt;<span style="color:#e6db74">&#34;
-</span></code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool @&lt;absolute path to buildargs file&gt;
+</code></pre></div><blockquote>
+<p>Note: Make sure that the absolute path to <code>buildargs</code> file is prepended with a <code>@</code> character as shown in the command above.</p>
+</blockquote>
+<p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool @&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/buildArgs
 </code></pre></div>
 <div class="expand">
@@ -3355,8 +3342,7 @@ $  imagetool cache addEntry --key 31857456_12.2.1.4.0 --value &lt;download locat
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <pre><code>```bash
-########## BEGIN DOCKERFILE ##########
+        <pre><code>########## BEGIN DOCKERFILE ##########
 #
 # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
@@ -3498,7 +3484,6 @@ WORKDIR /u01/oracle
     CMD [&quot;/u01/oracle/container-scripts/createDomainAndStart.sh&quot;]
 
 ########## END DOCKERFILE ##########
-```
 </code></pre>
 
     </div>
@@ -3506,17 +3491,19 @@ WORKDIR /u01/oracle
 </li>
 <li>
 <p>Check the created image using the <code>docker images</code> command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep soa
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep soasuite
 </code></pre></div></li>
 </ol>
 <h4 id="update-an-image">Update an image</h4>
 <p>After <a href="/fmw-kubernetes/soa-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, use the WebLogic Image Tool to <code>update</code> an existing Oracle SOA Suite Docker image:</p>
 <ol>
 <li>
-<p>Enter the following command for each patch to add the required patch(es) to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  cd &lt;imagetool-setup&gt;
-$ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.2.1.4.0 --value &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
-<span style="color:#f92672">[</span>INFO   <span style="color:#f92672">]</span> Added entry 30761841_12.2.1.4.0<span style="color:#f92672">=</span>&lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
+<p>Enter the following command to add the OPatch patch to the WebLogic Image Tool cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value &lt;downloaded-patches-location&gt;/p28186730_139424_Generic.zip
+</code></pre></div></li>
+<li>
+<p>Execute the <code>imagetool cache addEntry</code> command for each patch to add the required patch(es) to the WebLogic Image Tool cache. For example, to add patch <code>p30761841_122140_Generic.zip</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.2.1.4.0 --value &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
 </code></pre></div></li>
 <li>
 <p>Provide the following arguments to the WebLogic Image Tool <code>update</code> command:</p>
@@ -3537,123 +3524,124 @@ $ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.
         <span>
         
     	
-    	Click here to see the example `update` command:
+    	Click here to see the example &#39;update&#39; command:
     	
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
         <pre><code>$ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0
 
-    [INFO   ] Image Tool build ID: bd21dc73-b775-4186-ae03-8219bf02113e
-    [INFO   ] Temporary directory used for docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1117031733123594064
-    [INFO   ] Using patch 28186730_13.9.4.2.2 from cache: &lt;downloaded-patches-location&gt;/p28186730_139422_Generic.zip
-    [WARNING] skipping patch conflict check, no support credentials provided
-    [WARNING] No credentials provided, skipping validation of patches
-    [INFO   ] Using patch 30761841_12.2.1.4.0 from cache: &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
-    [INFO   ] docker cmd = docker build --force-rm=true --no-cache --tag soasuite:12.2.1.4-30761841 --build-arg http_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg https_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg no_proxy=&lt;IP addresses and Domain address for no_proxy&gt;,/var/run/docker.sock &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1117031733123594064
-    Sending build context to Docker daemon  53.47MB
+  [INFO   ] Image Tool build ID: bd21dc73-b775-4186-ae03-8219bf02113e
+  [INFO   ] Temporary directory used for docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1117031733123594064
+  [INFO   ] Using patch 28186730_13.9.4.2.2 from cache: &lt;downloaded-patches-location&gt;/p28186730_139422_Generic.zip
+  [WARNING] skipping patch conflict check, no support credentials provided
+  [WARNING] No credentials provided, skipping validation of patches
+  [INFO   ] Using patch 30761841_12.2.1.4.0 from cache: &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
+  [INFO   ] docker cmd = docker build --force-rm=true --no-cache --tag soasuite:12.2.1.4-30761841 --build-arg http_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg https_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg no_proxy=&lt;IP addresses and Domain address for no_proxy&gt;,/var/run/docker.sock &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1117031733123594064
+  Sending build context to Docker daemon  53.47MB
 
-    Step 1/7 : FROM soasuite:12.2.1.4 as FINAL_BUILD
-    ---&gt; 445b649a3459
-    Step 2/7 : USER root
-    ---&gt; Running in 27f45e6958c3
-    Removing intermediate container 27f45e6958c3
-    ---&gt; 150ae0161d46
-    Step 3/7 : ENV OPATCH_NO_FUSER=true
-    ---&gt; Running in daddfbb8fd9e
-    Removing intermediate container daddfbb8fd9e
-    ---&gt; a5fc6b74be39
-    Step 4/7 : LABEL com.oracle.weblogic.imagetool.buildid=&quot;bd21dc73-b775-4186-ae03-8219bf02113e&quot;
-    ---&gt; Running in cdfec79c3fd4
-    Removing intermediate container cdfec79c3fd4
-    ---&gt; 4c773aeb956f
-    Step 5/7 : USER oracle
-    ---&gt; Running in ed3432e43e89
-    Removing intermediate container ed3432e43e89
-    ---&gt; 54fe6b07c447
-    Step 6/7 : COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
-    ---&gt; d6d12f02a9be
-    Step 7/7 : RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches     &amp;&amp; /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle     &amp;&amp; rm -rf /tmp/imagetool
-    ---&gt; Running in a79addca4d2f
-    Oracle Interim Patch Installer version 13.9.4.2.2
-    Copyright (c) 2020, Oracle Corporation.  All rights reserved.
-
-
-    Oracle Home       : /u01/oracle
-    Central Inventory : /u01/oracle/oraInventory
-      from           : /u01/oracle/oraInst.loc
-    OPatch version    : 13.9.4.2.2
-    OUI version       : 13.9.4.0.0
-    Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
+  Step 1/7 : FROM soasuite:12.2.1.4 as FINAL_BUILD
+  ---&gt; 445b649a3459
+  Step 2/7 : USER root
+  ---&gt; Running in 27f45e6958c3
+  Removing intermediate container 27f45e6958c3
+  ---&gt; 150ae0161d46
+  Step 3/7 : ENV OPATCH_NO_FUSER=true
+  ---&gt; Running in daddfbb8fd9e
+  Removing intermediate container daddfbb8fd9e
+  ---&gt; a5fc6b74be39
+  Step 4/7 : LABEL com.oracle.weblogic.imagetool.buildid=&quot;bd21dc73-b775-4186-ae03-8219bf02113e&quot;
+  ---&gt; Running in cdfec79c3fd4
+  Removing intermediate container cdfec79c3fd4
+  ---&gt; 4c773aeb956f
+  Step 5/7 : USER oracle
+  ---&gt; Running in ed3432e43e89
+  Removing intermediate container ed3432e43e89
+  ---&gt; 54fe6b07c447
+  Step 6/7 : COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
+  ---&gt; d6d12f02a9be
+  Step 7/7 : RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches     &amp;&amp; /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle     &amp;&amp; rm -rf /tmp/imagetool
+  ---&gt; Running in a79addca4d2f
+  Oracle Interim Patch Installer version 13.9.4.2.2
+  Copyright (c) 2020, Oracle Corporation.  All rights reserved.
 
 
-    OPatch detects the Middleware Home as &quot;/u01/oracle&quot;
-
-    Verifying environment and performing prerequisite checks...
-    OPatch continues with these patches:   30761841
-
-    Do you want to proceed? [y|n]
-    Y (auto-answered by -silent)
-    User Responded with: Y
-    All checks passed.
-
-    Please shutdown Oracle instances running out of this ORACLE_HOME on the local system.
-    (Oracle Home = '/u01/oracle')
+  Oracle Home       : /u01/oracle
+  Central Inventory : /u01/oracle/oraInventory
+    from           : /u01/oracle/oraInst.loc
+  OPatch version    : 13.9.4.2.2
+  OUI version       : 13.9.4.0.0
+  Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
 
 
-    Is the local system ready for patching? [y|n]
-    Y (auto-answered by -silent)
-    User Responded with: Y
-    Backing up files...
-    Applying interim patch '30761841' to OH '/u01/oracle'
-    ApplySession: Optional component(s) [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.52.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.52.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.48.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.48.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.51.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.51.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.5.0.0.0 ]  not present in the Oracle Home or a higher version is found.
+  OPatch detects the Middleware Home as &quot;/u01/oracle&quot;
 
-    Patching component oracle.org.bouncycastle.bcprov.jdk15on, 1.60.0.0.0...
+  Verifying environment and performing prerequisite checks...
+  OPatch continues with these patches:   30761841
 
-    Patching component oracle.org.bouncycastle.bcprov.jdk15on, 1.60.0.0.0...
+  Do you want to proceed? [y|n]
+  Y (auto-answered by -silent)
+  User Responded with: Y
+  All checks passed.
 
-    Patching component oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.60.0.0.0...
-
-    Patching component oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.60.0.0.0...
-
-    Patching component oracle.org.bouncycastle.bcpkix.jdk15on, 1.60.0.0.0...
-
-    Patching component oracle.org.bouncycastle.bcpkix.jdk15on, 1.60.0.0.0...
-    Patch 30761841 successfully applied.
-    Log file location: /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
-
-    OPatch succeeded.
-    Oracle Interim Patch Installer version 13.9.4.2.2
-    Copyright (c) 2020, Oracle Corporation.  All rights reserved.
+  Please shutdown Oracle instances running out of this ORACLE_HOME on the local system.
+  (Oracle Home = '/u01/oracle')
 
 
-    Oracle Home       : /u01/oracle
-    Central Inventory : /u01/oracle/oraInventory
-      from           : /u01/oracle/oraInst.loc
-    OPatch version    : 13.9.4.2.2
-    OUI version       : 13.9.4.0.0
-    Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-57-19AM_1.log
+  Is the local system ready for patching? [y|n]
+  Y (auto-answered by -silent)
+  User Responded with: Y
+  Backing up files...
+  Applying interim patch '30761841' to OH '/u01/oracle'
+  ApplySession: Optional component(s) [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.52.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.52.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.48.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.48.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.51.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.51.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.54.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcpkix.jdk15on, 1.55.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.49.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.5.0.0.0 ] , [ oracle.org.bouncycastle.bcprov.jdk15on, 1.5.0.0.0 ]  not present in the Oracle Home or a higher version is found.
+
+  Patching component oracle.org.bouncycastle.bcprov.jdk15on, 1.60.0.0.0...
+
+  Patching component oracle.org.bouncycastle.bcprov.jdk15on, 1.60.0.0.0...
+
+  Patching component oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.60.0.0.0...
+
+  Patching component oracle.org.bouncycastle.bcprov.ext.jdk15on, 1.60.0.0.0...
+
+  Patching component oracle.org.bouncycastle.bcpkix.jdk15on, 1.60.0.0.0...
+
+  Patching component oracle.org.bouncycastle.bcpkix.jdk15on, 1.60.0.0.0...
+  Patch 30761841 successfully applied.
+  Log file location: /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
+
+  OPatch succeeded.
+  Oracle Interim Patch Installer version 13.9.4.2.2
+  Copyright (c) 2020, Oracle Corporation.  All rights reserved.
 
 
-    OPatch detects the Middleware Home as &quot;/u01/oracle&quot;
+  Oracle Home       : /u01/oracle
+  Central Inventory : /u01/oracle/oraInventory
+    from           : /u01/oracle/oraInst.loc
+  OPatch version    : 13.9.4.2.2
+  OUI version       : 13.9.4.0.0
+  Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-57-19AM_1.log
 
-    Invoking utility &quot;cleanup&quot;
-    OPatch will clean up 'restore.sh,make.txt' files and 'scratch,backup' directories.
-    You will be still able to rollback patches after this cleanup.
-    Do you want to proceed? [y|n]
-    Y (auto-answered by -silent)
-    User Responded with: Y
 
-    Backup area for restore has been cleaned up. For a complete list of files/directories
-    deleted, Please refer log file.
+  OPatch detects the Middleware Home as &quot;/u01/oracle&quot;
 
-    OPatch succeeded.
-    Removing intermediate container a79addca4d2f
-    ---&gt; 2ef2a67a685b
-    Successfully built 2ef2a67a685b
-    Successfully tagged soasuite:12.2.1.4-30761841
-    [INFO   ] Build successful. Build time=112s. Image tag=soasuite:12.2.1.4-30761841
+  Invoking utility &quot;cleanup&quot;
+  OPatch will clean up 'restore.sh,make.txt' files and 'scratch,backup' directories.
+  You will be still able to rollback patches after this cleanup.
+  Do you want to proceed? [y|n]
+  Y (auto-answered by -silent)
+  User Responded with: Y
+
+  Backup area for restore has been cleaned up. For a complete list of files/directories
+  deleted, Please refer log file.
+
+  OPatch succeeded.
+  Removing intermediate container a79addca4d2f
+  ---&gt; 2ef2a67a685b
+  Successfully built 2ef2a67a685b
+  Successfully tagged soasuite:12.2.1.4-30761841
+  [INFO   ] Build successful. Build time=112s. Image tag=soasuite:12.2.1.4-30761841
 </code></pre>
+
     </div>
 </div>
 
@@ -3663,58 +3651,60 @@ $ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.
         <span>
         
     	
-    	Click here to see the example Dockerfile generated by the WebLogic Image Tool with the `–-dryRun` option:
+    	Click here to see the example Dockerfile generated by the WebLogic Image Tool with the &#39;--dryRun&#39; option:
     	
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool update --fromImage soasuite:12.2.1.4 --tag<span style="color:#f92672">=</span>soasuite:12.2.1.4-30761841 --patches<span style="color:#f92672">=</span>30761841_12.2.1.4.0 --dryRun
+        <pre><code>$ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --dryRun
 
-  <span style="color:#f92672">[</span>INFO <span style="color:#f92672">]</span> Image Tool build ID: f9feea35-c52c-4974-b155-eb7f34d95892
-  <span style="color:#f92672">[</span>INFO <span style="color:#f92672">]</span> Temporary directory used <span style="color:#66d9ef">for</span> docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1799120592903014749
-  <span style="color:#f92672">[</span>INFO <span style="color:#f92672">]</span> Using patch 28186730_13.9.4.2.2 from cache: &lt;downloaded-patches-location&gt;/p28186730_139422_Generic.zip
-  <span style="color:#f92672">[</span>WARNING<span style="color:#f92672">]</span> skipping patch conflict check, no support credentials provided
-  <span style="color:#f92672">[</span>WARNING<span style="color:#f92672">]</span> No credentials provided, skipping validation of patches
-  <span style="color:#f92672">[</span>INFO <span style="color:#f92672">]</span> Using patch 30761841_12.2.1.4.0 from cache: &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
-  <span style="color:#f92672">[</span>INFO <span style="color:#f92672">]</span> docker cmd <span style="color:#f92672">=</span> docker build --force-rm<span style="color:#f92672">=</span>true --no-cache --tag soasuite:12.2.1.4-30761841 --build-arg http_proxy<span style="color:#f92672">=</span>http://www.yourcompany.proxy.com:80 --build-arg https_proxy<span style="color:#f92672">=</span>http://www.yourcompany.proxy.com:80 --build-arg no_proxy<span style="color:#f92672">=</span>10.250.109.251,localhost,127.0.0.1,/var/run/docker.sock &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1799120592903014749
-  <span style="color:#75715e">########## BEGIN DOCKERFILE ##########</span>
-  #
-  <span style="color:#75715e"># Copyright (c) 2019, 2020, Oracle and/or its affiliates.</span>
-  #
-  <span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
-  #
-  #
+[INFO ] Image Tool build ID: f9feea35-c52c-4974-b155-eb7f34d95892
+[INFO ] Temporary directory used for docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1799120592903014749
+[INFO ] Using patch 28186730_13.9.4.2.2 from cache: &lt;downloaded-patches-location&gt;/p28186730_139422_Generic.zip
+[WARNING] skipping patch conflict check, no support credentials provided
+[WARNING] No credentials provided, skipping validation of patches
+[INFO ] Using patch 30761841_12.2.1.4.0 from cache: &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
+[INFO ] docker cmd = docker build --force-rm=true --no-cache --tag soasuite:12.2.1.4-30761841 --build-arg http_proxy=http://www.yourcompany.proxy.com:80 --build-arg https_proxy=http://www.yourcompany.proxy.com:80 --build-arg no_proxy=10.250.109.251,localhost,127.0.0.1,/var/run/docker.sock &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1799120592903014749
+########## BEGIN DOCKERFILE ##########
+#
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
 
-  FROM soasuite:12.2.1.4 as FINAL_BUILD
-  USER root
+FROM soasuite:12.2.1.4 as FINAL_BUILD
+USER root
 
-  ENV OPATCH_NO_FUSER<span style="color:#f92672">=</span>true
-
-
-  LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;f9feea35-c52c-4974-b155-eb7f34d95892&#34;</span>
-
-  USER oracle
+ENV OPATCH_NO_FUSER=true
 
 
-  COPY --chown<span style="color:#f92672">=</span>oracle:oracle patches/* /tmp/imagetool/patches/
+LABEL com.oracle.weblogic.imagetool.buildid=&quot;f9feea35-c52c-4974-b155-eb7f34d95892&quot;
 
-  RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  <span style="color:#f92672">&amp;&amp;</span> /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  <span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/imagetool
+USER oracle
 
 
+COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
+
+RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
+&amp;&amp; /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle \
+&amp;&amp; rm -rf /tmp/imagetool
 
 
-  <span style="color:#75715e">########## END DOCKERFILE ##########</span>
-</code></pre></div>
+
+
+########## END DOCKERFILE ##########
+</code></pre>
+
     </div>
 </div>
 </li>
 <li>
 <p>Check the built image using the <code>docker images</code> command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep soa
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep soasuite
   soasuite   12.2.1.4-30761841
   2ef2a67a685b        About a minute ago   4.84GB
+  $
 </code></pre></div></li>
 </ol>
 <h3 id="create-an-oracle-soa-suite-docker-image-using-dockerfile">Create an Oracle SOA Suite Docker image using Dockerfile</h3>
@@ -5792,19 +5782,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1607426122"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1607682568"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1607426122"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1607426122"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1607682568"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1607682568"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1607426122" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1607426122"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1607682568" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1607682568"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
