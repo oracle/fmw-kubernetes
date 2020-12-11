@@ -427,7 +427,6 @@ The following files in the code repository location `<imagetool-setup-location>/
         CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
 
     ########## END DOCKERFILE ##########
-
     {{% /expand %}}
 
 1. Check the created image using the `docker images` command:
@@ -463,7 +462,6 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
     ##### Examples
 
     {{%expand "Click here to see the example 'update' command:" %}}
-
 
     $ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0
 
@@ -620,7 +618,6 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 
     ########## END DOCKERFILE ##########
-
   {{% /expand %}}
 
 
