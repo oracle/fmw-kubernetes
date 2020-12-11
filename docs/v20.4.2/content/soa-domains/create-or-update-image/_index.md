@@ -111,7 +111,8 @@ Creating an Oracle SOA Suite Docker image using the WebLogic Image Tool requires
     $ cd imagetool-setup/docker-images/OracleSOASuite/imagetool/12.2.1.4.0
     $ cp -rf ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts/* .
     ```
-
+>Note: If you want to create the image continue with the following steps, otherwise to update the image see [update an image](#update-an-image). 
+ 
 #### Create an image
 
 After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-update-image/#set-up-the-weblogic-image-tool" >}}) and required build scripts, follow these steps to use the WebLogic Image Tool to `create` a new Oracle SOA Suite Docker image.
@@ -120,7 +121,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 You must download the required Oracle SOA Suite installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
 
-{{%expand "Click here to see the list of installation binaries and patches required for 20.4.2 release:" %}}
+Following is the list of installation binaries and patches required for 20.4.2 release:
 
 * JDK:  
     * jdk-8u271-linux-x64.tar.gz
@@ -133,7 +134,7 @@ You must download the required Oracle SOA Suite installation binaries and patche
     * fmw_12.2.1.4.0_osb.jar
 
 * Fusion MiddleWare Infrastructure patches:  
-    * p28186730_139424_Generic.zip (Opatch)
+    * p28186730_139424_Generic.zip (OPatch)
     * p31960985_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.201001)
     * p32097167_12214201001_Generic.zip (WLS OVERLAY PATCH)
     * p31544353_122140_Linux-x86-64.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 JULY CPU 2020)
@@ -152,8 +153,6 @@ You must download the required Oracle SOA Suite installation binaries and patche
     * p31534880_122140_Generic.zip (One-off SOA)
     * p31857456_122140_Generic.zip (One-off OSB)
 
-{{% /expand %}}
-
 
 ##### Update required build files
 
@@ -162,7 +161,7 @@ The following files available in the code repository location `<imagetool-setup-
 * `additionalBuildCmds.txt`
 * `buildArgs`
 
-1. In the `buildArgs` file, update all the occurrences of `%DOCKER_REPO%` with the `docker-images` repository location, which is the complete path of `imagetool-setup/docker-images`.
+1. In the `buildArgs` file, update all the occurrences of `%DOCKER_REPO%` with the `docker-images` repository location, which is the complete path of `<imagetool-setup-location>/docker-images`.
 
    For example, update:
 
@@ -195,12 +194,23 @@ The following files available in the code repository location `<imagetool-setup-
     $ imagetool cache addInstaller --type osb --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_osb.jar
 
     ```
-1. Add the downloaded patches to the WebLogic Image Tool cache:
+1. Add the downloaded OPatch patch to the WebLogic Image Tool cache:
 
-    {{%expand "Click here to see the commands to add patches in to the cache:" %}}
     ``` bash
     $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value <download location>/p28186730_139424_Generic.zip
+    ```
 
+1. Append the `--opatchBugNumber` flag and the OPatch patch key, to the create command in `buildArgs` file:
+
+    ``` bash
+    --opatchBugNumber 28186730_13.9.4.2.4
+    ```
+
+1. Add the downloaded product patches to the WebLogic Image Tool cache:  
+
+    Following are the commands to add product patches in to the cache:
+
+    ``` bash
     $  imagetool cache addEntry --key 31960985_12.2.1.4.0 --value <download location>/p31960985_122140_Generic.zip
 
     $  imagetool cache addEntry --key 32097167_12.2.1.4.0 --value <download location>/p32097167_12214201001_Generic.zip
@@ -231,18 +241,14 @@ The following files available in the code repository location `<imagetool-setup-
 
     $  imagetool cache addEntry --key 31857456_12.2.1.4.0 --value <download location>/p31857456_122140_Generic.zip
     ```
-   {{% /expand  %}}
 
-1. Update the patches list to `buildArgs`.
+1. Append the `--patches` flag and the product patch keys, to the create command in `buildArgs` file. The `--patches` list must be a comma seperated collection of patch `--key` values used in the above `imagetool cache addEntry` commands. Sample `--patches` list for the product patches added in to the cache:
 
-    To the `create` command in the `buildArgs` file, append the Oracle SOA Suite and Oracle Service Bus patches list using the `--patches` flag and Opatch patch using the `--opatchBugNumber` flag. Sample options for the list of patches above are:
-
-    ```
-    --patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.4
-    ```
-
-   Example `buildArgs` file after appending product's list of patches and Opatch patch:
+      ```
+      --patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
+      ```
+    
+    Example `buildArgs` file after appending the OPatch patch and product patches:
 
     ```
     create
@@ -254,17 +260,22 @@ The following files available in the code repository location `<imagetool-setup-
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
     --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
     --installerResponseFile <imagetool-setup-location>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response
+    --opatchBugNumber 28186730_13.9.4.2.4
     --patches 31960985_12.2.1.4.0,32097167_12.2.1.4.0,31544353_12.2.1.4.0,31762739_12.2.1.4.0,31666198_12.2.1.4.0,31806259_12.2.1.4.0,31903409_12.2.1.4.0,31700519_12.2.1.4.0,31918617_12.2.1.4.0,31869446_12.2.1.4.0,31734213_12.2.1.4.0,31287540_12.2.1.4.0,31628564_12.2.1.4.0,31534880_12.2.1.4.0,31857456_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.4
     ```
+    >Note: In `buildArgs` file:  
+    > * `--jdkVersion` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type` jdk.  
+    > * `--version` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type` soa.  
+    > * `--pull` always pulls the latest base Linux image `oraclelinux:7-slim` from Docker registry. This flag can be removed, if you want to use the Linux image `oraclelinux:7-slim` which is already available on the host where the SOA image is being created.
 
-     Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
+    Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Enter the following command to create the Oracle SOA Suite image:
 
     ```bash
-    $ imagetool @<absolute path to `buildargs` file>"
+    $ imagetool @<absolute path to buildargs file>
     ```
+    >Note: Make sure that the absolute path to `buildargs` file is prepended with a `@` character as shown in the command above.
 
     For example:
 
@@ -274,7 +285,7 @@ The following files available in the code repository location `<imagetool-setup-
 
     {{%expand "Click here to see the sample Dockerfile generated with the imagetool command." %}}
 
-    ```bash
+    
     ########## BEGIN DOCKERFILE ##########
     #
     # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
@@ -417,25 +428,28 @@ The following files available in the code repository location `<imagetool-setup-
         CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
 
     ########## END DOCKERFILE ##########
-    ```
+    
     {{% /expand %}}
 
 1. Check the created image using the `docker images` command:
 
     ```bash
-      $ docker images | grep soa
+      $ docker images | grep soasuite
     ```
 
 #### Update an image
 
 After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-update-image/#set-up-the-weblogic-image-tool" >}}) and required build scripts, use the WebLogic Image Tool to `update` an existing Oracle SOA Suite Docker image:
 
-1. Enter the following command for each patch to add the required patch(es) to the WebLogic Image Tool cache:
+1. Enter the following command to add the OPatch patch to the WebLogic Image Tool cache:
+   
+   ```bash
+   $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value <downloaded-patches-location>/p28186730_139424_Generic.zip
+   ```
+1. Execute the `imagetool cache addEntry` command for each patch to add the required patch(es) to the WebLogic Image Tool cache. For example, to add patch `p30761841_122140_Generic.zip`:
 
     ```bash wrap
-    $  cd <imagetool-setup>
     $ imagetool cache addEntry --key=30761841_12.2.1.4.0 --value <downloaded-patches-location>/p30761841_122140_Generic.zip
-    [INFO   ] Added entry 30761841_12.2.1.4.0=<downloaded-patches-location>/p30761841_122140_Generic.zip
     ```
 1. Provide the following arguments to the WebLogic Image Tool `update` command:
 
@@ -449,10 +463,10 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
     ##### Examples
 
-    {{%expand "Click here to see the example `update` command:" %}}
+    {{%expand "Click here to see the example 'update' command:" %}}
 
-  ```
-  $ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0
+  
+    $ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0
 
       [INFO   ] Image Tool build ID: bd21dc73-b775-4186-ae03-8219bf02113e
       [INFO   ] Temporary directory used for docker build context: <work-directory>/wlstmp/wlsimgbuilder_temp1117031733123594064
@@ -563,15 +577,13 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
       Successfully built 2ef2a67a685b
       Successfully tagged soasuite:12.2.1.4-30761841
       [INFO   ] Build successful. Build time=112s. Image tag=soasuite:12.2.1.4-30761841
-  ```
+  
     {{% /expand %}}
 
 
-    {{%expand "Click here to see the example Dockerfile generated by the WebLogic Image Tool with the `–-dryRun` option:" %}}
-
-
-  ```bash wrap
-  $ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --dryRun
+    {{%expand "Click here to see the example Dockerfile generated by the WebLogic Image Tool with the '--dryRun' option:" %}}
+  
+    $ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --dryRun
 
     [INFO ] Image Tool build ID: f9feea35-c52c-4974-b155-eb7f34d95892
     [INFO ] Temporary directory used for docker build context: <work-directory>/wlstmp/wlsimgbuilder_temp1799120592903014749
@@ -609,15 +621,16 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 
     ########## END DOCKERFILE ##########
-  ```
+  
   {{% /expand %}}
 
 
 1. Check the built image using the `docker images` command:
     ```bash
-      $ docker images | grep soa
+      $ docker images | grep soasuite
       soasuite   12.2.1.4-30761841
       2ef2a67a685b        About a minute ago   4.84GB
+      $
     ```
 
 ### Create an Oracle SOA Suite Docker image using Dockerfile
