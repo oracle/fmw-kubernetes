@@ -104,7 +104,7 @@ You can now use the deployment scripts from `${WORKDIR}/weblogic-kubernetes-oper
 
 The Oracle SOA Suite image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle SOA Suite image from My Oracle Support.
 
-1. Download the patch `32215749` from My Oracle Support (MOS).
+1. Download the patch [32215749](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32215749) from My Oracle Support (MOS).
 1. Unzip the downloaded patch zip file.
 1. Load the image archive using `docker load` command:
 

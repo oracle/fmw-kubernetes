@@ -19,7 +19,7 @@ For the current production release 20.4.2:
 * Flannel networking v0.9.1-amd64 or later (check with `docker images | grep flannel`).
 * Helm 3.1.3+ (check with `helm version --client --short`).
 * Oracle WebLogic Kubernetes operator 3.0.1 (see [operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
-* Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch 32215749). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.
+* Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [32215749](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32215749)). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.
 * You must have the `cluster-admin` role to install the operator. The operator does not need the `cluster-admin` role at runtime.
 * We do not currently support running SOA in non-Linux containers.
 * Additionally, see the Oracle SOA Suite [documentation](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/insoa/preparing-install-and-configure-product.html#GUID-E2D4D481-BE80-4600-8078-FD9C03A30210) for other requirements such as database version.
