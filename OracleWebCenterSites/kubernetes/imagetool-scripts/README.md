@@ -91,18 +91,18 @@ Below a sample `buildArgs` file after appending patch/Opacth detals,
 create
 --jdkVersion=8u241
 --type WCS
---version=12.2.1.4.0
+--version=12.2.1.4
 --tag=oracle/wcsites:12.2.1.4-21.1.1
---installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/install.file
---additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs-wls-docker-install
+--installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file
+--additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
 --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,29710661_12.2.1.4.0
 --opatchBugNumber=28186730_13.9.4.2.4
 ```
 
 ### v) Preparing response files 
 
-1. Add INSTALL_TYPE="WebLogic Server" in %path-to-downloaded-docker-repo%/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file
-1. Rename %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/install.file to %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs.file 
+1. Add INSTALL_TYPE="WebLogic Server" in %path-to-downloaded-docker-repo%/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file
+1. Rename %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file to %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file 
 
 ### vi) Create a wcs-wls-docker-install installer
 
