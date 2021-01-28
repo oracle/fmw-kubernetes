@@ -4,26 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Configure the ingress-based Traefik load balancer for Oracle WebCenter Sites domains.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Traefik :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832843" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832842" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832842"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/traefik/">
     <nav id="sidebar" class="">
 
 
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832843"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832842"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832842"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832842"></script>
 
     
   </div>
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -2854,7 +2854,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -2881,7 +2881,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
-        
+        parent
         
         
         ">
@@ -2905,7 +2905,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item active">
         <a href="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/traefik/">
         <b>a. </b>Traefik
         
@@ -3440,7 +3440,25 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > <a href='/fmw-kubernetes/wcsites-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/'>Set up a load balancer</a> > Traefik
+          
+         
+          
+         
+          
+         
           
          
           
@@ -3455,7 +3473,7 @@
   <ul>
     <li>
       <ul>
-        <li></li>
+        <li><a href="#setting-up-loadbalancer-traefik-for-the-webcenter-sites-domain-on-k8s">Setting Up Loadbalancer Traefik for the WebCenter Sites Domain on K8S</a></li>
       </ul>
     </li>
   </ul>
@@ -3475,7 +3493,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Traefik
             </h1>
           
 
@@ -3483,59 +3501,230 @@
 
 
 
-
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
-<ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
-</ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
-<ul>
+<p>This section provides information about how to install and configure the ingress-based <em>Traefik</em> load balancer (version 2.2.1 or later for production deployments) to load balance Oracle WebCenter Sites domain clusters. You can configure Traefik for access of the application URL.</p>
+<p>Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Sites domain in a Kubernetes cluster:</p>
+<h3 id="setting-up-loadbalancer-traefik-for-the-webcenter-sites-domain-on-k8s">Setting Up Loadbalancer Traefik for the WebCenter Sites Domain on K8S</h3>
+<p>Follow these steps to set up Traefik as a loadbalancer for the Oracle WebCenter Sites domain:</p>
+<ol>
+<li><a href="#install-the-traefik-load-balancer">Install the Traefik Load Balancer</a></li>
+<li><a href="#configure-traefik-to-manage-ingresses">Configure Traefik to Manage Ingresses</a></li>
+<li><a href="#create-an-ingress-for-the-domain">Create an Ingress for the Domain</a></li>
+<li><a href="#verify-that-you-can-access-the-domain-url">Verify that You can Access the Domain URL</a></li>
+</ol>
+<h4 id="install-the-traefik-load-balancer">Install the Traefik Load Balancer</h4>
+<ol>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
-</li>
+<p>Use helm to install the Traefik load balancer. For detailed information, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/master/kubernetes/samples/charts/traefik/README.md">this document</a>.
+Use the values.yaml file in the sample but set <code>kubernetes.namespaces</code> specifically.</p>
+<blockquote>
+<p>Add the repo</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+$ kubectl create namespace traefik
+$ helm repo add traefik https://containous.github.io/traefik-helm-chart
+</code></pre></div><blockquote>
+<p>Update the repo</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm repo update
+</code></pre></div><blockquote>
+<p>Helm Install for Traefik</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install traefik-operator stable/traefik --namespace traefik --values kubernetes/samples/charts/traefik/values.yaml --set  <span style="color:#e6db74">&#34;dashboard.domain=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">,kubernetes.namespaces={traefik}&#34;</span> 
+
+NAME:traefik-operator
+LAST DEPLOYED: Fri Jun <span style="color:#ae81ff">19</span> 00:17:57 <span style="color:#ae81ff">2020</span>
+NAMESPACE: traefik
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+</code></pre></div></li>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
+<p>Access the Traefik dashboard through the URL <code>http://$(hostname -f):30305</code>, with the HTTP host <code>traefik.example.com</code>.
+NOTE: Make sure you specify full qualified node name for <code>$(hostname -f)</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -H <span style="color:#e6db74">&#39;host: $(hostname -f)&#39;</span> http://<span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>:30305/
+&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/dashboard/&#34;</span>&gt;Found&lt;/a&gt;.
+$
+</code></pre></div></li>
+</ol>
+<h4 id="configure-traefik-to-manage-ingresses">Configure Traefik to Manage Ingresses</h4>
+<p>Configure Traefik to manage Ingresses created in this namespace:
+Note: Here traefik is the Traefik namespace, <code>wcsites-ns</code> is the namespace of the domain.</p>
+<blockquote>
+<p>Helm upgrade for traefik</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --reuse-values --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik,wcsites-ns}&#34;</span> --wait traefik-operator stable/traefik --namespace traefik
+ 
+ 
+NAME:traefik-operator
+LAST DEPLOYED: Fri Jun <span style="color:#ae81ff">19</span> 00:18:50 <span style="color:#ae81ff">2020</span>
+NAMESPACE: traefik
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">2</span>
+TEST SUITE: None
+</code></pre></div><h4 id="create-an-ingress-for-the-domain">Create an Ingress for the Domain</h4>
+<ol>
+<li>
+<p>Create an Ingress for the domain (<code>ingress-per-domain-wcsites</code>), in the domain namespace by using the sample Helm chart.
+Here we are using the path-based routing for ingress. For detailed instructions about ingress, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/ingress/">this page</a>).</p>
+<p>For now, you can update the <code>kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain/values.yaml</code> with appropriate values. Sample values are shown below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain/values.yaml
+   
+<span style="color:#75715e"># Copyright 2020, Oracle Corporation and/or its affiliates.</span>
+<span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
+
+<span style="color:#75715e"># Default values for ingress-per-domain.</span>
+<span style="color:#75715e"># This is a YAML-formatted file.</span>
+<span style="color:#75715e"># Declare variables to be passed into your templates.</span>
+
+apiVersion: networking.k8s.io/v1beta1
+
+<span style="color:#75715e"># Load balancer type.  Supported values are: TRAEFIK, VOYAGER</span>
+type: TRAEFIK
+<span style="color:#75715e">#type: VOYAGER</span>
+<span style="color:#75715e">#type: NGINX</span>
+
+<span style="color:#75715e"># WLS domain as backend to the load balancer</span>
+wlsDomain:
+  domainUID: wcsitesinfra
+  adminServerName: adminserver
+  adminServerPort: <span style="color:#ae81ff">7001</span>
+  wcsitesClusterName: wcsites_cluster
+  wcsitesManagedServerPort: <span style="color:#ae81ff">8001</span>
+
+<span style="color:#75715e"># Voyager specific values</span>
+voyager:
+  <span style="color:#75715e"># web port</span>
+  webPort: <span style="color:#ae81ff">30305</span>
+  <span style="color:#75715e"># stats port</span>
+  statsPort: <span style="color:#ae81ff">30317</span>
+
+
+<span style="color:#75715e"># Ngnix specific values</span>
+ngnix:
+  <span style="color:#75715e">#connect timeout</span>
+  connectTimeout: 1800s
+  <span style="color:#75715e">#read timeout</span>
+  readTimeout: 1800s
+  <span style="color:#75715e">#send timeout</span>
+  sendTimeout: 1800s  
+</code></pre></div></li>
+<li>
+<p>Update the <code>kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain/templates/traefik-ingress.yaml</code> with the url routes to be load balanced.</p>
+<p>Below are the defined ingress rules:</p>
+<p>NOTE: This is not an exhaustive list of rules. You can enhance it based on the application urls that need to be accessed externally. These rules hold good for domain type <code>WCSITES</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vi kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain/templates/traefik-ingress.yaml
+   
+<span style="color:#75715e"># Copyright 2020, Oracle Corporation and/or its affiliates.</span>
+<span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
+
+<span style="color:#f92672">{{</span>- <span style="color:#66d9ef">if</span> eq .Values.type <span style="color:#e6db74">&#34;TRAEFIK&#34;</span> <span style="color:#f92672">}}</span>
+---
+apiVersion: <span style="color:#f92672">{{</span> .Values.apiVersion <span style="color:#f92672">}}</span>
+kind: Ingress
+metadata:
+  name: <span style="color:#f92672">{{</span> .Values.wlsDomain.domainUID <span style="color:#f92672">}}</span>-traefik
+  namespace: <span style="color:#f92672">{{</span> .Release.Namespace <span style="color:#f92672">}}</span>
+  labels:
+    weblogic.resourceVersion: domain-v2
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  rules:
+spec:
+  - host: <span style="color:#e6db74">&#39;{{ .Values.traefik.hostname }}&#39;</span>
+    http:
+      paths:
+      - path: /console
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
+      - path: /em
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
+      - path: /wls-exporter
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
+      - path: /weblogic
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
+      - path: /sbconsole
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
+      - path: /sites
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.wcsitesManagedServerPort <span style="color:#f92672">}}</span>
+      - path: /cas
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.wcsitesManagedServerPort <span style="color:#f92672">}}</span>
+      - path: /wls-exporter
+        backend:
+          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.wcsitesManagedServerPort <span style="color:#f92672">}}</span>
+ <span style="color:#75715e">#     - path: /wls-cat</span>
+ <span style="color:#75715e">#       backend:</span>
+ <span style="color:#75715e">#         serviceName: &#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+ <span style="color:#75715e">#         servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}</span>
+ <span style="color:#75715e">#     - path:</span>
+ <span style="color:#75715e">#       backend:</span>
+ <span style="color:#75715e">#         serviceName: &#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
+ <span style="color:#75715e">#         servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}</span>
+<span style="color:#f92672">{{</span>- end <span style="color:#f92672">}}</span>
+
+</code></pre></div></li>
+<li>
+<p>Install &ldquo;ingress-per-domain&rdquo; using helm.</p>
+<blockquote>
+<p>Helm Install ingress-per-domain</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install wcsitesinfra-ingress kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--namespace wcsites-ns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--values kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+
+NAME: wcsitesinfra-ingress
+LAST DEPLOYED: Fri Jun <span style="color:#ae81ff">19</span> 00:18:50 <span style="color:#ae81ff">2020</span>
+NAMESPACE: wcsites-ns
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+</code></pre></div></li>
+<li>
+<p>To confirm that the load balancer noticed the new Ingress and is successfully routing to the domain&rsquo;s server pods, you can send a request to the URL for the &ldquo;WebLogic ReadyApp framework&rdquo; which should return a HTTP 200 status code, as shown in the example below:</p>
 </li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
-
-
-
-
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ curl -v http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-PORT<span style="color:#e6db74">}</span>/weblogic/ready
+*   Trying 149.87.129.203...
+&gt; GET http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-PORT<span style="color:#e6db74">}</span>/weblogic/ready HTTP/1.1
+&gt; User-Agent: curl/7.29.0
+&gt; Accept: */*
+&gt; Proxy-Connection: Keep-Alive
+&gt; host: <span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
+&gt;
+&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+&lt; Date: Sat, <span style="color:#ae81ff">14</span> Mar <span style="color:#ae81ff">2020</span> 08:35:03 GMT
+&lt; Vary: Accept-Encoding
+&lt; Content-Length: <span style="color:#ae81ff">0</span>
+&lt; Proxy-Connection: Keep-Alive
+&lt;
+* Connection <span style="color:#75715e">#0 to host localhost left intact</span>
+</code></pre></div><h4 id="verify-that-you-can-access-the-domain-url">Verify that You can Access the Domain URL</h4>
+<p>After setting up the Traefik loadbalancer, verify that the domain applications are accessible through the loadbalancer port 30305.
+Through load balancer <code>(Traefik port 30305)</code>, the following URLs are available for setting up domains of WebCenter Sites domain types:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-PORT<span style="color:#e6db74">}</span>/weblogic/ready
+http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-PORT<span style="color:#e6db74">}</span>/console
+http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-PORT<span style="color:#e6db74">}</span>/em
+http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-PORT<span style="color:#e6db74">}</span>/sites/version.jsp
+</code></pre></div>
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -5450,6 +5639,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5465,6 +5655,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5477,6 +5668,7 @@ please consult this table of contents:</p>
             
             
                 
+                    
                     
                 
                 
@@ -5493,6 +5685,9 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +6038,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/" title="Set up a load balancer"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -5876,3 +6071,4 @@ please consult this table of contents:</p>
 
   </body>
 </html>
+

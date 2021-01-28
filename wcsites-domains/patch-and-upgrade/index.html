@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Pre-requisites for setting up WebCenter Sites domains with WebLogic Kubernetes Operator">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Upgrade and Patch  :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/">
     <nav id="sidebar" class="">
 
 
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -3038,8 +3038,8 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/" title="Upgrade and Patch " class="dd-item 
-        
-        
+        parent
+        active
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/">
@@ -3440,7 +3440,13 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > Upgrade and Patch 
+          
+         
           
          
           
@@ -3451,15 +3457,7 @@
                 
                     <div class="progress">
     <div class="wrapper">
-<nav id="TableOfContents">
-  <ul>
-    <li>
-      <ul>
-        <li></li>
-      </ul>
-    </li>
-  </ul>
-</nav>
+<nav id="TableOfContents"></nav>
     </div>
 </div>
 
@@ -3475,7 +3473,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Upgrade and Patch 
             </h1>
           
 
@@ -3484,50 +3482,96 @@
 
 
 
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
-<ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
+	<p>Patch an existing Oracle WebCenter Sites image or upgrade the infrastructure, such as upgrading the underlying Kubernetes cluster to a new release and upgrading the WebLogic Kubernetes Operator release.</p>
+
+
+
+
+
+
+
+<ul class="children children-h4">
+	
+
+	
+		
+	
+
+	
+
+	
+		
+	
+		
+			
+				
+					
+					
+
+<h4>
+<a href="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/" >Patch a Oracle WebCenter Sites product Docker image</a>
+</h4>
+
+				
+
+				
+					
+<p>Upgrade the underlying Oracle WebCenter Sites product image in a running Oracle WebCenter Sites Kubernetes environment.</p>
+					
+				
+			
+			
+		
+	
+		
+			
+				
+					
+					
+
+<h4>
+<a href="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/upgrade-operator-release/" >Upgrade an operator release</a>
+</h4>
+
+				
+
+				
+					
+<p>Upgrade the WebLogic Kubernetes Operator release to a newer version.</p>
+					
+				
+			
+			
+		
+	
+		
+			
+				
+					
+					
+
+<h4>
+<a href="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/" >Upgrade a Kubernetes cluster</a>
+</h4>
+
+				
+
+				
+					
+<p>Upgrade the underlying Kubernetes cluster version in a running Oracle WebCenter Sites Kubernetes environment.</p>
+					
+				
+			
+			
+		
+	
+
+	
 </ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
-<ul>
-<li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
-</li>
-<li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
-</li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
+
+
+
+
 
 
 
@@ -5580,6 +5624,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5592,6 +5637,9 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +5891,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/" title="Patch a Oracle WebCenter Sites product Docker image" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

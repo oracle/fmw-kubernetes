@@ -4,26 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Clean up the Oracle WebCenter Sites domain setup.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Uninstall :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832843" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832842" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832842"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/">
     <nav id="sidebar" class="">
 
 
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832843"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832842"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832842"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832842"></script>
 
     
   </div>
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -3152,7 +3152,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item active">
         <a href="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/">
         <b>5. </b>Uninstall
         
@@ -3440,7 +3440,13 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > Uninstall
+          
+         
           
          
           
@@ -3475,7 +3481,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Uninstall
             </h1>
           
 
@@ -3483,59 +3489,111 @@
 
 
 
-
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
-<ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
-</ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
-<ul>
+<p>Learn how to clean up the Oracle WebCenter Sites domain setup.</p>
+<h4 id="stop-all-administration-and-managed-server-pods">Stop all Administration and Managed server pods</h4>
+<p>First stop the all pods related to a domain. This can be done by patching domain &ldquo;serverStartPolicy&rdquo; to &ldquo;NEVER&rdquo;. Here is the sample command for the same.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;NEVER&#34; }]&#39;</span>
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcsitesinfra -n wcsites-ns --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;NEVER&#34; }]&#39;</span>
+</code></pre></div><h4 id="drop-the-rcu-schemas">Drop the RCU schemas</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd work-dir-name/weblogic-kubernetes-operator
+$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.yaml
+</code></pre></div><p>Check if the job has finished.</p>
+<h4 id="remove-the-domain">Remove the domain</h4>
+<ol>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
-</li>
+<p>Remove the domain&rsquo;s ingress (for example, Traefik ingress) using Helm:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall wcsites-domain-ingress -n wcsites-namespace
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall wcsitesinfra-ingress -n wsites-ns
+</code></pre></div></li>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
-</li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
-
-
-
-
+<p>Remove the domain resources by using the sample <code>delete-weblogic-domain-resources.sh</code> script present at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/delete-domain</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/delete-domain
+$ ./delete-weblogic-domain-resources.sh -d sample-domain1
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/delete-domain
+$ ./delete-weblogic-domain-resources.sh -d wcsites-ns
+</code></pre></div></li>
+<li>
+<p>Use <code>kubectl</code> to confirm that the server pods and domain resource are deleted:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n sample-domain1-ns
+$ kubectl get domains -n sample-domain1-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n wcsites-ns
+$ kubectl get domains -n wcsites-ns
+</code></pre></div></li>
+</ol>
+<h4 id="remove-the-domain-namespace">Remove the domain namespace</h4>
+<ol>
+<li>
+<p>Configure the installed ingress load balancer (for example, Traefik) to stop managing the ingresses in the domain namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade traefik-operator stable/traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --namespace traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --wait
+</code></pre></div></li>
+<li>
+<p>Configure the operator to stop managing the domain:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade  sample-weblogic-operator <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  kubernetes/charts/weblogic-operator <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --namespace sample-weblogic-operator-ns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --set <span style="color:#e6db74">&#34;domainNamespaces={}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --wait <span style="color:#ae81ff">\
+</span></code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+$ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  kubernetes/charts/weblogic-operator <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --namespace operator-ns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --set <span style="color:#e6db74">&#34;domainNamespaces={}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --wait <span style="color:#ae81ff">\
+</span></code></pre></div></li>
+<li>
+<p>Delete the domain namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace sample-domain1-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace wcsites-ns
+</code></pre></div></li>
+</ol>
+<h4 id="remove-the-operator">Remove the operator</h4>
+<ol>
+<li>
+<p>Remove the operator:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall sample-weblogic-operator -n sample-weblogic-operator-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall weblogic-kubernetes-operator -n operator-ns
+</code></pre></div></li>
+<li>
+<p>Remove the operator&rsquo;s namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace sample-weblogic-operator-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace operator-ns
+</code></pre></div></li>
+</ol>
+<h4 id="remove-the-load-balancer">Remove the load balancer</h4>
+<ol>
+<li>
+<p>Remove the installed ingress based load balancer (for example, Traefik):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall traefik-operator -n traefik
+</code></pre></div></li>
+<li>
+<p>Remove the Traefik namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace traefik
+</code></pre></div></li>
+</ol>
+<h4 id="delete-the-domain-home">Delete the domain home</h4>
+<p>To remove the domain home that is generated using the <code>create-domain.sh</code> script, with appropriate privileges manually delete the contents of the storage attached to the domain home persistent volume (PV).</p>
+<p>For example, for the domain&rsquo;s persistent volume of type <code>host_path</code>:</p>
+<pre><code>$ rm -rf /scratch/K8SVolume/WCSites
+</code></pre>
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -5660,6 +5718,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5675,6 +5734,9 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +5905,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/create-or-update-image/" title="Create or update an image"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -5856,19 +5918,19 @@ please consult this table of contents:</p>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1611832842"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1611832843"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1611832842"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1611832842"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1611832843" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1611832843"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1611832842" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1611832842"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
@@ -5876,3 +5938,4 @@ please consult this table of contents:</p>
 
   </body>
 </html>
+

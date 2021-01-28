@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Create a T3/T3S channel and the corresponding Kubernetes service to expose the T3/T3S protocol for the Administration Server and Managed Servers in an Oracle SOA Suite domain.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/20.4.2/images/favicon.png" type="image/png">
+
+    <title>Expose the T3/T3S protocol :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/20.4.2/css/nucleus.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/fontawesome-all.min.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/hybrid.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/featherlight.min.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/perfect-scrollbar.min.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/auto-complete.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/atom-one-dark-reasonable.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/theme.css?1607682397" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.2/css/hugo-theme.css?1607682397" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/20.4.2/js/jquery-3.3.1.min.js?1607682397"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/20.4.2/soa-domains/adminguide/enablingt3/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/20.4.2/">
+  <img src="/fmw-kubernetes/20.4.2//images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/20.4.2/js/lunr.min.js?1607682397"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.2/js/auto-complete.js?1607682397"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/20.4.2\/";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.2/js/search.js?1607682397"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item active">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/jms-asm-migration/" title="Configure Automatic Service Migration" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/jms-asm-migration/">
+        <b></b>Configure Automatic Service Migration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/20.4.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/20.4.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/20.4.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/20.4.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/20.4.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/20.4.2/soa-domains/adminguide/'>Administration Guide</a> > Expose the T3/T3S protocol
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#expose-a-t3t3s-channel-for-the-administration-server">Expose a T3/T3S Channel for the Administration Server</a></li>
+        <li><a href="#expose-t3t3s-for-managed-servers">Expose T3/T3S for Managed Servers</a></li>
+        <li><a href="#remove-t3t3s-configuration">Remove T3/T3S configuration</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Expose the T3/T3S protocol
+            </h1>
+          
+
+        
+
+
+
+
+<div class="notices warning" ><p>Oracle strongly recommends that you do not expose non-HTTPS traffic (T3/T3s/LDAP/IIOP/IIOPs) outside of the external firewall. You can control this access using a combination of network channels and firewalls.</p>
+</div>
+
+<p>You can create T3/T3S channels and the corresponding Kubernetes service to expose the T3/T3S protocol for the Administration Server and Managed Servers in an Oracle SOA Suite domain.</p>
+<p>The WebLogic Kubernetes operator provides an option to expose a T3 channel for the Administration Server using the <code>exposeAdminT3Channel</code> setting during domain creation, then the matching T3 service can be used to connect. By default, when <code>exposeAdminT3Channel</code> is set, the WebLogic Kubernetes operator environment exposes the  <code>NodePort</code> for the T3 channel of the <code>NetworkAccessPoint</code> at <code>30012</code> (use <code>t3ChannelPort</code> to configure the port to a different value).</p>
+<p>If you miss enabling <code>exposeAdminT3Channel</code> during domain creation, follow these steps to create a T3 channel for Administration Server manually.</p>
+<p><img src="/fmw-kubernetes/images/soa-domains/ExposeSOAMST3.png" alt="Exposing SOA Managed Server T3 Ports"></p>
+<h3 id="expose-a-t3t3s-channel-for-the-administration-server">Expose a T3/T3S Channel for the Administration Server</h3>
+<p>To create a custom T3/T3S channel for the Administration Server that has a listen port <strong>listen_port</strong> and a paired public port <strong>public_port</strong>:</p>
+<ol>
+<li>
+<p>Create <code>t3_admin_config.py</code> with the following content:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Python" data-lang="Python">admin_pod_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+admin_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>]
+user_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">3</span>]
+password <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">4</span>]
+listen_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">5</span>]
+public_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">6</span>]
+public_address <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">7</span>]
+AdminServerName <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">8</span>]
+channelType <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">9</span>]
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom admin_pod_name : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_pod_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom admin_port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_port);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom user_name : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> user_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom password : ********&#39;</span>);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;public address : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> public_address);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;channel listen port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> listen_port);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;channel public listen port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> public_port);
+connect(user_name, password, <span style="color:#e6db74">&#39;t3://&#39;</span> <span style="color:#f92672">+</span> admin_pod_name <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">+</span> admin_port)
+edit()
+startEdit()
+cd(<span style="color:#e6db74">&#39;/&#39;</span>)
+cd(<span style="color:#e6db74">&#39;Servers/</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">/&#39;</span> <span style="color:#f92672">%</span> AdminServerName )
+<span style="color:#66d9ef">if</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3&#39;</span>:
+   create(<span style="color:#e6db74">&#39;T3Channel_AS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+   cd(<span style="color:#e6db74">&#39;NetworkAccessPoints/T3Channel_AS&#39;</span>)
+   set(<span style="color:#e6db74">&#39;Protocol&#39;</span>,<span style="color:#e6db74">&#39;t3&#39;</span>)
+   set(<span style="color:#e6db74">&#39;ListenPort&#39;</span>,int(listen_port))
+   set(<span style="color:#e6db74">&#39;PublicPort&#39;</span>,int(public_port))
+   set(<span style="color:#e6db74">&#39;PublicAddress&#39;</span>, public_address)
+   <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Channel T3Channel_AS added&#39;</span>)
+<span style="color:#66d9ef">elif</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3s&#39;</span>:	  
+   create(<span style="color:#e6db74">&#39;T3SChannel_AS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+   cd(<span style="color:#e6db74">&#39;NetworkAccessPoints/T3SChannel_AS&#39;</span>)
+   set(<span style="color:#e6db74">&#39;Protocol&#39;</span>,<span style="color:#e6db74">&#39;t3s&#39;</span>)
+   set(<span style="color:#e6db74">&#39;ListenPort&#39;</span>,int(listen_port))
+   set(<span style="color:#e6db74">&#39;PublicPort&#39;</span>,int(public_port))
+   set(<span style="color:#e6db74">&#39;PublicAddress&#39;</span>, public_address)
+   set(<span style="color:#e6db74">&#39;HttpEnabledForThisProtocol&#39;</span>, true)
+   set(<span style="color:#e6db74">&#39;OutboundEnabled&#39;</span>, false)
+   set(<span style="color:#e6db74">&#39;Enabled&#39;</span>, true)
+   set(<span style="color:#e6db74">&#39;TwoWaySSLEnabled&#39;</span>, true)
+   set(<span style="color:#e6db74">&#39;ClientCertificateEnforced&#39;</span>, false)
+<span style="color:#66d9ef">else</span>:
+   <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;channelType [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">] not supported&#39;</span>,channelType)  
+activate()
+disconnect()
+</code></pre></div></li>
+<li>
+<p>Copy <code>t3_admin_config.py</code> into the domain home (for example, <code>/u01/oracle/user_projects/domains/soainfra</code>) of the Administration Server pod (for example, <code>soainfra-adminserver</code> in <code>soans</code> namespace).</p>
+<pre><code> $ kubectl cp t3_admin_config.py soans/soainfra-adminserver:/u01/oracle/user_projects/domains/soainfra
+</code></pre>
+</li>
+<li>
+<p>Run <code>wlst.sh t3_admin_config.py</code> by using <code>exec</code> into the Administration Server pod with the following  parameters:</p>
+<ul>
+<li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
+<li>admin_port:  7001</li>
+<li>user_name: weblogic</li>
+<li>password: Welcome1 <em># weblogic password</em></li>
+<li>listen_port: 30014 <em># New port for T3 Administration Server</em></li>
+<li>public_port: 30014 <em># Kubernetes NodePort which will be used to expose T3 port externally</em></li>
+<li>public_address: <!-- raw HTML omitted --></li>
+<li>AdminServerName: AdminServer <em># Give administration Server name</em></li>
+<li>channelType: t3  <em># t3 or t3s protocol channel</em></li>
+</ul>
+<pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_admin_config.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;t3 port on Administration Server&gt; &lt;t3 nodeport&gt; &lt;master_ip&gt; &lt;AdminServerName&gt; &lt;channelType t3 or t3s&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_admin_config.py soainfra-adminserver  7001 weblogic Welcome1 30014 30014 xxx.xxx.xxx.xxx AdminServer t3
+</code></pre></li>
+<li>
+<p>Create <code>t3_admin_svc.yaml</code> with the following contents to expose T3 at NodePort <code>30014</code> for <code>domainName</code> and <code>domainUID</code> as <code>soainfra</code> and domain deployed in <code>soans</code> namespace:</p>
+<blockquote>
+<p>Note: For T3S, replace NodePort <code>30014</code> with the appropriate value used with <code>public_port</code> while creating the T3S channel using <code>wlst.sh</code> in the previous step.</p>
+</blockquote>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+   name: soainfra-adminserver-t3-external
+   namespace: soans
+   labels:
+     weblogic.serverName: AdminServer
+     weblogic.domainName: soainfra
+     weblogic.domainUID: soainfra
+spec:
+  type: NodePort
+  selector:
+    weblogic.domainName: soainfra
+    weblogic.domainUID: soainfra
+    weblogic.serverName: AdminServer
+  ports:
+  - name: t3adminport
+    protocol: TCP
+    port: 30014
+    targetPort: 30014
+    nodePort: 30014
+</code></pre></li>
+<li>
+<p>Create the NodePort Service for port <code>30014</code>:</p>
+<pre><code>$ kubectl create -f t3_admin_svc.yaml
+</code></pre></li>
+<li>
+<p>Verify that you can access T3 for the Administration Server with the following URL:</p>
+<pre><code>t3://&lt;master_ip&gt;:30014
+</code></pre></li>
+<li>
+<p>Similarly, you can access T3S as follows:</p>
+<p>a. First get the certificates from the Administration Server to be used for secured (T3S) connection from the client. You can export the certificate from the Administration Server with WLST commands. For example, to export the default <code>demoidentity</code>:</p>
+<blockquote>
+<p>Note: If you are using the custom SSL certificate, replace the steps accordingly.</p>
+</blockquote>
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- bash
+$ /u01/oracle/oracle_common/common/bin/wlst.sh
+$ connect('weblogic','Welcome1','t3://soainfra-adminserver:7001')
+$ svc = getOpssService(name='KeyStoreService')
+$ svc.exportKeyStoreCertificate(appStripe='system', name='demoidentity', password='DemoIdentityKeyStorePassPhrase', alias='DemoIdetityKeyStorePassPhrase', type='Certificate', filepath='/tmp/cert.txt/')
+</code></pre><p>These steps download the certificate at <code>/tmp/cert.txt</code>.</p>
+<p>b. Use the same certificates from the client side and connect using <code>t3s</code>. For example:</p>
+<pre><code>$ export JAVA_HOME=/u01/jdk
+$ keytool -import -v -trustcacerts -alias soadomain -file cert.txt -keystore $JAVA_HOME/jre/lib/security/cacerts -keypass changeit -storepass changeit
+$ export WLST_PROPERTIES=&quot;-Dweblogic.security.SSL.ignoreHostnameVerification=true&quot;
+$ cd $ORACLE_HOME/oracle_common/common/bin
+$ ./wlst.sh
+  Initializing WebLogic Scripting Tool (WLST) ...
+  Welcome to WebLogic Server Administration Scripting Shell
+  Type help() for help on available commands
+$ wls:/offline&gt; connect('weblogic','Welcome1','t3s://&lt;Master IP address&gt;:30014')
+</code></pre></li>
+</ol>
+<h3 id="expose-t3t3s-for-managed-servers">Expose T3/T3S for Managed Servers</h3>
+<p>To create a custom T3/T3S channel for all Managed Servers, with a listen port <strong>listen_port</strong> and a paired public port <strong>public_port</strong>:</p>
+<ol>
+<li>
+<p>Create <code>t3_ms_config.py</code> with the following content:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Python" data-lang="Python">admin_pod_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+admin_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>]
+user_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">3</span>]
+password <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">4</span>]
+listen_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">5</span>]
+public_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">6</span>]
+public_address <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">7</span>]
+managedNameBase <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">8</span>]
+ms_count <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">9</span>]
+channelType <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">10</span>]
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom host : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_pod_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_port);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom user_name : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> user_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom password : ********&#39;</span>);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;public address : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> public_address);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;channel listen port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> listen_port);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;channel public listen port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> public_port);
+
+connect(user_name, password, <span style="color:#e6db74">&#39;t3://&#39;</span> <span style="color:#f92672">+</span> admin_pod_name <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">+</span> admin_port)
+
+edit()
+startEdit()
+<span style="color:#66d9ef">for</span> index <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, int(ms_count)):
+  cd(<span style="color:#e6db74">&#39;/&#39;</span>)
+  msIndex <span style="color:#f92672">=</span> index<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>
+  cd(<span style="color:#e6db74">&#39;/&#39;</span>)
+  name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (managedNameBase, msIndex)
+  cd(<span style="color:#e6db74">&#39;Servers/</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">/&#39;</span> <span style="color:#f92672">%</span> name )
+  <span style="color:#66d9ef">if</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3&#39;</span>:
+    create(<span style="color:#e6db74">&#39;T3Channel_MS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+    cd(<span style="color:#e6db74">&#39;NetworkAccessPoints/T3Channel_MS&#39;</span>)
+    set(<span style="color:#e6db74">&#39;Protocol&#39;</span>,<span style="color:#e6db74">&#39;t3&#39;</span>)
+    set(<span style="color:#e6db74">&#39;ListenPort&#39;</span>,int(listen_port))
+    set(<span style="color:#e6db74">&#39;PublicPort&#39;</span>,int(public_port))
+    set(<span style="color:#e6db74">&#39;PublicAddress&#39;</span>, public_address)
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Channel T3Channel_MS added ...for &#39;</span> <span style="color:#f92672">+</span> name)
+  <span style="color:#66d9ef">elif</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3s&#39;</span>:	  
+    create(<span style="color:#e6db74">&#39;T3SChannel_MS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+    cd(<span style="color:#e6db74">&#39;NetworkAccessPoints/T3SChannel_MS&#39;</span>)
+    set(<span style="color:#e6db74">&#39;Protocol&#39;</span>,<span style="color:#e6db74">&#39;t3s&#39;</span>)
+    set(<span style="color:#e6db74">&#39;ListenPort&#39;</span>,int(listen_port))
+    set(<span style="color:#e6db74">&#39;PublicPort&#39;</span>,int(public_port))
+    set(<span style="color:#e6db74">&#39;PublicAddress&#39;</span>, public_address)
+    set(<span style="color:#e6db74">&#39;HttpEnabledForThisProtocol&#39;</span>, true)
+    set(<span style="color:#e6db74">&#39;OutboundEnabled&#39;</span>, false)
+    set(<span style="color:#e6db74">&#39;Enabled&#39;</span>, true)
+    set(<span style="color:#e6db74">&#39;TwoWaySSLEnabled&#39;</span>, true)
+    set(<span style="color:#e6db74">&#39;ClientCertificateEnforced&#39;</span>, false)
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Channel T3SChannel_MS added ...for &#39;</span> <span style="color:#f92672">+</span> name)
+  <span style="color:#66d9ef">else</span>:
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Protocol [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">] not supported&#39;</span> <span style="color:#f92672">%</span> channelType)  	
+activate()
+disconnect()
+</code></pre></div></li>
+<li>
+<p>Copy <code>t3_ms_config.py</code> into the domain home (for example, <code>/u01/oracle/user_projects/domains/soainfra</code>) of the Administration Server pod (for example, <code>soainfra-adminserver</code> in <code>soans</code> namespace).</p>
+<pre><code>$ kubectl cp t3_ms_config.py soans/soainfra-adminserver:/u01/oracle/user_projects/domains/soainfra
+</code></pre></li>
+<li>
+<p>Run <code>wlst.sh t3_ms_config.py</code> by exec into the Administration Server pod with the following  parameters:</p>
+<ul>
+<li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
+<li>admin_port:  7001</li>
+<li>user_name: weblogic</li>
+<li>password: Welcome1 <em># weblogic password</em></li>
+<li>listen_port: 30016 <em># New port for T3 Managed Servers</em></li>
+<li>public_port: 30016 <em># Kubernetes NodePort which will be used to expose T3 port externally</em></li>
+<li>public_address: <!-- raw HTML omitted --></li>
+<li>managedNameBase: soa_server <em># Give Managed Server base name. For osb_cluster this will be osb_server</em></li>
+<li>ms_count: 5 <em># Number of configured Managed Servers</em></li>
+<li>channelType: t3 <em># channelType is t3 or t3s</em></li>
+</ul>
+<pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_ms_config.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;t3 port on Managed Server&gt; &lt;t3 nodeport&gt; &lt;master_ip&gt; &lt;managedNameBase&gt; &lt;ms_count&gt; &lt;channelType t3 or t3s&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_ms_config.py soainfra-adminserver  7001 weblogic Welcome1 30016 30016 xxx.xxx.xxx.xxx soa_server 5 t3
+</code></pre></li>
+<li>
+<p>Create <code>t3_ms_svc.yaml</code> with the following contents to expose T3 at Managed Server port <code>30016</code> for <code>domainName</code>, <code>domainUID</code> as <code>soainfra</code>, and <code>clusterName</code> as <code>soa_cluster</code> for SOA Cluster. Similarly, you can create Kubernetes Service with <code>clusterName</code> as <code>osb_cluster</code> for OSB Cluster:</p>
+<blockquote>
+<p>Note: For T3S, replace NodePort <code>30016</code> with the appropriate value used with public_port while creating the T3S channel using <code>wlst.sh</code> in the previous step.</p>
+</blockquote>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+   name: soainfra-soa-cluster-t3-external
+   namespace: soans
+   labels:
+     weblogic.clusterName: soa_cluster
+     weblogic.domainName: soainfra
+     weblogic.domainUID: soainfra
+spec:
+  type: NodePort
+  selector:
+    weblogic.domainName: soainfra
+    weblogic.domainUID: soainfra
+    weblogic.clusterName: soa_cluster
+  ports:
+  - name: t3soaport
+    protocol: TCP
+    port: 30016
+    targetPort: 30016
+    nodePort: 30016
+</code></pre></li>
+<li>
+<p>Create the NodePort Service for port <code>30016</code>:</p>
+<pre><code>$ kubectl create -f t3_ms_svc.yaml
+</code></pre></li>
+<li>
+<p>Verify that you can access T3 for the Managed Server with the following URL:</p>
+<pre><code>t3://&lt;master_ip&gt;:30016
+</code></pre></li>
+<li>
+<p>Similarly, you can access T3S as follows:</p>
+<p>a. First get the certificates from the Administration Server to be used for secured (t3s) connection from client. You can export the certificate from the Administration Server with wlst commands. Sample commands to export the default <code>demoidentity</code>:</p>
+<blockquote>
+<p>Note: In case you are using the custom SSL certificate, replaces the steps accordingly</p>
+</blockquote>
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- bash
+$ /u01/oracle/oracle_common/common/bin/wlst.sh
+$ connect('weblogic','Welcome1','t3://soainfra-adminserver:7001')
+$ svc = getOpssService(name='KeyStoreService')
+$ svc.exportKeyStoreCertificate(appStripe='system', name='demoidentity', password='DemoIdentityKeyStorePassPhrase', alias='DemoIdetityKeyStorePassPhrase', type='Certificate', filepath='/tmp/cert.txt/')
+</code></pre><p>The above steps download the certificate at <code>/tmp/cert.txt</code>.</p>
+<p>b. Use the same certificates from the client side and connect using <code>t3s</code>. For example:</p>
+<pre><code>$ export JAVA_HOME=/u01/jdk
+$ keytool -import -v -trustcacerts -alias soadomain -file cert.txt -keystore $JAVA_HOME/jre/lib/security/cacerts -keypass changeit -storepass changeit
+$ export WLST_PROPERTIES=&quot;-Dweblogic.security.SSL.ignoreHostnameVerification=true&quot;
+$ cd $ORACLE_HOME/oracle_common/common/bin
+$ ./wlst.sh
+  Initializing WebLogic Scripting Tool (WLST) ...
+  Welcome to WebLogic Server Administration Scripting Shell
+  Type help() for help on available commands
+$ wls:/offline&gt; connect('weblogic','Welcome1','t3s://&lt;Master IP address&gt;:30016')
+</code></pre></li>
+</ol>
+<h3 id="remove-t3t3s-configuration">Remove T3/T3S configuration</h3>
+<h4 id="for-administration-server">For Administration Server</h4>
+<ol>
+<li>
+<p>Create <code>t3_admin_delete.py</code> with the following content:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Python" data-lang="Python">admin_pod_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+admin_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>]
+user_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">3</span>]
+password <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">4</span>]
+AdminServerName <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">5</span>]
+channelType <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">6</span>]
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom admin_pod_name : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_pod_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom admin_port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_port);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom user_name : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> user_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom password : ********&#39;</span>);
+connect(user_name, password, <span style="color:#e6db74">&#39;t3://&#39;</span> <span style="color:#f92672">+</span> admin_pod_name <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">+</span> admin_port)
+edit()
+startEdit()
+cd(<span style="color:#e6db74">&#39;/&#39;</span>)
+cd(<span style="color:#e6db74">&#39;Servers/</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">/&#39;</span> <span style="color:#f92672">%</span> AdminServerName )
+<span style="color:#66d9ef">if</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3&#39;</span>:
+   delete(<span style="color:#e6db74">&#39;T3Channel_AS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+<span style="color:#66d9ef">elif</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3s&#39;</span>:
+   delete(<span style="color:#e6db74">&#39;T3SChannel_AS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+<span style="color:#66d9ef">else</span>:
+   <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;channelType [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">] not supported&#39;</span>,channelType)
+activate()
+disconnect()
+</code></pre></div></li>
+<li>
+<p>Copy <code>t3_admin_delete.py</code> into the domain home (for example, <code>/u01/oracle/user_projects/domains/soainfra</code>) of the Administration Server pod (for example, <code>soainfra-adminserver</code> in <code>soans</code> namespace).</p>
+<pre><code>$ kubectl cp t3_admin_delete.py soans/soainfra-adminserver:/u01/oracle/user_projects/domains/soainfra
+</code></pre></li>
+<li>
+<p>Run <code>wlst.sh t3_admin_delete.py</code> by exec into the Administration Server pod with the following  parameters:</p>
+<ul>
+<li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
+<li>admin_port:  7001</li>
+<li>user_name: weblogic</li>
+<li>password: Welcome1 <em># weblogic password</em></li>
+<li>AdminServerName: AdminServer <em># Give administration Server name</em></li>
+<li>channelType: t3  <em># T3 channel</em></li>
+</ul>
+<pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_admin_delete.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;AdminServerName&gt; &lt;protocol t3 or t3s&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_admin_delete.py soainfra-adminserver 7001 weblogic Welcome1 AdminServer t3
+</code></pre></li>
+<li>
+<p>Delete the NodePort Service for port <code>30014</code>:</p>
+<pre><code>$ kubectl delete -f t3_admin_svc.yaml
+</code></pre></li>
+</ol>
+<h4 id="for-managed-servers">For Managed Servers</h4>
+<p>These steps delete the custom T3/T3S channel created by <a href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/enablingt3/#expose-t3t3s-for-managed-servers">Expose T3/T3S for Managed Servers</a> for all Managed Servers.</p>
+<ol>
+<li>
+<p>Create <code>t3_ms_delete.py</code> with the following content:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Python" data-lang="Python">admin_pod_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+admin_port <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>]
+user_name <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">3</span>]
+password <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">4</span>]
+managedNameBase <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">5</span>]
+ms_count <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">6</span>]
+channelType <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">7</span>]
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom host : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_pod_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom port : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> admin_port);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom user_name : [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">]&#39;</span> <span style="color:#f92672">%</span> user_name);
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;custom password : ********&#39;</span>);
+connect(user_name, password, <span style="color:#e6db74">&#39;t3://&#39;</span> <span style="color:#f92672">+</span> admin_pod_name <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">+</span> admin_port)
+edit()
+startEdit()
+<span style="color:#66d9ef">for</span> index <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, int(ms_count)):
+  cd(<span style="color:#e6db74">&#39;/&#39;</span>)
+  msIndex <span style="color:#f92672">=</span> index<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>
+  cd(<span style="color:#e6db74">&#39;/&#39;</span>)
+  name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (managedNameBase, msIndex)
+  cd(<span style="color:#e6db74">&#39;Servers/</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">/&#39;</span> <span style="color:#f92672">%</span> name )
+  <span style="color:#66d9ef">if</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3&#39;</span>:
+    delete(<span style="color:#e6db74">&#39;T3Channel_MS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+  <span style="color:#66d9ef">elif</span> channelType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;t3s&#39;</span>:
+    delete(<span style="color:#e6db74">&#39;T3SChannel_MS&#39;</span>,<span style="color:#e6db74">&#39;NetworkAccessPoint&#39;</span>)
+  <span style="color:#66d9ef">else</span>:
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Protocol [</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">] not supported&#39;</span> <span style="color:#f92672">%</span> channelType)
+activate()
+disconnect()
+</code></pre></div></li>
+<li>
+<p>Copy <code>t3_ms_delete.py</code> into the domain home (for example, <code>/u01/oracle/user_projects/domains/soainfra</code>) of the Administration Server pod (for example, <code>soainfra-adminserver</code> in <code>soans</code> namespace).</p>
+<pre><code>$ kubectl cp t3_ms_delete.py soans/soainfra-adminserver:/u01/oracle/user_projects/domains/soainfra
+</code></pre></li>
+<li>
+<p>Run <code>wlst.sh t3_ms_delete.py</code> by exec into the Administration Server pod with the following  parameters:</p>
+<ul>
+<li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
+<li>admin_port:  7001</li>
+<li>user_name: weblogic</li>
+<li>password: Welcome1 <em># weblogic password</em></li>
+<li>managedNameBase: soa_server <em># Give Managed Server base name. For osb_cluster this will be osb_server</em></li>
+<li>ms_count: 5 <em># Number of configured Managed Servers</em></li>
+<li>channelType: t3 <em># channelType is t3 or t3s</em></li>
+</ul>
+<pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_ms_delete.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;t3 port on Managed Server&gt; &lt;t3 nodeport&gt; &lt;master_ip&gt; &lt;managedNameBase&gt; &lt;ms_count&gt; &lt;channelType t3 or t3s&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_ms_delete.py soainfra-adminserver 7001 weblogic Welcome1 soa_server 5 t3
+</code></pre></li>
+<li>
+<p>Delete the NodePort Service for port <code>30016</code> (or the NodePort used while creating the Kubernetes Service):</p>
+<pre><code>$ kubectl delete -f t3_ms_svc.yaml
+</code></pre></li>
+</ol>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/20.4.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/20.4.2/js/clipboard.min.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/perfect-scrollbar.min.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/perfect-scrollbar.jquery.min.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/jquery.sticky.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/featherlight.min.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/highlight.pack.js?1607682397"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/20.4.2/js/modernizr.custom-3.6.0.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/learn.js?1607682397"></script>
+    <script src="/fmw-kubernetes/20.4.2/js/hugo-learn.js?1607682397"></script>
+
+    <link href="/fmw-kubernetes/20.4.2/mermaid/mermaid.css?1607682397" rel="stylesheet" />
+    <script src="/fmw-kubernetes/20.4.2/mermaid/mermaid.js?1607682397"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
