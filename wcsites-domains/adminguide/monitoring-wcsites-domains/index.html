@@ -4,26 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Monitor an Oracle WebCenter Sites domain and publish the WebLogic Server logs to Elasticsearch.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Monitor a domain and publish logs :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832843" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832842" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832842"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/">
     <nav id="sidebar" class="">
 
 
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832843"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832842"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832842"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832842"></script>
 
     
   </div>
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -2854,7 +2854,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -2971,7 +2971,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/" title="Monitor a domain and publish logs" class="dd-item active">
         <a href="/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/">
         <b> </b>Monitor a domain and publish logs
         
@@ -3440,7 +3440,19 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > <a href='/fmw-kubernetes/wcsites-domains/adminguide/'>Administration Guide</a> > Monitor a domain and publish logs
+          
+         
+          
+         
           
          
           
@@ -3454,6 +3466,12 @@
 <nav id="TableOfContents">
   <ul>
     <li>
+      <ul>
+        <li><a href="#monitor-the-oracle-webcenter-sites-instance-using-prometheus-and-grafana">Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+      </ul>
+    </li>
+    <li><a href="#set-up-the-weblogic-monitoring-exporter">Set Up the WebLogic Monitoring Exporter</a>
       <ul>
         <li></li>
       </ul>
@@ -3475,7 +3493,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Monitor a domain and publish logs
             </h1>
           
 
@@ -3483,59 +3501,234 @@
 
 
 
-
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
+<p>After the Oracle WebCenter Sites domain is set up, you can:</p>
 <ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
+<li><a href="#monitor-the-oracle-wcsites-instance-using-prometheus-and-grafana">Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana</a></li>
+<li><a href="#publish-weblogic-server-logs-into-elasticsearch">Publish WebLogic Server logs into Elasticsearch</a></li>
 </ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
+<h3 id="monitor-the-oracle-webcenter-sites-instance-using-prometheus-and-grafana">Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana</h3>
+<p>Using the <code>WebLogic Monitoring Exporter</code> you can scrape runtime information from a running Oracle WebCenter Sites instance and monitor them using Prometheus and Grafana.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>This document assumes that the Prometheus Operator is deployed on the Kubernetes cluster. If it is not already deployed, follow the steps below for deploying the Prometheus Operator.</p>
+<h4 id="clone-the-kube-prometheus-project">Clone the kube-prometheus project</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/coreos/kube-prometheus.git
+</code></pre></div><h4 id="label-the-nodes">Label the nodes</h4>
+<p>Kube-Prometheus requires all the exporter nodes to be labelled with <code>kubernetes.io/os=linux</code>. If a node is not labelled, then you must label it using the following command:</p>
+<pre><code>$ kubectl label nodes --all kubernetes.io/os=linux
+</code></pre><h4 id="create-prometheus-and-grafana-resources">Create Prometheus and Grafana resources</h4>
+<p>Change to the <code>kube-prometheus</code> directory and execute the following commands to create the namespace and CRDs:</p>
+<p><strong>NOTE</strong>: Wait for a minute for each command to process.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd kube-prometheus
+
+$ kubectl create -f manifests/setup
+$ <span style="color:#66d9ef">until</span> kubectl get servicemonitors --all-namespaces ; <span style="color:#66d9ef">do</span> date; sleep 1; echo <span style="color:#e6db74">&#34;&#34;</span>; <span style="color:#66d9ef">done</span>
+$ kubectl create -f manifests/
+</code></pre></div><h4 id="provide-external-access">Provide external access</h4>
+<p>To provide external access for Grafana, Prometheus, and Alertmanager, execute the commands below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch svc grafana -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32100 }]&#39;</span>
+$ kubectl patch svc prometheus-k8s -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32101 }]&#39;</span>
+$ kubectl patch svc alertmanager-main -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32102 }]&#39;</span>
+</code></pre></div><p><strong>NOTE</strong>:</p>
 <ul>
+<li><code>32100</code> is the external port for Grafana</li>
+<li><code>32101</code> is the external port for Prometheus</li>
+<li><code>32102</code> is the external port for Alertmanager</li>
+</ul>
+<hr>
+<h2 id="set-up-the-weblogic-monitoring-exporter">Set Up the WebLogic Monitoring Exporter</h2>
+<p>Set up the WebLogic Monitoring Exporter that will collect WebLogic Server metrics and monitor your WebCenter Sites domain.</p>
+<h4 id="generate-the-weblogic-monitoring-exporter-deployment-package">Generate the WebLogic Monitoring Exporter Deployment Package</h4>
+<p>Two packages are required as the listening ports are different for the Administration Server and Managed Servers.
+One binary required for the Admin Server (<code>wls-exporter-as.war</code>) and one for Managed Cluster (<code>wls-exporter-ms.war</code>).
+Set the required proxies and then run the script <code>getX.X.X.sh</code> to generate two binaries:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter
+
+$ sh get1.1.0.sh
+</code></pre></div><p>Output:</p>
+<pre><code>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   607    0   607    0     0    357      0 --:--:--  0:00:01 --:--:--   357
+100 2016k  100 2016k    0     0   398k      0  0:00:05  0:00:05 --:--:--  797k
+-------------------wls-exporter-ms start-------------------
+created /tmp/ci-GNysQzP1kv
+Copying completed
+/tmp/ci-GNysQzP1kv /kubernetes/3.0.1/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter
+in temp dir
+  adding: WEB-INF/weblogic.xml (deflated 66%)
+  adding: config.yml (deflated 63%)
+wls-exporter-ms.war is ready
+-------------------wls-exporter-ms end-------------------
+-------------------wls-exporter-as start-------------------
+Copying completed
+in temp dir
+  adding: WEB-INF/weblogic.xml (deflated 66%)
+  adding: config.yml (deflated 52%)
+wls-exporter-as.war is ready
+-------------------wls-exporter-as end-------------------
+zip completed
+kubernetes/3.0.1/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter
+</code></pre><h4 id="copy-the-war-files-to-the-weblogic-domain-home">Copy the WAR Files to the WebLogic Domain Home</h4>
+<p>Copy the <code>wls-exporter-as.war</code> and <code>wls-exporter-ms.war</code> files to the domain home directory in the Administration Server pod.</p>
+<pre><code>$ kubectl cp wls-exporter-as.war wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/
+
+$ kubectl cp wls-exporter-ms.war wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/
+</code></pre><h4 id="deploy-the-weblogic-monitoring-exporter">Deploy the WebLogic Monitoring Exporter</h4>
+<p>Follow these steps to deploy the package in the WebLogic Server instances:</p>
+<ol>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
+<p>In the Administration Server and Managed Servers, deploy the WebLogic Monitoring Exporter (<code>wls-exporter-ms.war</code>) separately using the Oracle Enterprise Manager.</p>
+<p><img src="images/wme-deploy.png" alt="Wme-Deploy"></p>
 </li>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
+<p>Select the servers to which the Exporter WAR should be deployed:</p>
+<p><img src="images/wme-deploy-target-server.png" alt="Wme-Deploy-Target-Server"></p>
 </li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
+<li>
+<p>Set the application name. The application name must be different if it is deployed separately in the Administration Server and Managed Servers. Make sure the context-root for both the deployments is <code>wls-exporter</code>:</p>
+<p><img src="images/wme-deploy-contextroot.png" alt="Wme-Deploy-Contextroot"></p>
+</li>
+<li>
+<p>Click <strong>Install and start application</strong>.</p>
+</li>
+<li>
+<p>Then deploy the WebLogic Monitoring Exporter application (<code>wls-exporter-ms.war</code>).</p>
+</li>
+<li>
+<p>Activate the changes to start the application. If the application is started and the port is exposed,
+then you can access the WebLogic Monitoring Exporter console using this URL: <code>http://&lt;server:port&gt;/wls-exporter</code>.</p>
+<p><img src="images/wme-test-url.png" alt="Wme-Test-Url"></p>
+</li>
+<li>
+<p>Repeat same steps for <code>wls-exporter-as.war</code>.</p>
+</li>
+</ol>
+<h4 id="configure-prometheus-operator">Configure Prometheus Operator</h4>
+<p>Prometheus enables you to collect metrics from the WebLogic Monitoring Exporter. The Prometheus Operator identifies the targets using service discovery. To get the WebLogic Monitoring Exporter end point discovered as a target, you must create a service monitor pointing to the service.</p>
+<p>See the following sample service monitor deployment YAML configuration file located at</p>
+<p><code>kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter/wls-exporter.yaml</code>.</p>
+<p><code>ServiceMonitor</code> for wls-exporter:</p>
+<pre><code>apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+  namespace: monitoring
+data:
+  password: V2VsY29tZTE= # Welcome1 i.e.'WebLogic password'
+  user: d2VibG9naWM= # weblogic  i.e. 'WebLogic username'
+type: Opaque
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: wls-exporter-wcsitesinfra
+  namespace: monitoring
+  labels:
+    k8s-app: wls-exporter
+spec:
+  namespaceSelector:
+    matchNames:
+    - wcsites-ns
+  selector:
+    matchLabels:
+      weblogic.domainName: wcsitesinfra
+  endpoints:
+  - basicAuth:
+      password:
+        name: basic-auth
+        key: password
+      username:
+        name: basic-auth
+        key: user
+    port: default
+    relabelings:
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+    interval: 10s
+    honorLabels: true
+    path: /wls-exporter/metrics
+</code></pre><p>The exporting of metrics from <code>wls-exporter</code> requires <code>basicAuth</code> so a Kubernetes <code>Secret</code> is created with the user name and password that are base64 encoded. This <code>Secret</code> will be used in the <code>ServiceMonitor</code> deployment.</p>
+<p>When generating the base64 encoded strings for the user name and password, observe if a new line character is appended in the encoded string. This line character causes an authentication failure. To avoid a new line string, use the following example:</p>
+<pre><code>$ echo -n &quot;Welcome1&quot; | base64
+V2VsY29tZTE=
+</code></pre><p>In the deployment YAML configuration for <code>wls-exporter</code> shown above, <code>weblogic.domainName: wcsitesinfra</code> is used as a label under <code>spec.selector.matchLabels</code>, so all the services will be selected for the service monitor. If you don&rsquo;t use this label, you should create separate service monitors for each server&ndash;if the server name is used as matching labels in <code>spec.selector.matchLabels</code>.  Doing so will require you to relabel the configuration because Prometheus, by default, ignores the labels provided in the wls-exporter.</p>
+<p>By default, Prometheus does not store all the labels provided by the target. In the service monitor deployment YAML configuration, you must mention the relabeling configuration (<code>spec.endpoints.relabelings</code>) so that certain labels provided by <code>weblogic-monitoring-exporter</code> (required for the Grafana dashboard) are stored in Prometheus. Do not delete the following section from the configuration YAML file:</p>
+<pre><code>relabelings:
+  - action: labelmap
+    regex: __meta_kubernetes_service_label_(.+)
+</code></pre><h4 id="add-rolebinding-and-role-for-the-weblogic-domain-namespace">Add <code>RoleBinding</code> and <code>Role</code> for the WebLogic Domain Namespace</h4>
+<p>The
+RoleBinding is required for Prometheus to access the endpoints provided by the WebLogic Monitoring Exporter. You need to add RoleBinding for the namespace under which the WebLogic Servers pods are running in the Kubernetes cluster. Edit the <code>kube-prometheus/manifests/prometheus-roleBindingSpecificNamespaces.yaml</code> file in the Prometheus Operator deployment manifests and add the <code>RoleBinding</code> for the namespace (<code>wcsites-ns</code>) similar to the following example:</p>
+<pre><code>- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: prometheus-k8s
+    namespace: wcsites-ns
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: prometheus-k8s
+  subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: monitoring
+</code></pre><p>Similarly, add the <code>Role</code> for the namespace under which the WebLogic Servers pods are running in the Kubernetes cluster. Edit <code>kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml</code> in the Prometheus Operator deployment manifests and add the <code>Role</code> for the namespace (<code>wcsites-ns</code>) similar to the following example:</p>
+<pre><code>- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: prometheus-k8s
+    namespace: wcsites-ns
+  rules:
+  - apiGroups:
+    - &quot;&quot;
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+</code></pre><p>Then apply <code>prometheus-roleBindingSpecificNamespaces.yaml</code> and <code>prometheus-roleSpecificNamespaces.yaml</code> for the <code>RoleBinding</code> and <code>Role</code> to take effect in the cluster.</p>
+<pre><code>$ kubectl apply -f kube-prometheus/manifests/prometheus-roleBindingSpecificNamespaces.yaml
 
-
-
+$ kubectl apply -f kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml
+</code></pre><h4 id="deploy-the-service-monitor">Deploy the Service Monitor</h4>
+<p>To deploy the service monitor, use the above wls-exporter.yaml deployment YAML and run the following command:</p>
+<pre><code>$ kubectl create -f kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-monitoring-exporter/wls-exporter.yaml
+</code></pre><h4 id="enable-prometheus-to-discover-the-service">Enable Prometheus to Discover the Service</h4>
+<p>After the deployment of the service monitor, Prometheus should be able to discover wls-exporter and export metrics.</p>
+<p>You can access the Prometheus dashboard at <code>http://mycompany.com:32101/</code>.</p>
+<p><img src="images/wme-service-discovery.png" alt="Wme-Service-Discovery"></p>
+<h4 id="deploy-grafana-dashboard">Deploy Grafana Dashboard</h4>
+<p>To view the domain metrics, deploy the Grafana dashboard provided in the <a href="https://github.com/oracle/weblogic-monitoring-exporter/tree/master/samples/kubernetes/end2end#monitoring-weblogic-server-with-the-grafana-dashboard">WebLogic Monitoring Exporter</a>.</p>
+<p>You can access the Grafana dashboard at <code>http://mycompany.com:32100/</code>.</p>
+<ol>
+<li>
+<p>Log in to Grafana dashboard with <code>admin/admin</code>.</p>
+</li>
+<li>
+<p>Go to <strong>Settings</strong>, then select <strong>DataSources</strong>, and then <strong>Add Data Source</strong>.</p>
+<p>HTTP URL: Prometheus URL <code>http://mycompany.com:32101/</code></p>
+<p>Auth: Enable Basic Auth</p>
+<p>Basic Auth Details: WebLogic credentials provided in step <a href="#configure-prometheus-operator">Configure Prometheus Operator</a></p>
+<p><img src="images/wme-gp-add-datasource.png" alt="Wme-GP-Add-Datasource"></p>
+</li>
+<li>
+<p>Download the <code>weblogic_dashboard.json</code> file from <a href="weblogic_dashboard.json">here</a>.</p>
+</li>
+<li>
+<p>Click <strong>Add</strong> and then <strong>Import</strong>. Paste the modified JSON in the Paste JSON block, and then load it.</p>
+<p><img src="images/wme-gp-import-json.png" alt="Wme-GP-Import-Json"></p>
+<p>This displays the WebLogic Server Dashboard.</p>
+<p><img src="images/wme-gp-wls-dashboard.png" alt="Wme-GP-WLS-Dashboard"></p>
+</li>
+</ol>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -5450,6 +5643,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5465,18 +5659,8 @@ please consult this table of contents:</p>
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -5485,9 +5669,6 @@ please consult this table of contents:</p>
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5521,9 +5702,6 @@ please consult this table of contents:</p>
             
         
                     
-            
-        
-                    
                         
             
             
@@ -5540,10 +5718,33 @@ please consult this table of contents:</p>
             
         
                     
+            
+        
+                    
                         
             
             
                 
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +6044,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/voyager/" title="Voyager"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -5876,3 +6077,4 @@ please consult this table of contents:</p>
 
   </body>
 </html>
+

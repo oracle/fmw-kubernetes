@@ -4,26 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Monitor an Oracle WebCenter Sites domain and publish the WebLogic Server logs to Elasticsearch.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Publish logs to Elasticsearch :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832843" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832842" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832842"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/">
     <nav id="sidebar" class="">
 
 
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832843"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832842"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832842"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832842"></script>
 
     
   </div>
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -2854,7 +2854,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -3009,7 +3009,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item active">
         <a href="/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/">
         <b> </b>Publish logs to Elasticsearch
         
@@ -3440,7 +3440,19 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > <a href='/fmw-kubernetes/wcsites-domains/adminguide/'>Administration Guide</a> > Publish logs to Elasticsearch
+          
+         
+          
+         
           
          
           
@@ -3475,7 +3487,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Publish logs to Elasticsearch
             </h1>
           
 
@@ -3483,59 +3495,116 @@
 
 
 
-
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
+<p>The WebLogic Logging Exporter adds a log event handler to WebLogic Server. WebLogic Server logs can be pushed to Elasticsearch in Kubernetes directly
+by using the Elasticsearch REST API. For more details, see to the <a href="https://github.com/oracle/weblogic-logging-exporter">WebLogic Logging Exporter</a> project.</p>
+<p>This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing operator logs, see this <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/operator/">sample</a>.</p>
+<h4 id="prerequisites">Prerequisites</h4>
+<p>This document assumes that you have already set up Elasticsearch and Kibana for logs collection. If you have not, please see this <a href="https://github.com/oracle/weblogic-kubernetes-operator/tree/master/kubernetes/samples/scripts/elasticsearch-and-kibana">document</a>.</p>
+<hr>
+<h4 id="download-the-weblogic-logging-exporter-binaries">Download the WebLogic Logging Exporter binaries</h4>
+<p>The pre-built binaries are available on the WebLogic Logging Exporter <a href="https://github.com/oracle/weblogic-logging-exporter/releases">Releases</a> page.</p>
+<p>Download:</p>
 <ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
+<li><a href="https://github.com/oracle/weblogic-logging-exporter/releases/download/v1.0.0/weblogic-logging-exporter-1.0.0.jar">weblogic-logging-exporter-1.0.0.jar</a> from the Releases page.</li>
+<li><a href="https://repo1.maven.org/maven2/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar">snakeyaml-1.25.jar</a> from Maven Central.</li>
 </ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
+
+<div class="notices note" ><p>These identifiers are used in the sample commands in this document.</p>
 <ul>
+<li><code>wcsites-ns</code>: WebCenter Sites domain namespace</li>
+<li><code>wcsitesinfra</code>: <code>domainUID</code></li>
+<li><code>wcsitesinfra-adminserver</code>: Administration Server pod name</li>
+</ul>
+</div>
+
+<h4 id="copy-the-jar-files-to-the-weblogic-domain-home">Copy the JAR Files to the WebLogic Domain Home</h4>
+<p>Copy the <code>weblogic-logging-exporter-1.0.0.jar</code> and <code>snakeyaml-1.25.jar</code> files to the domain home directory in the Administration Server pod.</p>
+<pre><code>$ kubectl cp &lt;file-to-copy&gt; &lt;namespace&gt;/&lt;Administration-Server-pod&gt;:&lt;domainhome&gt;
+
+</code></pre><pre><code>$ kubectl cp snakeyaml-1.25.jar wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/
+
+$ kubectl cp weblogic-logging-exporter-1.0.0.jar wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/
+</code></pre><h4 id="add-a-startup-class-to-the-domain-configuration">Add a Startup Class to the Domain Configuration</h4>
+<ol>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
+<p>In the WebLogic Server Administration Console, in the left navigation pane, expand <strong>Environment</strong>, and then select <strong>Startup and Shutdown Classes</strong>.</p>
 </li>
 <li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
+<p>Add a new startup class. You may choose any descriptive name, however, the class name must be <code>weblogic.logging.exporter.Startup</code>.</p>
+<p><img src="images/wle-startup-shutdown-class.png" alt="WLE-Startup-Shutdown-Class"></p>
 </li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
-
-
-
+<li>
+<p>Target the startup class to each server from which you want to export logs.</p>
+<p><img src="images/wle-startup-shutdown-class-targets.png" alt="WLE-Startup-Shutdown-Class-Targets"></p>
+</li>
+<li>
+<p>In your <code>/u01/oracle/user_projects/domains/wcsitesinfra/config/config.xml</code> file, this update should look similar to the following example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -it wcsitesinfra-adminserver -n wcsites-ns cat /u01/oracle/user_projects/domains/wcsitesinfra/config/config.xml
+</code></pre></div><pre><code>&lt;startup-class&gt;
+  &lt;name&gt;weblogic-logging-exporter&lt;/name&gt;
+  &lt;target&gt;AdminServer,wcsites_cluster&lt;/target&gt;
+  &lt;class-name&gt;weblogic.logging.exporter.Startup&lt;/class-name&gt;
+&lt;/startup-class&gt;
+</code></pre></li>
+</ol>
+<h4 id="update-the-weblogic-server-classpath">Update the WebLogic Server <code>CLASSPATH</code></h4>
+<ol>
+<li>
+<p>Copy the <code>setDomainEnv.sh</code> file from the pod to a local folder:</p>
+<pre><code>$  kubectl cp wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/bin/setDomainEnv.sh $PWD/setDomainEnv.sh
+tar: Removing leading `/' from member names
+</code></pre><p>Ignore exception: <code>tar: Removing leading '/' from member names</code></p>
+</li>
+<li>
+<p>Update the server class path in <code>setDomainEnv.sh</code>:</p>
+<pre><code>CLASSPATH=/u01/oracle/user_projects/domains/wcsitesinfra/weblogic-logging-exporter-1.0.0.jar:/u01/oracle/user_projects/domains/wcsitesinfra/snakeyaml-1.25.jar:${CLASSPATH}
+export CLASSPATH
+</code></pre></li>
+<li>
+<p>Copy back the modified <code>setDomainEnv.sh</code> file to the pod:</p>
+<pre><code>$ kubectl cp setDomainEnv.sh wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/bin/setDomainEnv.sh
+</code></pre><p>``</p>
+</li>
+</ol>
+<h4 id="create-a-configuration-file-for-the-weblogic-logging-exporter">Create a Configuration File for the WebLogic Logging Exporter</h4>
+<ol>
+<li>
+<p>Specify the Elasticsearch server host and port number in file <code>kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-logging-exporter/WebLogicLoggingExporter.yaml</code>:</p>
+<p>Example:</p>
+<pre><code>weblogicLoggingIndexName: wls
+publishHost: elasticsearch.default.svc.cluster.local
+publishPort: 9200
+domainUID: wcsitesinfra
+weblogicLoggingExporterEnabled: true
+weblogicLoggingExporterSeverity: TRACE
+weblogicLoggingExporterBulkSize: 1
+</code></pre></li>
+<li>
+<p>Copy the <code>WebLogicLoggingExporter.yaml</code> file to the domain home directory in the WebLogic Administration Server pod:</p>
+<pre><code>$ kubectl cp kubernetes/samples/scripts/create-wcsites-domain/utils/weblogic-logging-exporter/WebLogicLoggingExporter.yaml wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/domains/wcsitesinfra/config/
+</code></pre></li>
+</ol>
+<h4 id="edit-the-wcsites-ingress-to-enable-wls-logging-exporter-only-if-you-are-using-yoyager-load-balancer">Edit the wcsites ingress to enable wls-logging-exporter (Only if you are using Yoyager load-balancer)</h4>
+<p>By default paths for wls-exporter are commented in ingress template. In order to expose the wls-exporter end-point externally, wcsites ingress must be edited and needs to be re-applied (if necessary). (See <code>Using Voyager Loadbalacer</code>)</p>
+<h4 id="restart-all-the-servers-in-the-domain">Restart All the Servers in the Domain</h4>
+<p>To restart the servers, stop and then start them using the following commands:</p>
+<p>To stop the servers:</p>
+<pre><code>$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/serverStartPolicy&quot;, &quot;value&quot;: &quot;NEVER&quot; }]'
+</code></pre><p>To start the servers:</p>
+<pre><code>$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/serverStartPolicy&quot;, &quot;value&quot;: &quot;IF_NEEDED&quot; }]'
+</code></pre><p>After all the servers are restarted, see their server logs to check that the <code>weblogic-logging-exporter</code> class is called, as shown below:</p>
+<pre><code>======================= WebLogic Logging Exporter Startup class called                                                 
+Reading configuration from file name: /u01/oracle/user_projects/domains/wcsitesinfra/config/WebLogicLoggingExporter.yaml   
+Config{weblogicLoggingIndexName='wls', publishHost='domain.host.com', publishPort=9200, weblogicLoggingExporterSeverity='Notice', weblogicLoggingExporterBulkSize='2', enabled=true, weblogicLoggingExporterFilters=FilterConfig{expression='NOT(MSGID = 'BEA-000449')', servers=[]}], domainUID='wcsitesinfra'}
+</code></pre><h4 id="create-an-index-pattern-in-kibana">Create an Index Pattern in Kibana</h4>
+<p>Create an index pattern <code>wls*</code> in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard:</p>
+<p><img src="images/wle-kibana-dashboard.png" alt="WLE-Kibana-Dashboard"></p>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -5450,6 +5519,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5465,34 +5535,8 @@ please consult this table of contents:</p>
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
                     
                 
                 
@@ -5501,28 +5545,6 @@ please consult this table of contents:</p>
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
                     
                         
             
@@ -5579,6 +5601,61 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +5920,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/patch-and-upgrade/" title="Upgrade and Patch " style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -5876,3 +5953,4 @@ please consult this table of contents:</p>
 
   </body>
 </html>
+

@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Running WebLogic Kubernetes Operator managed Oracle WebCenter Sites domains on OKE">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Creating an OCIR :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/oracle-cloud/ocir/">
     <nav id="sidebar" class="">
 
 
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -3172,7 +3172,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
-        
+        parent
         
         
         ">
@@ -3253,7 +3253,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/oracle-cloud/ocir/" title="Creating an OCIR" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/oracle-cloud/ocir/" title="Creating an OCIR" class="dd-item active">
         <a href="/fmw-kubernetes/wcsites-domains/oracle-cloud/ocir/">
         <b>d. </b>Creating an OCIR
         
@@ -3440,7 +3440,19 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > <a href='/fmw-kubernetes/wcsites-domains/oracle-cloud/'>Oracle Cloud Infrastructure</a> > Creating an OCIR
+          
+         
+          
+         
           
          
           
@@ -3455,7 +3467,7 @@
   <ul>
     <li>
       <ul>
-        <li></li>
+        <li><a href="#creation-of-ocir">Creation of OCIR</a></li>
       </ul>
     </li>
   </ul>
@@ -3475,7 +3487,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Creating an OCIR
             </h1>
           
 
@@ -3483,59 +3495,41 @@
 
 
 
-
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
+<h3 id="creation-of-ocir">Creation of OCIR</h3>
+<p>Push all the required images to OCIR and use from OCIR.  Follow the below steps before pushing the images to OCIR</p>
+<h4 id="create-an-auth-token">Create an &ldquo;Auth token&rdquo;</h4>
+<p>Create an &ldquo;Auth token&rdquo; which will be used as docker password to push/pull images from OCIR
+Login to Console and navigate to User Settings, which is in the drop down under your OCI username in the top nav
+<img src="images/ocir-1.png" alt="OCIR"></p>
 <ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
+<li>On User Details page, select &ldquo;Auth Tokens&rdquo; in the left nav and then Click the &ldquo;Generate Token&rdquo; button:
+Enter a Name and Click &ldquo;Generate Token&rdquo;
+<img src="images/ocir-2.png" alt="OCIR">
+<img src="images/ocir-3.png" alt="OCIR"></li>
+<li>Token will get generated
+<img src="images/ocir-4.png" alt="OCIR"></li>
+<li>Copy the generated token. NOTE: It will only be displayed this one time, and you will need to copy it to a secure place for further use.
+NOTE: It will only be displayed this one time, and you will need to copy it to a secure place for further use.</li>
 </ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
-<ul>
-<li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
-</li>
-<li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
-</li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
-
-
-
+<h4 id="get-the-ocir-name">Get the OCIR name</h4>
+<p>Get the OCIR Repo Name by Log in to Oracle Cloud Infrastructure Console. In he OCI Console, open the Navigation menu. Under Solutions and Platform, go to Developer Services and click Registry (OCIR).
+<img src="images/ocir-5.png" alt="OCIR"></p>
+<h4 id="using-the-ocir">Using the OCIR</h4>
+<p>Using the Docker CLI to login to OCIR ( for phoenix : phx.ocir.io , ashburn: iad.ocir.io etc)
+a. docker login phx.ocir.io
+b. When promoted for username enter docker username as OCIR RepoName/oci username ( eg., <a href="mailto:axcmmdmzqtqb/oracleidentitycloudservice/myemailid@oracle.com">axcmmdmzqtqb/oracleidentitycloudservice/myemailid@oracle.com</a>)
+c. When prompted for your password, enter the generated Auth Token i.e  p[3k;pYePDSTD:-(LlAS
+Now you can tag the images and push to OCIR.</p>
+<pre><code>$ docker login phx.ocir.io
+$ username - axcmmdmzqtqb/oracleidentitycloudservice/myemailid@oracle.com
+$ password - p[3k;pYePDSTD:-(LlAS     (Token Generated for OCIR using user setting)
+</code></pre><p>This has to be done on Bastion Node for all the images.</p>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -5676,6 +5670,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5688,6 +5683,9 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -5737,6 +5735,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5755,6 +5754,9 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +5845,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/oracle-cloud/filesystem/" title="Preparing a file system"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/faq/" title="Frequently Asked Questions" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -5876,3 +5878,4 @@ please consult this table of contents:</p>
 
   </body>
 </html>
+

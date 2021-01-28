@@ -4,26 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes.">
+    <meta name="description" content="Monitor an Oracle WebCenter Sites domain and publish the WebLogic Server logs to Elasticsearch.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Oracle WebCenter Sites :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Elasticsearch integration for logs :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1611832843" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832843" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1611832842" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1611832842" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832843"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1611832842"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/">
+  <body class="" data-url="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/">
     <nav id="sidebar" class="">
 
 
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832843"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1611832842"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1611832842"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1611832842"></script>
 
     
   </div>
@@ -2701,7 +2701,7 @@
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
         parent
-        active
+        
         
         ">
       <a href="/fmw-kubernetes/wcsites-domains/">
@@ -2854,7 +2854,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -2990,7 +2990,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item active">
         <a href="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/">
         <b> </b>Elasticsearch integration for logs
         
@@ -3440,7 +3440,19 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle WebCenter Sites
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > <a href='/fmw-kubernetes/wcsites-domains/adminguide/'>Administration Guide</a> > Elasticsearch integration for logs
+          
+         
+          
+         
           
          
           
@@ -3475,7 +3487,7 @@
           
             <h1>
               
-              Oracle WebCenter Sites
+              Elasticsearch integration for logs
             </h1>
           
 
@@ -3483,59 +3495,130 @@
 
 
 
-
-	<p>In this release, Oracle WebCenter Sites domains are supported using the &ldquo;domain on a persistent volume&rdquo;
-<a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/">model</a> only, where the domain home is located in a persistent volume (PV).</p>
-<p>The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:</p>
-<ul>
-<li>Create Oracle WebCenter Sites instances in a Kubernetes persistent volume (PV). This PV can reside in an NFS file system or other Kubernetes volume types.</li>
-<li>Start servers based on declarative startup parameters and desired states.</li>
-<li>Expose the Oracle WebCenter Sites services and composites for external access.</li>
-<li>Scale Oracle WebCenter Sites domains by starting and stopping Managed Servers on demand, or by integrating with a REST API to initiate scaling based on WLDF, Prometheus, Grafana, or other rules.</li>
-<li>Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.</li>
-<li>Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana.</li>
-</ul>
-<h4 id="current-production-release">Current production release</h4>
-<p>The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1">3.0.1</a></p>
-<h4 id="recent-changes-and-known-issues">Recent changes and known issues</h4>
-<p>See the <a href="/fmw-kubernetes/wcsites-domains/release-notes/">Release Notes</a> for recent changes and known issues for Oracle WebCenter Sites domains deployment on Kubernetes.</p>
-<h4 id="limitations">Limitations</h4>
-<p>See <a href="/fmw-kubernetes/wcsites-domains/installguide/prerequisites/#limitations">here</a> for limitations in this release.</p>
-<h4 id="about-this-documentation">About this documentation</h4>
-<p>This documentation includes sections targeted to different audiences.  To help you find what you are looking for more easily,
-please consult this table of contents:</p>
-<ul>
-<li>
-<p><a href="/fmw-kubernetes/wcsites-domains/appendix/quickstart-deployment-on-prem/">Quick Start</a> explains how to quickly get an Oracle WebCenter Sites domain instance running, using the defaults, nothing special. Note that this is only for development and test purposes.</p>
-</li>
-<li>
-<p><a href="/fmw-kubernetes/wcsites-domains/installguide/">Install Guide</a> and <a href="/fmw-kubernetes/wcsites-domains/adminguide/">Administration Guide</a> provide detailed information about all aspects of using the Kubernetes operator including:</p>
-<ul>
-<li>Installing and configuring the operator.</li>
-<li>Using the operator to create and manage Oracle WebCenter Sites domains.</li>
-<li>Configuring Kubernetes load balancers.</li>
-<li>Configuring Elasticsearch and Kibana to access the operator and WebLogic Server log files.</li>
-<li>Patching an Oracle WebCenter Sites Docker image.</li>
-<li>Removing/deleting domains.</li>
-<li>And much more!</li>
-</ul>
-</li>
-</ul>
-<h4 id="additional-reading">Additional reading</h4>
-<p>Oracle WebCenter Sites domains deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes operator framework.</p>
-<ul>
-<li>To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the <a href="https://oracle.github.io/weblogic-kubernetes-operator">operator documentation</a>.</li>
-<li>To learn more about the Oracle WebCenter Sites architecture and components, see <a href="https://docs.oracle.com/en/middleware/webcenter/sites/12.2.1.4/index.html">Understanding Oracle WebCenter Sites</a>.</li>
-<li>To understand the known issues and common questions for Oracle WebCenter Sites domains deployment on Kubernetes, see the  <a href="/fmw-kubernetes/wcsites-domains/faq/">frequently asked questions</a>.</li>
-</ul>
-
-
-
+<h4 id="1-integrate-elasticsearch-to-weblogic-kubernetes-operator">1. Integrate Elasticsearch to WebLogic Kubernetes Operator</h4>
+<p>For reference information, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/">Elasticsearch integration for the WebLogic Kubernetes Operator</a>.</p>
+<p>To enable elasticsearch integration, you must edit file <code>kubernetes/charts/weblogic-operator/values.yaml</code> before deploying the WebLogic Kubernetes Operator.</p>
+<pre><code># elkIntegrationEnabled specifies whether or not ELK integration is enabled.                                            
+elkIntegrationEnabled: true                                                                                             
+                                                                                                                        
+# logStashImage specifies the Docker image containing logstash.                                                         
+# This parameter is ignored if 'elkIntegrationEnabled' is false.                                                        
+logStashImage: &quot;logstash:6.6.0&quot;                                                                                         
+                                                                                                                        
+# elasticSearchHost specifies the hostname of where Elasticsearch is running.                                           
+# This parameter is ignored if 'elkIntegrationEnabled' is false.                                                        
+elasticSearchHost: &quot;elasticsearch.default.svc.cluster.local&quot;                                                            
+                                                                                                                        
+# elasticSearchPort specifies the port number of where Elasticsearch is running.                                        
+# This parameter is ignored if 'elkIntegrationEnabled' is false.                                                        
+elasticSearchPort: 9200
+</code></pre><p>After you&rsquo;ve deployed WebLogic Kubernetes Operator and made the above changes, the weblogic-operator pod will have additional Logstash container. The Logstash container will push the weblogic-operator logs to the configured Elasticsearch server.</p>
+<h4 id="2-publish-weblogic-server-and-webcenter-sites-logs-using-logstash-pod">2. Publish WebLogic Server and WebCenter Sites Logs using Logstash Pod</h4>
+<p>You can publish the WebLogic Server logs to Elasticsearch Server using Logstash pod. This Logstash pod must have access to the
+shared domain home. For the WebCenter Sites <code>wcsitesinfra</code>, you can use the persistent volume of the domain home in the Logstash pod.
+The steps to create the Logstash pod are as follows:</p>
+<p>Sample Logstash configuration file is located at <code>kubernetes/samples/scripts/create-wcsites-domain/utils/logstash/logstash.conf</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vi kubernetes/samples/scripts/create-wcsites-domain/utils/logstash/logstash.conf
+</code></pre></div><pre><code>input {
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/logs/wcsitesinfra/adminserver.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/logs/wcsitesinfra/wcsites-server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/logs/wcsitesinfra/adminserver.out&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/logs/wcsitesinfra/wcsites-server*.out&quot;
+    start_position =&gt; beginning
+  }
+ file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/wcsitesinfra/servers/**/logs/sites.log&quot;
+    start_position =&gt; beginning
+  }
+ file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/wcsitesinfra/servers/**/logs/cas.log&quot;
+    start_position =&gt; beginning
+  }
+}
+filter {
+  grok {
+    match =&gt; [ &quot;message&quot;, &quot;&lt;%{DATA:log_timestamp}&gt; &lt;%{WORD:log_level}&gt; &lt;%{WORD:thread}&gt; &lt;%{HOSTNAME:hostname}&gt; &lt;%{HOSTNAME:servername}&gt; &lt;%{DATA:timer}&gt; &lt;&lt;%{DATA:kernel}&gt;&gt; &lt;&gt; &lt;%{DATA:uuid}&gt; &lt;%{NUMBER:timestamp}&gt; &lt;%{DATA:misc}&gt; &lt;%{DATA:log_number}&gt; &lt;%{DATA:log_message}&gt;&quot; ]
+  }
+}
+output {
+  elasticsearch {
+    hosts =&gt; [&quot;elasticsearch.default.svc.cluster.local:9200&quot;]
+  }
+}
+</code></pre><p>Here ** means that all sites.log and cas.log from any servers under <code>wcsitesinfra</code> will be pushed to Logstash.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl cp kubernetes/samples/scripts/create-wcsites-domain/utils/logstash/logstash.conf wcsites-ns/wcsitesinfra-adminserver:/u01/oracle/user_projects/logs/logstash.conf
+</code></pre></div><p>Get the persistent volume details of the domain home of the WebLogic Server(s). The following command will list the persistent volume details in the namespace - &ldquo;wcsites-ns&rdquo;:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pv -n wcsites-ns
+NAME                    CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS                       REASON   AGE
+wcsitesinfra-domain-pv   10Gi       RWX            Retain           Bound    wcsites-ns/wcsitesinfra-domain-pvc   wcsitesinfra-domain-storage-class            5d21h
+</code></pre></div><p>Sample Logstash deployment is located at <code>kubernetes/samples/scripts/create-wcsites-domain/utils/logstash/logstash.yaml</code> for Logstash pod. The mounted persistent volume of the domain home will provide access to the WebLogic Server logs to Logstash pod.</p>
+<pre><code>apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: logstash-wls
+  namespace: wcsites-ns
+spec:
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        k8s-app: logstash-wls
+    spec:
+      volumes:
+      - name: weblogic-domain-storage-volume
+        persistentVolumeClaim:
+          claimName: wcsitesinfra-domain-pvc
+      - name: shared-logs
+        emptyDir: {}
+      containers:
+      - name: logstash
+        image: logstash:6.6.0
+        command: [&quot;/bin/sh&quot;]
+        args: [&quot;/usr/share/logstash/bin/logstash&quot;, &quot;-f&quot;, &quot;/u01/oracle/user_projects/logs/logstash.conf&quot;]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+          name: weblogic-domain-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        ports:
+        - containerPort: 5044
+          name: logstash
+</code></pre><p>After you have created the Logstash deployment yaml and Logstash configuration file, deploy Logstash using following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create -f kubernetes/samples/scripts/create-wcsites-domain/utils/logstash/logstash.yaml
+</code></pre></div><h4 id="3-test-the-deployment-of-elasticsearch-and-kibana">3. Test the Deployment of Elasticsearch and Kibana</h4>
+<p>The WebLogic Operator also provides a sample deployment of Elasticsearch and Kibana for testing purpose. You can deploy Elasticsearch and Kibana on the Kubernetes cluster as shown below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create -f kubernetes/samples/scripts/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+</code></pre></div><h5 id="get-the-kibana-dashboard-port-information-as-shown-below">Get the Kibana dashboard port information as shown below:</h5>
+<p>Wait for pods to start:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get pods -w
+NAME                            READY   STATUS    RESTARTS   AGE
+elasticsearch-8bdb7cf54-mjs6s   1/1     Running   <span style="color:#ae81ff">0</span>          4m3s
+kibana-dbf8964b6-n8rcj          1/1     Running   <span style="color:#ae81ff">0</span>          4m3s
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get svc
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>             AGE
+elasticsearch   ClusterIP   10.100.11.154   &lt;none&gt;        9200/TCP,9300/TCP   4m32s
+kibana          NodePort    10.97.205.0     &lt;none&gt;        5601:31884/TCP      4m32s
+kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP             71d
+</code></pre></div><p>You can access the Kibana dashboard at <code>http://mycompany.com:kibana-nodeport/</code>. In our example, the node port would be 31884.</p>
+<h4 id="create-an-index-pattern-in-kibana">Create an Index Pattern in Kibana</h4>
+<p>Create an index pattern <code>logstash*</code> in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard:</p>
+<p><img src="images/wcs-kibana-dashboard.jpg" alt="WLS-Kibana-Dashboard"></p>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -5450,6 +5533,7 @@ please consult this table of contents:</p>
             
                 
                     
+                    
                 
                 
 
@@ -5465,34 +5549,8 @@ please consult this table of contents:</p>
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
                     
                 
                 
@@ -5501,28 +5559,6 @@ please consult this table of contents:</p>
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
                     
                         
             
@@ -5560,6 +5596,61 @@ please consult this table of contents:</p>
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -5843,10 +5934,10 @@ please consult this table of contents:</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/" title="Monitor a domain and publish logs"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -5876,3 +5967,4 @@ please consult this table of contents:</p>
 
   </body>
 </html>
+
