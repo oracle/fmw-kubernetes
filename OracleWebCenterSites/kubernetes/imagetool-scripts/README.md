@@ -46,10 +46,9 @@ The following files from this [repository](./) will be used for building the ima
 
 Update the repository location in `buildArgs` file in place of the place holder %DOCKER_REPO%
 
-```diff
-< --additionalBuildCommands %DOCKER_REPO%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt
----
-> --additionalBuildCommands <downloaded-docker-repo-path>/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt
+```
+--additionalBuildCommands %DOCKER_REPO%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt
+
 ```
 Similarily, update the placeholders %JDK_VERSION% & %BUILDTAG%
 

@@ -212,6 +212,7 @@ USER oracle
 List the built image using the following command,
 ```bash
 $ docker images | grep wcsites
-oracle/wcsites   12.2.1.4-21.1.1   2ef2a67a685b        About a minute ago   2.84GB
-oracle/wcsites   12.2.1.4-21.1.1-29710661  445b649a3459        4 days ago           3.2GB
+oracle/wcsites   12.2.1.4-21.1.1-29710661  445b649a3459        About a minute ago           3.2GB
+oracle/wcsites   12.2.1.4-21.1.1   2ef2a67a685b        4 days ago   2.84GB
+
 ```

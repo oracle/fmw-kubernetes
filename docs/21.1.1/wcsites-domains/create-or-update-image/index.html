@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/21.1.1/css/nucleus.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/fontawesome-all.min.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/hybrid.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/featherlight.min.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/perfect-scrollbar.min.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/auto-complete.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/atom-one-dark-reasonable.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/theme.css?1611579384" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.1.1/css/hugo-theme.css?1611579384" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/nucleus.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/fontawesome-all.min.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/hybrid.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/featherlight.min.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/perfect-scrollbar.min.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/auto-complete.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/atom-one-dark-reasonable.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/theme.css?1611759781" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/hugo-theme.css?1611759781" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/21.1.1/js/jquery-3.3.1.min.js?1611579384"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/jquery-3.3.1.min.js?1611759781"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/lunr.min.js?1611579384"></script>
-<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/auto-complete.js?1611579384"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/lunr.min.js?1611759781"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/auto-complete.js?1611759781"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/21.1.1\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/search.js?1611579384"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/search.js?1611759781"></script>
 
     
   </div>
@@ -965,7 +965,16 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 </ol>
 <h4 id="create-an-image">Create an image</h4>
 <p>After <a href="/fmw-kubernetes/21.1.1/wcsites-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, follow these steps to use the WebLogic Image Tool to <code>create</code> a new Oracle WebCenter Sites Docker image.</p>
-<h5 id="download-the-oracle-webcenter-sites-installation-binaries-and-patches">Download the Oracle WebCenter Sites installation binaries and patches</h5>
+<h5 id="preparing-response-files">Preparing response files</h5>
+<ol>
+<li>Add INSTALL_TYPE=&quot;WebLogic Server&rdquo; in %path-to-downloaded-docker-repo%/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file</li>
+<li>Rename %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file to %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file</li>
+</ol>
+<h5 id="create-a-wcs-wls-docker-install-installer">Create a wcs-wls-docker-install installer</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
+$ docker run --rm -u root -v <span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span>:/wcs-wls-docker-install groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
+
+</code></pre></div><h5 id="download-the-oracle-webcenter-sites-installation-binaries-and-patches">Download the Oracle WebCenter Sites installation binaries and patches</h5>
 <p>You must download the required Oracle WebCenter Sites installation binaries and patches as listed below from the <a href="https://edelivery.oracle.com/">Oracle Software Delivery Cloud</a> and save them in a directory of your choice. In these steps, this directory is <code>download location</code>.</p>
 
 <div class="expand">
@@ -1027,11 +1036,9 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 </ul>
 <ol>
 <li>
-<p>In the <code>buildArgs</code> file, update all the occurrences of <code>%DOCKER_REPO%</code> with the <code>docker-images</code> repository location, which is the complete path of <code>imagetool-setup/docker-images</code>.</p>
+<p>In the <code>buildArgs</code> file, update all the occurrences of <code>%DOCKER_REPO%</code> with the repository location, which is the complete path of <code>imagetool-setup</code>.</p>
 <p>For example, update:</p>
-<p><code>%DOCKER_REPO%/OracleWebCenterSites/imagetool/12.2.1.4/</code></p>
-<p>to:<br>
-<code>&lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterSites/imagetool/12.2.1.4/</code></p>
+<p><code>%DOCKER_REPO%/OracleWebCenterSites/kubernetes/imagetool-scripts/</code></p>
 </li>
 <li>
 <p>Similarly, update the placeholders <code>%JDK_VERSION%</code> and <code>%BUILDTAG%</code> with appropriate values.</p>
@@ -1090,23 +1097,15 @@ $ imagetool cache addEntry --key 29710661_12.2.1.4.0 --value &lt;download locati
 <pre><code>create
 --jdkVersion=8u241
 --type WCS
---version=12.2.1.4.0
+--version=12.2.1.4
 --tag=oracle/wcsites:12.2.1.4-21.1.1
---installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/install.file
---additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/imagetool/12.2.1.4.0/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs-wls-docker-install
+--installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file
+--additionalBuildCommands %path-to-downloaded-fmw-kubernetes%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
 --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,29710661_12.2.1.4.0
 --opatchBugNumber=28186730_13.9.4.2.4
 
 </code></pre><p>Refer to <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
 </li>
-<li>
-<p>Create a wcs-wls-docker-install installer jar</p>
-</li>
-</ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd %docker_repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
-docker run --rm -u root -v <span style="color:#e6db74">${</span>PWD<span style="color:#e6db74">}</span>:/wcs-wls-docker-install groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
-
-</code></pre></div><ol>
 <li>
 <p>Enter the following command to create the Oracle WebCenter Sites image:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool @&lt;absolute path to <span style="color:#e6db74">`</span>buildargs<span style="color:#e6db74">`</span> file&gt;<span style="color:#e6db74">&#34;
@@ -1288,7 +1287,7 @@ docker run --rm -u root -v <span style="color:#e6db74">${</span>PWD<span style="
 </li>
 <li>
 <p>Check the created image using the <code>Docker images</code> command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ Docker images | grep wcsites
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep wcsites
 </code></pre></div></li>
 </ol>
 <h4 id="update-an-image">Update an image</h4>
@@ -1521,9 +1520,9 @@ $ imagetool cache addEntry --key 29710661_12.2.1.4.0 --value &lt; %path-to-downl
 </li>
 <li>
 <p>Check the built image using the <code>Docker images</code> command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ Docker images | grep wcsites
-  oracle/wcsites   12.2.1.4.0-29710661   2ef2a67a685b        About a minute ago   2.84GB
-  oracle/wcsites   12.2.1.4.0            445b649a3459        <span style="color:#ae81ff">4</span> days ago           3.2GB
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep wcsites
+  oracle/wcsites   12.2.1.4-21.1.1-29710661   2ef2a67a685b        About a minute ago   2.84GB
+  oracle/wcsites   12.2.1.4-21.1.1            445b649a3459        <span style="color:#ae81ff">4</span> days ago           3.2GB
 
 </code></pre></div></li>
 </ol>
@@ -2113,19 +2112,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/21.1.1/js/clipboard.min.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/perfect-scrollbar.min.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/perfect-scrollbar.jquery.min.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/jquery.sticky.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/featherlight.min.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/highlight.pack.js?1611579384"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/clipboard.min.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/perfect-scrollbar.min.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/perfect-scrollbar.jquery.min.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/jquery.sticky.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/featherlight.min.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/highlight.pack.js?1611759781"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/21.1.1/js/modernizr.custom-3.6.0.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/learn.js?1611579384"></script>
-    <script src="/fmw-kubernetes/21.1.1/js/hugo-learn.js?1611579384"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/modernizr.custom-3.6.0.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/learn.js?1611759781"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/hugo-learn.js?1611759781"></script>
 
-    <link href="/fmw-kubernetes/21.1.1/mermaid/mermaid.css?1611579384" rel="stylesheet" />
-    <script src="/fmw-kubernetes/21.1.1/mermaid/mermaid.js?1611579384"></script>
+    <link href="/fmw-kubernetes/21.1.1/mermaid/mermaid.css?1611759781" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.1.1/mermaid/mermaid.js?1611759781"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

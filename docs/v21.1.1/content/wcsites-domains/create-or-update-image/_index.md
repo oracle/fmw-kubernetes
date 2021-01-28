@@ -116,6 +116,20 @@ Creating an Oracle WebCenter Sites Docker image using the WebLogic Image Tool re
 
 After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-or-update-image/#set-up-the-weblogic-image-tool" >}}) and required build scripts, follow these steps to use the WebLogic Image Tool to `create` a new Oracle WebCenter Sites Docker image.
 
+
+##### Preparing response files 
+
+1. Add INSTALL_TYPE="WebLogic Server" in %path-to-downloaded-docker-repo%/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file
+1. Rename %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file to %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file 
+
+##### Create a wcs-wls-docker-install installer
+
+  ```bash
+  $ cd %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
+  $ docker run --rm -u root -v ${PWD}:/wcs-wls-docker-install groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
+
+  ```   
+
 ##### Download the Oracle WebCenter Sites installation binaries and patches
 
 You must download the required Oracle WebCenter Sites installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
@@ -149,14 +163,11 @@ The following files available in the code repository location `${WORKDIR}/weblog
 * `additionalBuildCmds.txt`
 * `buildArgs`
 
-1. In the `buildArgs` file, update all the occurrences of `%DOCKER_REPO%` with the `docker-images` repository location, which is the complete path of `imagetool-setup/docker-images`.
+1. In the `buildArgs` file, update all the occurrences of `%DOCKER_REPO%` with the repository location, which is the complete path of `imagetool-setup`.
 
    For example, update:
 
-   `%DOCKER_REPO%/OracleWebCenterSites/imagetool/12.2.1.4/`
-
-   to:  
-   `<imagetool-setup-location>/docker-images/OracleWebCenterSites/imagetool/12.2.1.4/`
+   `%DOCKER_REPO%/OracleWebCenterSites/kubernetes/imagetool-scripts/`
 
 
 1. Similarly, update the placeholders `%JDK_VERSION%` and `%BUILDTAG%` with appropriate values.
@@ -210,10 +221,10 @@ The following files available in the code repository location `${WORKDIR}/weblog
     create
     --jdkVersion=8u241
     --type WCS
-    --version=12.2.1.4.0
+    --version=12.2.1.4
     --tag=oracle/wcsites:12.2.1.4-21.1.1
-    --installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/install.file
-    --additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/imagetool/12.2.1.4.0/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs-wls-docker-install
+    --installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file
+    --additionalBuildCommands %path-to-downloaded-fmw-kubernetes%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
     --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,29710661_12.2.1.4.0
     --opatchBugNumber=28186730_13.9.4.2.4
 
@@ -221,13 +232,6 @@ The following files available in the code repository location `${WORKDIR}/weblog
 
      Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
 
-1. Create a wcs-wls-docker-install installer jar
-
-  ```bash
-  cd %docker_repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
-  docker run --rm -u root -v ${PWD}:/wcs-wls-docker-install groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
-
-  ```
 
 1. Enter the following command to create the Oracle WebCenter Sites image:
 
@@ -401,7 +405,7 @@ The following files available in the code repository location `${WORKDIR}/weblog
 1. Check the created image using the `Docker images` command:
 
     ```bash
-      $ Docker images | grep wcsites
+      $ docker images | grep wcsites
     ```
 
 #### Update an image
@@ -617,9 +621,9 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 
 1. Check the built image using the `Docker images` command:
     ```bash
-      $ Docker images | grep wcsites
-      oracle/wcsites   12.2.1.4.0-29710661   2ef2a67a685b        About a minute ago   2.84GB
-      oracle/wcsites   12.2.1.4.0            445b649a3459        4 days ago           3.2GB
+      $ docker images | grep wcsites
+      oracle/wcsites   12.2.1.4-21.1.1-29710661   2ef2a67a685b        About a minute ago   2.84GB
+      oracle/wcsites   12.2.1.4-21.1.1            445b649a3459        4 days ago           3.2GB
 
     ```
 
