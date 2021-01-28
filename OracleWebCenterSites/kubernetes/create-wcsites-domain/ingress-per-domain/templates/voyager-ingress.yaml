@@ -1,0 +1,75 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+{{- if eq .Values.type "VOYAGER" }}
+---
+apiVersion: {{ .Values.apiVersion }}
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-voyager
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    ingress.appscode.com/type: 'NodePort'
+    ingress.appscode.com/stats: 'true'
+    ingress.appscode.com/affinity: 'cookie'
+    ingress.appscode.com/session-cookie-name: SERVERID
+    ingress.appscode.com/default-timeout: '{"connect": "1800s", "server": "1800s"}'
+spec:
+  rules:
+  - host: '*'
+    http:
+      nodePort: {{ .Values.voyager.webPort }}
+      paths:
+      - path: /console
+        backend:
+          serviceName: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        backend:
+          serviceName: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+#      - path: /wls-exporter
+#        backend:
+#          serviceName: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+#          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /weblogic
+        backend:
+          serviceName: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /sbconsole
+        backend:
+          serviceName: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /sites
+        backend:
+          serviceName: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}
+          servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+      - path: /cas
+        backend:
+          serviceName: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}
+          servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+#      - path: /wls-exporter
+#        backend:
+#          serviceName: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}
+#          servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-voyager-stats
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: NodePort
+  ports:
+    - name: client
+      protocol: TCP
+      port: 56789
+      targetPort: 56789
+      nodePort: {{ .Values.voyager.statsPort }}
+  selector:
+    origin: voyager
+    origin-name: {{ .Values.wlsDomain.domainUID }}-voyager
+{{- end }}

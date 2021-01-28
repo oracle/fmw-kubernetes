@@ -1,0 +1,40 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+# Name of the Admin Server
+adminServerName: adminserver
+
+# Unique ID identifying a domain.
+# This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
+domainUID: wcsitesinfra
+
+
+# Number of managed servers to generate for the domain
+configuredManagedServerCount: 3
+
+#Number of managed servers running at the time of upgrade
+managedServerRunning: 3
+
+# Base string used to generate managed server names
+managedServerNameBase: wcsites-server
+
+
+# Oracle WebCenter Sites Docker image.
+# The operator requires WebCenter Sites 12.2.1.4
+# Refer to build WCSites docker image https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites
+# for details on how to obtain or create the image.
+#image: oracle/wcsites:12.2.1.4.1 just an example
+image: oracle/wcsites:12.2.1.4.1
+
+# Image pull policy
+# Legal values are "IfNotPresent", "Always", or "Never"
+imagePullPolicy: IfNotPresent
+
+# Name of the domain namespace
+namespace: wcsites-ns
+
+#serverUpgradeScript: server-upgrade.sh
+
+

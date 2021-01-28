@@ -1,0 +1,126 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: oracle-db-pv
+  namespace: wcsitesdb-ns
+spec:
+  storageClassName: oracle-db-storage-class
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  # Valid values are Retain, Delete or Recycle
+  persistentVolumeReclaimPolicy: Retain
+  #hostPath:
+  nfs:
+    server: %NFS_SERVER%
+    path: "/scratch/K8SVolume/WCSitesDB"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: oracle-db-pvc
+  namespace: wcsitesdb-ns
+spec:
+  storageClassName: oracle-db-storage-class
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oracle-db
+  namespace: wcsitesdb-ns
+spec:
+  ports:
+  - name: tns
+    port: 1521
+    protocol: TCP
+    targetPort: 1521
+    nodePort: 30011
+  selector:
+    app.kubernetes.io/instance: dev
+    app.kubernetes.io/name: oracle-db
+  sessionAffinity: None
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracle-db
+  namespace: wcsitesdb-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: dev
+      app.kubernetes.io/name: oracle-db
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate           
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: dev
+        app.kubernetes.io/name: oracle-db
+    spec:
+      containers:
+      - env:
+        - name: DB_SID
+          value: devcdb
+        - name: DB_PDB
+          value: devpdb
+        - name: DB_DOMAIN
+          value: k8s
+        - name: DB_BUNDLE
+          value: basic
+        image: container-registry.oracle.com/database/enterprise:12.2.0.1-slim
+        imagePullPolicy: IfNotPresent      
+        name: oracle-db
+        ports:
+        - containerPort: 1521
+          name: tns
+          protocol: TCP
+#        - containerPort: 5500
+#          name: em-port
+#          protocol: TCP
+#        resources:
+#          limits:
+#            cpu: "2"
+#            memory: "6Gi"
+#          requests:
+#            cpu: 500m
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        readinessProbe:
+          exec:
+            command:
+            - grep
+            - "Done ! The database is ready for use ."
+            - "/home/oracle/setup/log/setupDB.log"
+          initialDelaySeconds: 300
+          periodSeconds: 5
+        volumeMounts:
+        - name: oracle-db-storage
+          mountPath: /ORCL
+      volumes:
+      - name: oracle-db-storage
+        persistentVolumeClaim:
+          claimName: oracle-db-pvc
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+           - name: docker-store
