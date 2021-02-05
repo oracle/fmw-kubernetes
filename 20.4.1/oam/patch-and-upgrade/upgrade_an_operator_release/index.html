@@ -12,18 +12,18 @@
     <title>b. Upgrade an operator release :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1606890169" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1612502690" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1612502690"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1606890169"></script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1612502690"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1612502690"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/20.4.1\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1612502690"></script>
 
     
   </div>
@@ -2078,12 +2078,12 @@
 <ol>
 <li>
 <p>Pull the Oracle WebLogic Server Kubernetes Operator 3.X.X image by running the following command on the master node:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull oracle/weblogic-kubernetes-operator:3.X.X
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X
 </code></pre></div><p>where <code>3.X.X</code> is the version of the operator you require.</p>
 </li>
 <li>
 <p>Run the docker tag command as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/weblogic-kubernetes-operator:3.X.X weblogic-kubernetes-operator:3.X.X
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X weblogic-kubernetes-operator:3.X.X
 </code></pre></div><p>where <code>3.X.X</code> is the version of the operator downloaded.</p>
 <p>After installing the new Oracle WebLogic Server Kubernetes Operator Docker image, repeat the above on the worker nodes.</p>
 </li>
@@ -2100,10 +2100,10 @@ $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch 
 <li>
 <p>Run the following helm command to upgrade the operator:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;work directory&gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>oracle/weblogic-kubernetes-operator:3.X.X --namespace &lt;sample-kubernetes-operator-ns&gt; --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>weblogic-kubernetes-operator:3.X.X --namespace &lt;sample-kubernetes-operator-ns&gt; --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>oracle/weblogic-kubernetes-operator:3.X.X --namespace opns --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>weblogic-kubernetes-operator:3.X.X --namespace opns --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Release <span style="color:#e6db74">&#34;weblogic-kubernetes-operator&#34;</span> has been upgraded. Happy Helming!
 NAME: weblogic-kubernetes-operator
@@ -3457,19 +3457,19 @@ TEST SUITE: None
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1612502690"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1612502690"></script>
 
-    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1606890169" rel="stylesheet" />
-    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1606890169"></script>
+    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1612502690" rel="stylesheet" />
+    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1612502690"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
