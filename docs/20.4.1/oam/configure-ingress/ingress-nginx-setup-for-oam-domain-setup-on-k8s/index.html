@@ -3601,23 +3601,23 @@ Update Complete. ⎈ Happy Helming!⎈
 </code></pre></div></li>
 <li>
 <p>Install NGINX using the following helm command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>&lt;domain_namespace&gt;/&lt;ssl_secret&gt; --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n &lt;domain_namespace&gt; --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>&lt;domain_namespace&gt;/&lt;ssl_secret&gt; --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>accessns/accessinfra-tls-cert --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n accessns --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>accessns/accessinfra-tls-cert --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: nginx-ingress
 LAST DEPLOYED: Thu Sep <span style="color:#ae81ff">24</span> 07:31:51 <span style="color:#ae81ff">2020</span>
 
-NAMESPACE: default
+NAMESPACE: accessns
 STATUS: deployed
 REVISION: <span style="color:#ae81ff">1</span>
 TEST SUITE: None
 NOTES:
 The nginx-ingress controller has been installed.
 Get the application URL by running these commands:
-  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
-  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
-  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
+  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace accessns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
+  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace accessns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
+  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace accessns get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
 
   echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
   echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
