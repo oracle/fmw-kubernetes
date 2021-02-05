@@ -61,6 +61,16 @@ Recent changes    Date Version Introduces backward incompatibilities Change     
     </item>
     
     <item>
+      <title>Release Notes</title>
+      <link>/fmw-kubernetes/wcsites-domains/release-notes/</link>
+      <pubDate>Fri, 15 Mar 2019 11:25:28 -0400</pubDate>
+      
+      <guid>/fmw-kubernetes/wcsites-domains/release-notes/</guid>
+      <description>Review the latest changes and known issues for Oracle WebCenter Sites on Kubernetes.
+Recent changes    Date Version Introduces backward incompatibilities Change     Jan 15, 2021 21.1.1 no Certified Oracle WebLogic Kubernetes Operator version 3.0.1. Kubernetes 1.14.8+, 1.15.7+, 1.1.6.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. Only Webcenter Sites 12.2.1.4 is supported.    Known issues    Issue Description     Publishing via LoadBalancer Endpoint Currenly publishing is only supported via NodePort as described in section For Publishing Setting in WebCenter Sites on page.</description>
+    </item>
+    
+    <item>
       <title>Deploy using JDeveloper</title>
       <link>/fmw-kubernetes/soa-domains/adminguide/deploying-composites/supportjdev/</link>
       <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
@@ -78,6 +88,15 @@ Use JDeveloper for development and test environments only. For a production envi
       
       <guid>/fmw-kubernetes/soa-domains/appendix/soa-cluster-sizing-info/</guid>
       <description>Oracle SOA cluster sizing recommendations    Oracle SOA Normal Usage Moderate Usage High Usage     Administration Server No of CPU core(s) : 1, Memory : 4GB No of CPU core(s) : 1, Memory : 4GB No of CPU core(s) : 1, Memory : 4GB   Number of Managed Servers 2 2 4   Configurations per Managed Server No of CPU core(s) : 2, Memory : 16GB No of CPU core(s) : 4, Memory : 16GB No of CPU core(s) : 6, Memory : 16-32GB   PV Storage Minimum 250GB Minimum 250GB Minimum 500GB    </description>
+    </item>
+    
+    <item>
+      <title>Domain resource sizing</title>
+      <link>/fmw-kubernetes/wcsites-domains/appendix/wcsites-cluster-sizing-info/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wcsites-domains/appendix/wcsites-cluster-sizing-info/</guid>
+      <description>Oracle WebCenter Sites cluster sizing recommendations    Oracle WebCenter Sites Normal Usage Moderate Usage High Usage     Administration Server No of CPU core(s) : 1, Memory : 4GB No of CPU core(s) : 1, Memory : 4GB No of CPU core(s) : 1, Memory : 4GB   Managed Server No of Servers : 2, No of CPU core(s) : 2, Memory : 16GB No of Servers : 2, No of CPU core(s) : 4, Memory : 16GB No of Servers : 3, No of CPU core(s) : 6, Memory : 16-32GB   PV Storage Minimum 250GB Minimum 250GB Minimum 500GB    </description>
     </item>
     
     <item>
@@ -316,6 +335,17 @@ $ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operato
     </item>
     
     <item>
+      <title>Upgrade an operator release</title>
+      <link>/fmw-kubernetes/wcsites-domains/patch-and-upgrade/upgrade-operator-release/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wcsites-domains/patch-and-upgrade/upgrade-operator-release/</guid>
+      <description>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.
+To upgrade the Kubernetes operator, use the helm upgrade command. When upgrading the operator, the helm upgrade command requires that you supply a new Helm chart and image. For example:
+$ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operator:3.0.2 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-operator \ kubernetes/charts/weblogic-operator </description>
+    </item>
+    
+    <item>
       <title>WLST Administration Operations</title>
       <link>/fmw-kubernetes/oam/manage-oam-domains/wlst-admin-operations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -411,6 +441,17 @@ $ kubectl exec -it helper -n accessns -- /bin/bash This will take you into a bas
   Run the following command to create a helper pod if one doesn&amp;rsquo;t already exist:
 $ kubectl run helper --image &amp;lt;image_name&amp;gt; -n &amp;lt;domain_namespace&amp;gt; -- sleep infinity For example:
 $ kubectl run helper --image oracle/oig:12.2.1.4.0 -n oimcluster -- sleep infinity The output will look similar to the following:</description>
+    </item>
+    
+    <item>
+      <title>Monitor a domain and publish logs</title>
+      <link>/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wcsites-domains/adminguide/monitoring-wcsites-domains/</guid>
+      <description>After the Oracle WebCenter Sites domain is set up, you can:
+ Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana Publish WebLogic Server logs into Elasticsearch  Monitor the Oracle WebCenter Sites instance using Prometheus and Grafana Using the WebLogic Monitoring Exporter you can scrape runtime information from a running Oracle WebCenter Sites instance and monitor them using Prometheus and Grafana.
+Prerequisites This document assumes that the Prometheus Operator is deployed on the Kubernetes cluster.</description>
     </item>
     
     <item>
@@ -605,6 +646,17 @@ Follow these steps to set up Apache webtier as a load balancer for an Oracle Web
       <description>After the OIG domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
 In Prepare your environment if you decided to use the Elasticsearch and Kibana by setting the parameter elkIntegrationEnabled to true, then the steps below must be followed to complete the setup.
 If you did not set elkIntegrationEnabled to true and want to do so post configuration, run the following command:</description>
+    </item>
+    
+    <item>
+      <title>Publish logs to Elasticsearch</title>
+      <link>/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wcsites-domains/adminguide/weblogic-logging-exporter-setup/</guid>
+      <description>The WebLogic Logging Exporter adds a log event handler to WebLogic Server. WebLogic Server logs can be pushed to Elasticsearch in Kubernetes directly by using the Elasticsearch REST API. For more details, see to the WebLogic Logging Exporter project.
+This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing operator logs, see this sample.
+Prerequisites This document assumes that you have already set up Elasticsearch and Kibana for logs collection.</description>
     </item>
     
     <item>
