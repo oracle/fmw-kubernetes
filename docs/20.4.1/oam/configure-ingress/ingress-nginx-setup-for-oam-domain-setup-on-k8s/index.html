@@ -12,18 +12,18 @@
     <title>a. Using an Ingress with NGINX :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1606890169" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1612502690" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1612502690"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1606890169"></script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1612502690"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1612502690"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/20.4.1\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1612502690"></script>
 
     
   </div>
@@ -2136,23 +2136,23 @@ Update Complete. ⎈ Happy Helming!⎈
 </code></pre></div></li>
 <li>
 <p>Install NGINX using the following helm command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>&lt;domain_namespace&gt;/&lt;ssl_secret&gt; --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n &lt;domain_namespace&gt; --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>&lt;domain_namespace&gt;/&lt;ssl_secret&gt; --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>accessns/accessinfra-tls-cert --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n accessns --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>accessns/accessinfra-tls-cert --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: nginx-ingress
 LAST DEPLOYED: Thu Sep <span style="color:#ae81ff">24</span> 07:31:51 <span style="color:#ae81ff">2020</span>
 
-NAMESPACE: default
+NAMESPACE: accessns
 STATUS: deployed
 REVISION: <span style="color:#ae81ff">1</span>
 TEST SUITE: None
 NOTES:
 The nginx-ingress controller has been installed.
 Get the application URL by running these commands:
-  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
-  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
-  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace default get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
+  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace accessns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
+  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace accessns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-controller<span style="color:#66d9ef">)</span>
+  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace accessns get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
 
   echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
   echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
@@ -2220,7 +2220,7 @@ access-ingress   &lt;none&gt;   *                        <span style="color:#ae8
 </code></pre></div></li>
 <li>
 <p>Find the node port of NGINX using the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace default get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace accessns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ae81ff">30099</span>
 </code></pre></div></li>
@@ -3637,19 +3637,19 @@ Events:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1612502690"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1612502690"></script>
 
-    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1606890169" rel="stylesheet" />
-    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1606890169"></script>
+    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1612502690" rel="stylesheet" />
+    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1612502690"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

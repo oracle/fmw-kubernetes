@@ -36,7 +36,7 @@ If the OAM domain creation fails when running `create-domain.sh`, run the follow
    Using the output you should be able to diagnose the problem and resolve the issue. 
    
    Clean down the failed domain creation by following steps 1-4 in [Delete the OAM domain home]({{< relref "/oam/manage-oam-domains/delete-domain-home" >}}). Then 
-   [recreate the PC and PVC]({{< relref "/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim" >}}) then execute the [OAM domain creation]({{< relref "/oam/create-oam-domains" >}}) steps again.
+   [recreate the PV and PVC]({{< relref "/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim" >}}) then execute the [OAM domain creation]({{< relref "/oam/create-oam-domains" >}}) steps again.
    
 2. If any of the above commands return the following error:
 
@@ -49,11 +49,7 @@ If the OAM domain creation fails when running `create-domain.sh`, run the follow
    
    a) The directory has 777 permissions: `chmod -R 777 <work directory>/accessdomainpv`.
    
-   b) If it does have the permissions, check if an `oracle` user exists and the `uid` and `gid` equal `1000`, for example:
-   
-   ```bash
-   $ uid=1000(oracle) gid=1000(spg) groups=1000(spg),59968(oinstall),8500(dba),100(users),1007(cgbudba)
-   ```
+   b) If it does have the permissions, check if an `oracle` user exists and the `uid` and `gid` equal `1000`.
    
    Create the `oracle` user if it doesn't exist and set the `uid` and `gid` to `1000`.
    
@@ -64,4 +60,4 @@ If the OAM domain creation fails when running `create-domain.sh`, run the follow
    ```
    
    Clean down the failed domain creation by following steps 1-4 in [Delete the OAM domain home]({{< relref "/oam/manage-oam-domains/delete-domain-home" >}}). Then 
-   [recreate the PC and PVC]({{< relref "/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim" >}}) and then execute the [OAM domain creation]({{< relref "/oam/create-oam-domains" >}}) steps again.
+   [recreate the PV and PVC]({{< relref "/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim" >}}) and then execute the [OAM domain creation]({{< relref "/oam/create-oam-domains" >}}) steps again.

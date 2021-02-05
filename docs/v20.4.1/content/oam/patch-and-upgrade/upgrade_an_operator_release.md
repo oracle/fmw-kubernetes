@@ -12,7 +12,7 @@ The new Oracle WebLogic Server Kubernetes Operator Docker image must be installe
 1. Pull the Oracle WebLogic Server Kubernetes Operator 3.X.X image by running the following command on the master node:
 
    ```bash
-   $ docker pull oracle/weblogic-kubernetes-operator:3.X.X
+   $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X
    ```
    
    where `3.X.X` is the version of the operator you require.
@@ -20,7 +20,7 @@ The new Oracle WebLogic Server Kubernetes Operator Docker image must be installe
 1. Run the docker tag command as follows:
 
    ```bash
-   $ docker tag oracle/weblogic-kubernetes-operator:3.X.X weblogic-kubernetes-operator:3.X.X
+   $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X weblogic-kubernetes-operator:3.X.X
    ```
    
    where `3.X.X` is the version of the operator downloaded.
@@ -49,14 +49,14 @@ The new Oracle WebLogic Server Kubernetes Operator Docker image must be installe
   
    ```bash
    $ cd <work directory>/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-   $ helm upgrade --reuse-values --set image=oracle/weblogic-kubernetes-operator:3.X.X --namespace <sample-kubernetes-operator-ns> --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+   $ helm upgrade --reuse-values --set image=weblogic-kubernetes-operator:3.X.X --namespace <sample-kubernetes-operator-ns> --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
    ```
   
    For example:
   
    ```bash
    $ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-   $ helm upgrade --reuse-values --set image=oracle/weblogic-kubernetes-operator:3.X.X --namespace opns --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+   $ helm upgrade --reuse-values --set image=weblogic-kubernetes-operator:3.X.X --namespace opns --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
    ```
 
 

@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1606890169" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1612502690" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1612502690"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1606890169"></script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1612502690"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1612502690"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/20.4.1\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1612502690"></script>
 
     
   </div>
@@ -2176,10 +2176,10 @@ k8s.gcr.io/etcd                                                        3.4.3-0  
 <ol>
 <li>
 <p>Pull the Oracle WebLogic Server Kubernetes Operator 3.0.1 image by running the following command on the master node:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull oracle/weblogic-kubernetes-operator:3.0.1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
 </code></pre></div><p>The output will look similar to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Trying to pull repository docker.io/oracle/weblogic-kubernetes-operator ...
-3.0.1: Pulling from docker.io/oracle/weblogic-kubernetes-operator
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Trying to pull repository ghcr.io/oracle/weblogic-kubernetes-operator ...
+3.0.1: Pulling from ghcr.io/oracle/weblogic-kubernetes-operator
 bce8f778fef0: Already exists
 de14ddc50a70: Pull complete
 77401a861078: Pull complete
@@ -2187,12 +2187,12 @@ de14ddc50a70: Pull complete
 2b6f244f998f: Pull complete
 625e05083092: Pull complete
 Digest: sha256:27047d032ac5a9077b39bec512b99d8ca54bf9bf71227f5fd1b7b26ac80c20d3
-Status: Downloaded newer image <span style="color:#66d9ef">for</span> oracle/weblogic-kubernetes-operator:3.0.1
-oracle/weblogic-kubernetes-operator:3.0.1
+Status: Downloaded newer image <span style="color:#66d9ef">for</span> ghcr.io/oracle/weblogic-kubernetes-operator
+ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
 </code></pre></div></li>
 <li>
 <p>Run the docker tag command as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
 </code></pre></div><p>After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.</p>
 </li>
 </ol>
@@ -2648,6 +2648,22 @@ $ mkdir output_access
 $ mkdir -p /scratch/OAMDockerK8S/accessdomainpv
 $ chmod -R <span style="color:#ae81ff">777</span> /scratch/OAMDockerK8S/accessdomainpv
 </code></pre></div><p><strong>Note</strong>: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has full access permissions, and that the folder is empty. In this example <code>/scratch/OAMDockerK8S/accessdomainpv</code> is accessible from all nodes via NFS.</p>
+</li>
+<li>
+<p>On the master node run the following command to ensure it is possible to read and write to the persistent volume:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd &lt;work directory&gt;/accessdomainpv
+touch filemaster.txt
+ls filemaster.txt
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/OAMDockerK8S/accessdomainpv
+touch filemaster.txt
+ls filemaster.txt
+</code></pre></div><p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/OAMDockerK8S/accessdomainpv
+ls filemaster.txt
+touch fileworker1.txt
+ls fileworker1.txt
+</code></pre></div><p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it&rsquo;s possible to read and write from each node to the persistent volume, delete the files created.</p>
 </li>
 <li>
 <p>Edit the <code>create-pv-pvc-inputs.yaml</code> file and update the following parameters to reflect your settings. Save the file when complete:</p>
@@ -4115,19 +4131,19 @@ Mounted By:     &lt;none&gt;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1612502690"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1612502690"></script>
 
-    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1606890169" rel="stylesheet" />
-    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1606890169"></script>
+    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1612502690" rel="stylesheet" />
+    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1612502690"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

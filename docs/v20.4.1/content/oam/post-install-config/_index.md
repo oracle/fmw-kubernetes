@@ -152,7 +152,7 @@ For production environments, the following WebLogic Server tuning parameters mus
    
       
    ```bash
-   $ kubectl gets pods -n accessns
+   $ kubectl get pods -n accessns
    ```
    
    The output will look similar to the following:

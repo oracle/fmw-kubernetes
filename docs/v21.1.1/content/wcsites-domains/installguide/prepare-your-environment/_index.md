@@ -33,7 +33,7 @@ After creating Kubernetes clusters, you can optionally:
 
 #### Build Oracle WebCenter Sites Image
 
-Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4).
+Build Oracle WebCenter Sites 12.2.1.4 Image by following steps from this [document](https://oracle.github.io/fmw-kubernetes/wcsites-domains/create-or-update-image/#create-an-image).
 
 #### Pull Other Dependent Images
 
