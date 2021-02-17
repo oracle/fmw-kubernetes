@@ -447,7 +447,8 @@ Follow [these steps]({{< relref "/soa-domains/installguide/prepare-your-environm
 1. Pull the operator image:
 
     ```
-    $ docker pull oracle/weblogic-kubernetes-operator:3.0.1
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
+    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1  oracle/weblogic-kubernetes-operator:3.0.1
     ```
 
 1. Obtain the Oracle Database image and Oracle SOA Suite Docker image from the [Oracle Container Registry](https://container-registry.oracle.com):
