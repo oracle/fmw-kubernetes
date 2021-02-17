@@ -12,18 +12,18 @@
     <title>Troubleshooting :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1606890169" rel="stylesheet">
-    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1606890169" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/nucleus.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/fontawesome-all.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hybrid.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/featherlight.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/perfect-scrollbar.min.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/auto-complete.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/atom-one-dark-reasonable.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/theme.css?1612502690" rel="stylesheet">
+    <link href="/fmw-kubernetes/20.4.1/css/hugo-theme.css?1612502690" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery-3.3.1.min.js?1612502690"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1606890169"></script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/lunr.min.js?1612502690"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/auto-complete.js?1612502690"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/20.4.1\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1606890169"></script>
+<script type="text/javascript" src="/fmw-kubernetes/20.4.1/js/search.js?1612502690"></script>
 
     
   </div>
@@ -2087,7 +2087,7 @@
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod accessinfra-create-fmw-infra-sample-domain-job-c6vfb -n accessns
 </code></pre></div><p>Using the output you should be able to diagnose the problem and resolve the issue.</p>
 <p>Clean down the failed domain creation by following steps 1-4 in <a href="/fmw-kubernetes/20.4.1/oam/manage-oam-domains/delete-domain-home/">Delete the OAM domain home</a>. Then
-<a href="/fmw-kubernetes/20.4.1/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim">recreate the PC and PVC</a> then execute the <a href="/fmw-kubernetes/20.4.1/oam/create-oam-domains/">OAM domain creation</a> steps again.</p>
+<a href="/fmw-kubernetes/20.4.1/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim">recreate the PV and PVC</a> then execute the <a href="/fmw-kubernetes/20.4.1/oam/create-oam-domains/">OAM domain creation</a> steps again.</p>
 </li>
 <li>
 <p>If any of the above commands return the following error:</p>
@@ -2095,13 +2095,12 @@
 <span style="color:#e6db74">&#39;/scratch/OAMDockerK8S/accessdomainpv &#39;</span>: mkdir /scratch/OAMDockerK8S/accessdomainpv : permission denied
 </code></pre></div><p>then there is a permissions error on the directory for the PV and PVC and the following should be checked:</p>
 <p>a) The directory has 777 permissions: <code>chmod -R 777 &lt;work directory&gt;/accessdomainpv</code>.</p>
-<p>b) If it does have the permissions, check if an <code>oracle</code> user exists and the <code>uid</code> and <code>gid</code> equal <code>1000</code>, for example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ uid<span style="color:#f92672">=</span>1000<span style="color:#f92672">(</span>oracle<span style="color:#f92672">)</span> gid<span style="color:#f92672">=</span>1000<span style="color:#f92672">(</span>spg<span style="color:#f92672">)</span> groups<span style="color:#f92672">=</span>1000<span style="color:#f92672">(</span>spg<span style="color:#f92672">)</span>,59968<span style="color:#f92672">(</span>oinstall<span style="color:#f92672">)</span>,8500<span style="color:#f92672">(</span>dba<span style="color:#f92672">)</span>,100<span style="color:#f92672">(</span>users<span style="color:#f92672">)</span>,1007<span style="color:#f92672">(</span>cgbudba<span style="color:#f92672">)</span>
-</code></pre></div><p>Create the <code>oracle</code> user if it doesn&rsquo;t exist and set the <code>uid</code> and <code>gid</code> to <code>1000</code>.</p>
+<p>b) If it does have the permissions, check if an <code>oracle</code> user exists and the <code>uid</code> and <code>gid</code> equal <code>1000</code>.</p>
+<p>Create the <code>oracle</code> user if it doesn&rsquo;t exist and set the <code>uid</code> and <code>gid</code> to <code>1000</code>.</p>
 <p>c) Edit the <code>&lt;work directory&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain-pv-pvc/create-pv-pvc-inputs.yaml</code> and add a slash to the end of the directory for the <code>weblogicDomainStoragePath</code> parameter:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">weblogicDomainStoragePath: /scratch/OAMDockerK8S/accessdomainpv/
 </code></pre></div><p>Clean down the failed domain creation by following steps 1-4 in <a href="/fmw-kubernetes/20.4.1/oam/manage-oam-domains/delete-domain-home/">Delete the OAM domain home</a>. Then
-<a href="/fmw-kubernetes/20.4.1/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim">recreate the PC and PVC</a> and then execute the <a href="/fmw-kubernetes/20.4.1/oam/create-oam-domains/">OAM domain creation</a> steps again.</p>
+<a href="/fmw-kubernetes/20.4.1/oam/prepare-your-environment/#create-a-kubernetes-persistent-volume-and-persistent-volume-claim">recreate the PV and PVC</a> and then execute the <a href="/fmw-kubernetes/20.4.1/oam/create-oam-domains/">OAM domain creation</a> steps again.</p>
 </li>
 </ol>
 
@@ -3445,19 +3444,19 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/clipboard.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/perfect-scrollbar.jquery.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/jquery.sticky.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/featherlight.min.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/highlight.pack.js?1612502690"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1606890169"></script>
-    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1606890169"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/modernizr.custom-3.6.0.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/learn.js?1612502690"></script>
+    <script src="/fmw-kubernetes/20.4.1/js/hugo-learn.js?1612502690"></script>
 
-    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1606890169" rel="stylesheet" />
-    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1606890169"></script>
+    <link href="/fmw-kubernetes/20.4.1/mermaid/mermaid.css?1612502690" rel="stylesheet" />
+    <script src="/fmw-kubernetes/20.4.1/mermaid/mermaid.js?1612502690"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
