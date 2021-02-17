@@ -101,13 +101,13 @@ Use helm to install NGINX.
 1. Install NGINX using the following helm command:
 
    ```bash
-   $ helm install nginx-ingress --set controller.extraArgs.default-ssl-certificate=<domain_namespace>/<ssl_secret> --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n <domain_namespace> --set controller.extraArgs.default-ssl-certificate=<domain_namespace>/<ssl_secret> --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    ```
 	
    For example:
 	
    ```bash
-   $ helm install nginx-ingress --set controller.extraArgs.default-ssl-certificate=accessns/accessinfra-tls-cert --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n accessns --set controller.extraArgs.default-ssl-certificate=accessns/accessinfra-tls-cert --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    ```
     
    The output will look similar to the following:
@@ -116,16 +116,16 @@ Use helm to install NGINX.
    NAME: nginx-ingress
    LAST DEPLOYED: Thu Sep 24 07:31:51 2020
 
-   NAMESPACE: default
+   NAMESPACE: accessns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    NOTES:
    The nginx-ingress controller has been installed.
    Get the application URL by running these commands:
-     export HTTP_NODE_PORT=$(kubectl --namespace default get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-controller)
-     export HTTPS_NODE_PORT=$(kubectl --namespace default get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-controller)
-     export NODE_IP=$(kubectl --namespace default get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
+     export HTTP_NODE_PORT=$(kubectl --namespace accessns get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-controller)
+     export HTTPS_NODE_PORT=$(kubectl --namespace accessns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-controller)
+     export NODE_IP=$(kubectl --namespace accessns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
 
      echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
      echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
@@ -216,7 +216,7 @@ Use helm to install NGINX.
 1. Find the node port of NGINX using the following command:
 
    ```bash
-   $ kubectl --namespace default get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller
+   $ kubectl --namespace accessns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller
    ```
    
    The output will look similar to the following:

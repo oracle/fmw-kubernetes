@@ -134,7 +134,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 
 You must download the required Oracle WebCenter Sites installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
 
-{{%expand "Click here to see the sample list of installation binaries and patches:" %}}
+Following is the list of installation binaries and patches required for 21.1.1 release:
+
 * JDK:  
     * jdk-8u241-linux-x64.tar.gz
 
@@ -150,11 +151,9 @@ You must download the required Oracle WebCenter Sites installation binaries and 
     * fmw_12.2.1.4.0_wcsites.jar
 
 * WCS patches:   
-    * p31548912_122140_Generic.zip (WCS)
+    * p32315127_122140_Generic.zip (WCS)
     
-{{% /expand %}}
 
->Note: This is a sample list of patches. You must get the appropriate list of patches for your Oracle WebCenter Sites image.
 
 ##### Update required build files
 
@@ -199,7 +198,7 @@ The following files available in the code repository location `${WORKDIR}/weblog
 
     $ imagetool cache addEntry --key 30729380_12.2.1.4.0 --value <download location>/p30729380_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 29710661_12.2.1.4.0 --value <download location>/p29710661_122140_Generic.zip
+    $ imagetool cache addEntry --key 32315127_12.2.1.4.0 --value <download location>/p32315127_122140_Generic.zip
 
 
     ```
@@ -210,7 +209,7 @@ The following files available in the code repository location `${WORKDIR}/weblog
     To the `create` command in the `buildArgs` file, append the Oracle WebCenter Sites patches list using the `--patches` flag and Opatch patch using the `--opatchBugNumber` flag. Sample options for the list of patches above are:
 
     ```
-    --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,p31548912_12.2.1.4.0
+    --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,p32315127_12.2.1.4.0
     --opatchBugNumber=28186730_13.9.4.2.4
 
     ```
@@ -225,7 +224,7 @@ The following files available in the code repository location `${WORKDIR}/weblog
     --tag=oracle/wcsites:12.2.1.4-21.1.1
     --installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file
     --additionalBuildCommands %path-to-downloaded-fmw-kubernetes%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
-    --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,29710661_12.2.1.4.0
+    --patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,32315127_12.2.1.4.0
     --opatchBugNumber=28186730_13.9.4.2.4
 
     ```
@@ -416,11 +415,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 
     ```bash wrap
     $  cd <imagetool-setup>
-    $ imagetool cache addEntry --key 29710661_12.2.1.4.0 --value < %path-to-downloaded-pathes%/patches
-/p29710661_122140_Generic.zip
-    [INFO   ] Added entry 29710661_12.2.1.4.0=< %path-to-downloaded-pathes%/patches
-/p29710661_122140_Generic.zip
-
+    $ imagetool cache addEntry --key 32315127_12.2.1.4.0 --value < %path-to-downloaded-pathes%/patches/p32315127_122140_Generic.zip
+      [INFO   ] Added entry 32315127_12.2.1.4.0=< %path-to-downloaded-pathes%/patches/p32315127_122140_Generic.zip
     ```
 1. Provide the following arguments to the WebLogic Image Tool `update` command:
 
@@ -437,7 +433,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
     {{%expand "Click here to see the example `update` command:" %}}
 
   ```
-  $ imagetool update --fromImage oracle/wcsites:12.2.1.4-21.1.1 --tag=oracle/wcsites:12.2.1.4-21.1.1-29710661 --patches=29710661_12.2.1.4.0
+  $ imagetool update --fromImage oracle/wcsites:12.2.1.4-21.1.1 --tag=oracle/wcsites:12.2.1.4-21.1.1-32315127 --patches=32315127_12.2.1.4.0
 
       [INFO   ] Image Tool build ID: 7c268a9a-723f-424e-a06e-cb615c783e6d
       [INFO   ] Temporary directory used for docker build context: %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp8555048225669509
@@ -446,8 +442,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
       [INFO   ] OPatch will not be updated, fromImage has version 13.9.4.2.4, available version is 13.9.4.2.4
       [WARNING] skipping patch conflict check, no support credentials provided
       [WARNING] No credentials provided, skipping validation of patches
-      [INFO   ] Using patch 31548912_12.2.1.4.0 from cache:  %path-to-downloaded-pathes%/patches
-/p31548912_122140_Generic.zip
+      [INFO   ] Using patch 32315127_12.2.1.4.0 from cache:  %path-to-downloaded-pathes%/patches
+/p32315127_122140_Generic.zip
       [INFO   ] docker cmd = docker build --no-cache --force-rm --tag oracle/wcsites:12.2.1.4-21.1.1 --build-arg http_proxy=http://www-proxy-your-company.com:80 --build-arg https_proxy=http://www-proxy-your-company.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,/var/run/docker.sock %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp8555048225669509
       Sending build context to Docker daemon  212.7MB
 
@@ -488,7 +484,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
       OPatch detects the Middleware Home as "/u01/oracle"
 
       Verifying environment and performing prerequisite checks...
-      OPatch continues with these patches:   31548912  
+      OPatch continues with these patches:   32315127  
 
       Do you want to proceed? [y|n]
       Y (auto-answered by -silent)
@@ -503,7 +499,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
       Y (auto-answered by -silent)
       User Responded with: Y
       Backing up files...
-      Applying interim patch '31548912' to OH '/u01/oracle'
+      Applying interim patch '32315127' to OH '/u01/oracle'
       ApplySession: Optional component(s) [ oracle.wcsites.wccintegration, 12.2.1.4.0 ] , [ oracle.wcsites.wccintegration, 12.2.1.4.0 ]  not present in the Oracle Home or a higher version is found.
 
       Patching component oracle.wcsites, 12.2.1.4.0...
@@ -529,7 +525,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
       Patching component oracle.wcsites.sitecapture, 12.2.1.4.0...
 
       Patching component oracle.wcsites.sitecapture, 12.2.1.4.0...
-      Patch 31548912 successfully applied.
+      Patch 32315127 successfully applied.
       Log file location: /u01/oracle/cfgtoollogs/opatch/opatch2020-08-04_05-15-38AM_1.log
 
       OPatch succeeded.
@@ -561,8 +557,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
       Removing intermediate container 5039320b2f10
        ---> 1be958e1e859
       Successfully built 1be958e1e859
-      Successfully tagged oracle/wcsites:12.2.1.4-21.1.1-29710661
-      [INFO   ] Build successful. Build time=73s. Image tag=oracle/wcsites:12.2.1.4-21.1.1-29710661
+      Successfully tagged oracle/wcsites:12.2.1.4-21.1.1-32315127
+      [INFO   ] Build successful. Build time=73s. Image tag=oracle/wcsites:12.2.1.4-21.1.1-32315127
 
   ```
     {{% /expand %}}
@@ -572,7 +568,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 
 
   ```bash wrap
-  $ imagetool update --fromImage oracle/wcsites:12.2.1.4-21.1.1 --tag=oracle/wcsites:12.2.1.4-21.1.1-29710661 --patches=29710661_12.2.1.4.0 --dryRun
+  $ imagetool update --fromImage oracle/wcsites:12.2.1.4-21.1.1 --tag=oracle/wcsites:12.2.1.4-21.1.1-32315127 --patches=32315127_12.2.1.4.0 --dryRun
 
     [INFO   ] Image Tool build ID: a2fca032-7807-4bfb-b5a4-0ed90a710a56
     [INFO   ] Temporary directory used for docker build context: %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp4743247141639108603
@@ -581,8 +577,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
     [INFO   ] OPatch will not be updated, fromImage has version 13.9.4.2.4, available version is 13.9.4.2.4
     [WARNING] skipping patch conflict check, no support credentials provided
     [WARNING] No credentials provided, skipping validation of patches
-    [INFO   ] Using patch 29710661_12.2.1.4.0 from cache:  %path-to-downloaded-pathes%/patches
-/p29710661_122140_Generic.zip
+    [INFO   ] Using patch 32315127_12.2.1.4.0 from cache:  %path-to-downloaded-pathes%/patches
+/p32315127_122140_Generic.zip
     [INFO   ] docker cmd = docker build --no-cache --force-rm --tag oracle/wcsites:12.2.1.4-21.1.1.1 --build-arg http_proxy=http://www-proxy-your-company.com:80 --build-arg https_proxy=http://www-proxy-your-company.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,/var/run/docker.sock %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp4743247141639108603
     ########## BEGIN DOCKERFILE ##########
     #
@@ -622,7 +618,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 1. Check the built image using the `Docker images` command:
     ```bash
       $ docker images | grep wcsites
-      oracle/wcsites   12.2.1.4-21.1.1-29710661   2ef2a67a685b        About a minute ago   2.84GB
+      oracle/wcsites   12.2.1.4-21.1.1-32315127   2ef2a67a685b        About a minute ago   2.84GB
       oracle/wcsites   12.2.1.4-21.1.1            445b649a3459        4 days ago           3.2GB
 
     ```
@@ -659,7 +655,7 @@ Follow these steps to build an Oracle Fusion Middleware Infrastructure image, an
 
    >Note: Copy the installer binaries to the same location as the Dockerfile.
 
-1. To build the Oracle WebCenter Sites image with patches, you must download and drop the patch zip files (for example, `p29928100_122140_Generic.zip`) into the `patches/` folder under the version that is required. For example, for `12.2.1.4` the folder is `12.2.1.4/patches`.
+1. To build the Oracle WebCenter Sites image with patches, you must download and drop the patch zip files (for example, `p32315127_122140_Generic.zip`) into the `patches/` folder under the version that is required. For example, for `12.2.1.4` the folder is `12.2.1.4/patches`.
 
 1. Create the Oracle WebCenter Sites image by running the provided script:
 

@@ -55,7 +55,8 @@ and accept the license agreement for the [WebLogic Server image](https://hub.doc
 1. Pull the operator image:
 
     ```bash
-    $ docker pull oracle/weblogic-kubernetes-operator:3.0.1
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
+    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1  oracle/weblogic-kubernetes-operator:3.0.1
     ```
 
 ### Set up the code repository to deploy Oracle SOA Suite domains
@@ -400,7 +401,7 @@ $
 $ ./drop-rcu-schema.sh \
   -s SOA1 \
   -t soaessosb \
-  -d soasuite:12.2.1.4 \
+  -d oracle-db.default.svc.cluster.local:1521/devpdb.k8s \
   -n default \
   -q Oradoc_db1 \
   -r Oradoc_db1
