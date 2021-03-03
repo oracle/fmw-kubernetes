@@ -1,4 +1,4 @@
-# Copyright (c) 2018, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 apiVersion: batch/v1
 kind: Job
@@ -58,14 +58,20 @@ spec:
               value: "%ADMIN_SERVER_NAME%"
             - name: CUSTOM_ADMIN_HOST
               value: "%CUSTOM_ADMIN_HOST%"
-            - name: CUSTOM_MANAGEDSERVER_PORT
-              value: "%MANAGED_SERVER_PORT%"
-            - name: CUSTOM_MANAGED_BASE_NAME
-              value: "%MANAGED_SERVER_NAME_BASE%"
+            - name: CUSTOM_SOA_MANAGEDSERVER_PORT
+              value: "%SOA_MANAGED_SERVER_PORT%"
+            - name: CUSTOM_OSB_MANAGEDSERVER_PORT
+              value: "%OSB_MANAGED_SERVER_PORT%"
+            - name: CUSTOM_SOA_MANAGED_BASE_NAME
+              value: "%SOA_MANAGED_SERVER_NAME_BASE%"
+            - name: CUSTOM_OSB_MANAGED_BASE_NAME
+              value: "%OSB_MANAGED_SERVER_NAME_BASE%"
             - name: CUSTOM_MANAGED_SERVER_COUNT
               value: "%CONFIGURED_MANAGED_SERVER_COUNT%"
-            - name: CUSTOM_CLUSTER_NAME
-              value: "%CLUSTER_NAME%"
+            - name: CUSTOM_SOA_CLUSTER_NAME
+              value: "%SOA_CLUSTER_NAME%"
+            - name: CUSTOM_OSB_CLUSTER_NAME
+              value: "%OSB_CLUSTER_NAME%"
             - name: CUSTOM_RCUPREFIX
               value: "%CUSTOM_RCUPREFIX%"
             - name: CUSTOM_PRODUCTION_MODE
@@ -80,8 +86,10 @@ spec:
               value: "%SSL_ENABLED%"
             - name: ADMIN_SERVER_SSL_PORT
               value: "%ADMIN_SERVER_SSL_PORT%"
-            - name: MANAGED_SERVER_SSL_PORT
-              value: "%MANAGED_SERVER_SSL_PORT%"
+            - name: SOA_MANAGED_SERVER_SSL_PORT
+              value: "%SOA_MANAGED_SERVER_SSL_PORT%"
+            - name: OSB_MANAGED_SERVER_SSL_PORT
+              value: "%OSB_MANAGED_SERVER_SSL_PORT%"
             - name: PERSISTENCE_STORE
               value: "%PERSISTENCE_STORE%"
       volumes:

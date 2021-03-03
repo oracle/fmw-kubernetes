@@ -1,5 +1,5 @@
 ---
-title: "b) Upgrade a Kubernetes cluster"
+title: "a) Upgrade a Kubernetes cluster"
 description: "Instructions on how to upgrade a Kubernetes cluster."
 ---
 

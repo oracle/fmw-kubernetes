@@ -112,14 +112,14 @@ The Oracle WebLogic Server Kubernetes Operator Docker image must be installed on
 1. Pull the Oracle WebLogic Server Kubernetes Operator 3.0.1 image by running the following command on the master node:
 
    ```bash
-   $ docker pull oracle/weblogic-kubernetes-operator:3.0.1
+   $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
    ```
  
    The output will look similar to the following:
 
    ```bash
-   Trying to pull repository docker.io/oracle/weblogic-kubernetes-operator ...
-   3.0.1: Pulling from docker.io/oracle/weblogic-kubernetes-operator
+   Trying to pull repository ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1 ...
+   3.0.1: Pulling from ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
    bce8f778fef0: Already exists
    de14ddc50a70: Pull complete
    77401a861078: Pull complete
@@ -127,14 +127,14 @@ The Oracle WebLogic Server Kubernetes Operator Docker image must be installed on
    2b6f244f998f: Pull complete
    625e05083092: Pull complete
    Digest: sha256:27047d032ac5a9077b39bec512b99d8ca54bf9bf71227f5fd1b7b26ac80c20d3
-   Status: Downloaded newer image for oracle/weblogic-kubernetes-operator:3.0.1
-   oracle/weblogic-kubernetes-operator:3.0.1
+   Status: Downloaded newer image for ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
+   ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
    ```
 
 1. Run the docker tag command as follows:
 
    ```bash
-   $ docker tag oracle/weblogic-kubernetes-operator:3.0.1  weblogic-kubernetes-operator:3.0.1
+   $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
    ```
 
    After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.
@@ -575,6 +575,11 @@ Before following the steps in this section, make sure that the database and list
 
 1. Run the following command to patch schemas in the database:
 
+   {{% notice note %}}
+   This command should be run if you are using an OIG image that contains OIG bundle patches. If using an OIG image without OIG bundle patches, then you can skip this step.
+   {{% /notice %}}
+   
+
    ```bash
    [oracle@helper oracle]$ /u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant \
    -f /u01/oracle/idm/server/setup/deploy-files/automation.xml \
@@ -854,7 +859,34 @@ In the Kubernetes domain namespace created above, create the persistent volume (
    $ chmod -R 777 /scratch/OIGDockerK8S/oimclusterdomainpv
    ```
    
-   **Note**: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has full access permissions, and that the folder is empty. In this example `/scratch/OIGDockerK8S/oimclusterdomainpv` is accessible from all nodes via NFS.
+   **Note**: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has **full** access permissions, and that the folder is empty. In this example `/scratch/OIGDockerK8S/oimclusterdomainpv` is accessible from all nodes via NFS. 
+   
+1. On the master node run the following command to ensure it is possible to read and write to the persistent volume:
+
+   ```bash 
+   cd /<work directory>/oimclusterdomainpv
+   touch filemaster.txt
+   ls filemaster.txt
+   ```
+   
+   For example:
+   
+   ```bash
+   cd /scratch/OIGDockerK8S/oimclusterdomainpv
+   touch filemaster.txt
+   ls filemaster.txt
+   ```
+   
+   On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
+   
+   ```bash
+   cd /scratch/OIGDockerK8S/oimclusterdomainpv
+   ls filemaster.txt
+   touch fileworker1.txt
+   ls fileworker1.txt
+   ```
+   
+   Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it's possible to read and write from each node to the persistent volume, delete the files created.
    
 1. Edit the `create-pv-pvc-inputs.yaml` file and update the following parameters to reflect your settings. Save the file when complete:
 

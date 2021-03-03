@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 #
@@ -430,13 +430,17 @@ function createFiles {
     sed -i -e "s:%ADMIN_PORT%:${adminPort}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_SSL_PORT%:${adminServerSSLPort}:g" ${createJobOutput}
     sed -i -e "s:%CONFIGURED_MANAGED_SERVER_COUNT%:${configuredManagedServerCount}:g" ${createJobOutput}
-    sed -i -e "s:%MANAGED_SERVER_NAME_BASE%:${managedServerNameBase}:g" ${createJobOutput}
-    sed -i -e "s:%MANAGED_SERVER_NAME_BASE_SVC%:${managedServerNameBaseSVC}:g" ${createJobOutput}
-    sed -i -e "s:%MANAGED_SERVER_PORT%:${managedServerPort}:g" ${createJobOutput}
-    sed -i -e "s:%MANAGED_SERVER_SSL_PORT%:${managedServerSSLPort}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_MANAGED_SERVER_NAME_BASE%:${soaManagedServerNameBase}:g" ${createJobOutput}
+    sed -i -e "s:%OSB_MANAGED_SERVER_NAME_BASE%:${osbManagedServerNameBase}:g" ${createJobOutput}
+    sed -i -e "s:%MANAGED_SERVER_NAME_BASE_SVC%:${soaManagedServerNameBaseSVC}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_MANAGED_SERVER_PORT%:${soaManagedServerPort}:g" ${createJobOutput}
+    sed -i -e "s:%OSB_MANAGED_SERVER_PORT%:${osbManagedServerPort}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_MANAGED_SERVER_SSL_PORT%:${soaManagedServerSSLPort}:g" ${createJobOutput}
+    sed -i -e "s:%OSB_MANAGED_SERVER_SSL_PORT%:${osbManagedServerSSLPort}:g" ${createJobOutput}
     sed -i -e "s:%T3_CHANNEL_PORT%:${t3ChannelPort}:g" ${createJobOutput}
     sed -i -e "s:%T3_PUBLIC_ADDRESS%:${t3PublicAddress}:g" ${createJobOutput}
-    sed -i -e "s:%CLUSTER_NAME%:${clusterName}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_CLUSTER_NAME%:${soaClusterName}:g" ${createJobOutput}
+    sed -i -e "s:%OSB_CLUSTER_NAME%:${osbClusterName}:g" ${createJobOutput}
     sed -i -e "s:%CLUSTER_TYPE%:${clusterType}:g" ${createJobOutput}
     sed -i -e "s:%DOMAIN_PVC_NAME%:${persistentVolumeClaimName}:g" ${createJobOutput}
     sed -i -e "s:%DOMAIN_ROOT_DIR%:${domainPVMountPath}:g" ${createJobOutput}
@@ -524,7 +528,11 @@ function createFiles {
   sed -i -e "s:%EXPOSE_ANY_CHANNEL_PREFIX%:${exposeAnyChannelPrefix}:g" ${dcrOutput}
   sed -i -e "s:%EXPOSE_ADMIN_PORT_PREFIX%:${exposeAdminNodePortPrefix}:g" ${dcrOutput}
   sed -i -e "s:%ADMIN_NODE_PORT%:${adminNodePort}:g" ${dcrOutput}
-  sed -i -e "s:%CLUSTER_NAME%:${clusterName}:g" ${dcrOutput}
+  if [ "${domainType}" = "soa" -o "${domainType}" = "soaess" -o "${domainType}" = "soaosb" -o "${domainType}" = "soaessosb" ]; then
+    sed -i -e "s:%CLUSTER_NAME%:${soaClusterName}:g" ${dcrOutput}
+  else
+    sed -i -e "s:%CLUSTER_NAME%:${osbClusterName}:g" ${dcrOutput}
+  fi
   sed -i -e "s:%INITIAL_MANAGED_SERVER_REPLICAS%:${initialManagedServerReplicas}:g" ${dcrOutput}
   sed -i -e "s:%ISTIO_PREFIX%:${istioPrefix}:g" ${dcrOutput}
   sed -i -e "s:%ISTIO_ENABLED%:${istioEnabled}:g" ${dcrOutput}
@@ -539,7 +547,13 @@ function createFiles {
   if [ -z "${serverPodResources}" ]; then
     sed -i -e "/%OPTIONAL_SERVERPOD_RESOURCES%/d" ${dcrOutput}
   else
-    sed -i -e "s:%OPTIONAL_SERVERPOD_RESOURCES%:${serverPodResources}:g" ${dcrOutput}
+    if [[ $(uname) -eq "Darwin" ]]; then
+      serverPodResources=$(echo "${serverPodResources}" | sed -e 's/\\n/%NEWLINE%/g')
+      sed -i -e "s:%OPTIONAL_SERVERPOD_RESOURCES%:${serverPodResources}:g" ${dcrOutput}
+      sed -i -e $'s|%NEWLINE%|\\\n|g' ${dcrOutput}
+    else
+      sed -i -e "s:%OPTIONAL_SERVERPOD_RESOURCES%:${serverPodResources}:g" ${dcrOutput}
+    fi
   fi
 
   if [ "${domainHomeInImage}" == "true" ]; then

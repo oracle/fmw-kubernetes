@@ -2078,12 +2078,12 @@
 <ol>
 <li>
 <p>Pull the Oracle WebLogic Kubernetes Operator 3.X.X image by running the following command on the master node:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull oracle/weblogic-kubernetes-operator:3.X.X
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X
 </code></pre></div><p>where <code>3.X.X</code> is the version of the operator you require.</p>
 </li>
 <li>
 <p>Run the <code>docker tag</code> command as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/weblogic-kubernetes-operator:3.X.X weblogic-kubernetes-operator:3.X.X
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X weblogic-kubernetes-operator:3.X.X
 </code></pre></div><p>where <code>3.X.X</code> is the version of the operator downloaded.</p>
 <p>After installing the new Oracle WebLogic Kubernetes Operator Docker image, repeat the above on the worker nodes.</p>
 </li>
@@ -2101,10 +2101,10 @@ $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch 
 <li>
 <p>Run the following helm command to upgrade the operator:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;work directory&gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>oracle/weblogic-kubernetes-operator:3.X.X --namespace &lt;sample-kubernetes-operator-ns&gt; --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X --namespace &lt;sample-kubernetes-operator-ns&gt; --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>oracle/weblogic-kubernetes-operator:3.X.X --namespace operator --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X --namespace operator --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Release <span style="color:#e6db74">&#34;weblogic-kubernetes-operator&#34;</span> has been upgraded. Happy Helming!
 NAME: weblogic-kubernetes-operator

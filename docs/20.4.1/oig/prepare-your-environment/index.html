@@ -2170,10 +2170,10 @@ k8s.gcr.io/etcd                       3.4.3-0             303ce5db0e90        9 
 <ol>
 <li>
 <p>Pull the Oracle WebLogic Server Kubernetes Operator 3.0.1 image by running the following command on the master node:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull oracle/weblogic-kubernetes-operator:3.0.1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
 </code></pre></div><p>The output will look similar to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Trying to pull repository docker.io/oracle/weblogic-kubernetes-operator ...
-3.0.1: Pulling from docker.io/oracle/weblogic-kubernetes-operator
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Trying to pull repository ghcr.io/oracle/weblogic-kubernetes-operator ...
+3.0.1: Pulling from ghcr.io/oracle/weblogic-kubernetes-operator
 bce8f778fef0: Already exists
 de14ddc50a70: Pull complete
 77401a861078: Pull complete
@@ -2181,12 +2181,12 @@ de14ddc50a70: Pull complete
 2b6f244f998f: Pull complete
 625e05083092: Pull complete
 Digest: sha256:27047d032ac5a9077b39bec512b99d8ca54bf9bf71227f5fd1b7b26ac80c20d3
-Status: Downloaded newer image <span style="color:#66d9ef">for</span> oracle/weblogic-kubernetes-operator:3.0.1
-oracle/weblogic-kubernetes-operator:3.0.1
+Status: Downloaded newer image <span style="color:#66d9ef">for</span> ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
+ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
 </code></pre></div></li>
 <li>
 <p>Run the docker tag command as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/weblogic-kubernetes-operator:3.0.1  weblogic-kubernetes-operator:3.0.1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1  weblogic-kubernetes-operator:3.0.1
 </code></pre></div><p>After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.</p>
 </li>
 </ol>
@@ -2488,6 +2488,10 @@ Repository Creation Utility - Create : Operation Completed
 </code></pre></div></li>
 <li>
 <p>Run the following command to patch schemas in the database:</p>
+
+<div class="notices note" ><p>This command should be run if you are using an OIG image that contains OIG bundle patches. If using an OIG image without OIG bundle patches, then you can skip this step.</p>
+</div>
+
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@helper oracle<span style="color:#f92672">]</span>$ /u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>-f /u01/oracle/idm/server/setup/deploy-files/automation.xml <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>run-patched-sql-files <span style="color:#ae81ff">\
@@ -2686,7 +2690,23 @@ $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
 $ mkdir output_oimcluster
 $ mkdir -p /scratch/OIGDockerK8S/oimclusterdomainpv
 $ chmod -R <span style="color:#ae81ff">777</span> /scratch/OIGDockerK8S/oimclusterdomainpv
-</code></pre></div><p><strong>Note</strong>: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has full access permissions, and that the folder is empty. In this example <code>/scratch/OIGDockerK8S/oimclusterdomainpv</code> is accessible from all nodes via NFS.</p>
+</code></pre></div><p><strong>Note</strong>: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has <strong>full</strong> access permissions, and that the folder is empty. In this example <code>/scratch/OIGDockerK8S/oimclusterdomainpv</code> is accessible from all nodes via NFS.</p>
+</li>
+<li>
+<p>On the master node run the following command to ensure it is possible to read and write to the persistent volume:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /&lt;work directory&gt;/oimclusterdomainpv
+touch filemaster.txt
+ls filemaster.txt
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/OIGDockerK8S/oimclusterdomainpv
+touch filemaster.txt
+ls filemaster.txt
+</code></pre></div><p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/OIGDockerK8S/oimclusterdomainpv
+ls filemaster.txt
+touch fileworker1.txt
+ls fileworker1.txt
+</code></pre></div><p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it&rsquo;s possible to read and write from each node to the persistent volume, delete the files created.</p>
 </li>
 <li>
 <p>Edit the <code>create-pv-pvc-inputs.yaml</code> file and update the following parameters to reflect your settings. Save the file when complete:</p>

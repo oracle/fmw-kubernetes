@@ -1,4 +1,4 @@
-# Copyright (c) 2018, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # The version of this inputs file.  Do not modify.
@@ -38,23 +38,41 @@ domainHome: /u01/oracle/user_projects/domains/soainfra
 # Legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
 serverStartPolicy: IF_NEEDED
 
-# Cluster name
-clusterName: soa_cluster
-
 # Number of managed servers to generate for the domain
 configuredManagedServerCount: 5
 
 # Number of managed servers to initially start for the domain
 initialManagedServerReplicas: 2
 
-# Base string used to generate managed server names
-managedServerNameBase: soa_server
+# BEGIN: Configuration for SOA cluster 
+# Below values applicable only for the domain types soa, soaess, soaosb and soaessosb
+# SOA Cluster name
+soaClusterName: soa_cluster
 
-# Port number for each managed server
-managedServerPort: 8001
+# Base string used to generate SOA managed server names
+soaManagedServerNameBase: soa_server
 
-# SSL Port number for each managed server
-managedServerSSLPort: 8002
+# Port number for each SOA managed server
+soaManagedServerPort: 8001
+
+# SSL Port number for each SOA managed server
+soaManagedServerSSLPort: 8002
+# END: Configuration for SOA cluster
+
+# BEGIN: Configuration for OSB cluster
+# Below values applicable only for the domain types osb, soaosb and soaessosb
+# OSB Cluster name
+osbClusterName: osb_cluster
+
+# Base string used to generate OSB managed server names
+osbManagedServerNameBase: osb_server
+
+# Port number for each OSB managed server
+osbManagedServerPort: 9001
+
+# SSL Port number for each OSB managed server
+osbManagedServerSSLPort: 9002
+# END: Configuration for OSB cluster
 
 # SOA Suite Docker image.
 # The operator requires SOA Suite 12.2.1.4.0.
@@ -81,7 +99,7 @@ weblogicCredentialsSecretName: soainfra-domain-credentials
 # The default is true.
 includeServerOutInPodLog: true
 
-# The in-pod location for domain log, server logs, server out, Node Manager log, and
+# The in-pod location for domain log, server logs, server out, Node Manager log, introspector out, and
 # HTTP access log files. If not specified, the value is derived from the domainUID as /shared/logs/<domainUID>
 logHome: /u01/oracle/user_projects/domains/logs/soainfra
 
@@ -192,4 +210,4 @@ rcuDatabaseURL: oracle-db.default.svc.cluster.local:1521/devpdb.k8s
 rcuCredentialsSecret: soainfra-rcu-credentials
 
 # The persistent store for 'JMS servers' and 'Transaction log store' in the domain. Valid values are 'jdbc' or 'file'. Default is 'jdbc'.
-persistentStore: jdbc 
+persistentStore: jdbc

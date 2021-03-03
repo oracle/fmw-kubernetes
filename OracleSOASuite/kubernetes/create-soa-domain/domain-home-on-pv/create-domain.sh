@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -200,7 +200,7 @@ function createDomainHome {
 
   # Below code updates domain.yaml file for SOASuite domains
   # 1. Adds precreateService: true  to serverPod and cluster definitions
-  # 2. Adds osb_cluster if domainType is soaosb or soaessosb
+  # 2. Adds OSB cluster if domainType is soaosb or soaessosb
   # 3. Updates %DOMAIN_TYPE% with value in create-domain-job.yaml
   cp ${dcrOutput} ${dcrOutput}.bak
   export PRECREATE_SERVICE="\    \serverService:\n\
@@ -210,9 +210,9 @@ function createDomainHome {
     echo "domainType: ${domainType}"
     sed -i -e "s:%DOMAIN_TYPE%:${domainType}:g" ${createJobOutput}
     if [ "${domainType}" == "soaosb" ] || [ "${domainType}" == "soaessosb" ]; then
-      # Appends new cluster and update cluster name to osb_cluster
+      # Appends new cluster and update cluster name to ${osbClusterName}
       sed -n '/- clusterName:/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
-      sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: osb_cluster/" ${dcrOutput}
+      sed -i "0,/- clusterName: ${soaClusterName}/s//- clusterName: ${osbClusterName}/" ${dcrOutput}
       sed -i -e "/- clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
     else
       sed -i -e "/- clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
