@@ -21,7 +21,7 @@ In this release, OIG domains are supported using the “domain on a persistent v
 * Helm 3.1.3+ (check with `helm version`).
 * You must have the `cluster-admin` role to install the operator.
 * We do not currently support running OIG in non-Linux containers.
-* A running Oracle Database 12.2.0.1 or later. The database must be a supported version for OIG as outlined in [Oracle Fusion Middleware 12c certifications](https://www.oracle.com/technetwork/middleware/fmw-122140-certmatrix-5763476.xlsx), and must meet the requirements as outlined in [About Database Requirements for an Oracle Fusion Middleware Installation](http://www.oracle.com/pls/topic/lookup?ctx=fmw122140&id=GUID-4D3068C8-6686-490A-9C3C-E6D2A435F20A).
+* A running Oracle Database 12.2.0.1 or later. The database must be a supported version for OIG as outlined in [Oracle Fusion Middleware 12c certifications](https://www.oracle.com/technetwork/middleware/fmw-122140-certmatrix-5763476.xlsx). It must meet the requirements as outlined in [About Database Requirements for an Oracle Fusion Middleware Installation](http://www.oracle.com/pls/topic/lookup?ctx=fmw122140&id=GUID-4D3068C8-6686-490A-9C3C-E6D2A435F20A) and in [RCU Requirements for Oracle Databases](http://www.oracle.com/pls/topic/lookup?ctx=fmw122140&id=GUID-35B584F3-6F42-4CA5-9BBB-116E447DAB83).
 * Java Developer Kit (11.0.3 or later recommended)
 
 ### Limitations

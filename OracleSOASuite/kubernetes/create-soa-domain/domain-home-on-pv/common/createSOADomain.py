@@ -1,4 +1,4 @@
-# Copyright (c) 2018, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -17,15 +17,9 @@ class SOA12214Provisioner:
         }
     }
 
-
-    MANAGED_SERVERS = []
-    ADDL_MANAGED_SERVERS = []
+    SOA_MANAGED_SERVERS = []
+    OSB_MANAGED_SERVERS = []
     JMSServersList  = ['SOAJMSServer','UMSJMSServer']
-    ADDL_CLUSTER = 'osb_cluster'
-    ADDL_MANAGED_SERVER_BASENAME = 'osb_server'
-    ADDL_MANAGED_SERVER_PORT = 9001
-    ADDL_MANAGED_SERVER_SSL_PORT = 9002
-
 
     JRF_12214_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
@@ -69,17 +63,14 @@ class SOA12214Provisioner:
         'serverGroupsToTarget' : [ 'SOA-MGD-SVRS-ONLY' ]
     }
 
-    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort,             managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled):
+    def __init__(self, oracleHome, javaHome, domainParentDir):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-
-
-    def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase,    managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled, domainType,
-                          exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
-        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, sslEnabled, clusterName, domainType)
+    def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType)
 
         if domainType == "soa" or domainType == "soaosb":
                 self.extendSoaDomain(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
@@ -92,6 +83,7 @@ class SOA12214Provisioner:
 
         if domainType == "bpm":
                 self.extendBpmDomain(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+        print '\n'
 
         if persistentStore == 'jdbc':
             self.configureTlogJDBCStore(domainHome, domainType)
@@ -106,11 +98,14 @@ class SOA12214Provisioner:
             ## Get the schema information for 'WLSSchemaDataSource'
             schemaPrefix = self.getDSSchemaPrefix ('WLSSchemaDataSource')
             serverList = ['AdminServer']
-            # Extend serverList with self.MANAGED_SERVERS for all domainTypes
-            serverList.extend(self.MANAGED_SERVERS)
-            # Extend serverList with self.ADDL_MANAGED_SERVERS for soaosb and soaessosb domainTypes
+            # Extend serverList with self.SOA_MANAGED_SERVERS for domainTypes with soa
+            if domainType == "soa" or domainType == "soaess" or domainType == "soaosb" or domainType == "soaessosb":
+                serverList.extend(self.SOA_MANAGED_SERVERS)
+            elif domainType == "osb":
+                serverList.extend(self.OSB_MANAGED_SERVERS)
+            # Extend serverList with self.OSB_MANAGED_SERVERS for soaosb and soaessosb domainTypes
             if domainType == "soaosb" or domainType == "soaessosb":
-                serverList.extend(self.ADDL_MANAGED_SERVERS)
+                serverList.extend(self.OSB_MANAGED_SERVERS)
             print serverList
             for server in serverList:
                 self.setTlogJDBCStoreAttributes(server, schemaPrefix) 
@@ -154,11 +149,14 @@ class SOA12214Provisioner:
         print time.asctime(time.localtime(time.time())) + ' : Read Domain: %s' % domainHome
         configUpdated = false
         serverList = []
-        # Extend serverList with self.MANAGED_SERVERS for all domainTypes
-        serverList.extend(self.MANAGED_SERVERS)
-        # Extend serverList with self.ADDL_MANAGED_SERVERS for soaosb and soaessosb domainTypes
+        # Extend serverList with self.SOA_MANAGED_SERVERS for domainTypes with soa
+        if domainType == "soa" or domainType == "soaess" or domainType == "soaosb" or domainType == "soaessosb":
+            serverList.extend(self.SOA_MANAGED_SERVERS)
+        elif domainType == "osb":
+            serverList.extend(self.OSB_MANAGED_SERVERS)
+        # Extend serverList with self.OSB_MANAGED_SERVERS for soaosb and soaessosb domainTypes
         if domainType == "soaosb" or domainType == "soaessosb":
-            serverList.extend(self.ADDL_MANAGED_SERVERS)
+            serverList.extend(self.OSB_MANAGED_SERVERS)
         print serverList
         dataSource = self.getDSMBean('WLSSchemaDataSource')
         if dataSource == None:
@@ -206,7 +204,7 @@ class SOA12214Provisioner:
         configUpdated = false
         jmsJdbcStoreName = self.getJMSJDBCStore(jmsServerName,jmsServerTargetName, schemaPrefix, dataSource)
         if(jmsJdbcStoreName == None):
-            print time.asctime(time.localtime(time.time())) + ' : Skipping '+str(jmsServerName)+' aready configured .'
+            print time.asctime(time.localtime(time.time())) + ' : Skipping '+str(jmsServerName)+' already configured .'
             return false
         else:
             cmo = cd('/JMSServer/'+jmsServerName)
@@ -433,14 +431,13 @@ class SOA12214Provisioner:
             name = '%s%s' % (managedNameBase, msIndex)
             create(name, 'Server')
             cd('/Servers/%s/' % name )
-            print('managed server name is %s' % name);
+            print('Creating managed server: %s' % name);
             set('ListenPort', ms_port)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
             cmo.setWeblogicPluginEnabled(true)
             ms_servers.append(name)
-            print 'before calling SSL if enabled'
             if (sslEnabled == 'true'):
               print 'Enabling SSL for Managed server...'
               create(name, 'SSL')
@@ -450,7 +447,7 @@ class SOA12214Provisioner:
         print ms_servers
         return ms_servers
 
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, sslEnabled, clusterName, domainType):
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase,soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType):
         baseTemplate = self.replaceTokens(self.JRF_12214_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
@@ -463,7 +460,6 @@ class SOA12214Provisioner:
         set('Name', domainName)
 
         admin_port = int(adminListenPort)
-        ms_port    = int(managedServerPort)
         ms_count   = int(managedCount)
         adminSSLport = int(adminServerSSLPort)
 
@@ -471,7 +467,6 @@ class SOA12214Provisioner:
         # =======================
         print 'Creating Admin Server...'
         cd('/Servers/AdminServer')
-        #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
         set('ListenPort', admin_port)
         set('Name', adminName)
         cmo.setWeblogicPluginEnabled(true)
@@ -489,29 +484,36 @@ class SOA12214Provisioner:
         set('Name', user)
         set('Password', password)
 
-        # Create a cluster
-        # ======================
-        print 'Creating cluster...'
-        cd('/')
-        cl=create(clusterName, 'Cluster')
-
-        # Create managed servers
-        managedSSLPort = int(managedServerSSLPort)
-        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, clusterName, self.MANAGED_SERVERS, managedSSLPort, sslEnabled)
-        
-        # Creating additional managed servers
-        if  domainType == "soaosb" or domainType == "soaessosb":
-            print 'Creating additional cluster... ' + self.ADDL_CLUSTER
+        # Create cluster and managed servers
+        if  domainType == "soa" or domainType == "soaess" or domainType == "soaosb" or domainType == "soaessosb":
+            ms_port = int(soaManagedServerPort)
+            managedSSLPort = int(soaManagedServerSSLPort)
+            print '\nCreating cluster...' + soaClusterName
             cd('/')
-            cl=create(self.ADDL_CLUSTER, 'Cluster')
-
+            cl=create(soaClusterName, 'Cluster')
+            self.SOA_MANAGED_SERVERS = self.createManagedServers(ms_count, soaManagedNameBase, ms_port, soaClusterName, self.SOA_MANAGED_SERVERS, managedSSLPort, sslEnabled)
+            print 'Created managed Servers for cluster..... ' + soaClusterName
+        elif domainType == "osb":
+            ms_port = int(osbManagedServerPort)
+            managedSSLPort = int(osbManagedServerSSLPort)
+            print '\nCreating cluster...' + osbClusterName
+            cd('/')
+            cl=create(osbClusterName, 'Cluster')
+            self.OSB_MANAGED_SERVERS = self.createManagedServers(ms_count, osbManagedNameBase, ms_port, osbClusterName, self.OSB_MANAGED_SERVERS, managedSSLPort, sslEnabled)
+            print 'Created managed Servers for cluster..... ' + osbClusterName
+       
+        # Creating additional cluster and managed servers
+        if  domainType == "soaosb" or domainType == "soaessosb":
+            print '\nCreating additional cluster... ' + osbClusterName
+            cd('/')
+            cl=create(osbClusterName, 'Cluster')
             # Creating  managed servers for additional cluster
-            self.ADDL_MANAGED_SERVERS = self.createManagedServers(ms_count, self.ADDL_MANAGED_SERVER_BASENAME, self.ADDL_MANAGED_SERVER_PORT, self.ADDL_CLUSTER, self.ADDL_MANAGED_SERVERS, self.ADDL_MANAGED_SERVER_SSL_PORT, sslEnabled)
-            print 'Created managed Servers for additional cluster..... ' + self.ADDL_CLUSTER
+            self.OSB_MANAGED_SERVERS = self.createManagedServers(ms_count, osbManagedNameBase, int(osbManagedServerPort), osbClusterName, self.OSB_MANAGED_SERVERS, int(osbManagedServerSSLPort), sslEnabled)
+            print 'Created managed Servers for additional cluster..... ' + osbClusterName
 
         # Create Node Manager
         # =======================
-        print 'Creating Node Managers...'
+        print '\nCreating Node Managers...'
         for machine in self.MACHINES:
             cd('/')
             create(machine, 'Machine')
@@ -613,7 +615,7 @@ class SOA12214Provisioner:
     def targetSOAServers(self,serverGroupsToTarget):
         print 'Targeting Server Groups...'
         cd('/')
-        for managedName in self.MANAGED_SERVERS:
+        for managedName in self.SOA_MANAGED_SERVERS:
             setServerGroups(managedName, serverGroupsToTarget)
             print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
             cd('/Servers/' + managedName)
@@ -623,14 +625,14 @@ class SOA12214Provisioner:
     def targetSOACluster(self):
         print 'Targeting Cluster ...'
         cd('/')
-        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + clusterName
-        cd('/Cluster/' + clusterName)
+        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + soaClusterName
+        cd('/Cluster/' + soaClusterName)
         set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
     def targetSOAESSServers(self,serverGroupsToTarget):
         cd('/')
-        for managedName in self.MANAGED_SERVERS:
+        for managedName in self.SOA_MANAGED_SERVERS:
             if not managedName == 'AdminServer':
                 setServerGroups(managedName, serverGroupsToTarget)
                 print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
@@ -641,26 +643,26 @@ class SOA12214Provisioner:
     def targetSOAESSCluster(self):
         print 'Targeting Cluster ...'
         cd('/')
-        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + clusterName
-        cd('/Cluster/' + clusterName)
+        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + soaClusterName
+        cd('/Cluster/' + soaClusterName)
         set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
-    def targetOSBServers(self,serverGroupsToTarget, managedServers):
+    def targetOSBServers(self,serverGroupsToTarget):
         print 'Targeting Server Groups...'
         cd('/')
-        for managedName in managedServers:
+        for managedName in self.OSB_MANAGED_SERVERS:
             setServerGroups(managedName, serverGroupsToTarget)
             print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
             cd('/Servers/' + managedName)
             set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
-    def targetOSBCluster(self, cluster_name):
+    def targetOSBCluster(self):
         print 'Targeting Cluster ...'
         cd('/')
-        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + cluster_name
-        cd('/Cluster/' + cluster_name)
+        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + osbClusterName
+        cd('/Cluster/' + osbClusterName)
         set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
@@ -669,7 +671,7 @@ class SOA12214Provisioner:
         self.applySOATemplates()
         print 'Extension Templates added'
         
-        if 'soa_server1' not in self.MANAGED_SERVERS:
+        if 'soa_server1' not in self.SOA_MANAGED_SERVERS:
             print 'INFO: deleting soa_server1'
             cd('/')
             delete('soa_server1','Server')
@@ -687,9 +689,9 @@ class SOA12214Provisioner:
         cd('/')
         self.targetSOACluster()
 
-        print "Set WLS clusters as target of defaultCoherenceCluster:[" + clusterName + "]"
+        print "Set WLS clusters as target of defaultCoherenceCluster:[" + soaClusterName + "]"
         cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
-        set('Target', clusterName)
+        set('Target', soaClusterName)
 
         print 'Preparing to update domain...'
         updateDomain()
@@ -703,7 +705,7 @@ class SOA12214Provisioner:
 
         print 'Extension Templates added'
         
-        if 'soa_server1' not in self.MANAGED_SERVERS:
+        if 'soa_server1' not in self.SOA_MANAGED_SERVERS:
             print 'INFO: deleting soa_server1'
             cd('/')
             delete('soa_server1','Server')
@@ -726,9 +728,9 @@ class SOA12214Provisioner:
         cd('/')
         self.targetSOAESSCluster()
 
-        print "Set WLS clusters as target of defaultCoherenceCluster:[" + clusterName + "]"
+        print "Set WLS clusters as target of defaultCoherenceCluster:[" + soaClusterName + "]"
         cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
-        set('Target', clusterName)
+        set('Target', soaClusterName)
 
         print 'Preparing to update domain...'
         updateDomain()
@@ -741,7 +743,7 @@ class SOA12214Provisioner:
         self.applyOSBTemplates()
         print 'Extension Templates added'
 
-        if 'osb_server1' not in self.MANAGED_SERVERS and 'osb_server1' not in self.ADDL_MANAGED_SERVERS:
+        if 'osb_server1' not in self.OSB_MANAGED_SERVERS:
             print 'INFO: deleting osb_server1'
             cd('/')
             delete('osb_server1','Server')
@@ -758,27 +760,16 @@ class SOA12214Provisioner:
         print 'Targeting Server Groups...'
         serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
         serverGroupsToTarget.extend(self.OSB_12214_TEMPLATES['serverGroupsToTarget'])
-        if domainType == "osb" :
+        if domainType == "osb" or domainType == "soaosb" or domainType == "soaessosb":
             cd('/')
-            self.targetOSBServers(serverGroupsToTarget, self.MANAGED_SERVERS)
+            self.targetOSBServers(serverGroupsToTarget)
 
             cd('/')
-            self.targetOSBCluster(clusterName)
+            self.targetOSBCluster()
 
-            print "Set WLS clusters as target of defaultCoherenceCluster:[" + clusterName + "]"
+            print "Set WLS clusters as target of defaultCoherenceCluster:[" + osbClusterName + "]"
             cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
-            set('Target', clusterName)
-
-        if domainType == "soaosb" or domainType == "soaessosb" :
-            cd('/')
-            self.targetOSBServers(serverGroupsToTarget, self.ADDL_MANAGED_SERVERS)
-
-            cd('/')
-            self.targetOSBCluster(self.ADDL_CLUSTER)
-
-            print "Set WLS clusters as target of defaultCoherenceCluster:[" + self.ADDL_CLUSTER + "]"
-            cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
-            set('Target', self.ADDL_CLUSTER)
+            set('Target', osbClusterName)
 
         print 'Preparing to update domain...'
         updateDomain()
@@ -804,9 +795,9 @@ class SOA12214Provisioner:
         cd('/')
         self.targetSOACluster()
 
-        print "Set WLS clusters as target of defaultCoherenceCluster:[" + clusterName + "]"
+        print "Set WLS clusters as target of defaultCoherenceCluster:[" + soaClusterName + "]"
         cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
-        set('Target', clusterName)
+        set('Target', soaClusterName)
         print 'Preparing to update domain...'
         updateDomain()
         print 'Domain updated successfully'
@@ -868,9 +859,12 @@ def usage():
           '-user <domain-user> -password <domain-password> ' + \
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
           '-adminListenPort <adminListenPort> -adminName <adminName> ' \
-          '-managedNameBase <managedNameBase> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
-          '-managedServerCount <managedCount> -clusterName <clusterName>' \
-          '-domainType <soa|osb|bpm|soaosb|soaess|soaessosb>' \
+          '-soaManagedNameBase <soaManagedNameBase> -osbManagedNameBase <osbManagedNameBase> ' \
+          '-soaManagedServerPort <soaManagedServerPort> -osbManagedServerPort <osbManagedServerPort> ' \
+          '-soaManagedServerSSLPort <soaManagedServerSSLPort> -osbManagedServerSSLPort <osbManagedServerSSLPort> ' \
+          '-prodMode <prodMode> -managedServerCount <managedCount> ' \
+          '-soaClusterName <soaClusterName> -osbClusterName <osbClusterName> ' \
+          '-domainType <soa|osb|bpm|soaosb|soaess|soaessosb> ' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
           '-t3ChannelPort <t3 channel port> -persistentStore <jdbc|file>'
     sys.exit(0)
@@ -942,14 +936,23 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-adminName':
         adminName = sys.argv[i + 1]
         i += 2
-    elif sys.argv[i] == '-managedNameBase':
-        managedNameBase = sys.argv[i + 1]
+    elif sys.argv[i] == '-soaManagedNameBase':
+        soaManagedNameBase = sys.argv[i + 1]
         i += 2
-    elif sys.argv[i] == '-managedServerPort':
-        managedServerPort = sys.argv[i + 1]
+    elif sys.argv[i] == '-osbManagedNameBase':
+        osbManagedNameBase = sys.argv[i + 1]
         i += 2
-    elif sys.argv[i] == '-managedServerSSLPort':
-        managedServerSSLPort = sys.argv[i + 1]
+    elif sys.argv[i] == '-soaManagedServerPort':
+        soaManagedServerPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-osbManagedServerPort':
+        osbManagedServerPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-soaManagedServerSSLPort':
+        soaManagedServerSSLPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-osbManagedServerSSLPort':
+        osbManagedServerSSLPort = sys.argv[i + 1]
         i += 2
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
@@ -957,8 +960,11 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-managedServerCount':
         managedCount = sys.argv[i + 1]
         i += 2
-    elif sys.argv[i] == '-clusterName':
-        clusterName = sys.argv[i + 1]
+    elif sys.argv[i] == '-soaClusterName':
+        soaClusterName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-osbClusterName':
+        osbClusterName = sys.argv[i + 1]
         i += 2
     elif sys.argv[i] == '-domainType':
         domainType = sys.argv[i + 1]
@@ -983,5 +989,5 @@ while i < len(sys.argv):
         usage()
         sys.exit(1)
 
-provisioner = SOA12214Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled)
-provisioner.createSOADomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner = SOA12214Provisioner(oracleHome, javaHome, domainParentDir)
+provisioner.createSOADomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)

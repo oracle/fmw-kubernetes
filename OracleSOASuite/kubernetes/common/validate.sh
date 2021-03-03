@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -129,7 +129,7 @@ function validateNamespace {
 # Create an instance of clusterName to be used in cases where a legal DNS name is required.
 #
 function validateClusterName {
-  clusterNameSVC=$(toDNS1123Legal $clusterName)
+  eval "${1}SVC=$(toDNS1123Legal ${2})"
 }
 
 #
@@ -140,10 +140,10 @@ function validateAdminServerName {
 }
 
 #
-# Create an instance of adminServerName to be used in cases where a legal DNS name is required.
+# Create an instance of managedServerName to be used in cases where a legal DNS name is required.
 #
 function validateManagedServerNameBase {
-  managedServerNameBaseSVC=$(toDNS1123Legal $managedServerNameBase)
+  eval "${1}SVC=$(toDNS1123Legal ${2})"
 }
 
 #
@@ -195,6 +195,82 @@ function validateFmwDomainType {
     fmwDomainType="JRF"
   fi
   failIfValidationErrors
+}
+
+#
+# Function to validate the SOA Suite domainType
+#
+function validateSOASuiteDomainType {
+  if [ ! -z ${domainType} ]; then
+    case ${domainType} in
+      "soa")
+      ;;
+      "soaess")
+      ;;
+      "osb")
+      ;;
+      "soaosb")
+      ;;
+      "soaessosb")
+      ;;
+      *)
+        validationError "Invalid domainType: ${domainType}. Valid values are: soa or soaess or osb or soaosb or soaessosb."
+      ;;
+    esac
+  else
+    # Set the default
+    domainType="soa"
+  fi
+  failIfValidationErrors
+}
+
+#
+# Function to validate the persistent store type for SOA Suite domains
+#
+function validatePersistentStoreType {
+  if [ ! -z ${persistentStore} ]; then
+    case ${persistentStore} in
+      "jdbc")
+      ;;
+      "file")
+      ;;
+      *)
+        validationError "Invalid persistentStore: ${persistentStore}. Valid values are: jdbc or file."
+      ;;
+    esac
+  else
+    # Set the default
+    persistentStore="jdbc"
+  fi
+  failIfValidationErrors
+}
+
+#
+# Validate SSL port value is specified ?
+#
+function validateSSLPortsSpecified {
+  if [ "${sslEnabled}" =  "true" ]; then
+    validateInputParamsSpecified \
+	  ${1}
+  fi  
+}
+
+#
+# Validate ConfiguredManagedServerCount is non zero value
+#
+function validateConfiguredManagedServerCount {
+  if [ "${configuredManagedServerCount}" -le 0 ]; then
+    validationError "Invalid configuredManagedServerCount value: ${configuredManagedServerCount}. configuredManagedServerCount value must be greater than 0."
+  fi  
+}
+
+#
+# Validate InitialManagedServerReplicas
+#
+function validateInitialManagedServerReplicas {
+  if [ "${initialManagedServerReplicas}" -lt 0 -o "${initialManagedServerReplicas}" -gt "${configuredManagedServerCount}" ]; then
+    validationError "Invalid initialManagedServerReplicas value: ${initialManagedServerReplicas}. initialManagedServerReplicas value must be a positive integer  lesser than configuredManagedServerCount."
+  fi  
 }
 
 #
@@ -337,13 +413,13 @@ function validateDomainSecret {
   failIfValidationErrors
 
   # Verify the secret contains a username
-  SECRET=`kubectl get secret ${weblogicCredentialsSecretName} -n ${namespace} -o jsonpath='{.data}'| grep username: | wc | awk ' { print $1; }'`
+  SECRET=`kubectl get secret ${weblogicCredentialsSecretName} -n ${namespace} -o jsonpath='{.data}' | tr -d '"' | grep username: | wc | awk ' { print $1; }'`
   if [ "${SECRET}" != "1" ]; then
     validationError "The domain secret ${weblogicCredentialsSecretName} in namespace ${namespace} does contain a username"
   fi
 
   # Verify the secret contains a password
-  SECRET=`kubectl get secret ${weblogicCredentialsSecretName} -n ${namespace} -o jsonpath='{.data}'| grep password: | wc | awk ' { print $1; }'`
+  SECRET=`kubectl get secret ${weblogicCredentialsSecretName} -n ${namespace} -o jsonpath='{.data}' | tr -d '"'| grep password: | wc | awk ' { print $1; }'`
   if [ "${SECRET}" != "1" ]; then
     validationError "The domain secret ${weblogicCredentialsSecretName} in namespace ${namespace} does contain a password"
   fi
@@ -360,8 +436,6 @@ function validateCommonInputs {
   validateInputParamsSpecified \
     adminServerName \
     domainUID \
-    clusterName \
-    managedServerNameBase \
     namespace \
     includeServerOutInPodLog \
     version
@@ -370,7 +444,6 @@ function validateCommonInputs {
     adminPort \
     configuredManagedServerCount \
     initialManagedServerReplicas \
-    managedServerPort \
     t3ChannelPort \
     adminNodePort
 
@@ -378,7 +451,8 @@ function validateCommonInputs {
     productionModeEnabled \
     exposeAdminT3Channel \
     exposeAdminNodePort \
-    includeServerOutInPodLog
+    includeServerOutInPodLog \
+    sslEnabled
 
   export requiredInputsVersion="create-weblogic-sample-domain-inputs-v1"
   validateVersion
@@ -386,13 +460,62 @@ function validateCommonInputs {
   validateDomainUid
   validateNamespace
   validateAdminServerName
-  validateManagedServerNameBase
-  validateClusterName
+
   validateWeblogicCredentialsSecretName
   validateServerStartPolicy
   validateWeblogicImagePullPolicy
   validateWeblogicImagePullSecretName
   validateFmwDomainType
+
+  # Below validations are for SOA Suite domains
+  validateSSLPortsSpecified \
+	adminServerSSLPort
+
+  validateSOASuiteDomainType
+  validatePersistentStoreType
+
+  if [ "${domainType}" = "soa" -o "${domainType}" = "soaess" -o "${domainType}" = "soaosb" -o "${domainType}" = "soaessosb" ]; then
+    validateInputParamsSpecified \
+      soaClusterName \
+      soaManagedServerNameBase
+
+    validateIntegerInputParamsSpecified \
+      soaManagedServerPort
+ 
+    validateSSLPortsSpecified \
+	  soaManagedServerSSLPort
+
+    validateClusterName \
+      soaClusterName \
+      ${soaClusterName}
+
+    validateManagedServerNameBase \
+      soaManagedServerNameBase \
+      ${soaManagedServerNameBase}
+  fi
+  if [ "${domainType}" = "osb" -o "${domainType}" = "soaosb" -o "${domainType}" = "soaessosb" ]; then
+    validateInputParamsSpecified \
+      osbClusterName \
+      osbManagedServerNameBase
+
+    validateIntegerInputParamsSpecified \
+      osbManagedServerPort
+
+    validateSSLPortsSpecified \
+	  osbManagedServerSSLPort
+
+    validateClusterName \
+      osbClusterName \
+      ${osbClusterName}
+
+    validateManagedServerNameBase \
+      osbManagedServerNameBase \
+      ${osbManagedServerNameBase}
+  fi
+
+  validateConfiguredManagedServerCount
+  validateInitialManagedServerReplicas
+  
   # Below three validate methods are used for MII integration testing
   validateWdtDomainType
   validateWdtModelFile
@@ -462,4 +585,3 @@ function validateWdtDomainType {
   fi
   failIfValidationErrors
 }
-

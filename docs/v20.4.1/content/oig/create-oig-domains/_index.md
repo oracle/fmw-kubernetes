@@ -78,7 +78,7 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    image: oracle/oig:12.2.1.4.0
    namespace: oimcluster
    weblogicCredentialsSecretName: oimcluster-domain-credentials
-   persistentVolumeClaimName: oimcluster-domain-pvc
+   persistentVolumeClaimName: oimcluster-oim-pvc
    logHome: /u01/oracle/user_projects/domains/logs/oimcluster
    rcuSchemaPrefix: OIGK8S
    rcuDatabaseURL: mydatabasehost.example.com:1521/orcl.example.com
