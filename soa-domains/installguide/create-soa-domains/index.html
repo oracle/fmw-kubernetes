@@ -4383,6 +4383,16 @@ provide in this file.</p>
 <td><code>osb_cluster</code></td>
 </tr>
 <tr>
+<td><code>soaClusterName</code></td>
+<td>Name of the SOA WebLogic Server cluster instance to generate for the domain. By default, the cluster name is <code>soa_cluster</code>. This configuration parameter is applicable only for soa, soaess, soaosb, and soaessosb domain types.</td>
+<td><code>soa_cluster</code></td>
+</tr>
+<tr>
+<td><code>osbClusterName</code></td>
+<td>Name of the Oracle Service Bus WebLogic Server cluster instance to generate for the domain. By default, the cluster name is <code>osb_cluster</code>. This configuration parameter is applicable only for osb, soaosb, and soaessosb domain types.</td>
+<td><code>osb_cluster</code></td>
+</tr>
+<tr>
 <td><code>createDomainFilesDir</code></td>
 <td>Directory on the host machine to locate all the files to create a WebLogic Server domain, including the script that is specified in the <code>createDomainScriptName</code> parameter. By default, this directory is set to the relative path <code>wlst</code>, and the create script will use the built-in WLST offline scripts in the <code>wlst</code> directory to create the WebLogic Server domain. An absolute path is also supported to point to an arbitrary directory in the file system. The built-in scripts can be replaced by the user-provided scripts as long as those files are in the specified directory. Files in this directory are put into a Kubernetes config map, which in turn is mounted to the <code>createDomainScriptsMountPath</code>, so that the Kubernetes pod can use the scripts and supporting files to create a domain home.</td>
 <td><code>wlst</code></td>
@@ -7081,6 +7091,22 @@ soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;    
                     
 
                     
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
                         
             
             
@@ -7149,6 +7175,22 @@ soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;    
                     
                     
                         
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
                     
                     
 
