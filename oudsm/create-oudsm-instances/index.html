@@ -2963,12 +2963,12 @@
  
   
     
-    <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
+    <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/" title="Administration Guide" class="dd-item 
         
         
         
         ">
-      <a href="/fmw-kubernetes/wcsites-domains/adminguide/">
+      <a href="/fmw-kubernetes/wccontent-domains/adminguide/">
           <b>3.  </b>Administration Guide
           
       </a>
@@ -3705,6 +3705,18 @@
             
             
 
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/wcsites-domains/adminguide/elasticsearch-integration/">
+        <b> </b>Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
 
  
   
@@ -4711,6 +4723,205 @@ bash-4.2$
                 
                 
 
+NAME                             STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/oudsmpvc   Bound    oudsmpv   10Gi       RWX            manual         45m
+
+NAME                         TYPE                                  DATA   AGE
+secret/default-token-5kbxk   kubernetes.io/service-account-token   3      84m
+secret/oudsmsecret           Opaque                                2      80m
+</code></pre><p>Once the container is running (READY shows as &lsquo;1/1&rsquo;) check the value of the service port (PORT/s value : here 7001:31674/TCP,7002:31490/TCP)  for the Oracle Unified Directory Services Manager service and use this to access Oracle Unified Directory Services Manager in a browser:</p>
+<pre><code>http://&lt;hostname&gt;:&lt;svcport&gt;/oudsm
+</code></pre>
+<p>In the case here:</p>
+<pre><code>http://&lt;myhost&gt;:31674/oudsm
+</code></pre>
+<p>If you need to release the resources created in this example (POD, service) then issue the following command:</p>
+<pre><code>$ kubectl delete -f samples/oudsm-pod.yaml
+service &quot;oudsm-svc&quot; deleted
+pod &quot;oudsmpod&quot; deleted
+</code></pre><p>This will avoid conflicts when running the following example for Deployments.</p>
+<h3 id="oracle-unified-directory-services-manager-deployment">Oracle Unified Directory Services Manager Deployment</h3>
+<p>In this example you create multiple Oracle Unified Directory Services Manager PODs/Services using Kubernetes deployments.</p>
+<p>To create the deployment update the <code>samples/oudsm-deployment.yaml</code> file.</p>
+<p>Update the following to values specific to your environment:</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Value</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>%NAMESPACE%</td>
+<td>Namespace</td>
+<td>myoudsmns</td>
+</tr>
+<tr>
+<td>%IMAGE%</td>
+<td>Oracle image tag</td>
+<td>oracle/oudsm:12.2.1.4.0</td>
+</tr>
+<tr>
+<td>%SECRET_NAME%</td>
+<td>Secret name</td>
+<td>oudsmsecret</td>
+</tr>
+</tbody>
+</table>
+<p>Apply the file:</p>
+<pre><code>$ kubectl apply -f samples/oudsm-deployment.yaml
+service/oudsm created
+deployment.apps/oudsmdeploypod created
+</code></pre><p>To validate that the POD is running:</p>
+<pre><code>$ kubectl --namespace &lt;namespace&gt; get all,pv,pvc,secret
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl --namespace myoudsmns get all,pv,pvc,secret
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl --namespace myoudsmns get all,pv,pvc,secret
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/oudsmdeploypod-7c6bb5476-6zcmc   1/1     Running   0          13m
+pod/oudsmdeploypod-7c6bb5476-nldd8   1/1     Running   0          13m
+
+NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                         AGE
+service/oudsm   NodePort   10.97.245.58   &lt;none&gt;        7001:31342/TCP,7002:31222/TCP   13m
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/oudsmdeploypod   2/2     2            2           13m
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/oudsmdeploypod-7c6bb5476   2         2         2       13m
+
+NAME                                    CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                     STORAGECLASS                   REASON   AGE
+persistentvolume/oudsmpv                10Gi       RWX            Delete           Bound    myoudsmns/oudsmpvc                        manual                                  16h
+
+NAME                             STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/oudsmpvc   Bound    oudsmpv   10Gi       RWX            manual         16h
+
+NAME                         TYPE                                  DATA   AGE
+secret/default-token-5kbxk   kubernetes.io/service-account-token   3      16h
+secret/oudsmsecret           Opaque                                2      16h
+
+</code></pre><p>Once the container is running (READY shows as &lsquo;1/1&rsquo;) check the value of the service port (PORT/s value : here 7001:31421/TCP,7002:31737/TCP) for the Oracle Unified Directory Services Manager service and use this to access Oracle Unified Directory Services Manager in a browser:</p>
+<pre><code>    http://&lt;hostname&gt;:&lt;svcport&gt;/oudsm
+</code></pre>
+<p>In the case here:</p>
+<pre><code>    http://&lt;myhost&gt;:31342/oudsm
+</code></pre>
+<p>Notice that in the output above we have created 2 Oracle Unified Directory Services Manager PODs (pod/oudsmdeploypod-7bb67b685c-78sq5, pod/oudsmdeploypod-7bb67b685c-xssbq) which are accessed via a service (service/oudsm).</p>
+<p>The number of PODs is governed by the <code>replicas</code> parameter in the <code>samples/oudsm-deployment.yaml</code> file:</p>
+<pre><code>...
+    kind: Deployment
+    metadata:
+      name: oudsmdeploypod
+      namespace: myoudsmns
+      labels:
+        app: oudsmdeploypod
+    spec:
+    replicas: 2
+    selector:
+        matchLabels:
+        app: oudsmdeploypod
+...
+</code></pre><p>If you have a requirement to add additional PODs to your cluster you can update the <code>samples/oudsm-deployment.yaml</code> file with the new value for <code>replicas</code> and apply the file.  For example, setting <code>replicas</code> to &lsquo;3&rsquo; would start an additional POD as shown below:</p>
+<pre><code>...
+    kind: Deployment
+    metadata:
+      name: oudsmdeploypod
+      namespace: myoudsmns
+      labels:
+        app: oudsmdeploypod
+    spec:
+    replicas: 3
+    selector:
+        matchLabels:
+        app: oudsmdeploypod
+...
+</code></pre><pre><code>$ kubectl apply -f samples/oudsm-deployment.yaml.tmp
+service/oudsm unchanged
+deployment.apps/oudsmdeploypod configured
+</code></pre><p>Check the number of PODs have increased to 3.</p>
+<pre><code>$ kubectl --namespace myoudsmns get all,pv,pvc,secret
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/oudsmdeploypod-7c6bb5476-6zcmc   1/1     Running   0          17m
+pod/oudsmdeploypod-7c6bb5476-nldd8   1/1     Running   0          17m
+pod/oudsmdeploypod-7c6bb5476-vqmz7   0/1     Running   0          26s
+
+NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                         AGE
+service/oudsm   NodePort   10.97.245.58   &lt;none&gt;        7001:31342/TCP,7002:31222/TCP   17m
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/oudsmdeploypod   2/3     3            2           17m
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/oudsmdeploypod-7c6bb5476   3         3         2       17m
+
+NAME                                    CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                     STORAGECLASS                   REASON   AGE
+persistentvolume/mike-oud-ds-rs-espv1   20Gi       RWX            Retain           Bound    mikens/data-mike-oud-ds-rs-es-cluster-0   elk                                     4d18h
+persistentvolume/mike-oud-ds-rs-pv      30Gi       RWX            Retain           Bound    mikens/mike-oud-ds-rs-pvc                 manual                                  4d18h
+persistentvolume/oimcluster-oim-pv      10Gi       RWX            Retain           Bound    oimcluster/oimcluster-oim-pvc             oimcluster-oim-storage-class            69d
+persistentvolume/oudsmpv                10Gi       RWX            Delete           Bound    myoudsmns/oudsmpvc                        manual                                  16h
+
+NAME                             STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/oudsmpvc   Bound    oudsmpv   10Gi       RWX            manual         16h
+
+NAME                         TYPE                                  DATA   AGE
+secret/default-token-5kbxk   kubernetes.io/service-account-token   3      16h
+secret/oudsmsecret           Opaque                                2      16h
+bash-4.2$
+</code></pre><p>In this example, the POD <code>pod/oudsmdeploypod-7c6bb5476-vqmz7</code> has been added.</p>
+<h3 id="appendix-a--reference">Appendix A : Reference</h3>
+<ol>
+<li><strong>samples/oudsm-pod.yaml</strong> : This yaml file is use to create the pod and bring up the Oracle Unified Directory Services Manager services</li>
+<li><strong>samples/oudsm-deployment.yaml</strong> : This yaml file is used to create replicas of Oracle Unified Directory Services Manager and bring up the Oracle Unified Directory Services Manager services based on the deployment</li>
+</ol>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
                     
                     
                         
@@ -5116,9 +5327,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5276,6 +5484,12 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
+                    
+            
+        
                     
                         
             
@@ -5289,9 +5503,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5453,9 +5664,6 @@ bash-4.2$
             
         
                     
-            
-        
-                    
                         
             
             
@@ -5484,9 +5692,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -5501,10 +5706,14 @@ bash-4.2$
 
                     
                     
-                        
                     
-                    
 
+                    
+            
+        
+                    
+            
+        
                     
                         
             
@@ -5518,9 +5727,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5589,6 +5795,9 @@ bash-4.2$
             
         
                     
+            
+        
+                    
                         
             
             
@@ -5601,6 +5810,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -5619,9 +5831,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5633,11 +5842,10 @@ bash-4.2$
 
                     
                     
+                        
                     
-
                     
-            
-        
+
                     
             
         
@@ -5666,6 +5874,8 @@ bash-4.2$
                 
 
                     
+                    
+                        
                     
                     
 
@@ -5704,7 +5914,22 @@ bash-4.2$
                     
             
         
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
                     
+                    
+                        
+                    
+                    
+
+                    
                         
             
             
@@ -5796,6 +6021,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
                         
             
@@ -5857,9 +6085,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5909,6 +6134,9 @@ bash-4.2$
                     
 
                     
+            
+        
+                    
                         
             
             
@@ -5940,6 +6168,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -5957,8 +6188,18 @@ bash-4.2$
                     
 
                     
+                        
             
-        
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
             
         
@@ -6022,12 +6263,13 @@ bash-4.2$
                 
                 
 
-                    
                     
-                        
                     
                     
 
+                    
+            
+        
                     
                         
             
@@ -6052,12 +6294,26 @@ bash-4.2$
                     
                 
                 
+
+                    
+                    
+                    
 
                     
+            
+        
                     
                         
+            
+            
+                
+                    
+                
+                
+
                     
                     
+                    
 
                     
             
@@ -6107,6 +6363,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -6139,6 +6398,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
                         
             
@@ -6188,11 +6450,10 @@ bash-4.2$
 
                     
                     
+                        
                     
-
                     
-            
-        
+
                     
                         
             
@@ -6225,9 +6486,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -6257,6 +6515,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -6273,9 +6534,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -6289,6 +6547,12 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
+                    
+            
+        
                     
                         
             
@@ -6330,21 +6594,24 @@ bash-4.2$
             
                 
                     
+                    
                 
                 
 
                     
                     
+                        
                     
-
                     
-            
-        
+
                     
                         
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -6373,27 +6640,12 @@ bash-4.2$
             
         
                     
-            
-        
-                    
                         
             
             
-                
-                    
-                
                 
-
-                    
                     
                     
-
-                    
-                        
-            
-            
-                
-                    
                 
                 
 
@@ -6416,11 +6668,10 @@ bash-4.2$
 
                     
                     
+                        
                     
-
                     
-            
-        
+
                     
                         
             
@@ -6456,9 +6707,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -6492,6 +6740,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
             
         
@@ -6617,11 +6868,10 @@ bash-4.2$
 
                     
                     
+                        
                     
-
                     
-            
-        
+
                     
                         
             
@@ -6648,12 +6898,13 @@ bash-4.2$
                 
 
                     
-                    
-                        
                     
                     
 
                     
+            
+        
+                    
                         
             
             
@@ -6703,9 +6954,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -6756,9 +7004,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -6785,9 +7030,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -6797,24 +7039,21 @@ bash-4.2$
             
                 
                     
-                    
                 
                 
 
-                    
                     
-                        
                     
                     
 
+                    
+            
+        
                     
                         
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -6851,7 +7090,6 @@ bash-4.2$
             
                 
                     
-                    
                 
                 
 
@@ -6859,27 +7097,22 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
                         
             
             
                 
                     
-                        
-                        
-                    
                 
                 
 
-                    
                     
-                        
                     
                     
 
+                    
+            
+        
                     
                         
             
@@ -6893,9 +7126,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -6912,6 +7142,12 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
+                    
+            
+        
                     
                         
             
@@ -6945,9 +7181,6 @@ bash-4.2$
             
         
                     
-            
-        
-                    
                         
             
             
@@ -6973,9 +7206,6 @@ bash-4.2$
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -7008,6 +7238,9 @@ bash-4.2$
                     
                     
 
+                    
+            
+        
                     
             
         
