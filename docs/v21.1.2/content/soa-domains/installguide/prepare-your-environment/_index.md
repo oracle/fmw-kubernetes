@@ -107,7 +107,7 @@ You can now use the deployment scripts from `${WORKDIR}/weblogic-kubernetes-oper
 
 The Oracle SOA Suite image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle SOA Suite image from My Oracle Support.
 
-1. Download patch [32398542](http://aru.us.oracle.com:8080/ARU/ViewPatchRequest/process_form?aru=24028532) from My Oracle Support (MOS).
+1. Download patch [32398542](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32398542) from My Oracle Support (MOS).
 1. Unzip the downloaded patch zip file.
 1. Load the image archive using the `docker load` command.
 
@@ -116,15 +116,6 @@ The Oracle SOA Suite image with latest bundle patch and required interim patches
    $ docker load < soa-12.2.1.4.0-210119.1140.180.tar
    Loaded image: oracle/soa:12.2.1.4.0-210119.1140.180
    $
-   ```
-1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `8395bf76-1030-479b-b8a9-7a88cf61eb55`.
-
-   For example:
-   ```bash
-   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/soa:12.2.1.4.0-210119.1140.180
-    8395bf76-1030-479b-b8a9-7a88cf61eb55
-   $
-
    ```
 1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `8395bf76-1030-479b-b8a9-7a88cf61eb55`.
 
