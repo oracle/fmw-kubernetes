@@ -24,7 +24,7 @@ Refer to the [sample](https://github.com/oracle/docker-images/tree/master/Oracle
 
 #### Create the Apache plugin configuration file
 
-1. The configuration file named `custom_mod_wl_apache.conf` should have all the URL routing rules for the Oracle SOA Suite applications deployed in the domain that needs to be accessible externally. Update this file with values based on your environment. The file content is similar to below. This directory location of this configuration file is referred as `host-config-dir` in `input.yaml`.
+1. The configuration file named `custom_mod_wl_apache.conf` should have all the URL routing rules for the Oracle SOA Suite applications deployed in the domain that needs to be accessible externally. Update this file with values based on your environment. The file content is similar to below.
 
 
    {{%expand "Click here to see the sample content of the configuration file custom_mod_wl_apache.conf for soa domain" %}}
@@ -66,13 +66,25 @@ Refer to the [sample](https://github.com/oracle/docker-images/tree/master/Oracle
     WebLogicPort 7001
     </Location>
 
+    <Location /xbusrouting>
+    SetHandler weblogic-handler
+    WebLogicHost soainfra-adminserver
+    WebLogicPort 7001
+    </Location>
+
+    <Location /xbustransform>
+    SetHandler weblogic-handler
+    WebLogicHost soainfra-adminserver
+    WebLogicPort 7001
+    </Location>
+
     <Location /weblogic/ready>
     SetHandler weblogic-handler
     WebLogicHost soainfra-adminserver
     WebLogicPort 7001
     </Location>
    # Directive for all application deployed on weblogic cluster with a prepath defined by LOCATION variable
-   # For example, if the LOCAITON is set to '/weblogic', all applications deployed on the cluster can be accessed via
+   # For example, if the LOCATION is set to '/weblogic', all applications deployed on the cluster can be accessed via
    # http://myhost:myport/weblogic/application_end_url
    # where 'myhost' is the IP of the machine that runs the Apache web tier, and
    #       'myport' is the port that the Apache web tier is publicly exposed to.
@@ -107,7 +119,7 @@ Refer to the [sample](https://github.com/oracle/docker-images/tree/master/Oracle
    PathTrim /weblogic1
    </Location>
    # Directive for all application deployed on weblogic cluster with a prepath defined by LOCATION2 variable
-   # For example, if the LOCAITON2 is set to '/weblogic2', all applications deployed on the cluster can be accessed via
+   # For example, if the LOCATION2 is set to '/weblogic2', all applications deployed on the cluster can be accessed via
    # http://myhost:myport/weblogic2/application_end_url
    # where 'myhost' is the IP of the machine that runs the Apache web tier, and
    #       'myport' is the port that the Apache webt ier is publicly exposed to.
@@ -120,7 +132,7 @@ Refer to the [sample](https://github.com/oracle/docker-images/tree/master/Oracle
 
    {{% /expand %}}
 
-1. Update `volume path` with the directory location of the file `custom_mod_wl_apache.conf` in file `kubernetes/samples/charts/apache-samples/custom-sample/input.yaml`
+1. Create a PV and PVC (pv-claim-name) that can be used to store the custom_mod_wl_apache.conf. Refer to the [Sample](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.1.1/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/README.md) for creating a PV or PVC. 
 
 #### Prepare the certificate and private key
 
@@ -165,17 +177,27 @@ Refer to the [sample](https://github.com/oracle/docker-images/tree/master/Oracle
     $ touch input.yaml
     ```
 
-    Update `virtualHostName` with the value of the `WEBLOGIC_HOST` in file `kubernetes/samples/charts/apache-samples/custom-sample/input.yaml`
+    Update the input parameters file, `kubernetes/samples/charts/apache-samples/custom-sample/input.yaml`.
 
    {{%expand "Click here to see the snapshot of the sample input.yaml file " %}}
    ```bash
     $ cat apache-samples/custom-sample/input.yaml
     # Use this to provide your own Apache webtier configuration as needed; simply define this
-    # path and put your own custom_mod_wl_apache.conf file under this path.
-    volumePath: ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/apache-samples/custom-sample
+    # Persistence Volume which contains your own custom_mod_wl_apache.conf file.
+    persistentVolumeClaimName: <pv-claim-name>
 
     # The VirtualHostName of the Apache HTTP server. It is used to enable custom SSL configuration.
     virtualHostName: <WEBLOGIC_HOST>
+
+    # The customer supplied certificate to use for Apache webtier SSL configuration.
+    # The value must be a string containing a base64 encoded certificate. Run following command to get it.
+    # base64 -i ${SSL_CERT_FILE} | tr -d '\n'
+    customCert: <cert_data>
+
+    # The customer supplied private key to use for Apache webtier SSL configuration.
+    # The value must be a string containing a base64 encoded key. Run following command to get it.
+    # base64 -i ${SSL_KEY_FILE} | tr -d '\n'
+    customKey: <key_data>
    ```
    {{% /expand %}}
 

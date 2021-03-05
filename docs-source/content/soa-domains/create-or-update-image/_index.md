@@ -121,7 +121,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 You must download the required Oracle SOA Suite installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
 
-The installation binaries and patches required for release 20.4.2  are:
+The installation binaries and patches required for release 21.1.2  are:
 
 * JDK:  
     * jdk-8u281-linux-x64.tar.gz
@@ -180,7 +180,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 1. Add a JDK package to the WebLogic Image Tool cache:
 
     ``` bash
-    $ imagetool cache addInstaller --type jdk --version 8u271 --path <download location>/jdk-8u271-linux-x64.tar.gz
+    $ imagetool cache addInstaller --type jdk --version 8u281 --path <download location>/jdk-8u281-linux-x64.tar.gz
     ```
 
 1. Add the downloaded installation binaries to the WebLogic Image Tool cache:
