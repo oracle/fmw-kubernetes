@@ -80,7 +80,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ /sbin/sysctl net.ipv4.ip_nonlocal_bind=1
     ```
     
-1. **To preserve the settings permanently**: Update the above values to 1 in files in ``/usr/lib/sysctl.d/``, ``/run/sysctl.d/``, and ``/etc/sysctl.d/`.`
+1. **To preserve the settings permanently**: Update the above values to 1 in files in ``/usr/lib/sysctl.d/``, ``/run/sysctl.d/``, and ``/etc/sysctl.d/``.
 
 1. Verify the iptables rule for forwarding.
 

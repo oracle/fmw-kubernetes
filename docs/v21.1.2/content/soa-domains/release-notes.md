@@ -10,11 +10,11 @@ Review the latest changes and known issues for Oracle SOA Suite on Kubernetes.
 
 ### Recent changes
 
-| Date | Version | Introduces backward incompatibilities | Change |
-| --- | --- | --- | --- |
-| February 28, 2021 | 21.1.2 | no | Supports Oracle SOA Suite 12.2.1.4 domains deployment using January 2021 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [32398542](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32398542)).
-| November 30, 2020 | 20.4.2 | no | Supports Oracle SOA Suite 12.2.1.4 domains deployment using October 2020 PSU and known bug fixes. Added HEALTHCHECK support for Oracle SOA Suite docker image. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [32215749](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32215749)).
-| October 3, 2020 | 20.3.3 | no | Certified Oracle WebLogic Kubernetes operator version 3.0.1. Kubernetes 1.14.8+, 1.15.7+, 1.16.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. SSL enabling for the Administration Server and Managed Servers is supported. Only Oracle SOA Suite 12.2.1.4 is supported.
+| Date | Version | Change |
+| --- | --- | --- |
+| February 28, 2021 | 21.1.2 | Supports Oracle SOA Suite 12.2.1.4 domains deployment using January 2021 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [32398542](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32398542)).
+| November 30, 2020 | 20.4.2 | Supports Oracle SOA Suite 12.2.1.4 domains deployment using October 2020 PSU and known bug fixes. Added HEALTHCHECK support for Oracle SOA Suite docker image. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [32215749](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32215749)).
+| October 3, 2020 | 20.3.3 | Certified Oracle WebLogic Kubernetes operator version 3.0.1. Kubernetes 1.14.8+, 1.15.7+, 1.16.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. SSL enabling for the Administration Server and Managed Servers is supported. Only Oracle SOA Suite 12.2.1.4 is supported.
 
 
 ### Known issues
