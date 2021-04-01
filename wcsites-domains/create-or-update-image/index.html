@@ -4996,169 +4996,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                 
                 
 
-  FROM oracle/wcsites:12.2.1.4-21.1.1 as FINAL_BUILD
-  USER root
-
-  ENV OPATCH_NO_FUSER<span style="color:#f92672">=</span>true
-
-
-  LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;a2fca032-7807-4bfb-b5a4-0ed90a710a56&#34;</span>
-
-  USER oracle
-
-
-      COPY --chown<span style="color:#f92672">=</span>oracle:oracle patches/* /tmp/imagetool/patches/
-
-      RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>      <span style="color:#f92672">&amp;&amp;</span> /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>      <span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/imagetool
-
-
-
-
-  <span style="color:#75715e">########## END DOCKERFILE ##########</span>
-  <span style="color:#f92672">[</span>INFO   <span style="color:#f92672">]</span> Dry run complete.  No image created.
-
-</code></pre></div>
-    </div>
-</div>
-</li>
-<li>
-<p>Check the built image using the <code>Docker images</code> command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep wcsites
-  oracle/wcsites   12.2.1.4-21.1.1-32315127   2ef2a67a685b        About a minute ago   2.84GB
-  oracle/wcsites   12.2.1.4-21.1.1            445b649a3459        <span style="color:#ae81ff">4</span> days ago           3.2GB
-
-</code></pre></div></li>
-</ol>
-<h3 id="create-an-oracle-webcenter-sites-docker-image-using-dockerfile">Create an Oracle WebCenter Sites Docker image using Dockerfile</h3>
-<p>For test and development purposes, you can create an Oracle WebCenter Sites image using the Dockerfile. Consult the <a href="https://github.com/oracle/docker-images/blob/master/OracleWebCenterSites/dockerfiles/README.md">README</a> file for important prerequisite steps,
-such as building or pulling the Server JRE Docker image, Oracle FMW Infrastructure Docker image, and downloading the Oracle WebCenter Sites installer and bundle patch binaries.</p>
-<p>A prebuilt Oracle Fusion Middleware Infrastructure image, <code>container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4</code>, is available at <code>container-registry.oracle.com</code>. We recommend that you pull and rename this image to build the Oracle WebCenter Sites image.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker pull &lt;path-to-container-registry&gt;/fmw-infrastructure:12.2.1.4
-  $ docker tag &lt;path-to-container-registry&gt;/fmw-infrastructure:12.2.1.4  oracle/fmw-infrastructure:12.2.1.4
-</code></pre></div><p>Follow these steps to build an Oracle Fusion Middleware Infrastructure image, and then the Oracle WebCenter Sites image as a layer on top of that:</p>
-<ol>
-<li>
-<p>Make a local clone of the sample repository:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/docker-images
-</code></pre></div></li>
-<li>
-<p>Build the <code>oracle/fmw-infrastructure:12.2.1.4</code> image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd docker-images/OracleFMWInfrastructure/dockerfiles
- $ sh buildDockerImage.sh -v 12.2.1.4 -s
-</code></pre></div><p>This will produce an image named <code>oracle/fmw-infrastructure:12.2.1.4</code>.</p>
-</li>
-<li>
-<p>Download the Oracle WebCenter Sites installer from the Oracle Technology Network or e-delivery.</p>
-<blockquote>
-<p>Note: Copy the installer binaries to the same location as the Dockerfile.</p>
-</blockquote>
-</li>
-<li>
-<p>To build the Oracle WebCenter Sites image with patches, you must download and drop the patch zip files (for example, <code>p32315127_122140_Generic.zip</code>) into the <code>patches/</code> folder under the version that is required. For example, for <code>12.2.1.4</code> the folder is <code>12.2.1.4/patches</code>.</p>
-</li>
-<li>
-<p>Create the Oracle WebCenter Sites image by running the provided script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd docker-images/OracleWebCenterSites/dockerfiles
-$ ./buildDockerImage.sh -v 12.2.1.4 -s
-</code></pre></div><p>The image produced will be named <code>oracle/wcsites:12.2.1.4</code>. The samples and instructions assume the Oracle WebCenter Sites image is named <code>wcsites:12.2.1.4</code>. You must rename your image to match this name, or update the samples to refer to the image you created.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/wcsites:12.2.1.4 oracle/wcsites:12.2.1.4-21.1.1 
-</code></pre></div></li>
-</ol>
-
-
-
-
-
-<footer class=" footline" >
-	
-</footer>
-
-        
-        </div> 
-        
-
-      </div>
-
-    <div id="navigation">
-        
-        
-        
-        
-            
-            
-                
-                    
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                        
-                        
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
                     
                     
                     
@@ -5208,9 +5045,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -5262,33 +5096,7 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
             
         
                     
@@ -5304,9 +5112,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -5355,36 +5160,7 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
             
         
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
                     
-                    
-
-                    
             
         
                     
@@ -5430,34 +5206,14 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
                 
                 
-
-                    
-                    
-                    
 
                     
-            
-        
                     
                         
-            
-            
-                
-                    
-                
-                
-
                     
                     
-                    
 
-                    
-            
-        
                     
-            
-        
-                    
                         
             
             
@@ -5505,19 +5261,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
                     
                         
             
@@ -6433,9 +6176,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -6450,6 +6190,9 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
 
                     
+            
+        
+                    
                         
             
             
@@ -6498,17 +6241,10 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
 
                     
                     
-                    
-
-                    
-            
-        
+                        
                     
-            
-        
                     
-            
-        
+
                     
                         
             
@@ -6518,9 +6254,7 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                 
                 
 
-                    
                     
-                        
                     
                     
 
@@ -6584,24 +6318,15 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                 
 
                     
-                    
-                        
                     
                     
 
                     
-                        
-            
             
-                
-                    
-                
-                
-
-                    
-                    
+        
                     
-
+            
+        
                     
                         
             
@@ -6628,9 +6353,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
                     
 
-                    
-            
-        
                     
             
         
@@ -6729,21 +6451,9 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                 
                 
 
-                    
-                    
-                        
-                    
                     
                     
                         
-            
-            
-                
-                    
-                
-                
-
-                    
                     
                     
 
