@@ -1,0 +1,41 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+apiVersion: networking.k8s.io/v1beta1
+
+# Load balancer type.  Supported values are: TRAEFIK, VOYAGER ,NGINX
+type: TRAEFIK
+# Supported values NONSSL ,SSL 
+tls: NONSSL
+
+# WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: wcp-domain
+  clusterName: wcp-cluster
+  managedServerPort: 8888
+  adminServerPort: 7001
+  adminServerName: adminserver
+
+# Traefik specific values
+traefik:
+  # hostname used by host-routing
+  hostname: domain1.org
+
+# Voyager specific values
+voyager:
+  # web port
+  webPort: 30305
+  # stats port
+  statsPort: 30315
+
+# Ngnix specific values
+nginx:
+  connectTimeout: 1800
+  readTimeout: 1800
+  sendTimeout: 1800
+  cookieExpires: 172800
+  cookieMaxAge: 172800
