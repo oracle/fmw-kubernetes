@@ -19,9 +19,9 @@ The operator has several key features to assist you with deploying and managing 
 * Scale Oracle WebCenter Portal domain by starting and stopping Managed Servers on demand, or by integrating with a REST API.
 * Publish operator and WebLogic Server logs to Elasticsearch and interact with them in Kibana.
 * Monitor the Oracle WebCenter Portal instance using Prometheus and Grafana.
-#### Current production release
+#### Current release
 
-The current production release for the Oracle WebCenter Portal domain deployment on Kubernetes is [21.2.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version [3.1.1](https://github.com/oracle/weblogic-kubernetes-operator/releases).
+The current preview release for the Oracle WebCenter Portal domain deployment on Kubernetes is [21.2.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version [3.1.1](https://github.com/oracle/weblogic-kubernetes-operator/releases).
 
 
 #### Recent changes and known issues
