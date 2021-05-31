@@ -1,0 +1,63 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+{{- if eq .Values.type "NGINX" }}
+---
+apiVersion: {{ .Values.apiVersion }}
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+{{- if eq .Values.tls "SSL" }}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
+    nginx.ingress.kubernetes.io/ingress.allow-http: "false"
+{{- end }}
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ngnix.connectTimeout }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ngnix.readTimeout }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ngnix.sendTimeout }}"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "stickyid"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "{{ .Values.ngnix.cookieExpires }}"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "{{ .Values.ngnix.cookieMaxAge }}"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
+spec:
+  rules:
+    - host: '{{ .Values.nginx.hostname }}'
+      http:
+        paths:
+          - path: /webcenter
+            backend:
+              serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.clusterName | lower}}'
+              servicePort: {{.Values.wlsDomain.managedServerPort}}
+          - path: /console
+            backend:
+              serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName| lower }}'
+              servicePort: {{.Values.wlsDomain.adminServerPort}}
+          - path: /rsscrawl
+            backend:
+              serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.clusterName | lower}}'
+              servicePort: {{.Values.wlsDomain.managedServerPort}}
+          - path: /webcenterhelp
+            backend:
+              serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.clusterName | lower}}'
+              servicePort: {{.Values.wlsDomain.managedServerPort}}
+          - path: /rest
+            backend:
+              serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.clusterName | lower}}'
+              servicePort: {{.Values.wlsDomain.managedServerPort}}
+          - path: /em
+            backend:
+              serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName| lower }}'
+              servicePort: {{.Values.wlsDomain.adminServerPort}}
+ {{- if eq .Values.tls "SSL" }}
+tls:
+  - hosts:
+      - '{{ .Values.nginx.hostname }}'
+    secretName: domain1-tls-cert
+{{- end }}
+  {{- end }}

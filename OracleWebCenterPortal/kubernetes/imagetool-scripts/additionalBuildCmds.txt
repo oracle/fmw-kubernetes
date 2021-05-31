@@ -1,0 +1,30 @@
+[package-manager-packages]
+hostname procps sudo zip
+
+[final-build-commands]
+
+ENV ORACLE_HOME=/u01/oracle \
+    SCRIPT_FILE=/u01/oracle/container-scripts/* \
+    USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+
+USER root
+
+RUN env && \
+    mkdir -p /u01/oracle/container-scripts && \
+    mkdir -p /u01/oracle/logs && \
+    mkdir -p /u01/esHome/esNode && \
+    chown oracle:oracle -R /u01 $VOLUME_DIR && \
+    chmod a+xr /u01
+
+COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
+RUN chmod +xr $SCRIPT_FILE && \
+    rm /u01/oracle/oracle_common/lib/ons.jar /u01/oracle/oracle_common/modules/oracle.jdbc/simplefan.jar 
+
+USER oracle
+EXPOSE $WCPORTAL_PORT $ADMIN_PORT
+
+WORKDIR ${ORACLE_HOME}
+CMD ["/u01/oracle/container-scripts/configureOrStartAdminServer.sh"]
+
+
