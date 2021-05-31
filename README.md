@@ -11,6 +11,7 @@ In addition, we've provided the deployment scripts in this repository to assist 
  - [Oracle SOA Suite](/OracleSOASuite)
  - [Oracle Unified Directory](/OracleUnifiedDirectory)
  - [Oracle Unified Directory Services Manager](/OracleUnifiedDirectorySM)
+ - [Oracle WebCenter Portal](/OracleWebCenterPortal)
  - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
 ## Support
