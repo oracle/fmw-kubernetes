@@ -1,0 +1,3114 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Configure the ingress-based Traefik load balancer for Oracle SOA Suite domains.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/21.1.2/images/favicon.png" type="image/png">
+
+    <title>Traefik :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/21.1.2/css/nucleus.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/fontawesome-all.min.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/hybrid.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/featherlight.min.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/perfect-scrollbar.min.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/auto-complete.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/atom-one-dark-reasonable.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/theme.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/hugo-theme.css?1614937638" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/21.1.2/js/jquery-3.3.1.min.js?1614937638"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/21.1.2/">
+  <img src="/fmw-kubernetes/21.1.2//images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/21.1.2/js/lunr.min.js?1614937638"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.2/js/auto-complete.js?1614937638"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/21.1.2\/";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.2/js/search.js?1614937638"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item active">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/jms-asm-migration/" title="Configure Automatic Service Migration" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/jms-asm-migration/">
+        <b></b>Configure Automatic Service Migration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/peforming-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/peforming-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/" title="Oracle WebCenter Content" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/">
+          Oracle WebCenter Content
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/create-wccontent-domains/">
+          <b>  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/" title="Monitor an Oracle WebCenter Content domain" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/">
+        <b> </b>Monitor an Oracle WebCenter Content domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/elasticsearch-integration/">
+        Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-logging-exporter-setup/">
+        Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/logging-fluentd-setup/" title="Publish logs to Elasticsearch Using Fluentd" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/logging-fluentd-setup/">
+        Publish logs to Elasticsearch Using Fluentd
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/">
+          <b>7. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/wcc-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/wcc-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/quickstart-deployment-guide/" title="Quick start deployment guide" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/quickstart-deployment-guide/">
+        <b> </b>Quick start deployment guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/21.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/21.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/21.1.2/soa-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/'>Set up a load balancer</a> > Traefik
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#non-ssl-and-ssl-termination">Non-SSL and SSL termination</a></li>
+        <li><a href="#end-to-end-ssl-configuration">End-to-end SSL configuration</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Traefik
+            </h1>
+          
+
+        
+
+
+
+<p>This section provides information about how to install and configure the ingress-based <em>Traefik</em> load balancer (version 2.2.1 or later for production deployments) to load balance Oracle SOA Suite domain clusters. You can configure Traefik for non-SSL and SSL termination access of the application URL.</p>
+<p>Follow these steps to set up Traefik as a load balancer for an Oracle SOA Suite domain in a Kubernetes cluster:</p>
+<ul>
+<li>
+<p><a href="#non-ssl-and-ssl-termination"> Non-SSL and SSL termination</a></p>
+<ol>
+<li><a href="#install-the-traefik-ingress-based-load-balancer">Install the Traefik (ingress-based) load balancer</a></li>
+<li><a href="#configure-traefik-to-manage-ingresses">Configure Traefik to manage ingresses</a></li>
+<li><a href="#create-an-ingress-for-the-domain">Create an Ingress for the domain</a></li>
+<li><a href="#verify-domain-application-url-access">Verify domain application URL access</a></li>
+<li><a href="#uninstall-the-traefik-ingress">Uninstall the Traefik ingress</a></li>
+</ol>
+</li>
+<li>
+<p><a href="#end-to-end-ssl-configuration"> End-to-end SSL configuration</a></p>
+<ol>
+<li><a href="#install-the-traefik-load-balancer-for-end-to-end-ssl">Install the Traefik load balancer for End-to-end SSL</a></li>
+<li><a href="#configure-traefik-to-manage-domain">Configure Traefik to manage domain</a></li>
+<li><a href="#%5Bcreate-ingressroutetcp">Create IngressRouteTCP</a></li>
+<li><a href="#verify-end-to-end-ssl-access">Verify end-to-end SSL access</a></li>
+<li><a href="#uninstall-traefik">Uninstall Traefik</a></li>
+</ol>
+</li>
+</ul>
+<h3 id="non-ssl-and-ssl-termination">Non-SSL and SSL termination</h3>
+<h4 id="install-the-traefik-ingress-based-load-balancer">Install the Traefik (ingress-based) load balancer</h4>
+<ol>
+<li>
+<p>Use Helm to install the Traefik (ingress-based) load balancer.
+Use the <code>values.yaml</code> file in the sample but set <code>kubernetes.namespaces</code> specifically.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ kubectl create namespace traefik
+ $ helm repo add traefik https://containous.github.io/traefik-helm-chart
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> <span style="color:#e6db74">&#34;traefik&#34;</span> has been added to your repositories
+</code></pre></div></li>
+<li>
+<p>Install Traefik:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install traefik  traefik/traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --namespace traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --values kubernetes/samples/scripts/charts/traefik/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --set  <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --set <span style="color:#e6db74">&#34;service.type=NodePort&#34;</span> --wait
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    LAST DEPLOYED: Sun Sep <span style="color:#ae81ff">13</span> 21:32:00 <span style="color:#ae81ff">2020</span>
+    NAMESPACE: traefik
+    STATUS: deployed
+    REVISION: <span style="color:#ae81ff">1</span>
+    TEST SUITE: None
+</code></pre></div>
+    </div>
+</div>
+<p>A sample <code>values.yaml</code> for deployment of Traefik 2.2.x:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
+<span style="color:#66d9ef">name</span>: traefik
+<span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">2.2.8</span>
+<span style="color:#66d9ef">pullPolicy</span>: IfNotPresent
+<span style="color:#66d9ef">ingressRoute</span>:
+<span style="color:#66d9ef">dashboard</span>:
+   <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#75715e"># Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)</span>
+   <span style="color:#66d9ef">annotations</span>: {}
+   <span style="color:#75715e"># Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)</span>
+   <span style="color:#66d9ef">labels</span>: {}
+<span style="color:#66d9ef">providers</span>:
+<span style="color:#66d9ef">kubernetesCRD</span>:
+   <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">true</span>
+<span style="color:#66d9ef">kubernetesIngress</span>:
+   <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#75715e"># IP used for Kubernetes Ingress endpoints</span>
+<span style="color:#66d9ef">ports</span>:
+<span style="color:#66d9ef">traefik</span>:
+   <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">9000</span>
+   <span style="color:#66d9ef">expose</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#75715e"># The exposed port for this service</span>
+   <span style="color:#66d9ef">exposedPort</span>: <span style="color:#ae81ff">9000</span>
+   <span style="color:#75715e"># The port protocol (TCP/UDP)</span>
+   <span style="color:#66d9ef">protocol</span>: TCP
+<span style="color:#66d9ef">web</span>:
+   <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">8000</span>
+   <span style="color:#75715e"># hostPort: 8000</span>
+   <span style="color:#66d9ef">expose</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#66d9ef">exposedPort</span>: <span style="color:#ae81ff">30305</span>
+   <span style="color:#66d9ef">nodePort</span>: <span style="color:#ae81ff">30305</span>
+   <span style="color:#75715e"># The port protocol (TCP/UDP)</span>
+   <span style="color:#66d9ef">protocol</span>: TCP
+   <span style="color:#75715e"># Use nodeport if set. This is useful if you have configured Traefik in a</span>
+   <span style="color:#75715e"># LoadBalancer</span>
+   <span style="color:#75715e"># nodePort: 32080</span>
+   <span style="color:#75715e"># Port Redirections</span>
+   <span style="color:#75715e"># Added in 2.2, you can make permanent redirects via entrypoints.</span>
+   <span style="color:#75715e"># https://docs.traefik.io/routing/entrypoints/#redirection</span>
+   <span style="color:#75715e"># redirectTo: websecure</span>
+<span style="color:#66d9ef">websecure</span>:
+   <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">8443</span>
+<span style="color:#75715e">#    # hostPort: 8443</span>
+   <span style="color:#66d9ef">expose</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#66d9ef">exposedPort</span>: <span style="color:#ae81ff">30443</span>
+   <span style="color:#75715e"># The port protocol (TCP/UDP)</span>
+   <span style="color:#66d9ef">protocol</span>: TCP
+   <span style="color:#66d9ef">nodePort</span>: <span style="color:#ae81ff">30443</span>
+</code></pre></div></li>
+<li>
+<p>Verify the Traefik status and find the port number of the SSL and non-SSL services:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl get all -n traefik
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+   NAME                           READY   STATUS    RESTARTS   AGE
+   pod/traefik-845f5d6dbb-swb96   1/1     Running   <span style="color:#ae81ff">0</span>          32s
+
+   NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>                                          AGE
+   service/traefik   LoadBalancer   10.99.52.249   &lt;pending&gt;     9000:31288/TCP,30305:30305/TCP,30443:30443/TCP   32s
+
+   NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+   deployment.apps/traefik   1/1     <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           33s
+
+   NAME                                 DESIRED   CURRENT   READY   AGE
+   replicaset.apps/traefik-845f5d6dbb   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       33s
+
+</code></pre></div>
+    </div>
+</div>
+</li>
+<li>
+<p>Access the Traefik dashboard through the URL <code>http://$(hostname -f):31288</code>, with the HTTP host <code>traefik.example.com</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -H <span style="color:#e6db74">&#34;host: </span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> http://<span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>:31288/dashboard/
+</code></pre></div><blockquote>
+<p>Note: Make sure that you specify a fully qualified node name for <code>$(hostname -f)</code></p>
+</blockquote>
+</li>
+</ol>
+<h4 id="configure-traefik-to-manage-ingresses">Configure Traefik to manage ingresses</h4>
+<p>Configure Traefik to manage ingresses created in this namespace, where <code>traefik</code> is the Traefik namespace and <code>soans</code> is the namespace of the domain:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    $ helm upgrade traefik traefik/traefik --namespace traefik     --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik,soans}&#34;</span>
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    Release <span style="color:#e6db74">&#34;traefik&#34;</span> has been upgraded. Happy Helming!
+    NAME: traefik
+    LAST DEPLOYED: Sun Sep <span style="color:#ae81ff">13</span> 21:32:12 <span style="color:#ae81ff">2020</span>
+    NAMESPACE: traefik
+    STATUS: deployed
+    REVISION: <span style="color:#ae81ff">2</span>
+    TEST SUITE: None
+</code></pre></div>
+    </div>
+</div>
+<h4 id="create-an-ingress-for-the-domain">Create an ingress for the domain</h4>
+<p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress.
+Sample values for default configuration are shown in the file <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml</code>.
+By default, <code>type</code> is <code>TRAEFIK</code> , <code>tls</code> is <code>Non-SSL</code>, and <code>domainType</code> is <code>soa</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code> based on the type of configuration (non-SSL or SSL).
+If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/traefik-ingress.yaml</code></p>
+<ol>
+<li>
+<p>Install <code>ingress-per-domain</code> using Helm for non-SSL configuration:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ helm install soa-traefik-ingress  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  NAME: soa-traefik-ingress
+  LAST DEPLOYED: Mon Jul <span style="color:#ae81ff">20</span> 11:44:13 <span style="color:#ae81ff">2020</span>
+  NAMESPACE: soans
+  STATUS: deployed
+  REVISION: <span style="color:#ae81ff">1</span>
+  TEST SUITE: None
+</code></pre></div></li>
+<li>
+<p>For secured access (SSL) to the Oracle SOA Suite application, create a certificate and generate a Kubernetes secret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=*&#34;</span>
+ $ kubectl -n soans create secret tls soainfra-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+</code></pre></div></li>
+<li>
+<p>Create Traefik Middleware custom resource</p>
+<p>In case of SSL termination, Traefik must pass a custom header <code>WL-Proxy-SSL:true</code> to the WebLogic Server endpoints. Create the Middleware using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt;EOF | kubectl apply -f -
+</span><span style="color:#e6db74">apiVersion: traefik.containo.us/v1alpha1
+</span><span style="color:#e6db74">kind: Middleware
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: wls-proxy-ssl
+</span><span style="color:#e6db74">  namespace: soans
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  headers:
+</span><span style="color:#e6db74">    customRequestHeaders:
+</span><span style="color:#e6db74">       WL-Proxy-SSL: &#34;true&#34;
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div></li>
+<li>
+<p>Create the Traefik TLSStore custom resource.</p>
+<p>In case of SSL termination, Traefik should be configured to use the user-defined SSL certificate. If the user-defined SSL certificate is not configured, Traefik will create a default SSL certificate. To configure a  user-defined SSL certificate for Traefik, use the TLSStore custom resource. The Kubernetes secret created with the SSL certificate should be referenced in the TLSStore object. Run the following command to create the TLSStore:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt;EOF | kubectl apply -f -
+</span><span style="color:#e6db74">apiVersion: traefik.containo.us/v1alpha1
+</span><span style="color:#e6db74">kind: TLSStore
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: default
+</span><span style="color:#e6db74">  namespace: soans
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  defaultCertificate:
+</span><span style="color:#e6db74">    secretName:  soainfra-tls-cert   
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div></li>
+<li>
+<p>Install <code>ingress-per-domain</code> using Helm for SSL configuration.</p>
+<p>The Kubernetes secret name should be updated in the template file.</p>
+<p>The template file also contains the following annotations:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> traefik.ingress.kubernetes.io/router.entrypoints: websecure
+ traefik.ingress.kubernetes.io/router.tls: <span style="color:#e6db74">&#34;true&#34;</span>
+ traefik.ingress.kubernetes.io/router.middlewares: soans-wls-proxy-ssl@kubernetescrd
+</code></pre></div><p>The entry point for SSL access and the Middleware name should be updated in the annotation. The Middleware name should be in the form <code>&lt;namespace&gt;-&lt;middleware name&gt;@kubernetescrd</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ helm install soa-traefik-ingress  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set tls<span style="color:#f92672">=</span>SSL
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  NAME: soa-traefik-ingress
+  LAST DEPLOYED: Mon Jul <span style="color:#ae81ff">20</span> 11:44:13 <span style="color:#ae81ff">2020</span>
+  NAMESPACE: soans
+  STATUS: deployed
+  REVISION: <span style="color:#ae81ff">1</span>
+  TEST SUITE: None
+
+</code></pre></div></li>
+<li>
+<p>For <strong>non-SSL access</strong> to the Oracle SOA Suite application, get the details of the services by the ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ kubectl describe ingress soainfra-traefik -n soans
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see all services supported by the above deployed ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  Name:             soainfra-traefik
+  Namespace:        soans
+  Address:
+  Default backend:  default-http-backend:80 <span style="color:#f92672">(</span>&lt;error: endpoints <span style="color:#e6db74">&#34;default-http-backend&#34;</span> not found&gt;<span style="color:#f92672">)</span>
+  Rules:
+     Host                                                   Path  Backends
+     ----                                                   ----  --------
+     www.example.com
+                                                           /console                   soainfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.45:7001<span style="color:#f92672">)</span>
+                                                           /em                        soainfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.45:7001<span style="color:#f92672">)</span>
+                                                           /weblogic/ready            soainfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.45:7001<span style="color:#f92672">)</span>
+                                                                                      soainfra-cluster-soa-cluster:8001    <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
+                                                            /soa-infra                 soainfra-cluster-soa-cluster:8001 <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
+                                                            /soa/composer              soainfra-cluster-soa-cluster:8001 <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
+                                                            /integration/worklistapp   soainfra-cluster-soa-cluster:8001 <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
+    Annotations:                                             kubernetes.io/ingress.class: traefik
+    Events:                                                  &lt;none&gt;
+
+</code></pre></div>
+    </div>
+</div>
+</li>
+<li>
+<p>For <strong>SSL access</strong> to the Oracle SOA Suite application, get the details of the services by the above deployed ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl describe ingress soainfra-traefik -n soans
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see all services supported by the above deployed ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>  ```
+  Name:             soainfra-traefik
+  Namespace:        soans
+  Address:
+  Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+  TLS:
+  soainfra-tls-cert terminates www.example.com
+  Rules:
+  Host                    Path  Backends
+  ----                    ----  --------
+  www.example.com
+                          /console                   soainfra-adminserver:7001 ()
+                          /em                        soainfra-adminserver:7001 ()
+                          /weblogic/ready            soainfra-adminserver:7001 ()
+                                                     soainfra-cluster-soa-cluster:8001 ()
+                          /soa-infra                 soainfra-cluster-soa-cluster:8001 ()
+                          /soa/composer              soainfra-cluster-soa-cluster:8001 ()
+                          /integration/worklistapp   soainfra-cluster-soa-cluster:8001 ()
+  Annotations:              kubernetes.io/ingress.class: traefik
+                          meta.helm.sh/release-name: soa-traefik-ingress
+                          meta.helm.sh/release-namespace: soans
+                          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+                          traefik.ingress.kubernetes.io/router.middlewares: soans-wls-proxy-ssl@kubernetescrd
+                          traefik.ingress.kubernetes.io/router.tls: true
+  Events:                   &lt;none&gt;
+  ```
+</code></pre>
+
+    </div>
+</div>
+</li>
+<li>
+<p>To confirm that the load balancer noticed the new ingress and is successfully routing to the domain server pods, you can send a request to the URL for the &ldquo;WebLogic ReadyApp framework&rdquo;, which should return an HTTP 200 status code, as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ curl -v http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_PORT<span style="color:#e6db74">}</span>/weblogic/ready
+ *   Trying 149.87.129.203...
+ &gt; GET http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_PORT<span style="color:#e6db74">}</span>/weblogic/ready HTTP/1.1
+ &gt; User-Agent: curl/7.29.0
+ &gt; Accept: */*
+ &gt; Proxy-Connection: Keep-Alive
+ &gt; host: <span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
+ &gt;
+ &lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+ &lt; Date: Sat, <span style="color:#ae81ff">14</span> Mar <span style="color:#ae81ff">2020</span> 08:35:03 GMT
+ &lt; Vary: Accept-Encoding
+ &lt; Content-Length: <span style="color:#ae81ff">0</span>
+ &lt; Proxy-Connection: Keep-Alive
+ &lt;
+ * Connection <span style="color:#75715e">#0 to host localhost left intact</span>
+</code></pre></div></li>
+</ol>
+<h4 id="verify-domain-application-url-access">Verify domain application URL access</h4>
+<h5 id="for-non-ssl-configuration">For non-SSL configuration</h5>
+<p>After setting up the Traefik (ingress-based) load balancer, verify that the domain application URLs are accessible through the non-SSL load balancer port <code>30305</code> for HTTP access. The sample URLs for Oracle SOA Suite domain of type <code>soa</code> are:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+    http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/console
+    http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/em
+    http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+    http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+    http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div><h5 id="for-ssl-configuration">For SSL configuration</h5>
+<p>After setting up the Traefik (ingress-based) load balancer, verify that the domain applications are accessible through the SSL load balancer port <code>30443</code> for HTTPS access. The sample URLs for Oracle SOA Suite domain of type <code>soa</code> are:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+    https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
+    https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/em
+    https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+    https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+    https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div><h4 id="uninstall-the-traefik-ingress">Uninstall the Traefik ingress</h4>
+<p>Uninstall and delete the ingress deployment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete soa-traefik-ingress  -n soans
+</code></pre></div><h3 id="end-to-end-ssl-configuration">End-to-end SSL configuration</h3>
+<h4 id="install-the-traefik-load-balancer-for-end-to-end-ssl">Install the Traefik load balancer for end-to-end SSL</h4>
+<ol>
+<li>
+<p>Use Helm to install the Traefik (ingress-based) load balancer.
+Use the <code>values.yaml</code> file in the sample but set <code>kubernetes.namespaces</code> specifically.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ kubectl create namespace traefik
+ $ helm repo add traefik https://containous.github.io/traefik-helm-chart
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> <span style="color:#e6db74">&#34;traefik&#34;</span> has been added to your repositories
+</code></pre></div></li>
+<li>
+<p>Install Traefik:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install traefik  traefik/traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --namespace traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --values kubernetes/samples/charts/traefik/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --set  <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --set <span style="color:#e6db74">&#34;service.type=NodePort&#34;</span> --wait
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    LAST DEPLOYED: Sun Sep <span style="color:#ae81ff">13</span> 21:32:00 <span style="color:#ae81ff">2020</span>
+    NAMESPACE: traefik
+    STATUS: deployed
+    REVISION: <span style="color:#ae81ff">1</span>
+    TEST SUITE: None
+</code></pre></div>
+    </div>
+</div>
+</li>
+<li>
+<p>Verify the Traefik operator status and find the port number of the SSL and non-SSL services:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl get all -n traefik
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+   NAME                           READY   STATUS    RESTARTS   AGE
+   pod/traefik-845f5d6dbb-swb96   1/1     Running   <span style="color:#ae81ff">0</span>          32s
+
+   NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>                                          AGE
+   service/traefik   LoadBalancer   10.99.52.249   &lt;pending&gt;     9000:31288/TCP,30305:30305/TCP,30443:30443/TCP   32s
+
+   NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+   deployment.apps/traefik   1/1     <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           33s
+
+   NAME                                 DESIRED   CURRENT   READY   AGE
+   replicaset.apps/traefik-845f5d6dbb   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       33s
+
+</code></pre></div>
+    </div>
+</div>
+</li>
+<li>
+<p>Access the Traefik dashboard through the URL <code>http://$(hostname -f):31288</code>, with the HTTP host <code>traefik.example.com</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -H <span style="color:#e6db74">&#34;host: </span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> http://<span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>:31288/dashboard/
+</code></pre></div><blockquote>
+<p>Note: Make sure that you specify a fully qualified node name for <code>$(hostname -f)</code>.</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="configure-traefik-to-manage-the-domain">Configure Traefik to manage the domain</h4>
+<p>Configure Traefik to manage the domain application service created in this namespace, where <code>traefik</code> is the Traefik namespace and <code>soans</code> is the namespace of the domain:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">      $ helm upgrade traefik traefik/traefik --namespace traefik     --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>         --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik,soans}&#34;</span>
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">      Release <span style="color:#e6db74">&#34;traefik&#34;</span> has been upgraded. Happy Helming!
+      NAME: traefik
+      LAST DEPLOYED: Sun Sep <span style="color:#ae81ff">13</span> 21:32:12 <span style="color:#ae81ff">2020</span>
+      NAMESPACE: traefik
+      STATUS: deployed
+      REVISION: <span style="color:#ae81ff">2</span>
+      TEST SUITE: None
+</code></pre></div>
+    </div>
+</div>
+<h4 id="create-ingressroutetcp">Create IngressRouteTCP</h4>
+<ol>
+<li>
+<p>To enable SSL passthrough in Traefik, you can configure a TCP router. A sample YAML for <code>IngressRouteTCP</code> is available at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls/traefik-tls.yaml</code>. The following should be updated in <code>traefik-tls.yaml</code>:</p>
+<ul>
+<li>The service name and the SSL port should be updated in the <code>services</code>.</li>
+<li>The load balancer hostname should be updated in the <code>HostSNI</code> rule.</li>
+</ul>
+<p>Sample <code>traefik-tls.yaml</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: traefik.containo.us/v1alpha1
+<span style="color:#66d9ef">kind</span>: IngressRouteTCP
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: soa-cluster-routetcp
+  <span style="color:#66d9ef">namespace</span>: soans
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">entryPoints</span>:
+    - websecure
+  <span style="color:#66d9ef">routes</span>:
+  - <span style="color:#66d9ef">match</span>: HostSNI(`${LOADBALANCER_HOSTNAME}`)
+    <span style="color:#66d9ef">services</span>:
+    - <span style="color:#66d9ef">name</span>: soainfra-cluster-soa-cluster
+      <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">8002</span>
+      <span style="color:#66d9ef">weight</span>: <span style="color:#ae81ff">3</span>
+      <span style="color:#66d9ef">TerminationDelay</span>: <span style="color:#ae81ff">400</span>
+  <span style="color:#66d9ef">tls</span>:
+    <span style="color:#66d9ef">passthrough</span>: <span style="color:#66d9ef">true</span>
+</code></pre></div></li>
+<li>
+<p>Create the IngressRouteTCP:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f traefik-tls.yaml
+</code></pre></div></li>
+</ol>
+<h4 id="verify-end-to-end-ssl-access">Verify end-to-end SSL access</h4>
+<p>Verify the access to application URLs exposed through the configured service. Because the SOA cluster service is configured, you should be able to access the following SOA domain URLs:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa-infra/
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div><h4 id="uninstall-traefik">Uninstall Traefik</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete traefik -n traefik
+</code></pre></div>
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/21.1.2/js/clipboard.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/perfect-scrollbar.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/perfect-scrollbar.jquery.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/jquery.sticky.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/featherlight.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/highlight.pack.js?1614937638"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/21.1.2/js/modernizr.custom-3.6.0.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/learn.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/hugo-learn.js?1614937638"></script>
+
+    <link href="/fmw-kubernetes/21.1.2/mermaid/mermaid.css?1614937638" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.1.2/mermaid/mermaid.js?1614937638"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
