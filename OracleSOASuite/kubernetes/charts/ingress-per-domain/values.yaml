@@ -1,0 +1,55 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+# Load balancer type.  Supported values are: TRAEFIK, VOYAGER
+type: TRAEFIK
+#type: VOYAGER
+#type: NGINX
+
+# Type of Configuration Supported Values are : NONSSL,SSL and E2ESSL
+sslType: NONSSL
+#sslType: SSL
+#sslType: E2ESSL
+
+# domainType Supported values are soa,osb and soaosb.
+# Make sure only one of these is uncommented.
+domainType: soa
+#domainType: osb
+#domainType: soaosb
+
+#WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: soainfra
+  adminServerName: AdminServer
+  adminServerPort: 7001
+  adminServerSSLPort: 7002
+  soaClusterName: soa_cluster
+  soaManagedServerPort: 8001
+  soaManagedServerSSLPort: 8002
+  osbClusterName: osb_cluster
+  osbManagedServerPort: 9001
+  osbManagedServerSSLPort: 9002
+
+# Host  specific values
+hostName:
+  admin: admin.org
+  soa: soa.org
+  osb: osb.org
+
+# Voyager specific values
+voyager:
+   # web port
+    webPort: 30305
+    webSSLPort: 30443
+# For Voyager E2E Access 
+    adminSSLPort: 30445
+    soaSSLPort: 30447
+    osbSSLPort: 30449
+   # stats port
+    statsPort: 30319
+

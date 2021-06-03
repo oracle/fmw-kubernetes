@@ -1,0 +1,106 @@
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ template "apache.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "apache.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "apache.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "apache.fullname" . }}
+    spec:
+      serviceAccountName: {{ template "apache.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 60
+{{- if or (and (.Values.virtualHostName) (.Values.customCert)) (.Values.persistentVolumeClaimName) }}
+      volumes:
+{{- end }}
+{{- if and (.Values.virtualHostName) (.Values.customCert) }}
+      - name: serving-cert
+        secret:
+          defaultMode: 420
+          secretName: {{ template "apache.fullname" . }}-cert
+{{- end }}
+{{- if .Values.persistentVolumeClaimName }}
+      - name: {{ template "apache.fullname" . }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistentVolumeClaimName | quote }}
+{{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{ .Values.imagePullSecrets | toYaml }}
+      {{- end }}
+      containers:
+      - name: {{ template "apache.fullname" . }}
+        image: {{ .Values.image | quote }}
+        imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+{{- if or (and (.Values.virtualHostName) (.Values.customCert)) (.Values.persistentVolumeClaimName) }}
+        volumeMounts:
+{{- end }}
+{{- if and (.Values.virtualHostName) (.Values.customCert) }}
+        - name: serving-cert
+          mountPath: "/var/serving-cert"
+{{- end }}
+{{- if .Values.persistentVolumeClaimName }}
+        - name: {{ template "apache.fullname" . }}
+          mountPath: "/config"
+{{- end }}
+{{- if or (not (.Values.persistentVolumeClaimName)) (.Values.virtualHostName) }}
+        env:
+{{- end }}
+{{- if .Values.useNonPriviledgedPorts }}
+          - name: NonPriviledgedPorts
+            value: "true"
+{{- end }}
+{{- if not (.Values.persistentVolumeClaimName) }}
+          - name: WEBLOGIC_CLUSTER
+            value: "{{ .Values.domainUID | replace "_" "-" | lower }}-cluster-{{ .Values.clusterName | replace "_" "-" | lower }}:{{ .Values.managedServerPort }}"
+          - name: LOCATION
+            value: {{ .Values.location | quote }}
+          - name: WEBLOGIC_HOST
+            value: "{{ .Values.domainUID | replace "_" "-" | lower }}-{{ .Values.adminServerName | replace "_" "-" | lower }}"
+          - name: WEBLOGIC_PORT
+            value: {{ .Values.adminPort | quote }}
+{{- end }}
+{{- if .Values.virtualHostName }}
+          - name: VIRTUAL_HOST_NAME
+            value: {{ .Values.virtualHostName | quote }}
+{{- if .Values.customCert }}
+          - name: SSL_CERT_FILE
+            value: "/var/serving-cert/tls.crt"
+          - name: SSL_CERT_KEY_FILE
+            value: "/var/serving-cert/tls.key"
+{{- end }}
+{{- end }}
+        readinessProbe:
+          tcpSocket:
+{{- if .Values.useNonPriviledgedPorts }}
+            port: 8080
+{{- else }}
+            port: 80
+{{- end }}
+          failureThreshold: 1
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        livenessProbe:
+          tcpSocket:
+{{- if .Values.useNonPriviledgedPorts }}
+            port: 8080
+{{- else }}
+            port: 80
+{{- end }}
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2

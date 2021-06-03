@@ -1,38 +1,38 @@
-# Managing RCU schema for a Fusion Middleware domain
+# Managing RCU schema for a OracleSOASuite domain
 
 The sample scripts in this directory demonstrate how to:
-* Create an RCU schema in the Oracle DB that will be used by a Fusion Middleware domain.
-* Delete the RCU schema in the Oracle DB used by a Fusion Middleware domain.
+* Create an RCU schema in the Oracle DB that will be used by a OracleSOASuite domain.
+* Delete the RCU schema in the Oracle DB used by a OracleSOASuite domain.
 
 ## Start an Oracle Database service in a Kubernetes cluster
 
 Use the script ``samples/scripts/create-oracle-db-service/start-db-service.sh``
 
-For creating a Fusion Middleware domain, you can use the Database connection string, `oracle-db.default.svc.cluster.local:1521/devpdb.k8s`, as an `rcuDatabaseURL` parameter in the `domain.input.yaml` file.
+For creating a OracleSOASuite domain, you can use the Database connection string, `oracle-db.default.svc.cluster.local:1521/devpdb.k8s`, as an `rcuDatabaseURL` parameter in the `domain.input.yaml` file.
 
 You can access the Database through the NodePort outside of the Kubernetes cluster, using the URL  `<hostmachine>:30011/devpdb.k8s`.
 
-**Note**: To create a Fusion Middleware domain image, the domain-in-image model needs a public Database URL as an `rcuDatabaseURL` parameter.
+**Note**: To create a OracleSOASuite domain image, the domain-in-image model needs a public Database URL as an `rcuDatabaseURL` parameter.
 
 
 ## Create the RCU schema in the Oracle Database
 
 This script generates the RCU schema based `schemaPrefix` and `dburl`.
 
-The script assumes that either the image, `container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4`, is available in the Docker image repository or an `ImagePullSecret` is created for `container-registry.oracle.com`. To create a secret for accessing `container-registry.oracle.com`, see the script `create-image-pull-secret.sh`.
+The script assumes that either the image, `soasuite:12.2.1.4`, is available in the nodes or an `ImagePullSecret` is created to pull the image. To create a secret, see the script `create-image-pull-secret.sh`.
 
-```
+```shell
 $ ./create-rcu-schema.sh -h
-usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  [-h]
+usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables>  [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-      (supported values: fmw(default), soa, osb, soaosb, soaess, soaessosb)
+      (supported values: osb,soa,soaosb)
   -d RCU Oracle Database URL (optional)
       (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
   -p FMW Infrastructure ImagePullSecret (optional)
       (default: none)
   -i FMW Infrastructure Image (optional)
-      (default: container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4)
+      (default: soasuite:12.2.1.4)
   -u FMW Infrastructure ImagePullPolicy (optional)
       (default: IfNotPresent)
   -n Namespace for RCU pod (optional)
@@ -43,10 +43,12 @@ usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <i
       (default: Oradoc_db1)
   -o Output directory for the generated YAML file. (optional)
       (default: rcuoutput)
+  -c Comma-separated variables in the format variablename=value. (optional).
+      (default: none)      
   -h Help
 
 $ ./create-rcu-schema.sh -s domain1
-ImagePullSecret[none] Image[container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4] dburl[oracle-db.default.svc.cluster.local:1521/devpdb.k8s] rcuType[fmw]
+ImagePullSecret[none] Image[soasuite:12.2.1.4] dburl[oracle-db.default.svc.cluster.local:1521/devpdb.k8s] rcuType[fmw] customVariables[none]
 pod/rcu created
 [rcu] already initialized ..
 Checking Pod READY column for State [1/1]
@@ -61,7 +63,7 @@ PATH=/u01/oracle/wlserver/server/bin:/u01/oracle/wlserver/../oracle_common/modul
 
 Your environment has been set.
 Check if the DB Service is ready to accept request
-DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s], schemaPrefix [domain1] rcuType [fmw]
+DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s], schemaPrefix [soainfra] rcuType [fmw]
 
 **** Success!!! ****
 
@@ -126,12 +128,12 @@ Repository Creation Utility - Create : Operation Completed
 
 Use this script to drop the RCU schema based `schemaPrefix` and `dburl`.
 
-```
+```shell
 $ ./drop-rcu-schema.sh -h
 usage: ./drop-rcu-schema.sh -s <schemaPrefix> -d <dburl> -n <namespace> -q <sysPassword> -r <schemaPassword> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-      (supported values: fmw(default), soa, osb, soaosb, soaess, soaessosb)
+      (supported values: osb,soa,soaosb)
   -d Oracle Database URL (optional)
       (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
   -n Namespace where RCU pod is deployed (optional)
@@ -140,6 +142,8 @@ usage: ./drop-rcu-schema.sh -s <schemaPrefix> -d <dburl> -n <namespace> -q <sysP
       (default: Oradoc_db1)
   -r password for all schema owner (regular user). (optional)
       (default: Oradoc_db1)
+  -c Comma-separated variables in the format variablename=value. (optional).
+      (default: none)      
   -h Help
 
 $ ./drop-rcu-schema.sh -s domain1

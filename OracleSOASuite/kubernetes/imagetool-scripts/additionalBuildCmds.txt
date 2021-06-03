@@ -7,13 +7,13 @@ ENV ORACLE_HOME=/u01/oracle \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 USER root
-RUN mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
+RUN mkdir -p $VOLUME_DIR && chown oracle:root /u01 $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
     yum install -y hostname ant && \
     rm -rf /var/cache/yum
 
 #COPY container-scripts/* /u01/oracle/container-scripts/
-COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
+COPY --chown=oracle:root files/container-scripts/ /u01/oracle/container-scripts/
 RUN chmod +xr $SCRIPT_FILE
 
 USER oracle
