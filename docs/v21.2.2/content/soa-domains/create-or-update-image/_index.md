@@ -476,8 +476,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
     ```
 1. Provide the following arguments to the WebLogic Image Tool `update` command:
 
-    * `–-fromImage` - Identify the image that needs to be updated. In the example below, the image to be updated is `soasuite:12.2.1.4`.
-    * `–-patches` - Multiple patches can be specified as a comma-separated list.
+    * `--fromImage` - Identify the image that needs to be updated. In the example below, the image to be updated is `soasuite:12.2.1.4`.
+    * `--patches` - Multiple patches can be specified as a comma-separated list.
     * `--tag` - Specify the new tag to be applied for the image being built.
 
     Refer [here](https://oracle.github.io/weblogic-image-tool/userguide/tools/update-image/) for the complete list of options available with the WebLogic Image Tool `update` command.
@@ -489,11 +489,11 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
     {{%expand "Click here to see the example 'update' command:" %}}
 
 
-    $ imagetool update --fromImage soasuite:12.2.1.4 --chown oracle:root --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0
+    $ imagetool update --fromImage soasuite:12.2.1.4 --chown oracle:root --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.5
 
       [INFO   ] Image Tool build ID: bd21dc73-b775-4186-ae03-8219bf02113e
       [INFO   ] Temporary directory used for docker build context: <work-directory>/wlstmp/wlsimgbuilder_temp1117031733123594064
-      [INFO   ] Using patch 28186730_13.9.4.2.2 from cache: <downloaded-patches-location>/p28186730_139422_Generic.zip
+      [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: <downloaded-patches-location>/p28186730_139425_Generic.zip
       [WARNING] skipping patch conflict check, no support credentials provided
       [WARNING] No credentials provided, skipping validation of patches
       [INFO   ] Using patch 30761841_12.2.1.4.0 from cache: <downloaded-patches-location>/p30761841_122140_Generic.zip
@@ -522,14 +522,14 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
       ---> d6d12f02a9be
       Step 7/7 : RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches     && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle     && rm -rf /tmp/imagetool
       ---> Running in a79addca4d2f
-      Oracle Interim Patch Installer version 13.9.4.2.2
+      Oracle Interim Patch Installer version 13.9.4.2.5
       Copyright (c) 2020, Oracle Corporation.  All rights reserved.
 
 
       Oracle Home       : /u01/oracle
       Central Inventory : /u01/oracle/oraInventory
         from           : /u01/oracle/oraInst.loc
-      OPatch version    : 13.9.4.2.2
+      OPatch version    : 13.9.4.2.5
       OUI version       : 13.9.4.0.0
       Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
 
@@ -570,14 +570,14 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
       Log file location: /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
 
       OPatch succeeded.
-      Oracle Interim Patch Installer version 13.9.4.2.2
+      Oracle Interim Patch Installer version 13.9.4.2.5
       Copyright (c) 2020, Oracle Corporation.  All rights reserved.
 
 
       Oracle Home       : /u01/oracle
       Central Inventory : /u01/oracle/oraInventory
         from           : /u01/oracle/oraInst.loc
-      OPatch version    : 13.9.4.2.2
+      OPatch version    : 13.9.4.2.5
       OUI version       : 13.9.4.0.0
       Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-57-19AM_1.log
 
@@ -610,7 +610,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
     [INFO ] Image Tool build ID: f9feea35-c52c-4974-b155-eb7f34d95892
     [INFO ] Temporary directory used for docker build context: <work-directory>/wlstmp/wlsimgbuilder_temp1799120592903014749
-    [INFO ] Using patch 28186730_13.9.4.2.2 from cache: <downloaded-patches-location>/p28186730_139422_Generic.zip
+    [INFO ] Using patch 28186730_13.9.4.2.5 from cache: <downloaded-patches-location>/p28186730_139425_Generic.zip
     [WARNING] skipping patch conflict check, no support credentials provided
     [WARNING] No credentials provided, skipping validation of patches
     [INFO ] Using patch 30761841_12.2.1.4.0 from cache: <downloaded-patches-location>/p30761841_122140_Generic.zip
