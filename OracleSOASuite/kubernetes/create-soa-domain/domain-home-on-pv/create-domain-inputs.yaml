@@ -22,12 +22,10 @@ domainUID: soainfra
 
 # Domain Type. Mandatory input for SOASuite domains. User must provide one of the supported values given below.
 # Domain Type must be carefully chosen and specified depending on the usecase. It can't be changed once you proceed.
-# In case of SOASuite domains, the supported Domain types are soa,osb,soaess,soaosb,soaessosb.
-# soa       : Deploys a SOA Domain
+# In case of SOASuite domains, the supported Domain types are soa,osb,soaosb.
+# soa       : Deploys a SOA Domain with Enterprise Scheduler (ESS)
 # osb       : Deploys an OSB Domain (Oracle Service Bus)
-# soaess    : Deploys a SOA Domain with Enterprise Scheduler (ESS)
-# soaosb    : Deploys a Domain with SOA and OSB
-# soaessosb : Deploys a Domain with SOA, OSB and Enterprise Scheduler (ESS)
+# soaosb    : Deploys a Domain with SOA, OSB and Enterprise Scheduler (ESS)
 domainType: soa
 
 # Home of the WebLogic domain
@@ -45,7 +43,7 @@ configuredManagedServerCount: 5
 initialManagedServerReplicas: 2
 
 # BEGIN: Configuration for SOA cluster 
-# Below values applicable only for the domain types soa, soaess, soaosb and soaessosb
+# Below values applicable only for the domain types soa and soaosb
 # SOA Cluster name
 soaClusterName: soa_cluster
 
@@ -60,7 +58,7 @@ soaManagedServerSSLPort: 8002
 # END: Configuration for SOA cluster
 
 # BEGIN: Configuration for OSB cluster
-# Below values applicable only for the domain types osb, soaosb and soaessosb
+# Below values applicable only for the domain types osb and soaosb
 # OSB Cluster name
 osbClusterName: osb_cluster
 
@@ -74,7 +72,7 @@ osbManagedServerPort: 9001
 osbManagedServerSSLPort: 9002
 # END: Configuration for OSB cluster
 
-# SOA Suite Docker image.
+# SOA Suite image.
 # The operator requires SOA Suite 12.2.1.4.0.
 # Refer to https://oracle.github.io/fmw-kubernetes/soa-domains/userguide/prepare-your-environment/#obtaining-the-soa-suite-docker-image/  for details on how to obtain or create the image.
 image: soasuite:12.2.1.4
@@ -83,7 +81,7 @@ image: soasuite:12.2.1.4
 # Legal values are "IfNotPresent", "Always", or "Never"
 imagePullPolicy: IfNotPresent
 
-# Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image
+# Name of the Kubernetes secret to access the container registry to pull the SOA Suite image
 # The presence of the secret will be validated when this parameter is enabled.
 #imagePullSecretName:
 

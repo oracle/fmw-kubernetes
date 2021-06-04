@@ -1,17 +1,17 @@
 #!/bin/bash
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-
+#
 . /u01/oracle/wlserver/server/bin/setWLSEnv.sh
 
 echo "Check if the DB Service is ready to accept request "
 connectString=${1:-oracle-db.default.svc.cluster.local:1521/devpdb.k8s}
-schemaPrefix=${2:-domain1}
+schemaPrefix=${2:-soainfra}
 rcuType=${3:-fmw}
 sysPassword=${4:-Oradoc_db1}
-schemaProfileType=${5:-SMALL}
+customVariables=${5:-none}
 
-echo "DB Connection String [$connectString], schemaPrefix [${schemaPrefix}] rcuType [${rcuType}] schemaProfileType [${schemaProfileType}]"
+echo "DB Connection String [$connectString], schemaPrefix [${schemaPrefix}] rcuType [${rcuType}] customVariables [${customVariables}]"
 
 max=100
 counter=0
@@ -33,28 +33,24 @@ else
  java utils.dbping ORACLE_THIN "sys as sysdba" ${sysPassword} ${connectString}
 fi
 
-# SOA needs extra component(s) SOAINFRA ESS (optional)
-# SOA needs variables param(s) SOA_PROFILE_TYPE=SMALL(or)LARGE,HEALTHCARE_INTEGRATION=NO
-
+if [ $customVariables != "none" ]; then
+  extVariables="-variables $customVariables"
+else
+  extVariables=""  
+fi
 case $rcuType in
- fmw)
-   extComponents=""
-   extVariables=""
-   echo "Creating RCU Schema for FMW Domain ..."
-   ;;
- soa|soaosb|osb)
+
+osb)
    extComponents="-component SOAINFRA"
-   extVariables="-variables SOA_PROFILE_TYPE=${schemaProfileType},HEALTHCARE_INTEGRATION=NO"
-   echo "Creating RCU Schema for SOA Domain [$rcuType] ..."
+   echo "Creating RCU Schema for OracleSOASuite Domain ..."
    ;;
- soaess|soaessosb)
-    extComponents="-component SOAINFRA -component ESS"
-    extVariables="-variables SOA_PROFILE_TYPE=${schemaProfileType},HEALTHCARE_INTEGRATION=NO"
-    echo "Creating RCU Schema for SOA Domain w/ESS [$rcuType] ..."
-  ;;
-  * )
+soa|soaosb|soab2b|soaosbb2b)
+   extComponents="-component SOAINFRA -component ESS"
+   echo "Creating RCU Schema for OracleSOASuite Domain ..."
+   ;;
+     * )
     echo "[ERROR] Unknown RCU Schema Type [$rcuType]"
-    echo "Supported values: fmw(default),soa,osb,soaosb,soaess,soaessosb"
+    echo "Supported values: osb,soa,soaosb,soab2b,soaosbb2b"
     exit -1
   ;;
 esac
@@ -73,3 +69,4 @@ echo "Extra RCU Schema Variable Choosen[${extVariables}]"
  -schemaPrefix ${schemaPrefix} ${extComponents} ${extVariables} \
  -component MDS -component IAU -component IAU_APPEND -component IAU_VIEWER \
  -component OPSS -component WLS -component STB  < /u01/oracle/pwd.txt
+

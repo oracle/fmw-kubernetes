@@ -21,8 +21,12 @@
 # Initialize
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
+# source weblogic operator provided common utility scripts
 source ${scriptDir}/../../common/utility.sh
 source ${scriptDir}/../../common/validate.sh
+# source SOA specific utility scripts
+source ${scriptDir}/../utils/utility.sh
+source ${scriptDir}/../utils/validate.sh
 
 function usage {
   echo usage: ${script} -o dir -i file [-e] [-v] [-t] [-h]
@@ -126,14 +130,14 @@ function initialize {
     validationError "The template file ${deleteJobInput} for deleting a WebLogic domain was not found"
   fi
 
-  dcrInput="${scriptDir}/../../common/jrf-domain-template.yaml"
+  dcrInput="${scriptDir}/../utils/soasuite-domain-template.yaml"
   if [ ! -f ${dcrInput} ]; then
     validationError "The template file ${dcrInput} for creating the domain resource was not found"
   fi
 
   failIfValidationErrors
 
-  validateCommonInputs
+  validateCommonInputs_SOA
 
   initOutputDir
   getKubernetesClusterIP
@@ -200,7 +204,7 @@ function createDomainHome {
 
   # Below code updates domain.yaml file for SOASuite domains
   # 1. Adds precreateService: true  to serverPod and cluster definitions
-  # 2. Adds OSB cluster if domainType is soaosb or soaessosb
+  # 2. Adds OSB cluster if domainType is soaosb or soaosbb2b
   # 3. Updates %DOMAIN_TYPE% with value in create-domain-job.yaml
   cp ${dcrOutput} ${dcrOutput}.bak
   export PRECREATE_SERVICE="\    \serverService:\n\
@@ -209,7 +213,7 @@ function createDomainHome {
   if [ -n "${domainType}" ]; then
     echo "domainType: ${domainType}"
     sed -i -e "s:%DOMAIN_TYPE%:${domainType}:g" ${createJobOutput}
-    if [ "${domainType}" == "soaosb" ] || [ "${domainType}" == "soaessosb" ]; then
+    if [ "${domainType}" == "soaosb" ] || [ "${domainType}" == "soaosbb2b" ]; then
       # Appends new cluster and update cluster name to ${osbClusterName}
       sed -n '/- clusterName:/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
       sed -i "0,/- clusterName: ${soaClusterName}/s//- clusterName: ${osbClusterName}/" ${dcrOutput}
@@ -220,7 +224,7 @@ function createDomainHome {
     # set MemoryMetricEnabled=false for SOA and OSB clusters
     if [ "${domainType}" = "osb" ]; then
       sed -i -e "s/%MemoryMetricEnabled%/-Doracle.sb.tracking.resiliency.MemoryMetricEnabled=false /" ${dcrOutput}
-    elif [ "${domainType}" = "soa" -o "${domainType}" = "soaess" ]; then
+    elif [ "${domainType}" = "soa" ]; then
       sed -i -e "s/%MemoryMetricEnabled%/-Doracle.soa.tracking.resiliency.MemoryMetricEnabled=false /" ${dcrOutput}
     else
       sed -i -z -e "s/%MemoryMetricEnabled%/-Doracle.sb.tracking.resiliency.MemoryMetricEnabled=false /" ${dcrOutput}
@@ -307,6 +311,6 @@ function printSummary {
 }
 
 # Perform the sequence of steps to create a domain
-createDomain false
+createDomain_SOA false
 
 
