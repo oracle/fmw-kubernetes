@@ -1,0 +1,3039 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Create or update an Oracle WebCenter Content Docker image used for deploying Oracle WebCenter Content domains. An Oracle WebCenter Content Docker image can be created using the WebLogic Image Tool or using the Dockerfile approach.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/21.1.2/images/favicon.png" type="image/png">
+
+    <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/21.1.2/css/nucleus.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/fontawesome-all.min.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/hybrid.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/featherlight.min.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/perfect-scrollbar.min.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/auto-complete.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/atom-one-dark-reasonable.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/theme.css?1614937638" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.2/css/hugo-theme.css?1614937638" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/21.1.2/js/jquery-3.3.1.min.js?1614937638"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/21.1.2/">
+  <img src="/fmw-kubernetes/21.1.2//images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/21.1.2/js/lunr.min.js?1614937638"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.2/js/auto-complete.js?1614937638"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/21.1.2\/";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.2/js/search.js?1614937638"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/jms-asm-migration/" title="Configure Automatic Service Migration" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/jms-asm-migration/">
+        <b></b>Configure Automatic Service Migration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/adminguide/peforming-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/adminguide/peforming-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/" title="Oracle WebCenter Content" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/">
+          Oracle WebCenter Content
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/installguide/create-wccontent-domains/">
+          <b>  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/" title="Monitor an Oracle WebCenter Content domain" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/">
+        <b> </b>Monitor an Oracle WebCenter Content domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/elasticsearch-integration/">
+        Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/weblogic-logging-exporter-setup/">
+        Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/logging-fluentd-setup/" title="Publish logs to Elasticsearch Using Fluentd" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/adminguide/logging-fluentd-setup/">
+        Publish logs to Elasticsearch Using Fluentd
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/">
+          <b>7. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/wcc-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/wcc-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/quickstart-deployment-guide/" title="Quick start deployment guide" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/quickstart-deployment-guide/">
+        <b> </b>Quick start deployment guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.2/wccontent-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/21.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/21.1.2/wccontent-domains/'>Oracle WebCenter Content</a> > Create or update an image
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#create-or-update-an-oracle-webcenter-content-docker-image-using-the-weblogic-image-tool">Create or update an Oracle WebCenter Content Docker image using the WebLogic Image Tool</a></li>
+        <li><a href="#create-an-oracle-webcenter-content-docker-image-using-dockerfile">Create an Oracle WebCenter Content Docker image using Dockerfile</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Create or update an image
+            </h1>
+          
+
+        
+
+
+
+
+	<p>If you have access to the My Oracle Support (MOS), and there is a need to build a new image with a patch (bundle or interim), it is recommended to use the WebLogic Image Tool to build an Oracle WebCenter Content image for production deployments.</p>
+<ul>
+<li><a href="#create-or-update-an-oracle-webcenter-content-docker-image-using-the-weblogic-image-tool">Create or update an Oracle WebCenter Content Docker image using the WebLogic Image Tool</a>
+<ul>
+<li><a href="#set-up-the-weblogic-image-tool">Set up the WebLogic Image Tool</a></li>
+<li><a href="#create-an-image">Create an image</a></li>
+<li><a href="#update-an-image">Update an image</a></li>
+</ul>
+</li>
+<li><a href="#create-an-oracle-webcenter-content-docker-image-using-dockerfile">Create an Oracle WebCenter Content Docker image using Dockerfile</a></li>
+</ul>
+<h3 id="create-or-update-an-oracle-webcenter-content-docker-image-using-the-weblogic-image-tool">Create or update an Oracle WebCenter Content Docker image using the WebLogic Image Tool</h3>
+<p>Using the WebLogic Image Tool, you can <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/#create-an-image">create</a> a new Oracle WebCenter Content Docker image (can include patches as well) or <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/#update-an-image">update</a> an existing image with one or more patches (bundle patch and interim patches).</p>
+<blockquote>
+<p><strong>Recommendations:</strong></p>
+<ul>
+<li>Use <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/#create-an-image">create</a> for creating a new Oracle WebCenter Content Docker image either:
+<ul>
+<li>without any patches</li>
+<li>or, containing the Oracle WebCenter Content binaries, bundle patch and interim patches. This is the recommended approach if you have access to the Oracle WebCenter Content patches because it optimizes the size of the image.</li>
+</ul>
+</li>
+<li>Use <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/#update-an-image">update</a> for patching an existing Oracle WebCenter Content Docker image with a single interim patch. Note that the patched image size may increase considerably due to additional image layers introduced by the patch application tool.</li>
+</ul>
+</blockquote>
+<h4 id="set-up-the-weblogic-image-tool">Set up the WebLogic Image Tool</h4>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#set-up-the-weblogic-image-tool">Set up the WebLogic Image Tool</a></li>
+<li><a href="#validate-setup">Validate setup</a></li>
+<li><a href="#weblogic-image-tool-build-directory">WebLogic Image Tool build directory</a></li>
+<li><a href="#weblogic-image-tool-cache">WebLogic Image Tool cache</a></li>
+<li><a href="#set-up-additional-build-scripts">Set up additional build scripts</a></li>
+</ul>
+<h5 id="prerequisites">Prerequisites</h5>
+<p>Verify that your environment meets the following prerequisites:</p>
+<ul>
+<li>Docker client and daemon on the build machine, with minimum Docker version 18.03.1.ce.</li>
+<li>Bash version 4.0 or later, to enable the <!-- raw HTML omitted --> command complete feature.</li>
+<li>JAVA_HOME environment variable set to the appropriate JDK location.</li>
+</ul>
+<h5 id="set-up-the-weblogic-image-tool-1">Set up the WebLogic Image Tool</h5>
+<p>To set up the WebLogic Image Tool:</p>
+<ol>
+<li>
+<p>Create a working directory and change to it. In these steps, this directory is <code>imagetool-setup</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir imagetool-setup
+$ cd imagetool-setup
+</code></pre></div></li>
+<li>
+<p>Download the latest version of the WebLogic Image Tool from the <a href="https://github.com/oracle/weblogic-image-tool/releases/latest">releases page</a>.</p>
+</li>
+<li>
+<p>Unzip the release ZIP file to the <code>imagetool-setup</code> directory.</p>
+</li>
+<li>
+<p>Execute the following commands to set up the WebLogic Image Tool on a Linux environment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd imagetool-setup/imagetool/bin
+$ source setup.sh
+</code></pre></div></li>
+</ol>
+<h5 id="validate-setup">Validate setup</h5>
+<p>To validate the setup of the WebLogic Image Tool:</p>
+<ol>
+<li>
+<p>Enter the following command to retrieve the version of the WebLogic Image Tool:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool --version
+</code></pre></div></li>
+<li>
+<p>Enter <code>imagetool</code> then press the Tab key to display the available <code>imagetool</code> commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool &lt;TAB&gt;
+cache   create  help    rebase  update
+</code></pre></div></li>
+</ol>
+<h5 id="weblogic-image-tool-build-directory">WebLogic Image Tool build directory</h5>
+<p>The WebLogic Image Tool creates a temporary Docker context directory, prefixed by <code>wlsimgbuilder_temp</code>, every time the tool runs. Under normal circumstances, this context directory will be deleted. However, if the process is aborted or the tool is unable to remove the directory, it is safe for you to delete it manually. By default, the WebLogic Image Tool creates the Docker context directory under the user&rsquo;s home directory. If you prefer to use a different directory for the temporary context, set the environment variable <code>WLSIMG_BLDDIR</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WLSIMG_BLDDIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path/to/buid/dir&#34;</span>
+</code></pre></div><h5 id="weblogic-image-tool-cache">WebLogic Image Tool cache</h5>
+<p>The WebLogic Image Tool maintains a local file cache store. This store is used to look up where the Java, WebLogic Server installers, and WebLogic Server patches reside in the local file system. By default, the cache store is located in the user&rsquo;s <code>$HOME/cache</code> directory. Under this directory, the lookup information is stored in the <code>.metadata</code> file. All automatically downloaded patches also reside in this directory. You can change the default cache store location by setting the environment variable <code>WLSIMG_CACHEDIR</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WLSIMG_CACHEDIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path/to/cachedir&#34;</span>
+</code></pre></div><h5 id="set-up-additional-build-scripts">Set up additional build scripts</h5>
+<p>Creating an Oracle WebCenter Content Docker image using the WebLogic Image Tool requires additional container scripts for Oracle WebCenter Content domains.</p>
+<ol>
+<li>
+<p>Clone the <a href="https://github.com/oracle/docker-images.git">docker-images</a> repository to set up those scripts. In these steps, this directory is <code>DOCKER_REPO</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd imagetool-setup
+$ git clone https://github.com/oracle/docker-images.git
+</code></pre></div></li>
+<li>
+<p>Copy the additional WebLogic Image Tool build files from the operator source repository to the <code>imagetool-setup</code> location:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p imagetool-setup/docker-images/WebCenterContent/imagetool/12.2.1.4.0
+$ cd imagetool-setup/docker-images/WebCenterContent/imagetool/12.2.1.4.0
+$ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts/* .
+</code></pre></div></li>
+</ol>
+<h4 id="create-an-image">Create an image</h4>
+<p>After <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, follow these steps to use the WebLogic Image Tool to <code>create</code> a new Oracle WebCenter Content Docker image.</p>
+<h5 id="download-the-oracle-webcenter-content-installation-binaries-and-patches">Download the Oracle WebCenter Content installation binaries and patches</h5>
+<p>You must download the required Oracle WebCenter Content installation binaries and patches as listed below from the <a href="https://edelivery.oracle.com/">Oracle Software Delivery Cloud</a> and save them in a directory of your choice. In these steps, this directory is <code>download location</code>.</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample list of installation binaries and patches:
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <ul>
+<li>
+<p>JDK:</p>
+<ul>
+<li>jdk-8u251-linux-x64.tar.gz</li>
+</ul>
+</li>
+<li>
+<p>Fusion MiddleWare Infrastructure installer:</p>
+<ul>
+<li>fmw_12.2.1.4.0_infrastructure_generic.jar</li>
+</ul>
+</li>
+<li>
+<p>WebCenter Content installers:</p>
+<ul>
+<li>fmw_12.2.1.4.0_wccontent.jar</li>
+</ul>
+</li>
+<li>
+<p>Fusion MiddleWare Infrastructure patches:</p>
+<ul>
+<li>p28186730_139424_Generic-23574493.zip (Opatch)</li>
+</ul>
+</li>
+<li>
+<p>WebCenter Content patches:</p>
+<ul>
+<li>p31390302_122140_Generic.zip (wcc)</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</div>
+<blockquote>
+<p>Note: This is a sample list of patches. You must get the appropriate list of patches for your Oracle WebCenter Content image.</p>
+</blockquote>
+<h5 id="update-required-build-files">Update required build files</h5>
+<p>The following files available in the code repository location <code>&lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterContent/imagetool/12.2.1.4.0</code>
+are used for creating the image.</p>
+<ul>
+<li><code>additionalBuildCmds.txt</code></li>
+<li><code>buildArgs</code></li>
+</ul>
+<ol>
+<li>
+<p>In the <code>buildArgs</code> file, update all the occurrences of <code>%DOCKER_REPO%</code> with the <code>docker-images</code> repository location, which is the complete path of <code>imagetool-setup/docker-images</code>.</p>
+<p>For example, update:</p>
+<p><code>%DOCKER_REPO%/OracleWebCenterContent/imagetool/12.2.1.4.0/</code></p>
+<p>to:<br>
+<code>&lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterContent/imagetool/12.2.1.4.0/</code></p>
+</li>
+<li>
+<p>Similarly, update the placeholders <code>%JDK_VERSION%</code> and <code>%BUILDTAG%</code> with appropriate values.</p>
+</li>
+</ol>
+<h5 id="create-the-image">Create the image</h5>
+<ol>
+<li>
+<p>Add a JDK package to the WebLogic Image Tool cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addInstaller --type jdk --version 8u251 --path &lt;download location&gt;/jdk-8u251-linux-x64.tar.gz
+</code></pre></div></li>
+<li>
+<p>Add the downloaded installation binaries to the WebLogic Image Tool cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path &lt;download location&gt;/fmw_12.2.1.4.0_infrastructure.jar
+
+$ imagetool cache addInstaller --type wcc --version 12.2.1.4.0 --path &lt;download location&gt;/fmw_12.2.1.4.0_wccontent.jar
+
+</code></pre></div></li>
+<li>
+<p>Add the downloaded patches to the WebLogic Image Tool cache:</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the commands to add patches in to the cache:
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>``` bash
+$ imagetool cache addEntry --key 31390302_12.2.1.4.0 --path &lt;download location&gt;/p31390302_122140_Generic.zip
+
+$ imagetool cache addEntry --key 28186730_13.9.4.2.4 --path &lt;download location&gt;/p28186730_139424_Generic-23574493.zip 
+
+```
+</code></pre>
+
+    </div>
+</div>
+</li>
+<li>
+<p>Update the patches list to <code>buildArgs</code>.</p>
+<p>To the <code>create</code> command in the <code>buildArgs</code> file, append the Oracle WebCenter Content patches list using the <code>--patches</code> flag and Opatch patch using the <code>--opatchBugNumber</code> flag. Sample options for the list of patches above are:</p>
+<pre><code>--patches 31754672_12.2.1.4.0
+--opatchBugNumber=28186730_13.9.4.2.4
+</code></pre><p>Example <code>buildArgs</code> file after appending product&rsquo;s list of patches and Opatch patch:</p>
+<pre><code>create
+--jdkVersion=8u251
+--type WCC
+--version=12.2.1.4.0
+--tag=oracle/wccontent_create_1015:12.2.1.4.0
+--pull
+--additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterContent/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+--additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4.0/container-scripts
+--patches 31754672_12.2.1.4.0
+--opatchBugNumber=28186730_13.9.4.2.4
+       
+</code></pre><p>Refer to <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
+</li>
+<li>
+<p>Enter the following command to create the Oracle WebCenter Content image:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool @&lt;absolute path to <span style="color:#e6db74">`</span>buildargs<span style="color:#e6db74">`</span> file&gt;<span style="color:#e6db74">&#34;
+</span></code></pre></div></li>
+</ol>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample Dockerfile generated with the imagetool command.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">########## BEGIN DOCKERFILE ##########</span>
+#
+<span style="color:#75715e"># Copyright (c) 2019, 2020, Oracle and/or its affiliates.</span>
+#
+<span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
+#
+#
+FROM oraclelinux:7-slim as OS_UPDATE
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+USER root
+
+RUN yum -y --downloaddir<span style="color:#f92672">=</span>/tmp/imagetool install gzip tar unzip libaio <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> yum -y --downloaddir<span style="color:#f92672">=</span>/tmp/imagetool clean all <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> rm -rf /var/cache/yum/* <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/imagetool
+
+<span style="color:#75715e">## Create user and group</span>
+RUN <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>getent group oracle<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> hash groupadd &amp;&gt; /dev/null <span style="color:#f92672">&amp;&amp;</span> groupadd oracle <span style="color:#f92672">||</span> exit -1 ; <span style="color:#66d9ef">fi</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>getent passwd oracle<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> hash useradd &amp;&gt; /dev/null <span style="color:#f92672">&amp;&amp;</span> useradd -g oracle oracle <span style="color:#f92672">||</span> exit -1; <span style="color:#66d9ef">fi</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> mkdir /u01 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:oracle /u01 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">775</span> /u01
+
+<span style="color:#75715e"># Install Java</span>
+FROM OS_UPDATE as JDK_BUILD
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+
+ENV JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk
+
+COPY --chown<span style="color:#f92672">=</span>oracle:oracle jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
+
+USER oracle
+
+
+RUN tar xzf /tmp/imagetool/jdk-8u251-linux-x64.tar.gz -C /u01 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">$(</span>test -d /u01/jdk* <span style="color:#f92672">&amp;&amp;</span> mv /u01/jdk* /u01/jdk <span style="color:#f92672">||</span> mv /u01/graal* /u01/jdk<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/imagetool <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> rm -f /u01/jdk/javafx-src.zip /u01/jdk/src.zip
+
+
+<span style="color:#75715e"># Install Middleware</span>
+FROM OS_UPDATE as WLS_BUILD
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+
+ENV JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    OPATCH_NO_FUSER<span style="color:#f92672">=</span>true
+
+RUN mkdir -p /u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> mkdir -p /u01/oracle/oraInventory <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:oracle /u01/oracle/oraInventory <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:oracle /u01/oracle
+
+COPY --from<span style="color:#f92672">=</span>JDK_BUILD --chown<span style="color:#f92672">=</span>oracle:oracle /u01/jdk /u01/jdk/
+
+COPY --chown<span style="color:#f92672">=</span>oracle:oracle fmw_12.2.1.4.0_infrastructure_generic.jar fmw.rsp /tmp/imagetool/
+COPY --chown<span style="color:#f92672">=</span>oracle:oracle fmw_12.2.1.4.0_wccontent.jar wcc.rsp /tmp/imagetool/
+COPY --chown<span style="color:#f92672">=</span>oracle:oracle oraInst.loc /u01/oracle/
+
+
+
+USER oracle
+
+
+RUN  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure_generic.jar -silent ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+RUN  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wccontent.jar -silent ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -responseFile /tmp/imagetool/wcc.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+
+
+
+
+
+FROM OS_UPDATE as FINAL_BUILD
+
+ARG ADMIN_NAME
+ARG ADMIN_HOST
+ARG ADMIN_PORT
+ARG MANAGED_SERVER_PORT
+
+ENV ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    LC_ALL<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DEFAULT_LOCALE<span style="color:#66d9ef">:-</span>en_US.UTF-8<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>PATH<span style="color:#e6db74">}</span>:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
+
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+
+    COPY --from<span style="color:#f92672">=</span>JDK_BUILD --chown<span style="color:#f92672">=</span>oracle:oracle /u01/jdk /u01/jdk/
+
+COPY --from<span style="color:#f92672">=</span>WLS_BUILD --chown<span style="color:#f92672">=</span>oracle:oracle /u01/oracle /u01/oracle/
+
+
+
+USER oracle
+WORKDIR /u01/oracle
+
+<span style="color:#75715e">#ENTRYPOINT /bin/bash</span>
+
+    
+    
+    ENV ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        VOLUME_DIR<span style="color:#f92672">=</span>/u01/oracle/user_projects <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        SCRIPT_FILE<span style="color:#f92672">=</span>/u01/oracle/container-scripts/* <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        USER_MEM_ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Djava.security.egd=file:/dev/./urandom&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        PATH<span style="color:#f92672">=</span>$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+    	
+    USER root
+    
+    RUN yum install -y libaio tar procps hostname zip unzip <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        rm -rf /var/cache/yum <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        mkdir -p $VOLUME_DIR <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        mkdir -p /u01/oracle/container-scripts <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        mkdir -p /u01/oracle/silent-install-files-tmp/config <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        mkdir -p /u01/oracle/logs <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        chown oracle:oracle -R /u01 $VOLUME_DIR <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        chmod a+xr /u01
+    COPY --chown<span style="color:#f92672">=</span>oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
+    RUN chmod +xr $SCRIPT_FILE <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        rm /u01/oracle/oracle_common/lib/ons.jar /u01/oracle/oracle_common/modules/oracle.jdbc/simplefan.jar
+    
+    USER oracle
+    
+    EXPOSE $UCM_PORT $UCM_INTRADOC_PORT $IBR_INTRADOC_PORT $IBR_PORT $ADMIN_PORT
+    WORKDIR <span style="color:#e6db74">${</span>ORACLE_HOME<span style="color:#e6db74">}</span>
+    
+    CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/u01/oracle/container-scripts/createDomainandStartAdmin.sh&#34;</span><span style="color:#f92672">]</span>
+
+<span style="color:#75715e">########## END DOCKERFILE ##########</span>
+</code></pre></div>
+    </div>
+</div>
+<ol>
+<li>
+<p>Check the created image using the <code>docker images</code> command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep wcc
+</code></pre></div></li>
+</ol>
+<h4 id="update-an-image">Update an image</h4>
+<p>After <a href="/fmw-kubernetes/21.1.2/wccontent-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, use the WebLogic Image Tool to <code>update</code> an existing Oracle WebCenter Content Docker image:</p>
+<ol>
+<li>
+<p>Enter the following command for each patch to add the required patch(es) to the WebLogic Image Tool cache:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  cd &lt;imagetool-setup&gt;
+$ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.2.1.4.0 --value &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
+<span style="color:#f92672">[</span>INFO   <span style="color:#f92672">]</span> Added entry 30761841_12.2.1.4.0<span style="color:#f92672">=</span>&lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
+</code></pre></div></li>
+<li>
+<p>Provide the following arguments to the WebLogic Image Tool <code>update</code> command:</p>
+<ul>
+<li><code>–-fromImage</code> - Identify the image that needs to be updated. In the example below, the image to be updated is <code>wccontent:12.2.1.4.0</code>.</li>
+<li><code>–-patches</code> - Multiple patches can be specified as a comma-separated list.</li>
+<li><code>--tag</code> - Specify the new tag to be applied for the image being built.</li>
+</ul>
+<p>Refer <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/update-image.md">here</a> for the complete list of options available with the WebLogic Image Tool <code>update</code> command.</p>
+<blockquote>
+<p>Note: The WebLogic Image Tool cache should have the latest OPatch zip. The WebLogic Image Tool will update the OPatch if it is not already updated in the image.</p>
+</blockquote>
+<h5 id="examples">Examples</h5>
+</li>
+</ol>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the example `update` command:
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>  $ imagetool update --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.4
+      
+</code></pre>
+    </div>
+</div>
+<ol>
+<li>Check the built image using the <code>docker images</code> command:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker images | grep wcc
+
+</code></pre></div></li>
+</ol>
+<h3 id="create-an-oracle-webcenter-content-docker-image-using-dockerfile">Create an Oracle WebCenter Content Docker image using Dockerfile</h3>
+<p>For test and development purposes, you can create an Oracle WebCenter Content image using the Dockerfile. Consult the <a href="https://github.com/oracle/docker-images/blob/master/OracleWebCenterContent/dockerfiles/README.md">README</a> file for important prerequisite steps,
+such as building or pulling the Server JRE Docker image, Oracle FMW Infrastructure Docker image, and downloading the Oracle WebCenter Content installer and bundle patch binaries.</p>
+<p>A prebuilt Oracle Fusion Middleware Infrastructure image, <code>container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4</code>, is available at <code>container-registry.oracle.com</code>. We recommend that you pull and rename this image to build the Oracle WebCenter Content image.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
+  $ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0
+
+</code></pre></div><p>Follow these steps to build an Oracle Fusion Middleware Infrastructure image, and then the Oracle WebCenter Content image as a layer on top of that:</p>
+<ol>
+<li>
+<p>Make a local clone of the sample repository:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/docker-images
+</code></pre></div></li>
+<li>
+<p>Build the <code>oracle/fmw-infrastructure:12.2.1.4</code> image:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd docker-images/OracleFMWInfrastructure/dockerfiles
+ $ sh buildDockerImage.sh -v 12.2.1.4 -s
+</code></pre></div><p>This will produce an image named <code>oracle/fmw-infrastructure:12.2.1.4</code>.</p>
+</li>
+<li>
+<p>Download the Oracle WebCenter Content installer from the Oracle Technology Network or e-delivery.</p>
+<blockquote>
+<p>Note: Copy the installer binaries to the same location as the Dockerfile.</p>
+</blockquote>
+</li>
+<li>
+<p>Create the Oracle WebCenter Content image by running the provided script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd docker-images/OracleWebCenterContent/dockerfiles
+$ ./buildDockerImage.sh -v 12.2.1.4.0 -s
+</code></pre></div><p>The image produced will be named <code>oracle/wccontent:12.2.1.4.0</code>. The samples and instructions assume the Oracle WebCenter Content image is named <code>wccontent:12.2.1.4.0</code>. You must rename your image to match this name, or update the samples to refer to the image you created.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/wccontent:12.2.1.4.0 wccontent:12.2.1.4.0
+</code></pre></div></li>
+</ol>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/21.1.2/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/21.1.2/wccontent-domains/cleanup-domain-setup/" title="Uninstall" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/21.1.2/js/clipboard.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/perfect-scrollbar.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/perfect-scrollbar.jquery.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/jquery.sticky.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/featherlight.min.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/highlight.pack.js?1614937638"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/21.1.2/js/modernizr.custom-3.6.0.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/learn.js?1614937638"></script>
+    <script src="/fmw-kubernetes/21.1.2/js/hugo-learn.js?1614937638"></script>
+
+    <link href="/fmw-kubernetes/21.1.2/mermaid/mermaid.css?1614937638" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.1.2/mermaid/mermaid.js?1614937638"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
