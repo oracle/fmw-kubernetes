@@ -1639,17 +1639,21 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <li>fmw_12.2.1.4.0_b2bhealthcare_generic.jar</li>
 </ul>
 </li>
+
+<div class="notices warning" ><p>In this release, Oracle B2B is not supported to be configured, but the installer is required for completeness.</p>
+</div>
+
 <li>
 <p>Fusion Middleware Infrastructure patches:</p>
 <ul>
-<li>p28186730_139425_Generic.zip           (OPATCH 13.9.4.2.5 FOR EM 13.4, FMW/WLS 12.2.1.3.0, 12.2.1.4.0 AND 14.1.1.0.0)</li>
+<li>p28186730_139425_Generic.zip      (OPATCH 13.9.4.2.5 FOR EM 13.4, FMW/WLS 12.2.1.3.0, 12.2.1.4.0 AND 14.1.1.0.0)</li>
 <li>p32698246_122140_Generic.zip      (WLS PATCH SET UPDATE 12.2.1.4.210330)</li>
-<li>p32652899_122140_Generic.zip	    (FMW COMMON THIRDPARTY SPU 12.2.1.4.0 FOR APRIL2021CPU)</li>
+<li>p32652899_122140_Generic.zip      (FMW COMMON THIRDPARTY SPU 12.2.1.4.0 FOR APRIL2021CPU)</li>
 <li>p32684757_122140_Generic.zip      (ADF BUNDLE PATCH 12.2.1.4.210325)</li>
 <li>p32581859_122140_Generic.zip      (Coherence 12.2.1.4.8 Cumulative Patch using OPatch)</li>
 <li>p31544353_122140_Linux-x86-64.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 JULY CPU 2020)</li>
 <li>p32784652_122140_Generic.zip      (OPSS Bundle Patch 12.2.1.4.210418)</li>
-<li>p32772437_122140_Generic.zip	    (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)</li>
+<li>p32772437_122140_Generic.zip      (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)</li>
 <li>p31287540_122140_Generic.zip      (WLS One-off)</li>
 <li>p31918617_122140_Generic.zip      (WLS One-off SSL certificate)</li>
 </ul>
@@ -1660,8 +1664,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <li>p32656931_122140_Generic.zip      (SOA BUNDLE PATCH 12.2.1.4.210319)</li>
 <li>p32121987_122140_Generic.zip      (Oracle Service Bus BUNDLE PATCH 12.2.1.4.201105)</li>
 <li>p31857456_122140_Generic.zip      (Oracle Service Bus One-off)</li>
-<li>p32827327_122140_Generic.zip      (Oracle Service Bus One-off)</li>
-<li>p32808126_122140_Generic.zip      (SOA One-off)</li>
+<li>p31713053_122140_Linux-x86-64.zip (One-off patch)</li>
 </ul>
 </li>
 </ul>
@@ -1743,15 +1746,11 @@ $ imagetool cache addEntry --key 32772437_12.2.1.4.0 --value &lt;download locati
 
 $ imagetool cache addEntry --key 32784652_12.2.1.4.0 --value &lt;download location&gt;/p32784652_122140_Generic.zip
 
-$ imagetool cache addEntry --key 32808126_12.2.1.4.0 --value &lt;download location&gt;/p32808126_122140_Generic.zip
-
-$ imagetool cache addEntry --key 32827327_12.2.1.4.0 --value &lt;download location&gt;/p32827327_122140_Generic.zip
-
 </code></pre></div></li>
 <li>
 <p>Append the <code>--patches</code> flag and the product patch keys to the <code>create</code> command in the <code>buildArgs</code> file. The <code>--patches</code> list must be a comma-separated collection of patch <code>--key</code> values used in the <code>imagetool cache addEntry</code> commands above.</p>
 <p>Sample <code>--patches</code> list for the product patches added in to the cache:</p>
-<pre><code>--patches 30741105_12.2.1.4.0,31287540_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,31918617_12.2.1.4.0,32121987_12.2.1.4.0,32581859_12.2.1.4.0,32652899_12.2.1.4.0,32656931_12.2.1.4.0,32684757_12.2.1.4.0,32698246_12.2.1.4.0,32772437_12.2.1.4.0,32784652_12.2.1.4.0,32808126_12.2.1.4.0,32827327_12.2.1.4.0
+<pre><code>--patches 30741105_12.2.1.4.0,31287540_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,31918617_12.2.1.4.0,32121987_12.2.1.4.0,32581859_12.2.1.4.0,32652899_12.2.1.4.0,32656931_12.2.1.4.0,32684757_12.2.1.4.0,32698246_12.2.1.4.0,32772437_12.2.1.4.0,32784652_12.2.1.4.0
 </code></pre><p>Example <code>buildArgs</code> file after appending the OPatch patch and product patches:</p>
 <pre><code>create
 --jdkVersion 8u291
@@ -1763,7 +1762,7 @@ $ imagetool cache addEntry --key 32827327_12.2.1.4.0 --value &lt;download locati
 --additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
 --installerResponseFile &lt;imagetool-setup-location&gt;/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/b2b.response
---patches 30741105_12.2.1.4.0,31287540_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,31918617_12.2.1.4.0,32121987_12.2.1.4.0,32581859_12.2.1.4.0,32652899_12.2.1.4.0,32656931_12.2.1.4.0,32684757_12.2.1.4.0,32698246_12.2.1.4.0,32772437_12.2.1.4.0,32784652_12.2.1.4.0,32808126_12.2.1.4.0,32827327_12.2.1.4.0
+--patches 30741105_12.2.1.4.0,31287540_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,31918617_12.2.1.4.0,32121987_12.2.1.4.0,32581859_12.2.1.4.0,32652899_12.2.1.4.0,32656931_12.2.1.4.0,32684757_12.2.1.4.0,32698246_12.2.1.4.0,32772437_12.2.1.4.0,32784652_12.2.1.4.0
 --opatchBugNumber 28186730_13.9.4.2.5
 </code></pre><blockquote>
 <p>Note: In the <code>buildArgs</code> file:</p>
@@ -2125,7 +2124,7 @@ WORKDIR /u01/oracle
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <pre><code>$ imagetool update --fromImage soasuite:12.2.1.4 --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --dryRun
+        <pre><code>$ imagetool update --fromImage soasuite:12.2.1.4 --chown oracle:root --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.5 --dryRun
 
 [INFO ] Image Tool build ID: f9feea35-c52c-4974-b155-eb7f34d95892
 [INFO ] Temporary directory used for docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1799120592903014749

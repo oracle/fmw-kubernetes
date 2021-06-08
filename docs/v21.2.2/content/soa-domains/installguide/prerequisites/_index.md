@@ -12,8 +12,10 @@ This section provides information about the system requirements and limitations 
 
 For the current production release 21.2.2:
 
-* Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes) are supported.
-* Oracle Linux Cloud Native Environment (OLCNE) version 1.1.2 is supported.
+* Operating systems supported:
+  * Oracle Linux 7 (UL6+) 
+  * Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes)
+  * Oracle Linux Cloud Native Environment (OLCNE) version 1.1.2
 * Kubernetes 1.16.15+, 1.17.13+, 1.18.10+, and 1.19.7+ (check with `kubectl version`).
 * Docker 18.09.1ce, 19.03.1 (check with `docker version`) or CRI-O 1.14.7 (check with `crictl version | grep RuntimeVersion`).
 * Flannel networking v0.9.1-amd64 or later (check with `docker images | grep flannel`), Calico networking v3.16.1 or later.
