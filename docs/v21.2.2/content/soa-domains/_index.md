@@ -66,5 +66,5 @@ To view documentation for an earlier release, see:
 
 Oracle SOA Suite domains deployment on Kubernetes leverages the WebLogic Kubernetes operator framework.
 * To develop an understanding of the operator, including design, architecture, domain life cycle management, and configuration overrides, review the [operator documentation](https://oracle.github.io/weblogic-kubernetes-operator).
-* To learn more about the Oracle SOA Suite architecture and components, see [Understanding Oracle SOA Suite](https://docs.oracle.com/en/middleware/soa-suite/soa/12.2.1.4/concepts/overview.html).
+* To learn more about the Oracle SOA Suite architecture and components, see [Understanding Oracle SOA Suite](https://docs.oracle.com/en/middleware/soa-suite/soa/12.2.1.4/develop/introduction-building-applications.html#GUID-AED865D0-2FFF-4243-B8C5-473F8572D6F0).
 * To review the known issues and common questions for Oracle SOA Suite domains deployment on Kubernetes, see the  [frequently asked questions]({{< relref "/soa-domains/faq.md" >}}).

@@ -276,7 +276,7 @@ The following files in the code repository location `<imagetool-setup-location>/
     > * `--version` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type soa`.  
     > * `--pull` always pulls the latest base Linux image `oraclelinux:7-slim` from the Docker registry. This flag can be removed if you want to use the Linux image `oraclelinux:7-slim`, which is already available on the host where the SOA image is created.
 
-    Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
+    Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Create the Oracle SOA Suite image:
 

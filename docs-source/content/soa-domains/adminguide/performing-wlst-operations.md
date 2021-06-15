@@ -254,7 +254,7 @@ Note: Refer to [Interactive mode](#interactive-mode) for details on how to conne
 #### Sample WLST operations
 
 
-For a full list of WLST operations, refer to [WebLogic Server WLST Online and Offline Command Reference](https://docs.oracle.com/pls/topic/lookup?ctx=en/middleware/fusion-middleware/weblogic-server/12.2.1.4/wlstc&id=GUID-B6001303-FF2D-4EE7-8BB6-354E6D7C1692).
+For a full list of WLST operations, refer to [WebLogic Server WLST Online and Offline Command Reference](https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/wlstc/quick_ref.html#GUID-B6001303-FF2D-4EE7-8BB6-354E6D7C1692).
 
 ##### Display servers
 
