@@ -46,6 +46,22 @@ spec:
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /_dav
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /idcws
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /idcnativews
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }} 
+      - path: /wsm-pm
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
       - path: /ibr
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ibrClusterName | lower | replace "_" "-" }}'

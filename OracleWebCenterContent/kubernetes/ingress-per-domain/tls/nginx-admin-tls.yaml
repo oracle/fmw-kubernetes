@@ -1,0 +1,27 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wcc-admin-ingress
+  namespace: wccns
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+spec:
+  tls:
+  - hosts:
+    - 'your_host_name'
+    secretName: domain1-tls-cert
+  rules:
+  - host: 'your_host_name'
+    http:
+      paths:
+      - path:
+        backend:
+          serviceName: wccinfra-adminserver-nginx-ssl
+          servicePort: 7002
+
+

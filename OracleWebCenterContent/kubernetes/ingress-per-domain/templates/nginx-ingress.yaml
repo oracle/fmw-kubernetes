@@ -11,6 +11,8 @@ metadata:
   
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
 {{- if eq .Values.tls "SSL" }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_input_headers "X-Forwarded-Proto: https";
@@ -30,6 +32,10 @@ spec:
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /wls-exporter
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
       - path: /cs
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
@@ -39,6 +45,22 @@ spec:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
       - path: /_ocsh
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /_dav
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /idcws
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /idcnativews
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /wsm-pm
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
