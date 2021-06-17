@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Describes how to configure a WebCenter Portal domain to use Fluentd to send log information to Elasticsearch.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/21.2.2/images/favicon.png" type="image/png">
+
+    <title> Fluentd :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/21.2.2/css/nucleus.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/fontawesome-all.min.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/hybrid.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/featherlight.min.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/perfect-scrollbar.min.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/auto-complete.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/atom-one-dark-reasonable.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/theme.css?1622716897" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.2/css/hugo-theme.css?1622716897" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/21.2.2/js/jquery-3.3.1.min.js?1622716897"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/21.2.2">
+  <img src="/fmw-kubernetes/21.2.2/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/21.2.2/js/lunr.min.js?1622716897"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.2.2/js/auto-complete.js?1622716897"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/21.2.2";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/21.2.2/js/search.js?1622716897"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache web tier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/adminguide/performing-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/" title="Oracle WebCenter Portal" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/">
+          Oracle WebCenter Portal
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/prerequisites/">
+          <b> </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/create-wcp-domain/" title="Create WebCenter Portal domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/create-wcp-domain/">
+          <b>  </b>Create WebCenter Portal domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/configure-wcp-search/" title="Configure WebCenter Portal For Search" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/installguide/configure-wcp-search/">
+          <b> </b>Configure WebCenter Portal For Search
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/">
+          <b>3. </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
+        <b>d. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/" title="Monitor a domain and publish logs" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/">
+          <b> </b>Monitor a domain and publish logs
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/monitoring-domain/" title=" Monitor a WebCenter Portal domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/monitoring-domain/">
+          <b></b> Monitor a WebCenter Portal domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/" title="Publish WebLogic Server logs into Elasticsearch" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/">
+          <b> </b>Publish WebLogic Server logs into Elasticsearch
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/" title=" Fluentd" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/">
+          <b>a. </b> Fluentd
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/" title="WebLogic logging exporter" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
+          <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/create-or-update-image/">
+          <b>4. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/cleanup-domain-setup/" title="Uninstall an Oracle WebCenter Portal domain" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/cleanup-domain-setup/">
+        <b>5. </b>Uninstall an Oracle WebCenter Portal domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/">
+          <b>6. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/wcp-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/wcp-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.2.2/wcportal-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/21.2.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/21.2.2/wcportal-domains/'>Oracle WebCenter Portal</a> > <a href='/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/'>Administration Guide</a> > <a href='/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/'>Monitor a domain and publish logs</a> > <a href='/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/'>Publish WebLogic Server logs into Elasticsearch</a> >  Fluentd
+          
+         
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+               Fluentd
+            </h1>
+          
+
+        
+
+
+
+
+	<h4 id="overview">Overview</h4>
+<p>You can configure your WebLogic domain to use <em>Fluentd</em> so it can send the log information to Elasticsearch.</p>
+<p>Here&rsquo;s how this works:</p>
+<ul>
+<li><code>fluentd</code> runs as a separate container in the Administration Server and Managed Server pods.</li>
+<li>The log files reside on a volume that is shared between the <code>weblogic-server</code> and <code>fluentd</code> containers.</li>
+<li><code>fluentd</code> tails the domain logs files and exports them to Elasticsearch.</li>
+<li>A <code>ConfigMap</code> contains the filter and format rules for exporting log records.</li>
+</ul>
+<h5 id="prerequisites">Prerequisites</h5>
+<p>It is assumed that you are editing an existing WebCenter Portal domain. However, you can make all the changes to the domain YAML before creating the domain.
+A complete example of a domain definition with fluentd configuration is at the <a href="#domain-example">end of this document</a>.</p>
+
+<div class="notices note" ><p>These identifiers  are used in the sample commands.</p>
+<ul>
+<li><code>wcpns</code>: WebCenter Portal domain namespace</li>
+<li><code>wcp-domain</code>: <code>domainUID</code></li>
+<li><code>wcpinfra-domain-credentials</code>: Kubernetes secret</li>
+</ul>
+</div>
+
+<p>The sample Elasticsearch configuration is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">    elasticsearchhost: elasticsearch.wcp-domain.sample.com
+    elasticsearchport: 443
+    elasticsearchuser: username
+    elasticsearchpassword: password
+</code></pre></div><h4 id="install-elasticsearch-and-kibana">Install Elasticsearch and Kibana</h4>
+<p>To install Elasticsearch and Kibana, run the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  kubectl apply -f kubernetes/samples/scripts/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+</code></pre></div><h4 id="configure-log-files-to-use-a-volume">Configure log files to use a volume</h4>
+<p>The domain log files must be written to a volume that can be shared between the <code>weblogic-server</code> and <code>fluentd</code> containers.  The following elements are required to accomplish this:</p>
+<ul>
+<li><code>logHome</code> must be a path that can be shared between containers.</li>
+<li><code>logHomeEnabled</code> must be set to <code>true</code> so that the logs are written outside the pod and persist across pod restarts.</li>
+<li>A <code>volume</code> must be defined on which the log files will reside. In the example, <code>emptyDir</code> is a volume that gets created when a Pod is created.  It will persist across pod restarts but deleting the pod would delete the <code>emptyDir</code> content.</li>
+<li>The <code>volumeMounts</code> mounts the named volume created with <code>emptyDir</code> and establishes the base path for accessing the volume.</li>
+</ul>
+<p><strong>NOTE</strong>: For brevity, only the paths to the relevant configuration are here.</p>
+<p>For Example, run : <code>kubectl edit domain wcp-domain -n wcpns</code> and make the following edits:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">logHome</span>: /u01/oracle/user_projects/domains/logs/wcp-domain
+  <span style="color:#66d9ef">logHomeEnabled</span>: <span style="color:#66d9ef">true</span>
+  <span style="color:#66d9ef">serverPod</span>:
+    <span style="color:#66d9ef">volumes</span>:
+    - <span style="color:#66d9ef">emptyDir</span>: {}
+      <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+    <span style="color:#66d9ef">volumeMounts</span>:
+    - <span style="color:#66d9ef">mountPath</span>: /scratch
+      <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+</code></pre></div><h4 id="add-elasticsearch-secrets-to-weblogic-domain-credentials">Add Elasticsearch secrets to WebLogic domain credentials</h4>
+<p>Configure the <code>fluentd</code> container to look for Elasticsearch parameters in the domain credentials.  Edit the domain credentials and add the parameters shown in the example below.</p>
+<p>For example, run: <code>kubectl edit secret wcpinfra-domain-credentials -n wcpns</code> and add the base64 encoded values of each Elasticsearch parameter:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">elasticsearchhost: ZWxhc3RpY3NlYXJjaC5ib2JzLWJvb2tzLnNhbXBsZS5jb20=
+elasticsearchport: NDQz
+elasticsearchuser: Ym9i
+elasticsearchpassword: d2VsY29tZTE=
+</code></pre></div><h4 id="create-fluentd-configuration">Create Fluentd configuration</h4>
+<p>Create a <code>ConfigMap</code> named <code>fluentd-config</code> in the namespace of the domain.  The <code>ConfigMap</code> contains the parsing rules and Elasticsearch configuration.</p>
+<p>Here&rsquo;s an explanation of some elements defined in the <code>ConfigMap</code>:</p>
+<ul>
+<li>The <code>@type tail</code> indicates that <code>tail</code> is used to obtain updates to the log file.</li>
+<li>The <code>path</code> of the log file obtained from the <code>LOG_PATH</code> environment variable that is defined in the <code>fluentd</code> container.</li>
+<li>The <code>tag</code> value of log records obtained from the <code>DOMAIN_UID</code> environment variable that is defined in the <code>fluentd</code> container.</li>
+<li>The <code>&lt;parse&gt;</code> section defines how to interpret and tag each element of a log record.</li>
+<li>The <code>&lt;match **&gt;</code> section contains the configuration information for connecting to Elasticsearch and defines the index name of each record to be the <code>domainUID.</code></li>
+<li>The <code>scheme</code> indicates type of connection between fluentd and Elasticsearch.</li>
+</ul>
+<p>The following is an example of how to create the <code>ConfigMap</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt;EOF | kubectl apply -f -
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: ConfigMap
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  labels:
+</span><span style="color:#e6db74">    weblogic.domainUID: wcp-domain
+</span><span style="color:#e6db74">    weblogic.resourceVersion: domain-v2
+</span><span style="color:#e6db74">  name: fluentd-config
+</span><span style="color:#e6db74">  namespace: wcpns
+</span><span style="color:#e6db74">data:
+</span><span style="color:#e6db74">  fluentd.conf: |
+</span><span style="color:#e6db74">    &lt;match fluent.**&gt;
+</span><span style="color:#e6db74">      @type null
+</span><span style="color:#e6db74">    &lt;/match&gt;
+</span><span style="color:#e6db74">    &lt;source&gt;
+</span><span style="color:#e6db74">      @type tail
+</span><span style="color:#e6db74">      path &#34;#{ENV[&#39;LOG_PATH&#39;]}&#34;
+</span><span style="color:#e6db74">      pos_file /tmp/server.log.pos
+</span><span style="color:#e6db74">      read_from_head true
+</span><span style="color:#e6db74">      tag &#34;#{ENV[&#39;DOMAIN_UID&#39;]}&#34;
+</span><span style="color:#e6db74">      # multiline_flush_interval 20s
+</span><span style="color:#e6db74">      &lt;parse&gt;
+</span><span style="color:#e6db74">        @type multiline
+</span><span style="color:#e6db74">        format_firstline /^####/
+</span><span style="color:#e6db74">        format1 /^####&lt;(?&lt;timestamp&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format2 / &lt;(?&lt;level&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format3 / &lt;(?&lt;subSystem&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format4 / &lt;(?&lt;serverName&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format5 / &lt;(?&lt;serverName2&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format6 / &lt;(?&lt;threadName&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format7 / &lt;(?&lt;info1&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format8 / &lt;(?&lt;info2&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format9 / &lt;(?&lt;info3&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format10 / &lt;(?&lt;sequenceNumber&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format11 / &lt;(?&lt;severity&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format12 / &lt;(?&lt;messageID&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">        format13 / &lt;(?&lt;message&gt;(.*?))&gt;/
+</span><span style="color:#e6db74">      &lt;/parse&gt;
+</span><span style="color:#e6db74">    &lt;/source&gt;
+</span><span style="color:#e6db74">    &lt;match **&gt;
+</span><span style="color:#e6db74">      @type elasticsearch
+</span><span style="color:#e6db74">      host &#34;#{ENV[&#39;ELASTICSEARCH_HOST&#39;]}&#34;
+</span><span style="color:#e6db74">      port &#34;#{ENV[&#39;ELASTICSEARCH_PORT&#39;]}&#34;
+</span><span style="color:#e6db74">      user &#34;#{ENV[&#39;ELASTICSEARCH_USER&#39;]}&#34;
+</span><span style="color:#e6db74">      password &#34;#{ENV[&#39;ELASTICSEARCH_PASSWORD&#39;]}&#34;
+</span><span style="color:#e6db74">      index_name &#34;#{ENV[&#39;DOMAIN_UID&#39;]}&#34;
+</span><span style="color:#e6db74">      scheme http
+</span><span style="color:#e6db74">    &lt;/match&gt;
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><h4 id="mount-the-configmap-as-a-volume-in-the-weblogic-server-container">Mount the ConfigMap as a volume in the <code>weblogic-server</code> container</h4>
+<p>Edit the domain definition and configure a volume for the <code>ConfigMap</code> containing the <code>fluentd</code> configuration.</p>
+<p><strong>NOTE</strong>: For brevity, only the paths to the relevant configuration are shown.</p>
+<p>For example, run: <code>kubectl edit domain wcp-domain -n wcpns</code> and add the following portions to the domain definition.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">serverPod</span>:
+    <span style="color:#66d9ef">volumes</span>:
+    - <span style="color:#66d9ef">configMap</span>:
+        <span style="color:#66d9ef">defaultMode</span>: <span style="color:#ae81ff">420</span>
+        <span style="color:#66d9ef">name</span>: fluentd-config
+      <span style="color:#66d9ef">name</span>: fluentd-config-volume
+</code></pre></div><h4 id="add-fluentd-container">Add <code>fluentd</code> container</h4>
+<p>Add a container to the domain to run <code>fluentd</code> in the Administration Server and Managed Server pods.</p>
+<p>The container definition:</p>
+<ul>
+<li>Defines a <code>LOG_PATH</code> environment variable that points to the log location of <code>bobbys-front-end</code>.</li>
+<li>Defines <code>ELASTICSEARCH_HOST</code>, <code>ELASTICSEARCH_PORT</code>, <code>ELASTICSEARCH_USER</code>, and <code>ELASTICSEARCH_PASSWORD</code> environment variables that are all retrieving their values from the secret <code>wcpinfra-domain-credentials</code>.</li>
+<li>Includes volume mounts for the <code>fluentd-config</code> <code>ConfigMap</code> and the volume containing the domain logs.</li>
+</ul>
+<p><strong>NOTE</strong>: For brevity, only the paths to the relevant configuration are shown.</p>
+<p>For example, run: <code>kubectl edit domain wcp-domain -n wcpcns</code> and add the following container definition.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">serverPod</span>:
+    <span style="color:#66d9ef">containers</span>:
+    - <span style="color:#66d9ef">args</span>:
+      - -c
+      - /etc/fluent.conf
+      <span style="color:#66d9ef">env</span>:
+      - <span style="color:#66d9ef">name</span>: DOMAIN_UID
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">fieldRef</span>:
+            <span style="color:#66d9ef">fieldPath</span>: metadata.labels[<span style="color:#e6db74">&#39;weblogic.domainUID&#39;</span>]
+      - <span style="color:#66d9ef">name</span>: SERVER_NAME
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">fieldRef</span>:
+            <span style="color:#66d9ef">fieldPath</span>: metadata.labels[<span style="color:#e6db74">&#39;weblogic.serverName&#39;</span>]
+      - <span style="color:#66d9ef">name</span>: LOG_PATH
+        <span style="color:#66d9ef">value</span>: /u01/oracle/user_projects/domains/logs/wcp-domain/$(SERVER_NAME).log
+      - <span style="color:#66d9ef">name</span>: FLUENTD_CONF
+        <span style="color:#66d9ef">value</span>: fluentd.conf
+      - <span style="color:#66d9ef">name</span>: FLUENT_ELASTICSEARCH_SED_DISABLE
+        <span style="color:#66d9ef">value</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_HOST
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchhost
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PORT
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchport
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_USER
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchuser
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">optional</span>: <span style="color:#66d9ef">true</span>
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PASSWORD
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchpassword
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">optional</span>: <span style="color:#66d9ef">true</span>
+      <span style="color:#66d9ef">image</span>: fluent/fluentd-kubernetes-daemonset:v1<span style="color:#ae81ff">.3.3</span>-debian-elasticsearch<span style="color:#ae81ff">-1.3</span>
+      <span style="color:#66d9ef">imagePullPolicy</span>: IfNotPresent
+      <span style="color:#66d9ef">name</span>: fluentd
+      <span style="color:#66d9ef">resources</span>: {}
+      <span style="color:#66d9ef">volumeMounts</span>:
+      - <span style="color:#66d9ef">mountPath</span>: /fluentd/etc/fluentd.conf
+        <span style="color:#66d9ef">name</span>: fluentd-config-volume
+        <span style="color:#66d9ef">subPath</span>: fluentd.conf
+      - <span style="color:#66d9ef">mountPath</span>: /scratch
+        <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+</code></pre></div><h4 id="verify-logs-exported-to-elasticsearch">Verify logs exported to Elasticsearch</h4>
+<p>The logs are sent to Elasticsearch after you start the Administration Server and Managed Server pods after making the changes described previously.</p>
+<p>You can check if the <code>fluentd</code> container is successfully tailing the log by executing a command like <code>kubectl logs -f wcp-domain-adminserver -n wcpns fluentd</code>.  The log output should look similar to this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">2019-10-01 16:23:44 +0000 [info]: #0 starting fluentd worker pid=13 ppid=9 worker=0
+2019-10-01 16:23:44 +0000 [warn]: #0 /scratch/logs/bobs-bookstore/managed-server1.log not found. Continuing without tailing it.
+2019-10-01 16:23:44 +0000 [info]: #0 fluentd worker is now running worker=0
+2019-10-01 16:24:01 +0000 [info]: #0 following tail of /scratch/logs/bobs-bookstore/managed-server1.log
+</code></pre></div><p>When you connect to Kibana, you will see an index created for the <code>domainUID</code>.</p>
+<h4 id="domain-example">Domain example</h4>
+<p>The following is a complete example of a domain custom resource with a <code>fluentd</code> container configured.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: weblogic.oracle/v8
+<span style="color:#66d9ef">kind</span>: Domain
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">labels</span>:
+    <span style="color:#66d9ef">weblogic.domainUID</span>: wcp-domain
+  <span style="color:#66d9ef">name</span>: wcp-domain
+  <span style="color:#66d9ef">namespace</span>: wcpns
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">domainHome</span>: /u01/oracle/user_projects/domains/wcp-domain
+  <span style="color:#66d9ef">domainHomeSourceType</span>: PersistentVolume
+  <span style="color:#66d9ef">image</span>: <span style="color:#e6db74">&#34;oracle/wcportal:12.2.1.4&#34;</span>
+  <span style="color:#66d9ef">imagePullPolicy</span>: <span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
+  <span style="color:#66d9ef">webLogicCredentialsSecret</span>:
+    <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+  <span style="color:#66d9ef">includeServerOutInPodLog</span>: <span style="color:#66d9ef">true</span>
+  <span style="color:#66d9ef">logHomeEnabled</span>: <span style="color:#66d9ef">true</span> 
+  <span style="color:#66d9ef">httpAccessLogInLogHome</span>: <span style="color:#66d9ef">true</span>
+  <span style="color:#66d9ef">logHome</span>: /u01/oracle/user_projects/domains/logs/wcp-domain
+  <span style="color:#66d9ef">dataHome</span>: <span style="color:#e6db74">&#34;&#34;</span>
+  <span style="color:#66d9ef">serverStartPolicy</span>: <span style="color:#e6db74">&#34;IF_NEEDED&#34;</span>
+  <span style="color:#66d9ef">adminServer</span>:
+    <span style="color:#66d9ef">serverStartState</span>: <span style="color:#e6db74">&#34;RUNNING&#34;</span>
+  <span style="color:#66d9ef">clusters</span>:
+  - <span style="color:#66d9ef">clusterName</span>: wcp_cluster
+    <span style="color:#66d9ef">serverStartState</span>: <span style="color:#e6db74">&#34;RUNNING&#34;</span>
+    <span style="color:#66d9ef">serverPod</span>:
+      <span style="color:#66d9ef">affinity</span>:
+        <span style="color:#66d9ef">podAntiAffinity</span>:
+          <span style="color:#66d9ef">preferredDuringSchedulingIgnoredDuringExecution</span>:
+            - <span style="color:#66d9ef">weight</span>: <span style="color:#ae81ff">100</span>
+              <span style="color:#66d9ef">podAffinityTerm</span>:
+                <span style="color:#66d9ef">labelSelector</span>:
+                  <span style="color:#66d9ef">matchExpressions</span>:
+                    - <span style="color:#66d9ef">key</span>: <span style="color:#e6db74">&#34;weblogic.clusterName&#34;</span>
+                      <span style="color:#66d9ef">operator</span>: In
+                      <span style="color:#66d9ef">values</span>:
+                        - $(CLUSTER_NAME)
+                <span style="color:#66d9ef">topologyKey</span>: <span style="color:#e6db74">&#34;kubernetes.io/hostname&#34;</span>     
+  <span style="color:#66d9ef">replicas</span>: <span style="color:#ae81ff">2</span>
+  <span style="color:#66d9ef">serverPod</span>:
+    <span style="color:#66d9ef">containers</span>:
+    - <span style="color:#66d9ef">args</span>:
+      - -c
+      - /etc/fluent.conf
+      <span style="color:#66d9ef">env</span>:
+      - <span style="color:#66d9ef">name</span>: DOMAIN_UID
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">fieldRef</span>:
+            <span style="color:#66d9ef">fieldPath</span>: metadata.labels[<span style="color:#e6db74">&#39;weblogic.domainUID&#39;</span>]
+      - <span style="color:#66d9ef">name</span>: SERVER_NAME
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">fieldRef</span>:
+            <span style="color:#66d9ef">fieldPath</span>: metadata.labels[<span style="color:#e6db74">&#39;weblogic.serverName&#39;</span>]
+      - <span style="color:#66d9ef">name</span>: LOG_PATH
+        <span style="color:#66d9ef">value</span>: /u01/oracle/user_projects/domains/logs/wcp-domain/$(SERVER_NAME).log
+      - <span style="color:#66d9ef">name</span>: FLUENTD_CONF
+        <span style="color:#66d9ef">value</span>: fluentd.conf
+      - <span style="color:#66d9ef">name</span>: FLUENT_ELASTICSEARCH_SED_DISABLE
+        <span style="color:#66d9ef">value</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_HOST
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchport
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PORT
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchhost
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_USER
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchuser
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+      - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PASSWORD
+        <span style="color:#66d9ef">valueFrom</span>:
+          <span style="color:#66d9ef">secretKeyRef</span>:
+            <span style="color:#66d9ef">key</span>: elasticsearchpassword
+            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+      <span style="color:#66d9ef">image</span>: fluent/fluentd-kubernetes-daemonset:v1<span style="color:#ae81ff">.11.5</span>-debian-elasticsearch6<span style="color:#ae81ff">-1.0</span>
+      <span style="color:#66d9ef">imagePullPolicy</span>: IfNotPresent
+      <span style="color:#66d9ef">name</span>: fluentd
+      <span style="color:#66d9ef">resources</span>: {}
+      <span style="color:#66d9ef">volumeMounts</span>:
+      - <span style="color:#66d9ef">mountPath</span>: /fluentd/etc/fluentd.conf
+        <span style="color:#66d9ef">name</span>: fluentd-config-volume
+        <span style="color:#66d9ef">subPath</span>: fluentd.conf
+      - <span style="color:#66d9ef">mountPath</span>: /u01/oracle/user_projects/domains
+        <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+    <span style="color:#66d9ef">env</span>:
+    - <span style="color:#66d9ef">name</span>: JAVA_OPTIONS
+      <span style="color:#66d9ef">value</span>: -Dweblogic.StdoutDebugEnabled=<span style="color:#66d9ef">false</span>
+    - <span style="color:#66d9ef">name</span>: USER_MEM_ARGS
+      <span style="color:#66d9ef">value</span>: <span style="color:#e6db74">&#39;-Djava.security.egd=file:/dev/./urandom -Xms1g -Xmx2g&#39;</span>
+    <span style="color:#66d9ef">volumeMounts</span>:
+    - <span style="color:#66d9ef">mountPath</span>: /u01/oracle/user_projects/domains
+      <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+    <span style="color:#66d9ef">volumes</span>:
+    - <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+      <span style="color:#66d9ef">persistentVolumeClaim</span>:
+        <span style="color:#66d9ef">claimName</span>: wcp-domain-domain-pvc 
+    - <span style="color:#66d9ef">emptyDir</span>: {}
+      <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+    - <span style="color:#66d9ef">configMap</span>:
+        <span style="color:#66d9ef">defaultMode</span>: <span style="color:#ae81ff">420</span>
+        <span style="color:#66d9ef">name</span>: fluentd-config
+      <span style="color:#66d9ef">name</span>: fluentd-config-volume
+  <span style="color:#66d9ef">serverStartPolicy</span>: IF_NEEDED
+  <span style="color:#66d9ef">webLogicCredentialsSecret</span>:
+    <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+</code></pre></div><h5 id="get-the-kibana-dashboard-port-information-as-shown-below">Get the Kibana dashboard port information as shown below:</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get pods -w
+NAME                            READY   STATUS    RESTARTS   AGE
+elasticsearch-8bdb7cf54-mjs6s   1/1     Running   <span style="color:#ae81ff">0</span>          4m3s
+kibana-dbf8964b6-n8rcj          1/1     Running   <span style="color:#ae81ff">0</span>          4m3s
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get svc
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>             AGE
+elasticsearch   ClusterIP   10.100.11.154   &lt;none&gt;        9200/TCP,9300/TCP   4m32s
+kibana          NodePort    10.97.205.0     &lt;none&gt;        5601:31884/TCP      4m32s
+kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP             71d
+</code></pre></div><p>You can access the Kibana dashboard at <code>http://mycompany.com:kibana-nodeport/</code>. In our example, the node port is 31884.</p>
+<h4 id="create-an-index-pattern-in-kibana">Create an Index Pattern in Kibana</h4>
+<p>Create an index pattern <code>wcp-domain*</code> in Kibana by navigating to the dashboard through the Management option. When the servers are started, the log data is shown on the Kibana dashboard.</p>
+<p><img src="wcp-kibana-dashboard.png" alt="WCP-Kibana-Dashboard"></p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/" title="Publish WebLogic Server logs into Elasticsearch"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/21.2.2/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/" title="WebLogic logging exporter" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/21.2.2/js/clipboard.min.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/perfect-scrollbar.min.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/perfect-scrollbar.jquery.min.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/jquery.sticky.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/featherlight.min.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/highlight.pack.js?1622716897"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/21.2.2/js/modernizr.custom-3.6.0.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/learn.js?1622716897"></script>
+    <script src="/fmw-kubernetes/21.2.2/js/hugo-learn.js?1622716897"></script>
+
+    <link href="/fmw-kubernetes/21.2.2/mermaid/mermaid.css?1622716897" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.2.2/mermaid/mermaid.js?1622716897"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
