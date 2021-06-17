@@ -5,7 +5,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: wcc-ucm-ingress
+  name: wcc-ibr-ingress
   namespace: wccns
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -13,15 +13,15 @@ metadata:
 spec:
   tls:
   - hosts:
-    - '*.com'
+    - 'your_host_name'
     secretName: domain1-tls-cert
   rules:
-  - host: '*.com'
+  - host: 'your_host_name'
     http:
       paths:
-      - path: /cs
+      - path:
         backend:
-          serviceName: wccinfra-cluster-ucm-cluster
-          servicePort: 16201
+          serviceName: wccinfra-cluster-ibr-cluster
+          servicePort: 16251
 
 
