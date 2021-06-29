@@ -21,8 +21,8 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Co
 
 * [ End-to-end SSL configuration](#end-to-end-ssl-configuration)
   1. [Install the NGINX load balancer for End-to-end SSL](#install-the-nginx-load-balancer-for-end-to-end-ssl)
-  2. [Deploy tls to access the services](#deploy-tls-to-access-services)
-  3. [Verify End-to-end SSL access](#verify-end-to-end-ssl-access)
+  2. [Deploy tls to access UCM and IBR Managed Servers](#deploy-tls-to-access-ucm-and-ibr-managed-servers)
+  3. [Deploy tls to access Administration Server](#deploy-tls-to-access-administration-server)
 
 
  To get repository information, enter the following Helm commands:

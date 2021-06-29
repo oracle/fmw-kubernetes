@@ -205,6 +205,7 @@ are used for creating the image.
     --version=12.2.1.4.0
     --tag=oracle/wccontent_create_1015:12.2.1.4.0
     --pull
+    --chown oracle:root
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleWebCenterContent/imagetool/12.2.1.4.0/additionalBuildCmds.txt
     --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4.0/container-scripts
     --patches 31754672_12.2.1.4.0
@@ -225,34 +226,34 @@ are used for creating the image.
 ```bash
 ########## BEGIN DOCKERFILE ##########
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 #
-FROM oraclelinux:7-slim as OS_UPDATE
-LABEL com.oracle.weblogic.imagetool.buildid="47601fd7-4f1f-433f-8c53-bac65be48fec"
+FROM ghcr.io/oracle/oraclelinux:7-slim as os_update
+LABEL com.oracle.weblogic.imagetool.buildid="f46ab190-077e-4ed7-b747-7bb170fe592c"
 USER root
 
-RUN yum -y --downloaddir=/tmp/imagetool install gzip tar unzip libaio \
+RUN yum -y --downloaddir=/tmp/imagetool install gzip tar unzip libaio jq hostname  \
  && yum -y --downloaddir=/tmp/imagetool clean all \
  && rm -rf /var/cache/yum/* \
  && rm -rf /tmp/imagetool
 
 ## Create user and group
-RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
- && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
- && mkdir /u01 \
- && chown oracle:oracle /u01 \
+RUN if [ -z "$(getent group root)" ]; then hash groupadd &> /dev/null && groupadd root || exit -1 ; fi \
+ && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g root oracle || exit -1; fi \
+ && mkdir -p /u01 \
+ && chown oracle:root /u01 \
  && chmod 775 /u01
 
 # Install Java
-FROM OS_UPDATE as JDK_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid="47601fd7-4f1f-433f-8c53-bac65be48fec"
+FROM os_update as jdk_build
+LABEL com.oracle.weblogic.imagetool.buildid="f46ab190-077e-4ed7-b747-7bb170fe592c"
 
 ENV JAVA_HOME=/u01/jdk
 
-COPY --chown=oracle:oracle jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
+COPY --chown=oracle:root jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
 
 USER oracle
 
@@ -264,8 +265,8 @@ RUN tar xzf /tmp/imagetool/jdk-8u251-linux-x64.tar.gz -C /u01 \
 
 
 # Install Middleware
-FROM OS_UPDATE as WLS_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid="47601fd7-4f1f-433f-8c53-bac65be48fec"
+FROM os_update as wls_build
+LABEL com.oracle.weblogic.imagetool.buildid="f46ab190-077e-4ed7-b747-7bb170fe592c"
 
 ENV JAVA_HOME=/u01/jdk \
     ORACLE_HOME=/u01/oracle \
@@ -273,32 +274,36 @@ ENV JAVA_HOME=/u01/jdk \
 
 RUN mkdir -p /u01/oracle \
  && mkdir -p /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle
+ && chown oracle:root /u01/oracle/oraInventory \
+ && chown oracle:root /u01/oracle
 
-COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
+COPY --from=jdk_build --chown=oracle:root /u01/jdk /u01/jdk/
 
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure_generic.jar fmw.rsp /tmp/imagetool/
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_wccontent.jar wcc.rsp /tmp/imagetool/
-COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
+COPY --chown=oracle:root fmw_12.2.1.4.0_infrastructure_generic.jar fmw.rsp /tmp/imagetool/
+COPY --chown=oracle:root fmw_12.2.1.4.0_wccontent.jar wcc.rsp /tmp/imagetool/
+COPY --chown=oracle:root oraInst.loc /u01/oracle/
 
 
 
 USER oracle
 
 
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure_generic.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wccontent.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/wcc.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+RUN echo "INSTALLING MIDDLEWARE" \
+ && echo "INSTALLING fmw" \
+ &&  \
+    /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure_generic.jar -silent ORACLE_HOME=/u01/oracle \
+    -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
+ && echo "INSTALLING wcc" \
+ &&  \
+    /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wccontent.jar -silent ORACLE_HOME=/u01/oracle \
+    -responseFile /tmp/imagetool/wcc.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
+ && chmod -R g+r /u01/oracle
 
 
 
 
 
-FROM OS_UPDATE as FINAL_BUILD
+FROM os_update as final_build
 
 ARG ADMIN_NAME
 ARG ADMIN_HOST
@@ -307,14 +312,13 @@ ARG MANAGED_SERVER_PORT
 
 ENV ORACLE_HOME=/u01/oracle \
     JAVA_HOME=/u01/jdk \
-    LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
     PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
 
-LABEL com.oracle.weblogic.imagetool.buildid="47601fd7-4f1f-433f-8c53-bac65be48fec"
+LABEL com.oracle.weblogic.imagetool.buildid="f46ab190-077e-4ed7-b747-7bb170fe592c"
 
-    COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
+    COPY --from=jdk_build --chown=oracle:root /u01/jdk /u01/jdk/
 
-COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
+COPY --from=wls_build --chown=oracle:root /u01/oracle /u01/oracle/
 
 
 
@@ -323,33 +327,31 @@ WORKDIR /u01/oracle
 
 #ENTRYPOINT /bin/bash
 
-    
-    
+
+
     ENV ORACLE_HOME=/u01/oracle \
         VOLUME_DIR=/u01/oracle/user_projects \
         SCRIPT_FILE=/u01/oracle/container-scripts/* \
         USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
         PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
-    	
+
     USER root
-    
-    RUN yum install -y libaio tar procps hostname zip unzip && \
-        rm -rf /var/cache/yum && \
-        mkdir -p $VOLUME_DIR && \
+
+    RUN mkdir -p $VOLUME_DIR && \
         mkdir -p /u01/oracle/container-scripts && \
         mkdir -p /u01/oracle/silent-install-files-tmp/config && \
         mkdir -p /u01/oracle/logs && \
-        chown oracle:oracle -R /u01 $VOLUME_DIR && \
+        chown oracle:root -R /u01 $VOLUME_DIR && \
         chmod a+xr /u01
-    COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
-    RUN chmod +xr $SCRIPT_FILE && \
-        rm /u01/oracle/oracle_common/lib/ons.jar /u01/oracle/oracle_common/modules/oracle.jdbc/simplefan.jar
-    
+    COPY --chown=oracle:root files/container-scripts/ /u01/oracle/container-scripts/
+    RUN chmod +xr $SCRIPT_FILE
+
+
     USER oracle
-    
+
     EXPOSE $UCM_PORT $UCM_INTRADOC_PORT $IBR_INTRADOC_PORT $IBR_PORT $ADMIN_PORT
     WORKDIR ${ORACLE_HOME}
-    
+
     CMD ["/u01/oracle/container-scripts/createDomainandStartAdmin.sh"]
 
 ########## END DOCKERFILE ##########
@@ -388,7 +390,12 @@ After [setting up the WebLogic Image Tool]({{< relref "/wccontent-domains/create
 {{%expand "Click here to see the example `update` command:" %}}
 
 ```
+  # If you are using a pre-built Oracle WebCenter Content image, obtained from My Oracle Support, then please use this command:
   $ imagetool update --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.4
+
+  # In case, you chose to build an Oracle WebCenter Content image, please use the command given below:
+  $ imagetool update --chown oracle:root --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 
+    --opatchBugNumber=28186730_13.9.4.2.4
       
 ```
  {{% /expand %}}
@@ -404,29 +411,22 @@ After [setting up the WebLogic Image Tool]({{< relref "/wccontent-domains/create
 For test and development purposes, you can create an Oracle WebCenter Content image using the Dockerfile. Consult the [README](https://github.com/oracle/docker-images/blob/master/OracleWebCenterContent/dockerfiles/README.md) file for important prerequisite steps,
 such as building or pulling the Server JRE Docker image, Oracle FMW Infrastructure Docker image, and downloading the Oracle WebCenter Content installer and bundle patch binaries.
 
-A prebuilt Oracle Fusion Middleware Infrastructure image, `container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4`, is available at `container-registry.oracle.com`. We recommend that you pull and rename this image to build the Oracle WebCenter Content image.
+A prebuilt Oracle Fusion Middleware Infrastructure image, `container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407`, is available at `container-registry.oracle.com`. We recommend that you pull and rename this image to build the Oracle WebCenter Content image.
 
 
   ```bash
-    $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
-    $ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0
+    $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
+    $ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407 oracle/fmw-infrastructure:12.2.1.4.0
   
   ```
 
-Follow these steps to build an Oracle Fusion Middleware Infrastructure image, and then the Oracle WebCenter Content image as a layer on top of that:
+Follow these steps to build an Oracle WebCenter Content image :
 
 1. Make a local clone of the sample repository:
 
     ```bash
     $ git clone https://github.com/oracle/docker-images
     ```
-1. Build the `oracle/fmw-infrastructure:12.2.1.4` image:
-
-   ```bash
-    $ cd docker-images/OracleFMWInfrastructure/dockerfiles
-    $ sh buildDockerImage.sh -v 12.2.1.4 -s
-   ```
-   This will produce an image named `oracle/fmw-infrastructure:12.2.1.4`.
 
 1. Download the Oracle WebCenter Content installer from the Oracle Technology Network or e-delivery.
 
@@ -437,11 +437,11 @@ Follow these steps to build an Oracle Fusion Middleware Infrastructure image, an
 
     ```bash
     $ cd docker-images/OracleWebCenterContent/dockerfiles
-    $ ./buildDockerImage.sh -v 12.2.1.4.0 -s
+    $ ./buildDockerImage.sh -v 12.2.1.4 -s
     ```
 
-    The image produced will be named `oracle/wccontent:12.2.1.4.0`. The samples and instructions assume the Oracle WebCenter Content image is named `wccontent:12.2.1.4.0`. You must rename your image to match this name, or update the samples to refer to the image you created.
+    The image produced will be named `oracle/wccontent:12.2.1.4`. The samples and instructions assume the Oracle WebCenter Content image is named `wccontent:12.2.1.4.0`. You must rename your image to match this name, or update the samples to refer to the image you created.
 
     ```bash
-    $ docker tag oracle/wccontent:12.2.1.4.0 wccontent:12.2.1.4.0
+    $ docker tag oracle/wccontent:12.2.1.4 wccontent:12.2.1.4.0
     ```
