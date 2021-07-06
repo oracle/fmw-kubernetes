@@ -35,7 +35,7 @@ class WCPortal12214Provisioner:
             '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.wc_spaces_template.jar',
             '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.analyticscollector_template.jar'
         ],
-        'serverGroupsToTarget' : [ 'SPACES-MGD-SVRS' ]
+        'serverGroupsToTarget' : [ 'SPACES-MGD-SVRS', 'AS-MGD-SVRS' ]
     }
 
     def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
