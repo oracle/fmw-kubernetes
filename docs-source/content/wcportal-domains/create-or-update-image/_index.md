@@ -117,7 +117,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcportal-domains/create-
 
 You must download the required Oracle WebCenter Portal installation binaries and patches listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, the directory is `download location`.
 
-The installation binaries and patches required for release 21.2.1  are:
+The installation binaries and patches required for release 21.2.3  are:
 
 * JDK:  
     * jdk-8u281-linux-x64.tar.gz

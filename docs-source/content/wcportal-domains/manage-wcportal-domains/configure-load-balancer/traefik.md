@@ -7,7 +7,7 @@ pre = "<b>a. </b>"
 description = "Configure the ingress-based Traefik load balancer for an Oracle WebCenter Portal domain."
 +++
 
-To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based *Traefik* load balancer (version 2.2.1 or later for production deployments) and configure it for non-SSL and SSL-based access of the application URL.Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
+To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based *Traefik* load balancer (version 2.2.1 or later for production deployments) and configure it for non-SSL, SSL termination, and end-to-end SSL access of the application URL. Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
 
 * [ Non-SSL and SSL termination](#non-ssl-and-ssl-termination)
   1. [Install the Traefik (ingress-based) load balancer](#install-the-traefik-ingress-based-load-balancer)
@@ -409,7 +409,7 @@ $ helm delete wcp-traefik-ingress  -n wcpns
       pod/traefik-845f5d6dbb-swb96   1/1     Running   0          32s
 
       NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                                          AGE
-      service/traefik   LoadBalancer   10.99.52.249   <pending>     9000:31288/TCP,30305:30305/TCP,30443:30443/TCP   32s
+      service/traefik   NodePort       10.99.52.249   <none>        9000:31288/TCP,30305:30305/TCP,30443:30443/TCP   32s
 
       NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
       deployment.apps/traefik   1/1     1            1           33s
@@ -446,7 +446,7 @@ $ helm upgrade traefik traefik/traefik --namespace traefik --reuse-values \
   {{% /expand %}}
 
 #### Create IngressRouteTCP
-
+1. For each backend service, create different ingresses, as Traefik does not support multiple paths or rules with annotation `ssl-passthrough`. For example, for `wcp-domain-adminserver` and `wcp-domain-cluster-wcp-cluster,` different ingresses must be created.
 1. To enable SSL passthrough in Traefik, you can configure a TCP router. A sample YAML for `IngressRouteTCP` is available at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls/traefik-tls.yaml`. The following should be updated in `traefik-tls.yaml`:
    * The service name and the SSL port should be updated in the `services`.
    * The load balancer host name should be updated in the `HostSNI` rule.

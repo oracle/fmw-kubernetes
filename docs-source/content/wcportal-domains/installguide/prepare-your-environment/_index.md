@@ -99,7 +99,7 @@ Oracle WebCenter Portal domain deployment on Kubernetes leverages the WebLogic K
 1. Download the WebCenter Portal Kubernetes deployment scripts from this [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to WebLogic operator samples location.
 
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.2.2
+   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.2.3
    
    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/create-wcp-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/

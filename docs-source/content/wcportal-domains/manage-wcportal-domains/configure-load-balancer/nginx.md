@@ -7,7 +7,7 @@ pre = "<b>b. </b>"
 description = "Configure the ingress-based NGINX load balancer for an Oracle WebCenter Portal domain."
 +++
 
-To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based *NGINX* load balancer and configure NGINX for both SSL and non-SSL access of the application URL.
+To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based *NGINX* load balancer and configure NGINX for non-SSL, SSL termination, and end-to-end SSL access of the application URL.
 Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
 
  See the official [installation document](https://github.com/kubernetes/ingress-nginx/tree/master/charts/ingress-nginx#prerequisites) for prerequisites.
