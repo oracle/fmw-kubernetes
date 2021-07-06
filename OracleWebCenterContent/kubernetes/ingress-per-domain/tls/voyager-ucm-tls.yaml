@@ -1,0 +1,28 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+
+apiVersion: voyager.appscode.com/v1beta1
+kind: Ingress
+metadata:
+  name: voyager-ucm-ssl
+  namespace: wccns
+  annotations:
+    ingress.appscode.com/type: 'NodePort'
+    ingress.appscode.com/stats: 'true'
+    ingress.appscode.com/affinity: 'cookie'
+    ingress.appscode.com/ssl-passthrough: "true"
+spec:
+   tls:
+   - secretName: domain1-tls-cert
+     hosts:
+     - '*'
+   rules:
+   - host: '*'
+     http:
+       nodePort: '31318'
+       paths:
+       - path: /cs
+         backend:
+           serviceName: wccinfra-cluster-ucm-cluster
+           servicePort: '16201'

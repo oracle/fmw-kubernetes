@@ -134,9 +134,9 @@ hostname=`echo $hostname | sed  's/^[[:space:]]*//'`
 hostalias=`echo $hostname | sed  's/[.]//g'`
 truncatedhostname=${hostalias}
 
-if [ ${#truncatedhostname} -gt "20" ]
+if [ ${#truncatedhostname} -ge "15" ]
 then
-    truncatedhostname=${truncatedhostname:0:10}
+    truncatedhostname=${truncatedhostname:0:14}
 fi
 
 sed -i "s/@UCM_PORT@/$UCM_PORT/g" autoinstall.cfg.cs
@@ -158,10 +158,10 @@ kubectl cp  autoinstall.cfg.ibr $domainNS/$domainUID-ibr-server1:/u01/oracle/use
 #expose service for IBR intradoc port
 ip_addr=`hostname -i`
 
-kubectl expose  service/wccinfra-cluster-ibr-cluster --name wccinfra-cluster-ibr-cluster-ext --port=5555 --target-port=5555  --external-ip=$ip_addr -n $domainNS
+kubectl expose  service/wccinfra-cluster-ibr-cluster --name wccinfra-cluster-ibr-cluster-ext --port=$IBRIntradocPort --target-port=$IBRIntradocPort  --external-ip=$ip_addr -n $domainNS
 
 kubectl get service/wccinfra-cluster-ibr-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ibr-cluster-ext.yaml
-sed -i '0,/5555/s//16250/' wccinfra-cluster-ibr-cluster-ext.yaml
+sed -i "0,/$IBRIntradocPort/s//16250/" wccinfra-cluster-ibr-cluster-ext.yaml
 kubectl -n $domainNS apply -f wccinfra-cluster-ibr-cluster-ext.yaml
 
 #STOP

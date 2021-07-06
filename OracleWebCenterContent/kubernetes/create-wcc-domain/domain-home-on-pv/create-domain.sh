@@ -212,12 +212,13 @@ function createDomainHome {
   JOB_NAME="${domainUID}-${CONTAINER_NAME}"
   deleteK8sObj job $JOB_NAME ${createJobOutput}
 
-  # testing for ibr cluster	
   cp ${dcrOutput} ${dcrOutput}.bak
   export PRECREATE_SERVICE="\    \serverService:\n\
       precreateService: true"
   
-
+  # override JVM max heap size from 512m to 1024m
+  sed -i "s/-Xmx512m/-Xmx1024m/" ${dcrOutput}
+  
   # Appends new cluster and update cluster name to ibr_cluster
   sed -n '/- clusterName:/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
   sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: ibr_cluster/" ${dcrOutput}
@@ -226,6 +227,24 @@ function createDomainHome {
   # Update the "- $(CLUSTER_NAME)" in the affinity section to ibr_cluster
   sed -i "0,/- ${clusterName}/s//- ibr_cluster/" ${dcrOutput}
   sed -i -e "/- clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
+
+  #Traefik sticky session Setting
+  echo "loadBalancerType= $loadBalancerType" 
+
+  if [ -z "$loadBalancerType" ]
+  then
+  	echo "\$loadBalancerType is empty"
+  else
+  	echo "\$loadBalancerType is NOT empty"
+  	if [ $loadBalancerType == "traefik" ] ; then
+         export LB_SETTINGS="\    clusterService:\n\
+         annotations: \n\
+            traefik.ingress.kubernetes.io/affinity: \"true\"\n\
+            traefik.ingress.kubernetes.io/service.sticky.cookie: \"true\"\n\
+            traefik.ingress.kubernetes.io/session-cookie-name: JSESSIONID"
+        fi
+    sed -i -e "/clusterName: ${clusterName}/a ${LB_SETTINGS}" ${dcrOutput}
+  fi
 
   echo Creating the domain by creating the job ${createJobOutput}
   kubectl create -f ${createJobOutput}

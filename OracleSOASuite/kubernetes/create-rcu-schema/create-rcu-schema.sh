@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-
+#
 # Configure RCU schema based on schemaPreifix and rcuDatabaseURL
 
 script="${BASH_SOURCE[0]}"
@@ -9,16 +9,16 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../common/utility.sh
 
 function usage {
-  echo "usage: ${script} -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -l <schemaProfileType>  [-h]"
+  echo "usage: ${script} -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -c <customVariables>  [-h]"
   echo "  -s RCU Schema Prefix (required)"
   echo "  -t RCU Schema Type (optional)"
-  echo "      (supported values: fmw(default), soa, osb, soaosb, soaess, soaessosb) "
+  echo "      (supported values: osb,soa,soaosb)"
   echo "  -d RCU Oracle Database URL (optional) "
   echo "      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s) "
   echo "  -p FMW Infrastructure ImagePullSecret (optional) "
   echo "      (default: none) "
   echo "  -i FMW Infrastructure Image (optional) "
-  echo "      (default: container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4) "
+  echo "      (default: soasuite:12.2.1.4) "
   echo "  -u FMW Infrastructure ImagePullPolicy (optional) "
   echo "      (default: IfNotPresent) "
   echo "  -n Namespace for RCU pod (optional)"
@@ -29,13 +29,13 @@ function usage {
   echo "      (default: Oradoc_db1)"
   echo "  -o Output directory for the generated YAML file. (optional)"
   echo "      (default: rcuoutput)"
-  echo "  -l Profile type for SOA RCU schema creation (optional)."
-  echo "      (supported values: SMALL(default), MED, LARGE)"
+  echo "  -c Comma-separated variables in the format variablename=value. (optional)."
+  echo "      (default: none)"
   echo "  -h Help"
   exit $1
 }
 
-while getopts ":h:s:d:p:i:t:n:q:r:o:u:l:" opt; do
+while getopts ":h:s:d:p:i:t:n:q:r:o:u:c:" opt; do
   case $opt in
     s) schemaPrefix="${OPTARG}"
     ;;
@@ -57,7 +57,7 @@ while getopts ":h:s:d:p:i:t:n:q:r:o:u:l:" opt; do
     ;;
     u) imagePullPolicy="${OPTARG}"
     ;;
-    l) schemaProfileType="${OPTARG}"
+    c) customVariables="${OPTARG}"
     ;;
     h) usage 0
     ;;
@@ -85,7 +85,7 @@ if [ -z ${pullsecret} ]; then
 fi
 
 if [ -z ${fmwimage} ]; then
- fmwimage="container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4"
+ fmwimage="soasuite:12.2.1.4"
 fi
 
 if [ -z ${imagePullPolicy} ]; then
@@ -108,11 +108,11 @@ if [ -z ${rcuOutputDir} ]; then
  rcuOutputDir="rcuoutput"
 fi
 
-if [ -z ${schemaProfileType} ]; then
- schemaProfileType="SMALL"
+if [ -z ${customVariables} ]; then
+ customVariables="none"
 fi
 
-echo "ImagePullSecret[$pullsecret] Image[${fmwimage}] dburl[${dburl}] rcuType[${rcuType}] schemaProfileType[${schemaProfileType}]"
+echo "ImagePullSecret[$pullsecret] Image[${fmwimage}] dburl[${dburl}] rcuType[${rcuType}] customVariables[${customVariables}]"
 
 mkdir -p ${rcuOutputDir}
 rcuYaml=${rcuOutputDir}/rcu.yaml
@@ -120,7 +120,6 @@ rm -f ${rcuYaml}
 rcuYamlTemp=${scriptDir}/common/template/rcu.yaml.template
 cp $rcuYamlTemp $rcuYaml
 
-#kubectl run rcu --generator=run-pod/v1 --image ${jrf_image} -- sleep infinity
 # Modify the ImagePullSecret based on input
 sed -i -e "s:%NAMESPACE%:${namespace}:g" $rcuYaml
 sed -i -e "s:%WEBLOGIC_IMAGE_PULL_POLICY%:${imagePullPolicy}:g" $rcuYaml
@@ -143,7 +142,7 @@ kubectl exec -n $namespace -i rcu -- bash -c 'cat > /u01/oracle/createRepository
 kubectl exec -n $namespace -i rcu -- bash -c 'cat > /u01/oracle/pwd.txt' < pwd.txt 
 rm -rf createRepository.sh pwd.txt
 
-kubectl exec -n $namespace -i rcu /bin/bash /u01/oracle/createRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${sysPassword} ${schemaProfileType}
+kubectl exec -n $namespace -i rcu /bin/bash /u01/oracle/createRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${sysPassword} ${customVariables}
 if [ $? != 0  ]; then
  echo "######################";
  echo "[ERROR] Could not create the RCU Repository";
@@ -152,3 +151,4 @@ if [ $? != 0  ]; then
 fi
 
 echo "[INFO] Modify the domain.input.yaml to use [$dburl] as rcuDatabaseURL and [${schemaPrefix}] as rcuSchemaPrefix "
+

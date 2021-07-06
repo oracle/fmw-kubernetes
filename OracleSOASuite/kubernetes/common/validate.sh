@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -129,7 +129,7 @@ function validateNamespace {
 # Create an instance of clusterName to be used in cases where a legal DNS name is required.
 #
 function validateClusterName {
-  eval "${1}SVC=$(toDNS1123Legal ${2})"
+  clusterNameSVC=$(toDNS1123Legal $clusterName)
 }
 
 #
@@ -140,10 +140,10 @@ function validateAdminServerName {
 }
 
 #
-# Create an instance of managedServerName to be used in cases where a legal DNS name is required.
+# Create an instance of adminServerName to be used in cases where a legal DNS name is required.
 #
 function validateManagedServerNameBase {
-  eval "${1}SVC=$(toDNS1123Legal ${2})"
+  managedServerNameBaseSVC=$(toDNS1123Legal $managedServerNameBase)
 }
 
 #
@@ -198,82 +198,6 @@ function validateFmwDomainType {
 }
 
 #
-# Function to validate the SOA Suite domainType
-#
-function validateSOASuiteDomainType {
-  if [ ! -z ${domainType} ]; then
-    case ${domainType} in
-      "soa")
-      ;;
-      "soaess")
-      ;;
-      "osb")
-      ;;
-      "soaosb")
-      ;;
-      "soaessosb")
-      ;;
-      *)
-        validationError "Invalid domainType: ${domainType}. Valid values are: soa or soaess or osb or soaosb or soaessosb."
-      ;;
-    esac
-  else
-    # Set the default
-    domainType="soa"
-  fi
-  failIfValidationErrors
-}
-
-#
-# Function to validate the persistent store type for SOA Suite domains
-#
-function validatePersistentStoreType {
-  if [ ! -z ${persistentStore} ]; then
-    case ${persistentStore} in
-      "jdbc")
-      ;;
-      "file")
-      ;;
-      *)
-        validationError "Invalid persistentStore: ${persistentStore}. Valid values are: jdbc or file."
-      ;;
-    esac
-  else
-    # Set the default
-    persistentStore="jdbc"
-  fi
-  failIfValidationErrors
-}
-
-#
-# Validate SSL port value is specified ?
-#
-function validateSSLPortsSpecified {
-  if [ "${sslEnabled}" =  "true" ]; then
-    validateInputParamsSpecified \
-	  ${1}
-  fi  
-}
-
-#
-# Validate ConfiguredManagedServerCount is non zero value
-#
-function validateConfiguredManagedServerCount {
-  if [ "${configuredManagedServerCount}" -le 0 ]; then
-    validationError "Invalid configuredManagedServerCount value: ${configuredManagedServerCount}. configuredManagedServerCount value must be greater than 0."
-  fi  
-}
-
-#
-# Validate InitialManagedServerReplicas
-#
-function validateInitialManagedServerReplicas {
-  if [ "${initialManagedServerReplicas}" -lt 0 -o "${initialManagedServerReplicas}" -gt "${configuredManagedServerCount}" ]; then
-    validationError "Invalid initialManagedServerReplicas value: ${initialManagedServerReplicas}. initialManagedServerReplicas value must be a positive integer  lesser than configuredManagedServerCount."
-  fi  
-}
-
-#
 # Function to validate the weblogic image pull secret name
 #
 function validateWeblogicImagePullSecretName {
@@ -294,7 +218,7 @@ function validateWeblogicImagePullSecretName {
 # Function to validate the weblogic image pull secret exists
 #
 function validateWeblogicImagePullSecret {
-  # The kubernetes secret for pulling images from the docker store is optional.
+  # The kubernetes secret for pulling images from a container registry is optional.
   # If it was specified, make sure it exists.
   validateSecretExists ${imagePullSecretName} ${namespace}
   failIfValidationErrors
@@ -427,6 +351,17 @@ function validateDomainSecret {
 }
 
 #
+# function to validate if we will be using wdt or wlst to create the domain
+#
+function validateDomainFilesDir {
+  useWdt=true
+  if [ -z "${createDomainFilesDir}" ] || [ "${createDomainFilesDir}" == "wlst" ]; then
+    useWdt=false
+  fi
+  echo useWdt is ${useWdt}
+}
+
+#
 # Function to validate the common input parameters
 #
 function validateCommonInputs {
@@ -436,6 +371,8 @@ function validateCommonInputs {
   validateInputParamsSpecified \
     adminServerName \
     domainUID \
+    clusterName \
+    managedServerNameBase \
     namespace \
     includeServerOutInPodLog \
     version
@@ -444,6 +381,7 @@ function validateCommonInputs {
     adminPort \
     configuredManagedServerCount \
     initialManagedServerReplicas \
+    managedServerPort \
     t3ChannelPort \
     adminNodePort
 
@@ -451,8 +389,7 @@ function validateCommonInputs {
     productionModeEnabled \
     exposeAdminT3Channel \
     exposeAdminNodePort \
-    includeServerOutInPodLog \
-    sslEnabled
+    includeServerOutInPodLog
 
   export requiredInputsVersion="create-weblogic-sample-domain-inputs-v1"
   validateVersion
@@ -460,62 +397,14 @@ function validateCommonInputs {
   validateDomainUid
   validateNamespace
   validateAdminServerName
-
+  validateManagedServerNameBase
+  validateClusterName
   validateWeblogicCredentialsSecretName
   validateServerStartPolicy
   validateWeblogicImagePullPolicy
   validateWeblogicImagePullSecretName
   validateFmwDomainType
-
-  # Below validations are for SOA Suite domains
-  validateSSLPortsSpecified \
-	adminServerSSLPort
-
-  validateSOASuiteDomainType
-  validatePersistentStoreType
-
-  if [ "${domainType}" = "soa" -o "${domainType}" = "soaess" -o "${domainType}" = "soaosb" -o "${domainType}" = "soaessosb" ]; then
-    validateInputParamsSpecified \
-      soaClusterName \
-      soaManagedServerNameBase
-
-    validateIntegerInputParamsSpecified \
-      soaManagedServerPort
- 
-    validateSSLPortsSpecified \
-	  soaManagedServerSSLPort
-
-    validateClusterName \
-      soaClusterName \
-      ${soaClusterName}
-
-    validateManagedServerNameBase \
-      soaManagedServerNameBase \
-      ${soaManagedServerNameBase}
-  fi
-  if [ "${domainType}" = "osb" -o "${domainType}" = "soaosb" -o "${domainType}" = "soaessosb" ]; then
-    validateInputParamsSpecified \
-      osbClusterName \
-      osbManagedServerNameBase
-
-    validateIntegerInputParamsSpecified \
-      osbManagedServerPort
-
-    validateSSLPortsSpecified \
-	  osbManagedServerSSLPort
-
-    validateClusterName \
-      osbClusterName \
-      ${osbClusterName}
-
-    validateManagedServerNameBase \
-      osbManagedServerNameBase \
-      ${osbManagedServerNameBase}
-  fi
-
-  validateConfiguredManagedServerCount
-  validateInitialManagedServerReplicas
-  
+  validateDomainFilesDir
   # Below three validate methods are used for MII integration testing
   validateWdtDomainType
   validateWdtModelFile
@@ -585,3 +474,4 @@ function validateWdtDomainType {
   fi
   failIfValidationErrors
 }
+
