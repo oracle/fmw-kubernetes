@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="Clean up the Oracle WebCenter Sites domain setup.">
+    <meta name="description" content="Describes how to create connections to Oracle WebCenter Content Server to enable content integration within Oracle WebCenter Portal.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Uninstall :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Additional Configuration :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/css/nucleus.css?1625565886" rel="stylesheet">
@@ -33,7 +33,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/">
+  <body class="" data-url="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/">
     <nav id="sidebar" class="">
 
 
@@ -3351,7 +3351,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcportal-domains/" title="Oracle WebCenter Portal" class="dd-item 
-        
+        parent
         
         
         ">
@@ -3862,7 +3862,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/" title="Appendix" class="dd-item 
-        
+        parent
         
         
         ">
@@ -3943,7 +3943,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item active">
         <a href="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/">
         <b> </b>Additional Configuration
         
@@ -3979,7 +3979,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
-        parent
+        
         
         
         ">
@@ -4431,7 +4431,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item active">
+      <li data-nav-id="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
         <a href="/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/">
         <b>5. </b>Uninstall
         
@@ -4723,7 +4723,13 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcsites-domains/'>Oracle WebCenter Sites</a> > Uninstall
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcportal-domains/'>Oracle WebCenter Portal</a> > <a href='/fmw-kubernetes/wcportal-domains/appendix/'>Appendix</a> > Additional Configuration
+          
+         
           
          
           
@@ -4740,7 +4746,9 @@
   <ul>
     <li>
       <ul>
-        <li></li>
+        <li><a href="#creating-a-connection-to-oracle-webcenter-content-server">Creating a Connection to Oracle WebCenter Content Server</a></li>
+        <li><a href="#import-ssl-certificate">Import SSL Certificate</a></li>
+        <li><a href="#update-the-truststore">Update the TrustStore</a></li>
       </ul>
     </li>
   </ul>
@@ -4760,7 +4768,7 @@
           
             <h1>
               
-              Uninstall
+              Additional Configuration
             </h1>
           
 
@@ -4768,106 +4776,36 @@
 
 
 
-<p>Learn how to clean up the Oracle WebCenter Sites domain setup.</p>
-<h4 id="stop-all-administration-and-managed-server-pods">Stop all Administration and Managed server pods</h4>
-<p>First stop the all pods related to a domain. This can be done by patching domain &ldquo;serverStartPolicy&rdquo; to &ldquo;NEVER&rdquo;. Here is the sample command for the same.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;NEVER&#34; }]&#39;</span>
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcsitesinfra -n wcsites-ns --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;NEVER&#34; }]&#39;</span>
-</code></pre></div><h4 id="drop-the-rcu-schemas">Drop the RCU schemas</h4>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd work-dir-name/weblogic-kubernetes-operator
-$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.yaml
-</code></pre></div><p>Check if the job has finished.</p>
-<h4 id="remove-the-domain">Remove the domain</h4>
-<ol>
-<li>
-<p>Remove the domain&rsquo;s ingress (for example, Traefik ingress) using Helm:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall wcsites-domain-ingress -n wcsites-namespace
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall wcsitesinfra-ingress -n wsites-ns
-</code></pre></div></li>
-<li>
-<p>Remove the domain resources by using the sample <code>delete-weblogic-domain-resources.sh</code> script present at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/delete-domain</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/delete-domain
-$ ./delete-weblogic-domain-resources.sh -d sample-domain1
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/delete-domain
-$ ./delete-weblogic-domain-resources.sh -d wcsites-ns
-</code></pre></div></li>
-<li>
-<p>Use <code>kubectl</code> to confirm that the server pods and domain resource are deleted:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n sample-domain1-ns
-$ kubectl get domains -n sample-domain1-ns
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n wcsites-ns
-$ kubectl get domains -n wcsites-ns
-</code></pre></div></li>
-</ol>
-<h4 id="remove-the-domain-namespace">Remove the domain namespace</h4>
-<ol>
-<li>
-<p>Configure the installed ingress load balancer (for example, Traefik) to stop managing the ingresses in the domain namespace:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade traefik-operator stable/traefik <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    --namespace traefik <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    --reuse-values <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik}&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    --wait
-</code></pre></div></li>
-<li>
-<p>Configure the operator to stop managing the domain:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade  sample-weblogic-operator <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  kubernetes/charts/weblogic-operator <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --namespace sample-weblogic-operator-ns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --reuse-values <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --set <span style="color:#e6db74">&#34;domainNamespaces={}&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --wait <span style="color:#ae81ff">\
-</span></code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
-$ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  kubernetes/charts/weblogic-operator <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --namespace operator-ns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --reuse-values <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --set <span style="color:#e6db74">&#34;domainNamespaces={}&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --wait <span style="color:#ae81ff">\
-</span></code></pre></div></li>
-<li>
-<p>Delete the domain namespace:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace sample-domain1-ns
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace wcsites-ns
-</code></pre></div></li>
-</ol>
-<h4 id="remove-the-operator">Remove the operator</h4>
-<ol>
-<li>
-<p>Remove the operator:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall sample-weblogic-operator -n sample-weblogic-operator-ns
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall weblogic-kubernetes-operator -n operator-ns
-</code></pre></div></li>
-<li>
-<p>Remove the operator&rsquo;s namespace:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace sample-weblogic-operator-ns
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace operator-ns
-</code></pre></div></li>
-</ol>
-<h4 id="remove-the-load-balancer">Remove the load balancer</h4>
-<ol>
-<li>
-<p>Remove the installed ingress based load balancer (for example, Traefik):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall traefik-operator -n traefik
-</code></pre></div></li>
-<li>
-<p>Remove the Traefik namespace:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace traefik
-</code></pre></div></li>
-</ol>
-<h4 id="delete-the-domain-home">Delete the domain home</h4>
-<p>To remove the domain home that is generated using the <code>create-domain.sh</code> script, with appropriate privileges manually delete the contents of the storage attached to the domain home persistent volume (PV).</p>
-<p>For example, for the domain&rsquo;s persistent volume of type <code>host_path</code>:</p>
-<pre><code>$ rm -rf /scratch/K8SVolume/WCSites
-</code></pre>
+<h3 id="creating-a-connection-to-oracle-webcenter-content-server">Creating a Connection to Oracle WebCenter Content Server</h3>
+<p>To enable content integration within Oracle WebCenter Portal create a connection to Oracle WebCenter Content Server using JAX-WS. Follow the steps in the documentation <a href="https://docs.oracle.com/en/middleware/webcenter/portal/12.2.1.4/admin/managing-connections-oracle-webcenter-content-server.html#GUID-7907C8EA-802F-40B6-A19B-B0CC55CDB532">link</a> to create the connection.</p>
+<blockquote>
+<p>Note: If the Oracle WebCenter Content Server is configured with SSL, before creating the connection, the SSL certificate should be imported into any location under mount path of domain persistent volume to avoid loss of certificate due pod restart.</p>
+</blockquote>
+<h3 id="import-ssl-certificate">Import SSL Certificate</h3>
+<p>Import the certificate using below sample command, update the keystore location to a directory under mount path of the domain persistent volume :</p>
+<pre><code>kubectl exec -it wcp-domain-adminserver -n wcpns /bin/bash
+cd $JAVA_HOME/bin
+./keytool -importcert -alias collab_cert -file /filepath/sslcertificate/contentcert.crt -keystore /u01/oracle/user_projects/domains/wcp-domain/DemoTrust.jks
+
+</code></pre><h3 id="update-the-truststore">Update the TrustStore</h3>
+<p>To update the truststore location edit <code>domain.yaml</code> file, append <code>-Djavax.net.ssl.trustStore</code> to the <code>spec.serverPod.env.JAVA_OPTIONS</code> environment variable value. The truststore location used in <code>-Djavax.net.ssl.trustStore</code> option should be same as keystore location where the SSL certificate has been imported.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">serverPod</span>:
+  <span style="color:#75715e"># an (optional) list of environment variable to be set on the servers</span>
+  <span style="color:#66d9ef">env</span>:
+  - <span style="color:#66d9ef">name</span>: JAVA_OPTIONS
+    <span style="color:#66d9ef">value</span>: <span style="color:#e6db74">&#34;-Dweblogic.StdoutDebugEnabled=true -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true -Djavax.net.ssl.trustStore=/u01/oracle/user_projects/domains/wcp-domain/DemoTrust.jks&#34;</span>
+  - <span style="color:#66d9ef">name</span>: USER_MEM_ARGS
+    <span style="color:#66d9ef">value</span>: <span style="color:#e6db74">&#34;-Djava.security.egd=file:/dev/./urandom -Xms256m -Xmx1024m &#34;</span>
+  <span style="color:#66d9ef">volumes</span>:
+  - <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+    <span style="color:#66d9ef">persistentVolumeClaim</span>:
+      <span style="color:#66d9ef">claimName</span>: wcp-domain-domains-pvc
+  <span style="color:#66d9ef">volumeMounts</span>:
+  - <span style="color:#66d9ef">mountPath</span>: /u01/oracle/user_projects/domains
+    <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
+</code></pre></div><p>Apply the <code>domain.yaml</code> file to restart the Oracle WebCenter Portal domain.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f domain.yaml
+</code></pre></div>
 
 <footer class=" footline" >
 	
@@ -7140,416 +7078,6 @@ $ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
             
                 
                     
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
                     
                 
                 
@@ -7594,6 +7122,22 @@ $ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -7722,6 +7266,408 @@ $ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -7861,7 +7807,6 @@ $ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
             
                 
                     
-                    
                 
                 
 
@@ -7877,9 +7822,6 @@ $ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -8048,10 +7990,10 @@ $ helm upgrade weblogic-kubernetes-operator <span style="color:#ae81ff">\
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/wcsites-domains/create-or-update-image/" title="Create or update an image"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcportal-domains/appendix/docker-k8s-hardening/" title="Security hardening"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcsites-domains/" title="Oracle WebCenter Sites" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

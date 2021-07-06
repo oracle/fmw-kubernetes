@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1623837405" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1625565888" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1623837405"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1625565888"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1623837405"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1623837405"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1625565888"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1625565888"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1623837405"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1625565888"></script>
 
     
   </div>
@@ -3936,6 +3936,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+        <a href="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/">
+        <b> </b>Additional Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -4969,6 +4988,7 @@ $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --path &lt;download locatio
 --version=12.2.1.4.0
 --tag=oracle/wccontent_create_1015:12.2.1.4.0
 --pull
+--chown oracle:root
 --additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterContent/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4.0/container-scripts
 --patches 31754672_12.2.1.4.0
@@ -4995,34 +5015,34 @@ $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --path &lt;download locatio
     <div class="expand-content" style="display: none;">
         <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">########## BEGIN DOCKERFILE ##########</span>
 #
-<span style="color:#75715e"># Copyright (c) 2019, 2020, Oracle and/or its affiliates.</span>
+<span style="color:#75715e"># Copyright (c) 2019, 2021, Oracle and/or its affiliates.</span>
 #
 <span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
 #
 #
-FROM oraclelinux:7-slim as OS_UPDATE
-LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+FROM ghcr.io/oracle/oraclelinux:7-slim as os_update
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;f46ab190-077e-4ed7-b747-7bb170fe592c&#34;</span>
 USER root
 
-RUN yum -y --downloaddir<span style="color:#f92672">=</span>/tmp/imagetool install gzip tar unzip libaio <span style="color:#ae81ff">\
+RUN yum -y --downloaddir<span style="color:#f92672">=</span>/tmp/imagetool install gzip tar unzip libaio jq hostname  <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> yum -y --downloaddir<span style="color:#f92672">=</span>/tmp/imagetool clean all <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> rm -rf /var/cache/yum/* <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/imagetool
 
 <span style="color:#75715e">## Create user and group</span>
-RUN <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>getent group oracle<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> hash groupadd &amp;&gt; /dev/null <span style="color:#f92672">&amp;&amp;</span> groupadd oracle <span style="color:#f92672">||</span> exit -1 ; <span style="color:#66d9ef">fi</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>getent passwd oracle<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> hash useradd &amp;&gt; /dev/null <span style="color:#f92672">&amp;&amp;</span> useradd -g oracle oracle <span style="color:#f92672">||</span> exit -1; <span style="color:#66d9ef">fi</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> mkdir /u01 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:oracle /u01 <span style="color:#ae81ff">\
+RUN <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>getent group root<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> hash groupadd &amp;&gt; /dev/null <span style="color:#f92672">&amp;&amp;</span> groupadd root <span style="color:#f92672">||</span> exit -1 ; <span style="color:#66d9ef">fi</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>getent passwd oracle<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> hash useradd &amp;&gt; /dev/null <span style="color:#f92672">&amp;&amp;</span> useradd -g root oracle <span style="color:#f92672">||</span> exit -1; <span style="color:#66d9ef">fi</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> mkdir -p /u01 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:root /u01 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">775</span> /u01
 
 <span style="color:#75715e"># Install Java</span>
-FROM OS_UPDATE as JDK_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+FROM os_update as jdk_build
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;f46ab190-077e-4ed7-b747-7bb170fe592c&#34;</span>
 
 ENV JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk
 
-COPY --chown<span style="color:#f92672">=</span>oracle:oracle jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
+COPY --chown<span style="color:#f92672">=</span>oracle:root jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
 
 USER oracle
 
@@ -5034,8 +5054,8 @@ RUN tar xzf /tmp/imagetool/jdk-8u251-linux-x64.tar.gz -C /u01 <span style="color
 
 
 <span style="color:#75715e"># Install Middleware</span>
-FROM OS_UPDATE as WLS_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+FROM os_update as wls_build
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;f46ab190-077e-4ed7-b747-7bb170fe592c&#34;</span>
 
 ENV JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>    ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
@@ -5043,32 +5063,36 @@ ENV JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk <span style="color:#ae
 
 RUN mkdir -p /u01/oracle <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> mkdir -p /u01/oracle/oraInventory <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:oracle /u01/oracle/oraInventory <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:oracle /u01/oracle
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:root /u01/oracle/oraInventory <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chown oracle:root /u01/oracle
 
-COPY --from<span style="color:#f92672">=</span>JDK_BUILD --chown<span style="color:#f92672">=</span>oracle:oracle /u01/jdk /u01/jdk/
+COPY --from<span style="color:#f92672">=</span>jdk_build --chown<span style="color:#f92672">=</span>oracle:root /u01/jdk /u01/jdk/
 
-COPY --chown<span style="color:#f92672">=</span>oracle:oracle fmw_12.2.1.4.0_infrastructure_generic.jar fmw.rsp /tmp/imagetool/
-COPY --chown<span style="color:#f92672">=</span>oracle:oracle fmw_12.2.1.4.0_wccontent.jar wcc.rsp /tmp/imagetool/
-COPY --chown<span style="color:#f92672">=</span>oracle:oracle oraInst.loc /u01/oracle/
+COPY --chown<span style="color:#f92672">=</span>oracle:root fmw_12.2.1.4.0_infrastructure_generic.jar fmw.rsp /tmp/imagetool/
+COPY --chown<span style="color:#f92672">=</span>oracle:root fmw_12.2.1.4.0_wccontent.jar wcc.rsp /tmp/imagetool/
+COPY --chown<span style="color:#f92672">=</span>oracle:root oraInst.loc /u01/oracle/
 
 
 
 USER oracle
 
 
-RUN  <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure_generic.jar -silent ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-RUN  <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wccontent.jar -silent ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    -responseFile /tmp/imagetool/wcc.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+RUN echo <span style="color:#e6db74">&#34;INSTALLING MIDDLEWARE&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#34;INSTALLING fmw&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span>  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure_generic.jar -silent ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#34;INSTALLING wcc&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span>  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wccontent.jar -silent ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -responseFile /tmp/imagetool/wcc.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> <span style="color:#f92672">&amp;&amp;</span> chmod -R g+r /u01/oracle
 
 
 
 
 
-FROM OS_UPDATE as FINAL_BUILD
+FROM os_update as final_build
 
 ARG ADMIN_NAME
 ARG ADMIN_HOST
@@ -5077,14 +5101,13 @@ ARG MANAGED_SERVER_PORT
 
 ENV ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>    JAVA_HOME<span style="color:#f92672">=</span>/u01/jdk <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    LC_ALL<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DEFAULT_LOCALE<span style="color:#66d9ef">:-</span>en_US.UTF-8<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>    PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>PATH<span style="color:#e6db74">}</span>:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
 
-LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;47601fd7-4f1f-433f-8c53-bac65be48fec&#34;</span>
+LABEL com.oracle.weblogic.imagetool.buildid<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;f46ab190-077e-4ed7-b747-7bb170fe592c&#34;</span>
 
-    COPY --from<span style="color:#f92672">=</span>JDK_BUILD --chown<span style="color:#f92672">=</span>oracle:oracle /u01/jdk /u01/jdk/
+    COPY --from<span style="color:#f92672">=</span>jdk_build --chown<span style="color:#f92672">=</span>oracle:root /u01/jdk /u01/jdk/
 
-COPY --from<span style="color:#f92672">=</span>WLS_BUILD --chown<span style="color:#f92672">=</span>oracle:oracle /u01/oracle /u01/oracle/
+COPY --from<span style="color:#f92672">=</span>wls_build --chown<span style="color:#f92672">=</span>oracle:root /u01/oracle /u01/oracle/
 
 
 
@@ -5093,33 +5116,31 @@ WORKDIR /u01/oracle
 
 <span style="color:#75715e">#ENTRYPOINT /bin/bash</span>
 
-    
-    
+
+
     ENV ORACLE_HOME<span style="color:#f92672">=</span>/u01/oracle <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        VOLUME_DIR<span style="color:#f92672">=</span>/u01/oracle/user_projects <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        SCRIPT_FILE<span style="color:#f92672">=</span>/u01/oracle/container-scripts/* <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        USER_MEM_ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-Djava.security.egd=file:/dev/./urandom&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        PATH<span style="color:#f92672">=</span>$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
-    	
+
     USER root
-    
-    RUN yum install -y libaio tar procps hostname zip unzip <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        rm -rf /var/cache/yum <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        mkdir -p $VOLUME_DIR <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+
+    RUN mkdir -p $VOLUME_DIR <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        mkdir -p /u01/oracle/container-scripts <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        mkdir -p /u01/oracle/silent-install-files-tmp/config <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        mkdir -p /u01/oracle/logs <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        chown oracle:oracle -R /u01 $VOLUME_DIR <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        chown oracle:root -R /u01 $VOLUME_DIR <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        chmod a+xr /u01
-    COPY --chown<span style="color:#f92672">=</span>oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
-    RUN chmod +xr $SCRIPT_FILE <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        rm /u01/oracle/oracle_common/lib/ons.jar /u01/oracle/oracle_common/modules/oracle.jdbc/simplefan.jar
-    
+    COPY --chown<span style="color:#f92672">=</span>oracle:root files/container-scripts/ /u01/oracle/container-scripts/
+    RUN chmod +xr $SCRIPT_FILE
+
+
     USER oracle
-    
+
     EXPOSE $UCM_PORT $UCM_INTRADOC_PORT $IBR_INTRADOC_PORT $IBR_PORT $ADMIN_PORT
     WORKDIR <span style="color:#e6db74">${</span>ORACLE_HOME<span style="color:#e6db74">}</span>
-    
+
     CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/u01/oracle/container-scripts/createDomainandStartAdmin.sh&#34;</span><span style="color:#f92672">]</span>
 
 <span style="color:#75715e">########## END DOCKERFILE ##########</span>
@@ -5167,7 +5188,12 @@ $ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <pre><code>  $ imagetool update --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.4
+        <pre><code>  # If you are using a pre-built Oracle WebCenter Content image, obtained from My Oracle Support, then please use this command:
+  $ imagetool update --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.4
+
+  # In case, you chose to build an Oracle WebCenter Content image, please use the command given below:
+  $ imagetool update --chown oracle:root --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 
+    --opatchBugNumber=28186730_13.9.4.2.4
       
 </code></pre>
     </div>
@@ -5181,22 +5207,16 @@ $ imagetool cache addEntry --key<span style="color:#f92672">=</span>30761841_12.
 <h3 id="create-an-oracle-webcenter-content-docker-image-using-dockerfile">Create an Oracle WebCenter Content Docker image using Dockerfile</h3>
 <p>For test and development purposes, you can create an Oracle WebCenter Content image using the Dockerfile. Consult the <a href="https://github.com/oracle/docker-images/blob/master/OracleWebCenterContent/dockerfiles/README.md">README</a> file for important prerequisite steps,
 such as building or pulling the Server JRE Docker image, Oracle FMW Infrastructure Docker image, and downloading the Oracle WebCenter Content installer and bundle patch binaries.</p>
-<p>A prebuilt Oracle Fusion Middleware Infrastructure image, <code>container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4</code>, is available at <code>container-registry.oracle.com</code>. We recommend that you pull and rename this image to build the Oracle WebCenter Content image.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
-  $ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0
+<p>A prebuilt Oracle Fusion Middleware Infrastructure image, <code>container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407</code>, is available at <code>container-registry.oracle.com</code>. We recommend that you pull and rename this image to build the Oracle WebCenter Content image.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
+  $ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407 oracle/fmw-infrastructure:12.2.1.4.0
 
-</code></pre></div><p>Follow these steps to build an Oracle Fusion Middleware Infrastructure image, and then the Oracle WebCenter Content image as a layer on top of that:</p>
+</code></pre></div><p>Follow these steps to build an Oracle WebCenter Content image :</p>
 <ol>
 <li>
 <p>Make a local clone of the sample repository:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/docker-images
 </code></pre></div></li>
-<li>
-<p>Build the <code>oracle/fmw-infrastructure:12.2.1.4</code> image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd docker-images/OracleFMWInfrastructure/dockerfiles
- $ sh buildDockerImage.sh -v 12.2.1.4 -s
-</code></pre></div><p>This will produce an image named <code>oracle/fmw-infrastructure:12.2.1.4</code>.</p>
-</li>
 <li>
 <p>Download the Oracle WebCenter Content installer from the Oracle Technology Network or e-delivery.</p>
 <blockquote>
@@ -5206,9 +5226,9 @@ such as building or pulling the Server JRE Docker image, Oracle FMW Infrastructu
 <li>
 <p>Create the Oracle WebCenter Content image by running the provided script:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd docker-images/OracleWebCenterContent/dockerfiles
-$ ./buildDockerImage.sh -v 12.2.1.4.0 -s
-</code></pre></div><p>The image produced will be named <code>oracle/wccontent:12.2.1.4.0</code>. The samples and instructions assume the Oracle WebCenter Content image is named <code>wccontent:12.2.1.4.0</code>. You must rename your image to match this name, or update the samples to refer to the image you created.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/wccontent:12.2.1.4.0 wccontent:12.2.1.4.0
+$ ./buildDockerImage.sh -v 12.2.1.4 -s
+</code></pre></div><p>The image produced will be named <code>oracle/wccontent:12.2.1.4</code>. The samples and instructions assume the Oracle WebCenter Content image is named <code>wccontent:12.2.1.4.0</code>. You must rename your image to match this name, or update the samples to refer to the image you created.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker tag oracle/wccontent:12.2.1.4 wccontent:12.2.1.4.0
 </code></pre></div></li>
 </ol>
 
@@ -7877,6 +7897,22 @@ $ ./buildDockerImage.sh -v 12.2.1.4.0 -s
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8391,19 +8427,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4.0 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1623837405"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1625565888"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1623837405"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1625565888"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1623837405" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1623837405"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1625565888" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1625565888"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
