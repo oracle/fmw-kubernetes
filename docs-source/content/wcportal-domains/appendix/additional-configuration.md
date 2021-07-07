@@ -14,9 +14,9 @@ To enable content integration within Oracle WebCenter Portal create a connection
 ### Import SSL Certificate
 Import the certificate using below sample command, update the keystore location to a directory under mount path of the domain persistent volume :
 ```
-kubectl exec -it wcp-domain-adminserver -n wcpns /bin/bash
-cd $JAVA_HOME/bin
-./keytool -importcert -alias collab_cert -file /filepath/sslcertificate/contentcert.crt -keystore /u01/oracle/user_projects/domains/wcp-domain/DemoTrust.jks
+$ kubectl exec -it wcp-domain-adminserver -n wcpns /bin/bash
+$ cd $JAVA_HOME/bin
+$ ./keytool -importcert -alias collab_cert -file /filepath/sslcertificate/contentcert.crt -keystore /u01/oracle/user_projects/domains/wcp-domain/DemoTrust.jks
 
 ```
 
