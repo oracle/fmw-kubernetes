@@ -125,7 +125,7 @@ Follow these steps to set up Traefik as a load balancer for an Oracle SOA Suite 
       <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
       
       <guid>/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/</guid>
-      <description>To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based Traefik load balancer (version 2.2.1 or later for production deployments) and configure it for non-SSL and SSL-based access of the application URL.Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
+      <description>To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based Traefik load balancer (version 2.2.1 or later for production deployments) and configure it for non-SSL, SSL termination, and end-to-end SSL access of the application URL. Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
   Non-SSL and SSL termination
  Install the Traefik (ingress-based) load balancer Configure Traefik to manage ingresses Create an Ingress for the domain Verify domain application URL access Uninstall the Traefik ingress    End-to-end SSL configuration</description>
     </item>
@@ -190,8 +190,7 @@ Recent changes    Date Version Introduces backward incompatibilities Change     
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/wcportal-domains/release-notes/</guid>
-      <description>Recent changes    Date Version Change     May 27, 2021 21.2.2 Only Oracle Portal 12.2.1.4 is supported and certified with the WebLogic Kubernetes operator version 3.1.1.     Note: This is a preview release.
- </description>
+      <description>Recent changes    Date Version Change     June 30, 2021 21.2.3 Only Oracle Portal 12.2.1.4 is supported and certified with the WebLogic Kubernetes operator version 3.1.1.    </description>
     </item>
     
     <item>
@@ -298,7 +297,7 @@ To extend an existing ingress with additional application URL access:
       <description>This section provides information about how to install and configure the ingress-based NGINX load balancer to load balance Oracle SOA Suite domain clusters. You can configure NGINX for non-SSL, SSL termination, and end-to-end SSL access of the application URL.
 Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite domain in a Kubernetes cluster:
 See the official installation document for prerequisites.
- Install the NGINX load balancer for non-SSL and SSL termination configuration Generate secret for SSL access Install NGINX load balancer for end-to-end configuration Configure NGINX to manage ingresses Verify domain application URL access Uninstall Nginx ingress Uninstall Nginx  To get repository information, enter the following Helm commands:</description>
+ Install the NGINX load balancer for non-SSL and SSL termination configuration Generate secret for SSL access Install NGINX load balancer for end-to-end SSL configuration Configure NGINX to manage ingresses Verify domain application URL access Uninstall NGINX ingress Uninstall NGINX  To get repository information, enter the following Helm commands:</description>
     </item>
     
     <item>
@@ -307,7 +306,7 @@ See the official installation document for prerequisites.
       <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
       
       <guid>/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/</guid>
-      <description>To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based NGINX load balancer and configure NGINX for both SSL and non-SSL access of the application URL. Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
+      <description>To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based NGINX load balancer and configure NGINX for non-SSL, SSL termination, and end-to-end SSL access of the application URL. Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
 See the official installation document for prerequisites.
   Non-SSL and SSL termination
  Install the NGINX load balancer Configure NGINX to manage ingresses Verify non-SSL and SSL termination access    End-to-end SSL configuration</description>
@@ -641,6 +640,16 @@ To enable elasticsearch integration, you must edit file kubernetes/charts/weblog
       <description>The WebLogic Logging Exporter adds a log event handler to WebLogic Server. WebLogic Server logs can be pushed to Elasticsearch in Kubernetes directly by using the Elasticsearch REST API. For more details, see to the WebLogic Logging Exporter project.
 This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing operator logs, see this sample.
 Prerequisites This document assumes that you have already set up Elasticsearch and Kibana for logs collection.</description>
+    </item>
+    
+    <item>
+      <title>Additional Configuration</title>
+      <link>/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/</guid>
+      <description>Creating a Connection to Oracle WebCenter Content Server To enable content integration within Oracle WebCenter Portal create a connection to Oracle WebCenter Content Server using JAX-WS. Follow the steps in the documentation link to create the connection.
+ Note: If the Oracle WebCenter Content Server is configured with SSL, before creating the connection, the SSL certificate should be imported into any location under mount path of domain persistent volume to avoid loss of certificate due pod restart.</description>
     </item>
     
     <item>

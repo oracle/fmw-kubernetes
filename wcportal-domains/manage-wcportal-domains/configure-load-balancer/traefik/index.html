@@ -12,18 +12,18 @@
     <title>Traefik :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1623837404" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1625565886" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1625565886" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1623837404"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1625565886"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1623837404"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1623837404"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1625565886"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1625565886"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1623837404"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1625565886"></script>
 
     
   </div>
@@ -3936,6 +3936,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+        <a href="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/">
+        <b> </b>Additional Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -4762,7 +4781,7 @@
 
 
 
-<p>To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based <em>Traefik</em> load balancer (version 2.2.1 or later for production deployments) and configure it for non-SSL and SSL-based access of the application URL.Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:</p>
+<p>To load balance Oracle WebCenter Portal domain clusters, you can install the ingress-based <em>Traefik</em> load balancer (version 2.2.1 or later for production deployments) and configure it for non-SSL, SSL termination, and end-to-end SSL access of the application URL. Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:</p>
 <ul>
 <li>
 <p><a href="#non-ssl-and-ssl-termination"> Non-SSL and SSL termination</a></p>
@@ -5188,7 +5207,7 @@ Events:                                         &lt;none&gt;
    pod/traefik-845f5d6dbb-swb96   1/1     Running   <span style="color:#ae81ff">0</span>          32s
 
    NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>                                          AGE
-   service/traefik   LoadBalancer   10.99.52.249   &lt;pending&gt;     9000:31288/TCP,30305:30305/TCP,30443:30443/TCP   32s
+   service/traefik   NodePort       10.99.52.249   &lt;none&gt;        9000:31288/TCP,30305:30305/TCP,30443:30443/TCP   32s
 
    NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
    deployment.apps/traefik   1/1     <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           33s
@@ -5237,6 +5256,9 @@ TEST SUITE: None
 </div>
 <h4 id="create-ingressroutetcp">Create IngressRouteTCP</h4>
 <ol>
+<li>
+<p>For each backend service, create different ingresses, as Traefik does not support multiple paths or rules with annotation <code>ssl-passthrough</code>. For example, for <code>wcp-domain-adminserver</code> and <code>wcp-domain-cluster-wcp-cluster,</code> different ingresses must be created.</p>
+</li>
 <li>
 <p>To enable SSL passthrough in Traefik, you can configure a TCP router. A sample YAML for <code>IngressRouteTCP</code> is available at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls/traefik-tls.yaml</code>. The following should be updated in <code>traefik-tls.yaml</code>:</p>
 <ul>
@@ -7944,6 +7966,22 @@ $ kubectl delete -f traefik-tls.yaml
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8458,19 +8496,19 @@ $ kubectl delete -f traefik-tls.yaml
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1623837404"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1625565886"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1623837404"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1625565886"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1625565886"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1623837404" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1623837404"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1625565886" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1625565886"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

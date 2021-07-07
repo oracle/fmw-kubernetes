@@ -12,18 +12,18 @@
     <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1623837404" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1623837404" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1625565885" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1625565885" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1623837404"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1625565885"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1623837404"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1623837404"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1625565885"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1625565885"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1623837404"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1625565885"></script>
 
     
   </div>
@@ -3936,6 +3936,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+        <a href="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/">
+        <b> </b>Additional Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -4767,11 +4786,11 @@
 <ol>
 <li><a href="#install-the-nginx-load-balancer-for-non-ssl-and-ssl-termination-configuration">Install the NGINX load balancer for non-SSL and SSL termination configuration</a></li>
 <li><a href="#generate-secret-for-ssl-access">Generate secret for SSL access</a></li>
-<li><a href="#install-nginx-load-balancer-for-end-to-end-configuration">Install NGINX load balancer for end-to-end configuration</a></li>
+<li><a href="#install-nginx-load-balancer-for-end-to-end-ssl-configuration">Install NGINX load balancer for end-to-end SSL configuration</a></li>
 <li><a href="#configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</a></li>
 <li><a href="#verify-domain-application-url-access">Verify domain application URL access</a></li>
-<li><a href="#uninstall-nginx-ingress">Uninstall Nginx ingress</a></li>
-<li><a href="#uninstall-nginx">Uninstall Nginx</a></li>
+<li><a href="#uninstall-nginx-ingress">Uninstall NGINX ingress</a></li>
+<li><a href="#uninstall-nginx">Uninstall NGINX</a></li>
 </ol>
 <p>To get repository information, enter the following Helm commands:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -5192,10 +5211,10 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span s
 </code></pre></div><blockquote>
 <p>Note: This is the default host name. If you have updated the host name in <code>value.yaml</code>, then use the updated values.</p>
 </blockquote>
-<h4 id="uninstall-nginx-ingress">Uninstall Nginx ingress</h4>
+<h4 id="uninstall-nginx-ingress">Uninstall NGINX ingress</h4>
 <p>Uninstall and delete the <code>ingress-nginx</code> deployment:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete soa-nginx-ingress  -n soans
-</code></pre></div><h4 id="uninstall-nginx">Uninstall Nginx</h4>
+</code></pre></div><h4 id="uninstall-nginx">Uninstall NGINX</h4>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete nginx-ingress -n soans
 </code></pre></div>
 
@@ -7866,6 +7885,22 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span s
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8380,19 +8415,19 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1623837404"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1625565885"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1623837404"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1623837404"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1625565885"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1625565885"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1623837404" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1623837404"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1625565885" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1625565885"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

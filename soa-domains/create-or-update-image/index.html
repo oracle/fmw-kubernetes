@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1623837405" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1623837405" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1625565888" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1625565888" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1623837405"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1625565888"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1623837405"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1623837405"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1625565888"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1625565888"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1623837405"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1625565888"></script>
 
     
   </div>
@@ -3936,6 +3936,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+        <a href="/fmw-kubernetes/wcportal-domains/appendix/additional-configuration/">
+        <b> </b>Additional Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -4872,7 +4891,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <ul>
 <li>fmw_12.2.1.4.0_soa.jar</li>
 <li>fmw_12.2.1.4.0_osb.jar</li>
-<li>fmw_12.2.1.4.0_b2bhealthcare_generic.jar</li>
+<li>fmw_12.2.1.4.0_b2bhealthcare.jar</li>
 </ul>
 </li>
 </ul>
@@ -4943,7 +4962,7 @@ $ imagetool cache addInstaller --type soa --version 12.2.1.4.0 --path &lt;downlo
 
 $ imagetool cache addInstaller --type osb --version 12.2.1.4.0 --path &lt;download location&gt;/fmw_12.2.1.4.0_osb.jar
 
-$ imagetool cache addInstaller --type b2b --version 12.2.1.4.0 --path &lt;download location&gt;/fmw_12.2.1.4.0_b2bhealthcare_generic.jar
+$ imagetool cache addInstaller --type b2b --version 12.2.1.4.0 --path &lt;download location&gt;/fmw_12.2.1.4.0_b2bhealthcare.jar
 
 </code></pre></div></li>
 <li>
@@ -5102,7 +5121,7 @@ COPY --from=jdk_build --chown=oracle:root /u01/jdk /u01/jdk/
 COPY --chown=oracle:root fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
 COPY --chown=oracle:root fmw_12.2.1.4.0_soa.jar soasuite.response /tmp/imagetool/
 COPY --chown=oracle:root fmw_12.2.1.4.0_osb.jar osb.response /tmp/imagetool/
-COPY --chown=oracle:root fmw_12.2.1.4.0_b2bhealthcare_generic.jar b2b.response /tmp/imagetool/
+COPY --chown=oracle:root fmw_12.2.1.4.0_b2bhealthcare.jar b2b.response /tmp/imagetool/
 COPY --chown=oracle:root oraInst.loc /u01/oracle/
 
 USER oracle
@@ -5123,7 +5142,7 @@ RUN echo &quot;INSTALLING MIDDLEWARE&quot; \
     -responseFile /tmp/imagetool/osb.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
 &amp;&amp; echo &quot;INSTALLING b2b&quot; \
 &amp;&amp;  \
-    /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_b2bhealthcare_generic.jar -silent ORACLE_HOME=/u01/oracle \
+    /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_b2bhealthcare.jar -silent ORACLE_HOME=/u01/oracle \
     -responseFile /tmp/imagetool/b2b.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
 &amp;&amp; chmod -R g+r /u01/oracle
 
@@ -8119,6 +8138,22 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8633,19 +8668,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1623837405"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1625565888"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1623837405"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1623837405"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1625565888"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1625565888"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1623837405" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1623837405"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1625565888" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1625565888"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
