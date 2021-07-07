@@ -132,7 +132,7 @@ The installation binaries and patches required for release 21.2.2 are:
 * Oracle SOA Suite installers:  
     * fmw_12.2.1.4.0_soa.jar
     * fmw_12.2.1.4.0_osb.jar
-    * fmw_12.2.1.4.0_b2bhealthcare_generic.jar
+    * fmw_12.2.1.4.0_b2bhealthcare.jar
 
 {{% notice warning %}}
 In this release, Oracle B2B is not supported to be configured, but the installer is required for completeness.
@@ -198,7 +198,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 
     $ imagetool cache addInstaller --type osb --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_osb.jar
 
-    $ imagetool cache addInstaller --type b2b --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_b2bhealthcare_generic.jar
+    $ imagetool cache addInstaller --type b2b --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_b2bhealthcare.jar
 
     ```
 1. Add the downloaded OPatch patch to the WebLogic Image Tool cache:
@@ -362,7 +362,7 @@ The following files in the code repository location `<imagetool-setup-location>/
     COPY --chown=oracle:root fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
     COPY --chown=oracle:root fmw_12.2.1.4.0_soa.jar soasuite.response /tmp/imagetool/
     COPY --chown=oracle:root fmw_12.2.1.4.0_osb.jar osb.response /tmp/imagetool/
-    COPY --chown=oracle:root fmw_12.2.1.4.0_b2bhealthcare_generic.jar b2b.response /tmp/imagetool/
+    COPY --chown=oracle:root fmw_12.2.1.4.0_b2bhealthcare.jar b2b.response /tmp/imagetool/
     COPY --chown=oracle:root oraInst.loc /u01/oracle/
 
     USER oracle
@@ -383,7 +383,7 @@ The following files in the code repository location `<imagetool-setup-location>/
         -responseFile /tmp/imagetool/osb.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
     && echo "INSTALLING b2b" \
     &&  \
-        /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_b2bhealthcare_generic.jar -silent ORACLE_HOME=/u01/oracle \
+        /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_b2bhealthcare.jar -silent ORACLE_HOME=/u01/oracle \
         -responseFile /tmp/imagetool/b2b.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation \
     && chmod -R g+r /u01/oracle
 

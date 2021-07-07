@@ -707,7 +707,7 @@ After ServiceMonitor is deployed, the wls-exporter should be discovered by Prome
 
 1. Access the Grafana dashboard with the following URL: `http://${MASTERNODE-HOSTNAME}:32100` and login with `admin/admin`. Change your password when prompted.
 
-1. Import the Grafana dashboard by navigating on the left hand menu to *Create* > *Import*. Copy the content from `<work_directory>/FMW-DockerImages/OracleAccessManagement/kubernetes/3.0.1/grafana/weblogic_dashboard.json` and paste. Then click *Load* and *Import*.
+1. Import the Grafana dashboard by navigating on the left hand menu to *Create* > *Import*. Copy the content from `<work_directory>/OracleAccessManagement/kubernetes/3.0.1/grafana/weblogic_dashboard.json` and paste. Then click *Load* and *Import*.
    
   
 

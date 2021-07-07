@@ -177,6 +177,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
     $ cd ${WORKDIR}/weblogic-kubernetes-operator
     $ helm install wcc-traefik-ingress  \
         kubernetes/samples/charts/ingress-per-domain \
+        --set type=TRAEFIK \
         --namespace wccns \
         --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
         --set "traefik.hostname=$(hostname -f)"
@@ -251,6 +252,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
     $ cd ${WORKDIR}/weblogic-kubernetes-operator
     $ helm install wcc-traefik-ingress  \
         kubernetes/samples/charts/ingress-per-domain \
+        --set type=TRAEFIK \
         --namespace wccns \
         --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
         --set "traefik.hostname=$(hostname -f)" \

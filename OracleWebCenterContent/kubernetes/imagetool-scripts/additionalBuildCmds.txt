@@ -16,9 +16,9 @@ RUN mkdir -p $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
     mkdir -p /u01/oracle/silent-install-files-tmp/config && \
     mkdir -p /u01/oracle/logs && \
-    chown oracle:oracle -R /u01 $VOLUME_DIR && \
+    chown oracle:root -R /u01 $VOLUME_DIR && \
     chmod a+xr /u01
-COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/container-scripts/
+COPY --chown=oracle:root files/container-scripts/ /u01/oracle/container-scripts/
 RUN chmod +xr $SCRIPT_FILE
     
 

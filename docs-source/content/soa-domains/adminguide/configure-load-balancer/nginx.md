@@ -16,11 +16,11 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
   1. [Install the NGINX load balancer for non-SSL and SSL termination configuration](#install-the-nginx-load-balancer-for-non-ssl-and-ssl-termination-configuration)
   2. [Generate secret for SSL access](#generate-secret-for-ssl-access)
-  3. [Install NGINX load balancer for end-to-end configuration](#install-nginx-load-balancer-for-end-to-end-configuration)
+  3. [Install NGINX load balancer for end-to-end SSL configuration](#install-nginx-load-balancer-for-end-to-end-ssl-configuration)
   4. [Configure NGINX to manage ingresses](#configure-nginx-to-manage-ingresses)
   5. [Verify domain application URL access](#verify-domain-application-url-access)
-  6. [Uninstall Nginx ingress](#uninstall-nginx-ingress)
-  7. [Uninstall Nginx](#uninstall-nginx)
+  6. [Uninstall NGINX ingress](#uninstall-nginx-ingress)
+  7. [Uninstall NGINX](#uninstall-nginx)
 
 
  To get repository information, enter the following Helm commands:
@@ -417,13 +417,13 @@ Verify that the Oracle SOA Suite domain application URLs are accessible through 
   ```
 >  Note: This is the default host name. If you have updated the host name in `value.yaml`, then use the updated values.
 
-####  Uninstall Nginx ingress
+####  Uninstall NGINX ingress
 Uninstall and delete the `ingress-nginx` deployment:
 
   ```bash
   $ helm delete soa-nginx-ingress  -n soans
   ```
-#### Uninstall Nginx
+#### Uninstall NGINX
 
    ```bash
    $ helm delete nginx-ingress -n soans

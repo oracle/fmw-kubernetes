@@ -569,9 +569,11 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
       ```
 
 1. Create the Kubernetes persistence volume and persistence volume claim.
+    >  **Notes:**
+    >  * If you are using Oracle WebCenter Content pre-built image, downloaded from My Oracle Support (MOS patch [32822360](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32822360)), then please use the below command to create the directory -
 
-   a. Create the Oracle WebCenter Content domain home directory.
-      Determine if a user already exists on your host system with `uid:gid` of `1000`:
+    a. Create the Oracle WebCenter Content domain home directory.
+      Determine if a user already exists on your host system with `uid:gid` of `1000:1000`:
       ```
       $ sudo getent passwd 1000
       ```
@@ -586,7 +588,17 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
       $ sudo mkdir /scratch/k8s_dir
       $ sudo chown -R 1000:1000 /scratch/k8s_dir
       ```
-
+    
+	>  **Notes:**
+    >  * If you choose to build Oracle WebCenter Content image, instead of downloading from My Oracle Support, then please use the below command to create the directory with updated user permission -
+	  ```
+	  #Determine if a user already exists on your host system with `uid:gid` of `1000:0`:
+	  $ sudo getent passwd 1000
+	  $ sudo useradd -u 1000 -g 0 oracle
+      $ sudo mkdir /scratch/k8s_dir
+      $ sudo chown -R 1000:0 /scratch/k8s_dir
+      ```
+	
     b. Update `create-pv-pvc-inputs.yaml` with the following values:
 
       * baseName: domain
