@@ -4783,9 +4783,9 @@
 </blockquote>
 <h3 id="import-ssl-certificate">Import SSL Certificate</h3>
 <p>Import the certificate using below sample command, update the keystore location to a directory under mount path of the domain persistent volume :</p>
-<pre><code>kubectl exec -it wcp-domain-adminserver -n wcpns /bin/bash
-cd $JAVA_HOME/bin
-./keytool -importcert -alias collab_cert -file /filepath/sslcertificate/contentcert.crt -keystore /u01/oracle/user_projects/domains/wcp-domain/DemoTrust.jks
+<pre><code>$ kubectl exec -it wcp-domain-adminserver -n wcpns /bin/bash
+$ cd $JAVA_HOME/bin
+$ ./keytool -importcert -alias collab_cert -file /filepath/sslcertificate/contentcert.crt -keystore /u01/oracle/user_projects/domains/wcp-domain/DemoTrust.jks
 
 </code></pre><h3 id="update-the-truststore">Update the TrustStore</h3>
 <p>To update the truststore location edit <code>domain.yaml</code> file, append <code>-Djavax.net.ssl.trustStore</code> to the <code>spec.serverPod.env.JAVA_OPTIONS</code> environment variable value. The truststore location used in <code>-Djavax.net.ssl.trustStore</code> option should be same as keystore location where the SSL certificate has been imported.</p>
