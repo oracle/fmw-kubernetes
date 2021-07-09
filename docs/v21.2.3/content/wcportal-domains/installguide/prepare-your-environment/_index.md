@@ -9,7 +9,7 @@ Set up the environment, including setting up a Kubernetes cluster and the Weblog
 
 1. [Install Helm](#install-helm)
 1. [Set Up your Kubernetes Cluster](#set-up-your-kubernetes-cluster)
-1. [Build Oracle WebCenter Portal Image](#build-oracle-webcenter-portal-image)
+1. [Obtain the Oracle WebCenter Portal Docker Image](#obtain-the-oracle-webcenter-portal-docker-image)
 1. [Pull Other Dependent Images](#pull-other-dependent-images)
 1. [Set Up the Code Repository to Deploy Oracle WebCenter Portal Domain](#set-up-the-code-repository-to-deploy-oracle-webcenter-portal-domain)
 1. [Grant Roles and Clear Stale Resources](#grant-roles-and-clear-stale-resources)
@@ -41,9 +41,27 @@ After creating Kubernetes clusters, you can optionally:
 * Create load balancers to direct traffic to backend domain
 * Configure Kibana and Elasticsearch for your operator logs
 
-### Build Oracle WebCenter Portal Image
+### Obtain the Oracle WebCenter Portal Docker Image
+The Oracle WebCenter Portal image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Portal image from My Oracle Support.
 
-Build Oracle WebCenter Portal 12.2.1.4 Image by following steps from this [document]({{< relref "/wcportal-domains/create-or-update-image/">}}).
+1. Download patch [32688937](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32688937) from My Oracle Support (MOS).
+
+1. Unzip the downloaded patch zip file.
+
+1. Load the image archive using the `docker load` command.
+
+    For example:
+    ```bash
+    $ docker load < wcportal-12.2.1.4.0-210326.0857.320.tar
+    Loaded image: oracle/wcportal:12.2.1.4.0-210326.0857.320
+    ```
+If you want to build and use an Oracle WebCenter Portal Docker image with any additional bundle patch or interim patches that are not part of the image obtained from My Oracle Support, then follow these [steps]({{< relref "/wcportal-domains/create-or-update-image/">}}) to create the image.
+
+>Note: The default Oracle WebCenter Portal image name used for Oracle WebCenter Portal domain deployment is `oracle/wcportal:12.2.1.4`. The image obtained must be tagged as `oracle/wcportal:12.2.1.4` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wcportal:12.2.1.4` image name is used.
+
+
+
+
 ### Pull Other Dependent Images
 
 Dependent images include WebLogic Kubernetes Operator, database, and Traefik. Pull these images and add them to your local registry:
