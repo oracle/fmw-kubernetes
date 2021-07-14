@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/21.2.3/css/nucleus.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/fontawesome-all.min.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/hybrid.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/featherlight.min.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/perfect-scrollbar.min.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/auto-complete.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/atom-one-dark-reasonable.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/theme.css?1625565560" rel="stylesheet">
-    <link href="/fmw-kubernetes/21.2.3/css/hugo-theme.css?1625565560" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/nucleus.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/fontawesome-all.min.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/hybrid.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/featherlight.min.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/perfect-scrollbar.min.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/auto-complete.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/atom-one-dark-reasonable.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/theme.css?1625810192" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.2.3/css/hugo-theme.css?1625810192" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/21.2.3/js/jquery-3.3.1.min.js?1625565560"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/jquery-3.3.1.min.js?1625810192"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/21.2.3/js/lunr.min.js?1625565560"></script>
-<script type="text/javascript" src="/fmw-kubernetes/21.2.3/js/auto-complete.js?1625565560"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.2.3/js/lunr.min.js?1625810192"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.2.3/js/auto-complete.js?1625810192"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/21.2.3";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/21.2.3/js/search.js?1625565560"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.2.3/js/search.js?1625810192"></script>
 
     
   </div>
@@ -1407,7 +1407,7 @@
       <ul>
         <li><a href="#install-helm">Install Helm</a></li>
         <li><a href="#set-up-your-kubernetes-cluster">Set Up your Kubernetes Cluster</a></li>
-        <li><a href="#build-oracle-webcenter-portal-image">Build Oracle WebCenter Portal Image</a></li>
+        <li><a href="#obtain-the-oracle-webcenter-portal-docker-image">Obtain the Oracle WebCenter Portal Docker Image</a></li>
         <li><a href="#pull-other-dependent-images">Pull Other Dependent Images</a></li>
         <li><a href="#set-up-the-code-repository-to-deploy-oracle-webcenter-portal-domain">Set Up the Code Repository to Deploy Oracle WebCenter Portal Domain</a></li>
         <li><a href="#grant-roles-and-clear-stale-resources">Grant Roles and Clear Stale Resources</a></li>
@@ -1450,7 +1450,7 @@
 <p><a href="#set-up-your-kubernetes-cluster">Set Up your Kubernetes Cluster</a></p>
 </li>
 <li>
-<p><a href="#build-oracle-webcenter-portal-image">Build Oracle WebCenter Portal Image</a></p>
+<p><a href="#obtain-the-oracle-webcenter-portal-docker-image">Obtain the Oracle WebCenter Portal Docker Image</a></p>
 </li>
 <li>
 <p><a href="#pull-other-dependent-images">Pull Other Dependent Images</a></p>
@@ -1483,8 +1483,26 @@
 <li>Create load balancers to direct traffic to backend domain</li>
 <li>Configure Kibana and Elasticsearch for your operator logs</li>
 </ul>
-<h3 id="build-oracle-webcenter-portal-image">Build Oracle WebCenter Portal Image</h3>
-<p>Build Oracle WebCenter Portal 12.2.1.4 Image by following steps from this <a href="/fmw-kubernetes/21.2.3/wcportal-domains/create-or-update-image/">document</a>.</p>
+<h3 id="obtain-the-oracle-webcenter-portal-docker-image">Obtain the Oracle WebCenter Portal Docker Image</h3>
+<p>The Oracle WebCenter Portal image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Portal image from My Oracle Support.</p>
+<ol>
+<li>
+<p>Download patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32688937">32688937</a> from My Oracle Support (MOS).</p>
+</li>
+<li>
+<p>Unzip the downloaded patch zip file.</p>
+</li>
+<li>
+<p>Load the image archive using the <code>docker load</code> command.</p>
+<p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker load &lt; wcportal-12.2.1.4.0-210326.0857.320.tar
+Loaded image: oracle/wcportal:12.2.1.4.0-210326.0857.320
+</code></pre></div></li>
+</ol>
+<p>If you want to build and use an Oracle WebCenter Portal Docker image with any additional bundle patch or interim patches that are not part of the image obtained from My Oracle Support, then follow these <a href="/fmw-kubernetes/21.2.3/wcportal-domains/create-or-update-image/">steps</a> to create the image.</p>
+<blockquote>
+<p>Note: The default Oracle WebCenter Portal image name used for Oracle WebCenter Portal domain deployment is <code>oracle/wcportal:12.2.1.4</code>. The image obtained must be tagged as <code>oracle/wcportal:12.2.1.4</code> using the <code>docker tag</code> command. If you want to use a different name for the image, make sure to update the new image tag name in the <code>create-domain-inputs.yaml</code> file and also in other instances where the <code>oracle/wcportal:12.2.1.4</code> image name is used.</p>
+</blockquote>
 <h3 id="pull-other-dependent-images">Pull Other Dependent Images</h3>
 <p>Dependent images include WebLogic Kubernetes Operator, database, and Traefik. Pull these images and add them to your local registry:</p>
 <ol>
@@ -2666,19 +2684,19 @@ those schemas. You must set up the database before you create your domain.</p>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/21.2.3/js/clipboard.min.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/perfect-scrollbar.min.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/perfect-scrollbar.jquery.min.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/jquery.sticky.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/featherlight.min.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/highlight.pack.js?1625565560"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/clipboard.min.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/perfect-scrollbar.min.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/perfect-scrollbar.jquery.min.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/jquery.sticky.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/featherlight.min.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/highlight.pack.js?1625810192"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/21.2.3/js/modernizr.custom-3.6.0.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/learn.js?1625565560"></script>
-    <script src="/fmw-kubernetes/21.2.3/js/hugo-learn.js?1625565560"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/modernizr.custom-3.6.0.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/learn.js?1625810192"></script>
+    <script src="/fmw-kubernetes/21.2.3/js/hugo-learn.js?1625810192"></script>
 
-    <link href="/fmw-kubernetes/21.2.3/mermaid/mermaid.css?1625565560" rel="stylesheet" />
-    <script src="/fmw-kubernetes/21.2.3/mermaid/mermaid.js?1625565560"></script>
+    <link href="/fmw-kubernetes/21.2.3/mermaid/mermaid.css?1625810192" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.2.3/mermaid/mermaid.js?1625810192"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

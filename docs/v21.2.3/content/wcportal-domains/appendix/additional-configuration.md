@@ -42,5 +42,5 @@ serverPod:
 Apply the `domain.yaml` file to restart the Oracle WebCenter Portal domain.
 
 ```bash
-kubectl apply -f domain.yaml
+$ kubectl apply -f domain.yaml
 ```
