@@ -109,7 +109,7 @@ Creating an Oracle WebCenter Sites Docker image using the WebLogic Image Tool re
     ```bash
     $ mkdir -p imagetool-setup/docker-images/OracleWebCenterSites/imagetool/12.2.1.4
     $ cd imagetool-setup/docker-images/OracleWebCenterSites/imagetool/12.2.1.4
-    $ cp -rf ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts/* .
+    $ cp -rf ${WORKDIR}/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/imagetool-scripts/* .
     ```
 
 #### Create an image
@@ -157,7 +157,7 @@ Following is the list of installation binaries and patches required for 21.1.1 r
 
 ##### Update required build files
 
-The following files available in the code repository location `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts` are used for creating the image.
+The following files available in the code repository location `${WORKDIR}/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/imagetool-scripts` are used for creating the image.
 
 * `additionalBuildCmds.txt`
 * `buildArgs`
