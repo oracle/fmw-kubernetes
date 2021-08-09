@@ -52,7 +52,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ export docker_dir=/u01/docker
     $ export kubelet_dir=/u01/kubelet
     $ mkdir -p $docker_dir $kubelet_dir
-    $ ln -s kubelet_dir /var/lib/kubelet
+    $ ln -s $kubelet_dir /var/lib/kubelet
     ```
 
 1. Verify that IPv4 forwarding is enabled on your host.
@@ -452,13 +452,43 @@ Follow [these steps]({{< relref "/wcsites-domains/installguide/prepare-your-envi
 
     ```
     $ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.0.1
+    $ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.0.1 oracle/weblogic-kubernetes-operator:3.0.1
     ```
 
 1. Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4)
 
 1. Copy all the above built and pulled images to all the nodes in your cluster or add to a Docker registry that your cluster can access.
     
+#### 3.3 Set Up the Code Repository to Deploy Oracle WebCenter Sites Domain
 
+Oracle WebCenter Sites domain deployment on Kubernetes leverages the Oracle WebLogic Kubernetes Operator infrastructure. For deploying the Oracle WebCenter Sites domain, you need to set up the deployment scripts as below:
+
+1. Create a working directory to set up the source code.
+   ```bash
+   $ mkdir ${WORKDIR}
+   $ cd ${WORKDIR}
+   ```
+
+1. Download the supported version of Oracle WebLogic Kubernetes Operator source code archieve file (`.zip`/`.tar.gz`) from the operator [relases page](https://github.com/oracle/weblogic-kubernetes-operator/releases). Currently supported operator version can be downloaded from [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/archive/v3.0.1.zip).
+
+1. Extract the source code archive file (`.zip`/`.tar.gz`) in to the work directory.
+
+1. Download the WebCenter Sites kubernetes deployment scripts from this [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to WebLogic operator samples location.
+
+   ```bash
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-wcsites-domain  ${WORKDIR}/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
+   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
+   ```
+
+You can now use the deployment scripts from `<work directory>/weblogic-kubernetes-operator-3.0.1` to set up the WebCenter Sites domain as further described in this document.
+
+This will be your home directory for runnning all the required scripts.
+
+```bash
+$ cd ${WORKDIR}/weblogic-kubernetes-operator-3.0.1
+```    
+    
 ### 4. Install the WebLogic Kubernetes Operator
 
 #### 4.1 Prepare for the WebLogic Kubernetes Operator.
