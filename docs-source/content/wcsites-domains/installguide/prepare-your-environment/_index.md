@@ -24,7 +24,7 @@ This document describes the steps to set up the environment that includes settin
 
 #### Set Up your Kubernetes Cluster
 
-If you need help in setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup).
+If you need help in setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/kubernetes/k8s-setup).
 
 After creating Kubernetes clusters, you can optionally:
 
@@ -35,6 +35,26 @@ After creating Kubernetes clusters, you can optionally:
 
 Build Oracle WebCenter Sites 12.2.1.4 Image by following steps from this [document](https://oracle.github.io/fmw-kubernetes/wcsites-domains/create-or-update-image/#create-an-image).
 
+Alternatively, the Oracle WebCenter Sites Image with latest bundle patch can be obtained from My Oracle Support (MOS).
+
+1. Download patch [32847300](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32847300) from My Oracle Support (MOS).
+
+1. Unzip the downloaded zip file.
+
+	For example:
+    ```bash
+    $ unzip  p32847300_122140_Linux-x86-64.zip
+    ```
+
+1. Load the image archive using the `docker load` command.
+
+	For example:
+    ```bash
+    $ docker load < wcsites-20210422.tar.gz
+    ```
+
+> Note: The default Oracle WebCenter Sites image name used for Oracle WebCenter Sites domains deployment is `oracle/wcsites:12.2.1.4-21.1.1`. The image obtained must be tagged as `oracle/wcsites:12.2.1.4-21.1.1` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wcsites:12.2.1.4-21.1.1` image name is used.
+	
 #### Pull Other Dependent Images
 
 Dependent images include WebLogic Kubernetes Operator, and Traefik. Pull these images and add them to your local registry:
@@ -89,7 +109,8 @@ Oracle WebCenter Sites domain deployment on Kubernetes leverages the Oracle WebL
 
    ```bash
    $ git clone https://github.com/oracle/fmw-kubernetes.git
-   $ cp -rf <work directory>/fmw-kubernetes/OracleWebCenterSites/kubernetes/3.0.1/create-wcsites-domain  <work directory>/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
+   $ cp -rf <work directory>/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-wcsites-domain  <work directory>/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
+   $ cp -rf <work directory>/fmw-kubernetes/OracleWebCenterSites/kubernetes/imagetool-scripts  <work directory>/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
    ```
 
 You can now use the deployment scripts from `<work directory>/weblogic-kubernetes-operator-3.0.1` to set up the WebCenter Sites domain as further described in this document.
@@ -145,7 +166,7 @@ $ cd <work directory>/weblogic-kubernetes-operator-3.0.1
 	> Helm install weblogic-operator
 
 	```bash
-	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
+	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set image=oracle/weblogic-kubernetes-operator:3.0.1 --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
  
  
 	NAME: weblogic-kubernetes-operator
@@ -277,7 +298,7 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     
     ```bash
     $ sh kubernetes/samples/scripts/create-rcu-credentials/create-rcu-credentials.sh \
-        -u WCS1 -p Welcome1 -a sys -q Oradoc_db1 -n wcsites-ns \
+        -u WCS1 -p Welcome##1 -a sys -q Welcome##1 -n wcsites-ns \
         -d wcsitesinfra -s wcsitesinfra-rcu-credentials
      
     secret/wcsitesinfra-rcu-credentials created
@@ -287,8 +308,8 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     Where:
     
        * WCS1                             is the schema user
-       * Welcome1                         is the schema password
-       * Oradoc_db1                       is the database SYS users password
+       * Welcome##1                       is the schema password
+       * Welcome##1                       is the database SYS users password
        * wcsitesinfra                     is the domain name
        * wcsites-ns                       is the domain namespace
        * wcsitesinfra-rcu-credentials     is the secret name
@@ -378,4 +399,4 @@ Oracle WebCenter Sites domains require a database with the necessary schemas ins
 
 For production deployments, you must set up and use the standalone (non-container) based database running outside of Kubernetes.
 
-Before creating a domain, you will need to set up the necessary schemas in your database.
+Before creating a domain, you need to set up the necessary schemas in your database.

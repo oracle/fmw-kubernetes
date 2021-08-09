@@ -66,7 +66,7 @@ The following parameters can be provided in the inputs file:
 | `domainUID` | Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name. | `wcsitesinfra` |
 | `exposeAdminNodePort` | Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster. | `false` |
 | `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `false` |
-| `image` | WebCenter Sites Docker image. The Operator requires WebCenter Sites release 12.2.1.4.0. Refer to [WebCenter Sites Docker image](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4) for details on how to obtain or create the image. | `oracle/wcsites:12.2.1.4-21.1.1` |
+| `image` | WebCenter Sites Docker image. The Operator requires WebCenter Sites release 12.2.1.4.0. Refer to [WebCenter Sites Docker image](https://oracle.github.io/fmw-kubernetes/wcsites-domains/installguide/prepare-your-environment/#build-oracle-webcenter-sites-image) for details on how to obtain or create the image. | `oracle/wcsites:12.2.1.4-21.1.1` |
 | `imagePullPolicy` | WebLogic Docker image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
 | `imagePullSecretName` | Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret will be validated when this parameter is specified. |  |
 | `includeServerOutInPodLog` | Boolean indicating whether to include the server.out to the pod's stdout. | `true` |
@@ -615,4 +615,4 @@ wcsitesinfra-wcsites-server1-np   NodePort   10.105.167.205   <none>        8001
 
 #### Customization
 
-A customer specific customizations (extend.sites.webapp-lib.war) has to be placed in sites-home directory inside your domain mount path. 
+A customer specific customizations (extend.sites.webapp-lib.war) has to be placed in `sites-home` directory inside your domain mount path (/scratch/K8SVolume/WCSites/sites-home). 
