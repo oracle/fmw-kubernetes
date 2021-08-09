@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="Understand the system requirements and limitations for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes operator, including the SOA cluster sizing recommendations.">
+    <meta name="description" content="Understand the system requirements and limitations for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes Operator, including the SOA cluster sizing recommendations.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
@@ -12,18 +12,18 @@
     <title>Requirements and limitations :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1625810191" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1625810191" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1628488446" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1628488446" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1625810191"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.3.1.min.js?1628488446"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -53,14 +53,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1625810191"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1625810191"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1628488446"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1628488446"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1625810191"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1628488446"></script>
 
     
   </div>
@@ -4776,9 +4776,9 @@
 
 
 
-	<p>This section provides information about the system requirements and limitations for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes operator.</p>
+	<p>This section provides information about the system requirements and limitations for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes Operator.</p>
 <h3 id="system-requirements-for-oracle-soa-suite-domains">System requirements for Oracle SOA Suite domains</h3>
-<p>For the current production release 21.2.2:</p>
+<p>For the current production release 21.3.2:</p>
 <ul>
 <li>Operating systems supported:
 <ul>
@@ -4788,11 +4788,11 @@
 </ul>
 </li>
 <li>Kubernetes 1.16.15+, 1.17.13+, 1.18.10+, and 1.19.7+ (check with <code>kubectl version</code>).</li>
-<li>Docker 18.09.1ce, 19.03.1 (check with <code>docker version</code>) or CRI-O 1.14.7 (check with <code>crictl version | grep RuntimeVersion</code>).</li>
+<li>Docker 18.09.1ce, 19.03.1 (check with <code>docker version</code>) or CRI-O 1.17.0 (check with <code>crictl version | grep RuntimeVersion</code>).</li>
 <li>Flannel networking v0.9.1-amd64 or later (check with <code>docker images | grep flannel</code>), Calico networking v3.16.1 or later.</li>
 <li>Helm 3.3.4+ (check with <code>helm version --client --short</code>).</li>
 <li>WebLogic Kubernetes Operator 3.2.1 (see <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.2.1">operator releases</a> page).</li>
-<li>Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32794257">32794257</a>). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.</li>
+<li>Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33125465">33125465</a>). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.</li>
 <li>You must have the <code>cluster-admin</code> role to install the operator. The operator does not need the <code>cluster-admin</code> role at runtime.</li>
 <li>We do not currently support running SOA in non-Linux containers.</li>
 <li>Additionally, see the Oracle SOA Suite <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/insoa/preparing-install-and-configure-product.html#GUID-E2D4D481-BE80-4600-8078-FD9C03A30210">documentation</a> for other requirements such as database version.</li>
@@ -8017,19 +8017,19 @@ currently supports WebLogic MBean trees only. Support for JRF and Oracle SOA Sui
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1625810191"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1628488446"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1625810191"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1625810191"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1628488446"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1628488446"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1625810191" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1625810191"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1628488446" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1628488446"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
