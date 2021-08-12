@@ -1,0 +1,171 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a responsefile for IDM Provisioning on Kubernetes
+#
+# Products to Configure
+#
+INSTALL_OUDSM=true
+INSTALL_OUD=true
+INSTALL_OAM=true
+INSTALL_OIG=true
+
+#imagefile=/docker/scripts/software_versions.txt
+
+# Docker Image Download Location
+#
+IMAGE_DIR=/docker/images
+
+# Local Work Directories
+
+LOCAL_WORKDIR=/docker/workdir
+K8_WORKDIR=/u01/oracle/user_projects/workdir
+K8_WORKER_HOST1=k8worker1.example.com
+K8_WORKER_HOST2=k8worker2.example.com
+
+# Product Namespaces
+OAMNS=oamns
+OUDNS=oudns
+OIGNS=oigns
+OPERNS=opns
+
+# OUD Parameters
+#
+OUD_SHARE=/export/IDMPVS/OUD
+OUD_CONFIG_SHARE=/export/IDMPVS/OUDCONFIG
+OUD_LOCAL_SHARE=/docker_volumes/oudconfig
+OUD_LOCAL_PVSHARE=/docker_volumes/oud
+OUD_ADMIN_USER=cn=oudadmin
+OUD_ADMIN_PWD=Mypassword1
+OUD_POD_PREFIX=edg
+OUD_REPLICAS=1
+
+OUD_SEARCHBASE=dc=example,dc=com
+OUD_REGION=example
+OUD_GROUP_SEARCHBASE=cn=Groups,dc=example,dc=com
+OUD_USER_SEARCHBASE=cn=Users,dc=example,dc=com
+OUD_RESERVE_SEARCHBASE=cn=Reserve,dc=example,dc=com
+OUD_SYSTEMIDS=systemids
+OUD_OAMADMIN_USER=oamadmin
+OUD_OIGADMIN_GRP=OIMAdministrators
+OUD_OAMADMIN_GRP=OAMAdministrators
+OUD_WLSADMIN_GRP=WLSAdministrators
+OUD_OAMLDAP_USER=oamLDAP
+OUD_OIGLDAP_USER=oimLDAP
+OUD_WLSADMIN_USER=weblogic_iam
+OUD_XELSYSADM_USER=xelsysadm
+OUD_USER_PWD=Mypassword1
+OUD_PWD_EXPIRY=2022-01-02
+
+OUD_CREATE_NODEPORT=true
+OUD_LDAP_K8=31389
+OUD_LDAPS_K8=31636
+
+
+#
+
+# Weblogic Operator Parameters
+# 
+NS_WLSOPER=wlsoper
+OPER_ACT=operadmin
+OPER_IMAGE=ghcr.io/oracle/weblogic-kubernetes-operator
+OPER_VER=3.0.1
+
+# Generic Parameters
+#
+# Name of Shared Storage where Persistant Volumes are defined
+#
+PVSERVER=192.168.1.1
+IAM_PVS=/export/IDMPVS
+PV_MOUNT=/u01/oracle/user_projects
+
+# 
+# OUDSM Parameters
+#
+OUDSM_USER=weblogic
+OUDSM_PWD=Mypassword1
+OUDSM_SHARE=/export/IDMPVS/OUDSM
+OUDSM_LOCAL_SHARE=/docker_volumes/oudsm
+OUDSM_SERVICE_PORT=30901
+
+# 
+# OAM Parameters
+#
+OAM_SHARE=/export/IDMPVS/OAM
+OAM_LOCAL_SHARE=/docker_volumes/oam/
+OAM_SERVER_COUNT=5
+OAM_SERVER_INITIAL=2
+OAM_ADMIN_PORT=7001
+OAM_ADMIN_K8=30701
+OAM_OAM_K8=30410
+OAM_POLICY_K8=30510
+OAM_DB_SCAN=dbscan.example.com
+OAM_DB_LISTENER=1521
+OAM_DB_SERVICE=iadedg.example.com
+OAM_RCU_PREFIX=IADEDG
+OAM_DB_SYS_PWD=SysPassword
+OAM_SCHEMA_PWD=MyPassword1
+OAM_WEBLOGIC_USER=weblogic
+OAM_WEBLOGIC_PWD=MyPassword1
+OAM_DOMAIN_NAME=accessdomain
+OAM_LOGIN_LBR_HOST=login.example.com
+OAM_LOGIN_LBR_PORT=443
+OAM_LOGIN_LBR_PROTOCOL=https
+OAM_ADMIN_LBR_HOST=iadadmin.example.com
+OAM_ADMIN_LBR_PORT=80
+OAM_COOKIE_DOMAIN=.example.com
+
+OAM_OAP_HOST=k8worker1.example.com
+OAM_OAP_PORT=5575
+OAM_OAP_SERVICE_PORT=30540
+OAM_OIG_INTEG=true
+
+OAM_OAMADMIN_USER=$OUD_OAMADMIN_USER
+OAM_OAMADMIN_PWD=$OUD_USER_PWD
+
+OAMSERVER_JAVA_PARAMS="-Xms2048m -Xmx8192m "
+
+#OIG Parameters
+#
+CONNECTOR_DIR=/docker/OIM/connectors/
+OIG_SHARE=/export/IDMPVS/OIG
+OIG_LOCAL_SHARE=/docker_volumes/oig
+OIG_SERVER_COUNT=2
+OIG_SERVER_INITIAL=2
+OIG_DOMAIN_NAME=governancedomain
+OIG_ADMIN_PORT=7101
+OIG_ADMIN_K8=30711
+OIG_DB_SCAN=dbscan.example.com
+OIG_DB_LISTENER=1521
+OIG_DB_SERVICE=igdedg.example.com
+OIG_RCU_PREFIX=IGDEDG
+OIG_DB_SYS_PWD=SysPassword
+OIG_SCHEMA_PWD=MyPassword1
+OIG_WEBLOGIC_USER=weblogic
+OIG_WEBLOGIC_PWD=MyPassword1
+OIG_ADMIN_LBR_HOST=igdadmin.example.com
+OIG_ADMIN_LBR_PORT=80
+OIG_LBR_HOST=prov.example.com
+OIG_LBR_PORT=443
+OIG_LBR_PROTOCOL=https
+OIG_LBR_INT_HOST=igdinternal.example.com
+OIG_LBR_INT_PORT=7777
+OIG_LBR_INT_PROTOCOL=http
+OIG_OIM_PORT_K8=30140
+OIG_OIM_T3_PORT_K8=30142
+OIG_SOA_PORT_K8=30801
+OIG_ENABLE_T3=false
+OIG_BI_INTEG=true
+OIG_BI_HOST=bi.example.com
+OIG_BI_PORT=443
+OIG_BI_PROTOCOL=https
+OIG_BI_USER=idm_report
+OIG_BI_USER_PWD=Mypassword1
+
+OIMSERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
+
+# OHS Parameters
+# 
+OHS_HOST1=webhost1.example.com
+OHS_HOST2=webhost2.example.com
+OHS_PORT=7777
