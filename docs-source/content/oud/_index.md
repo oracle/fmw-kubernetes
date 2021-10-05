@@ -2,7 +2,7 @@
 title: "Oracle Unified Directory"
 date: 2019-02-23T16:43:45-05:00
 description: "Oracle Unified Directory provides a comprehensive Directory Solution for robust Identity Management"
-weight: 4
+weight: 2
 ---
 
 Oracle Unified Directory provides a comprehensive Directory Solution for robust Identity Management.
@@ -25,6 +25,8 @@ Follow the instructions in this guide to set up Oracle Unified Directory on Kube
 ### Getting started
 
 For detailed information about deploying Oracle Unified Directory, start at [Prerequisites]({{< relref "/oud/prerequisites">}}) and follow this documentation sequentially.
+
+If performing an Enterprise Deployment, refer to the [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/index.html) instead.
 
 ### Current release
 

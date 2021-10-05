@@ -1,14 +1,10 @@
-+++
-title = "a. Using Design Console with Voyager(non-SSL)"
-description = "Configure Design Console with Voyager(non-SSL)."
-+++
+---
+title: "c. Using Design Console with Voyager(non-SSL)"
+weight: 3
+description: "Configure Design Console with Voyager(non-SSL)."
+---
 
 Configure a Voyager ingress (non-SSL) to allow Design Console to connect to your Kubernetes cluster.
-
-{{% notice note %}}
-Design Console is not installed as part of the OAM Kubernetes cluster so must be installed on a seperate client before following the steps below.
-{{% /notice %}}
-
 
 ### Add the Voyager ingress using helm
 
@@ -86,7 +82,7 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
    $ vi values.yaml
    ```
 
-   Edit `values.yaml` and ensure that `type=VOYAGER` and `tls=NONSSL` are set, and that `webPort` and `statsPort` are set to free ports, for example:
+   Edit `values.yaml` and ensure that `type=VOYAGER`, `tls=NONSSL` and `domainUID: governancedomain are set, and that `webPort` and `statsPort` are set to free ports, for example:
    
    ```
    $ cat values.yaml
@@ -108,7 +104,7 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
 
    # WLS domain as backend to the load balancer
    wlsDomain:
-     domainUID: oimcluster
+     domainUID: governancedomain
      oimClusterName: oim_cluster
      oimServerT3Port: 14001
 
@@ -126,22 +122,22 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
    
    ```
    $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install oimcluster-voyager-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+   $ helm install governancedomain-voyager-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oigns  --values kubernetes/samples/charts/design-console-ingress/values.yaml
    ```
   
    For example:
    
    ```
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm install oimcluster-voyager-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+   $ helm install governancedomain-voyager-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oigns  --values kubernetes/samples/charts/design-console-ingress/values.yaml
    ```
    
    The output will look similar to the following:
 
    ```
-   NAME: oimcluster-voyager-designconsole
+   NAME: governancedomain-voyager-designconsole
    LAST DEPLOYED: Wed Oct 21 08:36:03 2020
-   NAMESPACE: oimcluster
+   NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -157,34 +153,34 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
    For example:
    
    ```
-   $ kubectl get ingress.voyager.appscode.com -n oimcluster
+   $ kubectl get ingress.voyager.appscode.com -n oigns
    ```
    
    The output will look similar to the following:
 
    ```  
-   NAME                               HOSTS   LOAD_BALANCER_IP   AGE
-   oimcluster-voyager-designconsole   *                          10s
+   NAME                                     HOSTS   LOAD_BALANCER_IP   AGE
+   governancedomain-voyager-designconsole   *                          10s
    ```
    
 1. Return details of the ingress using the following command:
 
    ```
-   $ kubectl describe ingress.voyager.appscode.com oimcluster-voyager-designconsole -n oimcluster
+   $ kubectl describe ingress.voyager.appscode.com governancedomain-voyager-designconsole -n oigns
    ```
    
    The output will look similar to the following:
    
    ```
-   Name:         oimcluster-voyager-designconsole
-   Namespace:    oimcluster
+   Name:         governancedomain-voyager-designconsole
+   Namespace:    oigns
    Labels:       app.kubernetes.io/managed-by=Helm
                  weblogic.resourceVersion=domain-v2
    Annotations:  ingress.appscode.com/affinity: cookie
                  ingress.appscode.com/stats: true
                  ingress.appscode.com/type: NodePort
-                 meta.helm.sh/release-name: oimcluster-voyager-designconsole
-                 meta.helm.sh/release-namespace: oimcluster
+                 meta.helm.sh/release-name: governancedomain-voyager-designconsole
+                 meta.helm.sh/release-namespace: oigns
    API Version:  voyager.appscode.com/v1beta1
    Kind:         Ingress
    Metadata:
@@ -215,7 +211,7 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
        Operation:       Update
        Time:            2020-10-21T15:46:29Z
      Resource Version:  6082128
-     Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/oimcluster/ingresses/oimcluster-voyager-designconsole
+     Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/oigns/ingresses/governancedomain-voyager-designconsole
      UID:               a4968c01-28eb-4e4a-ac31-d60cfcd8705f
    Spec:
      Frontend Rules:
@@ -228,19 +224,112 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
          Node Port:  30325
          Paths:
            Backend:
-             Service Name:  oimcluster-cluster-oim-cluster
+             Service Name:  governancedomain-cluster-oim-cluster
              Service Port:  14001
            Path:            /
      Tls:
        Hosts:
          *
-       Secret Name:  oimcluster-tls-cert
+       Secret Name:  governancedomain-tls-cert
    Events:
      Type     Reason                           Age   From              Message
      ----     ------                           ----  ----              -------
-     Normal  DeploymentReconcileSuccessful  55m   voyager-operator  Successfully patched HAProxy Deployment voyager-oimcluster-voyager-designconsole
-     Normal  DeploymentReconcileSuccessful  45m   voyager-operator  Successfully patched HAProxy Deployment voyager-oimcluster-voyager-designconsole
+     Normal  DeploymentReconcileSuccessful  55m   voyager-operator  Successfully patched HAProxy Deployment voyager-governancedomain-voyager-designconsole
+     Normal  DeploymentReconcileSuccessful  45m   voyager-operator  Successfully patched HAProxy Deployment voyager-governancedomain-voyager-designconsole
    ```   
+
+
+### Design Console Client
+
+It is possible to use Design Console from an on-premises install, or from a container image.
+
+#### Using an on-premises installed Design Console
+
+1. Install Design Console on an on-premises machine
+
+1. Follow [Login to the Design Console](../using-the-design-console-with-voyager-ssl/#login-to-the-design-console).
+
+#### Using a container image for Design Console
+
+The Design Console can be run from a container using X windows emulation.
+
+1. On the parent machine where the Design Console is to be displayed, run `xhost+`.
+
+1. Execute the following command to start a container to run Design Console:
+
+   ```
+   $ docker run -u root --name oigdcbase -it <image> bash
+   ```
+   
+   For example:
+   
+   ```
+   $ docker run -u root -it --name oigdcbase oracle/oig:12.2.1.4.0 bash
+   ```
+
+   This will take you into a bash shell inside the container:
+   
+   ```
+   bash-4.2#
+   ```
+   
+1. Inside the container set the proxy, for example:
+
+   ```
+   bash-4.2# export https_proxy=http://proxy.example.com:80
+   ```
+
+1. Install the relevant X windows packages in the container:
+
+   ```
+   bash-4.2# yum install libXext libXrender libXtst
+   ```
+   
+1. Execute the following outside the container to create a new Design Console image from the container:
+
+   ```
+   $ docker commit <container_name> <design_console_image_name>
+   ```
+   
+   For example:
+   
+   ```
+   $ docker commit oigdcbase oigdc
+   ```
+   
+1. Exit the container bash session:
+
+   ```
+   bash-4.2# exit
+   ```
+   
+1. Start a new container using the Design Console image:
+
+   ```
+   $ docker run --name oigdc -it oigdc /bin/bash
+   ```
+   
+   This will take you into a bash shell for the container:
+   
+   ```
+   bash-4.2#
+   ```
+   
+1. In the container run the following to export the DISPLAY:
+
+   ```
+   $ export DISPLAY=<parent_machine_hostname:1>
+   ```   
+
+1. Start the Design Console from the container:
+
+   ```
+   bash-4.2# cd idm/designconsole
+   bash-4.2# sh xlclient.sh
+   ```
+   
+   The Design Console login should be displayed. Now follow **Login to the Design Console**.
+
    
 #### Login to the Design Console
 

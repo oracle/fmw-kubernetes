@@ -1,7 +1,7 @@
 +++
 title = "Manage OAM Domains"
-weight = 8 
-pre = "<b>8. </b>"
+weight = 9 
+pre = "<b>9. </b>"
 description=  "This document provides steps to manage the OAM domain."
 +++
 

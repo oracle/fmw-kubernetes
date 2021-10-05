@@ -18,7 +18,7 @@ If the OAM domain creation fails when running `create-domain.sh`, run the follow
    For example:
    
    ```bash
-   $ kubectl logs accessinfra-create-fmw-infra-sample-domain-job-c6vfb -n accessns
+   $ kubectl logs accessdomain-create-fmw-infra-sample-domain-job-c6vfb -n oamns
    ```
    
    Also run:
@@ -30,7 +30,7 @@ If the OAM domain creation fails when running `create-domain.sh`, run the follow
    For example:
    
    ```bash
-   $ kubectl describe pod accessinfra-create-fmw-infra-sample-domain-job-c6vfb -n accessns
+   $ kubectl describe pod accessdomain-create-fmw-infra-sample-domain-job-c6vfb -n oamns
    ```
    
    Using the output you should be able to diagnose the problem and resolve the issue. 

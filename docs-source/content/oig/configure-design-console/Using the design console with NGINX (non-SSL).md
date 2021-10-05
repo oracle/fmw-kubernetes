@@ -1,12 +1,13 @@
-+++
-title = "a. Using Design Console with NGINX(non-SSL)"
-description = "Configure Design Console with NGINX(non-SSL)."
-+++
+---
+title: "a. Using Design Console with NGINX(non-SSL)"
+weight: 1
+description: "Configure Design Console with NGINX(non-SSL)."
+---
 
 Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your Kubernetes cluster.
 
 {{% notice note %}}
-Design Console is not installed as part of the OAM Kubernetes cluster so must be installed on a seperate client before following the steps below.
+Design Console is not installed as part of the OIG Kubernetes cluster so must be installed on a seperate client before following the steps below.
 {{% /notice %}}
 
 
@@ -64,7 +65,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    a) Using NodePort
 
    ```
-   $ helm install nginx-dc-operator stable/ingress-nginx -n nginx --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false --set controller.service.nodePorts.http=30315 --set controller.ingressClass=nginx-designconsole
+   $ helm install nginx-dc-operator stable/ingress-nginx -n nginx --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false --set controller.service.nodePorts.http=30315 --set controller.ingressClass=nginx-designconsole --version=3.34.0
    ```    
 
    The output will look similar to the following:
@@ -126,7 +127,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    b) Using LoadBalancer
 
    ```
-   $ helm install nginx-dc-operator stable/ingress-nginx -n nginx --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false
+   $ helm install nginx-dc-operator stable/ingress-nginx -n nginx --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false --version=3.34.0
    ```
 
    The output will look similar to the following:
@@ -189,7 +190,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    $ vi values.yaml
    ```
 
-   Edit `values.yaml` and ensure that `type=NGINX` and `tls=NONSSL` are set, for example:
+   Edit `values.yaml` and ensure that `type: NGINX`, `tls: NONSSL`  and `domainUID: governancedomain` are set, for example:
    
    ```
    $ cat values.yaml
@@ -211,7 +212,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    # WLS domain as backend to the load balancer
    wlsDomain:
-     domainUID: oimcluster
+     domainUID: governancedomain
      oimClusterName: oim_cluster
      oimServerT3Port: 14001
 
@@ -229,22 +230,22 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    
    ```
    $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+   $ helm install governancedomain-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oigns  --values kubernetes/samples/charts/design-console-ingress/values.yaml
    ```
   
    For example:
    
    ```
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+   $ helm install governancedomain-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oigns  --values kubernetes/samples/charts/design-console-ingress/values.yaml
    ```
    
    The output will look similar to the following:
 
    ```
-   NAME: oimcluster-nginx-designconsole
+   NAME: governancedomain-nginx-designconsole
    LAST DEPLOYED: Tue Oct 20 08:01:47 2020
-   NAMESPACE: oimcluster
+   NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -253,39 +254,130 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 1. Run the following command to show the ingress is created successfully:
 
    ```
-   $ kubectl describe ing oimcluster-nginx-designconsole -n <domain_namespace>
+   $ kubectl describe ing governancedomain-nginx-designconsole -n <domain_namespace>
    ```
    
    For example:
    
    ```
-   $ kubectl describe ing oimcluster-nginx-designconsole -n oimcluster
+   $ kubectl describe ing governancedomain-nginx-designconsole -n oigns
    ```
    
    The output will look similar to the following:
 
    ```  
-   Name:             oimcluster-nginx-designconsole
-   Namespace:        oimcluster
+   Name:             governancedomain-nginx-designconsole
+   Namespace:        oigns
    Address:          10.99.240.21
    Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
    Rules:
      Host        Path  Backends
      ----        ----  --------
      *
-                    oimcluster-cluster-oim-cluster:14001 ()
+                    governancedomain-cluster-oim-cluster:14001 ()
    Annotations:  kubernetes.io/ingress.class: nginx-designconsole
-                 meta.helm.sh/release-name: oimcluster-nginx-designconsole
-                 meta.helm.sh/release-namespace: oimcluster
+                 meta.helm.sh/release-name: governancedomain-nginx-designconsole
+                 meta.helm.sh/release-namespace: oigns
                  nginx.ingress.kubernetes.io/affinity: cookie
                  nginx.ingress.kubernetes.io/enable-access-log: false
    Events:
      Type    Reason  Age   From                      Message
      ----    ------  ----  ----                      -------
-     Normal  CREATE  117s  nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx-designconsole
-     Normal  UPDATE  64s   nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx-designconsole
+     Normal  CREATE  117s  nginx-ingress-controller  Ingress oigns/governancedomain-nginx-designconsole
+     Normal  UPDATE  64s   nginx-ingress-controller  Ingress oigns/governancedomain-nginx-designconsole
+   ```
+
+   
+### Design Console Client
+
+It is possible to use Design Console from an on-premises install, or from a container image.
+
+#### Using an on-premises installed Design Console
+
+1. Install Design Console on an on-premises machine
+
+1. Follow [Login to the Design Console](../using-the-design-console-with-nginx-ssl/#login-to-the-design-console).
+
+#### Using a container image for Design Console
+
+The Design Console can be run from a container using X windows emulation.
+
+1. On the parent machine where the Design Console is to be displayed, run `xhost+`.
+
+1. Execute the following command to start a container to run Design Console:
+
+   ```
+   $ docker run -u root --name oigdcbase -it <image> bash
    ```
    
+   For example:
+   
+   ```
+   $ docker run -u root -it --name oigdcbase oracle/oig:12.2.1.4.0 bash
+   ```
+
+   This will take you into a bash shell inside the container:
+   
+   ```
+   bash-4.2#
+   ```
+   
+1. Inside the container set the proxy, for example:
+
+   ```
+   bash-4.2# export https_proxy=http://proxy.example.com:80
+   ```
+
+1. Install the relevant X windows packages in the container:
+
+   ```
+   bash-4.2# yum install libXext libXrender libXtst
+   ```
+   
+1. Execute the following outside the container to create a new Design Console image from the container:
+
+   ```
+   $ docker commit <container_name> <design_console_image_name>
+   ```
+   
+   For example:
+   
+   ```
+   $ docker commit oigdcbase oigdc
+   ```
+   
+1. Exit the container bash session:
+
+   ```
+   bash-4.2# exit
+   ```
+   
+1. Start a new container using the Design Console image:
+
+   ```
+   $ docker run --name oigdc -it oigdc /bin/bash
+   ```
+   
+   This will take you into a bash shell for the container:
+   
+   ```
+   bash-4.2#
+   ```
+   
+1. In the container run the following to export the DISPLAY:
+
+   ```
+   $ export DISPLAY=<parent_machine_hostname:1>
+   ```   
+
+1. Start the Design Console from the container:
+
+   ```
+   bash-4.2# cd idm/designconsole
+   bash-4.2# sh xlclient.sh
+   ```
+   
+   The Design Console login should be displayed. Now follow [Login to the Design Console](../using-the-design-console-with-nginx-ssl/#login-to-the-design-console).   
    
 ### Login to the Design Console
 

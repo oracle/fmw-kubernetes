@@ -1,7 +1,7 @@
 +++
 title = "Create OAM domains"
-weight = 3
-pre = "<b>3. </b>"
+weight = 4
+pre = "<b>4. </b>"
 description = "Sample for creating an OAM domain home on an existing PV or PVC, and the domain resource YAML file for deploying the generated OAM domain."
 +++
 
@@ -58,16 +58,16 @@ provide in this file.
    For example:
 
    ```bash   
-   domainUID: accessinfra
-   domainHome: /u01/oracle/user_projects/domains/accessinfra
+   domainUID: accessdomain
+   domainHome: /u01/oracle/user_projects/domains/accessdomain
    image: oracle/oam:12.2.1.4.0
-   namespace: accessns
-   weblogicCredentialsSecretName: accessinfra-domain-credentials
-   persistentVolumeClaimName: accessinfra-domain-pvc
-   logHome: /u01/oracle/user_projects/domains/logs/accessinfra
+   namespace: oamns
+   weblogicCredentialsSecretName: accessdomain-domain-credentials
+   persistentVolumeClaimName: accessdomain-domain-pvc
+   logHome: /u01/oracle/user_projects/domains/logs/accessdomain
    rcuSchemaPrefix: OAMK8S
    rcuDatabaseURL: mydatabasehost.example.com:1521/orcl.example.com
-   rcuCredentialsSecret: accessinfra-rcu-credentials
+   rcuCredentialsSecret: accessdomain-rcu-credentials
    ```
    
    
@@ -136,7 +136,7 @@ generated artifacts:
    
    ```bash
    $ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv
-   $ ./create-domain.sh -i create-domain-inputs.yaml -o output_access
+   $ ./create-domain.sh -i create-domain-inputs.yaml -o output
    ```
    
    The output will look similar to the following:
@@ -146,9 +146,9 @@ generated artifacts:
    export version="create-weblogic-sample-domain-inputs-v1"
    export adminPort="7001"
    export adminServerName="AdminServer"
-   export domainUID="accessinfra"
+   export domainUID="accessdomain"
    export domainType="oam"
-   export domainHome="/u01/oracle/user_projects/domains/accessinfra"
+   export domainHome="/u01/oracle/user_projects/domains/accessdomain"
    export serverStartPolicy="IF_NEEDED"
    export clusterName="oam_cluster"
    export configuredManagedServerCount="5"
@@ -158,53 +158,53 @@ generated artifacts:
    export image="oracle/oam:12.2.1.4.0"
    export imagePullPolicy="IfNotPresent"
    export productionModeEnabled="true"
-   export weblogicCredentialsSecretName="accessinfra-domain-credentials"
+   export weblogicCredentialsSecretName="accessdomain-domain-credentials"
    export includeServerOutInPodLog="true"
-   export logHome="/u01/oracle/user_projects/domains/logs/accessinfra"
+   export logHome="/u01/oracle/user_projects/domains/logs/accessdomain"
    export t3ChannelPort="30012"
    export exposeAdminT3Channel="false"
    export adminNodePort="30701"
    export exposeAdminNodePort="false"
-   export namespace="accessns"
+   export namespace="oamns"
    javaOptions=-Dweblogic.StdoutDebugEnabled=false
-   export persistentVolumeClaimName="accessinfra-domain-pvc"
+   export persistentVolumeClaimName="accessdomain-domain-pvc"
    export domainPVMountPath="/u01/oracle/user_projects/domains"
    export createDomainScriptsMountPath="/u01/weblogic"
    export createDomainScriptName="create-domain-job.sh"
    export createDomainFilesDir="wlst"
    export rcuSchemaPrefix="OAMK8S"
    export rcuDatabaseURL="mydatabasehost.example.com:1521/orcl.example.com"
-   export rcuCredentialsSecret="accessinfra-rcu-credentials"
+   export rcuCredentialsSecret="accessdomain-rcu-credentials"
 
-   Generating output_access/weblogic-domains/accessinfra/create-domain-job.yaml
-   Generating output_access/weblogic-domains/accessinfra/delete-domain-job.yaml
-   Generating output_access/weblogic-domains/accessinfra/domain.yaml
-   Checking to see if the secret accessinfra-domain-credentials exists in namespace accessns
-   configmap/accessinfra-create-oam-infra-domain-job-cm created
-   Checking the configmap accessinfra-create-oam-infra-domain-job-cm was created
-   configmap/accessinfra-create-oam-infra-domain-job-cm labeled
-   Checking if object type job with name accessinfra-create-oam-infra-domain-job exists
-   No resources found in accessns namespace.
-   Creating the domain by creating the job output_access/weblogic-domains/accessinfra/create-domain-job.yaml
-   job.batch/accessinfra-create-oam-infra-domain-job created
+   Generating output/weblogic-domains/accessdomain/create-domain-job.yaml
+   Generating output/weblogic-domains/accessdomain/delete-domain-job.yaml
+   Generating output/weblogic-domains/accessdomain/domain.yaml
+   Checking to see if the secret accessdomain-domain-credentials exists in namespace oamns
+   configmap/accessdomain-create-oam-infra-domain-job-cm created
+   Checking the configmap accessdomain-create-oam-infra-domain-job-cm was created
+   configmap/accessdomain-create-oam-infra-domain-job-cm labeled
+   Checking if object type job with name accessdomain-create-oam-infra-domain-job exists
+   No resources found in oamns namespace.
+   Creating the domain by creating the job output/weblogic-domains/accessdomain/create-domain-job.yaml
+   job.batch/accessdomain-create-oam-infra-domain-job created
    Waiting for the job to complete...
    status on iteration 1 of 20
-   pod accessinfra-create-oam-infra-domain-job-vj69h status is Running
+   pod accessdomain-create-oam-infra-domain-job-vj69h status is Running
    status on iteration 2 of 20
-   pod accessinfra-create-oam-infra-domain-job-vj69h status is Running
+   pod accessdomain-create-oam-infra-domain-job-vj69h status is Running
    status on iteration 3 of 20
-   pod accessinfra-create-oam-infra-domain-job-vj69h status is Running
+   pod accessdomain-create-oam-infra-domain-job-vj69h status is Running
    status on iteration 4 of 20
-   pod accessinfra-create-oam-infra-domain-job-vj69h status is Running
+   pod accessdomain-create-oam-infra-domain-job-vj69h status is Running
    status on iteration 5 of 20
-   pod accessinfra-create-oam-infra-domain-job-vj69h status is Completed
+   pod accessdomain-create-oam-infra-domain-job-vj69h status is Completed
 
-   Domain accessinfra was created and will be started by the Oracle WebLogic Kubernetes Operator
+   Domain accessdomain was created and will be started by the Oracle WebLogic Kubernetes Operator
  
    The following files were generated:
-   output_access/weblogic-domains/accessinfra/create-domain-inputs.yaml
-   output_access/weblogic-domains/accessinfra/create-domain-job.yaml
-   output_access/weblogic-domains/accessinfra/domain.yaml
+   output/weblogic-domains/accessdomain/create-domain-inputs.yaml
+   output/weblogic-domains/accessdomain/create-domain-job.yaml
+   output/weblogic-domains/accessdomain/domain.yaml
 
    Completed
    ```
@@ -213,16 +213,16 @@ generated artifacts:
    
    The command creates a `domain.yaml` file required for domain creation. 
    
-1. Navigate to the `/output_access/weblogic-domains/<domain_uid>` directory:
+1. Navigate to the `/output/weblogic-domains/<domain_uid>` directory:
 
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output_access/weblogic-domains/<domain_uid>
+   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output/weblogic-domains/<domain_uid>
    ```
    
    For example:
    
    ```bash
-   $ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output_access/weblogic-domains/accessinfra
+   $ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain
    ```
    
    Edit the `domain.yaml` file, increase the min and max heap size save the file. Change the following value from:
@@ -238,6 +238,37 @@ generated artifacts:
    - name: USER_MEM_ARGS"
      value: "-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m"
    ```
+
+   Add the following environment variable  to the domain.yaml file for the Admin Server under "env" tag. This is needed for running the `idmconfigtool` from the AdminServer.
+
+   ```
+   - name: CLASSPATH
+     value: "/u01/oracle/wlserver/server/lib/weblogic.jar"
+   ```
+
+   Sample below: 
+  
+   ```
+     adminServer:
+     # serverStartState legal values are "RUNNING" or "ADMIN"
+     # "RUNNING" means the listed server will be started up to "RUNNING" mode
+     # "ADMIN" means the listed server will be start up to "ADMIN" mode
+     serverStartState: "RUNNING"
+     adminService:
+       channels:
+     # The Admin Server's NodePort
+        - channelName: default
+          nodePort: 30701
+     # Uncomment to export the T3Channel as a service
+        - channelName: T3Channel
+     serverPod:
+       # an (optional) list of environment variable to be set on the admin servers
+       env:
+       - name: USER_MEM_ARGS
+         value: "-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m "
+       - name: CLASSPATH
+         value: "/u01/oracle/wlserver/server/lib/weblogic.jar"
+   ``` 
    
 1. If required, you can add the optional parameter `maxClusterConcurrentStartup` to the `spec` section of the `domain.yaml`. This parameter specifies the number of managed servers to be started in sequence per cluster. For example if you updated the `initialManagedServerReplicas` to `4` in `create-domain-inputs.yaml` and only had 2 nodes, then setting `maxClusterConcurrentStartup: 1` will start one managed server at a time on each node, rather than starting them all at once. This can be useful to take the strain off individual nodes at startup. Below is an example with the parameter added:
    
@@ -245,13 +276,13 @@ generated artifacts:
    apiVersion: "weblogic.oracle/v8"
    kind: Domain
    metadata:
-     name: accessinfra
-     namespace: accessns
+     name: accessdomain
+     namespace: oamns
      labels:
-       weblogic.domainUID: accessinfra
+       weblogic.domainUID: accessdomain
    spec:
      # The WebLogic Domain Home
-     domainHome: /u01/oracle/user_projects/domains/accessinfra
+     domainHome: /u01/oracle/user_projects/domains/accessdomain
 	 maxClusterConcurrentStartup: 1
 
      # The domain home source type
@@ -266,19 +297,19 @@ generated artifacts:
 1. Create the Kubernetes resource using the following command:
 
    ```bash
-   $ kubectl apply -f <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output_access/weblogic-domains/accessinfra/domain.yaml
+   $ kubectl apply -f <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain/domain.yaml
    ```
    
    For example:
    
    ```bash
-   $ kubectl apply -f /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output_access/weblogic-domains/accessinfra/domain.yaml
+   $ kubectl apply -f /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain/domain.yaml
    ```
    
    The output will look similar to the following:
    
    ```bash
-   domain.weblogic.oracle/accessinfra created
+   domain.weblogic.oracle/accessdomain created
    ```
 
 #### Verify the domain
@@ -293,48 +324,48 @@ generated artifacts:
    For example:
    
     ```bash
-   $ kubectl get all,domains -n accessns
+   $ kubectl get all,domains -n oamns
    ```
    
    The output will look similar to the following:
 
    ```bash
    NAME                                                READY   STATUS      RESTARTS   AGE
-   pod/accessinfra-adminserver                         1/1     Running     0          17m
-   pod/accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          42m
-   pod/accessinfra-oam-policy-mgr1                     1/1     Running     0          9m7s
-   pod/accessinfra-oam-server1                         1/1     Running     0          9m7s
-   pod/accessinfra-oam-server2                         1/1     Running     0          9m7s
+   pod/accessdomain-adminserver                         1/1     Running     0          17m
+   pod/accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          42m
+   pod/accessdomain-oam-policy-mgr1                     1/1     Running     0          9m7s
+   pod/accessdomain-oam-server1                         1/1     Running     0          9m7s
+   pod/accessdomain-oam-server2                         1/1     Running     0          9m7s
    pod/helper                                          1/1     Running     0          23h
 
    NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
-   service/accessinfra-adminserver              ClusterIP   None             <none>        7001/TCP    17m
-   service/accessinfra-cluster-oam-cluster      ClusterIP   10.110.50.168     <none>        14100/TCP   9m8s
-   service/accessinfra-cluster-policy-cluster   ClusterIP   10.102.32.247      <none>        15100/TCP   9m8s
-   service/accessinfra-oam-policy-mgr1          ClusterIP   None             <none>        15100/TCP   9m8s
-   service/accessinfra-oam-policy-mgr2          ClusterIP   10.104.147.108    <none>        15100/TCP   9m8s
-   service/accessinfra-oam-policy-mgr3          ClusterIP   10.108.233.86    <none>        15100/TCP   9m8s
-   service/accessinfra-oam-policy-mgr4          ClusterIP   10.105.15.228     <none>        15100/TCP   9m7s
-   service/accessinfra-oam-policy-mgr5          ClusterIP   10.99.66.92    <none>        15100/TCP   9m8s
-   service/accessinfra-oam-server1              ClusterIP   None             <none>        14100/TCP   9m8s
-   service/accessinfra-oam-server2              ClusterIP   None             <none>        14100/TCP   9m8s
-   service/accessinfra-oam-server3              ClusterIP   10.111.231.33    <none>        14100/TCP   9m8s
-   service/accessinfra-oam-server4              ClusterIP   10.110.10.183     <none>        14100/TCP   9m7s
-   service/accessinfra-oam-server5              ClusterIP   10.103.192.174   <none>        14100/TCP   9m8s
+   service/accessdomain-adminserver              ClusterIP   None             <none>        7001/TCP    17m
+   service/accessdomain-cluster-oam-cluster      ClusterIP   10.110.50.168     <none>        14100/TCP   9m8s
+   service/accessdomain-cluster-policy-cluster   ClusterIP   10.102.32.247      <none>        15100/TCP   9m8s
+   service/accessdomain-oam-policy-mgr1          ClusterIP   None             <none>        15100/TCP   9m8s
+   service/accessdomain-oam-policy-mgr2          ClusterIP   10.104.147.108    <none>        15100/TCP   9m8s
+   service/accessdomain-oam-policy-mgr3          ClusterIP   10.108.233.86    <none>        15100/TCP   9m8s
+   service/accessdomain-oam-policy-mgr4          ClusterIP   10.105.15.228     <none>        15100/TCP   9m7s
+   service/accessdomain-oam-policy-mgr5          ClusterIP   10.99.66.92    <none>        15100/TCP   9m8s
+   service/accessdomain-oam-server1              ClusterIP   None             <none>        14100/TCP   9m8s
+   service/accessdomain-oam-server2              ClusterIP   None             <none>        14100/TCP   9m8s
+   service/accessdomain-oam-server3              ClusterIP   10.111.231.33    <none>        14100/TCP   9m8s
+   service/accessdomain-oam-server4              ClusterIP   10.110.10.183     <none>        14100/TCP   9m7s
+   service/accessdomain-oam-server5              ClusterIP   10.103.192.174   <none>        14100/TCP   9m8s
 
    NAME                                                COMPLETIONS   DURATION   AGE
-   job.batch/accessinfra-create-oam-infra-domain-job   1/1           2m14s      42m
+   job.batch/accessdomain-create-oam-infra-domain-job   1/1           2m14s      42m
 
    NAME                                 AGE
-   domain.weblogic.oracle/accessinfra   25m
+   domain.weblogic.oracle/accessdomain   25m
    ```
    
    **Note**: It will take several minutes before all the services listed above show. When a pod has a `STATUS` of `0/1` the pod is started but the OAM server associated with it is currently starting. While the pods are starting you can check the startup status in the pod logs, by running the following command:
    
    ```bash
-   $ kubectl logs accessinfra-adminserver -n accessns
-   $ kubectl logs accessinfra-oam-policy-mgr1 -n accessns
-   $ kubectl logs accessinfra-oam-server1 -n accessns
+   $ kubectl logs accessdomain-adminserver -n oamns
+   $ kubectl logs accessdomain-oam-policy-mgr1 -n oamns
+   $ kubectl logs accessdomain-oam-server1 -n oamns
    etc..
    ```
    
@@ -357,15 +388,15 @@ generated artifacts:
 
    For example:
    ```bash
-   $ kubectl describe domain accessinfra -n accessns
+   $ kubectl describe domain accessdomain -n oamns
    ```
 
    The output will look similar to the following:
 
    ```bash
-   Name:         accessinfra
-   Namespace:    accessns
-   Labels:       weblogic.domainUID=accessinfra
+   Name:         accessdomain
+   Namespace:    oamns
+   Labels:       weblogic.domainUID=accessdomain
    Annotations:  API Version:  weblogic.oracle/v8
    Kind:         Domain
    Metadata:
@@ -398,14 +429,16 @@ generated artifacts:
        Operation:       Update
        Time:            2020-09-24T14:12:51Z
      Resource Version:  244336
-     Self Link:         /apis/weblogic.oracle/v8/namespaces/accessns/domains/accessinfra
+     Self Link:         /apis/weblogic.oracle/v8/namespaces/oamns/domains/accessdomain
      UID:               0edf8266-4419-45f1-bd50-e26ac41340e5
    Spec:
      Admin Server:
        Server Pod:
          Env:
            Name:            USER_MEM_ARGS
-           Value:           -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m
+           Value:           -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m
+           Name:            CLASSPATH
+           Value:           /u01/oracle/wlserver/server/lib/weblogic.jar
        Server Start State:  RUNNING
      Clusters:
        Cluster Name:  policy_cluster
@@ -445,13 +478,13 @@ generated artifacts:
           Precreate Service:          true
         Server Start State:           RUNNING
      Data Home:
-     Domain Home:                    /u01/oracle/user_projects/domains/accessinfra
+     Domain Home:                    /u01/oracle/user_projects/domains/accessdomain
      Domain Home Source Type:        PersistentVolume
      Http Access Log In Log Home:    true
      Image:                          oracle/oam:12.2.1.4.0
      Image Pull Policy:              IfNotPresent
      Include Server Out In Pod Log:  true
-     Log Home:                       /u01/oracle/user_projects/domains/logs/accessinfra
+     Log Home:                       /u01/oracle/user_projects/domains/logs/accessdomain
      Log Home Enabled:               true
      Server Pod:
        Env:
@@ -465,10 +498,10 @@ generated artifacts:
        Volumes:
          Name:  weblogic-domain-storage-volume
          Persistent Volume Claim:
-            Claim Name:     accessinfra-domain-pvc
+            Claim Name:     accessdomain-domain-pvc
       Server Start Policy:  IF_NEEDED
       Web Logic Credentials Secret:
-       Name:  accessinfra-domain-credentials
+       Name:  accessdomain-domain-credentials
     Status:
       Clusters:
        Cluster Name:      oam_cluster
@@ -568,18 +601,18 @@ generated artifacts:
    For example:
    
    ```bash
-   $ kubectl get pods -n accessns -o wide
+   $ kubectl get pods -n oamns -o wide
    ```
    
    The output will look similar to the following:
    
    ```
    NAME                                            READY   STATUS      RESTARTS   AGE     IP            NODE             NOMINATED NODE   READINESS GATES
-   accessinfra-adminserver                         1/1     Running     0          26m     10.244.1.7   10.250.111.112   <none>           <none>
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          5h55m   10.244.1.5   10.250.111.112   <none>           <none>
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          18m     10.244.1.9   10.250.111.112   <none>           <none>
-   accessinfra-oam-server1                         1/1     Running     0          18m     10.244.2.3   10.250.111.111   <none>           <none>
-   accessinfra-oam-server2                         1/1     Running     0          18m     10.244.1.8   10.250.111.112   <none>           <none>
+   accessdomain-adminserver                         1/1     Running     0          26m     10.244.1.7   10.250.111.112   <none>           <none>
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          5h55m   10.244.1.5   10.250.111.112   <none>           <none>
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          18m     10.244.1.9   10.250.111.112   <none>           <none>
+   accessdomain-oam-server1                         1/1     Running     0          18m     10.244.2.3   10.250.111.111   <none>           <none>
+   accessdomain-oam-server2                         1/1     Running     0          18m     10.244.1.8   10.250.111.112   <none>           <none>
    helper                                          1/1     Running     0          22h     10.244.1.4   10.250.111.112   <none>           <none>
    ```
 

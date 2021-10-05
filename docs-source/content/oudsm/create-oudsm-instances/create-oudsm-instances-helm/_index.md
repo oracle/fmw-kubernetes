@@ -1,10 +1,8 @@
-+++
-title = "Create Oracle Unified Directory Services Manager Instances Using Helm"
-date = 2019-04-18T06:46:23-05:00
-weight = 4 
-pre = "<b>4. </b>"
-description=  "This document provides steps to create OUDSM instances using Helm Charts."
-+++
+---
+title: "b. Create Oracle Unified Directory Services Manager Instances Using Helm"
+weight: 2
+description: "This document provides steps to create OUDSM instances using Helm Charts."
+---
 
 1. [Introduction](#introduction)
 1. [Install Helm](#install-helm)
@@ -31,7 +29,7 @@ $ helm install [Deployment NAME] [CHART Reference] [flags]
 For example:
 
 ```
-$ helm install my-oudsm oudsm --namespace myhelmns
+$ helm install oudsm oudsm --namespace oudns
 ```
 
 #### Undeploy an Application using the Helm Chart
@@ -47,9 +45,9 @@ $ helm --namespace <namespace> list
 For example:
 
 ```
-$ helm --namespace myhelmns list
-NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-my-oudsm                myhelmns        1               2020-03-31 10:37:30.616927678 -0700 PDT deployed        my-oudsm-12.2.1.4.0     12.2.1.4.0
+$ helm --namespace oudns list
+NAME                    NAMESPACE       REVISION        UPDATED                                  STATUS          CHART                   APP VERSION
+oudsm                   oudns           1               2020-03-31 10:37:30.616927678 -0700 PDT  deployed        oudsm-12.2.1.4.0        12.2.1.4.0
 ```
         
 To delete the chart:
@@ -61,8 +59,8 @@ $ helm uninstall --namespace <namespace> <release>
 For example:
 
 ```
-$ helm uninstall --namespace myhelmns my-oudsm
-release "my-oudsm" uninstalled
+$ helm uninstall --namespace oudns oudsm
+release "oudsm" uninstalled
 ```
 
 #### Helm Chart(s) for Oracle Unified Directory Services Manager
@@ -73,4 +71,4 @@ The following list provides Helm charts for deploying Oracle Unified Directory S
 
 Details about each Helm Chart can be found in the relevant README listed below:
 
-* [oudsm]({{< relref "/oudsm/create-oudsm-instances-helm/oudsm" >}}) : A Helm chart for deployment of Oracle Unified Directory Services Manager instances on Kubernetes.
+* [oudsm]({{< relref "/oudsm/create-oudsm-instances/create-oudsm-instances-helm/oudsm" >}}) : A Helm chart for deployment of Oracle Unified Directory Services Manager instances on Kubernetes.

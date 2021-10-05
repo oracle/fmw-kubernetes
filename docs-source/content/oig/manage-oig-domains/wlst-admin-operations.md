@@ -18,13 +18,13 @@ To use WLST to administer the OIG domain, use a helper pod in the same Kubernete
    For example:
 
    ```
-   $ kubectl run helper --image oracle/oig:12.2.1.4.0 -n oimcluster -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4.0 -n oigns -- sleep infinity
    ```
 
    The output will look similar to the following:
 
    ```
-   $ kubectl run helper --image oracle/oig:12.2.1.4.0 -n oimcluster -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4.0 -n oigns -- sleep infinity
    pod/helper created
    ```
 
@@ -37,7 +37,7 @@ To use WLST to administer the OIG domain, use a helper pod in the same Kubernete
    For example:
 	
    ```
-   $ kubectl exec -it helper -n oimcluster -- /bin/bash
+   $ kubectl exec -it helper -n oigns -- /bin/bash
    ```
 	
    This will take you into a bash shell in the running helper pod:
@@ -72,39 +72,39 @@ To use WLST to administer the OIG domain, use a helper pod in the same Kubernete
 1. To access t3 for the Administration Server connect as follows:
 
    ```
-   connect('weblogic','<password>','t3://oimcluster-adminserver:7001')
+   connect('weblogic','<password>','t3://governancedomain-adminserver:7001')
    ```
    
    The output will look similar to the following:
    
    ```
-   wls:/offline> connect('weblogic','<password>','t3://oimcluster-adminserver:7001')
-   Connecting to t3://oimcluster-adminserver:7001 with userid weblogic ...
-   Successfully connected to Admin Server "AdminServer" that belongs to domain "oimcluster".
+   wls:/offline> connect('weblogic','<password>','t3://governancedomain-adminserver:7001')
+   Connecting to t3://governancedomain-adminserver:7001 with userid weblogic ...
+   Successfully connected to Admin Server "AdminServer" that belongs to domain "governancedomain".
 
    Warning: An insecure protocol was used to connect to the server.
    To ensure on-the-wire security, the SSL port or Admin port should be used instead.
 
-   wls:/oimcluster/serverConfig/>
+   wls:/governancedomain/serverConfig/>
    ```
 
    Or to access t3 for the OIG Cluster service, connect as follows:
 
    ```
-   connect('weblogic','<password>','t3://oimcluster-cluster-oim-cluster:14100')
+   connect('weblogic','<password>','t3://governancedomain-cluster-oim-cluster:14100')
    ```
 
    The output will look similar to the following:
    
    ```
-   wls:/offline> connect('weblogic','<password>','t3://oimcluster-cluster-oim-cluster:14000')
-   Connecting to t3://oimcluster-cluster-oim-cluster:14000 with userid weblogic ...
-   Successfully connected to managed Server "oim_server1" that belongs to domain "oimcluster".
+   wls:/offline> connect('weblogic','<password>','t3://governancedomain-cluster-oim-cluster:14000')
+   Connecting to t3://governancedomain-cluster-oim-cluster:14000 with userid weblogic ...
+   Successfully connected to managed Server "oim_server1" that belongs to domain "governancedomain".
 
    Warning: An insecure protocol was used to connect to the server.
    To ensure on-the-wire security, the SSL port or Admin port should be used instead.
 
-   wls:/oimcluster/serverConfig/>
+   wls:/governancedomain/serverConfig/>
    ```
 
 ### Sample operations
@@ -114,8 +114,8 @@ For a full list of WLST operations refer to [WebLogic Server WLST Online and Off
 #### Display servers
 
 ```
-wls:/oimcluster/serverConfig/> cd('/Servers')
-wls:/oimcluster/serverConfig/Servers> ls ()
+wls:/governancedomain/serverConfig/> cd('/Servers')
+wls:/governancedomain/serverConfig/Servers> ls ()
 dr--   AdminServer
 dr--   oim_server1
 dr--   oim_server2
@@ -128,7 +128,7 @@ dr--   soa_server3
 dr--   soa_server4
 dr--   soa_server5
 
-wls:/oimcluster/serverConfig/Servers>
+wls:/governancedomain/serverConfig/Servers>
 ```
 
 ### Performing WLST Administration via SSL
@@ -155,12 +155,12 @@ wls:/oimcluster/serverConfig/Servers>
    metadata:
      labels:
        serviceType: SERVER
-       weblogic.domainName: oimcluster
-       weblogic.domainUID: oimcluster
+       weblogic.domainName: governancedomain
+       weblogic.domainUID: governancedomain
        weblogic.resourceVersion: domain-v2
        weblogic.serverName: AdminServer
-     name: oimcluster-adminserver-ssl
-     namespace: oimcluster
+     name: governancedomain-adminserver-ssl
+     namespace: oigns
    spec:
      clusterIP: None
      ports:
@@ -170,7 +170,7 @@ wls:/oimcluster/serverConfig/Servers>
        targetPort: 7002
      selector:
        weblogic.createdByOperator: "true"
-       weblogic.domainUID: oimcluster
+       weblogic.domainUID: governancedomain
        weblogic.serverName: AdminServer
      type: ClusterIP
    ```
@@ -183,11 +183,11 @@ wls:/oimcluster/serverConfig/Servers>
    metadata:
      labels:
        serviceType: SERVER
-       weblogic.domainName: oimcluster
-       weblogic.domainUID: oimcluster
+       weblogic.domainName: governancedomain
+       weblogic.domainUID: governancedomain
        weblogic.resourceVersion: domain-v2
-     name: oimcluster-cluster-oim-cluster-ssl
-     namespace: oimcluster
+     name: governancedomain-cluster-oim-cluster-ssl
+     namespace: oigns
    spec:
      clusterIP: None
      ports:
@@ -198,7 +198,7 @@ wls:/oimcluster/serverConfig/Servers>
      selector:
        weblogic.clusterName: oim_cluster
 	   weblogic.createdByOperator: "true"
-       weblogic.domainUID: oimcluster
+       weblogic.domainUID: governancedomain
      type: ClusterIP
    ```  
 
@@ -206,15 +206,15 @@ wls:/oimcluster/serverConfig/Servers>
 1. Apply the template using the following command for the Administration Server:
 
    ```
-   $ kubectl apply -f oimcluster-adminserver-ssl.yaml
-   service/oimcluster-adminserver-ssl created
+   $ kubectl apply -f governancedomain-adminserver-ssl.yaml
+   service/governancedomain-adminserver-ssl created
    ```
    
    or using the following command for the OIG Managed Server:
    
    ```
-   $ kubectl apply -f oimcluster-oim-cluster-ssl.yaml
-   service/oimcluster-cluster-oim-cluster-ssl created
+   $ kubectl apply -f governancedomain-oim-cluster-ssl.yaml
+   service/governancedomain-cluster-oim-cluster-ssl created
    ```
    
 1. Validate that the Kubernetes Services to access SSL ports are created successfully:
@@ -226,28 +226,28 @@ wls:/oimcluster/serverConfig/Servers>
    For example:
    
    ```
-   $ kubectl get svc -n oimcluster |grep ssl
+   $ kubectl get svc -n oigns |grep ssl
    ```
    
    The output will look similar to the following:
    
    ```
-   oimcluster-adminserver-ssl           ClusterIP   None             <none>        7002/TCP                     74s
-   oimcluster-cluster-oim-cluster-ssl   ClusterIP   None             <none>        14101/TCP                    21s
+   governancedomain-adminserver-ssl           ClusterIP   None             <none>        7002/TCP                     74s
+   governancedomain-cluster-oim-cluster-ssl   ClusterIP   None             <none>        14101/TCP                    21s
    ```
 
 1. Connect to a bash shell of the helper pod:
 
    ```
-   $ kubectl exec -it helper -n oimcluster -- /bin/bash
+   $ kubectl exec -it helper -n oigns -- /bin/bash
    ```
 
 1. In the bash shell run the following:
 
    ```
-   [oracle@oimcluster-adminserver oracle]$ export WLST_PROPERTIES="-Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.security.TrustKeyStore=DemoTrust"
-   [oracle@oimcluster-adminserver oracle]$ cd /u01/oracle/oracle_common/common/bin
-   [oracle@oimcluster-adminserver oracle]$ ./wlst.sh
+   [oracle@governancedomain-adminserver oracle]$ export WLST_PROPERTIES="-Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.security.TrustKeyStore=DemoTrust"
+   [oracle@governancedomain-adminserver oracle]$ cd /u01/oracle/oracle_common/common/bin
+   [oracle@governancedomain-adminserver oracle]$ ./wlst.sh
    Initializing WebLogic Scripting Tool (WLST) ...
    
    Welcome to WebLogic Server Administration Scripting Shell
@@ -259,21 +259,21 @@ wls:/oimcluster/serverConfig/Servers>
    Connect to the Administration Server t3s service:
 
    ```
-   wls:/offline> connect('weblogic','<password>','t3s://oimcluster-adminserver-ssl:7002')
+   wls:/offline> connect('weblogic','<password>','t3s://governancedomain-adminserver-ssl:7002')
    <Sep 30, 2020 3:16:48 PM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
    <Sep 30, 2020 3:16:48 PM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
    <Sep 30, 2020 3:16:48 PM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
-   Successfully connected to Admin Server "AdminServer" that belongs to domain "oimcluster".
+   Successfully connected to Admin Server "AdminServer" that belongs to domain "governancedomain".
 
-   wls:/oimcluster/serverConfig/>
+   wls:/governancedomain/serverConfig/>
    ```
 
    To connect to the OIG Managed Server t3s service:
    
    ```
-   wls:/offline> connect('weblogic','<password>','t3s://oimcluster-cluster-oim-cluster-ssl:14101')
-   Connecting to t3s://oimcluster-cluster-oim-cluster-ssl:14101 with userid weblogic ...
-   Successfully connected to managed Server "oim_server1" that belongs to domain "oimcluster".
+   wls:/offline> connect('weblogic','<password>','t3s://governancedomain-cluster-oim-cluster-ssl:14101')
+   Connecting to t3s://governancedomain-cluster-oim-cluster-ssl:14101 with userid weblogic ...
+   Successfully connected to managed Server "oim_server1" that belongs to domain "governancedomain".
 
-   wls:/oimcluster/serverConfig/>
+   wls:/governancedomain/serverConfig/>
    ```

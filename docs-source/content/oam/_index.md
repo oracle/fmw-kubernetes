@@ -1,15 +1,15 @@
 ---
 title: "Oracle Access Management"
 description: "The Oracle WebLogic Server Kubernetes Operator supports deployment of Oracle Access Management (OAM). Follow the instructions in this guide to set up these Oracle Access Management domains on Kubernetes."
-weight: 1
+weight: 2
 ---
 
-The Oracle WebLogic Server Kubernetes Operator supports deployment of Oracle Access Management (OAM).
+The WebLogic Kubernetes Operator supports deployment of Oracle Access Management (OAM).
 
 In this release, OAM domains are supported using the “domain on a persistent volume”
 [model](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
 
-The Oracle WebLogic Server Kubernetes Operator has several key features to assist you with deploying and managing Oracle Access Management domains in a Kubernetes
+The WebLogic Kubernetes Operator has several key features to assist you with deploying and managing Oracle Access Management domains in a Kubernetes
 environment. You can:
 
 
@@ -29,7 +29,10 @@ See [here]({{< relref "/oam/prerequisites#limitations">}}) for limitations in th
 
 For detailed information about deploying Oracle Access Management domains, start at [Prerequisites]({{< relref "/oam/prerequisites" >}}) and follow this documentation sequentially.
 
+If performing an Enterprise Deployment, refer to the [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/index.html) instead.
+
+
 ### Current release
 
-The current supported release of the Oracle WebLogic Server Kubernetes Operator, for Oracle Access Management domains deployment is [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1).
+The current supported release of the WebLogic Kubernetes Operator, for Oracle Access Management domains deployment is [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1).
 

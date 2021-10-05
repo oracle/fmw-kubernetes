@@ -1,14 +1,10 @@
-+++
-title = "a. Using Design Console with NGINX(SSL)"
-description = "Configure Design Console with NGINX(SSL)."
-+++
+---
+title: "b. Using Design Console with NGINX(SSL)"
+weight: 2
+description: "Configure Design Console with NGINX(SSL)."
+---
 
 Configure an NGINX ingress (SSL) to allow Design Console to connect to your Kubernetes cluster.
-
-{{% notice note %}}
-Design Console is not installed as part of the OAM Kubernetes cluster so must be installed on a seperate client before following the steps below.
-{{% /notice %}}
-
 
 #### Generate SSL Certificate
 
@@ -48,27 +44,27 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
 1. Create a secret for SSL containing the SSL certificate by running the following command:
 
    ```
-   $ kubectl -n oimcluster create secret tls <domain_id>-tls-cert --key <work directory>/tls.key --cert <work directory>/tls.crt
+   $ kubectl -n oigns create secret tls <domain_id>-tls-cert --key <work directory>/tls.key --cert <work directory>/tls.crt
    ```
    
    For example:
    
    ```
-   $ kubectl -n oimcluster create secret tls oimcluster-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
+   $ kubectl -n oigns create secret tls governancedomain-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
    ```
    
    The output will look similar to the following:
    
    ```
-   $ kubectl -n oimcluster create secret tls oimcluster-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
-   secret/oimcluster-tls-cert created
+   $ kubectl -n oigns create secret tls governancedomain-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
+   secret/governancedomain-tls-cert created
    $
    ```
 
 1. Confirm that the secret is created by running the following command:
 
    ```
-   $ kubectl get secret oimcluster-tls-cert -o yaml -n oimcluster
+   $ kubectl get secret governancedomain-tls-cert -o yaml -n oigns
    ```
    
    The output will look similar to the following:
@@ -93,10 +89,10 @@ Design Console is not installed as part of the OAM Kubernetes cluster so must be
        manager: kubectl
        operation: Update
        time: "2020-09-29T15:51:22Z"
-     name: oimcluster-tls-cert
-     namespace: oimcluster
+     name: governancedomain-tls-cert
+     namespace: oigns
      resourceVersion: "1291036"
-     selfLink: /api/v1/namespaces/oimcluster/secrets/oimcluster-tls-cert
+     selfLink: /api/v1/namespaces/oigns/secrets/governancedomain-tls-cert
      uid: a127e5fd-705b-43e1-ab56-590834efda5e
    type: kubernetes.io/tls
    ```
@@ -155,7 +151,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    a) Using NodePort
 
    ```
-   $ helm install nginx-dc-operator-ssl -n nginxssl --set controller.extraArgs.default-ssl-certificate=oimcluster/oimcluster-tls-cert --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false --set controller.service.nodePorts.https=30321 --set controller.ingressClass=nginx-designconsole stable/ingress-nginx
+   $ helm install nginx-dc-operator-ssl -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false --set controller.service.nodePorts.https=30321 --set controller.ingressClass=nginx-designconsole stable/ingress-nginx --version=3.34.0
    ```
    The output will look similar to the following:
 
@@ -217,7 +213,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    b) Using LoadBalancer
 
    ```
-   $ helm install nginx-dc-operator-ssl -n nginxssl --set controller.extraArgs.default-ssl-certificate=oimcluster/oimcluster-tls-cert --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-dc-operator-ssl -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    ```
 
    The output will look similar to the following:
@@ -281,7 +277,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    $ vi values.yaml
    ```
 
-   Edit `values.yaml` and ensure that `type=NGINX`, `tls=SSL` and `secretName:oimcluster-tls-cert` are set, for example:
+   Edit `values.yaml` and ensure that `type=NGINX`, `tls=SSL`, `domainUID: governancedomain` and `secretName: governancedomain-tls-cert` are set, for example:
    
    ```
    $ cat values.yaml
@@ -298,12 +294,12 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    # tls: NONSSL
    tls: SSL
    # TLS secret name if the mode is SSL
-   secretName: oimcluster-tls-cert
+   secretName: governancedomain-tls-cert
 
 
    # WLS domain as backend to the load balancer
    wlsDomain:
-     domainUID: oimcluster
+     domainUID: governancedomain
      oimClusterName: oim_cluster
      oimServerT3Port: 14001
 
@@ -321,22 +317,22 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    
    ```
    $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+   $ helm install governancedomain-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oigns  --values kubernetes/samples/charts/design-console-ingress/values.yaml
    ```
   
    For example:
    
    ```
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oimcluster  --values kubernetes/samples/charts/design-console-ingress/values.yaml
+   $ helm install governancedomain-nginx-designconsole kubernetes/samples/charts/design-console-ingress  --namespace oigns  --values kubernetes/samples/charts/design-console-ingress/values.yaml
    ```
    
    The output will look similar to the following:
 
    ```
-   NAME: oimcluster-nginx-designconsole
+   NAME: governancedomain-nginx-designconsole
    LAST DEPLOYED: Wed Oct 21 04:12:00 2020
-   NAMESPACE: oimcluster
+   NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -345,30 +341,30 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 1. Run the following command to show the ingress is created successfully:
 
    ```
-   $ kubectl describe ing oimcluster-nginx-designconsole -n <domain_namespace>
+   $ kubectl describe ing governancedomain-nginx-designconsole -n <domain_namespace>
    ```
    
    For example:
    
    ```
-   $ kubectl describe ing oimcluster-nginx-designconsole -n oimcluster
+   $ kubectl describe ing governancedomain-nginx-designconsole -n oigns
    ```
    
    The output will look similar to the following:
 
    ```  
-   Name:             oimcluster-nginx-designconsole
-   Namespace:        oimcluster
+   Name:             governancedomain-nginx-designconsole
+   Namespace:        oigns
    Address:          10.106.181.99
    Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
    Rules:
      Host        Path  Backends
      ----        ----  --------
      *
-                    oimcluster-cluster-oim-cluster:14001 ()
+                    governancedomain-cluster-oim-cluster:14001 ()
    Annotations:  kubernetes.io/ingress.class: nginx-designconsole
-                 meta.helm.sh/release-name: oimcluster-nginx-designconsole
-                 meta.helm.sh/release-namespace: oimcluster
+                 meta.helm.sh/release-name: governancedomain-nginx-designconsole
+                 meta.helm.sh/release-namespace: oigns
                  nginx.ingress.kubernetes.io/affinity: cookie
                  nginx.ingress.kubernetes.io/configuration-snippet:
                    more_set_input_headers "X-Forwarded-Proto: https";
@@ -379,28 +375,149 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    Events:
      Type    Reason  Age   From                      Message
      ----    ------  ----  ----                      -------
-     Normal  CREATE  38s   nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx-designconsole
-     Normal  UPDATE  10s   nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx-designconsole
+     Normal  CREATE  38s   nginx-ingress-controller  Ingress oigns/governancedomain-nginx-designconsole
+     Normal  UPDATE  10s   nginx-ingress-controller  Ingress oigns/governancedomain-nginx-designconsole
    ```
    
   
 ### Design Console Client
 
+It is possible to use Design Console from an on-premises install, or from a container image.
+
+#### Using an on-premises installed Design Console
+
 The instructions below should be performed on the client where Design Console is installed.
 
-#### Import the CA certificate into the java keystore
+1. Import the CA certificate into the java keystore
 
-If in [Generate a SSL Certificate](../using-the-design-console-with-nginx-ssl/#generate-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.
+   If in [Generate a SSL Certificate](../using-the-design-console-with-nginx-ssl/#generate-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.
 
-If in [Generate a SSL Certificate](../using-the-design-console-with-nginx-ssl/#generate-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.
+   If in [Generate a SSL Certificate](../using-the-design-console-with-nginx-ssl/#generate-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.
 
-Import the certificate using the following command:
+   Import the certificate using the following command:
 
-```
-$ keytool -import -trustcacerts -alias dc -file <certificate> -keystore $JAVA_HOME/jre/lib/security/cacerts
-```
+   ```
+   $ keytool -import -trustcacerts -alias dc -file <certificate> -keystore $JAVA_HOME/jre/lib/security/cacerts
+   ```
 
-where `<certificate>` is the CA certificate, or self-signed certicate.
+   where `<certificate>` is the CA certificate, or self-signed certicate.
+
+1. Once complete follow [Login to the Design Console](../using-the-design-console-with-nginx-ssl/#login-to-the-design-console).
+
+#### Using a container image for Design Console
+
+The Design Console can be run from a container using X windows emulation.
+
+1. On the parent machine where the Design Console is to be displayed, run `xhost+`.
+
+1. Execute the following command to start a container to run Design Console:
+
+   ```
+   $ docker run -u root --name oigdcbase -it <image> bash
+   ```
+   
+   For example:
+   
+   ```
+   $ docker run -u root -it --name oigdcbase oracle/oig:12.2.1.4.0 bash
+   ```
+
+   This will take you into a bash shell inside the container:
+   
+   ```
+   bash-4.2#
+   ```
+   
+1. Inside the container set the proxy, for example:
+
+   ```
+   bash-4.2# export https_proxy=http://proxy.example.com:80
+   ```
+
+1. Install the relevant X windows packages in the container:
+
+   ```
+   bash-4.2# yum install libXext libXrender libXtst
+   ```
+   
+1. Execute the following outside the container to create a new Design Console image from the container:
+
+   ```
+   $ docker commit <container_name> <design_console_image_name>
+   ```
+   
+   For example:
+   
+   ```
+   $ docker commit oigdcbase oigdc
+   ```
+   
+1. Exit the container bash session:
+
+   ```
+   bash-4.2# exit
+   ```
+   
+1. Start a new container using the Design Console image:
+
+   ```
+   $ docker run --name oigdc -it oigdc /bin/bash
+   ```
+   
+   This will take you into a bash shell for the container:
+   
+   ```
+   bash-4.2#
+   ```
+   
+1. Copy the Ingress CA certificate into the container
+
+   If in [Generate a SSL Certificate](../using-the-design-console-with-nginx-ssl/#generate-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
+
+   If in [Generate a SSL Certificate](../using-the-design-console-with-nginx-ssl/#generate-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
+
+   Run the following command outside the container:
+
+   ```
+   $ cd <work directory>/ssl
+   $ docker cp <certificate> <container_name>:/u01/jdk/jre/lib/security/<certificate>
+   ```
+
+   For example:
+   
+   ```
+   $ cd /scratch/OIGDockerK8S/ssl
+   $ docker cp tls.crt oigdc:/u01/jdk/jre/lib/security/tls.crt
+   
+
+1. Import the certificate using the following command:
+
+   ```
+   bash-4.2# /u01/jdk/bin/keytool -import -trustcacerts -alias dc -file /u01/jdk/jre/lib/security/<certificate> -keystore /u01/jdk/jre/lib/security/cacerts
+   ```
+
+   For example:
+   
+   ```
+   bash-4.2# /u01/jdk/bin/keytool -import -trustcacerts -alias dc -file /u01/jdk/jre/lib/security/tls.crt -keystore /u01/jdk/jre/lib/security/cacerts
+   ```
+
+
+1. In the container run the following to export the DISPLAY:
+
+   ```
+   $ export DISPLAY=<parent_machine_hostname:1>
+   ```   
+
+1. Start the Design Console from the container:
+
+   ```
+   bash-4.2# cd idm/designconsole
+   bash-4.2# sh xlclient.sh
+   ```
+   
+   The Design Console login should be displayed. Now follow [Login to the Design Console](../using-the-design-console-with-nginx-ssl/#login-to-the-design-console).
+
 
 
 #### Login to the Design Console

@@ -19,7 +19,7 @@ To use WLST to administer the OAM domain, use the helper pod in the same Kuberne
 	For example:
 	
     ```bash
-	$ kubectl exec -it helper -n accessns -- /bin/bash
+	$ kubectl exec -it helper -n oamns -- /bin/bash
     ```
 	
 	This will take you into a bash shell in the running helper pod:
@@ -52,37 +52,37 @@ To use WLST to administer the OAM domain, use the helper pod in the same Kuberne
 1. To access t3 for the Administration Server connect as follows:
 
    ```bash
-   connect('weblogic','<password>','t3://accessinfra-adminserver:7001')
+   connect('weblogic','<password>','t3://accessdomain-adminserver:7001')
    ```
    
    The output will look similar to the following:
    
    ```bash
-   Connecting to t3://accessinfra-adminserver:7001 with userid weblogic ...
-   Successfully connected to Admin Server "AdminServer" that belongs to domain "accessinfra".
+   Connecting to t3://accessdomain-adminserver:7001 with userid weblogic ...
+   Successfully connected to Admin Server "AdminServer" that belongs to domain "accessdomain".
 
    Warning: An insecure protocol was used to connect to the server.
    To ensure on-the-wire security, the SSL port or Admin port should be used instead.
 
-   wls:/accessinfra/serverConfig/>
+   wls:/accessdomain/serverConfig/>
    ```
 
    Or to access t3 for the OAM Cluster service, connect as follows:
    
    ```bash
-   connect('weblogic','<password>','t3://accessinfra-cluster-oam-cluster:14100')
+   connect('weblogic','<password>','t3://accessdomain-cluster-oam-cluster:14100')
    ```
    
    The output will look similar to the following:
    
    ```bash
-   Connecting to t3://accessinfra-cluster-oam-cluster:14100 with userid weblogic ...
-   Successfully connected to managed Server "oam_server1" that belongs to domain "accessinfra".
+   Connecting to t3://accessdomain-cluster-oam-cluster:14100 with userid weblogic ...
+   Successfully connected to managed Server "oam_server1" that belongs to domain "accessdomain".
 
    Warning: An insecure protocol was used to connect to the server.
    To ensure on-the-wire security, the SSL port or Admin port should be used instead.
 
-   wls:/accessinfra/serverConfig/>
+   wls:/accessdomain/serverConfig/>
    ```
 ### Sample operations
 
@@ -91,8 +91,8 @@ For a full list of WLST operations refer to [WebLogic Server WLST Online and Off
 #### Display servers
 
 ```bash
-wls:/accessinfra/serverConfig/> cd('/Servers')
-wls:/accessinfra/serverConfig/Servers> ls()
+wls:/accessdomain/serverConfig/> cd('/Servers')
+wls:/accessdomain/serverConfig/Servers> ls()
    
 dr--   AdminServer
 dr--   oam_policy_mgr1
@@ -106,7 +106,7 @@ dr--   oam_server3
 dr--   oam_server4
 dr--   oam_server5
 
-wls:/accessinfra/serverConfig/Servers>
+wls:/accessdomain/serverConfig/Servers>
 ```
    
 #### Configure logging for managed servers   
@@ -114,14 +114,14 @@ wls:/accessinfra/serverConfig/Servers>
 Connect to the Administration Server and run the following:
 
 ```bash
-wls:/accessinfra/serverConfig/> domainRuntime()
+wls:/accessdomain/serverConfig/> domainRuntime()
 Location changed to domainRuntime tree. This is a read-only tree
 with DomainMBean as the root MBean.
 For more help, use help('domainRuntime')
    
-wls:/accessinfra/domainRuntime/>
+wls:/accessdomain/domainRuntime/>
    
-wls:/accessinfra/domainRuntime/> listLoggers(pattern="oracle.oam.*",target="oam_server1")
+wls:/accessdomain/domainRuntime/> listLoggers(pattern="oracle.oam.*",target="oam_server1")
 ------------------------------------------+-----------------
 Logger                                    | Level
 ------------------------------------------+-----------------
@@ -166,16 +166,16 @@ oracle.oam.proxy.osso                     | <Inherited>
 oracle.oam.pswd.service.provider          | <Inherited>
 oracle.oam.replication                    | <Inherited>
 oracle.oam.user.identity.provider         | <Inherited>
-wls:/accessinfra/domainRuntime/>
+wls:/accessdomain/domainRuntime/>
 ```
 
 Set the log level to `TRACE:32`:
 
 ```bash
-wls:/accessinfra/domainRuntime/> setLogLevel(target='oam_server1',logger='oracle.oam',level='TRACE:32',persist="1",addLogger=1)
-wls:/accessinfra/domainRuntime/>
+wls:/accessdomain/domainRuntime/> setLogLevel(target='oam_server1',logger='oracle.oam',level='TRACE:32',persist="1",addLogger=1)
+wls:/accessdomain/domainRuntime/>
 
-wls:/accessinfra/domainRuntime/> listLoggers(pattern="oracle.oam.*",target="oam_server1")
+wls:/accessdomain/domainRuntime/> listLoggers(pattern="oracle.oam.*",target="oam_server1")
 ------------------------------------------+-----------------
 Logger                                    | Level
 ------------------------------------------+-----------------
@@ -220,17 +220,17 @@ oracle.oam.proxy.osso                     | <Inherited>
 oracle.oam.pswd.service.provider          | <Inherited>
 oracle.oam.replication                    | <Inherited>
 oracle.oam.user.identity.provider         | <Inherited>
-wls:/accessinfra/domainRuntime/>
+wls:/accessdomain/domainRuntime/>
 ```
 
 Verify that `TRACE:32` log level is set by connecting to the Administration Server and viewing the logs:
 
 ```bash
-$ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
-[oracle@accessinfra-adminserver oracle]$
+$ kubectl exec -it accessdomain-adminserver -n oamns -- /bin/bash
+[oracle@accessdomain-adminserver oracle]$
 
-[oracle@accessinfra-adminserver oracle]$ cd /u01/oracle/user_projects/domains/accessinfra/servers/oam_server1/logs
-[oracle@accessinfra-adminserver logs]$ tail oam_server1-diagnostic.log
+[oracle@accessdomain-adminserver oracle]$ cd /u01/oracle/user_projects/domains/accessdomain/servers/oam_server1/logs
+[oracle@accessdomain-adminserver logs]$ tail oam_server1-diagnostic.log
 [2020-09-25T09:02:19.492+00:00] [oam_server1] [TRACE:32] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1062] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: getSelectSQL] SELECT SQL:SELECT  version  from  IDM_OBJECT_STORE  where id = ? and version = (select max(version) from  IDM_OBJECT_STORE  where id = ?)
 [2020-09-25T09:02:19.494+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1062] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: load] Time (ms) to load key CONFIG:-1{FIELD_TYPES=INT, SELECT_FIELDS=SELECT  version  from  IDM_OBJECT_STORE }:3
 [2020-09-25T09:02:19.494+00:00] [oam_server1] [TRACE:16] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 0dc53783-fada-4709-b7c1-8958bbbaac95-0000000b,0:1062] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: load] RETURN
@@ -265,12 +265,12 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    metadata:
      labels:
        serviceType: SERVER
-       weblogic.domainName: accessinfra
-       weblogic.domainUID: accessinfra
+       weblogic.domainName: accessdomain
+       weblogic.domainUID: accessdomain
        weblogic.resourceVersion: domain-v2
        weblogic.serverName: AdminServer
-     name: accessinfra-adminserverssl
-     namespace: accessns
+     name: accessdomain-adminserverssl
+     namespace: oamns
    spec:
      clusterIP: None
      ports:
@@ -280,7 +280,7 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
        targetPort: 7002
      selector:
        weblogic.createdByOperator: "true"
-       weblogic.domainUID: accessinfra
+       weblogic.domainUID: accessdomain
        weblogic.serverName: AdminServer
      type: ClusterIP
    ```
@@ -293,11 +293,11 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    metadata:
      labels:
 	   serviceType: SERVER
-       weblogic.domainName: accessinfra
-       weblogic.domainUID: accessinfra
+       weblogic.domainName: accessdomain
+       weblogic.domainUID: accessdomain
        weblogic.resourceVersion: domain-v2
-     name: accessinfra-oamcluster-ssl
-     namespace: accessns
+     name: accessdomain-oamcluster-ssl
+     namespace: oamns
    spec:
      clusterIP: None
      ports:
@@ -308,7 +308,7 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
      selector:
        weblogic.clusterName: oam_cluster
        weblogic.createdByOperator: "true"
-       weblogic.domainUID: accessinfra
+       weblogic.domainUID: accessdomain
      type: ClusterIP
    ```  
    
@@ -320,8 +320,8 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    For example:
    
    ```bash
-   $ kubectl apply -f accessinfra-adminserver-ssl.yaml
-   service/accessinfra-adminserverssl created
+   $ kubectl apply -f accessdomain-adminserver-ssl.yaml
+   service/accessdomain-adminserverssl created
    ```
    
    and using the following command for the OAM Managed Server:
@@ -333,8 +333,8 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    For example:
    
    ```bash
-   $ kubectl apply -f accessinfra-oamcluster-ssl.yaml
-   service/accessinfra-oamcluster-ssl created
+   $ kubectl apply -f accessdomain-oamcluster-ssl.yaml
+   service/accessdomain-oamcluster-ssl created
    ```
    
    
@@ -347,14 +347,14 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    For example:
    
    ```bash
-   $ kubectl get svc -n accessns |grep ssl
+   $ kubectl get svc -n oamns |grep ssl
    ```
    
    The output will look similar to the following:
    
    ```bash
-   accessinfra-adminserverssl           ClusterIP   None             <none>        7002/TCP                     102s
-   accessinfra-oamcluster-ssl           ClusterIP   None             <none>        14101/TCP                    35s
+   accessdomain-adminserverssl           ClusterIP   None             <none>        7002/TCP                     102s
+   accessdomain-oamcluster-ssl           ClusterIP   None             <none>        14101/TCP                    35s
    ```
    
 1. Inside the bash shell of the running helper pod, run the following:
@@ -374,21 +374,21 @@ $ kubectl exec -it accessinfra-adminserver -n accessns -- /bin/bash
    To connect to the Administration Server t3s service:
 
    ```bash
-   wls:/offline> connect('weblogic','<password>','t3s://accessinfra-adminserverssl:7002')
-   Connecting to t3s://accessinfra-adminserverssl:7002 with userid weblogic ...
+   wls:/offline> connect('weblogic','<password>','t3s://accessdomain-adminserverssl:7002')
+   Connecting to t3s://accessdomain-adminserverssl:7002 with userid weblogic ...
    <Sep 25, 2020 9:11:24 AM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
    <Sep 25, 2020 9:11:24 AM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
    <Sep 25, 2020 9:11:24 AM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
-   Successfully connected to Admin Server "AdminServer" that belongs to domain "accessinfra".
+   Successfully connected to Admin Server "AdminServer" that belongs to domain "accessdomain".
 
-   wls:/accessinfra/serverConfig/>
+   wls:/accessdomain/serverConfig/>
    ```
    
    To connect to the OAM Managed Server t3s service:
    
    ```bash
-   wls:/offline> connect('weblogic','<password>','t3s://accessinfra-oamcluster-ssl:14101')   
-   Connecting to t3s://accessinfra-oamcluster-ssl:14101 with userid weblogic ...
-   Successfully connected to managed Server "oam_server1" that belongs to domain "accessinfra".
+   wls:/offline> connect('weblogic','<password>','t3s://accessdomain-oamcluster-ssl:14101')   
+   Connecting to t3s://accessdomain-oamcluster-ssl:14101 with userid weblogic ...
+   Successfully connected to managed Server "oam_server1" that belongs to domain "accessdomain".
    ```
    

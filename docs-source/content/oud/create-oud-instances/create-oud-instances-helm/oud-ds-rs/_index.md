@@ -33,8 +33,8 @@ Based on the configuration, this chart deploys the following objects in the spec
 Create a Kubernetes namespace to provide a scope for other objects such as pods and services that you create in the environment. To create your namespace issue the following command:
 
 ```
-$ kubectl create ns myhelmns
-namespace/myhelmns created
+$ kubectl create ns oudns
+namespace/oudns created
 ```
 
 ### Deploy oud-ds-rs Helm Chart
@@ -44,6 +44,7 @@ Create or Deploy a group of replicated Oracle Unified Directory instances along 
 The deployment can be initiated by running the following Helm command with reference to the `oud-ds-rs` Helm Chart, along with configuration parameters according to your environment. Before deploying the Helm chart, the namespace should be created. Objects to be created by the Helm chart will be created inside the specified namespace.
 
 ```
+$ cd <work directory>/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/helm
 $ helm install --namespace <namespace> \
 <Configuration Parameters> \
 <deployment/release name> \
@@ -59,20 +60,20 @@ Configuration Parameters (override values in chart) can be passed on with `--set
 ##### Example where configuration parameters are passed with `--set` argument:
 
 ```
-$ helm install --namespace myhelmns \
---set oudConfig.rootUserPassword=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects \
-my-oud-ds-rs oud-ds-rs
+$ helm install --namespace oudns \
+--set oudConfig.rootUserPassword=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects,image.repository=oracle/oud,image.tag=12.2.1.4.0-PSU2020July-20200730 \
+oud-ds-rs oud-ds-rs
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
-* In this example, it is assumed that the command is executed from the directory containing the 'oud-ds-rs' helm chart directory (`OracleUnifiedDirectory/kubernetes/helm/`).
+* In this example, it is assumed that the command is executed from the directory containing the 'oud-ds-rs' helm chart directory (`<work directory>/OracleUnifiedDirectory/kubernetes/helm/`).
 
 ##### Example where configuration parameters are passed with `--values` argument:
 
 ```
-$ helm install --namespace myhelmns \
+$ helm install --namespace oudns \
 --values oud-ds-rs-values-override.yaml \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
@@ -97,17 +98,17 @@ In this example, we are setting replicaCount value to 3. If initially, the repli
 We have two ways to achieve our goal:
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --set replicaCount=3 \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 
 OR
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --values oud-ds-rs-values-override.yaml \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 
 oud-ds-rs-values-override.yaml
@@ -125,17 +126,17 @@ In this example, we will apply PSU2020July-20200730 patch on earlier running Ora
 We have two ways to achieve our goal:
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --set image.repository=oracle/oud,image.tag=12.2.1.4.0-PSU2020July-20200730 \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 
 OR
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --values oud-ds-rs-values-override.yaml \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 		
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
@@ -151,9 +152,9 @@ image:
 ##### Example for using NFS as PV Storage:
 
 ```
-$ helm install --namespace myhelmns \
+$ helm install --namespace oudns \
 --values oud-ds-rs-values-override-nfs.yaml \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
@@ -176,9 +177,9 @@ persistence:
 ##### Example for using PV type of your choice:
 
 ```
-$ helm install --namespace myhelmns \
+$ helm install --namespace oudns \
 --values oud-ds-rs-values-override-pv-custom.yaml \
-my-oud-ds-rs oud-ds-rs
+oud-ds-rs oud-ds-rs
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
@@ -208,9 +209,9 @@ persistence:
 
 Ouput similar to the following is observed following successful execution of `helm install/upgrade` command.
 
-    NAME: my-oud-ds-rs
+    NAME: oud-ds-rs
     LAST DEPLOYED: Tue Mar 31 01:40:05 2020
-    NAMESPACE: myhelmns
+    NAMESPACE: oudns
     STATUS: deployed
     REVISION: 1
     TEST SUITE: None
@@ -220,46 +221,46 @@ Ouput similar to the following is observed following successful execution of `he
 Command: 
 
 ```
-$ kubectl --namespace myhelmns get nodes,pod,service,secret,pv,pvc,ingress -o wide
+$ kubectl --namespace oudns get nodes,pod,service,secret,pv,pvc,ingress -o wide
 ```
 
 Output is similar to the following: 
 
 ```
-NAME                 READY   STATUS    RESTARTS   AGE     IP             NODE            NOMINATED NODE   READINESS GATES
-pod/my-oud-ds-rs-0   1/1     Running   0          8m44s   10.244.0.195   <Worker Node>   <none>           <none>
-pod/my-oud-ds-rs-1   1/1     Running   0          8m44s   10.244.0.194   <Worker Node>   <none>           <none>
-pod/my-oud-ds-rs-2   0/1     Running   0          8m44s   10.244.0.193   <Worker Node>   <none>           <none>
+NAME              READY   STATUS    RESTARTS   AGE     IP             NODE            NOMINATED NODE   READINESS GATES
+pod/oud-ds-rs-0   1/1     Running   0          8m44s   10.244.0.195   <Worker Node>   <none>           <none>
+pod/oud-ds-rs-1   1/1     Running   0          8m44s   10.244.0.194   <Worker Node>   <none>           <none>
+pod/oud-ds-rs-2   0/1     Running   0          8m44s   10.244.0.193   <Worker Node>   <none>           <none>
     
-NAME                             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE     SELECTOR
-service/my-oud-ds-rs-0           ClusterIP   10.99.232.83     <none>        1444/TCP,1888/TCP,1898/TCP   8m44s   kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-0
-service/my-oud-ds-rs-1           ClusterIP   10.100.186.42    <none>        1444/TCP,1888/TCP,1898/TCP   8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-1
-service/my-oud-ds-rs-2           ClusterIP   10.104.55.53     <none>        1444/TCP,1888/TCP,1898/TCP   8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-2
-service/my-oud-ds-rs-http-0      ClusterIP   10.102.116.145   <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-0
-service/my-oud-ds-rs-http-1      ClusterIP   10.111.103.84    <none>        1080/TCP,1081/TCP            8m44s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-1
-service/my-oud-ds-rs-http-2      ClusterIP   10.105.53.24     <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-2
-service/my-oud-ds-rs-lbr-admin   ClusterIP   10.98.39.206     <none>        1888/TCP,1444/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/my-oud-ds-rs-lbr-http    ClusterIP   10.110.77.132    <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/my-oud-ds-rs-lbr-ldap    ClusterIP   10.111.55.122    <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/my-oud-ds-rs-ldap-0      ClusterIP   10.108.155.81    <none>        1389/TCP,1636/TCP            8m44s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-0
-service/my-oud-ds-rs-ldap-1      ClusterIP   10.104.88.44     <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-1
-service/my-oud-ds-rs-ldap-2      ClusterIP   10.105.253.120   <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=my-oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=my-oud-ds-rs-2
+NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE     SELECTOR
+service/oud-ds-rs-0           ClusterIP   10.99.232.83     <none>        1444/TCP,1888/TCP,1898/TCP   8m44s   kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
+service/oud-ds-rs-1           ClusterIP   10.100.186.42    <none>        1444/TCP,1888/TCP,1898/TCP   8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
+service/oud-ds-rs-2           ClusterIP   10.104.55.53     <none>        1444/TCP,1888/TCP,1898/TCP   8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
+service/oud-ds-rs-http-0      ClusterIP   10.102.116.145   <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
+service/oud-ds-rs-http-1      ClusterIP   10.111.103.84    <none>        1080/TCP,1081/TCP            8m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
+service/oud-ds-rs-http-2      ClusterIP   10.105.53.24     <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
+service/oud-ds-rs-lbr-admin   ClusterIP   10.98.39.206     <none>        1888/TCP,1444/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-http    ClusterIP   10.110.77.132    <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-ldap    ClusterIP   10.111.55.122    <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-ldap-0      ClusterIP   10.108.155.81    <none>        1389/TCP,1636/TCP            8m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
+service/oud-ds-rs-ldap-1      ClusterIP   10.104.88.44     <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
+service/oud-ds-rs-ldap-2      ClusterIP   10.105.253.120   <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
     
 NAME                                        TYPE                                  DATA   AGE
 secret/default-token-tbjr5                  kubernetes.io/service-account-token   3      25d
-secret/my-oud-ds-rs-creds                   opaque                                8      8m48s
-secret/my-oud-ds-rs-token-cct26             kubernetes.io/service-account-token   3      8m50s
-secret/sh.helm.release.v1.my-oud-ds-rs.v1   helm.sh/release.v1                    1      8m51s
+secret/oud-ds-rs-creds                      opaque                                8      8m48s
+secret/oud-ds-rs-token-cct26                kubernetes.io/service-account-token   3      8m50s
+secret/sh.helm.release.v1.oud-ds-rs.v1      helm.sh/release.v1                    1      8m51s
     
-NAME                               CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                       STORAGECLASS   REASON   AGE
-persistentvolume/my-oud-ds-rs-pv   20Gi       RWX            Retain           Bound    myhelmns/my-oud-ds-rs-pvc   manual                  8m47s
+NAME                               CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                    STORAGECLASS   REASON   AGE
+persistentvolume/oud-ds-rs-pv      20Gi       RWX            Retain           Bound    oudns/oud-ds-rs-pvc      manual                  8m47s
  
-NAME                                     STATUS   VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/my-oud-ds-rs-pvc   Bound    my-oud-ds-rs-pv   20Gi       RWX            manual         8m48s
+NAME                                  STATUS   VOLUME         CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/oud-ds-rs-pvc   Bound    oud-ds-rs-pv   20Gi       RWX            manual         8m48s
    
-NAME                                                  HOSTS                                                                        ADDRESS         PORTS   AGE
-ingress.extensions/my-oud-ds-rs-admin-ingress-nginx   my-oud-ds-rs-admin-0,my-oud-ds-rs-admin-1,my-oud-ds-rs-admin-2 + 2 more...   10.229.141.78   80      8m45s
-ingress.extensions/my-oud-ds-rs-http-ingress-nginx    my-oud-ds-rs-http-0,my-oud-ds-rs-http-1,my-oud-ds-rs-http-2 + 3 more...      10.229.141.78   80      8m45s
+NAME                                               HOSTS                                                               ADDRESS         PORTS   AGE
+ingress.extensions/oud-ds-rs-admin-ingress-nginx   oud-ds-rs-admin-0,oud-ds-rs-admin-1,oud-ds-rs-admin-2 + 2 more...   10.229.141.78   80      8m45s
+ingress.extensions/oud-ds-rs-http-ingress-nginx    oud-ds-rs-http-0,oud-ds-rs-http-1,oud-ds-rs-http-2 + 3 more...      10.229.141.78   80      8m45s
 ```
 
 ##### Kubernetes Objects
@@ -268,27 +269,27 @@ Kubernetes objects created by the Helm chart are detailed in the table below:
 
 | **Type** | **Name** | **Example Name** | **Purpose** | 
 | ------ | ------ | ------ | ------ |
-| Service Account | <deployment/release name> | my-oud-ds-rs | Kubernetes Service Account for the Helm Chart deployment |
-| Secret | <deployment/release name>-creds |  my-oud-ds-rs-creds | Secret object for Oracle Unified Directory related critical values like passwords |
-| Persistent Volume | <deployment/release name>-pv | my-oud-ds-rs-pv | Persistent Volume for user_projects mount. | 
-| Persistent Volume Claim | <deployment/release name>-pvc | my-oud-ds-rs-pvc | Persistent Volume Claim for user_projects mount. |
-| Persistent Volume | <deployment/release name>-pv-config | my-oud-ds-rs-pv-config | Persistent Volume for mounting volume in containers for configuration files like ldif, schema, jks, java.security, etc. |
-| Persistent Volume Claim | <deployment/release name>-pvc-config | my-oud-ds-rs-pvc-config | Persistent Volume Claim for mounting volume in containers for configuration files like ldif, schema, jks, java.security, etc. |
-| Pod | <deployment/release name>-0 | my-oud-ds-rs-0 | Pod/Container for base Oracle Unified Directory Instance which would be populated first with base configuration (like number of sample entries) |
-| Pod | <deployment/release name>-N | my-oud-ds-rs-1, my-oud-ds-rs-2, ...  | Pod(s)/Container(s) for Oracle Unified Directory Instances - each would have replication enabled against base Oracle Unified Directory instance <deployment/release name>-0|
-| Service | <deployment/release name>-0 | my-oud-ds-rs-0 | Service for LDAPS Admin, REST Admin and Replication interfaces from base Oracle Unified Directory instance <deployment/release name>-0|
-| Service | <deployment/release name>-http-0 | my-oud-ds-rs-http-0 | Service for HTTP and HTTPS interfaces from base Oracle Unified Directory instance <deployment/release name>-0 |
-| Service | <deployment/release name>-ldap-0 | my-oud-ds-rs-ldap-0 | Service for LDAP and LDAPS interfaces from base Oracle Unified Directory instance <deployment/release name>-0 |
-| Service | <deployment/release name>-N | my-oud-ds-rs-1, my-oud-ds-rs-2, ... | Service(s) for LDAPS Admin, REST Admin and Replication interfaces from base Oracle Unified Directory instance <deployment/release name>-N |
-| Service | <deployment/release name>-http-N | my-oud-ds-rs-http-1, my-oud-ds-rs-http-2, ... | Service(s) for HTTP and HTTPS interfaces from base Oracle Unified Directory instance <deployment/release name>-N |
-| Service | <deployment/release name>-ldap-N | my-oud-ds-rs-ldap-1, my-oud-ds-rs-ldap-2, ... | Service(s) for LDAP and LDAPS interfaces from base Oracle Unified Directory instance <deployment/release name>-N |
-| Service | <deployment/release name>-lbr-admin | my-oud-ds-rs-lbr-admin | Service for LDAPS Admin, REST Admin and Replication interfaces from all Oracle Unified Directory instances |
-| Service | <deployment/release name>-lbr-http | my-oud-ds-rs-lbr-http | Service for HTTP and HTTPS interfaces from all Oracle Unified Directory instances |
-| Service | <deployment/release name>-lbr-ldap | my-oud-ds-rs-lbr-ldap | Service for LDAP and LDAPS interfaces from all Oracle Unified Directory instances |
-| Ingress | <deployment/release name>-admin-ingress-nginx | my-oud-ds-rs-admin-ingress-nginx | Ingress Rules for HTTP Admin interfaces. |
-| Ingress | <deployment/release name>-http-ingress-nginx | my-oud-ds-rs-http-ingress-nginx | Ingress Rules for HTTP (Data/REST) interfaces. |
+| Service Account | <deployment/release name> | oud-ds-rs | Kubernetes Service Account for the Helm Chart deployment |
+| Secret | <deployment/release name>-creds |  oud-ds-rs-creds | Secret object for Oracle Unified Directory related critical values like passwords |
+| Persistent Volume | <deployment/release name>-pv | oud-ds-rs-pv | Persistent Volume for user_projects mount. | 
+| Persistent Volume Claim | <deployment/release name>-pvc | oud-ds-rs-pvc | Persistent Volume Claim for user_projects mount. |
+| Persistent Volume | <deployment/release name>-pv-config | oud-ds-rs-pv-config | Persistent Volume for mounting volume in containers for configuration files like ldif, schema, jks, java.security, etc. |
+| Persistent Volume Claim | <deployment/release name>-pvc-config | oud-ds-rs-pvc-config | Persistent Volume Claim for mounting volume in containers for configuration files like ldif, schema, jks, java.security, etc. |
+| Pod | <deployment/release name>-0 | oud-ds-rs-0 | Pod/Container for base Oracle Unified Directory Instance which would be populated first with base configuration (like number of sample entries) |
+| Pod | <deployment/release name>-N | oud-ds-rs-1, oud-ds-rs-2, ...  | Pod(s)/Container(s) for Oracle Unified Directory Instances - each would have replication enabled against base Oracle Unified Directory instance <deployment/release name>-0|
+| Service | <deployment/release name>-0 | oud-ds-rs-0 | Service for LDAPS Admin, REST Admin and Replication interfaces from base Oracle Unified Directory instance <deployment/release name>-0|
+| Service | <deployment/release name>-http-0 | oud-ds-rs-http-0 | Service for HTTP and HTTPS interfaces from base Oracle Unified Directory instance <deployment/release name>-0 |
+| Service | <deployment/release name>-ldap-0 | oud-ds-rs-ldap-0 | Service for LDAP and LDAPS interfaces from base Oracle Unified Directory instance <deployment/release name>-0 |
+| Service | <deployment/release name>-N | oud-ds-rs-1, oud-ds-rs-2, ... | Service(s) for LDAPS Admin, REST Admin and Replication interfaces from base Oracle Unified Directory instance <deployment/release name>-N |
+| Service | <deployment/release name>-http-N | oud-ds-rs-http-1, oud-ds-rs-http-2, ... | Service(s) for HTTP and HTTPS interfaces from base Oracle Unified Directory instance <deployment/release name>-N |
+| Service | <deployment/release name>-ldap-N | oud-ds-rs-ldap-1, oud-ds-rs-ldap-2, ... | Service(s) for LDAP and LDAPS interfaces from base Oracle Unified Directory instance <deployment/release name>-N |
+| Service | <deployment/release name>-lbr-admin | oud-ds-rs-lbr-admin | Service for LDAPS Admin, REST Admin and Replication interfaces from all Oracle Unified Directory instances |
+| Service | <deployment/release name>-lbr-http | oud-ds-rs-lbr-http | Service for HTTP and HTTPS interfaces from all Oracle Unified Directory instances |
+| Service | <deployment/release name>-lbr-ldap | oud-ds-rs-lbr-ldap | Service for LDAP and LDAPS interfaces from all Oracle Unified Directory instances |
+| Ingress | <deployment/release name>-admin-ingress-nginx | oud-ds-rs-admin-ingress-nginx | Ingress Rules for HTTP Admin interfaces. |
+| Ingress | <deployment/release name>-http-ingress-nginx | oud-ds-rs-http-ingress-nginx | Ingress Rules for HTTP (Data/REST) interfaces. |
 
-* In the table above the 'Example Name' for each Object is based on the value 'my-oud-ds-rs' as deployment/release name for the Helm chart installation.
+* In the table above the 'Example Name' for each Object is based on the value 'oud-ds-rs' as deployment/release name for the Helm chart installation.
 
 ### Verify the Replication
 
@@ -303,7 +304,7 @@ $ kubectl get pods -n <namespace> -o jsonpath='{.items[*].spec.containers[*].nam
 For example:
 
 ```
-$ kubectl get pods -n myhelmns -o jsonpath='{.items[*].spec.containers[*].name}'
+$ kubectl get pods -n oudns -o jsonpath='{.items[*].spec.containers[*].name}'
 oud-ds-rs
 ```
     
@@ -316,16 +317,16 @@ $ kubectl --namespace <namespace> exec -it -c <containername> <podname> /bin/bas
 For example: 
 
 ```
-$ kubectl --namespace myhelmns exec -it -c oud-ds-rs my-oud-ds-rs-0 /bin/bash
+$ kubectl --namespace oudns exec -it -c oud-ds-rs oud-ds-rs-0 /bin/bash
 ```
     
 From the prompt, use the `dsreplication` command to check the status of your replication group:
 
 ```
-$ cd /u01/oracle/user_projects/my-oud-ds-rs-0/OUD/bin
+$ cd /u01/oracle/user_projects/oud-ds-rs-0/OUD/bin
 
 $ ./dsreplication status --trustAll \
---hostname my-oud-ds-rs-0 --port 1444 --adminUID admin \
+--hostname oud-ds-rs-0 --port 1444 --adminUID admin \
 --dataToDisplay compat-view --dataToDisplay rs-connections
 ```
 
@@ -343,20 +344,20 @@ dc=example,dc=com - Replication Enabled
     
 Server               : Entries : M.C. [1] : A.O.M.C. [2] : Port [3] : Encryption [4] : Trust [5] : U.C. [6] : Status [7] : ChangeLog [8] : Group ID [9] : Connected To [10]
 ---------------------:---------:----------:--------------:----------:----------------:-----------:----------:------------:---------------:--------------:-------------------------------
-my-oud-ds-rs-0:1444  : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : my-oud-ds-rs-0:1898
+oud-ds-rs-0:1444     : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-0:1898
                      :         :          :              :          :                :           :          :            :               :              : (GID=1)
-my-oud-ds-rs-1:1444  : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : my-oud-ds-rs-1:1898
+oud-ds-rs-1:1444     : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-1:1898
                      :         :          :              :          :                :           :          :            :               :              : (GID=1)
-my-oud-ds-rs-2:1444  : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : my-oud-ds-rs-2:1898
+oud-ds-rs-2:1444     : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
                      :         :          :              :          :                :           :          :            :               :              : (GID=1)
     
 Replication Server [11]        : RS #1 : RS #2 : RS #3
 -------------------------------:-------:-------:------
-my-oud-ds-rs-0:1898            : --    : Yes   : Yes
+oud-ds-rs-0:1898               : --    : Yes   : Yes
 (#1)                           :       :       :
-my-oud-ds-rs-1:1898            : Yes   : --    : Yes
+oud-ds-rs-1:1898               : Yes   : --    : Yes
 (#2)                           :       :       :
-my-oud-ds-rs-2:1898            : Yes   : Yes   : --
+oud-ds-rs-2:1898               : Yes   : Yes   : --
 (#3)                           :       :       :
     
 [1] The number of changes that are still missing on this element (and that have been applied to at least one other server).
@@ -384,9 +385,9 @@ $ kubectl --namespace <namespace> exec -it -c <containername> <podname> -- \
 For example: 
 
 ```
-$ kubectl --namespace myhelmns exec -it -c oud-ds-rs my-oud-ds-rs-0 -- \
-/u01/oracle/user_projects/my-oud-ds-rs-0/OUD/bin/dsreplication status \
---trustAll --hostname my-oud-ds-rs-0 --port 1444 --adminUID admin \
+$ kubectl --namespace oudns exec -it -c oud-ds-rs oud-ds-rs-0 -- \
+/u01/oracle/user_projects/oud-ds-rs-0/OUD/bin/dsreplication status \
+--trustAll --hostname oud-ds-rs-0 --port 1444 --adminUID admin \
 --dataToDisplay compat-view --dataToDisplay rs-connections
 ```
 
@@ -419,8 +420,8 @@ Confirm the charts available by issuing the following command:
 
 ```
 $ helm search repo | grep nginx
-ingress-nginx/ingress-nginx     3.4.1           0.40.2          Ingress controller for Kubernetes using NGINX a...
-stable/ingress-nginx            3.4.1           0.40.2          Ingress controller for Kubernetes using NGINX a...
+ingress-nginx/ingress-nginx     4.0.1           1.0.0          Ingress controller for Kubernetes using NGINX a...
+stable/ingress-nginx            4.0.1           1.0.0          Ingress controller for Kubernetes using NGINX a...
 ```
 
 ##### Command `helm install` to install nginx-ingress related objects like pod, service, deployment, etc.
@@ -430,7 +431,7 @@ To install and configure NGINX Ingress issue the following command:
 ```
 $ helm install --namespace mynginx \
 --values nginx-ingress-values-override.yaml \
-lbr-nginx ingress-nginx/ingress-nginx
+lbr-nginx ingress-nginx/ingress-nginx --version=3.34.0
 ```
 
 Where:
@@ -440,7 +441,7 @@ Where:
 Output will be similar to the following:
 
 ```
-$ helm install --namespace mynginx --values samples/nginx-ingress-values-override.yaml lbr-nginx ingress-nginx/ingress-nginx
+$ helm install --namespace mynginx --values samples/nginx-ingress-values-override.yaml lbr-nginx ingress-nginx/ingress-nginx --version=3.34.0
 NAME: lbr-nginx
 LAST DEPLOYED: Wed Oct  7 08:07:29 2020
 NAMESPACE: mynginx
@@ -500,9 +501,9 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 # <PortNumber>: <Namespace>/<Service>
 tcp: 
   # Map 1389 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port
-  1389: myhelmns/my-oud-ds-rs-lbr-ldap:ldap
+  1389: oudns/oud-ds-rs-lbr-ldap:ldap
   # Map 1636 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port
-  1636: myhelmns/my-oud-ds-rs-lbr-ldap:ldaps
+  1636: oudns/oud-ds-rs-lbr-ldap:ldaps
 controller:
   admissionWebhooks:
     enabled: false
@@ -510,7 +511,7 @@ controller:
     # The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.
     # If this flag is not provided NGINX will use a self-signed certificate.
     # If the TLS Secret is in different namespace, name can be mentioned as <namespace>/<tlsSecretName>
-    default-ssl-certificate: myhelmns/my-oud-ds-rs-tls-cert
+    default-ssl-certificate: oudns/oud-ds-rs-tls-cert
   service:
     # controller service external IP addresses
     # externalIPs:
@@ -533,7 +534,7 @@ controller:
         1636: 31636
 ```
 
-* The configuration above assumes that you have `oud-ds-rs` installed with value `my-oud-ds-rs` as a deployment/release name.
+* The configuration above assumes that you have `oud-ds-rs` installed with value `oud-ds-rs` as a deployment/release name.
 * Based on the deployment/release name in your environment, TCP port mapping may be required to be changed/updated.
 
 ##### Optional: Command `helm upgrade` to update nginx-ingress related objects like pod, service, deployment, etc.
@@ -542,10 +543,11 @@ If required, an nginx-ingress deployment can be updated/upgraded with following 
 
 ```
 $ helm upgrade --namespace mynginx \
---values nginx-ingress-values-override.yaml \
-lbr-nginx ingress-nginx/nginx-ingress
+--values /samples/nginx-ingress-values-override.yaml \
+lbr-nginx ingress-nginx/ingress-nginx --version=3.34.0
 ```
 
+helm upgrade --namespace mynginx --values samples/nginx-ingress-values-override.yaml lbr-nginx ingress-nginx/nginx-ingress --version=3.34.0
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
 * The `--values` argument passes a file path/name which overrides values in the chart. 
 
@@ -557,30 +559,30 @@ lbr-nginx ingress-nginx/nginx-ingress
 # <PortNumber>: <Namespace>/<Service>
 tcp: 
   # Map 1389 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port
-  1389: myhelmns/my-oud-ds-rs-lbr-ldap:ldap
+  1389: oudns/oud-ds-rs-lbr-ldap:ldap
   # Map 1636 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port
-  1636: myhelmns/my-oud-ds-rs-lbr-ldap:ldaps
+  1636: oudns/oud-ds-rs-lbr-ldap:ldaps
   # Map specific ports for LDAP and LDAPS communication from individual Services/Pods
-  # To redirect requests on 3890 port to myhelmns/my-oud-ds-rs-ldap-0:ldap
-  3890: myhelmns/my-oud-ds-rs-ldap-0:ldap
-  # To redirect requests on 6360 port to myhelmns/my-oud-ds-rs-ldaps-0:ldap
-  6360: myhelmns/my-oud-ds-rs-ldap-0:ldaps
-  # To redirect requests on 3891 port to myhelmns/my-oud-ds-rs-ldap-1:ldap
-  3891: myhelmns/my-oud-ds-rs-ldap-1:ldap
-  # To redirect requests on 6361 port to myhelmns/my-oud-ds-rs-ldaps-1:ldap
-  6361: myhelmns/my-oud-ds-rs-ldap-1:ldaps
-  # To redirect requests on 3892 port to myhelmns/my-oud-ds-rs-ldap-2:ldap
-  3892: myhelmns/my-oud-ds-rs-ldap-2:ldap
-  # To redirect requests on 6362 port to myhelmns/my-oud-ds-rs-ldaps-2:ldap
-  6362: myhelmns/my-oud-ds-rs-ldap-2:ldaps
+  # To redirect requests on 3890 port to oudns/oud-ds-rs-ldap-0:ldap
+  3890: oudns/oud-ds-rs-ldap-0:ldap
+  # To redirect requests on 6360 port to oudns/oud-ds-rs-ldaps-0:ldap
+  6360: oudns/oud-ds-rs-ldap-0:ldaps
+  # To redirect requests on 3891 port to oudns/oud-ds-rs-ldap-1:ldap
+  3891: oudns/oud-ds-rs-ldap-1:ldap
+  # To redirect requests on 6361 port to oudns/oud-ds-rs-ldaps-1:ldap
+  6361: oudns/oud-ds-rs-ldap-1:ldaps
+  # To redirect requests on 3892 port to oudns/oud-ds-rs-ldap-2:ldap
+  3892: oudns/oud-ds-rs-ldap-2:ldap
+  # To redirect requests on 6362 port to oudns/oud-ds-rs-ldaps-2:ldap
+  6362: oudns/oud-ds-rs-ldap-2:ldaps
   # Map 1444 TCP port to LBR Admin service to get requests handled through any available POD/Endpoint serving Admin LDAPS Port
-  1444: myhelmns/my-oud-ds-rs-lbr-admin:adminldaps
-  # To redirect requests on 4440 port to myhelmns/my-oud-ds-rs-0:adminldaps
-  4440: myhelmns/my-oud-ds-rs-0:adminldaps
-  # To redirect requests on 4441 port to myhelmns/my-oud-ds-rs-1:adminldaps
-  4441: myhelmns/my-oud-ds-rs-1:adminldaps
-  # To redirect requests on 4442 port to myhelmns/my-oud-ds-rs-2:adminldaps
-  4442: myhelmns/my-oud-ds-rs-2:adminldaps
+  1444: oudns/oud-ds-rs-lbr-admin:adminldaps
+  # To redirect requests on 4440 port to oudns/oud-ds-rs-0:adminldaps
+  4440: oudns/oud-ds-rs-0:adminldaps
+  # To redirect requests on 4441 port to oudns/oud-ds-rs-1:adminldaps
+  4441: oudns/oud-ds-rs-1:adminldaps
+  # To redirect requests on 4442 port to oudns/oud-ds-rs-2:adminldaps
+  4442: oudns/oud-ds-rs-2:adminldaps
 controller:
   admissionWebhooks:
     enabled: false
@@ -588,7 +590,7 @@ controller:
     # The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.
     # If this flag is not provided NGINX will use a self-signed certificate.
     # If the TLS Secret is in different namespace, name can be mentioned as <namespace>/<tlsSecretName>
-    default-ssl-certificate: myhelmns/my-oud-ds-rs-tls-cert
+    default-ssl-certificate: oudns/oud-ds-rs-tls-cert
   service:
     # controller service external IP addresses
     # externalIPs:
@@ -631,7 +633,7 @@ controller:
         4442: 30442
 ```
 
-* The configuration above assumes that you have `oud-ds-rs` installed with value `my-oud-ds-rs` as a deployment/release name.
+* The configuration above assumes that you have `oud-ds-rs` installed with value `oud-ds-rs` as a deployment/release name.
 * Based on the deployment/release name in your environment, TCP port mapping may be required to be changed/updated.
 
 #### Ingress with Voyager
@@ -660,17 +662,17 @@ Using the Helm chart, Ingress objects are also created according to configuratio
 
 | **Port** | **NodePort** | **Host** | **Example Hostname** | **Path** | **Backend Service:Port** | **Example Service Name:Port** | 
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |  
-| http/https | 30080/30443 | <deployment/release name>-admin-0 | my-oud-ds-rs-admin-0 | * | <deployment/release name>-0:adminhttps | my-oud-ds-rs-0:adminhttps | 
-| http/https | 30080/30443 | <deployment/release name>-admin-N | my-oud-ds-rs-admin-N | * | <deployment/release name>-N:adminhttps | my-oud-ds-rs-1:adminhttps | 
-| http/https | 30080/30443 | <deployment/release name>-admin | my-oud-ds-rs-admin | * | <deployment/release name>-lbr-admin:adminhttps | my-oud-ds-rs-lbr-admin:adminhttps | 
-| http/https | 30080/30443 | * | * | /rest/v1/admin | <deployment/release name>-lbr-admin:adminhttps | my-oud-ds-rs-lbr-admin:adminhttps | 
-| http/https | 30080/30443 | <deployment/release name>-http-0 | my-oud-ds-rs-http-0 | * | <deployment/release name>-http-0:http | my-oud-ds-rs-http-0:http | 
-| http/https | 30080/30443 | <deployment/release name>-http-N | my-oud-ds-rs-http-N | * | <deployment/release name>-http-N:http | my-oud-ds-rs-http-N:http | 
-| http/https | 30080/30443 | <deployment/release name>-http | my-oud-ds-rs-http | * | <deployment/release name>-lbr-http:http | my-oud-ds-rs-lbr-http:http | 
-| http/https | 30080/30443 | * | * | /rest/v1/directory | <deployment/release name>-lbr-http:http | my-oud-ds-rs-lbr-http:http | 
-| http/https | 30080/30443 | * | * | /iam/directory | <deployment/release name>-lbr-http:http | my-oud-ds-rs-lbr-http:http | 
+| http/https | 30080/30443 | <deployment/release name>-admin-0 | oud-ds-rs-admin-0 | * | <deployment/release name>-0:adminhttps | oud-ds-rs-0:adminhttps | 
+| http/https | 30080/30443 | <deployment/release name>-admin-N | oud-ds-rs-admin-N | * | <deployment/release name>-N:adminhttps | oud-ds-rs-1:adminhttps | 
+| http/https | 30080/30443 | <deployment/release name>-admin | oud-ds-rs-admin | * | <deployment/release name>-lbr-admin:adminhttps | oud-ds-rs-lbr-admin:adminhttps | 
+| http/https | 30080/30443 | * | * | /rest/v1/admin | <deployment/release name>-lbr-admin:adminhttps | oud-ds-rs-lbr-admin:adminhttps | 
+| http/https | 30080/30443 | <deployment/release name>-http-0 | oud-ds-rs-http-0 | * | <deployment/release name>-http-0:http | oud-ds-rs-http-0:http | 
+| http/https | 30080/30443 | <deployment/release name>-http-N | oud-ds-rs-http-N | * | <deployment/release name>-http-N:http | oud-ds-rs-http-N:http | 
+| http/https | 30080/30443 | <deployment/release name>-http | oud-ds-rs-http | * | <deployment/release name>-lbr-http:http | oud-ds-rs-lbr-http:http | 
+| http/https | 30080/30443 | * | * | /rest/v1/directory | <deployment/release name>-lbr-http:http | oud-ds-rs-lbr-http:http | 
+| http/https | 30080/30443 | * | * | /iam/directory | <deployment/release name>-lbr-http:http | oud-ds-rs-lbr-http:http | 
 
-> In the table above, example values are based on the value 'my-oud-ds-rs' as the deployment/release name for Helm chart installation.<br>
+> In the table above, example values are based on the value 'oud-ds-rs' as the deployment/release name for Helm chart installation.<br>
 > The NodePorts mentioned in the table are according to Ingress configuration described in previous section.<br>
 > When External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on a Kubernetes Node.
 
@@ -678,20 +680,20 @@ For LDAP/LDAPS access (based on the updated/upgraded configuration mentioned in 
 
 | **Port** | **NodePort** | **Backend Service:Port** | **Example Service Name:Port** | 
 | ------ | ------ | ------ | ------ | 
-| 1389 | 31389 | <deployment/release name>-lbr-ldap:ldap | my-oud-ds-rs-lbr-ldap:ldap | 
-| 1636 | 31636 | <deployment/release name>-lbr-ldap:ldap | my-oud-ds-rs-lbr-ldap:ldaps |
-| 1444 | 31444 | <deployment/release name>-lbr-admin:adminldaps | my-oud-ds-rs-lbr-admin:adminldaps |
-| 3890 | 30890 | <deployment/release name>-ldap-0:ldap | my-oud-ds-rs-ldap-0:ldap | 
-| 6360 | 30360 | <deployment/release name>-ldap-0:ldaps | my-oud-ds-rs-ldap-0:ldaps | 
-| 3891 | 30891 | <deployment/release name>-ldap-1:ldap | my-oud-ds-rs-ldap-1:ldap | 
-| 6361 | 30361 | <deployment/release name>-ldap-1:ldaps | my-oud-ds-rs-ldap-1:ldaps | 
-| 3892 | 30892 | <deployment/release name>-ldap-2:ldap | my-oud-ds-rs-ldap-2:ldap | 
-| 6362 | 30362 | <deployment/release name>-ldap-2:ldaps | my-oud-ds-rs-ldap-2:ldaps |
-| 4440 | 30440 | <deployment/release name>-0:adminldaps | my-oud-ds-rs-ldap-0:adminldaps |
-| 4441 | 30441 | <deployment/release name>-1:adminldaps | my-oud-ds-rs-ldap-1:adminldaps |
-| 4442 | 30442 | <deployment/release name>-2:adminldaps | my-oud-ds-rs-ldap-2:adminldaps |
+| 1389 | 31389 | <deployment/release name>-lbr-ldap:ldap | oud-ds-rs-lbr-ldap:ldap | 
+| 1636 | 31636 | <deployment/release name>-lbr-ldap:ldap | oud-ds-rs-lbr-ldap:ldaps |
+| 1444 | 31444 | <deployment/release name>-lbr-admin:adminldaps | oud-ds-rs-lbr-admin:adminldaps |
+| 3890 | 30890 | <deployment/release name>-ldap-0:ldap | oud-ds-rs-ldap-0:ldap | 
+| 6360 | 30360 | <deployment/release name>-ldap-0:ldaps | oud-ds-rs-ldap-0:ldaps | 
+| 3891 | 30891 | <deployment/release name>-ldap-1:ldap | oud-ds-rs-ldap-1:ldap | 
+| 6361 | 30361 | <deployment/release name>-ldap-1:ldaps | oud-ds-rs-ldap-1:ldaps | 
+| 3892 | 30892 | <deployment/release name>-ldap-2:ldap | oud-ds-rs-ldap-2:ldap | 
+| 6362 | 30362 | <deployment/release name>-ldap-2:ldaps | oud-ds-rs-ldap-2:ldaps |
+| 4440 | 30440 | <deployment/release name>-0:adminldaps | oud-ds-rs-ldap-0:adminldaps |
+| 4441 | 30441 | <deployment/release name>-1:adminldaps | oud-ds-rs-ldap-1:adminldaps |
+| 4442 | 30442 | <deployment/release name>-2:adminldaps | oud-ds-rs-ldap-2:adminldaps |
 
-* In the table above, example values are based on value 'my-oud-ds-rs' as the deployment/release name for helm chart installation.
+* In the table above, example values are based on value 'oud-ds-rs' as the deployment/release name for helm chart installation.
 * The NodePorts mentioned in the table are according to Ingress configuration described in previous section.
 * When external LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on a Kubernetes Node.
 
@@ -700,11 +702,11 @@ For LDAP/LDAPS access (based on the updated/upgraded configuration mentioned in 
 If it is not possible to have a LoadBalancer configuration updated to have host names added for Oracle Unified Directory Interfaces then the following entries can be added in /etc/hosts files on host from where Oracle Unified Directory interfaces will be accessed. 
 
 ```
-<IP Address of External LBR or Kubernetes Node>	my-oud-ds-rs-http my-oud-ds-rs-http-0 my-oud-ds-rs-http-1 my-oud-ds-rs-http-2 my-oud-ds-rs-http-N
-<IP Address of External LBR or Kubernetes Node>	my-oud-ds-rs-admin my-oud-ds-rs-admin-0 my-oud-ds-rs-admin-1 my-oud-ds-rs-admin-2 my-oud-ds-rs-admin-N
+<IP Address of External LBR or Kubernetes Node>	oud-ds-rs-http oud-ds-rs-http-0 oud-ds-rs-http-1 oud-ds-rs-http-2 oud-ds-rs-http-N
+<IP Address of External LBR or Kubernetes Node>	oud-ds-rs-admin oud-ds-rs-admin-0 oud-ds-rs-admin-1 oud-ds-rs-admin-2 oud-ds-rs-admin-N
 ```
 
-* In the table above, host names are based on the value 'my-oud-ds-rs' as the deployment/release name for Helm chart installation.
+* In the table above, host names are based on the value 'oud-ds-rs' as the deployment/release name for Helm chart installation.
 * When External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on Kubernetes Node.
 
 #### Validate access 
@@ -767,14 +769,14 @@ b) Command to invoke Data REST API against specific Oracle Unified Directory Int
 
 ```
 $ curl --noproxy "*" --location \
---request GET 'https://my-oud-ds-rs-http-0/rest/v1/directory/uid=user.1,ou=People,dc=example,dc=com?scope=sub&attributes=*' \
+--request GET 'https://oud-ds-rs-http-0/rest/v1/directory/uid=user.1,ou=People,dc=example,dc=com?scope=sub&attributes=*' \
 --header 'Authorization: Basic <Base64 of userDN:userPassword>' | json_pp
 ```
 
 * `| json_pp` is used to format output in readable json format on the client side. It can be ignored if you do not have the `json_pp` library.
 * Base64 of userDN:userPassword can be generated using `echo -n "userDN:userPassword" | base64`.
-* For this example, it is assumed that the value 'my-oud-ds-rs' is used as the deployment/release name for helm chart installation.
-* It is assumed that 'my-oud-ds-rs-http-0' points to an External LoadBalancer
+* For this example, it is assumed that the value 'oud-ds-rs' is used as the deployment/release name for helm chart installation.
+* It is assumed that 'oud-ds-rs-http-0' points to an External LoadBalancer
 
 ##### HTTPS/REST API against Kubernetes NodePort for Ingress Controller Service
 
@@ -895,14 +897,14 @@ b) Command to invoke Data SCIM API against specific Oracle Unified Directory Int
 
 ```
 $ curl --noproxy "*" --location \
---request GET 'https://my-oud-ds-rs-http-0:30443/iam/directory/oud/scim/v1/Users' \
+--request GET 'https://oud-ds-rs-http-0:30443/iam/directory/oud/scim/v1/Users' \
 --header 'Authorization: Basic <Base64 of userDN:userPassword>' | json_pp
 ```
 
 * `| json_pp` is used to format output in readable json format on the client side. It can be ignored if you do not have the `json_pp` library.
 * Base64 of userDN:userPassword can be generated using `echo -n "userDN:userPassword" | base64`.
-* For this example, it is assumed that the value 'my-oud-ds-rs' is used as the deployment/release name for helm chart installation.
-* It is assumed that 'my-oud-ds-rs-http-0' points to an External LoadBalancer
+* For this example, it is assumed that the value 'oud-ds-rs' is used as the deployment/release name for helm chart installation.
+* It is assumed that 'oud-ds-rs-http-0' points to an External LoadBalancer
 
 ##### HTTPS/REST Admin API
 
@@ -953,7 +955,7 @@ b) Command to invoke Admin REST API against specific Oracle Unified Directory Ad
 
 ```
 $ curl --noproxy "*" --insecure --location \
---request GET 'https://my-oud-ds-rs-admin-0/rest/v1/admin/?scope=base&attributes=vendorName&attributes=vendorVersion&attributes=ds-private-naming-contexts&attributes=subschemaSubentry' \
+--request GET 'https://oud-ds-rs-admin-0/rest/v1/admin/?scope=base&attributes=vendorName&attributes=vendorVersion&attributes=ds-private-naming-contexts&attributes=subschemaSubentry' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Basic <Base64 of userDN:userPassword>' | json_pp
 ```
@@ -965,7 +967,7 @@ c) Command to invoke Admin REST API against Kubernetes NodePort for Ingress Cont
 
 ```
 $ curl --noproxy "*" --insecure --location \
---request GET 'https://my-oud-ds-rs-admin-0:30443/rest/v1/admin/?scope=base&attributes=vendorName&attributes=vendorVersion&attributes=ds-private-naming-contexts&attributes=subschemaSubentry' \
+--request GET 'https://oud-ds-rs-admin-0:30443/rest/v1/admin/?scope=base&attributes=vendorName&attributes=vendorVersion&attributes=ds-private-naming-contexts&attributes=subschemaSubentry' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Basic <Base64 of userDN:userPassword>' | json_pp
 ```

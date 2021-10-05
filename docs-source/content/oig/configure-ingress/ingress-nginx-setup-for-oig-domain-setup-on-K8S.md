@@ -76,7 +76,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    a) Using NodePort
 
    ```
-   $ helm install nginx-ingress -n nginx --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginx --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    ```    
 
    The output will look similar to the following:
@@ -138,7 +138,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    b) Using LoadBalancer
 
    ```
-   $ helm install nginx-ingress -n nginx --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginx --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    ```
 
    The output will look similar to the following:
@@ -202,7 +202,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    $ vi values.yaml
    ```
 
-   Edit `values.yaml` and ensure that `type=NGINX` and `tls=NONSSL` are set, for example:
+   Edit `values.yaml` and ensure that `type=NGINX` and `tls=NONSSL` are set. Change the `domainUID` to the value of the domain e.g `governancedomain`, for example:
    
    ```
    $ cat values.yaml
@@ -225,18 +225,13 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    # WLS domain as backend to the load balancer
    wlsDomain:
-     domainUID: oimcluster
+     domainUID: governancedomain
      oimClusterName: oim_cluster
      soaClusterName: soa_cluster
      soaManagedServerPort: 8001
      oimManagedServerPort: 14000
      adminServerName: adminserver
      adminServerPort: 7001
-
-   # Traefik specific values
-   # traefik:
-     # hostname used by host-routing
-     # hostname: idmdemo.m8y.xyz
 
    # Voyager specific values
    voyager:
@@ -249,11 +244,11 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
 ### Create an Ingress for the Domain
 
-1. Create an Ingress for the domain (`oimcluster-nginx`), in the domain namespace by using the sample Helm chart:
+1. Create an Ingress for the domain (`governancedomain-nginx`), in the domain namespace by using the sample Helm chart:
 
    ```
    $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace <namespace> --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-nginx kubernetes/samples/charts/ingress-per-domain --namespace <namespace> --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
   
    **Note**: The `<work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml` has `nginx.ingress.kubernetes.io/enable-access-log` set to `false`. If you want to enable access logs then set this value to `true` before executing the command. Enabling access-logs can cause issues with disk space if not regularly maintained.   
@@ -262,16 +257,16 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    
    ```
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace oimcluster --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-nginx kubernetes/samples/charts/ingress-per-domain --namespace oigns --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
    
    The output will look similar to the following:
 
    ```
-   $ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace oimcluster --values kubernetes/samples/charts/ingress-per-domain/values.yaml
-   NAME: oimcluster-nginx
+   $ helm install governancedomain-nginx kubernetes/samples/charts/ingress-per-domain --namespace oigns --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   NAME: governancedomain-nginx
    LAST DEPLOYED:  Tue Sep 29 08:10:06 2020
-   NAMESPACE: oimcluster
+   NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -286,14 +281,14 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    For example:
    
    ```
-   $ kubectl get ing -n oimcluster
+   $ kubectl get ing -n oigns
    ```
    
    The output will look similar to the following:
 
    ```
-   NAME               CLASS    HOSTS   ADDRESS   PORTS   AGE
-   oimcluster-nginx   <none>   *                 80      47s
+   NAME                     CLASS    HOSTS   ADDRESS   PORTS   AGE
+   governancedomain-nginx   <none>   *       x.x.x.x   80      47s
    ```
    
 1. Find the NodePort of NGINX using the following command (only if you installed NGINX using NodePort):
@@ -317,33 +312,33 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    For example:
    
    ```
-   $ kubectl describe ing oimcluster-nginx -n oimcluster
+   $ kubectl describe ing governancedomain-nginx -n oigns
    ```
    
    The output will look similar to the following:
 
    ```
-   Name:             oimcluster-nginx
-   Namespace:        oimcluster
+   Name:             governancedomain-nginx
+   Namespace:        oigns
    Address:          10.97.68.171
    Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
    Rules:
      Host        Path  Backends
      ----        ----  --------
      *
-                 /console       oimcluster-adminserver:7001 (10.244.1.42:7001)
-                 /em            oimcluster-adminserver:7001 (10.244.1.42:7001)
-                 /soa           oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
-                 /integration   oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
-                 /soa-infra     oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
-                                oimcluster-cluster-oim-cluster:14000 (10.244.1.44:14000)
-   Annotations:  meta.helm.sh/release-name: oimcluster-nginx
-                 meta.helm.sh/release-namespace: oimcluster
+                 /console       governancedomain-adminserver:7001 (10.244.1.42:7001)
+                 /em            governancedomain-adminserver:7001 (10.244.1.42:7001)
+                 /soa           governancedomain-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                 /integration   governancedomain-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                 /soa-infra     governancedomain-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                                governancedomain-cluster-oim-cluster:14000 (10.244.1.44:14000)
+   Annotations:  meta.helm.sh/release-name: governancedomain-nginx
+                 meta.helm.sh/release-namespace: oigns
    Events:
      Type    Reason  Age   From                      Message
      ----    ------  ----  ----                      -------
-     Normal  CREATE  53s   nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx
-     Normal  UPDATE  42s   nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx
+     Normal  CREATE  53s   nginx-ingress-controller  Ingress oigns/governancedomain-nginx
+     Normal  UPDATE  42s   nginx-ingress-controller  Ingress oigns/governancedomain-nginx
    ```
 
 1. To confirm that the new Ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the "WebLogic ReadyApp framework":
@@ -396,7 +391,7 @@ After setting up the NGINX ingress, verify that the domain applications are acce
 If you need to remove the NGINX Ingress (for example to setup NGINX with SSL) then remove the ingress with the following commands:
 
 ```
-$ helm delete oimcluster-nginx -n oimcluster
+$ helm delete governancedomain-nginx -n oigns
 
 $ helm delete nginx-ingress -n nginx
 
@@ -407,13 +402,12 @@ $ kubectl delete namespace nginx
 The output will look similar to the following:
 
 ```
-$ helm delete oimcluster-nginx -n oimcluster
-release "oimcluster-nginx" uninstalled
+$ helm delete governancedomain-nginx -n oigns
+release "governancedomain-nginx" uninstalled
 
 $ helm delete nginx-ingress -n nginx
 release "nginx-ingress" uninstalled
 
 $ kubectl delete namespace nginx
 namespace "nginx" deleted
-$
 ```

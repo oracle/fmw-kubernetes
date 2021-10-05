@@ -10,7 +10,7 @@ Once the new image is installed, choose one of the following options to update y
 1. Run the `kubectl edit domain` command
 2. Run the `kubectl patch domain` command
 
-In all of the above cases, the Oracle WebLogic Server Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
+In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
 
 
 ### Run the kubectl edit domain command
@@ -24,7 +24,7 @@ In all of the above cases, the Oracle WebLogic Server Kubernetes Operator will r
    For example:
 
    ```bash
-   $ kubectl edit domain accessinfra -n accessns
+   $ kubectl edit domain accessdomain -n oamns
    ```
 
 1. Update the `image` tag to point at the new image, for example:
@@ -50,11 +50,11 @@ In all of the above cases, the Oracle WebLogic Server Kubernetes Operator will r
    For example:
 
    ```bash
-   $ kubectl patch domain accessinfra -n accessns --type merge  -p '{"spec":{"image":"oracle/oam:12.2.1.4-new"}}'
+   $ kubectl patch domain accessdomain -n oamns --type merge  -p '{"spec":{"image":"oracle/oam:12.2.1.4-new"}}'
    ```
 
    The output will look similar to the following:
 
    ```bash
-   domain.weblogic.oracle/oimcluster patched
+   domain.weblogic.oracle/accessdomain patched
    ```
