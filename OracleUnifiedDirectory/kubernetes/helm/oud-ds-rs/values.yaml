@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -153,8 +153,18 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
-
+affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: "kubernetes.io/hostname"
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - oud-ds-rs
 # Configuration for Persistent Volume and Persistent Volume Claim for user_projects
 # PV/PVC associated with this configuration would be mounted inside containers at /u01/oracle/user_projects
 persistence:
