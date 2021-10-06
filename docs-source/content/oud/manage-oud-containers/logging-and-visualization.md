@@ -16,7 +16,7 @@ description: "Describes the steps for logging and visualization with Elasticsear
 
 ### Introduction
 
-This section describes how to install and configure logging and visualization for the [oud-ds-rs]({{< relref "/oud/create-oud-instances-helm/oud-ds-rs" >}}) Helm Chart deployment.
+This section describes how to install and configure logging and visualization for the [oud-ds-rs]({{< relref "/oud/create-oud-instances/create-oud-instances-helm/oud-ds-rs" >}}) Helm Chart deployment.
 
 The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK we can gain insights in real-time from the log data from your applications.
 
@@ -67,7 +67,7 @@ $ helm install --namespace <namespace> --values <valuesfile.yaml> <releasename> 
 For example:
 
 ```
-$ helm install --namespace myhelmns --values logging-override-values.yaml my-oud-ds-rs oud-ds-rs
+$ helm install --namespace oudns --values logging-override-values.yaml oud-ds-rs oud-ds-rs
 
 ```
 
@@ -80,7 +80,7 @@ $ helm upgrade --namespace <namespace> --values <valuesfile.yaml> <releasename> 
 For example:
 
 ```
-$ helm upgrade --namespace myhelmns --values logging-override-values.yaml my-oud-ds-rs oud-ds-rs
+$ helm upgrade --namespace oudns --values logging-override-values.yaml oud-ds-rs oud-ds-rs
 ```
 
 #### Configure ElasticSearch
@@ -94,23 +94,23 @@ $ kubectl get pods -o wide -n <namespace>
 For example:
 
 ```
-$ kubectl get pods -o wide -n myhelmns
+$ kubectl get pods -o wide -n oudns
 ```
 
 Output will be similar to the following:
 
 ```
-$ kubectl get pods -o wide -n myhelmns
-NAME                                     READY   STATUS    RESTARTS   AGE   IP             NODE           NOMINATED NODE   READINESS GATES
-my-oud-ds-rs-0                           1/1     Running   0          39m   10.244.1.107   10.89.73.203   <none>           <none>
-my-oud-ds-rs-1                           1/1     Running   0          39m   10.244.1.108   10.89.73.203   <none>           <none>
-my-oud-ds-rs-2                           1/1     Running   0          39m   10.244.1.106   10.89.73.203   <none>           <none>
-my-oud-ds-rs-es-cluster-0                1/1     Running   0          39m   10.244.1.109   10.89.73.203   <none>           <none>
-my-oud-ds-rs-kibana-665f9d5fb-pmz4v      1/1     Running   0          39m   10.244.1.110   10.89.73.203   <none>           <none>
-my-oud-ds-rs-logstash-756fd7c5f5-kvwrw   1/1     Running   0          39m   10.244.2.103   10.89.73.204   <none>           <none>
+$ kubectl get pods -o wide -n oudns
+NAME                                  READY   STATUS    RESTARTS   AGE   IP             NODE           NOMINATED NODE   READINESS GATES
+oud-ds-rs-0                           1/1     Running   0          39m   10.244.1.107   10.89.73.203   <none>           <none>
+oud-ds-rs-1                           1/1     Running   0          39m   10.244.1.108   10.89.73.203   <none>           <none>
+oud-ds-rs-2                           1/1     Running   0          39m   10.244.1.106   10.89.73.203   <none>           <none>
+oud-ds-rs-es-cluster-0                1/1     Running   0          39m   10.244.1.109   10.89.73.203   <none>           <none>
+oud-ds-rs-kibana-665f9d5fb-pmz4v      1/1     Running   0          39m   10.244.1.110   10.89.73.203   <none>           <none>
+oud-ds-rs-logstash-756fd7c5f5-kvwrw   1/1     Running   0          39m   10.244.2.103   10.89.73.204   <none>           <none>
 ```
 
-From this, identify the ElastiSearch POD, `my-oud-ds-rs-es-cluster-0`.
+From this, identify the ElastiSearch POD, `oud-ds-rs-es-cluster-0`.
 
 Run the `port-forward` command to allow ElasticSearch to be listening on port 9200:
 
@@ -121,7 +121,7 @@ $ kubectl port-forward oud-ds-rs-es-cluster-0 9200:9200 --namespace=<namespace> 
 For example:
 
 ```
-$ kubectl port-forward my-oud-ds-rs-es-cluster-0 9200:9200 --namespace=myhelmns &
+$ kubectl port-forward oud-ds-rs-es-cluster-0 9200:9200 --namespace=oudns &
 [1] 98458
 bash-4.2$ Forwarding from 127.0.0.1:9200 -> 9200
 Forwarding from [::1]:9200 -> 9200
@@ -162,13 +162,13 @@ $ kubectl get svc -o wide -n <namespace> | grep kibana
 For example:
 
 ```
-$ kubectl get svc -o wide -n myhelmns | grep kibana
+$ kubectl get svc -o wide -n oudns | grep kibana
 ```
 
 Output will be similar to the following:
 
 ```
-my-oud-ds-rs-kibana             NodePort    10.103.169.218   <none>        5601:31199/TCP               67m   app=kibana
+oud-ds-rs-kibana             NodePort    10.103.169.218   <none>        5601:31199/TCP               67m   app=kibana
 ```
 
 In this example, the port to access Kibana application via a Web browser will be `31199`.

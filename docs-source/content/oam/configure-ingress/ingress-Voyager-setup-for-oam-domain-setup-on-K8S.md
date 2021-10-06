@@ -12,7 +12,7 @@ The instructions below explain how to set up Voyager as an Ingress for the OAM d
 1. [Generate a SSL Certificate](#generate-a-ssl-certificate)
 2. [Install Voyager](#install-voyager)
 3. [Create an Ingress for the Domain](#create-an-ingress-for-the-domain)
-4. [Verify that You can Access the Domain URL](#verify-that-you-can-access-the-domain-url)
+4. [Verify that you can access the domain URL](#verify-that-you-can-access-the-domain-url)
 
 
 #### Generate a SSL Certificate
@@ -50,37 +50,25 @@ The instructions below explain how to set up Voyager as an Ingress for the OAM d
 2. Create a secret for SSL by running the following command:
 
    ```bash
-   $ kubectl -n accessns create secret tls <domain_uid>-tls-cert --key <work directory>/tls.key --cert <work directory>/tls.crt
+   $ kubectl -n oamns create secret tls <domain_uid>-tls-cert --key <work directory>/tls.key --cert <work directory>/tls.crt
    ```
    
    For example:
    
    ```bash
-   $ kubectl -n accessns create secret tls accessinfra-tls-cert --key /scratch/OAMDockerK8S/ssl/tls.key --cert /scratch/OAMDockerK8S/ssl/tls.crt
+   $ kubectl -n oamns create secret tls accessdomain-tls-cert --key /scratch/OAMDockerK8S/ssl/tls.key --cert /scratch/OAMDockerK8S/ssl/tls.crt
    ```
    
    The output will look similar to the following:
    
    ```bash
-   secret/accessinfra-tls-cert created
+   secret/accessdomain-tls-cert created
    ```
    
    
 #### Install Voyager
 
 Use helm to install Voyager.
-
-1. Add the helm chart repository for Voyager using the following command:
-
-   ```bash
-   $ helm repo add googleapis https://kubernetes-charts.storage.googleapis.com/
-   ```
-   
-   The output will look similar to the following:
-   
-   ```bash
-   "googleapis" has been added to your repositories
-   ```
 
 1. Add the appscode chart repository using the following command:
 
@@ -174,7 +162,7 @@ Use helm to install Voyager.
    $ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain
    ```
    
-   Edit `values.yaml` and change to `domainUID: <domain_UID>`, for example `domainUID: accessinfra`.
+   Edit `values.yaml` and change `Namespace: <domain namespace>`, for example `Namespace: oamns`. Also change `domainUID: <domain_UID>`, for example `domainUID: accessdomain`.
    
 1. Navigate to the following directory:
  
@@ -217,7 +205,7 @@ Use helm to install Voyager.
        rules:
        - http-request set-header WL-Proxy-SSL true
      tls:
-     - secretName: accessinfra-tls-cert
+     - secretName: accessdomain-tls-cert
        hosts:
        - '*'
    {{- end }}
@@ -236,14 +224,14 @@ Use helm to install Voyager.
    
    ```bash
    $ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator
-   $ helm install oam-voyager-ingress kubernetes/samples/charts/ingress-per-domain  --namespace accessns  --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install oam-voyager-ingress kubernetes/samples/charts/ingress-per-domain  --namespace oamns  --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
    
    The output will look similar to the following:
    ```bash
    NAME: oam-voyager-ingress
    Fri Sep 25 01:18:01 2020
-   NAMESPACE: accessns
+   NAMESPACE: oamns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -258,34 +246,34 @@ Use helm to install Voyager.
    The output will look similar to the following:
    ```bash
    NAMESPACE   NAME                  HOSTS   LOAD_BALANCER_IP   AGE
-   accessns    accessinfra-voyager   *                          80s
+   oamns    accessdomain-voyager   *                          80s
    ```
    
 1. Find the node port of the ingress using the following command:
 
    ```bash
-   $ kubectl describe svc voyager-accessinfra-voyager -n <domain_namespace>
+   $ kubectl describe svc voyager-accessdomain-voyager -n <domain_namespace>
    ```
    
    For example:
    
    ```bash
-   $ kubectl describe svc voyager-accessinfra-voyager -n accessns
+   $ kubectl describe svc voyager-accessdomain-voyager -n oamns
    ```
    
    The output will look similar to the following:
    ```bash
-   Name:                     voyager-accessinfra-voyager
-   Namespace:                accessns
+   Name:                     voyager-accessdomain-voyager
+   Namespace:                oamns
    Labels:                   app.kubernetes.io/managed-by=Helm
                              origin=voyager
                              origin-api-group=voyager.appscode.com
-                             origin-name=accessinfra-voyager
+                             origin-name=accessdomain-voyager
                              weblogic.resourceVersion=domain-v2
    Annotations:              ingress.appscode.com/last-applied-annotation-keys:
                              ingress.appscode.com/origin-api-schema: voyager.appscode.com/v1beta1
-                             ingress.appscode.com/origin-name: accessinfra-voyager
-   Selector:                 origin-api-group=voyager.appscode.com,origin-name=accessinfra-voyager,origin=voyager
+                             ingress.appscode.com/origin-name: accessdomain-voyager
+   Selector:                 origin-api-group=voyager.appscode.com,origin-name=accessdomain-voyager,origin=voyager
    Type:                     NodePort
    IP:                       10.105.242.191
    Port:                     tcp-443  443/TCP
@@ -342,6 +330,6 @@ Use helm to install Voyager.
    * Connection #0 to host 12.345.67.89 left intact
    ```
    
-#### Verify that You can Access the Domain URL
+#### Verify that you can access the domain URL
 
 After setting up the Voyager ingress, verify that the domain applications are accessible through the Voyager ingress port (for example 30305) as per [Validate Domain URLs ]({{< relref "/oam/validate-domain-urls" >}})

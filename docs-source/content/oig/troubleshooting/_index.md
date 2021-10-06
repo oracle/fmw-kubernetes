@@ -1,7 +1,7 @@
 +++
 title = "Troubleshooting"
-weight = 9
-pre = "<b>9. </b>"
+weight = 11
+pre = "<b>11. </b>"
 description = "Sample for creating an OIG domain home on an existing PV or PVC, and the domain resource YAML file for deploying the generated OIG domain."
 +++
 
@@ -18,7 +18,7 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
    For example:
    
    ```bash
-   $ kubectl logs oimcluster-create-fmw-infra-sample-domain-job-9wqzb -n oimcluster
+   $ kubectl logs governancedomain-create-fmw-infra-sample-domain-job-9wqzb -n oigns
    ```
    
    Also run:
@@ -30,7 +30,7 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
    For example:
    
    ```bash
-   $ kubectl describe pod oimcluster-create-fmw-infra-sample-domain-job-9wqzb -n oimcluster
+   $ kubectl describe pod governancedomain-create-fmw-infra-sample-domain-job-9wqzb -n oigns
    ```
    
    Using the output you should be able to diagnose the problem and resolve the issue. 
@@ -42,12 +42,12 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
 
    ```bash
    Failed to start container "create-fmw-infra-sample-domain-job": Error response from daemon: error while creating mount source path
-   '/scratch/OIGDockerK8S/oimclusterdomainpv ': mkdir /scratch/OIGDockerK8S/oimclusterdomainpv : permission denied
+   '/scratch/OIGDockerK8S/governancedomainpv ': mkdir /scratch/OIGDockerK8S/governancedomainpv : permission denied
    ```
     
    then there is a permissions error on the directory for the PV and PVC and the following should be checked:
    
-   a) The directory has 777 permissions: `chmod -R 777 <work directory>/oimclusterdomainpv`.
+   a) The directory has 777 permissions: `chmod -R 777 <work directory>/governancedomainpv`.
    
    b) If it does have the permissions, check if an `oracle` user exists and the `uid` and `gid` equal `1000`, for example:
    
@@ -60,7 +60,7 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
    c) Edit the `<work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain-pv-pvc/create-pv-pvc-inputs.yaml` and add a slash to the end of the directory for the `weblogicDomainStoragePath` parameter:
    
    ```bash
-   weblogicDomainStoragePath: /scratch/OIGDockerK8S/oimclusterdomainpv/
+   weblogicDomainStoragePath: /scratch/OIGDockerK8S/governancedomainpv/
    ```
    
    Clean down the failed domain creation by following steps 1-4 in [Delete the OIG domain home]({{< relref "/oig/manage-oig-domains/delete-domain-home" >}}). Then 

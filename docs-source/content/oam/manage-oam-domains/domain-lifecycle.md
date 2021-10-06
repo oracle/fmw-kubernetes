@@ -6,11 +6,11 @@ pre : "<b>1. </b>"
 description: "Learn about the domain life cyle of an OAM domain."
 ---
 
-As OAM domains use the Oracle WebLogic Server Kubernetes Operator, domain lifecyle operations are managed using the Oracle WebLogic Server Kubernetes Operator itself.
+As OAM domains use the WebLogic Kubernetes Operator, domain lifecyle operations are managed using the WebLogic Kubernetes Operator itself.
 
 This document shows the basic operations for starting, stopping and scaling servers in the OAM domain. 
 
-For more detailed information refer to [Domain Life Cycle](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/domain-lifecycle/) in the [Oracle WebLogic Server Kubernetes Operator](https://oracle.github.io/weblogic-kubernetes-operator/) documentation.
+For more detailed information refer to [Domain Life Cycle](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/domain-lifecycle/) in the [WebLogic Kubernetes Operator](https://oracle.github.io/weblogic-kubernetes-operator/) documentation.
  
 {{% notice note %}}
 Do not use the WebLogic Server Administration Console or Oracle Enterprise Manager Console to start or stop servers.
@@ -33,21 +33,19 @@ $ kubectl get pods -n <domain_namespace>
 For example:
 
 ```bash
-$ kubectl get pods -n accessns
+$ kubectl get pods -n oamns
 ```
 
 The output should look similar to the following:
 
 ```bash
 NAME                                            READY   STATUS             RESTARTS   AGE
-accessinfra-adminserver                         1/1     Running     0          18h
-accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          23h
-accessinfra-oam-policy-mgr1                     1/1     Running     0          18h
-accessinfra-oam-server1                         1/1     Running     0          18h
-accessinfra-oam-server2                         1/1     Running     0          18h
-helper                                          1/1     Running     0          40h
-voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          8m47s
-bash-4.2$
+accessdomain-adminserver                         1/1     Running     0          18h
+accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          23h
+accessdomain-oam-policy-mgr1                     1/1     Running     0          18h
+accessdomain-oam-server1                         1/1     Running     0          18h
+accessdomain-oam-server2                         1/1     Running     0          18h
+helper                                           1/1     Running     0          40h
 ```
 
 ### Starting/Scaling up OAM Managed Servers
@@ -63,12 +61,12 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    For example:
 
    ```bash
-   $ kubectl edit domain accessinfra -n accessns
+   $ kubectl edit domain accessdomain -n oamns
    ```
 
    **Note**: This opens an edit session for the domain where parameters can be changed using standard `vi` commands.
 
-1. In the edit session search for "clusterName: oam_cluster" and look for the `replicas` parameter. By default the replicas parameter is set to "2" hence two OAM Managed Servers are started (`oam_server1` and `oam_server2`):
+1. In the edit session search for `clusterName: oam_cluster` and look for the `replicas` parameter. By default the replicas parameter is set to "2" hence two OAM Managed Servers are started (`oam_server1` and `oam_server2`):
 
    ```
      clusters:
@@ -111,7 +109,7 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    The output will look similar to the following:
 
    ```
-   domain.weblogic.oracle/accessinfra edited
+   domain.weblogic.oracle/accessdomain edited
    ```
    
 1. Run the following kubectl command to view the pods:  
@@ -123,38 +121,35 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    For example:
    
    ```bash
-   $ kubectl get pods -n accessns
+   $ kubectl get pods -n oamns
    ```
    
    The output will look similar to the following:
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running     0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          23h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          18h
-   accessinfra-oam-server1                         1/1     Running     0          18h
-   accessinfra-oam-server2                         1/1     Running     0          18h
-   accessinfra-oam-server3                         0/1     Running     0          6s
-   accessinfra-oam-server4                         0/1     Running     0          6s
-   helper                                          1/1     Running     0          40h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          10m
-
+   accessdomain-adminserver                         1/1     Running     0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          23h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          18h
+   accessdomain-oam-server1                         1/1     Running     0          18h
+   accessdomain-oam-server2                         1/1     Running     0          18h
+   accessdomain-oam-server3                         0/1     Running     0          6s
+   accessdomain-oam-server4                         0/1     Running     0          6s
+   helper                                           1/1     Running     0          40h
    ```
    
-   Two new pods (`accessinfra-oam-server3` and `accessinfra-oam-server4`) are started, but currently have a `READY` status of `0/1`. This means `oam_server3` and `oam_server4` are not currently running but are in the process of starting. The servers will take several minutes to start so keep executing the command until `READY` shows `1/1`:
+   Two new pods (`accessdomain-oam-server3` and `accessdomain-oam-server4`) are started, but currently have a `READY` status of `0/1`. This means `oam_server3` and `oam_server4` are not currently running but are in the process of starting. The servers will take several minutes to start so keep executing the command until `READY` shows `1/1`:
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running     0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          18h
-   accessinfra-oam-server1                         1/1     Running     0          18h
-   accessinfra-oam-server2                         1/1     Running     0          18h
-   accessinfra-oam-server3                         1/1     Running     0          5m5s
-   accessinfra-oam-server4                         1/1     Running     0          5m5s
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          15m
+   accessdomain-adminserver                         1/1     Running     0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          18h
+   accessdomain-oam-server1                         1/1     Running     0          18h
+   accessdomain-oam-server2                         1/1     Running     0          18h
+   accessdomain-oam-server3                         1/1     Running     0          5m5s
+   accessdomain-oam-server4                         1/1     Running     0          5m5s
+   helper                                           1/1     Running     0          41h
    ```
    
    **Note**: To check what is happening during server startup when `READY` is `0/1`, run the following command to view the log of the pod that is starting:
@@ -166,7 +161,7 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    For example:
    
    ```bash
-   $ kubectl logs accessinfra-oam-server3 -n accessns
+   $ kubectl logs accessdomain-oam-server3 -n oamns
    ```
 
 1. To start more OAM Policy Manager servers, repeat the previous commands but change the `replicas` parameter for the `policy_cluster`. In the example below `replicas` has been increased to "2":
@@ -187,20 +182,19 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
                      - $(CLUSTER_NAME)
    ```
 
-   After saving the changes a new pod will be started. After a few minutes it will have a `READY` status of `1/1`. In the example below `accessinfra-oam-policy-mgr2` is started:
+   After saving the changes a new pod will be started. After a few minutes it will have a `READY` status of `1/1`. In the example below `accessdomain-oam-policy-mgr2` is started:
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running     0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          18h
-   accessinfra-oam-policy-mgr2                     1/1     Running     0          4m3s
-   accessinfra-oam-server1                         1/1     Running     0          18h
-   accessinfra-oam-server2                         1/1     Running     0          18h
-   accessinfra-oam-server3                         1/1     Running     0          10m
-   accessinfra-oam-server4                         1/1     Running     0          10m
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          21m
+   accessdomain-adminserver                         1/1     Running     0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          18h
+   accessdomain-oam-policy-mgr2                     1/1     Running     0          4m3s
+   accessdomain-oam-server1                         1/1     Running     0          18h
+   accessdomain-oam-server2                         1/1     Running     0          18h
+   accessdomain-oam-server3                         1/1     Running     0          10m
+   accessdomain-oam-server4                         1/1     Running     0          10m
+   helper                                           1/1     Running     0          41h
    ```
    
 ### Stopping/Scaling down OAM Managed Servers
@@ -216,7 +210,7 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    For example:
 
    ```bash
-   $ kubectl edit domain accessinfra -n accessns
+   $ kubectl edit domain accessdomain -n oamns
    ```
 
 1. In the edit session search for "clusterName: oam_cluster" and look for the `replicas` parameter. In the example below `replicas` is set to "4", hence four OAM Managed Servers are started (oam_server1 - oam_server4):
@@ -268,38 +262,35 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    For example:
    
    ```bash
-   $ kubectl get pods -n accessns
+   $ kubectl get pods -n oamns
    ```
    
    The output will look similar to the following:
    
    ```bash
    NAME                                            READY   STATUS        RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running       0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed     0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running       0          18h
-   accessinfra-oam-policy-mgr2                     1/1     Running       0          5m21s
-   accessinfra-oam-server1                         1/1     Running       0          18h
-   accessinfra-oam-server2                         1/1     Running       0          18h
-   accessinfra-oam-server3                         1/1     Terminating   0          12m
-   accessinfra-oam-server4                         1/1     Terminating   0          12m
-   helper                                          1/1     Running       0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running       0          23m
-
+   accessdomain-adminserver                         1/1     Running       0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed     0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running       0          18h
+   accessdomain-oam-policy-mgr2                     1/1     Running       0          5m21s
+   accessdomain-oam-server1                         1/1     Running       0          18h
+   accessdomain-oam-server2                         1/1     Running       0          18h
+   accessdomain-oam-server3                         1/1     Terminating   0          12m
+   accessdomain-oam-server4                         1/1     Terminating   0          12m
+   helper                                           1/1     Running       0          41h
    ```
    
-   Two pods now have a `STATUS` of `Terminating` (accessinfra-oam-server3 and accessinfra-oam-server4). The servers will take a minute or two to stop, so keep executing the command until the pods have disappeared:
+   Two pods now have a `STATUS` of `Terminating` (accessdomain-oam-server3 and accessdomain-oam-server4). The servers will take a minute or two to stop, so keep executing the command until the pods have disappeared:
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running     0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          18h
-   accessinfra-oam-policy-mgr2                     1/1     Running     0          6m3s
-   accessinfra-oam-server1                         1/1     Running     0          18h
-   accessinfra-oam-server2                         1/1     Running     0          18h
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          23m
+   accessdomain-adminserver                         1/1     Running     0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          18h
+   accessdomain-oam-policy-mgr2                     1/1     Running     0          6m3s
+   accessdomain-oam-server1                         1/1     Running     0          18h
+   accessdomain-oam-server2                         1/1     Running     0          18h
+   helper                                           1/1     Running     0          41h
    ```
 
 1. To stop OAM Policy Manager servers, repeat the previous commands but change the `replicas` parameter for the `policy_cluster`. In the example below `replicas` has been decreased from "2" to "1":
@@ -320,31 +311,29 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
                      - $(CLUSTER_NAME)
    ```
 
-   After saving the changes one pod will move to a `STATUS` of `Terminating` (accessinfra-oam-policy-mgr2). 
+   After saving the changes one pod will move to a `STATUS` of `Terminating` (accessdomain-oam-policy-mgr2). 
    
    ```bash
    NAME                                            READY   STATUS        RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running       0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed     0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running       0          18h
-   accessinfra-oam-policy-mgr2                     1/1     Terminating   0          7m12s
-   accessinfra-oam-server1                         1/1     Running       0          18h
-   accessinfra-oam-server2                         1/1     Running       0          18h
-   helper                                          1/1     Running       0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running       0          24m
+   accessdomain-adminserver                         1/1     Running       0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed     0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running       0          18h
+   accessdomain-oam-policy-mgr2                     1/1     Terminating   0          7m12s
+   accessdomain-oam-server1                         1/1     Running       0          18h
+   accessdomain-oam-server2                         1/1     Running       0          18h
+   helper                                           1/1     Running       0          41h
    ```
    
    The server will take a minute or two to stop, so keep executing the command until the pod has disappeared:
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running     0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          18h
-   accessinfra-oam-server1                         1/1     Running     0          18h
-   accessinfra-oam-server2                         1/1     Running     0          18h
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          25m
+   accessdomain-adminserver                         1/1     Running     0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          18h
+   accessdomain-oam-server1                         1/1     Running     0          18h
+   accessdomain-oam-server2                         1/1     Running     0          18h
+   helper                                           1/1     Running     0          41h
    ```
 
 ### Stopping and Starting the AdminServer and Managed Servers   
@@ -360,7 +349,7 @@ To stop all the OAM Managed Servers and the AdminServer in one operation:
    For example:
 
    ```bash
-   $ kubectl edit domain accessinfra -n accessns
+   $ kubectl edit domain accessdomain -n oamns
    ```
    
 1. In the edit session search for `serverStartPolicy: IF_NEEDED`:
@@ -369,10 +358,10 @@ To stop all the OAM Managed Servers and the AdminServer in one operation:
        volumes:
        - name: weblogic-domain-storage-volume
          persistentVolumeClaim:
-           claimName: accessinfra-domain-pvc
+           claimName: accessdomain-domain-pvc
      serverStartPolicy: IF_NEEDED
      webLogicCredentialsSecret:
-       name: accessinfra-domain-credentials
+       name: accessdomain-domain-credentials
    ```
    
 1. Change `serverStartPolicy: IF_NEEDED` to `NEVER` as follows: 
@@ -381,10 +370,10 @@ To stop all the OAM Managed Servers and the AdminServer in one operation:
        volumes:
        - name: weblogic-domain-storage-volume
          persistentVolumeClaim:
-           claimName: accessinfra-domain-pvc
+           claimName: accessdomain-domain-pvc
      serverStartPolicy: NEVER
      webLogicCredentialsSecret:
-       name: accessinfra-domain-credentials
+       name: accessdomain-domain-credentials
    ```
    
 1. Save the file and exit (:wq!).
@@ -398,30 +387,27 @@ To stop all the OAM Managed Servers and the AdminServer in one operation:
    For example:
    
    ```bash
-   $ kubectl get pods -n accessns
+   $ kubectl get pods -n oamns
    ```
    
    The output will look similar to the following:
 
    ```bash
    NAME                                            READY   STATUS        RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Terminating   0          18h
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed     0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Terminating   0          18h
-   accessinfra-oam-server1                         1/1     Terminating   0          18h
-   accessinfra-oam-server2                         1/1     Terminating   0          18h
-   helper                                          1/1     Running       0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running       0          27m
-
+   accessdomain-adminserver                         1/1     Terminating   0          18h
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed     0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Terminating   0          18h
+   accessdomain-oam-server1                         1/1     Terminating   0          18h
+   accessdomain-oam-server2                         1/1     Terminating   0          18h
+   helper                                           1/1     Running       0          41h
    ```
    
    The AdminServer pods and Managed Server pods will move to a `STATUS` of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
 
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          28m
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   helper                                           1/1     Running     0          41h
    ```
 
 1. To start the AdminServer and Managed Servers up again, repeat the previous steps but change  `serverStartPolicy: NEVER` to `IF_NEEDED` as follows:
@@ -430,10 +416,10 @@ To stop all the OAM Managed Servers and the AdminServer in one operation:
        volumes:
        - name: weblogic-domain-storage-volume
          persistentVolumeClaim:
-           claimName: accessinfra-domain-pvc
+           claimName: accessdomain-domain-pvc
      serverStartPolicy: IF_NEEDED
      webLogicCredentialsSecret:
-       name: accessinfra-domain-credentials
+       name: accessdomain-domain-credentials
    ```
 1. Run the following kubectl command to view the pods:
 
@@ -444,28 +430,26 @@ To stop all the OAM Managed Servers and the AdminServer in one operation:
    For example:
    
    ```bash
-   $ kubectl get pods -n accessns
+   $ kubectl get pods -n oamns
    ```
 
    The output will look similar to the following:
 
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-introspect-domain-job-7qx29         1/1     Running     0          8s
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          29m
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-introspect-domain-job-7qx29         1/1     Running     0          8s
+   helper                                           1/1     Running     0          41h
    ```
    
    The AdminServer pod will start followed by the OAM Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with `READY` status `1/1` :
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE  
-   accessinfra-adminserver                         1/1     Running     0          6m4s
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          3m5s
-   accessinfra-oam-server1                         1/1     Running     0          3m5s
-   accessinfra-oam-server2                         1/1     Running     0          3m5s
-   helper                                          1/1     Running     0          41h
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          36m
+   accessdomain-adminserver                         1/1     Running     0          6m4s
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          3m5s
+   accessdomain-oam-server1                         1/1     Running     0          3m5s
+   accessdomain-oam-server2                         1/1     Running     0          3m5s
+   helper                                           1/1     Running     0          41h
    ```

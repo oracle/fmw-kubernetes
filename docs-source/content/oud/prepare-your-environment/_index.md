@@ -1,8 +1,8 @@
 +++
 title=  "Prepare Your Environment"
 date = 2019-04-18T06:46:23-05:00
-weight = 2
-pre = "<b>2. </b>"
+weight = 3
+pre = "<b>3. </b>"
 description = "Prepare your environment"
 +++
 
@@ -17,6 +17,8 @@ description = "Prepare your environment"
 If you need help setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup/).
 
 It is recommended you have a master node and one or more worker nodes. The examples in this documentation assume one master and two worker nodes.
+
+Verify that the system clocks on each host computer are synchronized. You can do this by running the date command simultaneously on all the hosts in each cluster.
 
 After creating Kubernetes clusters, you can optionally:
 

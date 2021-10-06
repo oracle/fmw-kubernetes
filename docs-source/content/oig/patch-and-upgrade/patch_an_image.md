@@ -10,7 +10,7 @@ Once the new image is installed choose one of the following options to update yo
 1. Run the `kubectl edit domain` command
 2. Run the `kubectl patch domain` command
 
-In all of the above cases, the Oracle WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OIG Managed Servers.
+In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OIG Managed Servers.
 
 
 ### Run the kubectl edit domain command
@@ -24,7 +24,7 @@ In all of the above cases, the Oracle WebLogic Kubernetes Operator will restart 
    For example:
 
    ```bash
-   $ kubectl edit domain oimcluster -n oimcluster
+   $ kubectl edit domain governancedomain -n oigns
    ```
 
 1. Update the `image` tag to point at the new image, for example:
@@ -50,12 +50,12 @@ In all of the above cases, the Oracle WebLogic Kubernetes Operator will restart 
    For example:
 
    ```bash
-   $ kubectl patch domain oimcluster -n oimcluster --type merge  -p '{"spec":{"image":"oracle/oig:12.2.1.4-new"}}'
+   $ kubectl patch domain governancedomain -n oigns --type merge  -p '{"spec":{"image":"oracle/oig:12.2.1.4-new"}}'
    ```
 
    The output will look similar to the following:
 
    ```bash
-   domain.weblogic.oracle/oimcluster patched
+   domain.weblogic.oracle/governancedomain patched
    ```
 

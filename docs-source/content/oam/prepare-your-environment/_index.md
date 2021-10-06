@@ -1,7 +1,7 @@
 ---
 title: "Prepare your environment"
-weight: 2
-pre : "<b>2. </b>"
+weight: 3
+pre : "<b>3. </b>"
 description: "Sample for creating an OAM domain home on an existing PV or
 PVC, and the domain resource YAML file for deploying the generated OAM domain."
 ---
@@ -11,9 +11,9 @@ PVC, and the domain resource YAML file for deploying the generated OAM domain."
 1. [Install Helm](#install-helm)
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
 1. [Install the OAM Docker image](#install-the-oam-docker-image)
-1. [Install the Oracle WebLogic Server Kubernetes Operator docker image](#install-the-oracle-weblogic-server-kubernetes-operator-docker-image)
+1. [Install the WebLogic Kubernetes Operator docker image](#install-the-weblogic-kubernetes-operator-docker-image)
 1. [Set up the code repository to deploy OAM domains](#set-up-the-code-repository-to-deploy-oam-domains)
-1. [Install the Oracle WebLogic Server Kubernetes Operator](#install-the-oracle-weblogic-server-kubernetes-operator)
+1. [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
 1. [RCU schema creation](#rcu-schema-creation)
 1. [Preparing the environment for domain creation](#preparing-the-environment-for-domain-creation)
     1. [Configure the operator for the domain namespace](#configure-the-operator-for-the-domain-namespace)
@@ -25,6 +25,8 @@ PVC, and the domain resource YAML file for deploying the generated OAM domain."
 If you need help setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup/).
 
 It is recommended you have a master node and one or more worker nodes. The examples in this documentation assume one master and two worker nodes.
+
+Verify that the system clocks on each host computer are synchronized. You can do this by running the date command simultaneously on all the hosts in each cluster.
 
 After creating Kubernetes clusters, you can optionally:
 
@@ -106,19 +108,18 @@ The output will look similar to the following:
 
 
 
-### Install the Oracle WebLogic Server Kubernetes Operator Docker image
+### Install the WebLogic Kubernetes Operator Docker image
 
-In this release only Oracle WebLogic Server Kubernetes Operator 3.0.1 is supported.
+In this release only WebLogic Kubernetes Operator 3.0.1 is supported.
 
 {{% notice note %}}
-The Oracle WebLogic Server Kubernetes Operator Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
+The WebLogic Kubernetes Operator Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
 {{% /notice %}}
 
-1. Pull the Oracle WebLogic Server Kubernetes Operator 3.0.1 image by running the following command on the master node:
+1. Pull the WebLogic Kubernetes Operator 3.0.1 image by running the following command on the master node:
    ```bash
    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
    ```
-
   
    The output will look similar to the following:
 
@@ -143,12 +144,12 @@ The Oracle WebLogic Server Kubernetes Operator Docker image must be installed on
    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
    ```
 
-   After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.
+   After installing the WebLogic Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.
 
 
 ### Set up the code repository to deploy OAM domains
 
-OAM domain deployment on Kubernetes leverages the Oracle WebLogic Server Kubernetes Operator infrastructure. For deploying the OAM domains, you need to set up the deployment scripts on the **master** node as below:
+OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. For deploying the OAM domains, you need to set up the deployment scripts on the **master** node as below:
 
 1. Create a working directory to setup the source code.
    ```bash
@@ -176,7 +177,7 @@ OAM domain deployment on Kubernetes leverages the Oracle WebLogic Server Kuberne
 
    This will create the directory `<work directory>/weblogic-kubernetes-operator`
 
-1. Download the OAM deployment scripts from the OAM [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to the Oracle WebLogic Server Kubernetes Operator samples location.
+1. Download the OAM deployment scripts from the OAM [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to the WebLogic Kubernetes Operator samples location.
 
    ```bash
    $ git clone https://github.com/oracle/fmw-kubernetes.git
@@ -222,7 +223,7 @@ OAM domain deployment on Kubernetes leverages the Oracle WebLogic Server Kuberne
    customresourcedefinition.apiextensions.k8s.io "domains.weblogic.oracle" deleted
    ```
    
-### Install the Oracle WebLogic Server Kubernetes Operator
+### Install the WebLogic Kubernetes Operator
 
 1. On the **master** node run the following command to create a namespace for the operator:
 
@@ -385,13 +386,13 @@ Before following the steps in this section, make sure that the database and list
 	For example:
 	
     ```bash
-	$ kubectl create namespace accessns
+	$ kubectl create namespace oamns
     ```
 	
 	The output will look similar to the following:
 	
 	```bash
-	namespace/accessns created
+	namespace/oamns created
     ```
 
 1. Run the following command to create a helper pod to run RCU:
@@ -403,7 +404,7 @@ Before following the steps in this section, make sure that the database and list
 	For example:
 	
     ```bash
-	$ kubectl run helper --image oracle/oam:12.2.1.4.0 -n accessns -- sleep infinity
+	$ kubectl run helper --image oracle/oam:12.2.1.4.0 -n oamns -- sleep infinity
     ```
 	
 	The output will look similar to the following:
@@ -421,7 +422,7 @@ Before following the steps in this section, make sure that the database and list
 	For example:
 	
 	```bash
-	$ kubectl get pods -n accessns
+	$ kubectl get pods -n oamns
 	```
 	
 	The output will look similar to the following:
@@ -441,7 +442,7 @@ Before following the steps in this section, make sure that the database and list
 	For example:
 	
     ```bash
-	$ kubectl exec -it helper -n accessns -- /bin/bash
+	$ kubectl exec -it helper -n oamns -- /bin/bash
     ```
 	
 	This will take you into a bash shell in the running helper pod:
@@ -567,7 +568,7 @@ Before following the steps in this section, make sure that the database and list
     Component Status Logfile
     Common Infrastructure Services Success /tmp/RCU2020-09-23_15-36_1649016162/logs/stb.log
     Oracle Platform Security Services Success /tmp/RCU2020-09-23_15-36_1649016162/logs/opss.log
-    Oracle Access Manager Success /tmp/RCU2020-09-23_15-36_1649016162/logs/oam.log
+    Oracle Access Manager Success /tmp/RCU2020-09-23_15-36_1649016162/logs/OAM.log
     Audit Services Success /tmp/RCU2020-09-23_15-36_1649016162/logs/iau.log
     Audit Services Append Success /tmp/RCU2020-09-23_15-36_1649016162/logs/iau_append.log
     Audit Services Viewer Success /tmp/RCU2020-09-23_15-36_1649016162/logs/iau_viewer.log
@@ -592,7 +593,7 @@ In this section you prepare the environment for the OAM domain creation. This in
 
 #### Configure the operator for the domain namespace
 
-1. Configure the Oracle WebLogic Server Kubernetes Operator to manage the domain in the domain namespace by running the following command:
+1. Configure the WebLogic Kubernetes Operator to manage the domain in the domain namespace by running the following command:
 
     ```bash
 	$ cd <work directory>/weblogic-kubernetes-operator
@@ -603,7 +604,7 @@ In this section you prepare the environment for the OAM domain creation. This in
 	
     ```bash
 	$ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator
-	$ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={accessns}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+	$ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={oamns}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
     ```
 	
 	The output will look similar to the following:
@@ -645,15 +646,15 @@ In this section you prepare the environment for the OAM domain creation. This in
 	
     ```bash
 	$ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
-    $ ./create-weblogic-credentials.sh -u weblogic -p <password> -n accessns -d accessinfra -s accessinfra-domain-credentials
+    $ ./create-weblogic-credentials.sh -u weblogic -p <password> -n oamns -d accessdomain -s accessdomain-domain-credentials
     ```
 
     The output will look similar to the following:
 	
     ```bash
-	secret/accessinfra-domain-credentials created
-    secret/accessinfra-domain-credentials labeled
-    The secret accessinfra-domain-credentials has been successfully created in the accessns namespace.
+	secret/accessdomain-domain-credentials created
+    secret/accessdomain-domain-credentials labeled
+    The secret accessdomain-domain-credentials has been successfully created in the oamns namespace.
     ```
 
 1. Verify the secret is created using the following command:
@@ -665,7 +666,7 @@ In this section you prepare the environment for the OAM domain creation. This in
 	For example:
 	
     ```bash
-	$ kubectl get secret accessinfra-domain-credentials -o yaml -n accessns
+	$ kubectl get secret accessdomain-domain-credentials -o yaml -n oamns
     ```
 	
 	The output will look similar to the following:
@@ -679,8 +680,8 @@ In this section you prepare the environment for the OAM domain creation. This in
     metadata:
       creationTimestamp: "2020-09-23T15:46:25Z"
       labels:
-        weblogic.domainName: accessinfra
-        weblogic.domainUID: accessinfra
+        weblogic.domainName: accessdomain
+        weblogic.domainUID: accessdomain
       managedFields:
       - apiVersion: v1
         fieldsType: FieldsV1
@@ -698,10 +699,10 @@ In this section you prepare the environment for the OAM domain creation. This in
         manager: kubectl
         operation: Update
         time: "2020-09-23T15:46:25Z"
-      name: accessinfra-domain-credentials
-      namespace: accessns
+      name: accessdomain-domain-credentials
+      namespace: oamns
       resourceVersion: "50606"
-      selfLink: /api/v1/namespaces/accessns/secrets/accessinfra-domain-credentials
+      selfLink: /api/v1/namespaces/oamns/secrets/accessdomain-domain-credentials
       uid: 29f638f5-11d9-4b62-9cbb-03ff13ae3a90
     type: Opaque
     ```
@@ -731,15 +732,15 @@ In this section you prepare the environment for the OAM domain creation. This in
 	
     ```bash
 	$ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
-    $ ./create-rcu-credentials.sh -u OAMK8S -p <password> -a sys -q <password> -d accessinfra -n accessns -s accessinfra-rcu-credentials
+    $ ./create-rcu-credentials.sh -u OAMK8S -p <password> -a sys -q <password> -d accessdomain -n oamns -s accessdomain-rcu-credentials
     ```
 
     The output will look similar to the following:
 	
     ```bash
-	secret/accessinfra-rcu-credentials created
-    secret/accessinfra-rcu-credentials labeled
-    The secret accessinfra-rcu-credentials has been successfully created in the accessns namespace.
+	secret/accessdomain-rcu-credentials created
+    secret/accessdomain-rcu-credentials labeled
+    The secret accessdomain-rcu-credentials has been successfully created in the oamns namespace.
     ```
 	
 1. Verify the secret is created using the following command:
@@ -751,7 +752,7 @@ In this section you prepare the environment for the OAM domain creation. This in
 	For example:
 	
     ```bash
-	$ kubectl get secret accessinfra-rcu-credentials -o yaml -n accessns
+	$ kubectl get secret accessdomain-rcu-credentials -o yaml -n oamns
     ```
 	
 	The output will look similar to the following:
@@ -767,8 +768,8 @@ In this section you prepare the environment for the OAM domain creation. This in
     metadata:
       creationTimestamp: "2020-09-23T15:50:04Z"
       labels:
-        weblogic.domainName: accessinfra
-        weblogic.domainUID: accessinfra
+        weblogic.domainName: accessdomain
+        weblogic.domainUID: accessdomain
       managedFields:
       - apiVersion: v1
         fieldsType: FieldsV1
@@ -788,10 +789,10 @@ In this section you prepare the environment for the OAM domain creation. This in
       manager: kubectl
       operation: Update
       time: "2020-09-23T15:50:04Z"
-     name: accessinfra-rcu-credentials
-     namespace: accessns
+     name: accessdomain-rcu-credentials
+     namespace: oamns
      resourceVersion: "51134"
-     selfLink: /api/v1/namespaces/accessns/secrets/accessinfra-rcu-credentials
+     selfLink: /api/v1/namespaces/oamns/secrets/accessdomain-rcu-credentials
      uid: fce2499c-d8c8-4e9c-93e0-b15722bfc4d7
     type: Opaque
     ```
@@ -806,7 +807,7 @@ In this section you prepare the environment for the OAM domain creation. This in
     ```bash
 	$ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
     $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
-    $ mkdir output_access
+    $ mkdir output
     $ mkdir -p /<work directory>/accessdomainpv
     $ chmod -R 777 /<work directory>/accessdomainpv
     ```
@@ -816,7 +817,7 @@ In this section you prepare the environment for the OAM domain creation. This in
 	```bash
 	$ cd /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
     $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
-    $ mkdir output_access
+    $ mkdir output
     $ mkdir -p /scratch/OAMDockerK8S/accessdomainpv
     $ chmod -R 777 /scratch/OAMDockerK8S/accessdomainpv
     ```
@@ -859,6 +860,7 @@ In this section you prepare the environment for the OAM domain creation. This in
 	weblogicDomainStorageType: NFS
 	weblogicDomainStorageNFSServer: <nfs_server>
     weblogicDomainStoragePath: <physical_path_of_persistent_storage>
+	weblogicDomainStorageSize: 10Gi
     ```
     
 	For example:
@@ -871,9 +873,9 @@ In this section you prepare the environment for the OAM domain creation. This in
 	# Unique ID identifying a domain.
     # If left empty, the generated pv can be shared by multiple domains
     # This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
-    domainUID: accessinfra
+    domainUID: accessdomain
     # Name of the namespace for the persistent volume claim
-    namespace: accessns
+    namespace: oamns
     ...
     # Persistent volume type for the persistent storage.
     # The value must be 'HOST_PATH' or 'NFS'.
@@ -894,12 +896,19 @@ In this section you prepare the environment for the OAM domain creation. This in
    # setting, that is determined when you create your domain.
    # The following line must be uncomment and customized:
    weblogicDomainStoragePath: /scratch/OAMDockerK8S/accessdomainpv
+   
+   # Reclaim policy of the persistent storage
+   # The valid values are: 'Retain', 'Delete', and 'Recycle'
+   weblogicDomainStorageReclaimPolicy: Retain
+
+   # Total storage allocated to the persistent storage.
+   weblogicDomainStorageSize: 10Gi
    ```
 
 1. Execute the `create-pv-pvc.sh` script to create the PV and PVC configuration files:
 
     ```bash
-	$ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output_access
+	$ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output
     ```
 	
 	The output will be similar to the following:
@@ -908,46 +917,46 @@ In this section you prepare the environment for the OAM domain creation. This in
 	Input parameters being used
     export version="create-weblogic-sample-domain-pv-pvc-inputs-v1"
     export baseName="domain"
-    export domainUID="accessinfra"
-    export namespace="accessns"
+    export domainUID="accessdomain"
+    export namespace="oamns"
     export weblogicDomainStorageType="NFS"
     export weblogicDomainStorageNFSServer="mynfsserver"
     export weblogicDomainStoragePath="/scratch/OAMDockerK8S/accessdomainpv"
     export weblogicDomainStorageReclaimPolicy="Retain"
     export weblogicDomainStorageSize="10Gi"
 
-    Generating output_access/pv-pvcs/accessinfra-weblogic-sample-pv.yaml
-    Generating output_access/pv-pvcs/accessinfra-weblogic-sample-pvc.yaml
+    Generating output/pv-pvcs/accessdomain-weblogic-sample-pv.yaml
+    Generating output/pv-pvcs/accessdomain-weblogic-sample-pvc.yaml
     The following files were generated:
-      output_access/pv-pvcs/accessinfra-weblogic-sample-pv.yaml
-      output_access/pv-pvcs/accessinfra-weblogic-sample-pvc.yaml
+      output/pv-pvcs/accessdomain-weblogic-sample-pv.yaml
+      output/pv-pvcs/accessdomain-weblogic-sample-pvc.yaml
     ```
 
 1. Run the following to show the files are created:
 
     ```bash
-	$ ls output_access/pv-pvcs
-    create-pv-pvc-inputs.yaml  accessinfra-weblogic-sample-pv.yaml  accessinfra-weblogic-sample-pvc.yaml
+	$ ls output/pv-pvcs
+    create-pv-pvc-inputs.yaml  accessdomain-weblogic-sample-pv.yaml  accessdomain-weblogic-sample-pvc.yaml
     ```
 1. Run the following `kubectl` command to create the PV and PVC in the domain namespace:
 
     ```bash
-	$ kubectl create -f output_access/pv-pvcs/accessinfra-domain-pv.yaml -n <domain_namespace>
-	$ kubectl create -f output_access/pv-pvcs/accessinfra-domain-pvc.yaml -n <domain_namespace>
+	$ kubectl create -f output/pv-pvcs/accessdomain-domain-pv.yaml -n <domain_namespace>
+	$ kubectl create -f output/pv-pvcs/accessdomain-domain-pvc.yaml -n <domain_namespace>
     ```
    
    For example:
    
    ```bash
-   $ kubectl create -f output_access/pv-pvcs/accessinfra-domain-pv.yaml -n accessns
-   $ kubectl create -f output_access/pv-pvcs/accessinfra-domain-pvc.yaml -n accessns
+   $ kubectl create -f output/pv-pvcs/accessdomain-domain-pv.yaml -n oamns
+   $ kubectl create -f output/pv-pvcs/accessdomain-domain-pvc.yaml -n oamns
     ```
 
    The output will look similar to the following:
    
    ```bash
-   persistentvolume/accessinfra-domain-pv created
-   persistentvolumeclaim/accessinfra-domain-pvc created
+   persistentvolume/accessdomain-domain-pv created
+   persistentvolumeclaim/accessdomain-domain-pvc created
    ```
    
 1. Run the following commands to verify the PV and PVC were created successfully:
@@ -960,22 +969,22 @@ In this section you prepare the environment for the OAM domain creation. This in
    For example:
    
    ```bash
-   $ kubectl describe pv accessinfra-domain-pv
-   $ kubectl describe pvc accessinfra-domain-pvc -n accessns
+   $ kubectl describe pv accessdomain-domain-pv
+   $ kubectl describe pvc accessdomain-domain-pvc -n oamns
    ```
    
    The output will look similar to the following:
 
    ```bash
-   $ kubectl describe pv accessinfra-domain-pv
+   $ kubectl describe pv accessdomain-domain-pv
    
-   Name:           accessinfra-domain-pv
-   Labels:         weblogic.domainUID=accessinfra
+   Name:           accessdomain-domain-pv
+   Labels:         weblogic.domainUID=accessdomain
    Annotations:    pv.kubernetes.io/bound-by-controller: yes
    Finalizers:     [kubernetes.io/pv-protection]
-   StorageClass:   accessinfra-domain-storage-class
+   StorageClass:   accessdomain-domain-storage-class
    Status:         Bound
-   Claim:          accessns/accessinfra-domain-pvc
+   Claim:          oamns/accessdomain-domain-pvc
    Reclaim Policy: Retain
    Access Modes:   RWX
    VolumeMode:     Filesystem
@@ -991,14 +1000,14 @@ In this section you prepare the environment for the OAM domain creation. This in
    ```
    
    ```bash
-   $ kubectl describe pvc accessinfra-domain-pvc -n accessns
+   $ kubectl describe pvc accessdomain-domain-pvc -n oamns
    
-   Name:            accessinfra-domain-pvc
-   Namespace:       accessns
-   StorageClass:    accessinfra-domain-storage-class
+   Name:            accessdomain-domain-pvc
+   Namespace:       oamns
+   StorageClass:    accessdomain-domain-storage-class
    Status:          Bound
-   Volume:          accessinfra-domain-pv
-   Labels:          weblogic.domainUID=accessinfra
+   Volume:          accessdomain-domain-pv
+   Labels:          weblogic.domainUID=accessdomain
    Annotations:     pv.kubernetes.io/bind-completed: yes
                     pv.kubernetes.io/bound-by-controller: yes
    Finalizers:     [kubernetes.io/pvc-protection]
