@@ -73,3 +73,20 @@ sed -i 's/<ssl>/<!--ssl>/g' $DOMAIN_HOME/config/config.xml
 sed -i 's/<\/ssl>/<\/ssl-->/g' $DOMAIN_HOME/config/config.xml
 sed -i "s/oimk8namespace/$domainName/g" $DOMAIN_HOME/config/config.xml
 sed -i "s/applications\/$domainName\/em.ear/domains\/applications\/$domainName\/em.ear/g" $DOMAIN_HOME/config/config.xml
+
+
+if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/ConnectorConfigTemplate.xml ]; then
+    cp /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/ConnectorConfigTemplate.xml /u01/oracle/idm/server/ConnectorDefaultDirectory
+fi
+
+if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/ConnectorSchema.xsd ]; then
+    cp /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/ConnectorSchema.xsd /u01/oracle/idm/server/ConnectorDefaultDirectory
+fi
+
+if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/readme.txt ]; then
+    cp /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/readme.txt /u01/oracle/idm/server/ConnectorDefaultDirectory
+fi
+
+if [ ! -d /u01/oracle/idm/server/ConnectorDefaultDirectory/targetsystems-lib ]; then
+    cp -rf /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/targetsystems-lib /u01/oracle/idm/server/ConnectorDefaultDirectory
+fi
