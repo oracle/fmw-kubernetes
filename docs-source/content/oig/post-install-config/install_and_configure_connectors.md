@@ -20,7 +20,7 @@ description = "Install and Configure Connectors."
    ```
    $ cp $HOME/Downloads/Exchange-12.2.1.3.0.zip /scratch/OIGDocker/stage/
    $ cd /scratch/OIGDockerK8S/stage/
-   $ unzip Exchange-12.2.1.3.0.zip
+   $ unzip exchange-12.2.1.3.0.zip
    ```
 
    
@@ -29,16 +29,16 @@ description = "Install and Configure Connectors."
 1. On the master node run the following command to create a `ConnectorDefaultDirectory`:
 
    ```bash
-   $ kubectl exec -ti oimcluster-oim-server1 -n <domain_namespace> -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
+   $ kubectl exec -ti governancedomain-oim-server1 -n <domain_namespace> -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
    ```
    
    For example:
    
    ```bash
-   $ kubectl exec -ti oimcluster-oim-server1 -n oimcluster -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory 
+   $ kubectl exec -ti governancedomain-oim-server1 -n oigns -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory 
    ```
    
-   **Note**: This will create a directory in the persistent volume e:g `/scratch/OIGDockerK8S/oimclusterdomainpv/ConnectorDefaultDirectory`,
+   **Note**: This will create a directory in the persistent volume e:g `/scratch/OIGDockerK8S/governancedomainpv/ConnectorDefaultDirectory`,
    
    
 ### Copy OIG Connectors
@@ -57,13 +57,13 @@ It is recommended to use option a), however there may be cases, for example when
 1. Copy the connector zip file to the persistent volume. For example:
 
    ```
-   $ cp -R <path_to>/<connector> <work directory>/oimclusterdomainpv/ConnectorDefaultDirectory/
+   $ cp -R <path_to>/<connector> <work directory>/governancedomainpv/ConnectorDefaultDirectory/
    ```
    
    For example:
    
    ```
-   $ cp -R /scratch/OIGDockerK8S/stage/Exchange-12.2.1.3.0 /scratch/OIGDockerK8S/oimclusterdomainpv/ConnectorDefaultDirectory/
+   $ cp -R /scratch/OIGDockerK8S/stage/Exchange-12.2.1.3.0 /scratch/OIGDockerK8S/governancedomainpv/ConnectorDefaultDirectory/
    ```
    
 
@@ -78,7 +78,7 @@ It is recommended to use option a), however there may be cases, for example when
    For example:
 
    ```
-   $ kubectl -n oimcluster cp /scratch/OIGDockerK8S/stage/Exchange-12.2.1.3.0 oimcluster-oim-server1:/u01/oracle/idm/server/ConnectorDefaultDirectory/
+   $ kubectl -n oigns cp /scratch/OIGDockerK8S/stage/Exchange-12.2.1.3.0 governancedomain-oim-server1:/u01/oracle/idm/server/ConnectorDefaultDirectory/
    ```
 
 ### Install the Connector

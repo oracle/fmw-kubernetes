@@ -1,7 +1,7 @@
 +++
 title = "Post Install Configuration"
-weight = 6
-pre = "<b>6. </b>"
+weight = 7
+pre = "<b>7. </b>"
 description = "Post install configuration."
 +++
 

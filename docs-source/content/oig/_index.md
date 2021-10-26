@@ -1,10 +1,10 @@
 ---
 title: "Oracle Identity Governance"
-description: "The Oracle WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance. Follow the instructions in this guide to set up Oracle Identity Governance domains on Kubernetes."
+description: "The WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance. Follow the instructions in this guide to set up Oracle Identity Governance domains on Kubernetes."
 weight: 2
 ---
 
-The Oracle WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance (OIG).
+The WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance (OIG).
 
 In this release, OIG domains are supported using the “domain on a persistent volume”
 [model](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
@@ -27,7 +27,9 @@ See [here]({{< relref "/oig/prerequisites#limitations">}}) for limitations in th
 
 For detailed information about deploying Oracle Identity Governance domains, start at [Prerequisites]({{< relref "/oig/prerequisites" >}}) and follow this documentation sequentially.
 
+If performing an Enterprise Deployment, refer to the [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/index.html) instead.
+
 ### Current release
 
-The current supported release of the Oracle WebLogic Kubernetes Operator, for Oracle Identity Governance domains deployment is [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/releases).
+The current supported release of the WebLogic Kubernetes Operator, for Oracle Identity Governance domains deployment is [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/releases).
 

@@ -1,7 +1,7 @@
 +++
 title = "Create OIG domains"
-weight = 3
-pre = "<b>3. </b>"
+weight = 4
+pre = "<b>4. </b>"
 description = "Sample for creating an OIG domain home on an existing PV or PVC, and the domain resource YAML file for deploying the generated OIG domain."
 +++
 
@@ -13,6 +13,7 @@ description = "Sample for creating an OIG domain home on an existing PV or PVC, 
 1. [Run the Create Domain Script](#run-the-create-domain-script)
     1. [Generate the Create Domain Script](#generate-the-create-domain-script)
 	1. [Create Docker Registry Secret](#create-docker-registry-secret)
+	1. [Setting the OIM Server Memory Parameters](#setting-the-oim-server-memory-parameters)
 	1. [Run the Create Domain Scripts](#run-the-create-domain-scripts)
 1. [Verify the Results](#verify-the-results)
     1. [Verify the Domain, Pods and Services](#verify-the-domain-pods-and-services)
@@ -31,6 +32,32 @@ Before you begin, perform the following steps:
 1. Ensure that you have executed all the preliminary steps documented in [Prepare your environment]({{< relref "/oig/prepare-your-environment" >}}).
 1. Ensure that the database is up and running.
 
+#### Create Docker Registry Secret
+
+This section should only be followed if you are using a registry to store your container images and have not downloaded the container image to the master and worker nodes. 
+
+1. Create a Docker Registry Secret with name `oig-docker`. The operator validates the presence of this secret.  The OIG image has been manually loaded in [Install the OIG Docker Image]({{< relref "/oig/prepare-your-environment#install-the-oig-docker-image" >}}) so you can run this command as is. The presence of the secret is sufficient for creating the Kubernetes resource in the next step.
+
+
+   ```bash
+   $ kubectl create secret docker-registry oig-docker -n <domain_namespace> --docker-username='<user_name>' --docker-password='<password>' --docker-server='<docker_registry_url>' --docker-email='<email_address>'
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl create secret docker-registry oig-docker -n oigns --docker-username='<user_name>' --docker-password='<password>' --docker-server='<docker_registry_url>' --docker-email='<email_address>'
+   ```
+   
+   **Note**: The above command should be run as described. Do not change anything other than the `<domain_namespace>`.
+   
+   
+   
+   The output will look similar to the following:
+   
+   ```bash
+   secret/oig-docker created
+   ```
 
 ### Prepare the Create Domain Script
 
@@ -67,23 +94,31 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    logHome: /u01/oracle/user_projects/domains/logs/<domain_id>
    rcuSchemaPrefix: <rcu_prefix>
    rcuDatabaseURL: <rcu_db_host>:<rcu_db_port>/<rcu_db_service_name>
-   rcuCredentialsSecret: <kubernetes_rcu_secret>   
+   rcuCredentialsSecret: <kubernetes_rcu_secret>
+   frontEndHost: <front_end_hostname>
+   frontEndPort: <front_end_port>
    ```
 
    For example:
 
    ```bash
-   domainUID: oimcluster
-   domainHome: /u01/oracle/user_projects/domains/oimcluster
+   domainUID: governancedomain
+   domainHome: /u01/oracle/user_projects/domains/governancedomain
    image: oracle/oig:12.2.1.4.0
-   namespace: oimcluster
-   weblogicCredentialsSecretName: oimcluster-domain-credentials
-   persistentVolumeClaimName: oimcluster-oim-pvc
-   logHome: /u01/oracle/user_projects/domains/logs/oimcluster
+   namespace: oigns
+   weblogicCredentialsSecretName: oig-domain-credentials
+   persistentVolumeClaimName: governancedomain-domain-pvc
+   logHome: /u01/oracle/user_projects/domains/logs/governancedomain
    rcuSchemaPrefix: OIGK8S
    rcuDatabaseURL: mydatabasehost.example.com:1521/orcl.example.com
-   rcuCredentialsSecret: oimcluster-rcu-credentials
+   rcuCredentialsSecret: oig-rcu-credentials
+   frontEndHost: masternode.example.com
+   frontEndPort: 14100
    ```
+   
+   **Note**: `frontEndHost` and <front_end_port> should be set to the entry point host and port for OIM. This can be changed later in [Set OIMFrontendURL using MBeans](../post-install-config).
+   
+   **Note**: If using a container registry for your container images then you need to set `image` to the repository image name and `imagePullSecretName` to the name of the secret created earlier e.g: `oig-docker`.
 
 A full list of parameters in the `create-domain-inputs.yaml` file are shown below:
 
@@ -123,6 +158,8 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `rcuSchemaPrefix` | The schema prefix to use in the database, for example `OIGK8S`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `OIGK8S` |
 | `rcuDatabaseURL` | The database URL. | `oracle-db.default.svc.cluster.local:1521/devpdb.k8s` |
 | `rcuCredentialsSecret` | The Kubernetes secret containing the database credentials. | `oimcluster-rcu-credentials` |
+| `frontEndHost` | The entry point URL for the OIM. | Not set |
+| `frontEndPort` | The entry point port for the OIM. | Not set |
 
 Note that the names of the Kubernetes resources in the generated YAML files may be formed with the
 value of some of the properties specified in the `create-inputs.yaml` file. Those properties include
@@ -144,7 +181,7 @@ generated artifacts:
 
    ```bash
    $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv
-   $ mkdir output_oimcluster
+   $ mkdir output
    $ ./create-domain.sh -i create-domain-inputs.yaml -o /<path to output-directory>
    ```
 
@@ -152,20 +189,20 @@ generated artifacts:
    
    ```bash
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv
-   $ mkdir output_oimcluster
-   $ ./create-domain.sh -i create-domain-inputs.yaml -o output_oimcluster
+   $ mkdir output
+   $ ./create-domain.sh -i create-domain-inputs.yaml -o output
    ```
    
    The output will look similar to the following:
    
    ```bash
-   $ ./create-domain.sh -i create-domain-inputs.yaml -o output_oimcluster
+   $ ./create-domain.sh -i create-domain-inputs.yaml -o output
    Input parameters being used
    export version="create-weblogic-sample-domain-inputs-v1"
    export adminPort="7001"
    export adminServerName="AdminServer"
-   export domainUID="oimcluster"
-   export domainHome="/u01/oracle/user_projects/domains/oimcluster"
+   export domainUID="governancedomain"
+   export domainHome="/u01/oracle/user_projects/domains/governancedomain"
    export serverStartPolicy="IF_NEEDED"
    export clusterName="oim_cluster"
    export configuredManagedServerCount="5"
@@ -176,67 +213,67 @@ generated artifacts:
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="oig-docker"
    export productionModeEnabled="true"
-   export weblogicCredentialsSecretName="oimcluster-domain-credentials"
+   export weblogicCredentialsSecretName="oig-domain-credentials"
    export includeServerOutInPodLog="true"
-   export logHome="/u01/oracle/user_projects/domains/logs/oimcluster"
+   export logHome="/u01/oracle/user_projects/domains/logs/governancedomain"
    export t3ChannelPort="30012"
    export exposeAdminT3Channel="false"
    export adminNodePort="30701"
    export exposeAdminNodePort="false"
-   export namespace="oimcluster"
+   export namespace="governancedomain"
    javaOptions=-Dweblogic.StdoutDebugEnabled=false
-   export persistentVolumeClaimName="oimcluster-oim-pvc"
+   export persistentVolumeClaimName="governancedomain-domain-pvc"
    export domainPVMountPath="/u01/oracle/user_projects/domains"
    export createDomainScriptsMountPath="/u01/weblogic"
    export createDomainScriptName="create-domain-job.sh"
    export createDomainFilesDir="wlst"
    export rcuSchemaPrefix="OIGK8S"
    export rcuDatabaseURL="mydatabasehost.example.com:1521/orcl.example.com"
-   export rcuCredentialsSecret="oimcluster-rcu-credentials"
+   export rcuCredentialsSecret="oig-rcu-credentials"
    export frontEndHost="100.102.48.49"
    export frontEndPort="80"
 
-   Generating output_oimcluster/weblogic-domains/oimcluster/create-domain-job.yaml
-   Generating output_oimcluster/weblogic-domains/oimcluster/delete-domain-job.yaml
-   Generating output_oimcluster/weblogic-domains/oimcluster/domain.yaml
-   Checking to see if the secret oimcluster-domain-credentials exists in namespace oimcluster
-   configmap/oimcluster-create-fmw-infra-sample-domain-job-cm created
-   Checking the configmap oimcluster-create-fmw-infra-sample-domain-job-cm was created
-   configmap/oimcluster-create-fmw-infra-sample-domain-job-cm labeled
-   Checking if object type job with name oimcluster-create-fmw-infra-sample-domain-job exists
-   No resources found in oimcluster namespace.
-   Creating the domain by creating the job output_oimcluster/weblogic-domains/oimcluster/create-domain-job.yaml
-   job.batch/oimcluster-create-fmw-infra-sample-domain-job created
+   Generating output/weblogic-domains/governancedomain/create-domain-job.yaml
+   Generating output/weblogic-domains/governancedomain/delete-domain-job.yaml
+   Generating output/weblogic-domains/governancedomain/domain.yaml
+   Checking to see if the secret governancedomain-domain-credentials exists in namespace oigns
+   configmap/governancedomain-create-fmw-infra-sample-domain-job-cm created
+   Checking the configmap governancedomain-create-fmw-infra-sample-domain-job-cm was created
+   configmap/governancedomain-create-fmw-infra-sample-domain-job-cm labeled
+   Checking if object type job with name governancedomain-create-fmw-infra-sample-domain-job exists
+   No resources found in oigns namespace.
+   Creating the domain by creating the job output/weblogic-domains/governancedomain/create-domain-job.yaml
+   job.batch/governancedomain-create-fmw-infra-sample-domain-job created
    Waiting for the job to complete...
    status on iteration 1 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 2 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 3 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 4 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 5 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 6 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 7 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 8 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 9 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 10 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Running
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Running
    status on iteration 11 of 40
-   pod oimcluster-create-fmw-infra-sample-domain-job-dktkk status is Completed
+   pod governancedomain-create-fmw-infra-sample-domain-job-dktkk status is Completed
 
-   Domain oimcluster was created and will be started by the WebLogic Kubernetes Operator
+   Domain governancedomain was created and will be started by the WebLogic Kubernetes Operator
 
    The following files were generated:
-     output_oimcluster/weblogic-domains/oimcluster/create-domain-inputs.yaml
-     output_oimcluster/weblogic-domains/oimcluster/create-domain-job.yaml
-     output_oimcluster/weblogic-domains/oimcluster/domain.yaml
+     output/weblogic-domains/governancedomain/create-domain-inputs.yaml
+     output/weblogic-domains/governancedomain/create-domain-job.yaml
+     output/weblogic-domains/governancedomain/domain.yaml
    sed
 
    Completed
@@ -245,66 +282,93 @@ generated artifacts:
 
    **Note**: If the create domain script creation fails, refer to the [Troubleshooting](../troubleshooting) section.
 
-#### Create Docker Registry Secret
+#### Setting the OIM Server Memory Parameters
 
-1. Create a Docker Registry Secret with name `oig-docker`. The operator validates the presence of this secret.  The OIG image has been manually loaded in [Install the OIG Docker Image]({{< relref "/oig/prepare-your-environment#install-the-oig-docker-image" >}}) so you can run this command as is. The presence of the secret is sufficient for creating the Kubernetes resource in the next step.
-
+1. Navigate to the `output` directory:
 
    ```bash
-   $ kubectl create secret docker-registry oig-docker -n <domain_namespace> --docker-username='<user_name>' --docker-password='<password>' --docker-server='<docker_registry_url>' --docker-email='<email_address>'
+   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
    ```
    
    For example:
    
    ```bash
-   $ kubectl create secret docker-registry oig-docker -n oimcluster --docker-username='<user_name>' --docker-password='<password>' --docker-server='<docker_registry_url>' --docker-email='<email_address>'
+   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
+   ``` 
+   
+1. Edit the `domain_oim_soa.yaml` and locate the section of the file starting with: `- clusterName: oim_cluster`. Immediately after the line: `topologyKey: "kubernetes.io/hostname"`, add the following lines:
+
+   ```
+   env:
+      - name: USER_MEM_ARGS
+        value: "-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m"
    ```
    
-   **Note**: The above command should be run as described. Do not change anything other than the `<domain_namespace>`.
+   The file should looks as follows:
    
-   
-   
-   The output will look similar to the following:
-   
-   ```bash
-   secret/oig-docker created
    ```
+   - clusterName: oim_cluster
+     serverService:
+       precreateService: true
+     serverStartState: "RUNNING"
+     serverPod:
+       # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
+       # already members of the same cluster.
+       affinity:
+         podAntiAffinity:
+           preferredDuringSchedulingIgnoredDuringExecution:
+             - weight: 100
+               podAffinityTerm:
+                 labelSelector:
+                   matchExpressions:
+                     - key: "weblogic.clusterName"
+                       operator: In
+                       values:
+                         - $(CLUSTER_NAME)
+                 topologyKey: "kubernetes.io/hostname"
+       env:
+       - name: USER_MEM_ARGS
+         value: "-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m"
+     replicas: 1
+   ...
+   ```
+
 
 #### Run the Create Domain Scripts
 
 1. Create the Kubernetes resource using the following command:
 
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output_oimcluster/weblogic-domains/oimcluster
+   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
    $ kubectl apply -f domain.yaml
    ```
 
    For example:
 
    ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output_oimcluster/weblogic-domains/oimcluster
+   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
    $ kubectl apply -f domain.yaml
    ```
 
    The output will look similar to the following:
    
    ```bash
-   domain.weblogic.oracle/oimcluster created
+   domain.weblogic.oracle/governancedomain created
    ```
 
 1. Run the following command to view the status of the OIG pods:
 
    ```bash
-   $ kubectl get pods -n oimcluster
+   $ kubectl get pods -n oigns
    ```
    
    The output will initially look similar to the following:
    
    ```bash
-   NAME                                                  READY   STATUS      RESTARTS   AGE
-   helper                                                1/1     Running     0          3h30m
-   oimcluster-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          27m
-   oimcluster-introspect-domain-job-p4brt                1/1     Running     0          6s
+   NAME                                                        READY   STATUS      RESTARTS   AGE
+   helper                                                      1/1     Running     0          3h30m
+   governancedomain-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          27m
+   governancedomain-introspect-domain-job-p4brt                1/1     Running     0          6s
    ```
    
    The `introspect-domain-job` pod will be displayed first. Run the command again after several minutes and check to see that the AdminServer and SOA Server are both started. When started they should have `STATUS` = `Running` and `READY` = `1/1`.
@@ -312,37 +376,37 @@ generated artifacts:
    ```bash
    NAME                                                  READY   STATUS      RESTARTS   AGE
    helper                                                1/1     Running     0          3h38m
-   oimcluster-adminserver                                1/1     Running     0          7m30s
-   oimcluster-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          35m
-   oimcluster-soa-server1                                1/1     Running     0          4m
+   governancedomain-adminserver                                1/1     Running     0          7m30s
+   governancedomain-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          35m
+   governancedomain-soa-server1                                1/1     Running     0          4m
    ```
 
    **Note**: It will take several minutes before all the pods listed above show. When a pod has a `STATUS` of `0/1` the pod is started but the OIG server associated with it is currently starting. While the pods are starting you can check the startup status in the pod logs, by running the following command:
    
    ```bash
-   $ kubectl logs oimcluster-adminserver -n oimcluster
-   $ kubectl logs oimcluster-soa-server1 -n oimcluster
+   $ kubectl logs governancedomain-adminserver -n oigns
+   $ kubectl logs governancedomain-soa-server1 -n oigns
    ```
    
    
 1. Once both pods are running, start the OIM Server using the following command:
 
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output_oimcluster/weblogic-domains/oimcluster
+   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
    $ kubectl apply -f domain_oim_soa.yaml
    ```
 
    For example:
 
    ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output_oimcluster/weblogic-domains/oimcluster
+   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
    $ kubectl apply -f domain_oim_soa.yaml
    ```
 
    The output will look similar to the following:
 
    ```bash
-   domain.weblogic.oracle/oimcluster configured
+   domain.weblogic.oracle/governancedomain configured
    ```
 
 ### Verify the Results
@@ -352,7 +416,7 @@ generated artifacts:
 1. Verify the domain, servers pods and services are created and in the `READY` state with a `STATUS` of `1/1`, by running the following command:
 
    ```bash
-   $ kubectl get all,domains -n oimcluster
+   $ kubectl get all,domains -n oigns
    ```
    
    The output will look similar to the following:
@@ -360,37 +424,37 @@ generated artifacts:
    ```bash
    NAME                                                      READY   STATUS      RESTARTS   AGE
    pod/helper                                                1/1     Running     0          3h40m
-   pod/oimcluster-adminserver                                1/1     Running     0          16m
-   pod/oimcluster-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          36m
-   pod/oimcluster-oim-server1                                1/1     Running     0          5m57s
-   pod/oimcluster-soa-server1                                1/1     Running     0          13m
+   pod/governancedomain-adminserver                                1/1     Running     0          16m
+   pod/governancedomain-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          36m
+   pod/governancedomain-oim-server1                                1/1     Running     0          5m57s
+   pod/governancedomain-soa-server1                                1/1     Running     0          13m
 
    NAME                                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
-   service/oimcluster-adminserver           ClusterIP   None             <none>        7001/TCP    16m
-   service/oimcluster-cluster-oim-cluster   ClusterIP   10.97.121.159    <none>        14000/TCP   13m
-   service/oimcluster-cluster-soa-cluster   ClusterIP   10.111.231.242   <none>        8001/TCP    13m
-   service/oimcluster-oim-server1           ClusterIP   None             <none>        14000/TCP   5m57s
-   service/oimcluster-oim-server2           ClusterIP   10.108.139.30    <none>        14000/TCP   5m57s
-   service/oimcluster-oim-server3           ClusterIP   10.97.170.104    <none>        14000/TCP   5m57s
-   service/oimcluster-oim-server4           ClusterIP   10.99.82.214     <none>        14000/TCP   5m57s
-   service/oimcluster-oim-server5           ClusterIP   10.98.75.228     <none>        14000/TCP   5m57s
-   service/oimcluster-soa-server1           ClusterIP   None             <none>        8001/TCP    13m
-   service/oimcluster-soa-server2           ClusterIP   10.107.232.220   <none>        8001/TCP    13m
-   service/oimcluster-soa-server3           ClusterIP   10.108.203.6     <none>        8001/TCP    13m
-   service/oimcluster-soa-server4           ClusterIP   10.96.178.0      <none>        8001/TCP    13m
-   service/oimcluster-soa-server5           ClusterIP   10.107.83.62     <none>        8001/TCP    13m
+   service/governancedomain-adminserver           ClusterIP   None             <none>        7001/TCP    16m
+   service/governancedomain-cluster-oim-cluster   ClusterIP   10.97.121.159    <none>        14000/TCP   13m
+   service/governancedomain-cluster-soa-cluster   ClusterIP   10.111.231.242   <none>        8001/TCP    13m
+   service/governancedomain-oim-server1           ClusterIP   None             <none>        14000/TCP   5m57s
+   service/governancedomain-oim-server2           ClusterIP   10.108.139.30    <none>        14000/TCP   5m57s
+   service/governancedomain-oim-server3           ClusterIP   10.97.170.104    <none>        14000/TCP   5m57s
+   service/governancedomain-oim-server4           ClusterIP   10.99.82.214     <none>        14000/TCP   5m57s
+   service/governancedomain-oim-server5           ClusterIP   10.98.75.228     <none>        14000/TCP   5m57s
+   service/governancedomain-soa-server1           ClusterIP   None             <none>        8001/TCP    13m
+   service/governancedomain-soa-server2           ClusterIP   10.107.232.220   <none>        8001/TCP    13m
+   service/governancedomain-soa-server3           ClusterIP   10.108.203.6     <none>        8001/TCP    13m
+   service/governancedomain-soa-server4           ClusterIP   10.96.178.0      <none>        8001/TCP    13m
+   service/governancedomain-soa-server5           ClusterIP   10.107.83.62     <none>        8001/TCP    13m
 
    NAME                                                      COMPLETIONS   DURATION   AGE
-   job.batch/oimcluster-create-fmw-infra-sample-domain-job   1/1           5m30s      36m
+   job.batch/governancedomain-create-fmw-infra-sample-domain-job   1/1           5m30s      36m
 
    NAME                                AGE
-   domain.weblogic.oracle/oimcluster   17m
+   domain.weblogic.oracle/governancedomain   17m
    ```
    
-   **Note**: It will take several minutes before all the services listed above show. While the `oimcluster-oim-server1` pod has a `STATUS` of `0/1` the pod is started but the OIG server associated with it is currently starting. While the pod is starting you can check the startup status in the pod logs, by running the following command:
+   **Note**: It will take several minutes before all the services listed above show. While the `governancedomain-oim-server1` pod has a `STATUS` of `0/1` the pod is started but the OIG server associated with it is currently starting. While the pod is starting you can check the startup status in the pod logs, by running the following command:
    
    ```
-   $ kubectl logs oimcluster-soa-server1 -n oimcluster
+   $ kubectl logs governancedomain-oim-server1 -n oigns
    ```
 
 The default domain created by the script has the following characteristics:
@@ -415,15 +479,15 @@ $ kubectl describe domain <domain_uid> -n <namespace>
 
 For example:
 ```
-$ kubectl describe domain oimcluster -n oimcluster
+$ kubectl describe domain governancedomain -n oigns
 ```
 
 Here is an example of the output of this command:
 
 ```
-Name:         oimcluster
-Namespace:    oimcluster
-Labels:       weblogic.domainUID=oimcluster
+Name:         governancedomain
+Namespace:    oigns
+Labels:       weblogic.domainUID=governancedomain
 Annotations:  API Version:  weblogic.oracle/v8
 Kind:         Domain
 Metadata:
@@ -456,7 +520,7 @@ Metadata:
     Operation:       Update
     Time:            2020-09-29T14:27:30Z
   Resource Version:  1278400
-  Self Link:         /apis/weblogic.oracle/v8/namespaces/oimcluster/domains/oimcluster
+  Self Link:         /apis/weblogic.oracle/v8/namespaces/oigns/domains/governancedomain
   UID:               94604c47-6995-43c5-8848-5c5975ba5ace
 Spec:
   Admin Server:
@@ -503,7 +567,7 @@ Spec:
       Precreate Service:        true
     Server Start State:         RUNNING
   Data Home:
-  Domain Home:                  /u01/oracle/user_projects/domains/oimcluster
+  Domain Home:                  /u01/oracle/user_projects/domains/governancedomain
   Domain Home Source Type:      PersistentVolume
   Http Access Log In Log Home:  true
   Image:                        oracle/oig:12.2.1.4.0
@@ -511,7 +575,7 @@ Spec:
   Image Pull Secrets:
     Name:                         oig-docker
   Include Server Out In Pod Log:  true
-  Log Home:                       /u01/oracle/user_projects/domains/logs/oimcluster
+  Log Home:                       /u01/oracle/user_projects/domains/logs/governancedomain
   Log Home Enabled:               true
   Server Pod:
     Env:
@@ -525,10 +589,10 @@ Spec:
     Volumes:
       Name:  weblogic-domain-storage-volume
       Persistent Volume Claim:
-        Claim Name:     oimcluster-oim-pvc
+        Claim Name:     governancedomain-domain-pvc
   Server Start Policy:  IF_NEEDED
   Web Logic Credentials Secret:
-    Name:  oimcluster-domain-credentials
+    Name:  governancedomain-domain-credentials
 Status:
   Clusters:
     Cluster Name:      oim_cluster
@@ -622,18 +686,18 @@ $ kubectl get pods -n <namespace> -o wide
 For example:
 
 ```bash
-$ kubectl get pods -n oimcluster -o wide
+$ kubectl get pods -n oigns -o wide
 ```
 
 The output will look similar to the following:
 
 ```bash
-NAME                                                  READY   STATUS      RESTARTS   AGE   IP            NODE           NOMINATED NODE   READINESS GATES
-helper                                                1/1     Running     0          3h50m   10.244.1.39   10.250.111.112   <none>           <none>
-oimcluster-adminserver                                1/1     Running     0          27m     10.244.1.42   10.250.111.112   <none>           <none>
-oimcluster-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          47m     10.244.1.40   10.250.111.112   <none>           <none>
-oimcluster-oim-server1                                1/1     Running     0          16m     10.244.1.44   10.250.111.112   <none>           <none>
-oimcluster-soa-server1                                1/1     Running     0          24m     10.244.1.43   10.250.111.112   <none>           <none>
+NAME                                                        READY   STATUS      RESTARTS   AGE   IP            NODE           NOMINATED NODE   READINESS GATES
+helper                                                      1/1     Running     0          3h50m   10.244.1.39   10.250.111.112   <none>           <none>
+governancedomain-adminserver                                1/1     Running     0          27m     10.244.1.42   10.250.111.112   <none>           <none>
+governancedomain-create-fmw-infra-sample-domain-job-dktkk   0/1     Completed   0          47m     10.244.1.40   10.250.111.112   <none>           <none>
+governancedomain-oim-server1                                1/1     Running     0          16m     10.244.1.44   10.250.111.112   <none>           <none>
+governancedomain-soa-server1                                1/1     Running     0          24m     10.244.1.43   10.250.111.112   <none>           <none>
 ```
 
 You are now ready to configure an Ingress to direct traffic for your OIG domain as per [Configure an Ingress for an OIG domain](../configure-ingress).

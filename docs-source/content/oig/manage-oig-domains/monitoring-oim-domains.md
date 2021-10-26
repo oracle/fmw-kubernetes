@@ -476,7 +476,7 @@ The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape r
    For example:
    
    ```bash
-   $ cp wls-exporter*.war /scratch/OIGDockerK8S/oimclusterdomainpv/
+   $ cp wls-exporter*.war /scratch/OIGDockerK8S/governancedomainpv/
    ```
 
 ### Deploy the wls-exporter war files in OIG WebLogic server
@@ -541,17 +541,17 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    apiVersion: monitoring.coreos.com/v1
    kind: ServiceMonitor
    metadata:
-     name: wls-exporter-oimcluster
+     name: wls-exporter-governancedomain
      namespace: monitoring
      labels:
        k8s-app: wls-exporter
    spec:
      namespaceSelector:
        matchNames:
-       - oimcluster
+       - oigns
      selector:
        matchLabels:
-         weblogic.domainName: oimcluster
+         weblogic.domainName: governancedomain
      endpoints:
      - basicAuth:
          password:
@@ -575,7 +575,7 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    $ echo -n "<password>" | base64
    ```
    
-   If using a different namespace from `oimcluster` or a different domain_UID from `oimcluster`, then change accordingly.
+   If using a different namespace from `oigns` or a different `domainUID` from `governancedomain`, then change accordingly.
    
 1. Add Rolebinding for the WebLogic OIG domain namespace:
 
@@ -583,14 +583,14 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    $ cd <work_directory>/kube-prometheus/manifests
    ```
    
-   Edit the `prometheus-roleBindingSpecificNamespaces.yaml` file and add the following to the file for your OIG domain namespace, for example `oimcluster`:
+   Edit the `prometheus-roleBindingSpecificNamespaces.yaml` file and add the following to the file for your OIG domain namespace, for example `oigns`:
    
    ```
    - apiVersion: rbac.authorization.k8s.io/v1
      kind: RoleBinding
      metadata:
        name: prometheus-k8s
-       namespace: oimcluster
+       namespace: oigns
      roleRef:
        apiGroup: rbac.authorization.k8s.io
        kind: Role
@@ -610,7 +610,7 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
      kind: RoleBinding
      metadata:
        name: prometheus-k8s
-       namespace: oimcluster
+       namespace: oigns
      roleRef:
        apiGroup: rbac.authorization.k8s.io
        kind: Role
@@ -627,14 +627,14 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    ....
    ```
 
-1. Add the Role for WebLogic OIG domain namespace. Edit the `prometheus-roleSpecificNamespaces.yaml` and change the namespace to your OIG domain namespace, for example `oimcluster`:
+1. Add the Role for WebLogic OIG domain namespace. Edit the `prometheus-roleSpecificNamespaces.yaml` and change the namespace to your OIG domain namespace, for example `oigns`:
 
    ```
    - apiVersion: rbac.authorization.k8s.io/v1
      kind: Role
      metadata:
        name: prometheus-k8s
-       namespace: oimcluster
+       namespace: oigns
      rules:
      - apiGroups:
        - ""
@@ -699,7 +699,7 @@ After ServiceMonitor is deployed, the wls-exporter should be discovered by Prome
 
 1. Access the following URL to view Prometheus service discovery: `http://${MASTERNODE-HOSTNAME}:32101/service-discovery`
 
-1. Click on `monitoring/wls-exporter-oimcluster/0 ` and then *show more*. Verify all the targets are mentioned.
+1. Click on `monitoring/wls-exporter-governancedomain/0 ` and then *show more*. Verify all the targets are mentioned.
 
 ### Grafana Dashboard
 

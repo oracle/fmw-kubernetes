@@ -60,27 +60,27 @@ The instructions below explain how to set up NGINX as an ingress for the OIG dom
 1. Create a secret for SSL containing the SSL certificate by running the following command:
 
    ```
-   $ kubectl -n oimcluster create secret tls <domain_id>-tls-cert --key <work directory>/tls.key --cert <work directory>/tls.crt
+   $ kubectl -n oigns create secret tls <domain_id>-tls-cert --key <work directory>/tls.key --cert <work directory>/tls.crt
    ```
    
    For example:
    
    ```
-   $ kubectl -n oimcluster create secret tls oimcluster-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
+   $ kubectl -n oigns create secret tls governancedomain-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
    ```
    
    The output will look similar to the following:
    
    ```
-   $ kubectl -n oimcluster create secret tls oimcluster-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
-   secret/oimcluster-tls-cert created
+   $ kubectl -n oigns create secret tls governancedomain-tls-cert --key /scratch/OIGDockerK8S/ssl/tls.key --cert /scratch/OIGDockerK8S/ssl/tls.crt
+   secret/governancedomain-tls-cert created
    $
    ```
 
 1. Confirm that the secret is created by running the following command:
 
    ```
-   $ kubectl get secret oimcluster-tls-cert -o yaml -n oimcluster
+   $ kubectl get secret governancedomain-tls-cert -o yaml -n oigns
    ```
    
    The output will look similar to the following:
@@ -105,10 +105,10 @@ The instructions below explain how to set up NGINX as an ingress for the OIG dom
        manager: kubectl
        operation: Update
        time: "2020-09-29T15:51:22Z"
-     name: oimcluster-tls-cert
-     namespace: oimcluster
+     name: governancedomain-tls-cert
+     namespace: oigns
      resourceVersion: "1291036"
-     selfLink: /api/v1/namespaces/oimcluster/secrets/oimcluster-tls-cert
+     selfLink: /api/v1/namespaces/oigns/secrets/governancedomain-tls-cert
      uid: a127e5fd-705b-43e1-ab56-590834efda5e
    type: kubernetes.io/tls
    ```
@@ -170,13 +170,13 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    a) Using NodePort
 
    ```
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oimcluster/oimcluster-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    ```    
 
    The output will look similar to the following:
    
    ```
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oimcluster/oimcluster-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    NAME: nginx-ingress
    LAST DEPLOYED: Tue Sep 29 08:53:30 2020
    NAMESPACE: nginxssl
@@ -233,13 +233,13 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    b) Using LoadBalancer
 
    ```
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oimcluster/oimcluster-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    ```    
 
    The output will look similar to the following:
    
    ```
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oimcluster/oimcluster-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version=3.34.0
    NAME: nginx-ingress
    LAST DEPLOYED: Tue Sep 29 08:53:30 2020
    NAMESPACE: nginxssl
@@ -298,7 +298,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    $ vi values.yaml
    ```
 
-1. Edit `values.yaml` and ensure that the values `type=NGINX`, `tls=SSL` and `secretName=oimcluster-tls-cert` are set, for example:
+1. Edit `values.yaml` and ensure that the values `type=NGINX`, `tls=SSL` and `secretName=governancedomain-tls-cert` are set. Change the `domainUID` to the value of the domain e.g `governancedomain`, for example:
    
    ```
    $ cat values.yaml
@@ -316,23 +316,18 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    # tls: NONSSL
    tls: SSL
    # TLS secret name if the mode is SSL
-   secretName: oimcluster-tls-cert
+   secretName: governancedomain-tls-cert
 
 
    # WLS domain as backend to the load balancer
    wlsDomain:
-     domainUID: oimcluster
+     domainUID: governancedomain
      oimClusterName: oim_cluster
      soaClusterName: soa_cluster
      soaManagedServerPort: 8001
      oimManagedServerPort: 14000
      adminServerName: adminserver
      adminServerPort: 7001
-
-   # Traefik specific values
-   # traefik:
-     # hostname used by host-routing
-     # hostname: idmdemo.m8y.xyz
 
    # Voyager specific values
    voyager:
@@ -344,11 +339,11 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 
 #### Create an Ingress for the Domain
 
-1. Create an Ingress for the domain (`oimcluster-nginx`), in the domain namespace by using the sample Helm chart:
+1. Create an Ingress for the domain (`governancedomain-nginx`), in the domain namespace by using the sample Helm chart:
 
    ```
    $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace oimcluster --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-nginx kubernetes/samples/charts/ingress-per-domain --namespace oigns --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
    
    **Note**: The `<work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml` has `nginx.ingress.kubernetes.io/enable-access-log` set to `false`. If you want to enable access logs then set this value to `true` before executing the command. Enabling access-logs can cause issues with disk space if not regularly maintained. 
@@ -357,15 +352,15 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ```
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm install oimcluster-nginx kubernetes/samples/charts/ingress-per-domain --namespace oimcluster --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-nginx kubernetes/samples/charts/ingress-per-domain --namespace oigns --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
 
    The output will look similar to the following:
 
    ```
-   NAME: oimcluster-nginx
+   NAME: governancedomain-nginx
    LAST DEPLOYED: Tue Sep 29 08:56:38 2020
-   NAMESPACE: oimcluster
+   NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -380,14 +375,14 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    For example:
    
    ```
-   $ kubectl get ing -n oimcluster
+   $ kubectl get ing -n oigns
    ```
    
    The output will look similar to the following:
 
    ```
    NAME               CLASS    HOSTS   ADDRESS   PORTS   AGE
-   oimcluster-nginx   <none>   *                 80      49s
+   governancedomain-nginx   <none>   *                 80      49s
    ```
    
 1. Find the node port of NGINX using the following command:
@@ -405,35 +400,35 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 1. Run the following command to check the ingress:
 
    ```
-   $ kubectl describe ing oimcluster-nginx -n <namespace>
+   $ kubectl describe ing governancedomain-nginx -n <namespace>
    ```
    
    For example:
    
    ```
-   $ kubectl describe ing oimcluster-nginx -n oimcluster
+   $ kubectl describe ing governancedomain-nginx -n oigns
    ```
    
    The output will look similar to the following:
 
    ```
-   Name:             oimcluster-nginx
-   Namespace:        oimcluster
+   Name:             governancedomain-nginx
+   Namespace:        oigns
    Address:          10.103.131.225
    Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
    Rules:
      Host        Path  Backends
      ----        ----  --------
      *
-                 /console       oimcluster-adminserver:7001 (10.244.1.42:7001)
-                 /em            oimcluster-adminserver:7001 (10.244.1.42:7001)
-                 /soa           oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
-                 /integration   oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
-                 /soa-infra     oimcluster-cluster-soa-cluster:8001 (10.244.1.43:8001)
-                                oimcluster-cluster-oim-cluster:14000 (10.244.1.44:14000)
+                 /console       governancedomain-adminserver:7001 (10.244.1.42:7001)
+                 /em            governancedomain-adminserver:7001 (10.244.1.42:7001)
+                 /soa           governancedomain-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                 /integration   governancedomain-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                 /soa-infra     governancedomain-cluster-soa-cluster:8001 (10.244.1.43:8001)
+                                governancedomain-cluster-oim-cluster:14000 (10.244.1.44:14000)
    Annotations:  kubernetes.io/ingress.class: nginx
-                 meta.helm.sh/release-name: oimcluster-nginx
-                 meta.helm.sh/release-namespace: oimcluster
+                 meta.helm.sh/release-name: governancedomain-nginx
+                 meta.helm.sh/release-namespace: oigns
                  nginx.ingress.kubernetes.io/configuration-snippet:
                    more_set_input_headers "X-Forwarded-Proto: https";
                    more_set_input_headers "WL-Proxy-SSL: true";
@@ -442,8 +437,8 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    Events:
      Type    Reason  Age   From                      Message
      ----    ------  ----  ----                      -------
-     Normal  CREATE  5m4s  nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx
-     Normal  UPDATE  4m9s  nginx-ingress-controller  Ingress oimcluster/oimcluster-nginx
+     Normal  CREATE  5m4s  nginx-ingress-controller  Ingress oigns/governancedomain-nginx
+     Normal  UPDATE  4m9s  nginx-ingress-controller  Ingress oigns/governancedomain-nginx
    ```
 
 1. To confirm that the new Ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the "WebLogic ReadyApp framework":
@@ -498,7 +493,7 @@ After setting up the NGINX ingress, verify that the domain applications are acce
 If you need to remove the NGINX Ingress then remove the ingress with the following commands:
 
 ```
-$ helm delete oimcluster-nginx -n oimcluster
+$ helm delete governancedomain-nginx -n oigns
 $ helm delete nginx-ingress -n nginxssl
 $ kubectl delete namespace nginxssl
 ```
@@ -506,8 +501,8 @@ $ kubectl delete namespace nginxssl
 The output will look similar to the following:
 
 ```
-$ helm delete oimcluster-nginx -n oimcluster
-release "oimcluster-nginx" uninstalled
+$ helm delete governancedomain-nginx -n oigns
+release "governancedomain-nginx" uninstalled
 
 $ helm delete nginx-ingress -n nginxssl
 release "nginx-ingress" uninstalled

@@ -18,9 +18,9 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
 
    ```bash
-   $ kubectl delete jobs oimcluster-create-fmw-infra-sample-domain-job -n oimcluster
-   $ kubectl delete domain oimcluster -n oimcluster
-   $ kubectl delete configmaps oimcluster-create-fmw-infra-sample-domain-job-cm -n oimcluster
+   $ kubectl delete jobs governancedomain-create-fmw-infra-sample-domain-job -n oigns
+   $ kubectl delete domain governancedomain -n oigns
+   $ kubectl delete configmaps governancedomain-create-fmw-infra-sample-domain-job-cm -n oigns
    ```
 
    
@@ -42,7 +42,7 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
    
    ```bash
-   $ kubectl exec -it helper -n oimcluster -- /bin/bash
+   $ kubectl exec -it helper -n oigns -- /bin/bash
    [oracle@helper ~]$ export CONNECTION_STRING=mydatabasehost.example.com:1521/orcl.example.com
    [oracle@helper ~]$ export RCUPREFIX=OIGK8S
    /u01/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING \
@@ -61,35 +61,35 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
    
    ```bash
-   $ kubectl delete pv oimcluster-oim-pv -n oimcluster
-   $ kubectl delete pvc oimcluster-oim-pvc -n oimcluster
+   $ kubectl delete pv governancedomain-domain-pv -n oigns
+   $ kubectl delete pvc governancedomain-domain-pvc -n oigns
    ```
    
 1. Delete the contents of the persistent volume, for example:
 
    ```bash
-   $ rm -rf /<work directory>/oimclusterdomainpv/*
+   $ rm -rf /<work directory>/governancedomainpv/*
    ```
 
    For example:
    
    ```bash
-   $ rm -rf /scratch/OIGDockerK8S/oimclusterdomainpv/*
+   $ rm -rf /scratch/OIGDockerK8S/governancedomainpv/*
    ```
    
 
    
-5. Delete the Oracle WebLogic Kubernetes Operator, by running the following command:
+5. Delete the WebLogic Kubernetes Operator, by running the following command:
 
    ```bash
-   $ helm delete weblogic-kubernetes-operator -n operator
+   $ helm delete weblogic-kubernetes-operator -n opns
    ```
    
 6. To delete NGINX:
 
 
    ```bash
-   $ helm delete oimcluster-nginx -n oimcluster
+   $ helm delete governancedomain-nginx -n oigns
    $ helm delete nginx-ingress -n nginx
    $ kubectl delete namespace nginx
    ```
@@ -97,7 +97,7 @@ Sometimes in production, but most likely in testing environments, you might want
    or if using SSL:
    
    ```bash
-   $ helm delete oimcluster-nginx -n oimcluster
+   $ helm delete governancedomain-nginx -n oigns
    $ helm delete nginx-ingress -n nginxssl
    $ kubectl delete namespace nginxssl
    ```
@@ -105,7 +105,7 @@ Sometimes in production, but most likely in testing environments, you might want
 7. To delete Voyager:
     
    ```bash
-   $ helm delete oimcluster-voyager -n oimcluster
+   $ helm delete governancedomain-voyager -n oigns
    $ helm delete voyager-ingress -n voyager
    $ kubectl delete namespace voyager
    ```
@@ -113,7 +113,7 @@ Sometimes in production, but most likely in testing environments, you might want
    or if using SSL:
   
    ```bash
-   $ helm delete oimcluster-voyager -n oimcluster
+   $ helm delete governancedomain-voyager -n oigns
    $ helm delete voyager-ingress -n voyagerssl
    $ kubectl delete namespace voyagerssl
    ```

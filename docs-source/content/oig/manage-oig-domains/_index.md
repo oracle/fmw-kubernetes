@@ -1,7 +1,7 @@
 +++
 title = "Manage OIG Domains"
-weight = 7 
-pre = "<b>7. </b>"
+weight = 9 
+pre = "<b>9. </b>"
 description=  "This document provides steps to manage the OIG domain."
 +++
 

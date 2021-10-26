@@ -1,7 +1,7 @@
 +++
 title = "Validate a Basic SSO Flow using WebGate Registration "
-weight = 7
-pre = "<b>7. </b>"
+weight = 8
+pre = "<b>8. </b>"
 description = "Sample for validating a basic SSO flow using WebGate registration."
 +++
 
@@ -96,14 +96,14 @@ To change the WebGate agent to use OAP:
    **Note**: To find the value for `Host Port` run the following:
 
    ```bash
-   $ kubectl describe svc oamoap-service -n accessns
+   $ kubectl describe svc oamoap-service -n oamns
    ```
    
    The output will look similar to the following:
    
    ```
    Name: oamoap-service
-   Namespace: accessns
+   Namespace: oamns
    Labels: <none>
    Annotations: <none>
    Selector: weblogic.clusterName=oam_cluster

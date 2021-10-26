@@ -63,7 +63,7 @@ If you did not set `elkIntegrationEnabled` to `true` and want to do so post conf
    COMPUTED VALUES:
    dedicated: false
    domainNamespaces:
-   - accessns
+   - oamns
    elasticSearchHost: elasticsearch.default.svc.cluster.local
    elasticSearchPort: 9200
    elkIntegrationEnabled: true
@@ -98,7 +98,7 @@ If you did not set `elkIntegrationEnabled` to `true` and want to do so post conf
    
 ### Create the logstash pod
 
-OAM Server logs can be pushed to the Elasticsearch server using the `logstash` pod. The `logstash` pod needs access to the persistent volume of the OAM domain created previously, for example `accessinfra-domain-pv`.  The steps to create the `logstash` pod are as follows:
+OAM Server logs can be pushed to the Elasticsearch server using the `logstash` pod. The `logstash` pod needs access to the persistent volume of the OAM domain created previously, for example `accessdomain-domain-pv`.  The steps to create the `logstash` pod are as follows:
 
 1. Obtain the OAM domain persistence volume details:
 
@@ -109,17 +109,17 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    For example:
    
    ```bash
-   $ kubectl get pv -n accessns
+   $ kubectl get pv -n oamns
    ```
    
    The output will look similar to the following:
    
    ```bash
    NAME                    CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                             STORAGECLASS                       REASON   AGE
-   accessinfra-domain-pv   10Gi       RWX            Retain           Bound    accessns/accessinfra-domain-pvc   accessinfra-domain-storage-class            1h12m
+   accessdomain-domain-pv   10Gi       RWX            Retain           Bound    oamns/accessdomain-domain-pvc   accessdomain-domain-storage-class            1h12m
    ```
    
-   Make note of the `CLAIM` value, for example in this case `accessinfra-domain-pvc`
+   Make note of the `CLAIM` value, for example in this case `accessdomain-domain-pvc`
    
 1. Run the following command to get the `mountPath` of your domain:
    
@@ -130,7 +130,7 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    For example:
    
    ```bash
-   $ kubectl describe domains accessinfra -n accessns | grep "Mount Path"
+   $ kubectl describe domains accessdomain -n oamns | grep "Mount Path"
    ```
    
    The output will look similar to the following:
@@ -140,14 +140,14 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    ```
    
 1. Navigate to the `<work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/elasticsearch-and-kibana` directory and create a `logstash.yaml` file as follows.
-   Change the `claimName` and `mountPath` values to match the values returned in the previous commands:
+   Change the `claimName` and `mountPath` values to match the values returned in the previous commands. Change `namespace` to your domain namespace e.g `oamns`:
    
    ```
    apiVersion: apps/v1
    kind: Deployment
    metadata:
      name: logstash-wls
-     namespace: accessns
+     namespace: oamns
    spec:
      selector:
        matchLabels:
@@ -160,7 +160,7 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
          volumes:
          - name: weblogic-domain-storage-volume
            persistentVolumeClaim:
-             claimName: accessinfra-domain-pvc
+             claimName: accessdomain-domain-pvc
          - name: shared-logs
            emptyDir: {}
          containers:
@@ -190,42 +190,42 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    ```
    input {
      file {
-       path => "/u01/oracle/user_projects/domains/logs/accessinfra/AdminServer*.log"
+       path => "/u01/oracle/user_projects/domains/logs/accessdomain/AdminServer*.log"
        tags => "Adminserver_log"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/logs/accessinfra/oam_policy_mgr*.log"
+       path => "/u01/oracle/user_projects/domains/logs/accessdomain/oam_policy_mgr*.log"
        tags => "Policymanager_log"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/logs/accessinfra/oam_server*.log"
+       path => "/u01/oracle/user_projects/domains/logs/accessdomain/oam_server*.log"
        tags => "Oamserver_log"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/accessinfra/servers/AdminServer/logs/AdminServer-diagnostic.log"
+       path => "/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
        tags => "Adminserver_diagnostic"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/accessinfra/servers/**/logs/oam_policy_mgr*-diagnostic.log"
+       path => "/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/oam_policy_mgr*-diagnostic.log"
        tags => "Policy_diagnostic"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/accessinfra/servers/**/logs/oam_server*-diagnostic.log"
+       path => "/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/oam_server*-diagnostic.log"
        tags => "Oamserver_diagnostic"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/accessinfra/servers/**/logs/access*.log"
+       path => "/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/access*.log"
        tags => "Access_logs"
        start_position => beginning
      }
      file {
-       path => "/u01/oracle/user_projects/domains/accessinfra/servers/AdminServer/logs/auditlogs/OAM/audit.log"
+       path => "/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/auditlogs/OAM/audit.log"
        tags => "Audit_logs"
        start_position => beginning
      }
@@ -268,21 +268,20 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    For example:
    
    ```bash
-   $ kubectl get pods -n accessns
+   $ kubectl get pods -n oamns
    ```
    
    The output should look similar to the following:
    
    ```bash
    NAME                                            READY   STATUS      RESTARTS   AGE
-   accessinfra-adminserver                         1/1     Running     0          36m
-   accessinfra-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
-   accessinfra-oam-policy-mgr1                     1/1     Running     0          33m
-   accessinfra-oam-server1                         1/1     Running     0          33m
-   accessinfra-oam-server2                         1/1     Running     0          33m
+   accessdomain-adminserver                         1/1     Running     0          36m
+   accessdomain-create-oam-infra-domain-job-vj69h   0/1     Completed   0          24h
+   accessdomain-oam-policy-mgr1                     1/1     Running     0          33m
+   accessdomain-oam-server1                         1/1     Running     0          33m
+   accessdomain-oam-server2                         1/1     Running     0          33m
    helper                                          1/1     Running     0          41h
    logstash-wls-7957897645-67c4k                   1/1     Running     0          7s
-   voyager-accessinfra-voyager-698764d6d-w8pbt     1/1     Running     0          66m
    ```
    
    Then run the following to get the Elasticsearch pod name:

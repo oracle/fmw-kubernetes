@@ -19,9 +19,9 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
 
    ```bash
-   $ kubectl delete jobs accessinfra-create-oam-infra-domain-job -n accessns
-   $ kubectl delete domain accessinfra -n accessns
-   $ kubectl delete configmaps accessinfra-create-oam-infra-domain-job-cm -n accessns
+   $ kubectl delete jobs accessdomain-create-oam-infra-domain-job -n oamns
+   $ kubectl delete domain accessdomain -n oamns
+   $ kubectl delete configmaps accessdomain-create-oam-infra-domain-job-cm -n oamns
    ```
 
 1. Drop the RCU schemas as follows:
@@ -41,7 +41,7 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
    
    ```bash
-   $ kubectl exec -it helper -n accessns -- /bin/bash
+   $ kubectl exec -it helper -n oamns -- /bin/bash
    [oracle@helper ~]$ export CONNECTION_STRING=mydatabasehost.example.com:1521/orcl.example.com
    [oracle@helper ~]$ export RCUPREFIX=OAMK8S
    /u01/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING \
@@ -54,15 +54,15 @@ Sometimes in production, but most likely in testing environments, you might want
 1. Delete the Persistent Volume and Persistent Volume Claim:
 
    ```bash
-   $ kubectl delete pv <pv-name> -n <domain_namespace>
+   $ kubectl delete pv <pv-name>
    $ kubectl delete pvc <pvc-name> -n <domain_namespace>
    ```
    
    For example:
    
    ```bash
-   $ kubectl delete pv accessinfra-domain-pv -n accessns
-   $ kubectl delete pvc accessinfra-domain-pvc -n accessns
+   $ kubectl delete pv accessdomain-domain-pv
+   $ kubectl delete pvc accessdomain-domain-pvc -n oamns
    ```
 
 
@@ -82,7 +82,7 @@ Sometimes in production, but most likely in testing environments, you might want
 5. Delete the Oracle WebLogic Server Kubernetes Operator, by running the following command:
 
    ```bash
-   $ helm delete weblogic-kubernetes-operator
+   $ helm delete weblogic-kubernetes-operator -n opns
    ```
    
 6. To delete NGINX:
@@ -96,8 +96,15 @@ Sometimes in production, but most likely in testing environments, you might want
    Then run:
    
    ```bash
-   $ helm delete nginx-ingress
+   $ helm delete nginx-ingress -n <domain namespace>
    ```
+    
+   For example:
+   
+   ```bash
+   $ helm delete nginx-ingress -n oamns
+   ```
+   
 
 7. To delete Voyager:
     
@@ -113,7 +120,7 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
    
    ```bash
-   $ helm delete oam-voyager-ingress -n accessns
+   $ helm delete oam-voyager-ingress -n oamns
    ```
    
    

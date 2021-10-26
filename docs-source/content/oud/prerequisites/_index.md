@@ -1,8 +1,8 @@
 ---
 title: "Prerequisites"
 date: 2019-04-18T07:32:31-05:00
-weight: 1
-pre : "<b>1. </b>"
+weight: 2
+pre : "<b>2. </b>"
 description: "Oracle Unified Directory Prerequisites."
 ---
 
@@ -12,6 +12,4 @@ This document provides information about the system requirements for deploying a
 
 ### System Requirements for Oracle Unified Directory on Kubernetes
 
-* Kubernetes 1.16.0 or higher (check with `kubectl version`).
-* Docker 18.03 or higher (check with `docker version`)
-* Helm 3.0.2+ or higher (check with `helm version`)
+* A running Kubernetes cluster with Helm and Docker installed. For the minimum version requirements refer to document ID 2723908.1 on [My Oracle Support](https://support.oracle.com).

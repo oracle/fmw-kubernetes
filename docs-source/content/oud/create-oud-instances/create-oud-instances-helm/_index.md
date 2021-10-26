@@ -1,10 +1,11 @@
-+++
-title = "Create Oracle Unified Directory Instances Using Helm"
-date = 2019-04-18T06:46:23-05:00
-weight = 4 
-pre = "<b>4. </b>"
-description=  "This document provides steps to create Oracle Unified Directory instances using Helm Charts."
-+++
+---
+title: "b. Create Oracle Unified Directory Instances Using Helm"
+weight: 2
+description: "This document provides steps to create Oracle Unified Directory instances using Helm Charts."
+---
+
+
+
 
 1. [Introduction](#introduction)
 1. [Install Helm](#install-helm)
@@ -31,7 +32,7 @@ $ helm install [Deployment NAME] [CHART Reference] [flags]
 For example:
 
 ```
-$ helm install my-oud-ds-rs oud-ds-rs --namespace myhelmns
+$ helm install my-oud-ds-rs oud-ds-rs --namespace oudns
 ```
 
 #### Undeploy an Application using the Helm Chart
@@ -47,9 +48,9 @@ $ helm --namespace <namespace> list
 For example:
 
 ```
-$ helm --namespace myhelmns list
+$ helm --namespace oudns list
 NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-my-oud-ds-rs-           myhelmns        1               2020-03-31 10:37:30.616927678 -0700 PDT deployed        oud-ds-rs-12.2.1.4.0    12.2.1.4.0
+my-oud-ds-rs-           oudns        1               2020-03-31 10:37:30.616927678 -0700 PDT deployed        oud-ds-rs-12.2.1.4.0    12.2.1.4.0
 ```
         
 To delete the chart:
@@ -61,7 +62,7 @@ $ helm uninstall --namespace <namespace> <release>
 For example:
 
 ```
-$ helm uninstall --namespace myhelmns my-oud-ds-rs
+$ helm uninstall --namespace oudns my-oud-ds-rs
 release "my-oud-ds-rs" uninstalled
 ```
 
@@ -73,4 +74,4 @@ The following list provides Helm charts for deploying Oracle Unified Directory i
 
 Details about each Helm Chart can be found in the relevant README listed below:
 
-* [oud-ds-rs]({{< relref "/oud/create-oud-instances-helm/oud-ds-rs" >}}) : A Helm chart for deployment of Oracle Unified Directory Directory (DS+RS) instances on Kubernetes.
+* [oud-ds-rs]({{< relref "/oud/create-oud-instances/create-oud-instances-helm/oud-ds-rs" >}}) : A Helm chart for deployment of Oracle Unified Directory Directory (DS+RS) instances on Kubernetes.

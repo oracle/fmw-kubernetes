@@ -124,7 +124,7 @@ Use Helm to install Voyager. For detailed information, see [this document](https
    $ vi values.yaml
    ```
 
-   Edit `values.yaml` and ensure that the values `type=VOYAGER` and `tls=NONSSL` are set, for example:
+   Edit `values.yaml` and ensure that the values `type=VOYAGER` and `tls=NONSSL` are set. Also change `domainUID` to the value for your domain e.g (`governancedomain`), for example:
 
    ```
    $ cat values.yaml
@@ -147,18 +147,13 @@ Use Helm to install Voyager. For detailed information, see [this document](https
 
    # WLS domain as backend to the load balancer
    wlsDomain:
-     domainUID: oimcluster
+     domainUID: governancedomain
      oimClusterName: oim_cluster
      soaClusterName: soa_cluster
      soaManagedServerPort: 8001
      oimManagedServerPort: 14000
      adminServerName: adminserver
      adminServerPort: 7001
-
-   # Traefik specific values
-   # traefik:
-     # hostname used by host-routing
-     # hostname: idmdemo.m8y.xyz
 
    # Voyager specific values
    voyager:
@@ -170,26 +165,26 @@ Use Helm to install Voyager. For detailed information, see [this document](https
 
 ### Create an Ingress for the Domain
 
-1. Create an Ingress for the domain (`oimcluster-voyager`), in the domain namespace by using the sample Helm chart:
+1. Create an Ingress for the domain (`governancedomain-voyager`), in the domain namespace by using the sample Helm chart:
 
    ```
    $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install oimcluster-voyager kubernetes/samples/charts/ingress-per-domain  --namespace <namespace>  --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-voyager kubernetes/samples/charts/ingress-per-domain  --namespace <namespace>  --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
 
    For example:
    
    ```
    $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm install oimcluster-voyager kubernetes/samples/charts/ingress-per-domain  --namespace oimcluster  --values kubernetes/samples/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-voyager kubernetes/samples/charts/ingress-per-domain  --namespace oigns  --values kubernetes/samples/charts/ingress-per-domain/values.yaml
    ```
 
    The output will look similar to the following:
 
    ```
-   NAME: oimcluster-voyager
+   NAME: governancedomain-voyager
    LAST DEPLOYED: Tue Sep 29 09:28:12 2020
-   NAMESPACE: oimcluster
+   NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -198,34 +193,34 @@ Use Helm to install Voyager. For detailed information, see [this document](https
 1. Run the following command to show the ingress is created successfully:
 
    ```
-   $ kubectl get ingress.voyager.appscode.com -n oimcluster
+   $ kubectl get ingress.voyager.appscode.com -n oigns
    ```
    
    The output will look similar to the following:
 
    ```
    NAME                 HOSTS   LOAD_BALANCER_IP   AGE
-   oimcluster-voyager   *                          78s
+   governancedomain-voyager   *                          78s
    ```
    
 1. Return details of the ingress using the following command:
 
    ```
-   $ kubectl describe ingress.voyager.appscode.com oimcluster-voyager -n oimcluster
+   $ kubectl describe ingress.voyager.appscode.com governancedomain-voyager -n oigns
    ```
    
    The output will look similar to the following:
 
    ```
-   Name:         oimcluster-voyager
-   Namespace:    oimcluster
+   Name:         governancedomain-voyager
+   Namespace:    oigns
    Labels:       app.kubernetes.io/managed-by=Helm
                  weblogic.resourceVersion=domain-v2
    Annotations:  ingress.appscode.com/affinity: cookie
                  ingress.appscode.com/stats: true
                  ingress.appscode.com/type: NodePort
-                 meta.helm.sh/release-name: oimcluster-voyager
-                 meta.helm.sh/release-namespace: oimcluster
+                 meta.helm.sh/release-name: governancedomain-voyager
+                 meta.helm.sh/release-namespace: oigns
    API Version:  voyager.appscode.com/v1beta1
    Kind:         Ingress
    Metadata:
@@ -254,7 +249,7 @@ Use Helm to install Voyager. For detailed information, see [this document](https
        Operation:       Update
        Time:            2020-09-29T09:28:12Z
      Resource Version:  4168835
-     Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/oimcluster/ingresses/oimcluster-voyager
+     Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/oigns/ingresses/governancedomain-voyager
      UID:               2ea71f79-6836-4df2-8200-8418abf6ad9f
    Spec:
      Rules:
@@ -263,62 +258,66 @@ Use Helm to install Voyager. For detailed information, see [this document](https
          Node Port:  30305
          Paths:
            Backend:
-             Service Name:  oimcluster-adminserver
+             Service Name:  governancedomain-adminserver
              Service Port:  7001
            Path:            /console
            Backend:
-             Service Name:  oimcluster-adminserver
+             Service Name:  governancedomain-adminserver
              Service Port:  7001
            Path:            /em
            Backend:
-             Service Name:  oimcluster-cluster-soa-cluster
+             Service Name:  governancedomain-cluster-soa-cluster
              Service Port:  8001
            Path:            /soa-infra
+		   Backend:
+             Service Name:  governancedomain-cluster-soa-cluster
+             Service Port:  8001
+           Path:            /integration
            Backend:
-             Service Name:  oimcluster-cluster-oim-cluster
+             Service Name:  governancedomain-cluster-oim-cluster
              Service Port:  14000
            Path:            /
    Events:
      Type    Reason                           Age    From              Message
      ----    ------                           ----   ----              -------
-     Normal  ServiceReconcileSuccessful       5m22s  voyager-operator  Successfully created NodePort Service voyager-oimcluster-voyager
-     Normal  ConfigMapReconcileSuccessful     5m22s  voyager-operator  Successfully created ConfigMap voyager-oimcluster-voyager
-     Normal  RBACSuccessful                   5m22s  voyager-operator  Successfully created ServiceAccount voyager-oimcluster-voyager
-     Normal  RBACSuccessful                   5m22s  voyager-operator  Successfully created Role voyager-oimcluster-voyager
-     Normal  RBACSuccessful                   5m22s  voyager-operator  Successfully created RoleBinding voyager-oimcluster-voyager
-     Normal  DeploymentReconcileSuccessful    5m22s  voyager-operator  Successfully created HAProxy Deployment voyager-oimcluster-voyager
-     Normal  StatsServiceReconcileSuccessful  5m22s  voyager-operator  Successfully created stats Service voyager-oimcluster-voyager-stats
+     Normal  ServiceReconcileSuccessful       5m22s  voyager-operator  Successfully created NodePort Service voyager-governancedomain-voyager
+     Normal  ConfigMapReconcileSuccessful     5m22s  voyager-operator  Successfully created ConfigMap voyager-governancedomain-voyager
+     Normal  RBACSuccessful                   5m22s  voyager-operator  Successfully created ServiceAccount voyager-governancedomain-voyager
+     Normal  RBACSuccessful                   5m22s  voyager-operator  Successfully created Role voyager-governancedomain-voyager
+     Normal  RBACSuccessful                   5m22s  voyager-operator  Successfully created RoleBinding voyager-governancedomain-voyager
+     Normal  DeploymentReconcileSuccessful    5m22s  voyager-operator  Successfully created HAProxy Deployment voyager-governancedomain-voyager
+     Normal  StatsServiceReconcileSuccessful  5m22s  voyager-operator  Successfully created stats Service voyager-governancedomain-voyager-stats
    ```
 
 1. Find the NodePort of Voyager using the following command:
 
    ```
-   $ kubectl get svc -n oimcluster
+   $ kubectl get svc -n oigns
    ```
 
    The output will look similar to the following:
 
    ```
    NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
-   oimcluster-adminserver             ClusterIP   None             <none>        7001/TCP          19h
-   oimcluster-cluster-oim-cluster     ClusterIP   10.97.121.159    <none>        14000/TCP         19h
-   oimcluster-cluster-soa-cluster     ClusterIP   10.111.231.242   <none>        8001/TCP          19h
-   oimcluster-oim-server1             ClusterIP   None             <none>        14000/TCP         19h
-   oimcluster-oim-server2             ClusterIP   10.108.139.30    <none>        14000/TCP         19h
-   oimcluster-oim-server3             ClusterIP   10.97.170.104    <none>        14000/TCP         19h
-   oimcluster-oim-server4             ClusterIP   10.99.82.214     <none>        14000/TCP         19h
-   oimcluster-oim-server5             ClusterIP   10.98.75.228     <none>        14000/TCP         19h
-   oimcluster-soa-server1             ClusterIP   None             <none>        8001/TCP          19h
-   oimcluster-soa-server2             ClusterIP   10.107.232.220   <none>        8001/TCP          19h
-   oimcluster-soa-server3             ClusterIP   10.108.203.6     <none>        8001/TCP          19h
-   oimcluster-soa-server4             ClusterIP   10.96.178.0      <none>        8001/TCP          19h
-   oimcluster-soa-server5             ClusterIP   10.107.83.62     <none>        8001/TCP          19h
-   oimcluster-voyager-stats           NodePort    10.99.34.145     <none>        56789:30315/TCP   3m36s
-   voyager-oimcluster-voyager         NodePort    10.106.40.20     <none>        80:30305/TCP      3m36s
-   voyager-oimcluster-voyager-stats   ClusterIP   10.100.89.234    <none>        56789/TCP         3m30s
+   governancedomain-adminserver             ClusterIP   None             <none>        7001/TCP          19h
+   governancedomain-cluster-oim-cluster     ClusterIP   10.97.121.159    <none>        14000/TCP         19h
+   governancedomain-cluster-soa-cluster     ClusterIP   10.111.231.242   <none>        8001/TCP          19h
+   governancedomain-oim-server1             ClusterIP   None             <none>        14000/TCP         19h
+   governancedomain-oim-server2             ClusterIP   10.108.139.30    <none>        14000/TCP         19h
+   governancedomain-oim-server3             ClusterIP   10.97.170.104    <none>        14000/TCP         19h
+   governancedomain-oim-server4             ClusterIP   10.99.82.214     <none>        14000/TCP         19h
+   governancedomain-oim-server5             ClusterIP   10.98.75.228     <none>        14000/TCP         19h
+   governancedomain-soa-server1             ClusterIP   None             <none>        8001/TCP          19h
+   governancedomain-soa-server2             ClusterIP   10.107.232.220   <none>        8001/TCP          19h
+   governancedomain-soa-server3             ClusterIP   10.108.203.6     <none>        8001/TCP          19h
+   governancedomain-soa-server4             ClusterIP   10.96.178.0      <none>        8001/TCP          19h
+   governancedomain-soa-server5             ClusterIP   10.107.83.62     <none>        8001/TCP          19h
+   governancedomain-voyager-stats           NodePort    10.99.34.145     <none>        56789:30315/TCP   3m36s
+   voyager-governancedomain-voyager         NodePort    10.106.40.20     <none>        80:30305/TCP      3m36s
+   voyager-governancedomain-voyager-stats   ClusterIP   10.100.89.234    <none>        56789/TCP         3m30s
    ```
 
-   Identify the service `voyager-oimcluster-voyager` in the above output and get the `NodePort` which corresponds to port `80`. In this example it will be `30305`.
+   Identify the service `voyager-governancedomain-voyager` in the above output and get the `NodePort` which corresponds to port `80`. In this example it will be `30305`.
   
 1. To confirm that the new Ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the "WebLogic ReadyApp framework":
 
@@ -347,7 +346,7 @@ Use Helm to install Voyager. For detailed information, see [this document](https
    < HTTP/1.1 200 OK
    < Date: Wed, 29 Sep 2020 09:30:56 GMT
    < Content-Length: 0
-   < Set-Cookie: SERVERID=pod-oimcluster-oim-server1; path=/
+   < Set-Cookie: SERVERID=pod-governancedomain-oim-server1; path=/
    < Cache-control: private
    <
    * Connection #0 to host masternode.example.com left intact
@@ -363,7 +362,7 @@ After setting up the Voyager ingress, verify that the domain applications are ac
 If you need to remove the Voyager Ingress (for example to setup Voyager with SSL) then remove the ingress with the following commands:
 
 ```
-$ helm delete oimcluster-voyager -n oimcluster
+$ helm delete governancedomain-voyager -n oigns
 $ helm delete voyager-ingress -n voyager
 $ kubectl delete namespace voyager
 ```
@@ -371,8 +370,8 @@ $ kubectl delete namespace voyager
 The output will look similar to the following:
 
 ```
-$ helm delete oimcluster-voyager -n oimcluster
-release "oimcluster-voyager" uninstalled
+$ helm delete governancedomain-voyager -n oigns
+release "governancedomain-voyager" uninstalled
 
 $ helm delete voyager-ingress -n voyager
 release "voyager-ingress" uninstalled

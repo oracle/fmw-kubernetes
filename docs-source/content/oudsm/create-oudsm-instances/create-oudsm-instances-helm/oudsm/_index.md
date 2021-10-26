@@ -32,8 +32,8 @@ Based on the configuration, this chart deploys the following objects in the spec
 Create a Kubernetes namespace to provide a scope for other objects such as pods and services that you create in the environment. To create your namespace issue the following command:
 
 ```
-$ kubectl create ns myhelmns
-namespace/myhelmns created
+$ kubectl create ns oudns
+namespace/oudns created
 ```
 
 
@@ -44,6 +44,7 @@ Create/Deploy Oracle Unified Directory Services Manager instances along with Kub
 The deployment can be initiated by running the following Helm command with reference to the `oudsm` Helm Chart, along with configuration parameters according to your environment. Before deploying the Helm chart, the namespace should be created. Objects to be created by the Helm chart will be created inside the specified namespace.
 
 ```
+cd <work directory>/fmw-kubernetes/OracleUnifiedDirectorySM/kubernetes/helm
 $ helm install --namespace <namespace> \
 <Configuration Parameters> \
 <deployment/release name> \
@@ -57,9 +58,9 @@ Configuration Parameters (override values in chart) can be passed on with `--set
 ##### Example where configuration parameters are passed with `--set` argument:
 
 ```
-$ helm install --namespace myhelmns \
---set oudsm.adminUser=weblogic,oudsm.adminPass=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects \
-my-oudsm oudsm
+$ helm install --namespace oudns \
+--set oudsm.adminUser=weblogic,oudsm.adminPass=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=oracle/oudsm,image.tag=12.2.1.4.0-PSU2020July-20200730 \
+oudsm oudsm
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.
@@ -68,9 +69,9 @@ my-oudsm oudsm
 ##### Example where configuration parameters are passed with `--values` argument:
 
 ```
-$ helm install --namespace myhelmns \
+$ helm install --namespace oudns \
 --values oudsm-values-override.yaml \
-my-oudsm oudsm
+oudsm oudsm
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.
@@ -92,9 +93,9 @@ persistence:
 ##### Example to update/upgrade Helm Chart based deployment:
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --set oudsm.adminUser=weblogic,oudsm.adminPass=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,replicaCount=2 \
-my-oudsm oudsm
+oudsm oudsm
 ```
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.
 * In this example, it is assumed that the command is executed from the directory containing the 'oudsm' helm chart directory (`OracleUnifiedDirectorySM/kubernetes/helm/`).
@@ -106,17 +107,17 @@ In this example, we will apply PSU2020July-20200730 patch on earlier running Ora
 We have two ways to achieve our goal:
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --set image.repository=oracle/oudsm,image.tag=12.2.1.4.0-PSU2020July-20200730 \
-my-oudsm oudsm
+oudsm oudsm
 ```
 
 OR
 
 ```
-$ helm upgrade --namespace myhelmns \
+$ helm upgrade --namespace oudns \
 --values oudsm-values-override.yaml \
-my-oudsm oudsm
+oudsm oudsm
 ```
 		
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.<br>
@@ -133,9 +134,9 @@ image:
 ##### Example for using NFS as PV Storage:
 
 ```
-$ helm install --namespace myhelmns \
+$ helm install --namespace oudns \
 --values oudsm-values-override-nfs.yaml \
-my-oudsm oudsm
+oudsm oudsm
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.
@@ -159,9 +160,9 @@ persistence:
 ##### Example for using PV type of your choice:
 
 ```
-$ helm install --namespace myhelmns \
+$ helm install --namespace oudns \
 --values oudsm-values-override-pv-custom.yaml \
-my-oudsm oudsm
+oudsm oudsm
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.
@@ -193,9 +194,9 @@ persistence:
 Ouput similar to the following is observed following successful execution of `helm install/upgrade` command.
 
 ```
-NAME: my-oudsm
+NAME: oudsm
 LAST DEPLOYED: Wed Oct 14 06:22:10 2020
-NAMESPACE: myhelmns
+NAMESPACE: oudns
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
@@ -206,7 +207,7 @@ TEST SUITE: None
 Command: 
 
 ```
-$ kubectl --namespace myhelmns get nodes,pod,service,secret,pv,pvc,ingress -o wide
+$ kubectl --namespace oudns get nodes,pod,service,secret,pv,pvc,ingress -o wide
 ```
 
 Output is similar to the following: 
@@ -230,7 +231,7 @@ secret/sh.helm.release.v1.oudsm.v2   helm.sh/release.v1                    1    
 secret/sh.helm.release.v1.oudsm.v3   helm.sh/release.v1                    1      19h
 	
 NAME                            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                   STORAGECLASS   REASON   AGE   VOLUMEMODE
-persistentvolume/oudsm-pv       30Gi       RWX            Retain           Bound    myoudsmns/oudsm-pvc     manual                  22h   Filesystem
+persistentvolume/oudsm-pv       30Gi       RWX            Retain           Bound    myoudns/oudsm-pvc     manual                  22h   Filesystem
 
 NAME                              STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
 persistentvolumeclaim/oudsm-pvc   Bound    oudsm-pv   30Gi       RWX            manual         22h   Filesystem
@@ -245,15 +246,15 @@ Kubernetes objects created by the Helm chart are detailed in the table below:
 
 | **Type** | **Name** | **Example Name** | **Purpose** | 
 | ------ | ------ | ------ | ------ |
-| Service Account | <deployment/release name> | my-oudsm | Kubernetes Service Account for the Helm Chart deployment |
-| Secret | <deployment/release name>-creds |  my-oudsm-creds | Secret object for Oracle Unified Directory Services Manager related critical values like passwords |
-| Persistent Volume | <deployment/release name>-pv | my-oudsm-pv | Persistent Volume for user_projects mount. | 
-| Persistent Volume Claim | <deployment/release name>-pvc | my-oudsm-pvc | Persistent Volume Claim for user_projects mount. |
-| Pod | <deployment/release name>-N | my-oudsm-1, my-oudsm-2, ...  | Pod(s)/Container(s) for Oracle Unified Directory Services Manager Instances |
-| Service | <deployment/release name>-N | my-oudsm-1, my-oudsm-2, ... | Service(s) for HTTP and HTTPS interfaces from Oracle Unified Directory Services Manager instance <deployment/release name>-N |
-| Ingress | <deployment/release name>-ingress-nginx | my-oudsm-ingress-nginx | Ingress Rules for HTTP and HTTPS interfaces. |
+| Service Account | <deployment/release name> | oudsm | Kubernetes Service Account for the Helm Chart deployment |
+| Secret | <deployment/release name>-creds |  oudsm-creds | Secret object for Oracle Unified Directory Services Manager related critical values like passwords |
+| Persistent Volume | <deployment/release name>-pv | oudsm-pv | Persistent Volume for user_projects mount. | 
+| Persistent Volume Claim | <deployment/release name>-pvc | oudsm-pvc | Persistent Volume Claim for user_projects mount. |
+| Pod | <deployment/release name>-N | oudsm-1, oudsm-2, ...  | Pod(s)/Container(s) for Oracle Unified Directory Services Manager Instances |
+| Service | <deployment/release name>-N | oudsm-1, oudsm-2, ... | Service(s) for HTTP and HTTPS interfaces from Oracle Unified Directory Services Manager instance <deployment/release name>-N |
+| Ingress | <deployment/release name>-ingress-nginx | oudsm-ingress-nginx | Ingress Rules for HTTP and HTTPS interfaces. |
 
-* In the table above, the Example Name for each Object is based on the value 'my-oudsm' as the deployment/release name for the Helm chart installation.
+* In the table above, the Example Name for each Object is based on the value 'oudsm' as the deployment/release name for the Helm chart installation.
 
 ### Verify the Installation
 
@@ -267,18 +268,36 @@ By default Ingress configuration only supports HTTP and HTTPS Ports/Communicatio
 
 Nginx-ingress controller implementation can be deployed/installed in Kubernetes environment.
 
+##### Create a Kubernetes Namespace
+
+Create a Kubernetes namespace to provide a scope for NGINX objects such as pods and services that you create in the environment. To create your namespace issue the following command:
+
+```
+$ kubectl create ns mynginx
+namespace/mynginx created
+```
+
 ##### Add Repo reference to helm for retriving/installing Chart for nginx-ingress implementation.
 
 ```
 $ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 ```
 
+Confirm the charts available by issuing the following command:
+
+```
+$ helm search repo | grep nginx
+ingress-nginx/ingress-nginx     4.0.1           1.0.0          Ingress controller for Kubernetes using NGINX a...
+stable/ingress-nginx            4.0.1           1.0.0          Ingress controller for Kubernetes using NGINX a...
+```
+
 ##### Command `helm install` to install nginx-ingress related objects like pod, service, deployment, etc.
+
 
 ```
 $ helm install --namespace default \
 --values nginx-ingress-values-override.yaml \
-lbr-nginx ingress-nginx/ingress-nginx
+lbr-nginx ingress-nginx/ingress-nginx --version=3.34.0
 ```
 
 * For more details about the `helm` command and parameters, please execute `helm --help` and `helm install --help`.
@@ -294,7 +313,7 @@ controller:
     # The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.
     # If this flag is not provided NGINX will use a self-signed certificate.
     # If the TLS Secret is in different namespace, name can be mentioned as <namespace>/<tlsSecretName>
-    default-ssl-certificate=myhelmns/my-oudsm-tls-cert
+    default-ssl-certificate=oudns/oudsm-tls-cert
   service:
     # controller service external IP addresses
     externalIPs:
@@ -316,6 +335,15 @@ controller:
 
 Voyager ingress implementation can be deployed/installed in Kubernetes environment.
 
+##### Create a Kubernetes Namespace
+
+Create a Kubernetes namespace to provide a scope for NGINX objects such as pods and services that you create in the environment. To create your namespace issue the following command:
+
+```
+$ kubectl create ns myvoyager
+namespace/mynginx created
+```
+
 ##### Add Repo reference to helm for retrieving/installing Chart for voyager implementation.
 
 ```
@@ -325,7 +353,7 @@ $ helm repo add appscode https://charts.appscode.com/stable
 ##### Command `helm install` to install Voyager related objects like pod, service, deployment, etc.
 
 ```
-$ helm install --namespace default \
+$ helm install --namespace myvoyager \
 --set cloudProvider=baremetal \
 voyager-operator appscode/voyager
 ```
@@ -338,10 +366,10 @@ With the helm chart, Ingress objects are also created according to configuration
 
 | **Port** | **NodePort** | **Host** | **Example Hostname** | **Path** | **Backend Service:Port** | **Example Service Name:Port** | 
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |  
-| http/https | 30080/30443 | <deployment/release name>-N | my-oudsm-N | * | <deployment/release name>-N:http | my-oudsm-1:http | 
-| http/https | 30080/30443 | * | * | /oudsm<br> /console| <deployment/release name>-lbr:http | my-oudsm-lbr:http | 
+| http/https | 30080/30443 | <deployment/release name>-N | oudsm-N | * | <deployment/release name>-N:http | oudsm-1:http | 
+| http/https | 30080/30443 | * | * | /oudsm<br> /console| <deployment/release name>-lbr:http | oudsm-lbr:http | 
 
-* In the table above, the Example Name for each Object is based on the value 'my-oudsm' as the deployment/release name for the Helm chart installation.
+* In the table above, the Example Name for each Object is based on the value 'oudsm' as the deployment/release name for the Helm chart installation.
 * NodePort mentioned in the table are according to Ingress configuration described in previous section.
 * When an External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on the Kubernetes Node.
 
@@ -350,10 +378,10 @@ With the helm chart, Ingress objects are also created according to configuration
 In case, its not possible for you to have LoadBalancer configuration updated to have host names added for Oracle Unified Directory Services Manager Interfaces, following kind of entries can be added in /etc/hosts files on host from where Oracle Unified Directory Services Manager interfaces would be accessed. 
 
 ```
-<IP Address of External LBR or Kubernetes Node>	my-oudsm my-oudsm-1 my-oudsm-2 my-oudsm-N
+<IP Address of External LBR or Kubernetes Node>	oudsm oudsm-1 oudsm-2 oudsm-N
 ```
 
-* In the table above, the Example Name for each Object is based on the value 'my-oudsm' as the deployment/release name for the Helm chart installation.
+* In the table above, the Example Name for each Object is based on the value 'oudsm' as the deployment/release name for the Helm chart installation.
 * When an External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on the Kubernetes Node.
 
 ### Configuration Parameters

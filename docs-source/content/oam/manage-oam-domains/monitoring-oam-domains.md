@@ -38,7 +38,6 @@ The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape r
    The output will look similar to the following:
    
    ```bash
-   kubectl create -f manifests/setup
    namespace/monitoring created
    customresourcedefinition.apiextensions.k8s.io/alertmanagers.monitoring.coreos.com created
    customresourcedefinition.apiextensions.k8s.io/podmonitors.monitoring.coreos.com created
@@ -543,17 +542,17 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    apiVersion: monitoring.coreos.com/v1
    kind: ServiceMonitor
    metadata:
-     name: wls-exporter-accessinfra
+     name: wls-exporter-accessdomain
      namespace: monitoring
      labels:
        k8s-app: wls-exporter
    spec:
      namespaceSelector:
        matchNames:
-       - accessns
+       - oamns
      selector:
        matchLabels:
-         weblogic.domainName: accessinfra
+         weblogic.domainName: accessdomain
      endpoints:
      - basicAuth:
          password:
@@ -577,7 +576,7 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    $ echo -n "<password>" | base64
    ```
    
-   If using a different namespace from `accessns` or a different domain_UID from `accessinfra`, then change accordingly.
+   If using a different namespace from `oamns` or a different domain_UID from `accessdomain`, then change accordingly.
    
 1. Add Rolebinding for the WebLogic OAM domain namespace:
 
@@ -585,14 +584,14 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    $ cd <work_directory>/kube-prometheus/manifests
    ```
    
-   Edit the `prometheus-roleBindingSpecificNamespaces.yaml` file and add the following to the file for your OAM domain namespace, for example `accessns`.
+   Edit the `prometheus-roleBindingSpecificNamespaces.yaml` file and add the following to the file for your OAM domain namespace, for example `oamns`.
    
    ```
    - apiVersion: rbac.authorization.k8s.io/v1
      kind: RoleBinding
      metadata:
        name: prometheus-k8s
-       namespace: accessns
+       namespace: oamns
      roleRef:
        apiGroup: rbac.authorization.k8s.io
        kind: Role
@@ -612,7 +611,7 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
      kind: RoleBinding
      metadata:
        name: prometheus-k8s
-       namespace: accessns
+       namespace: oamns
      roleRef:
        apiGroup: rbac.authorization.k8s.io
        kind: Role
@@ -629,14 +628,14 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    ....
    ```
 
-1. Add the Role for WebLogic OAM domain namespace. Edit the `prometheus-roleSpecificNamespaces.yaml` and change the namespace to your OAM domain namespace, for example `accessns`.
+1. Add the Role for WebLogic OAM domain namespace. Edit the `prometheus-roleSpecificNamespaces.yaml` and change the namespace to your OAM domain namespace, for example `oamns`.
 
    ```
    - apiVersion: rbac.authorization.k8s.io/v1
      kind: Role
      metadata:
        name: prometheus-k8s
-       namespace: accessns
+       namespace: oamns
      rules:
      - apiGroups:
        - ""
@@ -692,7 +691,7 @@ Prometheus has to be configured to collect the metrics from the weblogic-monitor
    The output will look similar to the following:
    
    ```
-   servicemonitor.monitoring.coreos.com/wls-exporter-accessinfra created
+   servicemonitor.monitoring.coreos.com/wls-exporter-accessdomain created
    ```
    
 ### Prometheus Service Discovery
@@ -701,13 +700,13 @@ After ServiceMonitor is deployed, the wls-exporter should be discovered by Prome
 
 1. Access the following URL to view Prometheus service discovery: `http://${MASTERNODE-HOSTNAME}:32101/service-discovery`
 
-1. Click on `monitoring/wls-exporter-accessinfra/0 ` and then *show more*. Verify all the targets are mentioned.
+1. Click on `monitoring/wls-exporter-accessdomain/0 ` and then *show more*. Verify all the targets are mentioned.
 
 ### Grafana Dashboard
 
 1. Access the Grafana dashboard with the following URL: `http://${MASTERNODE-HOSTNAME}:32100` and login with `admin/admin`. Change your password when prompted.
 
-1. Import the Grafana dashboard by navigating on the left hand menu to *Create* > *Import*. Copy the content from `<work_directory>/OracleAccessManagement/kubernetes/3.0.1/grafana/weblogic_dashboard.json` and paste. Then click *Load* and *Import*.
+1. Import the Grafana dashboard by navigating on the left hand menu to *Create* > *Import*. Copy the content from `<work_directory>/fmw-kubernetes/OracleAccessManagement/kubernetes/3.0.1/grafana/weblogic_dashboard.json` and paste. Then click *Load* and *Import*.
    
   
 

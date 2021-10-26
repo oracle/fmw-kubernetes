@@ -1,7 +1,7 @@
 +++
 title = "Configure an Ingress for an OIG domain"
-weight = 4 
-pre = "<b>4. </b>"
+weight = 5 
+pre = "<b>5. </b>"
 description=  "This document provides steps to configure an Ingress to direct traffic to the OIG domain."
 +++
 
