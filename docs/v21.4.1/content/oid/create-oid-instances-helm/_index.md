@@ -1,8 +1,8 @@
 +++
 title = "Create Oracle Internet Directory Instances Using Helm"
 date = 2019-04-18T06:46:23-05:00
-weight = 3
-pre = "<b>3. </b>"
+weight = 4
+pre = "<b>4. </b>"
 description=  "This document provides steps to create Oracle Internet Directory instances using Helm Charts."
 +++
 

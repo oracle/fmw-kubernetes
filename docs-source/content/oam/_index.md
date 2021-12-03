@@ -1,7 +1,7 @@
 ---
 title: "Oracle Access Management"
 description: "The WebLogic Kubernetes Operator supports deployment of Oracle Access Management (OAM). Follow the instructions in this guide to set up these Oracle Access Management domains on Kubernetes."
-weight: 2
+weight: 1
 ---
 
 The WebLogic Kubernetes Operator supports deployment of Oracle Access Management (OAM).
