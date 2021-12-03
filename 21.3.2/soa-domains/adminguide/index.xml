@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Administration Guide on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/</link>
+    <description>Recent content in Administration Guide on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Apr 2019 06:46:23 -0500</lastBuildDate>
+    
+	<atom:link href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Enable additional URL access</title>
+      <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/enable-additional-url-access/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.3.2/soa-domains/adminguide/enable-additional-url-access/</guid>
+      <description>This section provides information about how to extend an existing ingress (Non-SSL and SSL termination) to enable additional application URL access for Oracle SOA Suite domains.
+The ingress per domain created in the steps in Set up a load balancer exposes the application paths defined in template YAML files present at ${WORKDIR}/charts/ingress-per-domain/templates/.
+To extend an existing ingress with additional application URL access:
+  Update the template YAML file at ${WORKDIR}/charts/ingress-per-domain/templates/ to define additional path rules.</description>
+    </item>
+    
+    <item>
+      <title>Configure SSL certificates</title>
+      <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/configuring-custom-ssl-certificates/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.3.2/soa-domains/adminguide/configuring-custom-ssl-certificates/</guid>
+      <description>Secure Socket Layer (SSL) provides a secured communication for data sent over unsecured networks. In an SSL termination scenario, you can configure SSL between the client browser and the load balancer in your Oracle SOA Suite instance to ensure that applications are accessed securely. In an SSL end-to-end scenario, an Oracle SOA Suite domain is configured to use a self-signed SSL certificate that was generated during domain creation. Clients will typically receive a message indicating that the signing CA for the certificate is unknown and not trusted.</description>
+    </item>
+    
+    <item>
+      <title>Monitor a domain and publish logs</title>
+      <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/monitoring-soa-domains/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.3.2/soa-domains/adminguide/monitoring-soa-domains/</guid>
+      <description>After the Oracle SOA Suite domain is set up, you can:
+ Monitor the Oracle SOA Suite instance using Prometheus and Grafana Publish WebLogic Server logs into Elasticsearch Publish SOA server diagnostics logs into Elasticsearch  Monitor the Oracle SOA Suite instance using Prometheus and Grafana Using the WebLogic Monitoring Exporter you can scrape runtime information from a running Oracle SOA Suite instance and monitor them using Prometheus and Grafana.</description>
+    </item>
+    
+    <item>
+      <title>Expose the T3/T3S protocol</title>
+      <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/enablingt3/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.3.2/soa-domains/adminguide/enablingt3/</guid>
+      <description>Oracle strongly recommends that you do not expose non-HTTPS traffic (T3/T3s/LDAP/IIOP/IIOPs) outside of the external firewall. You can control this access using a combination of network channels and firewalls.
+ You can create T3/T3S channels and the corresponding Kubernetes service to expose the T3/T3S protocol for the Administration Server and Managed Servers in an Oracle SOA Suite domain.
+The WebLogic Kubernetes Operator provides an option to expose a T3 channel for the Administration Server using the exposeAdminT3Channel setting during domain creation, then the matching T3 service can be used to connect.</description>
+    </item>
+    
+    <item>
+      <title>Persist adapter customizations</title>
+      <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/</guid>
+      <description>The lifetime for any customization done in a file on a server pod is up to the lifetime of that pod. The changes are not persisted once the pod goes down or is restarted.
+For example, the following configuration updates DbAdapter.rar to create a new connection instance and creates data source CoffeeShop on the Administration Console for the same with jdbc/CoffeeShopDS.
+File location: /u01/oracle/soa/soa/connectors/DbAdapter.rar
+&amp;lt;connection-instance&amp;gt; &amp;lt;jndi-name&amp;gt;eis/DB/CoffeeShop&amp;lt;/jndi-name&amp;gt; &amp;lt;connection-properties&amp;gt; &amp;lt;properties&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;XADataSourceName&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;jdbc/CoffeeShopDS&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;DataSourceName&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;PlatformClassName&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.</description>
+    </item>
+    
+    <item>
+      <title>Perform WLST operations</title>
+      <link>/fmw-kubernetes/21.3.2/soa-domains/adminguide/performing-wlst-operations/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.3.2/soa-domains/adminguide/performing-wlst-operations/</guid>
+      <description>You can use the WebLogic Scripting Tool (WLST) to manage a domain running in a Kubernetes cluster. Some of the many ways to do this are provided here.
+If the Administration Server was configured to expose a T3 channel using exposeAdminT3Channel when creating the domain, refer to Use WLST.
+If you do not want to expose additional ports and perform WLST administration operations using the existing Kubernetes services created by the WebLogic Server Kubernetes operator, then follow this documentation.</description>
+    </item>
+    
+  </channel>
+</rss>
