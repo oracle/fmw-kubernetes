@@ -1,6 +1,7 @@
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
+{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- if eq .Values.type "TRAEFIK" }}
 {{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
 ---
@@ -152,21 +153,22 @@ spec:
   - match: HostSNI(`{{ .Values.hostName.soa }}`)
     services:
     - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-      port: {{ .Values.wlsDomain.soaManagedServerSSLPort  }}
+      port: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
       weight: 3
       TerminationDelay: 400
-  {{- end}}
- {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+  {{- end }}
+  {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
   - match: HostSNI(`{{ .Values.hostName.osb }}`)
     services:
     - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
-      port: {{ .Values.wlsDomain.osbManagedServerSSLPort  }}
+      port: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
       weight: 3
       TerminationDelay: 400
-  {{- end}}
+  {{- end }}
   tls:
     passthrough: true
 {{- end }}
 
+{{- end }}
 {{- end }}
 

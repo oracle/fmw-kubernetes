@@ -175,7 +175,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
 1. Clone the Oracle Identity Governance deployment scripts from the OIG [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them into the WebLogic operator samples location.
 
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
    $ cp -rf <work directory>/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/create-oim-domain  <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
    $ mv -f <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
    $ cp -rf <work directory>/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/ingress-per-domain <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain
@@ -185,7 +185,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    For example:   
   
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
    $ cp -rf /scratch/OIGDockerK8S/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/create-oim-domain  /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/
    $ mv -f /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
    $ cp -rf /scratch/OIGDockerK8S/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/ingress-per-domain /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain

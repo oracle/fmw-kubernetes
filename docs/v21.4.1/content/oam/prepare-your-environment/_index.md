@@ -180,7 +180,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
 1. Download the OAM deployment scripts from the OAM [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to the WebLogic Kubernetes Operator samples location.
 
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
    $ cp -rf <work directory>/fmw-kubernetes/OracleAccessManagement/kubernetes/3.0.1/create-access-domain  <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
    $ mv -f <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
    $ cp -rf <work directory>/fmw-kubernetes/OracleAccessManagement/kubernetes/3.0.1/ingress-per-domain <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain
@@ -189,7 +189,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    For example:
    
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
    $ cp -rf /scratch/OAMDockerK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/3.0.1/create-access-domain  /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/
    $ mv -f /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
    $ cp -rf /scratch/OAMDockerK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/3.0.1/ingress-per-domain /scratch/OAMDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain

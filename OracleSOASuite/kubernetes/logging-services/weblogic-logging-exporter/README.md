@@ -61,11 +61,12 @@ Follow these steps to setup WebLogic Logging Exporter in a WebLogic operator env
 
     a) Copy setDomainEnv.sh from the pod to local folder.
     ```bash
-    $ kubectl cp soans/soainfra-adminserver:/u01/oracle/user_projects/domains/soainfra/bin/setDomainEnv.sh 
+    $ kubectl cp soans/soainfra-adminserver:/u01/oracle/user_projects/domains/soainfra/bin/setDomainEnv.sh setDomainEnv.sh
     ```
     b) Modify setDomainEnv.sh to update the Server Class path.
     ```bash
-    $CLASSPATH=/u01/oracle/user_projects/domains/soainfra/weblogic-logging-exporter.jar:/u01/oracle/user_projects/domains/soainfra/snakeyaml-1.23.jar:${CLASSPATH}
+    CLASSPATH=/u01/oracle/user_projects/domains/soainfra/weblogic-logging-exporter.jar:/u01/oracle/user_projects/domains/soainfra/snakeyaml-1.27.jar:${CLASSPATH}
+    export CLASSPATH
     ```
 	
     c) Copy back the modified setDomainEnv.sh to the pod.
@@ -127,3 +128,4 @@ Copy WebLogicLoggingExporter.yaml to the domain folder in the WebLogic server po
     We need to create an index pattern in Kibana for the logs to be available in the dashboard.
 
     Create an index pattern `wls*` in `Kibana` > `Management`. After the server starts, you will be able to see the log data from the WebLogic servers in the Kibana dashboard,
+

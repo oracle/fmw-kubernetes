@@ -1,7 +1,7 @@
 ---
 title: "Oracle WebCenter Content"
 date: 2020-11-27T16:43:45-05:00
-weight: 6
+weight: 7
 description: "The Oracle WebLogic Server Kubernetes Operator (the “operator”) supports deployment of Oracle WebCenter Content servers such as Oracle WebCenter Content(Content Server) and Oracle WebCenter Content(Inbound Refinery Server). Follow the instructions in this guide to set up Oracle WebCenter Content domain on Kubernetes."
 ---
 

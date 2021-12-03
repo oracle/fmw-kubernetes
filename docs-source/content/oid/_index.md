@@ -1,6 +1,7 @@
 ---
 title: "Oracle Internet Directory"
 date: 2019-02-23T16:43:45-05:00
+weight: 3
 description: "Oracle Internet Directory provides a comprehensive Directory Solution for robust Identity Management"
 ---
 

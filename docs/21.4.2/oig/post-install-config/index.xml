@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Post install configuration on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/21.4.2/oig/post-install-config/</link>
+    <description>Recent content in Post install configuration on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/fmw-kubernetes/21.4.2/oig/post-install-config/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>a. Post Install Tasks</title>
+      <link>/fmw-kubernetes/21.4.2/oig/post-install-config/set_oimfronendurl_using_mbeans/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oig/post-install-config/set_oimfronendurl_using_mbeans/</guid>
+      <description>Follow these post install configuration steps.
+ Create a Server Overrides File Set OIMFrontendURL using MBeans  Create a Server Overrides File   Navigate to the following directory:
+cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain   Create a setUserOverrides.sh with the following contents:
+DERBY_FLAG=false JAVA_OPTIONS=&amp;quot;${JAVA_OPTIONS} -Djava.net.preferIPv4Stack=true&amp;quot; MEM_ARGS=&amp;quot;-Xms8192m -Xmx8192m&amp;quot;   Copy the setUserOverrides.sh file to the Administration Server pod:
+$ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.sh oigns/governancedomain-adminserver:/u01/oracle/user_projects/domains/governancedomain/bin/setUserOverrides.sh Where oigns is the OIG namespace and governancedomain is the domain_UID.</description>
+    </item>
+    
+    <item>
+      <title>b. Install and configure connectors</title>
+      <link>/fmw-kubernetes/21.4.2/oig/post-install-config/install_and_configure_connectors/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oig/post-install-config/install_and_configure_connectors/</guid>
+      <description>Download the connector   Download the Connector you are interested in from Oracle Identity Manager Connector Downloads.
+  Copy the connector zip file to a staging directory on the master node e.g. &amp;lt;workdir&amp;gt;/stage and unzip it:
+$ cp $HOME/Downloads/&amp;lt;connector&amp;gt;.zip &amp;lt;workdir&amp;gt;/&amp;lt;stage&amp;gt;/ $ cd &amp;lt;workdir&amp;gt;/&amp;lt;stage&amp;gt; $ unzip &amp;lt;connector&amp;gt;.zip For example:
+$ cp $HOME/Downloads/Exchange-12.2.1.3.0.zip /scratch/OIGK8S/stage/ $ cd /scratch/OIGK8S/stage/ $ unzip exchange-12.2.1.3.0.zip   Create a directory in the persistent volume   On the master node run the following command to create a ConnectorDefaultDirectory:</description>
+    </item>
+    
+  </channel>
+</rss>

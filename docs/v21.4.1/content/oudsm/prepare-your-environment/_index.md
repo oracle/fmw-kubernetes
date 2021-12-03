@@ -111,7 +111,7 @@ $ mkdir /scratch/OUDSMContainer
 From the directory you created, download the Oracle Unified Directory Services Manager deployment scripts from the Oracle Unified Directory Services Manager [repository](https://github.com/oracle/fmw-kubernetes.git).
 
 ```
-$ git clone https://github.com/oracle/fmw-kubernetes.git
+$ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
 ```
 
 You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleUnifiedDirectorySM/kubernetes/samples/scripts/` to set up the Oracle Unified Directory Services Manager environments as further described in this document.

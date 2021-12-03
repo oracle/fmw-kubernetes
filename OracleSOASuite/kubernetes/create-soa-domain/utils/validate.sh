@@ -193,3 +193,23 @@ function validateCommonInputs_SOA {
 
   failIfValidationErrors
 }
+
+#
+# Function to validate the image pull secret name
+#
+function validateArtifactsImagePullSecretName {
+  if [ ! -z ${artifactsImagePullSecretName} ]; then
+    validateLowerCase artifactsImagePullSecretName ${artifactsImagePullSecretName}
+    artifactsImagePullSecretPrefix=""
+  else
+    # Set name blank when not specified, and comment out the yaml
+    artifactsImagePullSecretName=""
+    artifactsImagePullSecretPrefix="#"
+  fi
+}
+
+
+function validateArtifactsPVC {
+  # Validate the PVC using existing function
+  validateDomainPVC
+}

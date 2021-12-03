@@ -111,7 +111,7 @@ $ mkdir /scratch/OUDContainer
 From the directory you created, download the Oracle Unified Directory deployment scripts from the Oracle Unified Directory [repository](https://github.com/oracle/fmw-kubernetes.git).
 
 ```
-$ git clone https://github.com/oracle/fmw-kubernetes.git
+$ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
 ```
 
 You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/samples/` to set up the Oracle Unified Directory environments as further described in this document.

@@ -6,15 +6,10 @@
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 warDir=$PWD
+source ${scriptDir}/utils.sh
 
-domainType=${1:-soa}
-namespace=${2:-soans}
-domainUID=${3:-soainfra}
-adminServerName=${4:-AdminServer}
-adminServerPort=${5:-7001}
-username=${6:-weblogic}
-password=${7:Welcome1}
-
+# Setting default values
+initialize
 # Function to lowercase a value and make it a legal DNS1123 name
 # $1 - value to convert to lowercase
 function toDNS1123Legal {
@@ -23,13 +18,22 @@ function toDNS1123Legal {
   echo "$val"
 }
 
+# username and password from Kubernetes secret
+username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+
+
 adminServerPodName="${domainUID}-$(toDNS1123Legal ${adminServerName})"
 
-echo "Deploying WebLogic Monitoring Exporter with namespace[$namespace], domainUID[$domainUID], domainType[$domainType]"
-. $scriptDir/get-wls-exporter.sh $domainType
-kubectl cp $scriptDir/wls-exporter-deploy ${namespace}/${adminServerPodName}:/u01/oracle
-kubectl cp $scriptDir/deploy-weblogic-monitoring-exporter.py ${namespace}/${adminServerPodName}:/u01/oracle/wls-exporter-deploy
-EXEC_DEPLOY="kubectl exec -it -n ${namespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py -domainType ${domainType} -domainName ${domainUID} -adminServerName ${adminServerName} -adminURL ${adminServerPodName}:${adminServerPort} -username ${username} -password ${password}"
+InputParameterList=" -domainName ${domainUID} -adminServerName ${adminServerName} -adminURL ${adminServerPodName}:${adminServerPort} -username ${username} -password ${password}"
+InputParameterList="${InputParameterList} -soaClusterName ${soaClusterName} -wlsMonitoringExporterTosoaCluster ${wlsMonitoringExporterTosoaCluster}"
+InputParameterList="${InputParameterList} -osbClusterName ${osbClusterName} -wlsMonitoringExporterToosbCluster ${wlsMonitoringExporterToosbCluster}"
+
+echo "Deploying WebLogic Monitoring Exporter with domainNamespace[$domainNamespace], domainUID[$domainUID], adminServerPodName[$adminServerPodName]"
+. $scriptDir/get-wls-exporter.sh 
+kubectl cp $scriptDir/wls-exporter-deploy ${domainNamespace}/${adminServerPodName}:/u01/oracle
+kubectl cp $scriptDir/deploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/wls-exporter-deploy
+EXEC_DEPLOY="kubectl exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py ${InputParameterList}"
 eval ${EXEC_DEPLOY}
 
 
