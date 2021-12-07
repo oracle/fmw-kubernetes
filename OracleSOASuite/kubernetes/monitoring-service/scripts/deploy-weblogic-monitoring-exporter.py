@@ -19,37 +19,46 @@ def newDeploy(appName,target):
 #========================================================  
 
 def usage():
-    print sys.arg[0] + '-domainName <domainUID> -domainType <domaintype> -adminServerName <adminServerName> -adminURL <adminURL> -username <username> -password <password>'
+    argsList = ' -domainName <domainUID> -adminServerName <adminServerName> -adminURL <adminURL> -username <username> -password <password>'
+    argsList=argsList + ' -soaClusterName <soaClusterName>' + ' -wlsMonitoringExporterTosoaCluster <wlsMonitoringExporterTosoaCluster>'
+    argsList=argsList + ' -osbClusterName <osbClusterName>' + ' -wlsMonitoringExporterToosbCluster <wlsMonitoringExporterToosbCluster>'
+    print sys.argv[0] + argsList
     sys.exit(0)
 
 if len(sys.argv) < 1:
     usage()
 
-#domainName will be passed by command line parameter -domainName.
+# domainName will be passed by command line parameter -domainName
 domainName = "soainfra"
 
-#domaintype will be passed by command line parameter -domaintype
-domaintype = "soa"
-
-#adminServerName will be passed by command line parameter  -adminServerName
+# adminServerName will be passed by command line parameter  -adminServerName
 adminServerName = "AdminServer"
 
-#adminURL will be passed by command line parameter  -adminURL
+# adminURL will be passed by command line parameter  -adminURL
 adminURL = "soainfra-adminserver:7001"
 
-#username will be passed by command line parameter  -username
+# soaClusterName will be passed by command line parameter  -soaClusterName
+soaClusterName = "soaClusterName"
+
+# wlsMonitoringExporterTosoaCluster will be passed by command line parameter -wlsMonitoringExporterTosoaCluster
+wlsMonitoringExporterTosoaCluster = "false"
+
+# osbClusterName will be passed by command line parameter -osbClusterName
+osbClusterName = "osbClusterName"
+
+# wlsMonitoringExporterToosbCluster will be passed by command line parameter -wlsMonitoringExporterToosbCluster
+wlsMonitoringExporterToosbCluster = "false"
+
+# username will be passed by command line parameter  -username
 username = "weblogic"
 
-#password will be passed by command line parameter -password
+# password will be passed by command line parameter -password
 password = "Welcome1"
 
 i=1
 while i < len(sys.argv):
    if sys.argv[i] == '-domainName':
        domainName = sys.argv[i+1]
-       i += 2
-   elif sys.argv[i] == '-domainType':
-       domaintype = sys.argv[i+1]
        i += 2
    elif sys.argv[i] == '-adminServerName':
        adminServerName = sys.argv[i+1]
@@ -63,6 +72,18 @@ while i < len(sys.argv):
    elif sys.argv[i] == '-password':
        password = sys.argv[i+1]
        i += 2
+   elif sys.argv[i] == '-soaClusterName':
+       soaClusterName = sys.argv[i+1]
+       i += 2
+   elif sys.argv[i] == '-wlsMonitoringExporterTosoaCluster':
+       wlsMonitoringExporterTosoaCluster = sys.argv[i+1]
+       i += 2
+   elif sys.argv[i] == '-osbClusterName':
+       osbClusterName = sys.argv[i+1]
+       i += 2
+   elif sys.argv[i] == '-wlsMonitoringExporterToosbCluster':
+       wlsMonitoringExporterToosbCluster = sys.argv[i+1]
+       i += 2
    else:
        print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
        usage()
@@ -72,11 +93,11 @@ while i < len(sys.argv):
 connect(username, password, 't3://' + adminURL)
 cd('AppDeployments')
 newDeploy('wls-exporter-adminserver',adminServerName)
-if 'soa' in domaintype:
-  newDeploy('wls-exporter-soa','soa_cluster')
+if 'true' == wlsMonitoringExporterTosoaCluster:
+  newDeploy('wls-exporter-soa',soaClusterName)
 
-if 'osb' in domaintype:
-  newDeploy('wls-exporter-osb','osb_cluster')
+if 'true' == wlsMonitoringExporterToosbCluster:
+  newDeploy('wls-exporter-osb',osbClusterName)
 
 disconnect()
 exit()

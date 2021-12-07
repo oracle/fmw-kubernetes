@@ -1,8 +1,8 @@
 ---
 title: "Prerequisites"
 date: 2019-04-18T07:32:31-05:00
-weight: 1
-pre : "<b>1. </b>"
+weight: 2
+pre : "<b>2. </b>"
 description: "Prerequisites for deploying and running Oracle Internet Directory in a Kubernetes environment."
 ---
 

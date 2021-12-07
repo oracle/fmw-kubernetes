@@ -1,8 +1,8 @@
 +++
 title=  "Prepare Your Environment"
 date = 2019-04-18T06:46:23-05:00
-weight = 2
-pre = "<b>2. </b>"
+weight = 3
+pre = "<b>3. </b>"
 description = "Prepare your environment"
 +++
 

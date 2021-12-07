@@ -5,7 +5,7 @@
 # Initialize
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
-domainType=$1
+source ${scriptDir}/utils.sh
 warDir=$scriptDir/../bin
 mkdir -p $warDir
 curl -L -o $warDir/wls-exporter.war https://github.com/oracle/weblogic-monitoring-exporter/releases/download/v2.0.0/wls-exporter.war 
@@ -32,19 +32,15 @@ function update_wls_exporter_war {
   popd
 } 
 
-if [[ -z ${domainType} ]];
-then
-  domainType="soa"
-fi
-   
+initialize
 
-update_wls_exporter_war adminserver 7001
-if [[ $domainType =~ "soa" ]];
+update_wls_exporter_war adminserver ${adminServerPort}
+if [[ ${wlsMonitoringExporterTosoaCluster}  == "true" ]];
 then
- update_wls_exporter_war soa 8001
+  update_wls_exporter_war soa ${soaManagedServerPort}
 fi
-if [[ $domainType =~ "osb" ]];
+if [[ ${wlsMonitoringExporterToosbCluster}  == "true" ]];
 then
- update_wls_exporter_war osb 9001
+  update_wls_exporter_war osb ${osbManagedServerPort}
 fi
 

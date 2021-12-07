@@ -5,19 +5,20 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: basic-auth
-  namespace: monitoring
+  namespace: soans
 data:
-  password: V2VsY29tZTE=
-  user: d2VibG9naWM=
+  password: %PASSWORD%
+  user: %USERNAME%
 type: Opaque
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: wls-exporter
-  namespace: monitoring
+  namespace: soans
   labels:
     k8s-app: wls-exporter
+    release: monitoring
 spec:
   namespaceSelector:
     matchNames:

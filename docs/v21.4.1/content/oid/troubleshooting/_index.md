@@ -1,8 +1,8 @@
 +++
 title = "Troubleshooting"
 date = 2019-04-18T07:32:31-05:00
-weight = 4
-pre = "<b>4. </b>"
+weight = 5
+pre = "<b>5. </b>"
 description = "How to Troubleshoot issues."
 +++
 1. [Check the Status of a Namespace](#check-the-status-of-a-namespace)

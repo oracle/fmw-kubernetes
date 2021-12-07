@@ -1,8 +1,8 @@
 +++
 title=  "Prepare Your Environment"
 date = 2019-04-18T06:46:23-05:00
-weight = 2
-pre = "<b>2. </b>"
+weight = 3
+pre = "<b>3. </b>"
 description = "Prepare your environment"
 +++
 
@@ -109,7 +109,7 @@ $ mkdir /scratch/OIDContainer
 From the directory you created, download the Oracle Internet Directory deployment scripts from the Oracle Internet Directory [repository](https://github.com/oracle/fmw-kubernetes.git).
 
 ```
-$ git clone https://github.com/oracle/fmw-kubernetes.git
+$ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.1
 ```
 
 You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleInternetDirectory/kubernetes/samples/` to set up the Oracle Internet Directory environments as further described in this document.

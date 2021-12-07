@@ -9,17 +9,17 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../common/utility.sh
 
 function usage {
-  echo "usage: ${script} -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -c <customVariables>  [-h]"
+  echo "usage: ${script} -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -c <customVariables> [-l] <timeoutLimit>  [-h] "
   echo "  -s RCU Schema Prefix (required)"
   echo "  -t RCU Schema Type (optional)"
-  echo "      (supported values: osb,soa,soaosb)"
+  echo "      (supported values: osb,soa,soaosb,soab2b,soaosbb2b)"
   echo "  -d RCU Oracle Database URL (optional) "
   echo "      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s) "
-  echo "  -p FMW Infrastructure ImagePullSecret (optional) "
+  echo "  -p OracleSOASuite ImagePullSecret (optional) "
   echo "      (default: none) "
-  echo "  -i FMW Infrastructure Image (optional) "
+  echo "  -i OracleSOASuite Image (optional) "
   echo "      (default: soasuite:12.2.1.4) "
-  echo "  -u FMW Infrastructure ImagePullPolicy (optional) "
+  echo "  -u OracleSOASuite ImagePullPolicy (optional) "
   echo "      (default: IfNotPresent) "
   echo "  -n Namespace for RCU pod (optional)"
   echo "      (default: default)"
@@ -29,13 +29,57 @@ function usage {
   echo "      (default: Oradoc_db1)"
   echo "  -o Output directory for the generated YAML file. (optional)"
   echo "      (default: rcuoutput)"
-  echo "  -c Comma-separated variables in the format variablename=value. (optional)."
+  echo "  -c Comma-separated custom variables in the format variablename=value. (optional)."
   echo "      (default: none)"
+  echo "  -l Timeout limit in seconds. (optional)."
+  echo "      (default: 300)"
   echo "  -h Help"
   exit $1
 }
 
-while getopts ":h:s:d:p:i:t:n:q:r:o:u:c:" opt; do
+# Checks if all container(s) in a pod are running state based on READY column using given timeout limit
+# NAME                READY     STATUS    RESTARTS   AGE
+# domain1-adminserver 1/1       Running   0          4m
+function checkPodStateUsingCustomTimeout(){
+
+ status="NotReady"
+ count=1
+
+ pod=$1
+ ns=$2
+ state=${3:-1/1}
+ timeoutLimit=${4:-300}
+ max=`expr ${timeoutLimit} / 5`
+
+ echo "Checking Pod READY column for State [$state]"
+ pname=`kubectl get po -n ${ns} | grep -w ${pod} | awk '{print $1}'`
+ if [ -z ${pname} ]; then 
+  echo "No such pod [$pod] exists in NameSpace [$ns] "
+  exit -1
+ fi 
+
+ rcode=`kubectl get po ${pname} -n ${ns} | grep -w ${pod} | awk '{print $2}'`
+ [[ ${rcode} -eq "${state}"  ]] && status="Ready"
+
+ while [ ${status} != "Ready" -a $count -le $max ] ; do
+  sleep 5 
+  rcode=`kubectl get po/$pod -n ${ns} | grep -v NAME | awk '{print $2}'`
+  [[ ${rcode} -eq "1/1"  ]] && status="Ready"
+  echo "Pod [$1] Status is ${status} Iter [$count/$max]"
+  count=`expr $count + 1`
+ done
+ if [ $count -gt $max ] ; then
+   echo "[ERROR] Unable to start the Pod [$pod] after ${timeout}s "; 
+   exit 1
+ fi 
+
+ pname=`kubectl get po -n ${ns} | grep -w ${pod} | awk '{print $1}'`
+ kubectl -n ${ns} get po ${pname}
+}
+
+timeout=300
+
+while getopts ":h:s:d:p:i:t:n:q:r:o:u:c:l:" opt; do
   case $opt in
     s) schemaPrefix="${OPTARG}"
     ;;
@@ -58,6 +102,8 @@ while getopts ":h:s:d:p:i:t:n:q:r:o:u:c:" opt; do
     u) imagePullPolicy="${OPTARG}"
     ;;
     c) customVariables="${OPTARG}"
+    ;;
+    l) timeout="${OPTARG}"
     ;;
     h) usage 0
     ;;
@@ -112,6 +158,10 @@ if [ -z ${customVariables} ]; then
  customVariables="none"
 fi
 
+if [ -z ${timeout} ]; then
+ timeout=300
+fi
+
 echo "ImagePullSecret[$pullsecret] Image[${fmwimage}] dburl[${dburl}] rcuType[${rcuType}] customVariables[${customVariables}]"
 
 mkdir -p ${rcuOutputDir}
@@ -130,7 +180,7 @@ kubectl apply -f $rcuYaml
 
 # Make sure the rcu deployment Pod is RUNNING
 checkPod rcu $namespace
-checkPodState rcu $namespace "1/1"
+checkPodStateUsingCustomTimeout rcu $namespace "1/1" ${timeout}
 sleep 5
 kubectl get po/rcu -n $namespace 
 

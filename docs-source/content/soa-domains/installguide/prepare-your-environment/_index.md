@@ -6,7 +6,11 @@ pre = "<b>  </b>"
 description = "Prepare for creating Oracle SOA Suite domains, including required secrets creation, persistent volume and volume claim creation, database creation, and database schema creation."
 +++
 
-To prepare your Oracle SOA Suite in Kubernetes environment, complete the following steps:
+To prepare your Oracle SOA Suite in Kubernetes environment, complete the following steps.  
+
+{{% notice note %}}
+Refer to the [troubleshooting]({{< relref "/soa-domains/troubleshooting/" >}}) page to troubleshoot issues during the domain deployment process.
+{{% /notice %}}
 
 1. [Set up your Kubernetes cluster](#set-up-your-kubernetes-cluster)
 1. [Install Helm](#install-helm)
@@ -49,15 +53,15 @@ Obtain dependent images and add them to your local registry.
 
    Log in to the Oracle Container Registry (`container-registry.oracle.com`) from your Docker client:
 
-    ```bash
+    ```shell
     $ docker login container-registry.oracle.com
     ```
 
 1. Pull the operator image:
 
     ```bash
-    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.2.1
-    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.2.1  oracle/weblogic-kubernetes-operator:3.2.1
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
+    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0  oracle/weblogic-kubernetes-operator:3.3.0
     ```
 
 ### Set up the code repository to deploy Oracle SOA Suite domains
@@ -66,36 +70,36 @@ Oracle SOA Suite domain deployment on Kubernetes leverages the WebLogic Kubernet
 
 1. Create a working directory to set up the source code:
     ```bash
-    $ mkdir $HOME/soa_21.3.2
-    $ cd $HOME/soa_21.3.2
+    $ mkdir $HOME/soa_21.4.2
+    $ cd $HOME/soa_21.4.2
     ```
 1. Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA [repository](https://github.com/oracle/fmw-kubernetes.git). Required artifacts are available at `OracleSOASuite/kubernetes`.
 
     ``` bash
-    $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.3.2
-    $ export WORKDIR=$HOME/soa_21.3.2/OracleSOASuite/kubernetes
+    $ git clone https://github.com/oracle/fmw-kubernetes.git
+    $ export WORKDIR=$HOME/soa_21.4.2/OracleSOASuite/kubernetes
     ```
 
 ### Obtain the Oracle SOA Suite Docker image
 
 The Oracle SOA Suite image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle SOA Suite image from My Oracle Support.
 
-1. Download patch [33125465](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33125465) from My Oracle Support (MOS).
+1. Download patch [33467899](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33467899) from My Oracle Support (MOS).
 1. Unzip the downloaded patch zip file.
 1. Load the image archive using the `docker load` command.
 
    For example:
    ```bash
-   $ docker load < soasuite-12.2.1.4.0-8-ol7-210726.1017.tar
-   Loaded image: oracle/soasuite:12.2.1.4.0-8-ol7-210726.1017
+   $ docker load < soasuite-12.2.1.4.0-8-ol7-211129.1734.tar
+   Loaded image: oracle/soasuite:12.2.1.4.0-8-ol7-211129.1734
    $
    ```
-1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `dae045ba-378d-4cdb-b010-85003db61cde`.
+1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `2fd643ce-8ada-4841-9a0a-ed369cc08023`.
 
    For example:
    ```bash
-   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/soasuite:12.2.1.4.0-8-ol7-210726.1017
-    dae045ba-378d-4cdb-b010-85003db61cde
+   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/soasuite:12.2.1.4.0-8-ol7-211129.1734
+    2fd643ce-8ada-4841-9a0a-ed369cc08023
    $
 
    ```
@@ -107,15 +111,15 @@ If you want to build and use an Oracle SOA Suite Docker image with any additiona
 
 ### Install the WebLogic Kubernetes Operator
 
-The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.1/documentation/3.2/content/quickstart/install.md#install-the-operator) to install the operator.
-> Note: Optionally, you can execute these [steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/operator/) to send the contents of the operator’s logs to Elasticsearch.
+The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/documentation/3.3/content/quickstart/install.md#install-the-operator) to install the operator.
+> Note: Optionally, you can execute these [steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/) to send the contents of the operator’s logs to Elasticsearch.
 
-In the following example commands to install the WebLogic Kubernetes Operator, `opns` is the namespace and `op-sa` is the service account created for the operator:
+In the following example commands to install the WebLogic Kubernetes Operator, `opns` is the namespace and `op-sa` is the service account created for the Operator:
   ```
   $ kubectl create namespace opns
   $ kubectl create serviceaccount -n opns  op-sa
   $ cd ${WORKDIR}
-  $ helm install weblogic-kubernetes-operator charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.2.1 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
   ```
 
 ### Prepare the environment for Oracle SOA Suite domains
@@ -166,7 +170,7 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
     $ ./create-weblogic-credentials.sh -u weblogic -p Welcome1 -n soans -d soainfra -s soainfra-domain-credentials
   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.1/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 
@@ -313,28 +317,30 @@ For example:
 $ cd ${WORKDIR}/create-rcu-schema
 
 $ ./create-rcu-schema.sh -h
- usage: /create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -c <customVariables>  [-h]
+ usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -c <customVariables> [-l] <timeoutLimit>  [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-  	(supported values: osb,soa,soaosb)
+      (supported values: osb,soa,soaosb)
   -d RCU Oracle Database URL (optional)
-        (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
-  -p FMW Infrastructure ImagePullSecret (optional)
-        (default: none)
-  -i FMW Infrastructure Image (optional)
-        (default: soasuite:12.2.1.4)
-  -u FMW Infrastructure ImagePullPolicy (optional)
-        (default: IfNotPresent)
+      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
+  -p OracleSOASuite ImagePullSecret (optional)
+      (default: none)
+  -i OracleSOASuite Image (optional)
+      (default: soasuite:12.2.1.4)
+  -u OracleSOASuite ImagePullPolicy (optional)
+      (default: IfNotPresent)
   -n Namespace for RCU pod (optional)
-        (default: default)
+      (default: default)
   -q password for database SYSDBA user. (optional)
-        (default: Oradoc_db1)
+      (default: Oradoc_db1)
   -r password for all schema owner (regular user). (optional)
-        (default: Oradoc_db1)
+      (default: Oradoc_db1)
   -o Output directory for the generated YAML file. (optional)
-        (default: rcuoutput)
+      (default: rcuoutput)
   -c Comma-separated custom variables in the format variablename=value. (optional).
-        (default: none)
+      (default: none)
+  -l Timeout limit in seconds. (optional).
+      (default: 300)
   -h Help
 
 $ ./create-rcu-schema.sh \

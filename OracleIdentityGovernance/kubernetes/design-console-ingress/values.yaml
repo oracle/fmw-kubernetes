@@ -1,0 +1,21 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# Default values for design-console-ingress.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Load balancer type.  Supported values are: NGINX
+type: NGINX
+# Type of Configuration Supported Values are : NONSSL,SSL
+tls: NONSSL
+# TLS secret name if the mode is SSL
+secretName: dc-tls-cert
+
+
+# WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: oimcluster
+  oimClusterName: oim_cluster
+  oimServerT3Port: 14002
+
