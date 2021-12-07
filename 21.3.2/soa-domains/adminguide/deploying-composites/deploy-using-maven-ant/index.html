@@ -1,0 +1,2930 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Deploy Oracle SOA Suite and Oracle Service Bus composite applications using the Maven and Ant based approach in an Oracle SOA Suite deployment.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/21.3.2/images/favicon.png" type="image/png">
+
+    <title>Deploy using Maven and Ant :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/21.3.2/css/nucleus.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/fontawesome-all.min.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/hybrid.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/featherlight.min.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/perfect-scrollbar.min.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/auto-complete.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/atom-one-dark-reasonable.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/theme.css?1628488447" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.3.2/css/hugo-theme.css?1628488447" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/21.3.2/js/jquery-3.3.1.min.js?1628488447"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/21.3.2">
+  <img src="/fmw-kubernetes/21.3.2/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/21.3.2/js/lunr.min.js?1628488447"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.3.2/js/auto-complete.js?1628488447"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/21.3.2";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/21.3.2/js/search.js?1628488447"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>d. </b>Apache web tier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item active">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/performing-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/">
+          Oracle WebCenter Sites
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/create-wcsites-domains/" title="Create Oracle WebCenter Sites domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/installguide/create-wcsites-domains/">
+          <b>  </b>Create Oracle WebCenter Sites domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/monitoring-wcsites-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/monitoring-wcsites-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/elasticsearch-integration/">
+        <b> </b>Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/adminguide/weblogic-logging-exporter-setup/">
+        <b> </b>Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/" title="Upgrade and Patch " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/">
+          <b>4. </b>Upgrade and Patch 
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/" title="Patch a Oracle WebCenter Sites product Docker image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/">
+        <b>a. </b>Patch a Oracle WebCenter Sites product Docker image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/cleanup-domain-setup/">
+        <b>5. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/">
+          <b>6. </b>Oracle Cloud Infrastructure
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/oke/" title="Preparing an OKE environment" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/oke/">
+        <b>a. </b>Preparing an OKE environment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/bastion/" title="Preparing the Bastion host" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/bastion/">
+        <b>b. </b>Preparing the Bastion host
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/filesystem/" title="Preparing a file system" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/filesystem/">
+        <b>c. </b>Preparing a file system
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/ocir/" title="Creating an OCIR" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/oracle-cloud/ocir/">
+        <b>d. </b>Creating an OCIR
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/wcsites-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/wcsites-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.3.2/wcsites-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/21.3.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/21.3.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/21.3.2/soa-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/'>Deploy composite applications</a> > Deploy using Maven and Ant
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#create-a-composite-deployment-container">Create a composite deployment container</a></li>
+        <li><a href="#maven-based-build-and-deploy">Maven based build and deploy</a></li>
+        <li><a href="#ant-based-build-and-deploy">Ant based build and deploy</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Deploy using Maven and Ant
+            </h1>
+          
+
+        
+
+
+
+<p>Learn how to deploy Oracle SOA Suite and Oracle Service Bus composite applications using the Maven and Ant based approach in an Oracle SOA Suite in WebLogic Kubernetes Operator environment.</p>
+<p>Before deploying composite applications, we need to create a Kubernetes pod in the same cluster where the Oracle SOA Suite domain is running, so that composite applications can be deployed using the internal Kubernetes Service for the Administration Server URL.</p>
+<p>Place the SOA/Oracle Service Bus composite project at a share location (for example at <code>/share/soa-deploy</code>) mounted at <code>/composites</code> inside container.
+Make sure to provide <code>oracle</code> user <em>( uid: 1000 and gid: 0)</em> permission to directory <code>/share/soa-deploy</code>, so that it is accessible and writable inside the container.</p>
+<pre><code>$ sudo chown -R 1000:0 /share/soa-deploy
+</code></pre><p>Follow the steps in this section to create a container and then use it to deploy Oracle SOA Suite and Oracle Service Bus composite applications using Maven or Ant.</p>
+<h3 id="create-a-composite-deployment-container">Create a composite deployment container</h3>
+<p>Before creating a Kubernetes pod, make sure that the Oracle SOA Suite Docker image is available on a node, or you can create an image pull secret so that the pod can pull the Docker image on the host where it gets created.</p>
+<ol>
+<li>
+<p>Create an image pull secret to pull image <code>soasuite:12.2.1.4</code> by the Kubernetes pod:</p>
+<pre><code>$ kubectl create secret docker-registry image-secret -n soans --docker-server=your-registry.com --docker-username=xxxxxx --docker-password=xxxxxxx  --docker-email=my@company.com
+</code></pre></li>
+<li>
+<p>Create a PersistentVolume and PersistentVolumeClaim (<code>soadeploy-pv.yaml</code> and <code>soadeploy-pvc.yaml</code>) with sample composites for build and deploy placed at <code>/share/soa-deploy</code>.</p>
+<p>a) Create a PersistentVolume with the sample provided (<code>soadeploy-pv.yaml</code>), which uses NFS (you can use <code>hostPath</code> or any other supported PV type):</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: soadeploy-pv
+spec:
+  storageClassName: soadeploy-storage-class
+  capacity:
+   storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  # Valid values are Retain, Delete or Recycle
+  persistentVolumeReclaimPolicy: Retain
+  # hostPath:
+  nfs:
+    server: X.X.X.X
+    path: &quot;/share/soa-deploy&quot;
+</code></pre><p>b) Apply the YAML:</p>
+<pre><code>$ kubectl apply -f soadeploy-pv.yaml
+</code></pre><p>c) Create a PersistentVolumeClaim (<code>soadeploy-pvc.yaml</code>):</p>
+<pre><code>kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: soadeploy-pvc
+  namespace: soans
+spec:
+  storageClassName: soadeploy-storage-class
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi      
+</code></pre><p>d) Apply the YAML:</p>
+<pre><code>$ kubectl apply -f soadeploy-pvc.yaml
+</code></pre></li>
+<li>
+<p>Create a composite deploy pod using <code>soadeploy.yaml</code> to mount the composites inside pod at <code>/composites</code>:</p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: soadeploy
+  name: soadeploy
+  namespace: soans
+spec:
+  imagePullSecrets:
+  - name: image-secret
+  containers:
+  - image: soasuite:12.2.1.4
+    name: soadeploy
+    env:
+    - name: M2_HOME
+      value: /u01/oracle/oracle_common/modules/org.apache.maven_3.2.5
+    command: [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;echo 'export PATH=$PATH:$M2_HOME/bin' &gt;&gt; $HOME/.bashrc; sleep infinity&quot;]
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - name: mycomposite
+      mountPath: /composites
+  volumes:
+  - name: mycomposite
+    persistentVolumeClaim:
+       claimName: soadeploy-pvc
+</code></pre></li>
+<li>
+<p>Create the pod:</p>
+<pre><code>$ kubectl apply -f soadeploy.yaml
+</code></pre></li>
+<li>
+<p>Once the Kubernetes pod is deployed, exec into the pod to perform Maven/Ant based build and deploy:</p>
+<pre><code>$ kubectl exec -it -n soans soadeploy -- bash
+</code></pre></li>
+</ol>
+<h3 id="maven-based-build-and-deploy">Maven based build and deploy</h3>
+<blockquote>
+<p>Note: Make sure to execute these commands inside the <code>soadeploy</code> pod.</p>
+</blockquote>
+<p>Set up proxy details for Maven to pull dependencies from the internet.</p>
+<p>If your environment is not running behind a proxy, then skip this step. Otherwise, replace <code>REPLACE-WITH-PROXY-HOST</code>, <code>REPLACE-WITH-PROXY-PORT</code> and the value for <code>nonProxyHosts</code> attribute per your environment and create the <code>settings.xml</code>:</p>
+<pre><code>$ mkdir $HOME/.m2
+$ cat &lt;&lt;EOF &gt; $HOME/.m2/settings.xml
+&lt;settings&gt;
+&lt;proxies&gt;
+&lt;proxy&gt;
+&lt;active&gt;true&lt;/active&gt;
+&lt;protocol&gt;http&lt;/protocol&gt;
+&lt;host&gt;REPLACE-WITH-PROXY-HOST&lt;/host&gt;
+&lt;port&gt;REPLACE-WITH-PROXY-PORT&lt;/port&gt;
+&lt;nonProxyHosts&gt;soainfra-cluster-soa-cluster|soainfra-adminserver&lt;/nonProxyHosts&gt;
+&lt;/proxy&gt;
+&lt;/proxies&gt;
+&lt;/settings&gt;
+EOF
+</code></pre><h4 id="for-oracle-soa-suite-composite-applications">For Oracle SOA Suite composite applications</h4>
+<ol>
+<li>
+<p>Set up the environment for Maven:</p>
+<pre><code>#Perform Maven Sync
+$ cd /u01/oracle/oracle_common/plugins/maven/com/oracle/maven/oracle-maven-sync/12.2.1/
+$ mvn install:install-file \
+    -DpomFile=oracle-maven-sync-12.2.1.pom \
+    -Dfile=oracle-maven-sync-12.2.1.jar
+
+#install Maven plugin
+$ mvn help:describe \
+    -Dplugin=com.oracle.maven:oracle-maven-sync \
+    -Ddetail
+
+#push libraries into internal repository
+$ mvn com.oracle.maven:oracle-maven-sync:push \
+    -DoracleHome=/u01/oracle \
+    -DtestingOnly=false
+
+$ mvn archetype:crawl \
+    -Dcatalog=$HOME/.m2/archetype-catalog.xml \
+    -DarchetypeArtifactId=oracle-soa-application \
+    -DarchetypeVersion=12.2.1-4-0
+</code></pre></li>
+<li>
+<p>Build the SOA Archive (SAR) for your sample deployment available at <code>/composites/mavenproject/my-soa-app</code>:</p>
+<pre><code>$ cd /composites/mavenproject/my-soa-app
+$ mvn package
+</code></pre><p>The SAR will be generated at <code>/composites/mavenproject/my-soa-app/my-project/target/sca_my-project.jar</code>.</p>
+</li>
+<li>
+<p>Deploy into the Oracle SOA Suite instance. For example, if the instance URL is <code>http://soainfra-cluster-soa-cluster:8001</code> with credentials <code>username</code>: weblogic and <code>password</code>: Welcome1, enter the following commands:</p>
+<pre><code>$ cd /composites/mavenproject/my-soa-app
+$ mvn pre-integration-test \
+    -DoracleServerUrl=http://soainfra-cluster-soa-cluster:8001 \
+    -DsarLocation=/composites/mavenproject/my-soa-app/my-project/target/sca_my-project.jar \
+    -Doverwrite=true \
+    -DforceDefault=true \
+    -Dcomposite.partition=default \
+    -Duser=weblogic  -Dpassword=Welcome1
+</code></pre></li>
+</ol>
+<h4 id="for-oracle-service-bus-composite-applications">For Oracle Service Bus composite applications</h4>
+<ol>
+<li>
+<p>Set up the environment for Maven:</p>
+<pre><code>#Perform Maven Sync
+$ cd /u01/oracle/oracle_common/plugins/maven/com/oracle/maven/oracle-maven-sync/12.2.1/
+$ mvn install:install-file \
+    -DpomFile=oracle-maven-sync-12.2.1.pom \
+    -Dfile=oracle-maven-sync-12.2.1.jar
+
+#push libraries into internal repository
+$ mvn com.oracle.maven:oracle-maven-sync:push \
+    -DoracleHome=$ORACLE_HOME
+$ mvn archetype:crawl \
+    -Dcatalog=$HOME/.m2/archetype-catalog.xml
+
+#Verify the mvn setup
+$ mvn help:describe \
+    -DgroupId=com.oracle.servicebus.plugin \
+    -DartifactId=oracle-servicebus-plugin \
+    -Dversion=12.2.1-4-0
+</code></pre></li>
+<li>
+<p>Build the Oracle Service Bus Archive (<code>sbconfig.sbar</code>)</p>
+<p>Build <code>sbconfig.sbar</code> for your sample deployment, available at <code>/composites/mavenproject/HelloWorldSB</code>:</p>
+<pre><code>$ cd /composites/mavenproject/HelloWorldSB
+$ mvn com.oracle.servicebus.plugin:oracle-servicebus-plugin:package
+</code></pre><p>The Oracle Service Bus Archive (SBAR) will be generated at <code>/composites/mavenproject/HelloWorldSB/.data/maven/sbconfig.sbar</code>.</p>
+</li>
+<li>
+<p>Deploy the generated <code>sbconfig.sbar</code> into the Oracle Service Bus instance. For example, if the Administration URL is <code>http://soainfra-adminserver:7001</code> with credentials <code>username</code>: weblogic and <code>password</code>: Welcome1, enter the following commands:
+:</p>
+<pre><code>$ cd /composites/mavenproject/HelloWorldSB
+$ mvn pre-integration-test   \
+    -DoracleServerUrl=t3://soainfra-adminserver:7001 \
+    -DoracleUsername=weblogic -DoraclePassword=Welcome1
+</code></pre></li>
+</ol>
+<h3 id="ant-based-build-and-deploy">Ant based build and deploy</h3>
+<blockquote>
+<p>Note: Make sure to execute these commands inside the <code>soadeploy</code> pod.</p>
+</blockquote>
+<h4 id="for-oracle-soa-suite-composite-applications-1">For Oracle SOA Suite composite applications</h4>
+<ol>
+<li>
+<p>Build an Oracle SOA Suite composite application using Ant. For example, if the composite application to be deployed is available at  <code>/composites/antproject/Project</code>, enter the following commands:</p>
+<pre><code>$ cd /u01/oracle/soa/bin
+$ ant -f ant-sca-package.xml \
+      -DcompositeDir=/composites/antproject/Project \
+      -DcompositeName=Project \
+      -Drevision=0.1
+</code></pre><p>The SOA Archive is generated at <code>/composites/antproject/Project/deploy/sca_Project_rev0.1.jar</code>, which will be used for deploying.</p>
+</li>
+<li>
+<p>Deploy into the Oracle SOA Suite instance using Ant:</p>
+<pre><code>$ cd /u01/oracle/soa/bin
+$ ant -f ant-sca-deploy.xml \
+      -DserverURL=http://soainfra-cluster-soa-cluster:8001  \
+      -DsarLocation=/composites/antproject/Project/deploy/sca_Project_rev0.1.jar \
+      -Doverwrite=true \
+      -Duser=weblogic -Dpassword=Welcome1
+</code></pre></li>
+</ol>
+<h4 id="for-oracle-service-bus-composite-applications-1">For Oracle Service Bus composite applications</h4>
+<p>See <a href="https://docs.oracle.com/en/middleware/soa-suite/service-bus/12.2.1.4/develop/importing-and-exporting-resources-and-configurations.html#GUID-B4B84A13-FDED-4A2B-8AD8-597B92DC12E9">Developing Services Using Oracle Service Bus</a> to deploy Oracle Service Bus composite applications using Ant.</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/21.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/21.3.2/js/clipboard.min.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/perfect-scrollbar.min.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/perfect-scrollbar.jquery.min.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/jquery.sticky.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/featherlight.min.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/highlight.pack.js?1628488447"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/21.3.2/js/modernizr.custom-3.6.0.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/learn.js?1628488447"></script>
+    <script src="/fmw-kubernetes/21.3.2/js/hugo-learn.js?1628488447"></script>
+
+    <link href="/fmw-kubernetes/21.3.2/mermaid/mermaid.css?1628488447" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.3.2/mermaid/mermaid.js?1628488447"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
