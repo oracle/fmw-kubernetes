@@ -13,7 +13,7 @@
 edit_seedfile()
 {
    ST=`date +%s`
-   echo -n "Creating Seedfile - "
+   print_msg "Creating Seedfile"
    cp $TEMPLATES_DIR/base.ldif $WORKDIR
 
    SEEDFILE=$WORKDIR/base.ldif
@@ -50,7 +50,7 @@ edit_seedfile()
 create_override()
 {
    ST=`date +%s`
-   echo -n "Creating Helm Override file - "
+   print_msg "Creating Helm Override file"
    cp $TEMPLATES_DIR/override_oud.yaml $WORKDIR
    OVERRIDE_FILE=$WORKDIR/override_oud.yaml
    update_variable "<OUD_SEARCHBASE>" $OUD_SEARCHBASE  $OVERRIDE_FILE
@@ -61,10 +61,32 @@ create_override()
    update_variable "<OUD_CONFIG_SHARE>" $OUD_CONFIG_SHARE $OVERRIDE_FILE
    update_variable "<OUD_REPLICAS>" $OUD_REPLICAS $OVERRIDE_FILE
    update_variable "<OUD_OIGADMIN_GRP>" $OUD_OIGADMIN_GRP $OVERRIDE_FILE
+   update_variable "<REPOSITORY>" $OUD_IMAGE $OVERRIDE_FILE
+   update_variable "<IMAGE_VER>" $OUD_VER $OVERRIDE_FILE
+   update_variable "<USE_INGRESS>" $USE_INGRESS $OVERRIDE_FILE
 
    echo "Success"
    ET=`date +%s`
    print_time STEP "Create Helm Override File" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create a Nginx override file
+#
+create_nginx_override()
+{
+   ST=`date +%s`
+   print_msg "Creating NGINX Override file"
+   cp $TEMPLATES_DIR/oud_nginx.yaml $WORKDIR
+   OVERRIDE_FILE=$WORKDIR/oud_nginx.yaml
+   update_variable "<OUDNS>" $OUDNS  $OVERRIDE_FILE
+   update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $OVERRIDE_FILE
+   update_variable "<OUD_LDAP_K8>" $OUD_LDAP_K8 $OVERRIDE_FILE
+   update_variable "<OUD_LDAPS_K8>" $OUD_LDAPS_K8 $OVERRIDE_FILE
+   update_variable "<OUD_HTTP_K8>" $OUD_HTTP_K8 $OVERRIDE_FILE
+   update_variable "<OUD_HTTPS_K8>" $OUD_HTTPS_K8 $OVERRIDE_FILE
+   print_status $?
+   ET=`date +%s`
+   print_time STEP "Create Nginx Override File" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Copy seed files to OUD Config Share
@@ -72,7 +94,7 @@ create_override()
 copy_files_to_share()
 {
    ST=`date +%s`
-   echo -n "Copy files to local share - "
+   print_msg "Copy files to local share"
    cp $SEEDFILE $OUD_LOCAL_SHARE
    cp $TEMPLATES_DIR/99-user.ldif $OUD_LOCAL_SHARE
    chmod 777 $OUD_LOCAL_SHARE/*.ldif
@@ -88,19 +110,12 @@ create_oud()
 {
 
    ST=`date +%s`
-   echo -n "Use Helm to create OUD - "
+   print_msg "Use Helm to create OUD"
 
    rm -f $OUD_LOCAL_SHARE/rejects.ldif $OUD_LOCAL_SHARE/skip.ldif 2> /dev/null > /dev/null
-   cd $WORKDIR/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/helm/
+   cd $WORKDIR/samples/kubernetes/helm/
    helm install --namespace $OUDNS --values $WORKDIR/override_oud.yaml $OUD_POD_PREFIX oud-ds-rs > $LOGDIR/create_oud.log 
-   if [ "$?" = "0" ]
-   then
-       echo "Success"
-   else
-       echo "Fail"
-       exit 1
-   fi
-
+   print_status $? $LOGDIR/create_oud.log
    ET=`date +%s`
    print_time STEP "Create OUD Instances" $ST $ET >> $LOGDIR/timings.log
 
@@ -111,13 +126,15 @@ create_oud()
 check_oud_started()
 {
    ST=`date +%s`
-   echo -n "Check First OUD Server starts - "
+   print_msg "Check First OUD Server starts"
+   echo
    check_running $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0
    kubectl logs $OUD_POD_PREFIX-oud-ds-rs-0 -n $OUDNS > $LOGDIR/$OUD_POD_PREFIX-oud-ds-rs-0.log
    ET=`date +%s`
    print_time STEP "OUD Primary Started " $ST $ET >> $LOGDIR/timings.log
    ST=`date +%s`
-   echo -n "Check First OUD Replica starts - "
+   print_msg "Check First OUD Replica starts"
+   echo
    check_running $OUDNS $OUD_POD_PREFIX-oud-ds-rs-1
    kubectl logs $OUD_POD_PREFIX-oud-ds-rs-1 -n $OUDNS > $LOGDIR/$OUD_POD_PREFIX-oud-ds-rs-1.log
    ET=`date +%s`
@@ -130,7 +147,7 @@ check_oud_started()
 create_oud_nodeport()
 {
    ST=`date +%s`
-   echo -n "Create OUD Nodeport Services - "
+   print_msg "Create OUD Nodeport Services"
    cp $TEMPLATES_DIR/oud_nodeport.yaml $WORKDIR
    update_variable "<OUDNS>" $OUDNS $WORKDIR/oud_nodeport.yaml
    update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/oud_nodeport.yaml
@@ -138,24 +155,36 @@ create_oud_nodeport()
    update_variable "<OUD_LDAPS_K8>" $OUD_LDAPS_K8 $WORKDIR/oud_nodeport.yaml
 
    kubectl apply -f $WORKDIR/oud_nodeport.yaml > $LOGDIR/oud_nodeport.log 2>&1
-   if [ "$?" = "0" ]
-   then
-        echo "Success"
-   else
-        echo "Failed"
-        exit 1
-   fi
+   print_status $? $LOGDIR/oud_nodeport.log
 
    ET=`date +%s`
    print_time STEP "Create OUD Nodeport services" $ST $ET >> $LOGDIR/timings.log
 }
 
+create_ingress()
+{
+    ST=`date +%s`
+    echo -n "Adding Ingress Repository - "
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx > $LOGDIR/ingress.log 2>&1
+    helm repo update  > $LOGDIR/ingress.log 2>&1
+
+    helm search repo | grep -q nginx
+    print_status $? $LOGDIR/ingress.log
+
+    echo -n "Installing Ingress - "
+    helm install --namespace $OUDINGNS  --values $WORKDIR/oud_nginx.yaml  edg-nginx ingress-nginx/ingress-nginx >> $LOGDIR/ingress.log 2>&1
+    grep -q DEPLOYED $LOGDIR/ingress.log
+    print_status $? $LOGDIR/ingress.log
+
+    ET=`date +%s`
+    print_time STEP "Creating Ingress" $ST $ET >> $LOGDIR/timings.log
+}
 # Create a Helm override file to deploy OUDSM
 #
 create_oudsm_override()
 {
    ST=`date +%s`
-   echo -n "Create OUDSM Override File - "
+   print_msg "Create OUDSM Override File"
    cp $TEMPLATE_DIR/override_oudsm.yaml $WORKDIR
 
    # Perform variable substitution in template file
@@ -164,6 +193,9 @@ create_oudsm_override()
    update_variable "<OUDSM_PWD>" $OUDSM_PWD $WORKDIR/override_oudsm.yaml
    update_variable "<NFSSERVERNAME>" $PVSERVER $WORKDIR/override_oudsm.yaml
    update_variable "<OUDSM_SHARE>" $OUDSM_SHARE $WORKDIR/override_oudsm.yaml
+   update_variable "<REPOSITORY>" $OUDSM_IMAGE $WORKDIR/override_oudsm.yaml
+   update_variable "<IMAGE_VER>" $OUDSM_VER $WORKDIR/override_oudsm.yaml
+   update_variable "<USE_INGRESS>" $USE_INGRESS $WORKDIR/override_oudsm.yaml
 
    echo "Success"
    ET=`date +%s`
@@ -176,18 +208,11 @@ create_oudsm()
 {
 
    ST=`date +%s`
-   echo -n "Use Helm to create OUD - "
+   print_msg "Use Helm to create OUDSM"
 
-   cd $WORKDIR/fmw-kubernetes/OracleUnifiedDirectorySM/kubernetes/helm
-   helm install --namespace $OUDNS --values $WORKDIR/override_oudsm.yaml oudsm oudsm > $LOGDIR/create_oudsm.log
-   if [ "$?" = "0" ]
-   then
-       echo "Success"
-   else
-       echo "Fail"
-       exit 1
-   fi
-
+   cd $WORKDIR/samples/kubernetes/helm
+   helm install --namespace $OUDNS --values $WORKDIR/override_oudsm.yaml oudsm oudsm > $LOGDIR/create_oudsm.log 2>&1
+   print_status $? $LOGDIR/create_oudsm.log
    ET=`date +%s`
    print_time STEP "Create OUDSM Instances" $ST $ET >> $LOGDIR/timings.log
 
@@ -198,7 +223,8 @@ create_oudsm()
 check_oudsm_started()
 {
    ST=`date +%s`
-   echo -n "Check OUDSM Server starts - "
+   print_msg "Check OUDSM Server starts"
+   echo
    check_running $OUDNS oudsm
    kubectl logs oudsm-1 -n $OUDNS >> $LOGDIR/create_oudsm.log
    ET=`date +%s`
@@ -210,20 +236,58 @@ check_oudsm_started()
 create_oudsm_nodeport()
 {
    ST=`date +%s`
-   echo -n "Create OUDSM Nodeport Service - "
+   print_msg "Create OUDSM Nodeport Service"
    cp $TEMPLATE_DIR/oudsm_nodeport.yaml $WORKDIR
    update_variable "<OUDSM_SERVICE_PORT>" $OUDSM_SERVICE_PORT $WORKDIR/oudsm_nodeport.yaml
    update_variable "<OUDNS>" $OUDNS $WORKDIR/oudsm_nodeport.yaml
 
    kubectl apply -f $WORKDIR/oudsm_nodeport.yaml > $LOGDIR/oudsm_nodeport.log 2>&1
-   if [ "$?" = "0" ]
-   then
-        echo "Success"
-   else
-        echo "Failed"
-        exit 1
-   fi
+   print_status $? $LOGDIR/oudsm_nodeport.log
 
    ET=`date +%s`
    print_time STEP "Create OUDSM Nodeport services" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_oudsm_ohs_entries()
+{
+   print_msg "Create OUDSM OHS entries"
+   ST=`date +%s`
+
+   CONFFILE=$LOCAL_WORKDIR/ohs_oudsm.conf
+
+   cp $TEMPLATE_DIR/ohs_oudsm.conf $CONFFILE
+   if [ "$USE_INGRESS" = "true" ] 
+   then
+      update_variable "<OUDSM_SERVICE_PORT>" $OUD_HTTP_K8 $CONFFILE
+   else
+      update_variable "<OUDSM_SERVICE_PORT>" $OUDSM_SERVICE_PORT $CONFFILE
+   fi
+   update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $CONFFILE
+   update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $CONFFILE
+
+   OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
+   OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2
+
+   if [ -f $OHSHOST1FILES/iadadmin_vh.conf ]
+   then
+        printf "Adding to iadadmin_vh.conf "
+        sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/iadadmin_vh.conf
+        sed -i '/<\/VirtualHost>/d' $OHSHOST2FILES/iadadmin_vh.conf
+
+        cat $CONFFILE >> $OHSHOST1FILES/iadadmin_vh.conf
+        cat $CONFFILE >> $OHSHOST2FILES/iadadmin_vh.conf
+
+        print_status $?
+   else
+        if [ -d $OHSHOST1FILES ]
+        then
+            printf "Copying to $OHSHOST1FILES $OHSHOST2FILES"
+            cp $CONFFILE $OHSHOST1FILES
+            cp $CONFFILE $OHSHOST2FILES
+        else
+            echo "$CONFFILE Created"
+        fi
+   fi
+   ET=`date +%s`
+   print_time STEP "Create OHS Entries" $ST $ET >> $LOGDIR/timings.log
 }

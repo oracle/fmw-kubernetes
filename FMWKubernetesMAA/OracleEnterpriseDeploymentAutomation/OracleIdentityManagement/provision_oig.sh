@@ -22,8 +22,9 @@ TEMPLATE_DIR=$SCRIPTDIR/templates/oig
 
 START_TIME=`date +%s`
 
-WORKDIR=$LOCAL_WORKDIR
-LOGDIR=$WORKDIR/OIG/logs
+WORKDIR=$LOCAL_WORKDIR/OIG
+LOGDIR=$WORKDIR/logs
+OPER_DIR=OracleIdentityGovernance
 
 if [ "$INSTALL_OIG" != "true" ] && [ "$INSTALL_OIG" != "TRUE" ]
 then
@@ -50,46 +51,48 @@ PROGRESS=$(get_progress)
 
 if [ $STEPNO -gt $PROGRESS ]
 then
-   if [ -d $WORKDIR/weblogic-kubernetes-operator ]
-   then 
-       echo "Weblogic Operator Samples already downloaded - Skipping"
-   else
-       download_operator_samples $WORKDIR
-   fi
-   update_progress
+    download_samples $WORKDIR
+    update_progress
 fi
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    if [ -d $WORKDIR/fmw-kubernetes ]
-    then
-        echo "IDM FMW Samples already downloaded - Skipping"
-    else
-        download_samples $WORKDIR
-    fi
-    cp -rf $WORKDIR/fmw-kubernetes/OracleIdentityGovernance/kubernetes/$OPER_VER/create-oim-domain $WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-
+    copy_samples $OPER_DIR
     update_progress
 fi
 
 # Ensure Weblogic Operator has been created
 #
-check_oper_exists
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    check_oper_exists
+    update_progress
+fi
 
 # Create Namespace and Helper Pod
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    create_namespace $OIGNS
+    create_namespace $OIGNS WLS
+    update_progress
+fi
+
+new_step
+
+if [ $STEPNO -gt $PROGRESS ]
+then
+    create_registry_secret $REGISTRY $REG_USER $REG_PWD $OIGNS
     update_progress
 fi
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    create_helper_pod $OIGNS oig
+    create_helper_pod $OIGNS $OIG_IMAGE:$OIG_VER
     update_progress
 fi
 
@@ -101,47 +104,7 @@ then
     update_progress
 fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-     if  [ "$INSTALL_OAM" = "true" ] 
-     then
-          upgrade_operator $OAMNS,$OIGNS
-     else
-          upgrade_operator $OIGNS
-     fi
-    update_progress
-fi
 
-
-# Create Persistent Volumes
-#
-
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_persistent_volumes
-
-    check_pv_ok $OIG_DOMAIN_NAME
-    if [ $? = 0 ]
-    then
-         echo "  $OIG_DOMAIN_NAME-domain-pv Bound Successfully"
-    else
-         echo "  $OIG_DOMAIN_NAME-domain-pv is not bound"
-         exit 1
-    fi
-
-    check_pvc_ok $OIG_DOMAIN_NAME $OIGNS
-    if [ $? = 0 ]
-    then
-         echo "  $OIG_DOMAIN_NAME-domain-pvc Bound Successfully"
-    else
-         echo "  $OIG_DOMAIN_NAME-domain-pvc is not bound"
-         exit 1
-    fi
-
-    update_progress
-fi
 # Create Kubernetes Secrets
 #
 
@@ -158,11 +121,28 @@ then
     create_rcu_secret $OIGNS $OIG_DOMAIN_NAME $OIG_RCU_PREFIX $OIG_SCHEMA_PWD $OIG_DB_SYS_PWD
     update_progress
 fi
-new_step
+# Create Persistent Volumes
+#
 
+new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    create_registry_secret 
+    create_persistent_volumes
+    update_progress
+fi
+
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    check_pv_ok $OIG_DOMAIN_NAME
+    update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    check_pvc_ok $OIG_DOMAIN_NAME $OIGNS
     update_progress
 fi
 
@@ -172,7 +152,7 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    edit_domain_creation_file $WORKDIR/OIG/create-domain-inputs.yaml
+    edit_domain_creation_file $WORKDIR/create-domain-inputs.yaml
     update_progress
 fi
 
@@ -197,11 +177,14 @@ fi
 # Create NodePort Services
 #
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ ! "$USE_INGRESS" = "true" ]
 then
-   create_oig_nodeport
-   update_progress
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+      create_oig_nodeport
+      update_progress
+   fi
 fi
 
 # Create Working Directory inside container
@@ -210,7 +193,7 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    create_workdir $OIGNS $OIG_DOMAIN_NAME
-    update_progress
+   update_progress
 fi
 
 
@@ -219,7 +202,7 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    copy_to_k8 $TEMPLATE_DIR/oigSetUserOverrides.sh domains/$OIG_DOMAIN_NAME/bin/setUserOverrides.sh $OIGNS $OIG_DOMAIN_NAME
-    update_progress
+   update_progress
 fi
 
 
@@ -432,6 +415,14 @@ then
    update_progress
 fi
 
+# Assign WSM Roles
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   assign_wsmroles
+   update_progress
+fi
 
 if [ "$OIG_ENABLE_T3" = "true" ] || [ "$OIG_ENABLE_T3" = "TRUE" ]
 then
@@ -443,6 +434,28 @@ then
     fi
 fi
 
+#
+# Create an Email Driver
+#
+if [ "$OIG_EMAIL_CREATE" = "true" ] || [ "$OIG_EMAIL_CREATE" = "TRUE" ] 
+then
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+      create_email_driver
+    fi
+    update_progress
+
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+      set_email_notifications
+    fi
+    update_progress
+fi
+
+# Integrate OIG and BI
+#
 if [ "$OIG_BI_INTEG" = "true" ] || [ "$OIG_BI_INTEG" = "TRUE" ]
 then
     new_step
@@ -460,21 +473,34 @@ then
    update_progress
 fi
 
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    if [ "$UPDATE_OHS" = "true" ]
+    then
+       copy_ohs_config
+       update_progress
+    fi
+fi
+
 # Restart All Domain
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    stop_domain $OIGNS $OIG_DOMAIN_NAME
-   if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
-   then
-        stop_domain $OAMNS $OAM_DOMAIN_NAME
-   fi
    update_progress
 fi
 
 if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
 then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+        stop_domain $OAMNS $OAM_DOMAIN_NAME
+   fi
+   update_progress
+
    new_step
    if [ $STEPNO -gt $PROGRESS ]
    then

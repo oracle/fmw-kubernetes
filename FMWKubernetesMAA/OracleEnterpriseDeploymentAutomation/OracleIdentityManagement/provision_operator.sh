@@ -15,6 +15,7 @@
 
 WORKDIR=$LOCAL_WORKDIR
 LOGDIR=$WORKDIR/OPER/logs
+OPER_DIR=OracleAccessManagement
 
 if [ "$INSTALL_OAM" != "true" ] && [ "$INSTALL_OAM" != "TRUE" ] &&  [ "$INSTALL_OIG" != "true" ] && [ "$INSTALL_OIG" != "TRUE" ]
 then
@@ -36,32 +37,71 @@ echo -n "Provisioning WLS Operator on " >> $LOGDIR/timings.log
 date >> $LOGDIR/timings.log
 echo "----------------------------------------------------" >> $LOGDIR/timings.log
 
-if [ -d $WORKDIR/weblogic-kubernetes-operator ]
+STEPNO=1
+PROGRESS=$(get_progress)
+
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
 then
-   echo "Weblogic Operator Samples already downloaded - Skipping"
-else 
-   download_operator_samples $WORKDIR
+   download_samples $LOCAL_WORKDIR
+
 fi
 
-if [ -d $WORKDIR/fmw-kubernetes ]
+new_step
+if [ $STEPNO -gt $PROGRESS ]
 then
-   echo "IDM FMW Samples already downloaded - Skipping"
-else
-   download_samples $WORKDIR
+    copy_samples $OPER_DIR
+    update_progress
 fi
 
-cp -rf $WORKDIR/fmw-kubernetes/OracleAccessManagement/kubernetes/$OPER_VER/create-access-domain $WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-cp -rf $WORKDIR/fmw-kubernetes/OracleIdentityGovernance/kubernetes/$OPER_VER/create-oim-domain $WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-mv -f ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
-cp -rf ${WORKDIR}/fmw-kubernetes/OracleAccessManagement/kubernetes/3.0.1/ingress-per-domain ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+     delete_crd 
+     update_progress
+fi
 
-delete_crd > /dev/null 2> /dev/null
-create_namespace $OPERNS
-create_service_account $OPER_ACT $OPERNS
-cd $WORKDIR/weblogic-kubernetes-operator
-helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace $OPERNS --set image=weblogic-kubernetes-operator:$OPER_VER --set serviceAccount=$OPER_ACT --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+     create_namespace $OPERNS
+     update_progress
+fi
 
-check_running $OPERNS weblogic-operator 
+# Create a Container Registry Secret if requested
+#
+if [ $STEPNO -gt $PROGRESS ]
+then
+   if [ "$CREATE_REGSECRET" = "true" ]
+   then
+      create_registry_secret $REGISTRY $REG_USER $REG_PWD $OPERNS
+   fi
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+     create_service_account $OPER_ACT $OPERNS
+     update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   install_operator
+   update_progress
+fi
+
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    print_msg "Check Operator is Running\n"
+    check_running $OPERNS weblogic-operator 
+    update_progress
+fi
 
 
 exit

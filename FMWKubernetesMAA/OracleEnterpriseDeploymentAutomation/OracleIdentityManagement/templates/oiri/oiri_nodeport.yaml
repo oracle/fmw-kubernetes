@@ -1,20 +1,19 @@
 # Copyright (c) 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-# 
-# This is an example of creating a NodePort Service for Policy Managed Servers
+#
+# This is an example of creating a node port Kubernetes service for OAM
 # 
 kind: Service
 apiVersion: v1
 metadata:
-  name: <DOMAIN_NAME>-policy-nodeport
+  name: oiri-nodeport
   namespace: <NAMESPACE>
 spec:
   type: NodePort
   selector:
-    weblogic.clusterName: policy_cluster
-    weblogic.domainUID: <DOMAIN_NAME>
+    app: oiri
   ports:
-    - targetPort: 15100
-      port: 15100
-      nodePort: <OAM_POLICY_K8>
+    - targetPort: 8005
+      port: 8005
+      nodePort: <OIRI_K8>
       protocol: TCP

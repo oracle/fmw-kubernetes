@@ -23,16 +23,19 @@ echo
 echo "Performing General Checks"
 echo "-------------------------"
 
-echo -n "Checking Images Directory :"
-if [ -d $IMAGE_DIR ]
+if [ ! "$USE_REGISTRY" = "true" ]
 then
-      echo "Success"
-else
-      echo "Directory Does not exist"
-      exit 1
+   echo -n "Checking Images Directory : "
+   if [ -d $IMAGE_DIR ]
+   then
+     echo "Success"
+   else
+     echo "Directory Does not exist"
+     exit 1
+   fi
 fi
 
-echo -n "Checking Local Working Directory :"
+echo -n "Checking Local Working Directory : "
 if [ -d $LOCAL_WORKDIR ]
 then
       echo "Success"
@@ -48,68 +51,94 @@ else
       fi
 fi
 
-echo -n "Checking NFS server is reachable:"
+echo -n "Checking NFS server is reachable : "
 nc -z $PVSERVER 2049
-if [ $? ]
-then
-    echo "Success"
-else
-    echo "fail"
-    exit 1
-fi
+print_status $?
 
 echo ""
-echo "Checking Docker Images are in the repository"
-echo "--------------------------------------------"
-# Check Docker Images
+echo "Checking Images are in the repository"
+echo "-------------------------------------"
+# Check Images
 #
 
-if [ "$INSTALL_OUD" = "true" ]
+if [ "$CREATE_REGSECRET" = "false" ]
 then
-    check_docker_image oracle/oud 
-    if ! [ $? = 0 ]
-    then
-        RETCODE=1
-    fi
-fi
-if [ "$INSTALL_OUDSM" = "true" ]
-then
-    check_docker_image oracle/oudsm 
-    if ! [ $? = 0 ]
-    then
-        RETCODE=1
-    fi
-fi
-if [ "$INSTALL_OAM" = "true" ]
-then
-    check_docker_image oracle/oam 
-    if ! [ $? = 0 ]
-    then
-        RETCODE=1
-    fi
-fi
-if [ "$INSTALL_OIG" = "true" ]
-then
-    check_docker_image oracle/oig
-    if ! [ $? = 0 ]
-    then
-        RETCODE=1
-    fi
+   if [ "$INSTALL_OUD" = "true" ]
+   then
+       check_image_exists $OUD_IMAGE $OUD_VER
+       if [  $? -gt 0 ]
+       then
+           RETCODE=1
+       fi
+   fi
+   if [ "$INSTALL_OUDSM" = "true" ]
+   then
+       check_image_exists $OUDSM_IMAGE $OUDSM_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+   fi
+   if [ "$INSTALL_OAM" = "true" ]
+   then
+       check_image_exists $OAM_IMAGE $OAM_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+   fi
+
+   if [ "$INSTALL_OIG" = "true" ]
+   then
+       check_image_exists $OIG_IMAGE $OIG_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+   fi
+
+   if [ "$INSTALL_OIG" = "true" ] || [ "$INSTALL_OAM" = "true" ]
+   then
+      check_image_exists $OPER_IMAGE $OPER_VER
+      if  [ $? -gt 0 ]
+      then
+           RETCODE=1
+       fi
+   fi
+
+
+   if [ "$INSTALL_OIRI" = "true" ]
+   then
+       check_image_exists $OIRI_IMAGE $OIRI_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+       check_image_exists $OIRI_CLI_IMAGE $OIRICLI_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+       check_image_exists $OIRI_UI_IMAGE $OIRIUI_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+       check_image_exists $OIRI_DING_IMAGE $OIRIDING_VER
+       if  [ $? -gt  0 ]
+       then
+           RETCODE=1
+       fi
+   fi
+
+   if [ $RETCODE = 1 ]
+   then
+      echo
+      echo "Load images on each worker node or enable CREATE_REGCRED"
+      exit 1
+   fi
 fi
 
-if [ $RETCODE = 1 ]
-then
-        echo "Run load_docker_images.sh to attempt to load missing images"
-fi
-
-if [ "$INSTALL_OIG" = "true" ] || [ "$INSTALL_OAM" = "true" ]
-then
-    check_docker_image $OPER_IMAGE
-    if ! [ $? = 0 ]
-    then
-        RETCODE=1
-    fi
-fi
 # Check Load Balancers are set up
 #
 
@@ -130,6 +159,7 @@ then
         RETCODE=1
     fi
 fi
+
 if [ "$INSTALL_OIG" = "true" ]
 then
     if ! check_lbr $OIG_LBR_HOST $OIG_LBR_PORT
@@ -158,7 +188,7 @@ echo "Checking Oracle Unified Directory Pre-requisties"
 echo "------------------------------------------------"
 if [ "$INSTALL_OUD" = "true" ]
 then
-    echo -n "Checking local OUD config dir exists :"
+    echo -n "Checking local OUD config dir exists : "
     if [ -d $OUD_LOCAL_SHARE ]
     then
         echo "Success"
@@ -173,7 +203,7 @@ then
          exit 1
       fi
     fi
-    echo -n "Checking local OUD config dir is mounted :"
+    echo -n "Checking local OUD config dir is mounted : "
     df -k | grep -q $OUD_LOCAL_SHARE 
     if [ $? = 0 ]
     then
@@ -184,7 +214,7 @@ then
         exit 1
     fi
 
-    echo -n "Checking local OUD config dir is writeable :"
+    echo -n "Checking local OUD config dir is writeable : "
     if [ -w "$OUD_LOCAL_SHARE" ] 
     then 
          echo "Success" 
@@ -224,7 +254,7 @@ echo "Checking Oracle Identity Role Intelligence Pre-requisties"
 echo "---------------------------------------------------------"
 if [ "$INSTALL_OIRI" = "true" ]
 then
-    echo -n "Checking local OIRI dir exists :"
+    echo -n "Checking local OIRI dir exists : "
     if [ -d $OIRI_LOCAL_SHARE ]
     then
         echo "Success"
@@ -239,7 +269,7 @@ then
          exit 1
       fi
     fi
-    echo -n "Checking local OIRI config dir is mounted :"
+    echo -n "Checking local OIRI config dir is mounted : "
     df -k | grep -q $OIRI_LOCAL_SHARE 
     if [ $? = 0 ]
     then
@@ -250,7 +280,7 @@ then
         exit 1
     fi
 
-    echo -n "Checking local OIRI config dir is writeable :"
+    echo -n "Checking local OIRI config dir is writeable : "
     if [ -w "$OIRI_LOCAL_SHARE" ] 
     then 
          echo "Success" 
@@ -260,7 +290,7 @@ then
          exit 1
     fi
 
-    echo -n "Checking local OIRI Ding dir exists :"
+    echo -n "Checking local OIRI Ding dir exists : "
     if [ -d $OIRI_DING_LOCAL_SHARE ]
     then
         echo "Success"
@@ -275,7 +305,7 @@ then
          exit 1
       fi
     fi
-    echo -n "Checking local OIRI Ding dir is mounted :"
+    echo -n "Checking local OIRI Ding dir is mounted : "
     df -k | grep -q $OIRI_DING_LOCAL_SHARE 
     if [ $? = 0 ]
     then
@@ -286,7 +316,7 @@ then
         exit 1
     fi
 
-    echo -n "Checking local OIRI ding dir is writeable :"
+    echo -n "Checking local OIRI ding dir is writeable : "
     if [ -w "$OIRI_DING_LOCAL_SHARE" ] 
     then 
          echo "Success" 
