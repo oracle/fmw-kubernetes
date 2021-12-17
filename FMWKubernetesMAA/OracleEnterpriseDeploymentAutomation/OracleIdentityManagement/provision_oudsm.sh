@@ -17,7 +17,9 @@
 TEMPLATE_DIR=$SCRIPTDIR/templates/oudsm
 
 START_TIME=`date +%s`
-WORKDIR=$LOCAL_WORKDIR/OUD
+WORKDIR=$LOCAL_WORKDIR/OUDSM
+OPER_DIR=OracleUnifiedDirectorySM
+
 LOGDIR=$WORKDIR/logs
 
 if [ "$INSTALL_OUDSM" != "true" ] && [ "$INSTALL_OUDSM" != "TRUE" ]
@@ -39,17 +41,19 @@ echo -n "Provisioning OUDSM on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
 echo "-------------------------------------------------" >> $LOGDIR/timings.log
 
-rm $LOGDIR/progressfile
 STEPNO=1
 PROGRESS=$(get_progress)
 if [ $STEPNO -gt $PROGRESS ]
 then
-     if [ -d $WORKDIR/fmw-kubernetes ]
-     then
-          echo "IDM FMW Samples already downloaded - Skipping"
-     else
-        download_samples $WORKDIR
-     fi
+   download_samples 
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    copy_samples $OPER_DIR
+    update_progress
 fi
 
 # Create Helm Override File
@@ -58,6 +62,7 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     create_oudsm_override
+    update_progress
 fi
 
 # Create OUDSM
@@ -66,15 +71,32 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     create_oudsm
-    check_oudsm_started
+    update_progress
 fi
 
-# Create OUDSM Nodeport
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    check_oudsm_started
+    update_progress
+fi
+
+# Create NodePort for OUDSM
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ] && [ "$USE_INGRESS" = "false" ]
+then
+    create_oudsm_nodeport
+    update_progress
+fi
+
+# Create OUDSM OHS Entries
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    create_oudsm_nodeport
+    create_oudsm_ohs_entries
+    update_progress
 fi
 
 FINISH_TIME=`date +%s`

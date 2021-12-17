@@ -13,8 +13,11 @@
 # Common Environment Variables
 #
 
-SCRIPTDIR=/docker/scripts
+SCRIPTDIR=/home/opc/scripts
 RSPFILE=$SCRIPTDIR/responsefile/idm.rsp
+. $RSPFILE
+export SAMPLES_DIR=`echo $SAMPLES_REP | awk -F  "/" '{print $NF}' | sed 's/.git//'`
+
 SSH="ssh -q"
 
 # Create local Directories
@@ -22,12 +25,13 @@ SSH="ssh -q"
 create_local_workdir()
 {
     ST=`date +%s`
-    if ! [ -d $WORKDIR ]
+    if  [ ! -d $WORKDIR ]
     then
-        echo "Creating Working Directory :$WORKDIR"
+        printf "Creating Working Directory : $WORKDIR - "
         mkdir -p $WORKDIR
+        print_status $?
     else
-        echo "Using Working Directory : $WORKDIR"
+        printf "Using Working Directory    : $WORKDIR\n"
     fi
     ET=`date +%s`
 }
@@ -35,41 +39,93 @@ create_local_workdir()
 create_logdir()
 {
     ST=`date +%s`
-    if ! [ -d $LOGDIR ]
+    if  [ ! -d $LOGDIR ]
     then
-        echo "Creating Log Directory :$LOGDIR"
+        printf "Creating Log Directory     : $LOGDIR  - "
         mkdir -p $LOGDIR
+        print_status $?
     else
-        echo "Using Log Directory : $LOGDIR"
+        printf "Using Log Directory        : $LOGDIR\n "
     fi
+
+    echo ""
+
     ET=`date +%s`
-    print_time STEP "Create Work Directory" $ST $ET >> $LOGDIR/timings.log
+}
+
+
+#
+# Create Container Registry Secret
+#
+create_registry_secret()
+{
+    registry=$1
+    username=$2
+    pass=$3
+    namespace=$4
+
+    ST=`date +%s`
+    print_msg "Creating Container Registry Secret in namespace $namespace"
+    
+    kubectl create secret -n $namespace docker-registry regcred --docker-server=$registry --docker-username=$username --docker-password=$pass > $LOGDIR/create_reg_secret.log 2>&1
+    grep -q created $LOGDIR/create_reg_secret.log
+    if [ $? = 0 ]
+    then 
+         echo "Success"
+    else
+          grep -q exists $LOGDIR/create_reg_secret.log
+          if [ $? = 0 ]
+          then 
+               echo "Already Exists"
+          else
+               echo "Failed - See $LOGDIR/create_reg_secret.log."
+               exit 1
+          fi
+    fi
 }
 
 #
 check_oper_exists()
 {
-   echo -n "Check Operator has been installed - "
+   print_msg "Check Operator has been installed"
    kubectl get namespaces | grep -q $OPERNS 
    if [ $? = 0 ]
    then
        echo "Success"
    else
-       echo "Fail Install Operator before continuing."
+       echo "Failed Install Operator before continuing."
        exit 1
    fi
 }
 
 # Helm Functions
 #
+install_operator()
+{
+    ST=`date +%s`
+    
+    print_msg  "Installing Operator"
+    cd $WORKDIR/samples
+    helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT \
+            --set "enableClusterRoleBinding=true" \
+            --set "javaLoggingLevel=FINE" \
+            --set "domainNamespaceSelectionStrategy=LabelSelector" \
+            --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
+            --wait > $LOGDIR/install_oper.log 2>&1
+    print_status $? $LOGDIR/install_oper.log
+    ET=`date +%s`
+    print_time STEP "Install Operator" $ST $ET >> $LOGDIR/timings.log
+
+}
 upgrade_operator()
 {
     nslist=$1
     ST=`date +%s`
     
-    echo "Adding Namespaces:$nslist to Operator"
+    print_msg  "Adding Namespaces:$nslist to Operator"
     cd $WORKDIR/weblogic-kubernetes-operator
     helm upgrade --reuse-values --namespace $OPERNS --set "domainNamespaces={$nslist}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator > $LOGDIR/upgrade_operator.log 2>&1
+    print_status $? $LOGDIR/upgrade_operator.log
     ET=`date +%s`
     print_time STEP "Add Namespaces:$nslist to Operator" $ST $ET >> $LOGDIR/timings.log
 }
@@ -87,7 +143,7 @@ get_image()
 #
 get_k8nodes()
 {
-    kubectl get nodes | grep -v Disabled | sed '/NAME/d' | awk '{ print $1 }'
+    kubectl get nodes | grep -v Disabled | grep -v "control-plane" |sed '/NAME/d' | awk '{ print $1 }'
 }
 
 # Obtain a list of Kubernetes Control nodes
@@ -104,11 +160,44 @@ get_crd()
 
 delete_crd()
 {
+    print_msg "Deleting CRD if it exists"
     kubectl get crd | grep -q domains.weblogic.oracle
     if [ $? = 0 ]
     then
-          kubectl delete crd domains.weblogic.oracle
+          kubectl delete crd domains.weblogic.oracle > $LOGDIR/delete_crd.log 2>&1
+          print_status $?  $LOGDIR/delete_crd.log
+    else
+          echo "Not present"
     fi
+}
+
+#
+# Get Kubernetes NodePort Port
+#
+
+get_k8_port()
+{
+   SVC=$1
+   NS=$2
+
+   PORTS=`kubectl get service -n $NS | grep NodePort | grep $SVC | awk '{ print $5 }'`
+
+   PORT1=(`echo $PORTS | cut -f1 -d, | sed 's/\/TCP//;s/:/ /'`)
+   PORT2=(`echo $PORTS | cut -f2 -d, | sed 's/\/TCP//;s/:/ /'`)
+
+   echo $PORTS | grep -q ,
+
+   if [ $? = 1 ]
+   then 
+        echo  ${PORT1[1]}
+   else
+       if [ ${PORT1[0]} = 80 ]
+       then
+          echo  ${PORT1[1]}
+       else
+          echo  ${PORT2[1]}
+       fi
+   fi
 }
 
 # Create Namespace if it does not already exist
@@ -116,15 +205,22 @@ delete_crd()
 create_namespace()
 {
    NS=$1
+   TYPE=$2
    ST=`date +%s`
-   echo -n "Creating Namespace: $NS - "
+   print_msg "Creating Namespace: $NS"
    kubectl get namespace $NS >/dev/null 2> /dev/null
    if [ "$?" = "0" ]
    then
       echo "Already Exists"
    else
        kubectl create namespace $NS > $LOGDIR/create_ns.log 2>&1
-       echo "Success"
+       print_status $? $LOGDIR/create_ns.log
+       if [ "$TYPE" = "WLS" ]
+       then
+          printf "\t\t\tMarking as a WebLogic Enabled Namespace - "
+          kubectl label namespaces $NS weblogic-operator=enabled >> $LOGDIR/create_ns.log 2>&1
+          print_status $? $LOGDIR/create_ns.log
+       fi
    fi
    ET=`date +%s`
    print_time STEP "Create Namespace" $ST $ET >> $LOGDIR/timings.log
@@ -136,7 +232,20 @@ create_service_account()
 {
    actname=$1
    nsp=$2
-   kubectl create serviceaccount -n $nsp $actname
+   print_msg "Create Service Account"
+   kubectl create serviceaccount -n $nsp $actname >$LOGDIR/create_svc.log 2>&1
+   if [ $? -gt 0 ]
+   then
+      grep AlreadyExists -q $LOGDIR/create_svc.log
+      if [ $? = 0 ]
+      then 
+        echo "Already Exists"
+      else
+          print_status 1 $LOGDIR/create_svc.log
+      fi
+   else
+      print_status 0 $LOGDIR/create_svc.log
+   fi
 }
 
 # Copy file to Kubernetes Container
@@ -149,7 +258,7 @@ copy_to_k8()
    domain_name=$4
 
    kubectl cp $filename  $namespace/$domain_name-adminserver:$PV_MOUNT/$destination
-   if ! [ "$?" = "0" ]
+   if  [  $? -gt 0 ]
    then
       echo "Failed to copy $filename."
       exit 1
@@ -158,30 +267,34 @@ copy_to_k8()
 
 # Determine the status of a Persistent Volume
 #
-function check_pv_ok()
+check_pv_ok()
 {
     DOMAIN_NAME=$1
+    print_msg "Checking ${domain_name}-domain-pv"
     status=$(kubectl get pv | grep $DOMAIN_NAME-domain-pv | awk '{ print $5}' )
     if [ "$status" = "Bound" ]
     then
-        return 0
+        echo "Bound Successfully"
     else
-        return 1
+        echo "Is not bound - Resolve the issue before continuing"
+        exit 1
     fi
 }
 
 # Determine the status of a Persistent Volume Claim
 #
-function check_pvc_ok()
+check_pvc_ok()
 {
     domain_name=$1
     namespace=$2
+    print_msg "Checking ${domain_name}-domain-pvc"
     status=$(kubectl get pvc -n $namespace | grep $domain_name-domain-pvc | awk '{ print $2}' )
     if [ "$status" = "Bound" ]
     then
-        return 0
+        echo "Bound Successfully"
     else
-        return 1
+        echo "Is not bound - Resolve the issue before continuing"
+        exit 1
     fi
 }
 
@@ -195,6 +308,8 @@ copy_from_k8 ()
    domain_name=$4
 
    kubectl cp $namespace/$domain_name-adminserver:$filename $destination > /dev/null
+   RETCODE=$?
+
 }
 
 # Create Secrets
@@ -207,20 +322,14 @@ create_domain_secret()
    wlspwd=$4
 
    ST=`date +%s`
-   echo -n "Creating a Kubernetes Domain Secret - "
-   cd $WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials 
+   print_msg "Creating a Kubernetes Domain Secret"
+   cd $WORKDIR/samples/create-weblogic-domain-credentials 
    ./create-weblogic-credentials.sh -u $wlsuser -p $wlspwd -n $namespace -d $domain_name -s $domain_name-credentials > $LOGDIR/domain_secret.log  2>&1
 
-   if [ "$?" = "0" ]
-   then
-        echo "Success"
-   else
-        echo "Fail"
-        exit 1
-   fi
-    ET=`date +%s`
+   print_status $? $LOGDIR/domain_secret.log
+   ET=`date +%s`
 
-    print_time STEP "Create Domain Secret" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Create Domain Secret" $ST $ET >> $LOGDIR/timings.log
 }
 
 create_rcu_secret()
@@ -232,20 +341,14 @@ create_rcu_secret()
    syspwd=$5
 
    ST=`date +%s`
-   echo -n "Creating a Kubernetes RCU Secret - "
-   cd $WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+   print_msg "Creating a Kubernetes RCU Secret"
+   cd $WORKDIR/samples/create-rcu-credentials
    ./create-rcu-credentials.sh -u $rcuprefix -p $rcupwd -a sys -q $syspwd -d $domain_name -n $namespace -s $domain_name-rcu-credentials> $LOGDIR/rcu_secret.log  2>&1
 
-   if [ "$?" = "0" ]
-   then
-        echo "Success"
-   else
-        echo "Fail"
-        exit 1
-   fi
-    ET=`date +%s`
+   print_status $? $LOGDIR/rcu_secret.log
+   ET=`date +%s`
 
-    print_time STEP "Create RCU Secret" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Create RCU Secret" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Create a working directory inside the Kubernetes container
@@ -256,27 +359,16 @@ create_workdir()
    domain_name=$2
   
    ST=`date +%s`
-   echo -n "Creating Work directory inside container - "
+   print_msg "Creating Work directory inside container"
    kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $K8_WORKDIR
-   if [ "$?" = "0" ]
-   then 
-      echo "Success"
-   else
-      echo "Fail"
-      exit 1
-   fi
-   echo -n "Creating Keystores directory inside container - "
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $PV_MOUNT/keystores
-   if [ "$?" = "0" ]
-   then 
-      echo "Success"
-   else
-      echo "Fail"
-      exit 1
-   fi
-    ET=`date +%s`
+   print_status $? 
 
-    print_time STEP "Create Container Working Directory" $ST $ET >> $LOGDIR/timings.log
+   printf "\t\t\tCreating Keystores directory inside container - "
+   kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $PV_MOUNT/keystores
+   print_status $? 
+   ET=`date +%s`
+
+   print_time STEP "Create Container Working Directory" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Execute a command inside the Kubernetes container
@@ -288,11 +380,6 @@ run_command_k8()
    command=$3
   
    kubectl exec -n $namespace -ti $domain_name-adminserver -- $command
-   if ! [ "$?" = "0" ]
-   then 
-      echo "Failed to execute command: kubectl exec -n $namespace -ti $domain_name-adminserver -- $command"
-      exit 1
-   fi
 }
 
 # Execute a command inside the Kubernetes container
@@ -303,11 +390,12 @@ run_wlst_command()
    domain_name=$2
    command=$3
   
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh $command
-   if ! [ "$?" = "0" ]
+   WLSRETCODE=0
+   kubectl exec -n $namespace -ti $domain_name-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh $command 2> /dev/null
+   if [ $? -gt 0 ]
    then 
       echo "Failed to Execute wlst command: $command"
-      exit 1
+      WLSRETCODE=1
    fi
 }
 
@@ -315,28 +403,51 @@ run_wlst_command()
 #
 download_samples()
 {
-    workdir=$1
     ST=`date +%s`
-    cd $workdir
-    echo "Downloading Oracle Identity Management Samples"
-    git clone https://github.com/oracle/fmw-kubernetes.git
+    print_msg "Downloading Oracle Identity Management Samples "
+    cd $LOCAL_WORKDIR
+
+    echo $SAMPLES_REP | grep -q orahub
+    if [ $? = 0 ]
+    then
+       unset HTTPS_PROXY
+    fi
+    if [ -d $SAMPLES_DIR ]
+    then
+        echo "Already Exists - Skipping"
+    else
+        git clone -q $SAMPLES_REP > $LOCAL_WORKDIR/sample_download.log 2>&1
+        print_status $? $LOCAL_WORKDIR/sample_download.log
+    fi
     ET=`date +%s`
 
     print_time STEP "Download IDM Samples" $ST $ET >> $LOGDIR/timings.log
 }
 
-# Download WebLogic Kubernetes Operator to Directory
+# Copy Samples to Working Directory
 #
-download_operator_samples()
+copy_samples()
 {
-    workdir=$1
+    product=$1
     ST=`date +%s`
-    cd $workdir
-    echo "Downloading Oracle WebLogic Kubernetes Operator Config"
-    git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch release/$OPER_VER
+    print_msg "Copying Samples to Working Directory"
+    if [ "$product" = "OracleUnifiedDirectorySM" ] || [ "$product" = "OracleUnifiedDirectory" ]
+    then
+        cp -pr $LOCAL_WORKDIR/$SAMPLES_DIR/$product/ $WORKDIR/samples
+    else 
+        if [ "$SAMPLES_DIR" = "FMW-DockerImages" ]
+        then
+            cp -pr $LOCAL_WORKDIR/$SAMPLES_DIR/$product/kubernetes/$OPER_VER $WORKDIR/samples
+        else
+            cp -pr $LOCAL_WORKDIR/$SAMPLES_DIR/$product/kubernetes $WORKDIR/samples
+        fi
+    fi
+    print_status $?
+
     ET=`date +%s`
 
-    print_time STEP "Download Operator Samples" $ST $ET >> $LOGDIR/timings.log
+    print_time STEP "Copied IDM Samples" $ST $ET >> $LOGDIR/timings.log
+   
 }
 
 # Create helper pod
@@ -347,21 +458,22 @@ create_helper_pod ()
    IMAGE=$2
 
    ST=`date +%s`
-   echo -n "Creating Helper Pod - "
+   print_msg "Creating Helper Pod"
    kubectl get pod -n $NS helper > /dev/null 2> /dev/null
    if [ "$?" = "0" ]
    then
-       echo "Already Exists"
+       echo "Already Created"
+       check_running $NS helper
    else
-       kubectl run helper  --image oracle/$IMAGE:12.2.1.4.0 -n $NS -- sleep infinity > $LOGDIR/helper.log 2>&1
-       if [ "$?" = "0" ]
+       if [ "$USE_REGISTRY" = "true" ]
        then
-           echo "Success"
-           sleep 20
+           kubectl run helper -n $NS --image $IMAGE --overrides='{ "spec": { "imagePullSecrets": [{"name": "regcred"}]   } }' -- sleep infinity > $LOGDIR/helper.log 2>&1
+           print_status $? $LOGDIR/helper.log
        else
-           echo "Fail"
-           exit 1
+           kubectl run helper  --image $IMAGE -n $NS -- sleep infinity > $LOGDIR/helper.log 2>&1
+           print_status $? $LOGDIR/helper.log
        fi
+       check_running $NS helper
    fi
    ET=`date +%s`
    print_time STEP "Create Helper Pod" $ST $ET >> $LOGDIR/timings.log
@@ -385,94 +497,92 @@ update_replica_count()
 
 
    ST=`date +%s`
-   echo -n "Updating Server Start Count to $noReplicas -"
+   print_msg "Updating Server Start Count to $noReplicas"
    if [ "$install_type" = "oam" ]
    then
-      filename=$WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-access-domain/domain-home-on-pv/output/weblogic-domains/$OAM_DOMAIN_NAME
+      filename=$WORKDIR/samples/create-access-domain/domain-home-on-pv/output/weblogic-domains/$OAM_DOMAIN_NAME
       sed -i "s/replicas:.*/replicas: $noReplicas/" $filename/domain.yaml
-      echo "Success"
-      echo "Starting $noReplicas WebLogic Managed Servers"
-      kubectl apply -f $filename/domain.yaml
-      echo "Saving a Copy of Domain files to : $WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME"
-      mkdir -p $WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME
-      cp $filename/* $WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME
-      cp $WORKDIR/OAM/create-domain-inputs.yaml $WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME
+      print_status $? $LOGDIR/update_server_count.log 2>&1
+      kubectl apply -f $filename/domain.yaml  >>$LOGDIR/update_server_count.log 2>&1
+      printf "\t\t\tSaving a Copy of Domain files to : $LOCAL_WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME - "
+      mkdir -p $LOCAL_WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME
+      cp $filename/* $LOCAL_WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME
+      cp $WORKDIR/create-domain-inputs.yaml $LOCAL_WORKDIR/TO_KEEP/$OAM_DOMAIN_NAME
+      print_status $? 
    else
-      filename=$WORKDIR/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oim-domain/domain-home-on-pv/output/weblogic-domains/$OIG_DOMAIN_NAME
+      filename=$WORKDIR/samples/create-oim-domain/domain-home-on-pv/output/weblogic-domains/$OIG_DOMAIN_NAME
       sed -i "s/replicas:.*/replicas: $noReplicas/" $filename/domain.yaml
       sed -i "s/replicas:.*/replicas: $noReplicas/" $filename/domain_oim_soa.yaml
-      echo "Success"
-      echo "Starting $noReplicas WebLogic Servers"
-      kubectl apply -f $filename/domain_oim_soa.yaml
-      echo "Saving a Copy of Domain files to : $WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME"
-      mkdir -p $WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME
-      cp $filename/* $WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME
-      cp $WORKDIR/OIG/create-domain-inputs.yaml $WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME
+      print_status $? $LOGDIR/update_server_count.log 2>&1
+      kubectl apply -f $filename/domain_oim_soa.yaml >>$LOGDIR/update_server_count.log 2>&1
+      printf "\t\t\tSaving a Copy of Domain files to : $LOCAL_WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME - "
+      mkdir -p $LOCAL_WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME
+      cp $filename/* $LOCAL_WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME
+      cp $WORKDIR/create-domain-inputs.yaml $LOCAL_WORKDIR/TO_KEEP/$OIG_DOMAIN_NAME
+      print_status $? 
    fi
 
    ET=`date +%s`
    print_time STEP "Update Server Count" $ST $ET >> $LOGDIR/timings.log
 }
 
-# Docker Functions
+# Image Functions
 #
 
-function check_docker_image {
+function check_image_exists {
     IMAGE=$1
+    VER=$2
     KNODES=`get_k8nodes`
     RETCODE=0
-    echo "Checking Docker Image $IMAGE exists on each Kubernetes node"
+
+    if [ "$IMAGE_TYPE" = "docker" ]
+    then
+        CMD="docker"
+    else
+        CMD="sudo crictl"
+    fi
+
+    echo "Checking Image $IMAGE exists on each Kubernetes node"
     for node in $KNODES
     do
-         echo -n "... Checking docker image $IMAGE on $node :"
-         if [ "$IMAGE" = "oud" ]
-         then
-              if [[ $($SSH $node "docker images | grep -v "oudsm" | grep $IMAGE | tr -s ' ' | cut -d ' ' -f 3") = "" ]]
-              then
-                  echo " Missing."
-                  RETCODE=1
-              else
-                  echo "exists"
-              fi
-         elif [[ $($SSH $node "docker images | grep -E \"^$IMAGE( |$)\" | tr -s ' ' | cut -d ' ' -f 3") = "" ]]
+         echo -n "... Checking image $IMAGE on $node :"
+         if [[ $($SSH $node "$CMD images | grep $IMAGE | grep $VER") = "" ]]
          then
              echo " Missing."
              RETCODE=1
          else
-             echo "exists"
+             echo " Exists"
          fi
     done
     return $RETCODE
 }
 
-function remove_docker_image {
+remove_image()
+{
     IMAGE=$1
+    VER=$2
     KNODES=`get_k8nodes`
+    if [ "$IMAGE_TYPE" = "docker" ]
+    then
+      CMD="docker"
+    else
+      CMD="sudo crictl"
+    fi
     for node in $KNODES
     do
-         image_id=`$SSH $node "docker images" | grep oracle/$IMAGE | awk '{print $3}' | head -1`
-         if [ "$IMAGE" = "oud" ]
+         printf  "... Removing container image $IMAGE:$VER on $node : "
+         IMAGE_REC=`$SSH $node "$CMD images | grep $IMAGE | grep $VER  "`
+         IMAGE_ID=`echo $IMAGE_REC | awk ' {print $3}'`
+         if [  "$IMAGE_ID" = "" ]
          then
-              image_id=`$SSH $node "docker images" | grep -v oudsm | grep oracle/$IMAGE | awk '{print $3}' | head -1`
-              if [ "$image_id" = "" ]
-              then
-                  echo "... Docker Image $IMAGE not present on node $node."
-              else
-                  echo  "... Removing docker image $IMAGE on $node :"
-                  $SSH $node "docker image rm -f $image_id"
-              fi
-         elif [ "$image_id" = "" ]
-         then
-             echo "... Docker Image $IMAGE not present on node $node."
-             RETCODE=1
+            echo "Not Present"
          else
-             image_id=`$SSH $node "docker images" | grep $IMAGE | awk '{print $3}' | head -1`
-             echo II:$image_id
-             echo  "... Removing docker image $IMAGE on $node :"
-             $SSH $node "docker image rm -f $image_id"
+            $SSH $node "$CMD rmi $IMAGE_ID"
+            print_status $?
          fi
     done
 }
+
 
 upload_image_if_needed()
 {
@@ -481,27 +591,21 @@ upload_image_if_needed()
     KNODES=`get_k8nodes`
     VER=$(basename $IMAGE_FILE | sed 's/.tar//' | cut -f2 -d-)
     LABEL=$(basename $IMAGE_FILE | sed 's/.tar//' | cut -f2-6 -d-)
+
+    if [ "$IMAGE_TYPE" = "docker" ]
+    then
+      cmd="docker"
+    else
+      cmd="sudo podman"
+    fi
+
     for node in $KNODES
     do
          echo -n "Checking $IMAGE:$LABEL on $node :"
-         if [ "$IMAGE" = "oud" ]
-         then
-              if [[ $($SSH $node "docker images | grep -v "oudsm" | grep $IMAGE | grep $LABEL | tr -s ' ' | cut -d ' ' -f 3") = "" ]]
-              then
-                  echo " . Loading"
-                  $SSH $node "docker load < $IMAGE_FILE"
-                  $SSH $node "docker tag oracle/$IMAGE:$LABEL oracle/$IMAGE:$VER"
-              else
-                  echo "exists"
-              fi
-         elif [[ $($SSH $node "docker images | grep $IMAGE | grep $LABEL | tr -s ' ' | cut -d ' ' -f 3") = "" ]]
+         if [[ $($SSH $node "$cmd images | grep $IMAGE | grep $VER") = "" ]]
          then
              echo " . Loading"
-             $SSH $node "docker load < $IMAGE_FILE"
-             if ! [[ "$IMAGE" = oiri* ]]
-             then
-                 $SSH $node "docker tag oracle/$IMAGE:$LABEL oracle/$IMAGE:$VER"
-             fi
+             $SSH $node "$cmd load < $IMAGE_DIR/$IMAGE_FILE"
          else
              echo "exists"
          fi
@@ -524,6 +628,25 @@ function check_yes()
      fi
 }
 
+# Encode/Decode Passwords
+#
+function encode_pwd()
+{
+    password=$1
+
+    encoded_pwd=`echo -n $password | base64`
+
+    echo $encoded_pwd
+}
+ 
+function decode_pwd()
+{
+    password=$1
+
+    decoded_pwd=`echo -n $password | base64 --decode`
+
+    echo $decoded_pwd
+}
 #Replace a value in a file
 #
 replace_value()
@@ -624,7 +747,7 @@ create_schemas ()
 
       printf "$SYSPWD\n" > /tmp/pwd.txt
       printf "$RCUPWD\n" >> /tmp/pwd.txt
-      echo -n "Creating $SCHEMA_TYPE Schemas - "
+      print_msg "Creating $SCHEMA_TYPE Schemas"
 
       printf "#!/bin/bash\n" > /tmp/create_schema.sh
       printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> /tmp/create_schema.sh
@@ -649,17 +772,10 @@ create_schemas ()
       kubectl cp /tmp/pwd.txt  $NAMESPACE/helper:/tmp
       kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
       kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/create_schema.sh > $LOGDIR/create_schemas.log 2>&1
-      if [ $? = 0 ]
-      then
-           echo "Success"
-      else
-           echo "Fail"
-           exit 1
-      fi
-
+      print_status $? $LOGDIR/create_schemas.log
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
-         echo -n "Patching OIM Schema - " 
+         printf "\t\t\tPatching OIM Schema - " 
          printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> /tmp/patch_schema.sh
          printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> /tmp/patch_schema.sh
          printf " run-patched-sql-files " >> /tmp/patch_schema.sh
@@ -745,8 +861,13 @@ check_running()
     NAMESPACE=$1
     SERVER_NAME=$2
     
-    echo -e "\t Starting - $SERVER_NAME \c"
-    sleep 120
+    printf "\t\t\tChecking $SERVER_NAME "
+    if [ "$SERVER_NAME" = "adminserver" ]
+    then
+        sleep 120
+    else 
+        sleep 10
+    fi
     X=0
     while [ "$X" = "0" ]
     do
@@ -754,8 +875,8 @@ check_running()
         POD=`kubectl --namespace $NAMESPACE get pod -o wide | grep $SERVER_NAME `
         if [ "$POD" = "" ]
         then
-             kubectl --namespace $NAMESPACE get pod -o wide | grep infra-domain-job | grep Error > /dev/null
-             if [ $? = 0 ]
+             JOB_STATUS=`kubectl --namespace $NAMESPACE get pod -o wide | grep infra-domain-job | awk '{ print $3 }'`
+             if [ "$JOB_STATUS" = "Error" ]
              then
                   echo "Domain Creation has an Error"
              else
@@ -766,17 +887,18 @@ check_running()
         PODSTATUS=`echo $POD | awk '{ print $3 }'`
         RUNNING=`echo $POD | awk '{ print $2 }'`
         NODE=`echo $POD | awk '{ print $7 }'`
+
         if [ "$PODSTATUS" = "Error" ]
         then
               echo "Pod $SERVER_NAME has failed to start."
               X=2
-        elif [ "$PODSTATUS" = "ErrImagePull" ]
+        elif [ "$PODSTATUS" = "ErrImagePull" ] ||  [ "$PODSTATUS" = "ImagePullBackOff" ]
         then
-              echo "Pod $SERVER_NAME has failed to Obtain the image - Check Docker Image is present on $NODE."
+              echo "Pod $SERVER_NAME has failed to Obtain the image - Check Image is present on $NODE."
               X=2
         elif [ "$PODSTATUS" = "CrashLoopBackOff" ]
         then
-              echo "Pod $SERVER_NAME has failed to Start - Check Docker Image is present on $NODE."
+              echo "Pod $SERVER_NAME has failed to Start - Check Image is present on $NODE."
               X=2
         fi
         if [ "$SERVER_NAME" = "oim-server1" ]
@@ -788,11 +910,14 @@ check_running()
                  X=3
               fi
         fi
-        if [ "$RUNNING" = "1/1" ]
+        if [ "$RUNNING" = "1/1" ] 
         then
            echo " Running"
            X=1
-        else
+        elif [ $X -gt 1 ]
+        then
+             exit $X
+        else 
              echo -e ".\c"
              sleep 60
         fi
@@ -807,7 +932,7 @@ check_stopped()
     NAMESPACE=$1
     SERVER_NAME=$2
     
-    echo -e "\t Stopping $SERVER_NAME \c"
+    printf "\t\t\tStopping $SERVER_NAME "
 
     X=0
     while [ "$X" = "0" ]
@@ -835,7 +960,8 @@ start_domain()
   DOMAIN_NAME=$2
 
   ST=`date +%s`
-  echo "Starting Domain $DOMAIN_NAME "
+  print_msg "Starting Domain $DOMAIN_NAME "
+  echo
   kubectl -n $NAMESPACE patch domains $DOMAIN_NAME --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]' > /dev/null
 
   sleep 120
@@ -864,7 +990,8 @@ stop_domain()
   NAMESPACE=$1
   DOMAIN_NAME=$2
 
-  echo "Stopping Domain $DOMAIN_NAME "
+  print_msg "Stopping Domain $DOMAIN_NAME "
+  echo
   ST=`date +%s`
   kubectl -n $NAMESPACE patch domains $DOMAIN_NAME --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]' > /dev/null
 
@@ -893,6 +1020,35 @@ print_time()
      
 }
 
+# Print a message to show the step being executed
+#
+print_msg()
+{
+   msg=$1
+   if [ "$STEPNO" = "" ]
+   then
+       printf "$msg"
+   else
+       printf "Executing Step $STEPNO:\t$msg - " 
+   fi
+     
+}
+
+# Print Success/Failed Message dependent on status
+#
+print_status()
+{
+   statuscode=$1
+   logfile=$2
+   if [ $1 = 0 ]
+   then
+       echo "Success"
+   else
+       echo "Failed - Check Logfile : $logfile"
+       exit 1
+   fi
+}
+
 # Obtain an SSL certificate from a load balancer
 #
 get_lbr_certificate()
@@ -900,7 +1056,7 @@ get_lbr_certificate()
      LBRHOST=$1
      LBRPORT=$2
     
-     echo -n "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT - "
+     print_msg "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT"
      ST=`date +%s`
      openssl s_client -connect ${LBRHOST}:${LBRPORT} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > $WORKDIR/${LBRHOST}.pem
      if [ $? = 0 ]
@@ -912,10 +1068,60 @@ get_lbr_certificate()
      return 1
      fi
 
+     ET=`date +%s`
      print_time STEP "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT" $ST $ET >> $LOGDIR/timings.log
 }
 
-# Determine where a script stop to enable continuation
+# Copy OHS config Files to OHS servers
+#
+copy_ohs_config()
+{
+     OHS_SERVERS=$1
+
+     print_msg "Copying OHS configuration Files to OHS Servers"
+     printf "\n\t\t\tOHS Server $OHS_HOST1 - "
+
+     scp $LOCAL_WORKDIR/OHS/$OHS_HOST1/* $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs.log 2>&1
+     print_status $? $LOGDIR/copy_ohs.log
+
+     if [ "$COPY_WG_FILES" = "true" ]
+     then
+        scp -r $LOCAL_WORKDIR/OHS/webgate/wallet $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+        scp -r $LOCAL_WORKDIR/OHS/webgate/ObAccessClient.xml  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+        scp -r $LOCAL_WORKDIR/OHS/webgate/password.xml  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+        scp -r $LOCAL_WORKDIR/OHS/webgate/aaa*  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config/simple >> $LOGDIR/copy_ohs.log 2>&1
+     fi
+
+     printf "\t\t\tRestarting Oracle HTTP Server $OHS_HOST1 - "
+     ssh $OHS_HOST1 "$OHS_DOMAIN/bin/restartComponent.sh $OHS1_NAME" >> $LOGDIR/copy_ohs.log 2>&1
+     print_status $? $LOGDIR/copy_ohs.log
+
+     if [ ! "$OHS_HOST2" = "" ]
+     then
+         printf "\n\t\t\tOHS Server $OHS_HOST2 - "
+
+         scp $LOCAL_WORKDIR/OHS/$OHS_HOST2/* $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/moduleconf/ >> $LOGDIR/copy_ohs.log 2>&1
+         print_status $? $LOGDIR/copy_ohs.log
+    
+         if [ "$COPY_WG_FILES" = "true" ]
+         then
+            scp -r $LOCAL_WORKDIR/OHS/webgate/wallet $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+            scp -r $LOCAL_WORKDIR/OHS/webgate/ObAccessClient.xml  $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+            scp -r $LOCAL_WORKDIR/OHS/webgate/password.xml  $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+            scp -r $LOCAL_WORKDIR/OHS/webgate/aaa*  $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config/simple >> $LOGDIR/copy_ohs.log 2>&1
+         fi
+
+         printf "\t\t\tRestarting Oracle HTTP Server $OHS_HOST2 - "
+         ssh $OHS_HOST2 "$OHS_DOMAIN/bin/restartComponent.sh $OHS2_NAME" >> $LOGDIR/copy_ohs.log 2>&1
+         print_status $? $LOGDIR/copy_ohs.log
+     fi
+
+
+     ET=`date +%s`
+     print_time STEP "Copying OHS config" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Determine where a script stopped to enable continuation
 #
 function get_progress()
 {
@@ -950,7 +1156,7 @@ function check_lbr()
     host=$1
     port=$2
 
-    echo -n "Checking Loadbalancer $1 port $2 - "
+    print_msg "Checking Loadbalancer $1 port $2 : "
 
     nc -z $host $port
 
@@ -960,6 +1166,7 @@ function check_lbr()
        return 0
     else
        echo "Fail"
-    return 1
+       return 1
     fi
 }
+

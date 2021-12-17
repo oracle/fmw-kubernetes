@@ -10,11 +10,15 @@
 # Usage: Used and Input to Helm command
 #
 
+image:
+  repository: <REPOSITORY>
+  tag: <IMAGE_VER>
+
 oudConfig:
   baseDN: <OUD_SEARCHBASE>
   rootUserDN: <OUD_ADMIN_USER>
   rootUserPassword: <OUD_ADMIN_PWD>
-  sleepBeforeConfig: 1300
+  sleepBeforeConfig: 300
 
 persistence:
   storageClass: oci
@@ -38,9 +42,9 @@ configVolume:
 replicaCount: <OUD_REPLICAS>
 
 ingress:
-  enabled: false
+  enabled: <USE_INGRESS>
   type: nginx
-  tlsEnabled: true
+  tlsEnabled: false
 
 
 baseOUD:

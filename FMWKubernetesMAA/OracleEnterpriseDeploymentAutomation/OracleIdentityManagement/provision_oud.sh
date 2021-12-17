@@ -15,12 +15,13 @@
 
 . common/functions.sh
 . common/oud_functions.sh
-. $RSPFILE
+
 TEMPLATES_DIR=$SCRIPTDIR/templates/oud
 
 START_TIME=`date +%s`
 WORKDIR=$LOCAL_WORKDIR/OUD
 LOGDIR=$WORKDIR/logs
+OPER_DIR=OracleUnifiedDirectory
 
 if [ "$INSTALL_OUD" != "true" ] && [ "$INSTALL_OUD" != "TRUE" ]
 then
@@ -43,14 +44,19 @@ echo "------------------------------------------------" >> $LOGDIR/timings.log
 
 STEPNO=1
 PROGRESS=$(get_progress)
+
+
 if [ $STEPNO -gt $PROGRESS ]
 then
-     if [ -d $WORKDIR/fmw-kubernetes ]
-     then
-          echo "IDM FMW Samples already downloaded - Skipping"
-     else
-        download_samples $WORKDIR
-     fi
+     download_samples
+     update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    copy_samples $OPER_DIR
+    update_progress
 fi
 
 # Create Namespace and Helper Pod
@@ -59,6 +65,19 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     create_namespace $OUDNS
+    update_progress
+fi
+
+# Create a Container Registry Secret if requested
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   if [ "$CREATE_REGSECRET" = "true" ]
+   then
+       create_registry_secret $REGISTRY $REG_USER $REG_PWD $OUDNS
+   fi
+   update_progress
 fi
 
 # Modify base data template
@@ -67,6 +86,7 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     edit_seedfile
+    update_progress
 fi
 
 # Create Helm override file
@@ -75,6 +95,7 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     create_override
+    update_progress
 fi
 
 
@@ -84,6 +105,7 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     copy_files_to_share
+    update_progress
 fi
 
 
@@ -93,20 +115,50 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    create_oud
-   check_oud_started
+   update_progress
 fi
 
-
-# If requested create Nodeport Services
+# Check OUD has Started
 #
-if [ "$OUD_CREATE_NODEPORT" = "true" ] || [ "$OUD_CREATE_NODEPORT" = "TRUE" ]
+new_step
+if [ $STEPNO -gt $PROGRESS ]
 then
+   check_oud_started
+   update_progress
+fi
+    
+# Setup Ingress if required Otherwise create NodePort Services
+#
+if [ "$USE_INGRESS" = "true" ] 
+then
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+        create_nginx_override
+        update_progress
+    fi
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+        create_namespace $OUDINGNS
+        update_progress
+    fi
+    
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+        create_ingress 
+        update_progress
+    fi
+else 
+    new_step
     if [ $STEPNO -gt $PROGRESS ]
     then
         create_oud_nodeport
+        update_progress
     fi
 fi
-    
+
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUD" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
