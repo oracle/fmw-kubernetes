@@ -58,7 +58,7 @@ class WCContent12214Provisioner:
     def createWCContentDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort,  prodMode, managedCount, clusterName, sslEnabled, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
 
 	print '================================================================='
-        print '    WebCenter Content WebLogic Operator Domain Creation Script    '     
+        print '    Oracle WebCenter Content Domain Creation Script    '     
         print '                         12.2.1.4.0                              '
 	print '================================================================='
 
