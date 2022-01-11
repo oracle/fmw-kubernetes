@@ -36,12 +36,9 @@ Add the Prometheus and Grafana Helm repositories by issuing the following comman
 ```
 $ helm repo add prometheus https://prometheus-community.github.io/helm-charts
 "prometheus" has been added to your repositories
-$ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-"stable" has been added to your repositories
 $ helm repo update
 Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "prometheus" chart repository
-...Successfully got an update from the "stable" chart repository
 Update Complete.  Happy Helming!
 $
 ```
