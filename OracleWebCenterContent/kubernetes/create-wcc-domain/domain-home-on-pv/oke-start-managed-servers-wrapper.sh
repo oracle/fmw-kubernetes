@@ -4,8 +4,9 @@
 #
 
 function  usage {
-  echo usage: ${script} -o path_to_output_dir -p load_balancer_port [-u ucm_intradocport] [-i ibr_intradocport] [-h]
+  echo usage: ${script} -o path_to_output_dir -l load_balancer_external_ip -p load_balancer_port [-u ucm_intradocport] [-i ibr_intradocport] [-h]
   echo "  -o output directory which was used during domain creation to generate yaml files, must be specified."
+  echo "  -l load balancer external ip, must be specified."
   echo "  -p load balancer port, must be specified."
   echo "  -u ucm intradocport, optional"
   echo "  -i ibr intradocport, optional"
@@ -13,9 +14,11 @@ function  usage {
   exit $1
 }
 
-while getopts "ho:p:u:i:" opt; do
+while getopts "ho:l:p:u:i:" opt; do
   case $opt in
 	o) outputDir="${OPTARG}"
+	;;
+	l) LoadBalancerExternalIP="${OPTARG}"
 	;;
 	p) LoadBalancerPort="${OPTARG}"
 	;;
@@ -32,6 +35,11 @@ done
 
 if [ -z ${outputDir} ]; then
   echo "${script}: -o(outputDir) must be specified."
+  usage 1
+fi
+
+if [ -z ${LoadBalancerExternalIP} ]; then
+  echo "${script}: -l(LoadBalancerExternalIP) must be specified."
   usage 1
 fi
 
@@ -58,7 +66,7 @@ while true; do
         echo "$adminPod Pod started [OK]"
         break;
     elif [[ "$counter" -gt 8 ]]; then
-        echo "Pods timed out, exiting"
+        echo "Admin Pod timed out, exiting"
         exit 1
     else
         counter=$((counter+1))
@@ -78,7 +86,6 @@ for ((i = 1 ; i <= $rep ; i++)); do
   counter=0
 while true; do
     ready_status=$(kubectl -n $domainNS get pods $ucmPod$i -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}')
-
         if [ "True"  == "$ready_status" ]; then
            echo "$ucmPod$i Pod started [OK]"
            break;
@@ -94,7 +101,6 @@ done
 done
 
 }
-
 
 domainUID=$(grep  'domainUID:' create-domain-inputs.yaml);
 domainUID=${domainUID//*domainUID: /};
@@ -118,7 +124,7 @@ kubectl apply -f ${outputDir}/weblogic-domains/$domainUID/domain.yaml
 wait_admin_pod
 wait_managed_pods
 
-hostname=`hostname -f`
+hostname=$LoadBalancerExternalIP
 UCM_PORT=$LoadBalancerPort
 IBR_PORT=$LoadBalancerPort
 UCM_INTRADOC_PORT=$UCMIntradocPort
@@ -148,14 +154,6 @@ sed -i "s/@INSTALL_HOST_NAME@/$hostalias/g" autoinstall.cfg.ibr
 sed -i "s/@IBR_INTRADOC_PORT@/$IBR_INTRADOC_PORT/g" autoinstall.cfg.ibr
 
 kubectl cp  autoinstall.cfg.ibr $domainNS/$domainUID-ibr-server1:/u01/oracle/user_projects/domains/$domainUID/ucm/ibr/bin/autoinstall.cfg
-
-ip_addr=`hostname -i`
-
-kubectl expose  service/wccinfra-cluster-ibr-cluster --name wccinfra-cluster-ibr-cluster-ext --port=$IBRIntradocPort --target-port=$IBRIntradocPort  --external-ip=$ip_addr -n $domainNS
-
-kubectl get service/wccinfra-cluster-ibr-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ibr-cluster-ext.yaml
-sed -i "0,/$IBRIntradocPort/s//16250/" wccinfra-cluster-ibr-cluster-ext.yaml
-kubectl -n $domainNS apply -f wccinfra-cluster-ibr-cluster-ext.yaml
 
 kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
 
