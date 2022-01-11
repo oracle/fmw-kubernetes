@@ -27,11 +27,12 @@ source ${scriptDir}/../../common/utility.sh
 source ${scriptDir}/../../common/validate.sh
 
 function usage {
-  echo usage: ${script} -o dir -i file [-e] [-v] [-h]
+  echo usage: ${script} -o dir -i file [-e] [-v] [-h] [-t timeout]
   echo "  -i Parameter inputs file, must be specified."
   echo "  -o Output directory for the generated yaml files, must be specified."
   echo "  -e Also create the resources in the generated yaml files, optional."
   echo "  -v Validate the existence of persistentVolumeClaim, optional."
+  echo "  -t Timeout (in seconds) for create domain job execution, optional."
   echo "  -h Help"
   exit $1
 }
@@ -41,7 +42,8 @@ function usage {
 #
 doValidation=false
 executeIt=false
-while getopts "evhi:o:" opt; do
+timeout=600
+while getopts "evhi:o:t:" opt; do
   case $opt in
     i) valuesInputFile="${OPTARG}"
     ;;
@@ -49,7 +51,9 @@ while getopts "evhi:o:" opt; do
     ;;
     v) doValidation=true
     ;;
-    e) executeIt=true
+    e) executeIt=true 
+    ;;
+    t) timeout="${OPTARG}"
     ;;
     h) usage 0
     ;;
@@ -70,6 +74,10 @@ fi
 
 if [ "${missingRequiredOption}" == "true" ]; then
   usage 1
+fi
+
+if [ -z ${timeout} ]; then
+  timeout=600
 fi
 
 #
@@ -99,7 +107,7 @@ function initialize {
   validateKubectlAvailable
 
   if [ -z "${valuesInputFile}" ]; then
-    validationError "You must use the -i option to specify the name of the inputs parameter file (a modified copy of kubernetes/2.4.0/scripts/create-wcsites-domain/domain-home-on-pv/create-domain-inputs.yaml)."
+    validationError "You must use the -i option to specify the name of the inputs parameter file (a modified copy of kubernetes/create-wcsites-domain/domain-home-on-pv/create-domain-inputs.yaml)."
   else
     if [ ! -f ${valuesInputFile} ]; then
       validationError "Unable to locate the input parameters file ${valuesInputFile}"
@@ -271,7 +279,7 @@ function createDomainHome {
 
   echo "Waiting for the job to complete..."
   JOB_STATUS="0"
-  max=20
+  max=`expr ${timeout} / 30`
   count=0
   while [ "$JOB_STATUS" != "Completed" -a $count -lt $max ] ; do
     sleep 30

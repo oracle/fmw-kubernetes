@@ -2,7 +2,7 @@
 
 USER root
 
-COPY --chown=oracle:oracle files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
+COPY --chown=oracle:root files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
 
 USER oracle
 	
@@ -29,11 +29,11 @@ RUN yum install -y hostname && \
 
 RUN mkdir -p ${SITES_CONTAINER_SCRIPTS} && \
 	mkdir -p /u01/wcs-wls-docker-install 
-COPY --chown=oracle:oracle  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
-COPY --chown=oracle:oracle  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
+COPY --chown=oracle:root  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
+COPY --chown=oracle:root  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
 
-RUN chown oracle:oracle -R /u01/oracle/sites-container-scripts && \
-	chown oracle:oracle -R /u01/wcs-wls-docker-install && \
+RUN chown oracle:root -R /u01/oracle/sites-container-scripts && \
+	chown oracle:root -R /u01/wcs-wls-docker-install && \
 	chmod a+xr /u01/oracle/sites-container-scripts/* && \
 	chmod a+xr /u01/wcs-wls-docker-install/*.sh
 

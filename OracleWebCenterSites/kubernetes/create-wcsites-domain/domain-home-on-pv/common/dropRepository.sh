@@ -32,8 +32,6 @@ else
  java utils.dbping ORACLE_THIN "sys as sysdba" ${sysPassword} ${connectString}
 fi 
 
-# SOA needs extra component(s) SOAINFRA ESS (optional)
-# SOA needs variables param(s) SOA_PROFILE_TYPE=SMALL,HEALTHCARE_INTEGRATION=NO
 
 case $rcuType in
  fmw)
@@ -43,7 +41,7 @@ case $rcuType in
    ;;
  * )
     echo "[ERROR] Unknown RCU Schema Type [$rcuType]"
-    echo "Supported values: fmw(default),soa,osb,soaosb,soaess,soaessosb"
+    echo "Supported values: fmw(default),wcs"
     exit -1
   ;;
 esac
