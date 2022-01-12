@@ -1038,10 +1038,10 @@ Following kind of output would be shown after successful execution of `helm inst
     NOTES:
     Since "nginx" has been chosen, follow the steps below to configure nginx ingress controller.
     Add Repo reference to helm for retriving/installing Chart for nginx-ingress implementation.
-    command-# helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    command-# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
     Command helm install to install nginx-ingress related objects like pod, service, deployment, etc.
-    # helm install --namespace <namespace for ingress> --values nginx-ingress-values-override.yaml lbr-nginx stable/nginx-ingress
+    # helm install --namespace <namespace for ingress> --values nginx-ingress-values-override.yaml lbr-nginx ingress-nginx/nginx-ingress
 
     For details of content of nginx-ingress-values-override.yaml refer README.md file of this chart.
 

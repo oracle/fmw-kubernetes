@@ -70,18 +70,6 @@ The instructions below explain how to set up Voyager as an Ingress for the OAM d
 
 Use helm to install Voyager.
 
-1. Add the helm chart repository for Voyager using the following command:
-
-   ```bash
-   $ helm repo add googleapis https://kubernetes-charts.storage.googleapis.com/
-   ```
-   
-   The output will look similar to the following:
-   
-   ```bash
-   "googleapis" has been added to your repositories
-   ```
-
 1. Add the appscode chart repository using the following command:
 
    ```bash
