@@ -12,6 +12,16 @@
     
     
     <item>
+      <title>Preparing an OKE environment</title>
+      <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/prepare-oke-environment/</link>
+      <pubDate>Sun, 14 Feb 2021 16:43:45 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/prepare-oke-environment/</guid>
+      <description>Contents  Create Public SSH Key to access all the Bastion and Worker nodes Create a compartment for OKE Create Container Clusters (OKE) Create Bastion Node to access Cluster Setup OCI CLI to download kubeconfig and access OKE Cluster  Create Public SSH Key to access all the Bastion and Worker nodes Create SSH key using ssh-keygen on linux terminal to access (ssh) the Compute instances (worker/bastion) in OCI.
+ssh-keygen -t rsa -N &amp;#34;&amp;#34; -b 2048 -C demokey -f id_rsa Create a compartment for OKE Within your tenancy, there must be a compartment to contain the necessary network resources (VCN, subnets, internet gateway, route table, security lists).</description>
+    </item>
+    
+    <item>
       <title>Domain resource sizing</title>
       <link>/fmw-kubernetes/wccontent-domains/appendix/wcc-cluster-sizing-info/</link>
       <pubDate>Mon, 01 Feb 2021 15:44:42 -0500</pubDate>
@@ -32,12 +42,32 @@ It is expecting a Zero down time as a rolling upgrade approach is used.
     </item>
     
     <item>
+      <title>Preparing a file system</title>
+      <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/filesystem/</link>
+      <pubDate>Sat, 21 Sep 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/filesystem/</guid>
+      <description>Create Filesystem and security list for FSS  Note: Make sure you create the filesystem and security list in the OKE created VCN
+   Login to OCI Console and go to Storage and Click File System   Click Create File System   You can create File System and Mount Targets with the default values. But in case you want to rename the file System and mount targets, follow below steps.</description>
+    </item>
+    
+    <item>
       <title>Preparing an OKE environment</title>
       <link>/fmw-kubernetes/wcsites-domains/oracle-cloud/oke/</link>
       <pubDate>Sat, 21 Sep 2019 15:44:42 -0500</pubDate>
       
       <guid>/fmw-kubernetes/wcsites-domains/oracle-cloud/oke/</guid>
       <description>Overview Create Public SSH Key to access all the Bastion/Worker nodes  Create SSH key using ssh-keygen on linux terminal.  Generating public/private rsa key pair. Your identification has been saved in &amp;lt;path&amp;gt;/id_rsa. Your public key has been saved in &amp;lt;path&amp;gt;/id_rsa.pub. The key fingerprint is: SHA256:xCi1gf1QFafbRwOM3WjUTgqEInwi6UklbuxbBeMzA6M demokey The key&amp;#39;s randomart image is: +---[RSA 2048]----+ | +++oo..++*++ | | ++==+==. oo=.+ | |Eo+o*+++o .o +o | | oo * .. o.... | | .</description>
+    </item>
+    
+    <item>
+      <title>Preparing OCIR</title>
+      <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/ocir/</link>
+      <pubDate>Sat, 21 Sep 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/ocir/</guid>
+      <description>Publish images to OCIR Push all the required images to OCIR and subsequently use from there. Follow the below steps for pushing the images to OCIR
+Create an &amp;ldquo;Auth token&amp;rdquo; Create an &amp;ldquo;Auth token&amp;rdquo; which will be used as docker password to push and pull images from OCIR. Login to OCI Console and navigate to User Settings, which is in the drop down under your OCI user-profile, located at the top-right corner of the OCI console page.</description>
     </item>
     
     <item>
@@ -107,7 +137,7 @@ Recent changes    Date Version Change     November 30, 2021 21.4.2 Supports Orac
       
       <guid>/fmw-kubernetes/wcsites-domains/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle WebCenter Sites on Kubernetes.
-Recent changes    Date Version Introduces backward incompatibilities Change     Jan 15, 2021 21.1.1 no Certified Oracle WebLogic Kubernetes Operator version 3.0.1. Kubernetes 1.14.8+, 1.15.7+, 1.1.6.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. Only Webcenter Sites 12.2.1.4 is supported.    Known issues    Issue Description     Publishing via LoadBalancer Endpoint Currenly publishing is only supported via NodePort as described in section For Publishing Setting in WebCenter Sites on page.</description>
+Recent changes    Date Version Introduces backward incompatibilities Change     Dec 10, 2021 21.4.3 no Certified Oracle WebLogic Kubernetes Operator version 3.3.0. Kubernetes 1.16.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. Only Webcenter Sites 12.2.1.4 is supported.   Jan 15, 2021 21.1.1 no Certified Oracle WebLogic Kubernetes Operator version 3.</description>
     </item>
     
     <item>
@@ -237,7 +267,7 @@ If you have access to the Oracle WebCenter Content patches, you can patch an exi
       
       <guid>/fmw-kubernetes/wccontent-domains/release-notes/</guid>
       <description>Review the latest changes for Oracle WebCenter Content on Kubernetes.
-Recent changes    Date Version Introduces backward incompatibilities Change     June 16, 2021 21.2.3 no Supports Oracle WebCenter Content 12.2.1.4 domains deployment using April 2021 PSU and known bug fixes. Oracle WebCenter Content 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 32822360).   February 28, 2021 21.1.2 no Certified Oracle WebLogic Kubernetes operator version 3.</description>
+Recent changes    Date Version Change     December 7, 2021 21.4.3 Supports Oracle WebCenter Content 12.2.1.4 domains deployment using April 2021 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 3.2.5. Oracle WebCenter Content 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 32822360).   June 16, 2021 21.</description>
     </item>
     
     <item>
@@ -261,13 +291,24 @@ Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter 
     </item>
     
     <item>
+      <title>Traefik</title>
+      <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/</guid>
+      <description>This section provides information about how to install and configure the ingress-based Traefik load balancer (version 2.2.8 or later for production deployments) to load balance Oracle WebCenter Content domain clusters.
+Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Content	domain in a Kubernetes cluster:
+Contents  Install the Traefik (ingress-based) load balancer Configure Traefik to manage ingresses Create an Ingress for the domain Verify domain application URL access Uninstall the Traefik ingress  Install the Traefik (ingress-based) load balancer   Use Helm to install the Traefik (ingress-based) load balancer.</description>
+    </item>
+    
+    <item>
       <title>Quick start deployment guide</title>
       <link>/fmw-kubernetes/wccontent-domains/appendix/quickstart-deployment-guide/</link>
       <pubDate>Mon, 01 Feb 2021 15:27:38 -0500</pubDate>
       
       <guid>/fmw-kubernetes/wccontent-domains/appendix/quickstart-deployment-guide/</guid>
-      <description>Use this Quick Start to create an Oracle WebCenter Content domain deployment in a Kubernetes cluster (on-premise environments) with the Oracle WebLogic Server Kubernetes operator. Note that this walkthrough is for demonstration purposes only, not for use in production. These instructions assume that you are already familiar with Kubernetes. If you need more detailed instructions, refer to the Install Guide.
-Hardware requirements Supported Linux kernel for deploying and running Oracle WebCenter Content domain with the operator is Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes).</description>
+      <description>Use this Quick Start to create an Oracle WebCenter Content domain deployment in a Kubernetes cluster (on-premise environments) with WebLogic Kubernetes Operator. Note that this walkthrough is for demonstration purposes only, not for use in production. These instructions assume that you are already familiar with Kubernetes. If you need more detailed instructions, refer to the Install Guide.
+Hardware requirements Supported Linux kernel for deploying and running Oracle WebCenter Content domain with the WebLogic Kubernetes Operator is Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes).</description>
     </item>
     
     <item>
@@ -430,14 +471,13 @@ Prerequisites This document assumes that the Prometheus Operator is deployed on 
     </item>
     
     <item>
-      <title>Upgrade an operator release</title>
+      <title>Upgrade an WebLogic Kubernetes Operator release</title>
       <link>/fmw-kubernetes/wccontent-domains/patch_and_upgrade/upgrade-operator-release/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/wccontent-domains/patch_and_upgrade/upgrade-operator-release/</guid>
-      <description>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.
-To upgrade the Kubernetes operator, use the helm upgrade command. Make sure that the weblogic-kubernetes-operator repository on your local machine is at the operator release to which you are upgrading. When upgrading the operator, the helm upgrade command requires that you supply a new Helm chart and image. For example:
-$ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operator:3.</description>
+      <description>These instructions apply to upgrading WebLogic Kubernetes Operators within the 3.x release family as additional versions are released.
+To upgrade WebLogic Kubernetes Operator, use the helm upgrade command. Make sure that the weblogic-kubernetes-operator repository on your local machine is at the WebLogic Kubernetes Operator release to which you are upgrading. When upgrading the WebLogic Kubernetes Operator, the helm upgrade command requires that you supply a new Helm chart and image. For example:</description>
     </item>
     
     <item>
@@ -480,17 +520,6 @@ The deployment methods described in Deploy using JDeveloper and Deploy using Mav
       <description>1. Integrate Elasticsearch to WebLogic Kubernetes Operator For reference information, see Elasticsearch integration for the WebLogic Kubernetes Operator.
 To enable elasticsearch integration, you must edit file kubernetes/charts/weblogic-operator/values.yaml before deploying the WebLogic Kubernetes Operator.
 # elkIntegrationEnabled specifies whether or not ELK integration is enabled. elkIntegrationEnabled: true # logStashImage specifies the docker image containing logstash. # This parameter is ignored if &#39;elkIntegrationEnabled&#39; is false. logStashImage: &amp;quot;logstash:6.6.0&amp;quot; # elasticSearchHost specifies the hostname of where Elasticsearch is running.</description>
-    </item>
-    
-    <item>
-      <title>Voyager</title>
-      <link>/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/voyager/</link>
-      <pubDate>Sat, 15 Feb 2020 15:44:42 -0500</pubDate>
-      
-      <guid>/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/voyager/</guid>
-      <description>Voyager/HAProxy is a popular ingress-based load balancer for production environments. This section provides information about how to install and configure Voyager/HAProxy to load balance Oracle WebCenter Content domain clusters. You can configure Voyager for non-SSL, SSL termination, and end-to-end SSL access of the application URL.
-Follow these steps to set up Voyager as a load balancer for an Oracle WebCenter Content domain in a Kubernetes cluster:
-  Non-SSL and SSL termination</description>
     </item>
     
     <item>
@@ -595,17 +624,6 @@ It is expected that there will be a down time during the upgrade of the Kubernet
     </item>
     
     <item>
-      <title>Voyager</title>
-      <link>/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/voyager/</link>
-      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
-      
-      <guid>/fmw-kubernetes/wcsites-domains/adminguide/configure-load-balancer/voyager/</guid>
-      <description>Voyager/HAProxy is a popular ingress-based load balancer for production environments. This section provides information about how to install and configure Voyager/HAProxy to load balance Oracle WebCenter Sites domain clusters. You can configure Voyager for access of the application URL.
-Follow these steps to set up Voyager as a load balancer for an Oracle WebCenter Sites domain in a Kubernetes cluster:
- Install the Voyager Load Balancer Configure Voyager to Manage Ingresses Verify that You can Access the Domain URL  Install the Voyager Load Balancer See the official installation document and follow step 1 and 2 here.</description>
-    </item>
-    
-    <item>
       <title>Runnning OIG utilities</title>
       <link>/fmw-kubernetes/oig/manage-oig-domains/running-oig-utilities/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -636,7 +654,7 @@ It is expected that there will be a down time during the upgrade of the Kubernet
       
       <guid>/fmw-kubernetes/wccontent-domains/adminguide/weblogic-logging-exporter-setup/</guid>
       <description>The WebLogic Logging Exporter adds a log event handler to WebLogic Server. WebLogic Server logs can be pushed to Elasticsearch in Kubernetes directly by using the Elasticsearch REST API. For more details, see to the WebLogic Logging Exporter project.
-This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing operator logs, see this sample.
+This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing WebLogic Kubernetes Operator logs, see this sample.
 Prerequisites This document assumes that you have already set up Elasticsearch and Kibana for logs collection.</description>
     </item>
     
@@ -754,7 +772,7 @@ The WebLogic Kubernetes Operator provides an option to expose a T3 channel for t
       <description>Learn how to clean up the Oracle WebCenter Sites domain setup.
 Stop all Administration and Managed server pods First stop the all pods related to a domain. This can be done by patching domain &amp;ldquo;serverStartPolicy&amp;rdquo; to &amp;ldquo;NEVER&amp;rdquo;. Here is the sample command for the same.
 $ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; For example:
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; Drop the RCU schemas $ cd work-dir-name/weblogic-kubernetes-operator $ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.</description>
+$ kubectl patch domain wcsitesinfra -n wcsites-ns --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; Drop the RCU schemas $ cd work-dir-name/weblogic-kubernetes-operator $ kubectl apply -f kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.</description>
     </item>
     
     <item>

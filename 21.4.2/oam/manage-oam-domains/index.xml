@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Manage OAM Domains on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/</link>
+    <description>Recent content in Manage OAM Domains on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>a. Domain Life Cycle</title>
+      <link>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/domain-lifecycle/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/domain-lifecycle/</guid>
+      <description>As OAM domains use the WebLogic Kubernetes Operator, domain lifecyle operations are managed using the WebLogic Kubernetes Operator itself.
+This document shows the basic operations for starting, stopping and scaling servers in the OAM domain.
+For more detailed information refer to Domain Life Cycle in the WebLogic Kubernetes Operator documentation.
+Do not use the WebLogic Server Administration Console or Oracle Enterprise Manager Console to start or stop servers.
+ View existing OAM servers The default OAM deployment starts the Administration Server (AdminServer), two OAM Managed Servers (oam_server1 and oam_server2) and two OAM Policy Manager server (oam_policy_mgr1 and oam_policy_mgr2 ).</description>
+    </item>
+    
+    <item>
+      <title>b. WLST Administration Operations</title>
+      <link>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/wlst-admin-operations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/wlst-admin-operations/</guid>
+      <description>To use WLST to administer the OAM domain, use the helper pod in the same Kubernetes cluster as the OAM Domain.
+  Run the following command to start a bash shell in the helper pod:
+$ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash For example:
+$ kubectl exec -it helper -n oamns -- /bin/bash This will take you into a bash shell in the running helper pod:
+[oracle@helper ~]$   Connect to WLST using the following command:</description>
+    </item>
+    
+    <item>
+      <title>c. Logging and Visualization</title>
+      <link>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/logging-and-visualization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/logging-and-visualization/</guid>
+      <description>After the OAM domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
+In Prepare your environment if you decided to use the Elasticsearch and Kibana by setting the parameter elkIntegrationEnabled to true, then the steps below must be followed to complete the setup.
+If you did not set elkIntegrationEnabled to true and want to do so post configuration, run the following command from the $WORKDIR directory:</description>
+    </item>
+    
+    <item>
+      <title>d. Monitoring an OAM domain</title>
+      <link>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/monitoring-oam-domains/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/monitoring-oam-domains/</guid>
+      <description>After the OAM domain is set up you can monitor the OAM instance using Prometheus and Grafana. See Monitoring a domain.
+The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape runtime information and then exports Prometheus-compatible metrics. It is deployed as a web application in a WebLogic Server (WLS) instance, version 12.2.1 or later, typically, in the instance from which you want to get metrics.
+There are two ways to setup monitoring and you should choose one method or the other:</description>
+    </item>
+    
+    <item>
+      <title>e. Delete the OAM domain home</title>
+      <link>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/delete-domain-home/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.2/oam/manage-oam-domains/delete-domain-home/</guid>
+      <description>Sometimes in production, but most likely in testing environments, you might want to remove the domain home that is generated using the create-domain.sh script.
+  Run the following command to delete the domain:
+$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d &amp;lt;domain_uid&amp;gt; For example:
+$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d accessdomain   Drop the RCU schemas as follows:
+$ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash [oracle@helper ~]$ [oracle@helper ~]$ export CONNECTION_STRING=&amp;lt;db_host.</description>
+    </item>
+    
+  </channel>
+</rss>
