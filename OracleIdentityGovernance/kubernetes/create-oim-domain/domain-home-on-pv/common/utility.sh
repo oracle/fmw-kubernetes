@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 #
@@ -52,6 +52,7 @@ function prepareDomainHomeDir {
   createFolder ${DOMAIN_LOGS_DIR}
   createFolder ${DOMAIN_ROOT_DIR}/applications
   createFolder ${DOMAIN_ROOT_DIR}/stores
+  createFolder ${DOMAIN_ROOT_DIR}/domains/ConnectorDefaultDirectory
 }
 
 
