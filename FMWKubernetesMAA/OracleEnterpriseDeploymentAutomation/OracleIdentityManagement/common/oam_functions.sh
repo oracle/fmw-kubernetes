@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of procedures used to configure OAM
@@ -435,7 +435,7 @@ run_idmConfigTool()
    printf "\t\t\tChecking Log File - "
    copy_from_k8 $PV_MOUNT/workdir/configoam.log $WORKDIR/logs/configoam.log $OAMNS $OAM_DOMAIN_NAME
 
-   grep -q SEVERE $WORKDIR/logs/configoam.log | grep -v simple
+   grep SEVERE $WORKDIR/logs/configoam.log | grep -v simple > /dev/null
    if [ $? = 0 ]
    then
       echo "Failed - Check logifle $WORKDIR/logs/configoam.log"

@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # This is an example of the checks that can be performed before Provisioning Identity Management
@@ -161,6 +161,63 @@ create_oud_nodeport()
    print_time STEP "Create OUD Nodeport services" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Check Validate OUD Dataload was successful
+#
+validate_oud()
+{
+    ST=`date +%s`
+    print_msg "Validating OUD"
+    echo "Validating OUD" > $LOGDIR/validate_oud.log
+    echo "--------------" >> $LOGDIR/validate_oud.log
+    echo "" >> $LOGDIR/validate_oud.log
+    FAIL=0
+
+    printf "\n\t\t\tChecking for Import Errors - "
+    grep -q ERROR $OUD_LOCAL_PVSHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log
+    if [ $? = 0 ]
+    then
+         echo "Import Errors Found check logfile $OUD_LOCAL_PVSHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log"
+         echo "Import Errors Found check logfile $OUD_LOCAL_PVSHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log" >> $LOGDIR/validate_oud.log
+         FAIL=1
+    else
+         echo "No Errors"
+         echo "No Import Errors discovered" >> $LOGDIR/validate_oud.log
+    fi
+    printf "\t\t\tChecking for Rejects - "
+    if [ -s $OUD_LOCAL_SHARE/rejects.ldif ]
+    then 
+         echo "Rejects found check File: $OUD_LOCAL_SHARE/rejects.ldif"
+         echo "Rejects found check File: $OUD_LOCAL_SHARE/rejects.ldif" >> $LOGDIR/validate_oud.log
+         FAIL=1
+    else
+         echo "No Rejects found"
+         echo "No Reject Errors discovered" >> $LOGDIR/validate_oud.log
+    fi
+    printf "\t\t\tChecking for Skipped Records - "
+    if [ -s $OUD_LOCAL_SHARE/skip.ldif ]
+    then 
+         echo "Skipped Records found check File: $OUD_LOCAL_SHARE/skip.ldif"
+         echo "Skipped Records found check File: $OUD_LOCAL_SHARE/skip.ldif" >> $LOGDIR/validate_oud.log
+         FAIL=1
+    else
+         echo "No Skipped Records found"
+         echo "No Skipped Records discovered" >> $LOGDIR/validate_oud.log
+    fi
+
+
+    if [ "$FAIL" = "1" ]
+    then
+        printf "\n\t\t\tOUD Vaildation Failed\n"
+        exit 1
+    else
+        printf "\n\t\t\tOUD Vaildation Succeeded\n"
+    fi
+
+
+
+   ET=`date +%s`
+   print_time STEP "Validating OUD" $ST $ET >> $LOGDIR/timings.log
+}
 create_ingress()
 {
     ST=`date +%s`
@@ -179,6 +236,7 @@ create_ingress()
     ET=`date +%s`
     print_time STEP "Creating Ingress" $ST $ET >> $LOGDIR/timings.log
 }
+
 # Create a Helm override file to deploy OUDSM
 #
 create_oudsm_override()

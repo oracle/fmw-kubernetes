@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of common functions and procedures used by the provisioning and deletion scripts
@@ -749,48 +749,48 @@ create_schemas ()
       printf "$RCUPWD\n" >> /tmp/pwd.txt
       print_msg "Creating $SCHEMA_TYPE Schemas"
 
-      printf "#!/bin/bash\n" > /tmp/create_schema.sh
-      printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> /tmp/create_schema.sh
-      printf " -connectString $DB_HOST:$DB_PORT/$DB_SERVICE " >> /tmp/create_schema.sh
-      printf " -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true " >> /tmp/create_schema.sh
-      printf " -schemaPrefix $RCU_PREFIX" >> /tmp/create_schema.sh
+      printf "#!/bin/bash\n" > $WORKDIR/create_schema.sh
+      printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> $WORKDIR/create_schema.sh
+      printf " -connectString $DB_HOST:$DB_PORT/$DB_SERVICE " >> $WORKDIR/create_schema.sh
+      printf " -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true " >> $WORKDIR/create_schema.sh
+      printf " -schemaPrefix $RCU_PREFIX" >> $WORKDIR/create_schema.sh
  
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
-           printf "$OIG_SCHEMAS" >> /tmp/create_schema.sh
+           printf "$OIG_SCHEMAS" >> $WORKDIR/create_schema.sh
       elif [ "$SCHEMA_TYPE" = "OAM" ]
       then
-           printf "$OAM_SCHEMAS" >> /tmp/create_schema.sh
+           printf "$OAM_SCHEMAS" >> $WORKDIR/create_schema.sh
       else
            printf "\nInvalid Schema Type: $SCHEMA_TYPE \n"
            exit 1
       fi
 
-      printf " -f < /tmp/pwd.txt \n" >> /tmp/create_schema.sh
-      printf " exit \n" >> /tmp/create_schema.sh
+      printf " -f < /tmp/pwd.txt \n" >> $WORKDIR/create_schema.sh
+      printf " exit \n" >> $WORKDIR/create_schema.sh
 
       kubectl cp /tmp/pwd.txt  $NAMESPACE/helper:/tmp
-      kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
+      kubectl cp $WORKDIR/create_schema.sh  $NAMESPACE/helper:/tmp
       kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/create_schema.sh > $LOGDIR/create_schemas.log 2>&1
       print_status $? $LOGDIR/create_schemas.log
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
          printf "\t\t\tPatching OIM Schema - " 
-         printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> /tmp/patch_schema.sh
-         printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> /tmp/patch_schema.sh
-         printf " run-patched-sql-files " >> /tmp/patch_schema.sh
-         printf " -logger org.apache.tools.ant.NoBannerLogger " >> /tmp/patch_schema.sh
-         printf " -logfile /tmp/patch_oim_wls.log " >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.host=$DB_HOST" >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.port=$DB_PORT " >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.serviceName=$DB_SERVICE " >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.user=${RCU_PREFIX}_OIM " >> /tmp/patch_schema.sh
-         printf " -DOIM.DBPassword=$RCUPWD " >> /tmp/patch_schema.sh
-         printf " -Dojdbc=/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar \n" >> /tmp/patch_schema.sh
-         printf "exit \n" >> /tmp/patch_schema.sh
+         printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> $WORKDIR/patch_schema.sh
+         printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> $WORKDIR/patch_schema.sh
+         printf " run-patched-sql-files " >> $WORKDIR/patch_schema.sh
+         printf " -logger org.apache.tools.ant.NoBannerLogger " >> $WORKDIR/patch_schema.sh
+         printf " -logfile /tmp/patch_oim_wls.log " >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.host=$DB_HOST" >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.port=$DB_PORT " >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.serviceName=$DB_SERVICE " >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.user=${RCU_PREFIX}_OIM " >> $WORKDIR/patch_schema.sh
+         printf " -DOIM.DBPassword=$RCUPWD " >> $WORKDIR/patch_schema.sh
+         printf " -Dojdbc=/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar \n" >> $WORKDIR/patch_schema.sh
+         printf "exit \n" >> $WORKDIR/patch_schema.sh
 
 
-         kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
+         kubectl cp $WORKDIR/patch_schema.sh  $NAMESPACE/helper:/tmp
          kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/patch_schema.sh > $LOGDIR/patch_schema.log 2>&1
          kubectl cp  $NAMESPACE/helper:/tmp/patch_oim_wls.log $LOGDIR/patch_oim_wls.log > /dev/null
          grep -q "BUILD SUCCESSFUL" $LOGDIR/patch_oim_wls.log

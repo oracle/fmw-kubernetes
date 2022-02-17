@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example script to populate the responsefile
@@ -392,6 +392,7 @@ then
       if [ ! "$ANS" = "" ]
       then
            global_replace_value $OLD_SEARCHBASE $ANS $RSPFILE
+           OUD_SEARCHBASE=$ANS
            OUD_REGION=`echo $ANS | cut -f1 -d, | cut -f2 -d=`
            replace_value OUD_REGION $OUD_REGION $RSPFILE
            OAM_COOKIE_DOMAIN=`echo $OUD_SEARCHBASE | sed 's/dc=/./g;s/,//g'`
@@ -509,8 +510,8 @@ fi
 if [ "$INSTALL_OUDSM" = "true" ]
 then
       echo
-      echo "OUDSM Paramters"
-      echo "---------------"
+      echo "OUDSM Parameters"
+      echo "----------------"
       echo
       echo -n "Enter OUDSM Image Name [$OUDSM_IMAGE]:"
       read ANS
@@ -580,8 +581,8 @@ fi
 if [ "$INSTALL_OAM" = "true" ] || [ "$INSTALL_OIG" = "true" ]
 then
       echo
-      echo "WebLogic Operator Paramters"
-      echo "---------------------------"
+      echo "WebLogic Operator Parameters"
+      echo "----------------------------"
       echo
 
       if [ "$GET_NS" = "true" ]
@@ -611,8 +612,8 @@ fi
 if [ "$INSTALL_OAM" = "true" ] 
 then
       echo
-      echo "Oracle Access Manager Paramters"
-      echo "-------------------------------"
+      echo "Oracle Access Manager Parameters"
+      echo "--------------------------------"
       echo
 
       echo -n "Enter OAM Image Name [$OAM_IMAGE]:"
@@ -870,8 +871,8 @@ fi
 if [ "$INSTALL_OIG" = "true" ] 
 then
       echo
-      echo "Oracle Identity Governance Paramters"
-      echo "------------------------------------"
+      echo "Oracle Identity Governance Parameters"
+      echo "-------------------------------------"
       echo
 
       echo -n "Enter OIG Image Name [$OIG_IMAGE]:"
@@ -1214,8 +1215,8 @@ fi
 if [ "$INSTALL_OIRI" = "true" ] 
 then
       echo
-      echo "Oracle Identity Role Intelligence Paramters"
-      echo "-------------------------------------------"
+      echo "Oracle Identity Role Intelligence Parameters"
+      echo "--------------------------------------------"
       echo
 
       echo -n "Enter OIRI Image Name [$OIRI_IMAGE]:"
@@ -1545,8 +1546,8 @@ then
       fi
 fi
 echo
-echo "Oracle HTTP Server Paramters"
-echo "----------------------------"
+echo "Oracle HTTP Server Parameters"
+echo "-----------------------------"
 echo
 
 echo -n "Enter OHS1 Hostname [$OHS_HOST1]:"
