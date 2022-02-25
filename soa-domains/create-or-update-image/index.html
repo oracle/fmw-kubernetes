@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1641810730" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1641810730" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1645771000" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1641810730"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645771000"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1641810730"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1641810730"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645771000"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645771000"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1641810730"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645771000"></script>
 
     
   </div>
@@ -5097,12 +5097,12 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <p>After <a href="/fmw-kubernetes/soa-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, follow these steps to use the WebLogic Image Tool to <code>create</code> a new Oracle SOA Suite Docker image.</p>
 <h5 id="download-the-oracle-soa-suite-installation-binaries-and-patches">Download the Oracle SOA Suite installation binaries and patches</h5>
 <p>You must download the required Oracle SOA Suite installation binaries and patches as listed below from the <a href="https://edelivery.oracle.com/">Oracle Software Delivery Cloud</a> and save them in a directory of your choice. In these steps, this directory is <code>download location</code>.</p>
-<p>The installation binaries and patches required for release 21.4.2 are:</p>
+<p>The installation binaries and patches required for release 22.1.2 are:</p>
 <ul>
 <li>
 <p>JDK:</p>
 <ul>
-<li>jdk-8u311-linux-x64.tar.gz</li>
+<li>jdk-8u321-linux-x64.tar.gz</li>
 </ul>
 </li>
 <li>
@@ -5128,23 +5128,27 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <li>
 <p>Fusion Middleware Infrastructure patches:</p>
 <ul>
-<li>p28186730_139427_Generic.zip  (OPATCH 13.9.4.2.7 FOR EM 13.4, 13.5 AND FMW/WLS 12.2.1.3.0, 12.2.1.4.0 AND 14.1.1.0.0)</li>
-<li>p33416868_122140_Generic.zip  (WLS PATCH SET UPDATE 12.2.1.4.210930)</li>
-<li>p32880070_122140_Generic.zip  (FMW COMMON THIRDPARTY SPU 12.2.1.4.0 FOR APRIL2021CPU)</li>
+<li>p28186730_139428_Generic.zip  (OPATCH 13.9.4.2.8 FOR EM 13.4, 13.5 AND FMW/WLS 12.2.1.3.0, 12.2.1.4.0 AND 14.1.1.0.0)</li>
+<li>p33727616_122140_Generic.zip  (WLS PATCH SET UPDATE 12.2.1.4.220105)</li>
+<li>p33723124_122140_Generic.zip  (FMW Thirdparty Bundle Patch 12.2.1.4.220104)</li>
 <li>p32784652_122140_Generic.zip  (OPSS BUNDLE PATCH 12.2.1.4.210418)</li>
 <li>p32905339_122140_Generic.zip  (OWSM BUNDLE PATCH 12.2.1.4.210520)</li>
-<li>p33313802_122140_Generic.zip  (ADF BUNDLE PATCH 12.2.1.4.210903)</li>
-<li>p33286160_122140_Generic.zip  (Coherence 12.2.1.4 Cumulative Patch 11 (12.2.1.4.11))</li>
+<li>p33697227_122140_Generic.zip  (ADF BUNDLE PATCH 12.2.1.4.211221)</li>
+<li>p33591019_122140_Generic.zip  (Coherence 12.2.1.4 Cumulative Patch 12 (12.2.1.4.12))</li>
 <li>p33093748_122140_Generic.zip  (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)</li>
 <li>p31544353_122140_Linux-x86-64.zip  (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 JULY CPU 2020)</li>
+<li>p33735326_12214220105_Generic.zip  (WLS One Off)</li>
+<li>p32720458_122140_Generic.zip  (JDBC One Off)</li>
+<li>p33678607_204070122_Generic.zip  (FMW Thirdparty One Off)</li>
 </ul>
 </li>
 <li>
 <p>Oracle SOA Suite and Oracle Service Bus patches</p>
 <ul>
-<li>p33408307_122140_Generic.zip  (SOA BUNDLE PATCH 12.2.1.4.210928)</li>
+<li>p33696548_122140_Generic.zip  (SOA BUNDLE PATCH 12.2.1.4.211221)</li>
 <li>p32121987_122140_Generic.zip  (Oracle Service Bus BUNDLE PATCH 12.2.1.4.201105)</li>
 <li>p33404495_122140_Generic.zip  (SOA One-off)</li>
+<li>p31192457_12214211221_Generic.zip  (SOA One-off)</li>
 <li>p31857456_122140_Generic.zip  (Oracle Service Bus One-off)</li>
 <li>p30741105_122140_Generic.zip  (Oracle Service Bus One-off)</li>
 <li>p31713053_122140_Linux-x86-64.zip  (One-off patch)</li>
@@ -5176,7 +5180,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <ol>
 <li>
 <p>Add a JDK package to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addInstaller --type jdk --version 8u311 --path &lt;download location&gt;/jdk-8u311-linux-x64.tar.gz
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addInstaller --type jdk --version 8u321 --path &lt;download location&gt;/jdk-8u321-linux-x64.tar.gz
 </code></pre></div></li>
 <li>
 <p>Add the downloaded installation binaries to the WebLogic Image Tool cache:</p>
@@ -5191,55 +5195,60 @@ $ imagetool cache addInstaller --type b2b --version 12.2.1.4.0 --path &lt;downlo
 </code></pre></div></li>
 <li>
 <p>Add the downloaded OPatch patch to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.7 --value &lt;download location&gt;/p28186730_139427_Generic.zip
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value &lt;download location&gt;/p28186730_139428_Generic.zip
 </code></pre></div></li>
 <li>
 <p>Append the <code>--opatchBugNumber</code> flag and the OPatch patch key to the <code>create</code> command in the <code>buildArgs</code> file:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--opatchBugNumber 28186730_13.9.4.2.7
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--opatchBugNumber 28186730_13.9.4.2.8
 </code></pre></div></li>
 <li>
 <p>Add the downloaded product patches to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 30741105_12.2.1.4.0 --value &lt;download location&gt;/p30741105_122140_Generic.zip
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value &lt;download location&gt;/p28186730_139428_Generic.zip
+   
+$ imagetool cache addEntry --key 30741105_12.2.1.4.0 --value &lt;download location&gt;/p30741105_122140_Generic.zip
+   
 $ imagetool cache addEntry --key 31544353_12.2.1.4.0 --value &lt;download location&gt;/p31544353_122140_Linux-x86-64.zip
-
+   
 $ imagetool cache addEntry --key 31713053_12.2.1.4.0 --value &lt;download location&gt;/p31713053_122140_Linux-x86-64.zip
-
+   
 $ imagetool cache addEntry --key 31857456_12.2.1.4.0 --value &lt;download location&gt;/p31857456_122140_Generic.zip
-
+   
 $ imagetool cache addEntry --key 32121987_12.2.1.4.0 --value &lt;download location&gt;/p32121987_122140_Generic.zip
-
+   
+$ imagetool cache addEntry --key 32720458_12.2.1.4.0 --value &lt;download location&gt;/p32720458_122140_Generic.zip
+   
 $ imagetool cache addEntry --key 32784652_12.2.1.4.0 --value &lt;download location&gt;/p32784652_122140_Generic.zip
-
-$ imagetool cache addEntry --key 32808126_12.2.1.4.0 --value &lt;download location&gt;/p32808126_122140_Generic.zip
-
-$ imagetool cache addEntry --key 32827327_12.2.1.4.0 --value &lt;download location&gt;/p32827327_122140_Generic.zip
-
-$ imagetool cache addEntry --key 32880070_12.2.1.4.0 --value &lt;download location&gt;/p32880070_122140_Generic.zip
-
+  
 $ imagetool cache addEntry --key 32905339_12.2.1.4.0 --value &lt;download location&gt;/p32905339_122140_Generic.zip
-
+   
 $ imagetool cache addEntry --key 33093748_12.2.1.4.0 --value &lt;download location&gt;/p33093748_122140_Generic.zip
-
-$ imagetool cache addEntry --key 33286160_12.2.1.4.0 --value &lt;download location&gt;/p33286160_122140_Generic.zip
-
-$ imagetool cache addEntry --key 33313802_12.2.1.4.0 --value &lt;download location&gt;/p33313802_122140_Generic.zip
-
+   
 $ imagetool cache addEntry --key 33404495_12.2.1.4.0 --value &lt;download location&gt;/p33404495_122140_Generic.zip
+   
+$ imagetool cache addEntry --key 33591019_12.2.1.4.0 --value &lt;download location&gt;/p33591019_122140_Generic.zip
+   
+$ imagetool cache addEntry --key 33678607_20.4.0.7.0 --value &lt;download location&gt;/p33678607_204070122_Generic.zip
+   
+$ imagetool cache addEntry --key 33696548_12.2.1.4.0 --value &lt;download location&gt;/p33696548_122140_Generic.zip
+   
+$ imagetool cache addEntry --key 33697227_12.2.1.4.0 --value &lt;download location&gt;/p33697227_122140_Generic.zip
+   
+$ imagetool cache addEntry --key 33723124_12.2.1.4.0 --value &lt;download location&gt;/p33723124_122140_Generic.zip
+   
+$ imagetool cache addEntry --key 33727616_12.2.1.4.0 --value &lt;download location&gt;/p33727616_122140_Generic.zip
+   
+$ imagetool cache addEntry --key 33735326_12.2.1.4.0 --value &lt;download location&gt;/p33735326_12214220105_Generic.zip
 
-$ imagetool cache addEntry --key 33408307_12.2.1.4.0 --value &lt;download location&gt;/p33408307_122140_Generic.zip
-
-$ imagetool cache addEntry --key 33416868_12.2.1.4.0 --value &lt;download location&gt;/p33416868_122140_Generic.zip
-
+$ imagetool cache addEntry --key 31192457_12.2.1.4.0 --value &lt;download location&gt;/p31192457_12214211221_Generic.zip
 
 </code></pre></div></li>
 <li>
 <p>Append the <code>--patches</code> flag and the product patch keys to the <code>create</code> command in the <code>buildArgs</code> file. The <code>--patches</code> list must be a comma-separated collection of patch <code>--key</code> values used in the <code>imagetool cache addEntry</code> commands above.</p>
 <p>Sample <code>--patches</code> list for the product patches added in to the cache:</p>
-<pre><code>--patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32784652_12.2.1.4.0,32808126_12.2.1.4.0,32827327_12.2.1.4.0,32880070_12.2.1.4.0,32905339_12.2.1.4.0,33093748_12.2.1.4.0,33286160_12.2.1.4.0,33313802_12.2.1.4.0,33404495_12.2.1.4.0,33408307_12.2.1.4.0,33416868_12.2.1.4.0
+<pre><code>--patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32720458_12.2.1.4.0,32784652_12.2.1.4.0,32905339_12.2.1.4.0,33093748_12.2.1.4.0,33404495_12.2.1.4.0,33591019_12.2.1.4.0,33678607_20.4.0.7.0,33696548_12.2.1.4.0,33697227_12.2.1.4.0,33723124_12.2.1.4.0,33727616_12.2.1.4.0,33735326_12.2.1.4.0,31192457_12.2.1.4.0
 </code></pre><p>Example <code>buildArgs</code> file after appending the OPatch patch and product patches:</p>
 <pre><code>create
---jdkVersion 8u311
+--jdkVersion 8u321
 --type soa_osb_b2b
 --version 12.2.1.4.0
 --tag oracle/soasuite:12.2.1.4.0
@@ -5248,7 +5257,7 @@ $ imagetool cache addEntry --key 33416868_12.2.1.4.0 --value &lt;download locati
 --additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
 --installerResponseFile &lt;imagetool-setup-location&gt;/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/b2b.response
---patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32784652_12.2.1.4.0,32808126_12.2.1.4.0,32827327_12.2.1.4.0,32880070_12.2.1.4.0,32905339_12.2.1.4.0,33093748_12.2.1.4.0,33286160_12.2.1.4.0,33313802_12.2.1.4.0,33404495_12.2.1.4.0,33408307_12.2.1.4.0,33416868_12.2.1.4.0
+--patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32720458_12.2.1.4.0,32784652_12.2.1.4.0,32905339_12.2.1.4.0,33093748_12.2.1.4.0,33404495_12.2.1.4.0,33591019_12.2.1.4.0,33678607_20.4.0.7.0,33696548_12.2.1.4.0,33697227_12.2.1.4.0,33723124_12.2.1.4.0,33727616_12.2.1.4.0,33735326_12.2.1.4.0,31192457_12.2.1.4.0
 </code></pre><blockquote>
 <p>Note: In the <code>buildArgs</code> file:</p>
 <ul>
@@ -9036,19 +9045,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1641810731"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1645771000"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1641810731"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1641810731"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1645771000"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1641810731" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1641810731"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645771000" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645771000"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
