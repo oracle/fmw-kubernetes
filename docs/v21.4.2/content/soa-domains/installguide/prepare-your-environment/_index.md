@@ -77,7 +77,7 @@ Oracle SOA Suite domain deployment on Kubernetes leverages the WebLogic Kubernet
 
     ``` bash
     $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.4.2
-    $ export WORKDIR=$HOME/soa_21.4.2/OracleSOASuite/kubernetes
+    $ export WORKDIR=$HOME/soa_21.4.2/fmw-kubernetes/OracleSOASuite/kubernetes
     ```
 
 ### Obtain the Oracle SOA Suite Docker image
