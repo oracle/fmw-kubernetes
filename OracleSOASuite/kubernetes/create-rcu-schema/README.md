@@ -23,7 +23,7 @@ The script assumes that either the image, `soasuite:12.2.1.4`, is available in t
 
 ```
 $ ./create-rcu-schema.sh -h
-usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables>  [-h]
+usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables> [-l] <timeoutLimit> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
       (supported values: osb,soa,soaosb,soab2b,soaosbb2b)
@@ -44,7 +44,9 @@ usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <i
   -o Output directory for the generated YAML file. (optional)
       (default: rcuoutput)
   -c Comma-separated variables in the format variablename=value. (optional).
-      (default: none)      
+      (default: none)
+  -l Timeout limit in seconds. (optional).
+      (default: 300)      
   -h Help
 
 $ ./create-rcu-schema.sh -s domain1
