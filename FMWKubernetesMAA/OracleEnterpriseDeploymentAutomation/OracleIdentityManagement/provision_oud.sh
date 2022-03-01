@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of deploying Oracle Unified Directory, configuring it for use with Oracle Access Manager
@@ -127,6 +127,15 @@ then
    update_progress
 fi
     
+# Valiate OUD
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   validate_oud
+   update_progress
+fi
+
 # Setup Ingress if required Otherwise create NodePort Services
 #
 if [ "$USE_INGRESS" = "true" ] 

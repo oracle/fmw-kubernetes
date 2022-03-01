@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a helm override file to deploy OUD
@@ -54,7 +54,7 @@ baseOUD:
     - name: restartAfterSchemaConfig
       value: "true"
     - name: importLdif_1
-      value: --append --replaceExisting --includeBranch dc=us,dc=oracle,dc=com --backendID userRoot --ldifFile /u01/oracle/config-input/base.ldif --rejectFile /u01/oracle/config-input/rejects.ldif --skipFile /u01/oracle/config-input/skip.ldif
+      value: --append --replaceExisting --includeBranch ${baseDN} --backendID userRoot --ldifFile /u01/oracle/config-input/base.ldif --rejectFile /u01/oracle/config-input/rejects.ldif --skipFile /u01/oracle/config-input/skip.ldif
     - name: serverTuning
       value: -Xms1024m -Xmx2048m -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
     - name: dsconfig_1
@@ -64,9 +64,9 @@ baseOUD:
     - name: dsconfig_3
       value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)" 
     - name: dsconfig_4
-      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\")(version 3.0; acl \"<OUD_OIGADMIN_GRP> control access\"; allow(read)  groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,dc=us,dc=oracle,dc=com\";)"
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\")(version 3.0; acl \"<OUD_OIGADMIN_GRP> control access\"; allow(read)  groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
     - name: dsconfig_5
-      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///\")(targetscope=\"base\")(targetattr=\"lastExternalChangelogCookie\")(version 3.0; acl \"User-Visible lastExternalChangelog\"; allow (read,search,compare) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,dc=us,dc=oracle,dc=com\";)"
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///\")(targetscope=\"base\")(targetattr=\"lastExternalChangelogCookie\")(version 3.0; acl \"User-Visible lastExternalChangelog\"; allow (read,search,compare) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
     - name: dsconfig_6
       value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
     - name: dsconfig_7
