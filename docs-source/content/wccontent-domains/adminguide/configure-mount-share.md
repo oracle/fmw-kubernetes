@@ -2,7 +2,7 @@
 title: "Configure an additional mount or shared space to a domain for Imaging and Capture"
 date: 2020-11-27T16:43:45-05:00
 weight: 6
-description: "Configure an additional mount or shared space to a domain, for WebCeneter Imaging and WebCenter Capture"
+description: "Configure an additional mount or shared space to a domain, for WebCenter Imaging and WebCenter Capture"
 ---
 
 A volume can be mounted to a server pod which can be accessible directly from outside Kubernetes cluster so that an external application could write new files to it.
