@@ -224,7 +224,7 @@ Post the Apache webtier load balancer is up, verify that the domain applications
     http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em
     http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/cs
     http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/ibr
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/ipm
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/imaging
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/dc-console
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/wcc
    ```
@@ -237,7 +237,7 @@ Post the Apache webtier load balancer is up, verify that the domain applications
    https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/em
    https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/cs
    https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/ibr
-   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/ipm
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/imaging
    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/dc-console
    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/wcc
    ```
