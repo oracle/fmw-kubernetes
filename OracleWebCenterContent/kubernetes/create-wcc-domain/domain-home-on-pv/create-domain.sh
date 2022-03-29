@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -228,6 +228,31 @@ function createDomainHome {
   sed -i "0,/- ${clusterName}/s//- ibr_cluster/" ${dcrOutput}
   sed -i -e "/- clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
 
+  # Appends new clusters for IPM, CAPTURE and ADFUI COMPONENT  
+  if [ "${ipmEnabled}" == "true" ]
+  then
+     echo "adding IPM cluster info"
+     sed -n "/- clusterName: ${clusterName}/,/# replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
+     sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: ipm_cluster/" ${dcrOutput}
+     sed -i "0,/- ${clusterName}/s//- ipm_cluster/" ${dcrOutput}
+  fi
+
+  if [ "${captureEnabled}" == "true" ]
+  then
+     echo "adding CAPTURE cluster info"
+     sed -n "/- clusterName: ${clusterName}/,/# replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
+     sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: capture_cluster/" ${dcrOutput}
+     sed -i "0,/- ${clusterName}/s//- capture_cluster/" ${dcrOutput}
+  fi
+
+  if [ "${adfuiEnabled}" == "true" ]
+  then
+     echo "adding WCCADF cluster info"
+     sed -n "/- clusterName: ${clusterName}/,/# replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
+     sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: wccadf_cluster/" ${dcrOutput}
+     sed -i "0,/- ${clusterName}/s//- wccadf_cluster/" ${dcrOutput}
+  fi
+
   #Traefik sticky session Setting
   echo "loadBalancerType= $loadBalancerType" 
 
@@ -242,10 +267,36 @@ function createDomainHome {
             traefik.ingress.kubernetes.io/affinity: \"true\"\n\
             traefik.ingress.kubernetes.io/service.sticky.cookie: \"true\"\n\
             traefik.ingress.kubernetes.io/session-cookie-name: JSESSIONID"
+         export WCCADF_LB_SETTINGS="\    clusterService:\n\
+         annotations: \n\
+            traefik.ingress.kubernetes.io/affinity: \"true\"\n\
+            traefik.ingress.kubernetes.io/service.sticky.cookie: \"true\"\n\
+            traefik.ingress.kubernetes.io/session-cookie-name: WCCSID"
+        # Setting sticky session for UCM.
+        sed -i -e "/clusterName: ${clusterName}/a ${LB_SETTINGS}" ${dcrOutput}
+        # If IPM is enabled then set sticky session for IPM for Traefik
+        if [ "${ipmEnabled}" == "true" ] 
+        then
+            sed -i -e "/clusterName: ipm_cluster/a ${LB_SETTINGS}" ${dcrOutput}
         fi
-    sed -i -e "/clusterName: ${clusterName}/a ${LB_SETTINGS}" ${dcrOutput}
+        # If Capture is enabled then set sticky session for Capture for Traefik
+        if [ "${captureEnabled}" == "true" ]
+        then
+            sed -i -e "/clusterName: capture_cluster/a ${LB_SETTINGS}" ${dcrOutput}
+        fi
+        # If WCCADF is enabled then set sticky session for WCCADF for Traefik
+        if [ "${adfuiEnabled}" == "true" ]
+        then
+            sed -i -e "/clusterName: wccadf_cluster/a ${WCCADF_LB_SETTINGS}" ${dcrOutput}
+        fi
+    fi
   fi
-
+  
+  # replace the 'static string' with actual value of ipm,capture and adfui
+  sed -i -e "s:%IPM_ENABLED%:${ipmEnabled}:g" ${createJobOutput}
+  sed -i -e "s:%CAPTURE_ENABLED%:${captureEnabled}:g" ${createJobOutput}
+  sed -i -e "s:%ADFUI_ENABLED%:${adfuiEnabled}:g" ${createJobOutput}
+  
   echo Creating the domain by creating the job ${createJobOutput}
   kubectl create -f ${createJobOutput}
 

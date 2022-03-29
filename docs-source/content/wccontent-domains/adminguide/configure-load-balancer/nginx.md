@@ -21,7 +21,7 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Co
 
 * [ End-to-end SSL configuration](#end-to-end-ssl-configuration)
   1. [Install the NGINX load balancer for End-to-end SSL](#install-the-nginx-load-balancer-for-end-to-end-ssl)
-  2. [Deploy tls to access UCM and IBR Managed Servers](#deploy-tls-to-access-ucm-and-ibr-managed-servers)
+  2. [Deploy tls to access individual Managed Servers](#deploy-tls-to-access-individual-managed-servers)
   3. [Deploy tls to access Administration Server](#deploy-tls-to-access-administration-server)
 
 
@@ -187,6 +187,10 @@ Rules:
                                               /ibr                     wccinfra-cluster-ibr-cluster:16250 (10.244.0.59:16250)
                                               /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 (10.244.0.59:16250)
                                               /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
+                                              /imaging                 wccinfra-cluster-ipm-cluster:16000 (10.244.0.206:16000,10.244.0.209:16000,10.244.0.213:16000)
+                                              /dc-console              wccinfra-cluster-capture-cluster:16400 (10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400)
+                                              /dc-client               wccinfra-cluster-capture-cluster:16400 (10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400)
+                                              /wcc                     wccinfra-cluster-wccadf-cluster:16225 (10.244.0.205:16225,10.244.0.210:16225,10.244.0.214:16225)
 Annotations:                                  kubernetes.io/ingress.class: nginx
                                               meta.helm.sh/release-name: wccinfra-nginx-ingress
                                               meta.helm.sh/release-namespace: wccns
@@ -212,7 +216,9 @@ Verify that the Oracle WebCenter Content domain application URLs are accessible 
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/cs
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/ibr
-  
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/imaging
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/dc-console
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/wcc  
 ```
 
 ##### SSL configuration
@@ -225,7 +231,9 @@ Verify that the Oracle WebCenter Content domain application URLs are accessible 
   https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/em
   https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/cs
   https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/ibr
-  
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/imaging
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/dc-console
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/wcc
 ```
 
 ####  Uninstall the ingress
@@ -326,9 +334,9 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
      nginx-ingress-ingress-nginx-controller   NodePort    10.97.189.122    <none>            80:30993/TCP,443:30232/TCP    168m
    ```
 
-#### Deploy tls to access UCM and IBR Managed Servers
+#### Deploy tls to access individual Managed Servers
 
-1. Deploy tls to securely access the services. Only one application can be configured with `ssl-passthrough`. A sample tls file for NGINX is shown below for the service `wccinfra-cluster-ucm-cluster` and port `16201`. All the applications running on port `16201` can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation `ssl-passthrough`. That is, for `wccinfra-cluster-ucm-cluster`, `wccinfra-cluster-ibr-cluster` and `wccinfra-adminserver`, different ingresses must be created.
+1. Deploy tls to securely access the services. Only one application can be configured with `ssl-passthrough`. A sample tls file for NGINX is shown below for the service `wccinfra-cluster-ucm-cluster` and port `16201`. All the applications running on port `16201` can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation `ssl-passthrough`. That is, for `wccinfra-cluster-ucm-cluster`, `wccinfra-cluster-ibr-cluster`, `wccinfra-cluster-ipm-cluster`, `wccinfra-cluster-capture-cluster`, `wccinfra-cluster-wccadf-cluster` and `wccinfra-adminserver`, different ingresses must be created.
 
    ```bash
     $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls

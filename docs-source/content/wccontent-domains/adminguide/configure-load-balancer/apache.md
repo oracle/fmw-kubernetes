@@ -85,6 +85,30 @@ WebLogicCluster wccinfra-cluster-ibr-cluster:16250
 PathTrim /weblogic1
 </Location>
 
+<Location /imaging>
+WLSRequest On
+WebLogicCluster wccinfra-cluster-ipm-cluster:16000
+PathTrim /weblogic1
+</Location>
+
+<Location /dc-console>
+WLSRequest On
+WebLogicCluster wccinfra-cluster-capture-cluster:16400
+PathTrim /weblogic1
+</Location>
+
+<Location /dc-client>
+WLSRequest On
+WebLogicCluster wccinfra-cluster-capture-cluster:16400
+PathTrim /weblogic1
+</Location>
+
+<Location /wcc>
+WLSRequest On
+WebLogicCluster wccinfra-cluster-wccadf-cluster:16225
+PathTrim /weblogic1
+</Location>
+
 # Directive for all application deployed on weblogic cluster with a prepath defined by LOCATION2 variable
 # For example, if the LOCAITON2 is set to '/weblogic2', all applications deployed on the cluster can be accessed via
 # http://myhost:myport/weblogic2/application_end_url
@@ -200,6 +224,9 @@ Post the Apache webtier load balancer is up, verify that the domain applications
     http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em
     http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/cs
     http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/ibr
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/imaging
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/dc-console
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/wcc
    ```
 
 ##### SSL configuration
@@ -210,6 +237,9 @@ Post the Apache webtier load balancer is up, verify that the domain applications
    https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/em
    https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/cs
    https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/ibr
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/imaging
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/dc-console
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/wcc
    ```
 
 #### Uninstall Apache webtier

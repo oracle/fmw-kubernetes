@@ -283,19 +283,27 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      Host                                        Path  Backends
      ----                                        ----  --------
      domain1.org
-                                              /console                 wccinfra-adminserver:7001 (10.244.0.58:7001)
-                                              /em                      wccinfra-adminserver:7001 (10.244.0.58:7001)
-                                              /wls-exporter            wccinfra-adminserver:7001 (10.244.0.58:7001)
-                                              /cs                      wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-                                              /adfAuthentication       wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-                                              /wls-exporter            wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-                                              /ibr                     wccinfra-cluster-ibr-cluster:16250 (10.244.0.59:16250)
-                                              /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 (10.244.0.59:16250)
-                                              /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-Annotations:                                  kubernetes.io/ingress.class: traefik
-                                              meta.helm.sh/release-name: wccinfra-traefik
-                                              meta.helm.sh/release-namespace: wccns
-Events:                                       <none>
+                                                /console                 wccinfra-adminserver:7001 (10.244.0.201:7001)
+                                                /em                      wccinfra-adminserver:7001 (10.244.0.201:7001)
+                                                /wls-exporter            wccinfra-adminserver:7001 (10.244.0.201:7001)
+                                                /cs                      wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /adfAuthentication       wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /_ocsh                   wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /_dav                    wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /idcws                   wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /idcnativews             wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /wsm-pm                  wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /ibr                     wccinfra-cluster-ibr-cluster:16250 (10.244.0.203:16250)
+                                                /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 (10.244.0.203:16250)
+                                                /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /imaging                 wccinfra-cluster-ipm-cluster:16000 (10.244.0.206:16000,10.244.0.209:16000,10.244.0.213:16000)
+                                                /dc-console              wccinfra-cluster-capture-cluster:16400 (10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400)
+                                                /dc-client               wccinfra-cluster-capture-cluster:16400 (10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400)
+                                                /wcc                     wccinfra-cluster-wccadf-cluster:16225 (10.244.0.205:16225,10.244.0.210:16225,10.244.0.214:16225)
+Annotations:                                    kubernetes.io/ingress.class: traefik
+                                                meta.helm.sh/release-name: wcc-traefik-ingress
+                                                meta.helm.sh/release-namespace: wccns
+Events:                                         <none>
    ```
 {{% /expand %}}
 
@@ -314,20 +322,27 @@ Rules:
   Host                                        Path  Backends
   ----                                        ----  --------
   domain1.org
-                                              /console                 wccinfra-adminserver:7001 (10.244.0.58:7001)
-                                              /em                      wccinfra-adminserver:7001 (10.244.0.58:7001)
-                                              /wls-exporter            wccinfra-adminserver:7001 (10.244.0.58:7001)
-                                              /cs                      wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-                                              /adfAuthentication       wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-                                              /wls-exporter            wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-                                              /ibr                     wccinfra-cluster-ibr-cluster:16250 (10.244.0.59:16250)
-                                              /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 (10.244.0.59:16250)
-                                              /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 (10.244.0.60:16200,10.244.0.61:16200)
-Annotations:                                  kubernetes.io/ingress.class: traefik
-                                              meta.helm.sh/release-name: wccinfra-traefik
-                                              meta.helm.sh/release-namespace: wccns
-Events:                                       <none>
-  
+                                                /console                 wccinfra-adminserver:7001 (10.244.0.201:7001)
+                                                /em                      wccinfra-adminserver:7001 (10.244.0.201:7001)
+                                                /wls-exporter            wccinfra-adminserver:7001 (10.244.0.201:7001)
+                                                /cs                      wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /adfAuthentication       wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /_ocsh                   wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /_dav                    wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /idcws                   wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /idcnativews             wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /wsm-pm                  wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /ibr                     wccinfra-cluster-ibr-cluster:16250 (10.244.0.203:16250)
+                                                /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 (10.244.0.203:16250)
+                                                /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 (10.244.0.202:16200,10.244.0.207:16200,10.244.0.211:16200)
+                                                /imaging                 wccinfra-cluster-ipm-cluster:16000 (10.244.0.206:16000,10.244.0.209:16000,10.244.0.213:16000)
+                                                /dc-console              wccinfra-cluster-capture-cluster:16400 (10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400)
+                                                /dc-client               wccinfra-cluster-capture-cluster:16400 (10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400)
+                                                /wcc                     wccinfra-cluster-wccadf-cluster:16225 (10.244.0.205:16225,10.244.0.210:16225,10.244.0.214:16225)
+Annotations:                                    kubernetes.io/ingress.class: traefik
+                                                meta.helm.sh/release-name: wcc-traefik-ingress
+                                                meta.helm.sh/release-namespace: wccns
+Events:                                         <none>
    ```
 {{% /expand %}}
 
@@ -361,7 +376,10 @@ After setting up the Traefik (ingress-based) load balancer, verify that the doma
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/console
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/cs
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/ibr
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em	
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/imaging
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/dc-console
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/wcc	
 ```
 
 ##### For SSL configuration
@@ -374,7 +392,9 @@ After setting up the Traefik (ingress-based) load balancer, verify that the doma
     https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/cs
     https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/ibr
     https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/em
-    
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/imaging
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/dc-console
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/wcc
 ```
 
 #### Uninstall the Traefik ingress
@@ -514,6 +534,9 @@ LOADBALANCER-SSLPORT is 30443
    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/console
    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/cs
    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/ibr
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/imaging
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/dc-console
+   https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/wcc
    ```
 
 #### Uninstall Traefik

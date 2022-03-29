@@ -4,7 +4,7 @@ date: 2019-09-21T15:44:42-05:00
 draft: false
 weight: 1
 pre: "<b>1 c. </b>"
-description: "Running WebLogic Kubernetes Operator managed Oracle WebCenter Contnet domains on OKE"
+description: "Running WebLogic Kubernetes Operator managed Oracle WebCenter Content domains on OKE"
 ---
 
 #### Publish images to OCIR
@@ -35,10 +35,9 @@ $ docker login phx.ocir.io
 $ username - axcmmdmzqtqb/oracleidentitycloudservice/myemailid@oracle.com
 $ password - abCXYz942,vcde     (Token Generated for OCIR using user setting)
 
-$ docker tag
-docker tag oracle/wccontent:12.2.1.4.0-20210311104247 phx.ocir.io/axcmmdmzqtqb/oracle/wccontent:12.2.1.4.0-20210311104247
+$ docker tag oracle/wccontent:12.2.1.4.0-20210311104247 phx.ocir.io/axcmmdmzqtqb/oracle/wccontent:12.2.1.4.0-20210311104247
 
-$ docker push  docker push phx.ocir.io/axcmmdmzqtqb/oracle/wccontent:12.2.1.4.0-20210311104247
+$ docker push phx.ocir.io/axcmmdmzqtqb/oracle/wccontent:12.2.1.4.0-20210311104247
 ```
 This has to be done on Bastion Node for all the images.
 

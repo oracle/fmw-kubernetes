@@ -17,8 +17,8 @@ For the current production release 21.4.3:
 * Docker 18.09.1ce, 19.03.1 (check with `docker version`) or CRI-O 1.14.7 (check with `crictl version | grep RuntimeVersion`).
 * Flannel networking v0.12.0-amd64 or later (check with `docker images | grep flannel`).
 * Helm 3.4.1 (check with `helm version --client --short`).
-* Oracle WebLogic Kubernetes Operator 3.2.5 (see [WebLogic Kubernetes Operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
-* Oracle WebCenter Content 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [32822360](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32822360)). This image contains the latest bundle patch and one-off patches for Oracle WebCenter Content.
+* Oracle WebLogic Kubernetes Operator 3.3.0 (see [WebLogic Kubernetes Operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
+* Oracle WebCenter Content 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [33771196](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33771196)). This image contains the latest bundle patch and one-off patches for Oracle WebCenter Content.
 * You must have the `cluster-admin` role to install WebLogic Kubernetes Operator. The WebLogic Kubernetes Operator does not need the `cluster-admin` role at runtime.
 * We do not currently support running Oracle WebCenter Content in non-Linux containers.
 * Additionally, see the Oracle WebCenter Content [documentation](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/inecm/preparing-install-and-configure-product.html#GUID-16F78BFD-4095-45EE-9C3B-DB49AD5CBAAD) for other requirements such as database version.
@@ -44,7 +44,6 @@ following limitations currently exist for Oracle WebCenter Content domains:
   currently supports WebLogic MBean trees only. Support for JRF and Oracle WebCenter Content MBeans is not available. Also, a metrics dashboard specific to Oracle WebCenter Content is not available. Instead, use the WebLogic Server dashboard to monitor the Oracle WebCenter Content server metrics in Grafana.
 * Some features such as multicast, multitenancy, production redeployment, and Node Manager (although it is used internally for the liveness probe and to start WebLogic Server instances) are not supported in this release.
 * Features such as Java Messaging Service whole server migration, consensus leasing, and maximum availability architecture (Oracle WebCenter Content setup) are not supported in this release.
-* In this release, we are releasing with Oracle WebCenter Content server (UCM) and Oracle WebCenter Content Inbound Refinery server (IBR). Oracle WebCenter Enterprise Capture (Capture), Oracle WebCenter Imaging (Imaging) and ADFUI (WebCenter Content ADF based web user interface) servers are not yet added to the template.
 * You can have multiple UCM servers on your domain but you can have only one IBR server.
 * There is a generic limitation with all load-balancers in end-to-end SSL configuration - accessing multiple types of servers (different Managed Servers and/or Administration Server) at the same time, is currently not supported.
 

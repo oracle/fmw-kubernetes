@@ -203,7 +203,7 @@ then you can access the WebLogic Monitoring Exporter console using this URL: `ht
 
 	![Wme-Test-Url](images/wme-test-url.png)
 
-1. Repeat same steps for ucm & ibr servers.
+1. Repeat same steps for ucm, ibr, ipm, capture and wccadf servers.
 
 #### Configure Prometheus Operator 
 

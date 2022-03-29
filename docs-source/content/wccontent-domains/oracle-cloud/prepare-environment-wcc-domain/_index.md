@@ -10,11 +10,12 @@ To create your Oracle WebCenter Content domain in Kubernetes OKE environment, co
 
 ### Contents
 1. [Set up the code repository to deploy Oracle WebCenter Content domain](#set-up-the-code-repository-to-deploy-oracle-webcenter-content-domain)
+1. [Create a namespace for the Oracle WebCenter Content domain](#create-a-namespace-for-the-oracle-webcenter-content-domain)
 1. [Create the imagePullSecrets](#create-the-imagepullsecrets)
 1. [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
 1. [Prepare the environment for Oracle WebCenter Content domain](#prepare-the-environment-for-oracle-webcenter-content-domain)
 
-    a. [Create a namespace for the Oracle WebCenter Content domain](#create-a-namespace-for-the-oracle-webcenter-content-domain)
+    a. [Upgrade the WebLogic Kubernetes Operator with the Oracle WebCenter Content domain-namespace](#upgrade-the-weblogic-kubernetes-operator-with-the-oracle-webcenter-content-domain-namespace)
 	
 	b. [Create a persistent storage for the Oracle WebCenter Content domain](#create-a-persistent-storage-for-the-oracle-webcenter-content-domain)
 
@@ -35,15 +36,15 @@ Oracle WebCenter Content domain deployment on Kubernetes leverages the WebLogic 
 
 1. Create a working directory to set up the source code:
    ```bash
-   $ export WORKDIR=$HOME/wcc_3.2.5
+   $ export WORKDIR=$HOME/wcc_3.3.0
    $ mkdir ${WORKDIR}
    ```
 
-1. Download the supported version of the WebLogic Kubernetes Operator source code from the WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is [3.2.5](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.2.5):
+1. Download the supported version of the WebLogic Kubernetes Operator source code from the WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0):
 
     ``` bash
 	$ cd ${WORKDIR}
-    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.2.5
+    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.3.0
     ```
 1. Download the Oracle WebCenter Content Kubernetes deployment scripts from the WCC [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them to the WebLogic Kubernetes Operator samples location:
 
@@ -58,6 +59,15 @@ Oracle WebCenter Content domain deployment on Kubernetes leverages the WebLogic 
     
     $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
 	```
+	
+### Create a namespace for the Oracle WebCenter Content domain
+
+   Create a Kubernetes namespace (for example, `wccns`) for the domain unless you intend to use the default namespace. Use the new namespace in the remaining steps in this section.
+For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kubernetes-operator/quickstart/prepare/).
+
+  ```
+   $ kubectl create namespace wccns   
+  ```
 ### Create the imagePullSecrets
 
 Create the imagePullSecrets (in wccns namespace) so that Kubernetes Deployment can pull the image automatically from OCIR.
@@ -91,7 +101,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   ```
   $ cd ${WORKDIR}/weblogic-kubernetes-operator    
     
-  $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=phx.ocir.io/xxxxxxxxxxx/oracle/weblogic-kubernetes-operator:3.2.5 -s image-secret --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=phx.ocir.io/xxxxxxxxxxx/oracle/weblogic-kubernetes-operator:3.3.0 --set imagePullSecret=image-secret --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
   ```
 #### Verify the WebLogic Kubernetes Operator pod
   
@@ -105,18 +115,13 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   $ helm list -n opns
  
   NAME                            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                          APP VERSION
-  weblogic-kubernetes-operator    opns            2               2021-07-30 05:53:47.397122595 +0000 UTC deployed        weblogic-operator-3.2.5        3.2.5
+  weblogic-kubernetes-operator    opns            3               2022-02-24 06:50:29.810106777 +0000 UTC deployed        weblogic-operator-3.3.0        3.3.0
   ```
 ### Prepare the environment for Oracle WebCenter Content domain
 
-#### Create a namespace for the Oracle WebCenter Content domain
-
-   Create a Kubernetes namespace (for example, `wccns`) for the domain unless you intend to use the default namespace. Use the new namespace in the remaining steps in this section.
-For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kubernetes-operator/quickstart/prepare/).
+#### Upgrade the WebLogic Kubernetes Operator with the Oracle WebCenter Content domain-namespace
 
   ```
-   $ kubectl create namespace wccns
-   
    $ cd ${WORKDIR}/weblogic-kubernetes-operator
    $ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={wccns}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator    
   ```
@@ -167,7 +172,7 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
 	$ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wccns -d wccinfra -s wccinfra-domain-credentials
   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.5/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 
@@ -338,7 +343,11 @@ Once database is created successfully, you can use the database connection strin
 Run a container to create `rcu pod`
 
 ```bash
-kubectl run rcu --generator=run-pod/v1 -p image-secret --image phx.ocir.io/xxxxxxxxxxx/oracle/wccontent:x.x.x.x -s image-secret -n wccns  -- sleep infinity
+kubectl run rcu --generator=run-pod/v1 \
+  --image phx.ocir.io/xxxxxxxxxxx/oracle/wccontent:x.x.x.x \
+  --namespace wccns \
+  --overrides='{ "apiVersion": "v1", "spec": { "imagePullSecrets": [{"name": "image-secret"}] } }'  \
+  -- sleep infinity
    
 # Check the status of rcu pod
 kubectl get pods -n wccns
