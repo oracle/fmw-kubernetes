@@ -180,9 +180,9 @@ are used for creating the image.
 
     {{%expand "Click here to see the commands to add patches in to the cache:" %}}
     ``` bash
-    $ imagetool cache addEntry --key 31390302_12.2.1.4.0 --path <download location>/p31390302_122140_Generic.zip
+    $ imagetool cache addEntry --key p33578966_122140_Generic --path <download location>/p33578966_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --path <download location>/p28186730_139424_Generic-23574493.zip 
+    $ imagetool cache addEntry --key 28186730_13.9.4.2.8 --path <download location>/p28186730_139428_Generic-24497645.zip 
     
 	```
    {{% /expand  %}}
@@ -192,8 +192,8 @@ are used for creating the image.
     To the `create` command in the `buildArgs` file, append the Oracle WebCenter Content patches list using the `--patches` flag and Opatch patch using the `--opatchBugNumber` flag. Sample options for the list of patches above are:
 
     ```
-    --patches 31754672_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.4
+    --patches 33578966_12.2.1.4.0
+    --opatchBugNumber=28186730_13.9.4.2.8
     ```
 
    Example `buildArgs` file after appending product's list of patches and Opatch patch:
@@ -208,12 +208,12 @@ are used for creating the image.
     --chown oracle:root
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleWebCenterContent/imagetool/12.2.1.4.0/additionalBuildCmds.txt
     --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4.0/container-scripts
-    --patches 31754672_12.2.1.4.0
-	--opatchBugNumber=28186730_13.9.4.2.4
+    --patches 33578966_12.2.1.4.0
+	--opatchBugNumber=28186730_13.9.4.2.8
 		
     ```
 
-     Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
+     Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Enter the following command to create the Oracle WebCenter Content image:
 
@@ -372,8 +372,8 @@ After [setting up the WebLogic Image Tool]({{< relref "/wccontent-domains/create
 
     ```bash wrap
     $  cd <imagetool-setup>
-    $ imagetool cache addEntry --key=30761841_12.2.1.4.0 --value <downloaded-patches-location>/p30761841_122140_Generic.zip
-    [INFO   ] Added entry 30761841_12.2.1.4.0=<downloaded-patches-location>/p30761841_122140_Generic.zip
+    $ imagetool cache addEntry --key=33578966_12.2.1.4.0 --value <downloaded-patches-location>/p33578966_122140_Generic.zip
+    [INFO   ] Added entry 33578966_12.2.1.4.0=<downloaded-patches-location>/p33578966_122140_Generic.zip
     ```
 1. Provide the following arguments to the WebLogic Image Tool `update` command:
 
@@ -381,7 +381,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wccontent-domains/create
     * `–-patches` - Multiple patches can be specified as a comma-separated list.
     * `--tag` - Specify the new tag to be applied for the image being built.
 
-    Refer [here](https://github.com/oracle/weblogic-image-tool/blob/master/site/update-image.md) for the complete list of options available with the WebLogic Image Tool `update` command.
+    Refer [here](https://oracle.github.io/weblogic-image-tool/userguide/tools/update-image/) for the complete list of options available with the WebLogic Image Tool `update` command.
 
     > Note: The WebLogic Image Tool cache should have the latest OPatch zip. The WebLogic Image Tool will update the OPatch if it is not already updated in the image.
 
@@ -391,11 +391,11 @@ After [setting up the WebLogic Image Tool]({{< relref "/wccontent-domains/create
 
 ```
   # If you are using a pre-built Oracle WebCenter Content image, obtained from My Oracle Support, then please use this command:
-  $ imagetool update --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.4
+  $ imagetool update --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=33578966_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.8
 
   # In case, you chose to build an Oracle WebCenter Content image, please use the command given below:
-  $ imagetool update --chown oracle:root --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=31754672_12.2.1.4.0 
-    --opatchBugNumber=28186730_13.9.4.2.4
+  $ imagetool update --chown oracle:root --fromImage oracle/wccontent:12.2.1.4.0 --tag=oracle/wccontent_update_1015:12.2.1.4.0 --patches=33578966_12.2.1.4.0 
+    --opatchBugNumber=28186730_13.9.4.2.8
       
 ```
  {{% /expand %}}

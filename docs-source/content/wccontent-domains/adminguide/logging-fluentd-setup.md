@@ -158,7 +158,7 @@ containers:
      - mountPath: /fluentd/etc/fluentd.conf
        name: fluentd-config-volume
        subPath: fluentd.conf
-     - mountPath: /u01/oracle/user_projects
+     - mountPath: /u01/oracle/user_projects/domains
        name: weblogic-domain-storage-volume
 ```
 {{% /expand %}}
@@ -174,7 +174,7 @@ To restart the servers, edit the domain and change serverStartPolicy to **NEVER*
 
 
 #### Create index pattern in Kibana
-Create an index pattern "wls*" in Kibana > Management.
+Create an index pattern "wccinfra*" in Kibana > Management.
 After the server starts, you will be able to see the log data in the Kibana dashboard,
 
 ![wcc-kibana-dashboard](images/wcc-kibana-dashboard.png)

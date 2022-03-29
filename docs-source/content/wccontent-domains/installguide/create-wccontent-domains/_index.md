@@ -68,6 +68,9 @@ The following parameters can be provided in the inputs file.
 | `rcuSchemaPrefix` | The schema prefix to use in the database, for example `WCC1`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `WCC1` |
 | `rcuDatabaseURL` | The database URL. | `<YOUR DATABASE CONNECTION DETAILS>` |
 | `rcuCredentialsSecret` | The Kubernetes secret containing the database credentials. | `wccinfra-rcu-credentials` |
+| `ipmEnabled` | Boolean indicating whether to enable WebCenter Imaging application | `false` |
+| `captureEnabled` | Boolean indicating whether to enable WebCenter Capture application | `false` |
+| `adfuiEnabled` | Boolean indicating whether to enable WebCenter ADF UI application | `false` | 
 
 Note that the names of the Kubernetes resources in the generated YAML files may be formed with the
 value of some of the properties specified in the `create-inputs.yaml` file. Those properties include
@@ -75,6 +78,8 @@ the `adminServerName`, `clusterName` and `managedServerNameBase`. If those value
 characters that are invalid in a Kubernetes service name, those characters are converted to
 valid values in the generated YAML files. For example, an uppercase letter is converted to a
 lowercase letter and an underscore `("_")` is converted to a hyphen `("-")`.
+
+>Note: The properties ipmEnabled, captureEnabled, adfuiEnabled are set to `false` by default and should be updated to `true` if you need to enable the respective applications.
 
 The sample demonstrates how to create the Oracle WebCenter Content domain home and associated Kubernetes resources for that domain.
 In addition, the sample provides the capability for users to supply their own scripts
@@ -123,8 +128,14 @@ The default domain created by the script has the following characteristics:
 * An Administration Server named `AdminServer` listening on port `7001`.
 * A configured cluster named `ucm_cluster` of size 3.
 * A configured cluster named `ibr_cluster` of size 1.
+* A configured cluster named `ipm_cluster` of size 3.
+* A configured cluster named `capture_cluster` of size 3.
+* A configured cluster named `wccadf_cluster` of size 3.
 * Managed Servers, named `ucm_cluster` listening on port `16200`.
 * Managed Servers, named `ibr_cluster` listening on port `16250`.
+* Managed Servers, named `ipm_cluster` listening on port `16000`.
+* Managed Servers, named `capture_cluster` listening on port `16400`.
+* Managed Servers, named `wccadf_cluster` listening on port `16225`.
 * Log files that are located in `/shared/logs/<domainUID>`.
 
 #### Verify the results
@@ -132,7 +143,6 @@ The default domain created by the script has the following characteristics:
 The create domain script will verify that the domain was created, and will report failure if there was any error.
 However, it may be desirable to manually verify the domain, even if just to gain familiarity with the
 various Kubernetes objects that were created by the script.
-
 
 ##### Generated YAML files with the default inputs
 
@@ -263,6 +273,11 @@ spec:
   #     readinessPort: 
 
   - clusterName: ucm_cluster
+    clusterService:
+         annotations:
+            traefik.ingress.kubernetes.io/affinity: "true"
+            traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+            traefik.ingress.kubernetes.io/session-cookie-name: JSESSIONID
     serverService:
       precreateService: true
     serverStartState: "RUNNING"
@@ -285,7 +300,87 @@ spec:
     serverStartPolicy: "IF_NEEDED"
   # The number of managed servers to start for unlisted clusters
   # replicas: 1
-
+  - clusterName: ipm_cluster
+    clusterService:
+         annotations: 
+            traefik.ingress.kubernetes.io/affinity: "true"
+            traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+            traefik.ingress.kubernetes.io/session-cookie-name: JSESSIONID
+    serverService:
+      precreateService: true
+    serverStartState: "RUNNING"
+    serverPod:
+      # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
+      # already members of the same cluster.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "weblogic.clusterName"
+                      operator: In
+                      values:
+                        - $(CLUSTER_NAME)
+                topologyKey: "kubernetes.io/hostname"
+    replicas: 3
+  # The number of managed servers to start for unlisted clusters
+  # replicas: 1
+  - clusterName: capture_cluster
+    clusterService:
+         annotations: 
+            traefik.ingress.kubernetes.io/affinity: "true"
+            traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+            traefik.ingress.kubernetes.io/session-cookie-name: JSESSIONID
+    serverService:
+      precreateService: true
+    serverStartState: "RUNNING"
+    serverPod:
+      # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
+      # already members of the same cluster.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "weblogic.clusterName"
+                      operator: In
+                      values:
+                        - $(CLUSTER_NAME)
+                topologyKey: "kubernetes.io/hostname"
+    replicas: 3
+  # The number of managed servers to start for unlisted clusters
+  # replicas: 1
+  - clusterName: wccadf_cluster
+    clusterService:
+         annotations: 
+            traefik.ingress.kubernetes.io/affinity: "true"
+            traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+            traefik.ingress.kubernetes.io/session-cookie-name: WCCSID
+    serverService:
+      precreateService: true
+    serverStartState: "RUNNING"
+    serverPod:
+      # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
+      # already members of the same cluster.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "weblogic.clusterName"
+                      operator: In
+                      values:
+                        - $(CLUSTER_NAME)
+                topologyKey: "kubernetes.io/hostname"
+    replicas: 3
+  # The number of managed servers to start for unlisted clusters
+  # replicas: 1
 ```
 {{% /expand %}}
 
@@ -368,7 +463,12 @@ Spec:
     Server Start Policy:  IF_NEEDED
     Server Start State:   RUNNING
     Cluster Name:         ucm_cluster
-    Replicas:             2
+    Cluster Service:
+      Annotations:
+        traefik.ingress.kubernetes.io/affinity:               true
+        traefik.ingress.kubernetes.io/service.sticky.cookie:  true
+        traefik.ingress.kubernetes.io/session-cookie-name:    JSESSIONID
+    Replicas:                                                 3
     Server Pod:
       Affinity:
         Pod Anti Affinity:
@@ -386,6 +486,75 @@ Spec:
       Precreate Service:           true
     Server Start Policy:           IF_NEEDED
     Server Start State:            RUNNING
+    Cluster Name:         ipm_cluster
+    Cluster Service:
+      Annotations:
+        traefik.ingress.kubernetes.io/affinity:               true
+        traefik.ingress.kubernetes.io/service.sticky.cookie:  true
+        traefik.ingress.kubernetes.io/session-cookie-name:    JSESSIONID
+    Replicas:                                                 3
+    Server Pod:
+      Affinity:
+        Pod Anti Affinity:
+          Preferred During Scheduling Ignored During Execution:
+            Pod Affinity Term:
+              Label Selector:
+                Match Expressions:
+                  Key:       weblogic.clusterName
+                  Operator:  In
+                  Values:
+                    $(CLUSTER_NAME)
+              Topology Key:  kubernetes.io/hostname
+            Weight:          100
+    Server Service:
+      Precreate Service:  true
+    Server Start State:   RUNNING
+    Cluster Name:         capture_cluster
+    Cluster Service:
+      Annotations:
+        traefik.ingress.kubernetes.io/affinity:               true
+        traefik.ingress.kubernetes.io/service.sticky.cookie:  true
+        traefik.ingress.kubernetes.io/session-cookie-name:    JSESSIONID
+    Replicas:                                                 3
+    Server Pod:
+      Affinity:
+        Pod Anti Affinity:
+          Preferred During Scheduling Ignored During Execution:
+            Pod Affinity Term:
+              Label Selector:
+                Match Expressions:
+                  Key:       weblogic.clusterName
+                  Operator:  In
+                  Values:
+                    $(CLUSTER_NAME)
+              Topology Key:  kubernetes.io/hostname
+            Weight:          100
+    Server Service:
+      Precreate Service:  true
+    Server Start State:   RUNNING
+    Cluster Name:         wccadf_cluster
+    Cluster Service:
+      Annotations:
+        traefik.ingress.kubernetes.io/affinity:               true
+        traefik.ingress.kubernetes.io/service.sticky.cookie:  true
+        traefik.ingress.kubernetes.io/session-cookie-name:    WCCSID
+    Replicas:                                                 3
+    Server Pod:
+      Affinity:
+        Pod Anti Affinity:
+          Preferred During Scheduling Ignored During Execution:
+            Pod Affinity Term:
+              Label Selector:
+                Match Expressions:
+                  Key:       weblogic.clusterName
+                  Operator:  In
+                  Values:
+                    $(CLUSTER_NAME)
+              Topology Key:  kubernetes.io/hostname
+            Weight:          100
+    Server Service:
+      Precreate Service:  true
+    Server Start State:   RUNNING
   Data Home:
   Domain Home:                     /u01/oracle/user_projects/domains/wccinfra
   Domain Home Source Type:         PersistentVolume
@@ -423,9 +592,27 @@ Status:
     Cluster Name:      ucm_cluster
     Maximum Replicas:  5
     Minimum Replicas:  0
-    Ready Replicas:    2
-    Replicas:          2
-    Replicas Goal:     2
+    Ready Replicas:    3
+    Replicas:          3
+    Replicas Goal:     3
+    Cluster Name:      ipm_cluster
+    Maximum Replicas:  5
+    Minimum Replicas:  0
+    Ready Replicas:    3
+    Replicas:          3
+    Replicas Goal:     3
+    Cluster Name:      capture_cluster
+    Maximum Replicas:  5
+    Minimum Replicas:  0
+    Ready Replicas:    3
+    Replicas:          3
+    Replicas Goal:     3
+    Cluster Name:      wccadf_cluster
+    Maximum Replicas:  5
+    Minimum Replicas:  0
+    Ready Replicas:    3
+    Replicas:          3
+    Replicas Goal:     3
   Conditions:
     Last Transition Time:  2020-11-23T13:58:41.070Z
     Reason:                ServersReady
@@ -439,7 +626,7 @@ Status:
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      pjadam
+    Node Name:      MyNodeName
     Server Name:    AdminServer
     State:          RUNNING
     Cluster Name:   ibr_cluster
@@ -450,7 +637,7 @@ Status:
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      pjadam
+    Node Name:      MyNodeName
     Server Name:    ibr_server1
     State:          RUNNING
     Cluster Name:   ibr_cluster
@@ -473,7 +660,7 @@ Status:
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      pjadam
+    Node Name:      MyNodeName
     Server Name:    ucm_server1
     State:          RUNNING
     Cluster Name:   ucm_cluster
@@ -484,7 +671,7 @@ Status:
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      pjadam
+    Node Name:      MyNodeName
     Server Name:    ucm_server2
     State:          RUNNING
     Cluster Name:   ucm_cluster
@@ -496,6 +683,75 @@ Status:
     Cluster Name:   ucm_cluster
     Desired State:  SHUTDOWN
     Server Name:    ucm_server5
+    Cluster Name:   ipm_cluster
+    Desired State:  RUNNING
+    Health:
+      Activation Time:  2020-12-01T04:51:19.886Z
+      Overall Health:   ok
+      Subsystems:
+        Subsystem Name:  ServerRuntime
+        Symptoms:
+    Node Name:      MyNodeName
+    Server Name:    ipm_server1
+    State:          RUNNING
+    Cluster Name:   ipm_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    ipm_server2
+    Cluster Name:   ipm_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    ipm_server3
+    Cluster Name:   ipm_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    ipm_server4
+    Cluster Name:   ipm_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    ipm_server5
+    Cluster Name:   capture_cluster
+    Desired State:  RUNNING
+    Health:         
+      Activation Time:  2020-12-01T04:51:19.886Z
+      Overall Health:   ok
+      Subsystems:
+        Subsystem Name:  ServerRuntime 
+        Symptoms:
+    Node Name:      MyNodeName
+    Server Name:    capture_server1
+    State:          RUNNING
+    Cluster Name:   capture_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    capture_server2
+    Cluster Name:   capture_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    capture_server3
+    Cluster Name:   capture_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    capture_server4
+    Cluster Name:   capture_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    capture_server5
+    Cluster Name:   wccadf_cluster
+    Desired State:  RUNNING
+    Health:         
+      Activation Time:  2020-12-01T04:51:19.886Z
+      Overall Health:   ok
+      Subsystems:
+        Subsystem Name:  ServerRuntime 
+        Symptoms:
+    Node Name:      MyNodeName
+    Server Name:    wccadf_server1
+    State:          RUNNING
+    Cluster Name:   wccadf_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    wccadf_server2
+    Cluster Name:   wccadf_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    wccadf_server3
+    Cluster Name:   wccadf_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    wccadf_server4
+    Cluster Name:   wccadf_cluster
+    Desired State:  SHUTDOWN
+    Server Name:    wccadf_server5
   Start Time:       2020-11-23T12:48:13.756Z
 Events:             <none>
 ```
@@ -515,7 +771,7 @@ Enter the following command to see the pods running the servers:
 $ kubectl get pods -n NAMESPACE
 ```
 
-Here is an example of the output of this command. You can verify that an Administration Server and Managed Servers for ucm & ibr cluster are running.
+Here is an example of the output of this command. You can verify that an Administration Server and Managed Servers for ucm, ibr, ipm, capture and wccadf cluster are running.
 
 ```
 $ kubectl get pod -n wccns
@@ -526,7 +782,16 @@ wccinfra-create-fmw-infra-sample-domain-job-l8r9d   0/1     Completed   0       
 wccinfra-ibr-server1                                1/1     Running     0          9d
 wccinfra-ucm-server1                                1/1     Running     0          9d
 wccinfra-ucm-server2                                1/1     Running     0          9d
-
+wccinfra-ucm-server3                                1/1     Running     0          9d
+wccinfra-ipm-server1                                1/1     Running     0          9d
+wccinfra-ipm-server2                                1/1     Running     0          9d
+wccinfra-ipm-server3                                1/1     Running     0          9d
+wccinfra-capture-server1                            1/1     Running     0          9d
+wccinfra-capture-server2                            1/1     Running     0          9d
+wccinfra-capture-server3                            1/1     Running     0          9d
+wccinfra-wccadf-server1                             1/1     Running     0          9d
+wccinfra-wccadf-server2                             1/1     Running     0          9d
+wccinfra-wccadf-server3                             1/1     Running     0          9d
 ```
 
 #### Verify the services
@@ -547,6 +812,9 @@ wccinfra-adminserver               ClusterIP   None             <none>          
 wccinfra-adminserver-external      NodePort    10.104.100.193   <none>            7001:30701/TCP   9d
 wccinfra-cluster-ibr-cluster       ClusterIP   10.98.100.212    <none>            16250/TCP        114s
 wccinfra-cluster-ucm-cluster       ClusterIP   10.108.47.178    <none>            16200/TCP        9d
+wccinfra-cluster-ipm-cluster       ClusterIP   10.108.217.111   <none>            16000/TCP        9d
+wccinfra-cluster-capture-cluster   ClusterIP   10.110.193.252   <none>            16400/TCP        9d
+wccinfra-cluster-wccadf-cluster    ClusterIP   10.109.191.247   <none>            16225/TCP        9d
 wccinfra-ibr-server1               ClusterIP   None             <none>            16250/TCP        9d
 wccinfra-ibr-server2               ClusterIP   10.97.253.44     <none>            16250/TCP        9d
 wccinfra-ibr-server3               ClusterIP   10.110.183.48    <none>            16250/TCP        9d
@@ -554,8 +822,28 @@ wccinfra-ibr-server4               ClusterIP   10.108.228.158   <none>          
 wccinfra-ibr-server5               ClusterIP   10.101.29.140    <none>            16250/TCP        9d
 wccinfra-ucm-server1               ClusterIP   None             <none>            16200/TCP        9d
 wccinfra-ucm-server2               ClusterIP   None             <none>            16200/TCP        9d
-wccinfra-ucm-server3               ClusterIP   10.107.61.128    <none>            16200/TCP        9d
+wccinfra-ucm-server3               ClusterIP   None             <none>            16200/TCP        9d
 wccinfra-ucm-server4               ClusterIP   10.109.25.242    <none>            16200/TCP        9d
 wccinfra-ucm-server5               ClusterIP   10.109.193.26    <none>            16200/TCP        9d
+wccinfra-ipm-server1               ClusterIP   None             <none>            16000/TCP        9d
+wccinfra-ipm-server2               ClusterIP   None             <none>            16000/TCP        9d
+wccinfra-ipm-server3               ClusterIP   None             <none>            16000/TCP        9d
+wccinfra-ipm-server4               ClusterIP   10.111.215.108   <none>            16000/TCP        9d
+wccinfra-ipm-server5               ClusterIP   10.109.220.10    <none>            16000/TCP        9d
+wccinfra-capture-server1           ClusterIP   None             <none>            16400/TCP        9d
+wccinfra-capture-server2           ClusterIP   None             <none>            16400/TCP        9d
+wccinfra-capture-server3           ClusterIP   None             <none>            16400/TCP        9d
+wccinfra-capture-server4           ClusterIP   10.109.72.216    <none>            16400/TCP        9d
+wccinfra-capture-server5           ClusterIP   10.102.90.234    <none>            16400/TCP        9d
+wccinfra-wccadf-server1            ClusterIP   None             <none>            16225/TCP        9d
+wccinfra-wccadf-server2            ClusterIP   None             <none>            16225/TCP        9d
+wccinfra-wccadf-server3            ClusterIP   None             <none>            16225/TCP        9d
+wccinfra-wccadf-server4            ClusterIP   10.99.91.229     <none>            16225/TCP        9d
+wccinfra-wccadf-server5            ClusterIP   10.105.114.38    <none>            16225/TCP        9d
 ```
 {{% /expand %}}
+
+#### Configure an additional mount or shared space to a domain for Imaging and Capture
+
+Optionally, if you want to configure an additional mount or shared space to a domain, for WebCenter Imaging and WebCenter Capture applications for file imports, refer to the [Configure an Additional Mount or Shared-Space to a Domain for Imaging and Capture]({{< relref "/wccontent-domains/adminguide/configure-mount-share.md" >}}).
+

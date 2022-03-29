@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
@@ -157,10 +157,30 @@ kubectl get service/wccinfra-cluster-ibr-cluster-ext -n $domainNS -o yaml  > wcc
 sed -i "0,/$IBRIntradocPort/s//16250/" wccinfra-cluster-ibr-cluster-ext.yaml
 kubectl -n $domainNS apply -f wccinfra-cluster-ibr-cluster-ext.yaml
 
+echo " Expose the UCM intradoc port"
+kubectl expose  service/wccinfra-cluster-ucm-cluster --name wccinfra-cluster-ucm-cluster-ext --port=$UCMIntradocPort --target-port=$UCMIntradocPort  --external-ip=$ip_addr -n $domainNS
+
+
+kubectl get service/wccinfra-cluster-ucm-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ucm-cluster-ext.yaml
+sed -i "0,/$UCMIntradocPort/s//16200/" wccinfra-cluster-ucm-cluster-ext.yaml
+kubectl -n $domainNS apply -f wccinfra-cluster-ucm-cluster-ext.yaml
+
+# Load the script to configure wccadf domain if adfui is enabled
+wccadfEnabled=$(grep  'adfuiEnabled:' create-domain-inputs.yaml);
+wccadfEnabled=${wccadfEnabled//*adfuiEnabled: /};
+
+script="${BASH_SOURCE[0]}"
+scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
+if [ true  == "$wccadfEnabled" ]; then
+   source ${scriptDir}/configure-wccadf-domain.sh
+fi
+
+#STOP
 kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
 
 sleep 2m
 
+#START
 kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]'
 
 echo "Please monitor server pods status at console using kubectl get pod -n $domainNS"

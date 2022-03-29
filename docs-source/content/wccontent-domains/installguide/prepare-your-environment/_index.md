@@ -58,8 +58,8 @@ This step is required once at every node to get access to the Oracle Container R
 
 WebLogic Kubernetes Operator image:
 ```bash
-$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.2.5
-$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.2.5 oracle/weblogic-kubernetes-operator:3.2.5
+$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
+$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
 ```
 
 Pull Traefik Image
@@ -73,14 +73,14 @@ Oracle WebCenter Content domain deployment on Kubernetes leverages the WebLogic 
 
 1. Create a working directory to set up the source code:
    ```bash
-   $ export WORKDIR=$HOME/wcc_3.2.5
+   $ export WORKDIR=$HOME/wcc_3.3.0
    $ mkdir ${WORKDIR}
    ```
 
-1. Download the supported version of the WebLogic Kubernetes Operator source code from WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is [3.2.5](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.2.5):
+1. Download the supported version of the WebLogic Kubernetes Operator source code from WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0):
 
     ``` bash
-    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.2.5
+    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.3.0
     ```
 1. Download the Oracle WebCenter Content Kubernetes deployment scripts from the WCC [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them to the WebLogic Kubernetes Operator samples location:
 
@@ -100,7 +100,7 @@ Oracle WebCenter Content domain deployment on Kubernetes leverages the WebLogic 
 
 The Oracle WebCenter Content image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Content image from My Oracle Support.
 
-1. Download patch [32822360](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32822360) from My Oracle Support (MOS).
+1. Download patch [33771196](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33771196) from My Oracle Support (MOS).
 1. Unzip the downloaded patch zip file.
 
    For example:
@@ -147,7 +147,7 @@ Alternatively, if you want to build and use Oracle WebCenter Content Container i
 
 ### Install the WebLogic Kubernetes Operator
 
-The WebLogic Kubernetes Operator supports the deployment of Oracle WebCenter Content domain in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.5/documentation/3.2/content/quickstart/install.md) to install WebLogic Kubernetes Operator.
+The WebLogic Kubernetes Operator supports the deployment of Oracle WebCenter Content domain in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/documentation/3.3/content/quickstart/install.md) to install WebLogic Kubernetes Operator.
 > Note: Optionally, you can execute these [steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/operator/) to send the contents of the operator’s logs to Elasticsearch.
 
 In the following example commands to install the WebLogic Kubernetes Operator, `opns` is the namespace and `op-sa` is the service account created for WebLogic Kubernetes Operator:
@@ -163,7 +163,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   ```
   $ cd ${WORKDIR}/weblogic-kubernetes-operator
   
-  $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.2.5 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
   ```
 
 ### Prepare the environment for Oracle WebCenter Content domain
@@ -224,7 +224,7 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
 	$ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wccns -d wccinfra -s wccinfra-domain-credentials
   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.5/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 

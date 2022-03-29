@@ -4,7 +4,7 @@ date: 2019-09-21T15:44:42-05:00
 draft: false
 weight: 1
 pre: "<b>1 b. </b>"
-description: "Running WebLogic Kubernetes Operator managed Oracle WebCenter Contnet domains on OKE"
+description: "Running WebLogic Kubernetes Operator managed Oracle WebCenter Content domains on OKE"
 ---
 
 #### Create Filesystem and security list for FSS
@@ -63,9 +63,6 @@ We will use this as NFS for Domain Home with below details. Sample from the abov
   mount -a
  
   # Change proper permissions so that all users can access the share volume
-  sudo chown -R 1000:1000 /mnt/WCCFS
-  
-  # Note - If you choose to build Oracle WebCenter Content image, instead of downloading from My Oracle Support, then please use the below command to update user permission -
   sudo chown -R 1000:0 /mnt/WCCFS
   ```
 * Confirm that /WCCFS  is now pointing to created File System

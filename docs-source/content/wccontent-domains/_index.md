@@ -20,7 +20,7 @@ The WebLogic Kubernetes Operator has several key features to assist you with dep
 
 #### Current production release
 
-The current supported production release of WebLogic Kubernetes Operator, for Oracle WebCenter Content domain deployment is [3.2.5](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.2.5).
+The current supported production release of WebLogic Kubernetes Operator, for Oracle WebCenter Content domain deployment is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0).
 
 #### Recent changes
 

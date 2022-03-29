@@ -69,9 +69,8 @@ spec:
       - name: logstash
         image: logstash:6.6.0
         command: ["/bin/sh"]
-        args: ["/usr/share/logstash/bin/logstash", "-f", "/u01/oracle/user_projects/domains/logstash/logstash.conf"]
+        args: ["/usr/share/logstash/bin/logstash", "-f", "/u01/oracle/user_projects/domains/logstash.conf"]
         imagePullPolicy: IfNotPresent
-        serverStartPolicy: "NEVER"
         volumeMounts:
         - mountPath: /u01/oracle/user_projects/domains
           name: weblogic-domain-storage-volume
@@ -101,6 +100,18 @@ input {
     start_position => beginning
   }
   file {
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ipm_server*.log"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/capture_server*.log"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/wccadf_server*.log"
+    start_position => beginning
+  }
+  file {
     path => "/u01/oracle/user_projects/domains/logs/wccinfra/AdminServer.out"
     start_position => beginning
   }
@@ -112,16 +123,40 @@ input {
     path => "/u01/oracle/user_projects/domains/logs/wccinfra/ibr_server*.out"
     start_position => beginning
   }
- file {
+  file {
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ipm_server*.out"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/capture_server*.out"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/wccadf_server*.out"
+    start_position => beginning
+  }
+  file {
     path => "/u01/oracle/user_projects/domains/wccinfra/servers/AdminServer/logs/AdminServer-diagnostic.log"
     start_position => beginning
   }
- file {
+  file {
     path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ucm_server*.log"
     start_position => beginning
   }
- file {
+  file {
     path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ibr_server*.log"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ipm_server*.log"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/capture_server*.log"
+    start_position => beginning
+  }
+  file {
+    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/wccadf_server*.log"
     start_position => beginning
   }
 }
@@ -138,7 +173,7 @@ output {
 ```
 Here ** means that all ucm_server.log and ibr_server.log from any servers under `wccinfra` will be pushed to Logstash.
 ```bash
-$ kubectl cp kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/logstash/logstash.conf
+$ kubectl cp kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/logstash.conf
 ```
 #### Deploy Logstash pod
 
@@ -174,7 +209,5 @@ kubernetes      ClusterIP   10.96.0.1        <none>        443/TCP             4
 ```
 You can access the Kibana dashboard at `http://<your_hostname>:30412/`. In our example, the node port would be 30412.
 
-#### Create an Index Pattern in Kibana  
-Create an index pattern `wls*` in **Kibana > Management**. After the servers are started, you will see the log data in the Kibana dashboard:
-
-![wcc-kibana-dashboard](images/wcc-kibana-dashboard.png)
+#### Create an Index Pattern in Kibana
+Create an index pattern `logstash-*` in **Kibana > Management**. After the servers are started, you will see the log data in the Kibana dashboard.

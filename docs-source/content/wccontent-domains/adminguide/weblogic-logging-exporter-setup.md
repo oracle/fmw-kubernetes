@@ -69,7 +69,7 @@ In this step, we configure weblogic-logging-exporter JAR as a startup class in t
     ```
     <startup-class>
       <name>weblogic-logging-exporter</name>
-      <target>AdminServer,ucm_cluster,ibr_cluster</target>
+      <target>AdminServer,ucm_cluster,ibr_cluster,ipm_cluster,capture_cluster,wccadf_cluster</target>
       <class-name>weblogic.logging.exporter.Startup</class-name>
     </startup-class>
     ```  
@@ -147,6 +147,4 @@ FilterConfig{expression='NOT(MSGID = 'BEA-000449')', servers=[]}], domainUID='wc
 ```  
 
 #### Create an Index Pattern in Kibana  
-Create an index pattern `wls*` in **Kibana > Management**. After the servers are started, you will see the log data in the Kibana dashboard:
-
-![wcc-kibana-dashboard](images/wcc-kibana-dashboard.png)
+Create an appropriate index pattern in **Kibana > Management**. After the servers are started, you will see the log data in the Kibana dashboard.

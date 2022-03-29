@@ -469,7 +469,7 @@ Use Helm to install and start WebLogic Kubernetes Operator from the directory yo
    $ cd ${WORKDIR}/weblogic-kubernetes-operator
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=oracle/weblogic-kubernetes-operator:3.2.5 \
+   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=op-sa \
    --set "domainNamespaces={}" \
    --wait
@@ -486,7 +486,7 @@ Use Helm to install and start WebLogic Kubernetes Operator from the directory yo
    $ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes Operator v3.2.5 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.
+The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 
@@ -569,36 +569,24 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
       ```
 
 1. Create the Kubernetes persistence volume and persistence volume claim.
-    >  **Notes:**
-    >  * If you are using Oracle WebCenter Content pre-built image, downloaded from My Oracle Support (MOS patch [32822360](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32822360)), then please use the below command to create the directory -
-
+    
     a. Create the Oracle WebCenter Content domain home directory.
-      Determine if a user already exists on your host system with `uid:gid` of `1000:1000`:
+      Determine if a user already exists on your host system with `uid:gid` of `1000:0`:
       ```
       $ sudo getent passwd 1000
       ```
 
       If this command returns a username (which is the first field), you can skip the following `useradd` command. If not, create the oracle user with `useradd`:
       ```
-      $ sudo useradd -u 1000 -g 1000 oracle
+      $ sudo useradd -u 1000 -g 0 oracle
       ```
 
       Create the directory that will be used for the Oracle WebCenter Content domain home:
       ```
       $ sudo mkdir /scratch/k8s_dir
-      $ sudo chown -R 1000:1000 /scratch/k8s_dir
-      ```
-    
-	>  **Notes:**
-    >  * If you choose to build Oracle WebCenter Content image, instead of downloading from My Oracle Support, then please use the below command to create the directory with updated user permission -
-	  ```
-	  #Determine if a user already exists on your host system with `uid:gid` of `1000:0`:
-	  $ sudo getent passwd 1000
-	  $ sudo useradd -u 1000 -g 0 oracle
-      $ sudo mkdir /scratch/k8s_dir
       $ sudo chown -R 1000:0 /scratch/k8s_dir
       ```
-	
+ 	
     b. Update `create-pv-pvc-inputs.yaml` with the following values:
 
       * baseName: domain
@@ -713,4 +701,7 @@ Watch the `wccns` namespace for the status of domain creation:
     http://${LOADBALANCER_HOSTNAME}:30305/em
     http://${LOADBALANCER_HOSTNAME}:30305/cs
     http://${LOADBALANCER_HOSTNAME}:30305/ibr
+    http://${LOADBALANCER_HOSTNAME}:30305/imaging
+    http://${LOADBALANCER_HOSTNAME}:30305/dc-console
+    http://${LOADBALANCER_HOSTNAME}:30305/wcc
     ```
