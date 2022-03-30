@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1645771000" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1645771000" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1648555072" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1648555072" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1648555072"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645771000"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645771000"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1648555072"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1648555072"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645771000"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1648555072"></script>
 
     
   </div>
@@ -2811,6 +2811,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3185,7 +3204,7 @@
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/appendix/">
-          <b>7. </b>Appendix
+          <b>8. </b>Appendix
           
       </a>
       
@@ -5058,8 +5077,8 @@ Dependent images include WebLogic Kubernetes Operator, Traefik. Pull these image
 <pre><code>docker login https://container-registry.oracle.com (enter your Oracle email Id and password)
 This step is required once at every node to get access to the Oracle Container Registry.
 </code></pre><p>WebLogic Kubernetes Operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.2.5
-$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.2.5 oracle/weblogic-kubernetes-operator:3.2.5
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
+$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
 </code></pre></div><p>Pull Traefik Image</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull traefik:2.2.8
 </code></pre></div><h3 id="set-up-the-code-repository-to-deploy-oracle-webcenter-content-domain">Set up the code repository to deploy Oracle WebCenter Content domain</h3>
@@ -5067,12 +5086,12 @@ $ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operat
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>$HOME/wcc_3.2.5
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>$HOME/wcc_3.3.0
 $ mkdir <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
 </code></pre></div></li>
 <li>
-<p>Download the supported version of the WebLogic Kubernetes Operator source code from WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.2.5">3.2.5</a>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.2.5
+<p>Download the supported version of the WebLogic Kubernetes Operator source code from WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0">3.3.0</a>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.3.0
 </code></pre></div></li>
 <li>
 <p>Download the Oracle WebCenter Content Kubernetes deployment scripts from the WCC <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a> and copy them to the WebLogic Kubernetes Operator samples location:</p>
@@ -5092,7 +5111,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <p>The Oracle WebCenter Content image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Content image from My Oracle Support.</p>
 <ol>
 <li>
-<p>Download patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32822360">32822360</a> from My Oracle Support (MOS).</p>
+<p>Download patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33771196">33771196</a> from My Oracle Support (MOS).</p>
 </li>
 <li>
 <p>Unzip the downloaded patch zip file.</p>
@@ -5144,7 +5163,7 @@ Loaded image: oracle/wccontent:12.2.1.4.0-8-ol7-210507.0906
 <p>Note: The default Oracle WebCenter Content image name used for Oracle WebCenter Content domain deployment is <code>oracle/wccontent:12.2.1.4.0</code>. The image created must be tagged as <code>oracle/wccontent:12.2.1.4.0</code> using the <code>docker tag</code> command. If you want to use a different name for the image, make sure to update the new image tag name in the <code>create-domain-inputs.yaml</code> file and also in other instances where the <code>oracle/wccontent:12.2.1.4.0</code> image name is used.</p>
 </blockquote>
 <h3 id="install-the-weblogic-kubernetes-operator">Install the WebLogic Kubernetes Operator</h3>
-<p>The WebLogic Kubernetes Operator supports the deployment of Oracle WebCenter Content domain in the Kubernetes environment. Follow the steps in <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.5/documentation/3.2/content/quickstart/install.md">this document</a> to install WebLogic Kubernetes Operator.</p>
+<p>The WebLogic Kubernetes Operator supports the deployment of Oracle WebCenter Content domain in the Kubernetes environment. Follow the steps in <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/documentation/3.3/content/quickstart/install.md">this document</a> to install WebLogic Kubernetes Operator.</p>
 <blockquote>
 <p>Note: Optionally, you can execute these <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/operator/">steps</a> to send the contents of the operator’s logs to Elasticsearch.</p>
 </blockquote>
@@ -5156,7 +5175,7 @@ $ kubectl create serviceaccount -n opns  op-sa
 </code></pre><h3 id="install-weblogic-kubernetes-operator">Install WebLogic Kubernetes Operator</h3>
 <pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator
 
-$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.2.5 --set serviceAccount=op-sa --set &quot;domainNamespaces={}&quot; --set &quot;javaLoggingLevel=FINE&quot; --wait
+$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=op-sa --set &quot;domainNamespaces={}&quot; --set &quot;javaLoggingLevel=FINE&quot; --wait
 </code></pre><h3 id="prepare-the-environment-for-oracle-webcenter-content-domain">Prepare the environment for Oracle WebCenter Content domain</h3>
 <h4 id="create-a-namespace-for-the-oracle-webcenter-content-domain">Create a namespace for the Oracle WebCenter Content domain</h4>
 <p>Create a Kubernetes namespace (for example, <code>wccns</code>) for the domain unless you intend to use the default namespace. Use the new namespace in the remaining steps in this section.
@@ -5208,7 +5227,7 @@ $ kubectl describe pvc wccinfra-domain-pvc -n wccns
 <pre><code>  $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
   
   $ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wccns -d wccinfra -s wccinfra-domain-credentials
-</code></pre><p>For more details, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.2.5/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md">this document</a>.</p>
+</code></pre><p>For more details, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md">this document</a>.</p>
 <p>You can check the secret with the <code>kubectl get secret</code> command.</p>
 <p>For example:</p>
 
@@ -7273,6 +7292,22 @@ type: Opaque
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8685,19 +8720,19 @@ type: Opaque
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1648555072"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1645771000"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1645771000"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1648555072"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1648555072"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645771000" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645771000"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1648555072" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1648555072"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

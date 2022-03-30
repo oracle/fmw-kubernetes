@@ -12,18 +12,18 @@
     <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1645770999" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1648555071" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1648555071"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645770999"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1648555071"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1648555071"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1648555071"></script>
 
     
   </div>
@@ -2811,6 +2811,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3185,7 +3204,7 @@
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/appendix/">
-          <b>7. </b>Appendix
+          <b>8. </b>Appendix
           
       </a>
       
@@ -5022,7 +5041,7 @@
 <p><a href="#end-to-end-ssl-configuration"> End-to-end SSL configuration</a></p>
 <ol>
 <li><a href="#install-the-nginx-load-balancer-for-end-to-end-ssl">Install the NGINX load balancer for End-to-end SSL</a></li>
-<li><a href="#deploy-tls-to-access-ucm-and-ibr-managed-servers">Deploy tls to access UCM and IBR Managed Servers</a></li>
+<li><a href="#deploy-tls-to-access-individual-managed-servers">Deploy tls to access individual Managed Servers</a></li>
 <li><a href="#deploy-tls-to-access-administration-server">Deploy tls to access Administration Server</a></li>
 </ol>
 </li>
@@ -5192,6 +5211,10 @@ Rules:
                                               /ibr                     wccinfra-cluster-ibr-cluster:16250 <span style="color:#f92672">(</span>10.244.0.59:16250<span style="color:#f92672">)</span>
                                               /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 <span style="color:#f92672">(</span>10.244.0.59:16250<span style="color:#f92672">)</span>
                                               /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 <span style="color:#f92672">(</span>10.244.0.60:16200,10.244.0.61:16200<span style="color:#f92672">)</span>
+                                              /imaging                 wccinfra-cluster-ipm-cluster:16000 <span style="color:#f92672">(</span>10.244.0.206:16000,10.244.0.209:16000,10.244.0.213:16000<span style="color:#f92672">)</span>
+                                              /dc-console              wccinfra-cluster-capture-cluster:16400 <span style="color:#f92672">(</span>10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400<span style="color:#f92672">)</span>
+                                              /dc-client               wccinfra-cluster-capture-cluster:16400 <span style="color:#f92672">(</span>10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400<span style="color:#f92672">)</span>
+                                              /wcc                     wccinfra-cluster-wccadf-cluster:16225 <span style="color:#f92672">(</span>10.244.0.205:16225,10.244.0.210:16225,10.244.0.214:16225<span style="color:#f92672">)</span>
 Annotations:                                  kubernetes.io/ingress.class: nginx
                                               meta.helm.sh/release-name: wccinfra-nginx-ingress
                                               meta.helm.sh/release-namespace: wccns
@@ -5212,7 +5235,9 @@ Events:                                       &lt;none&gt;
   http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/em
   http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/cs
   http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/ibr
-  
+  http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/imaging
+  http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/dc-console
+  http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/wcc  
 </code></pre></div><h5 id="ssl-configuration">SSL configuration</h5>
 <p>Verify that the Oracle WebCenter Content domain application URLs are accessible through the <code>LOADBALANCER-SSLPORT</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
@@ -5220,7 +5245,9 @@ Events:                                       &lt;none&gt;
   https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/em
   https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/cs
   https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/ibr
-  
+  https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/imaging
+  https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/dc-console
+  https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/wcc
 </code></pre></div><h4 id="uninstall-the-ingress">Uninstall the ingress</h4>
 <p>Uninstall and delete the <code>ingress-nginx</code> deployment:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ helm delete wccinfra-nginx -n wccns
@@ -5317,10 +5344,10 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  nginx-ingress-ingress-nginx-controller   NodePort    10.97.189.122    &lt;none&gt;            80:30993/TCP,443:30232/TCP    168m
 </code></pre></div></li>
 </ol>
-<h4 id="deploy-tls-to-access-ucm-and-ibr-managed-servers">Deploy tls to access UCM and IBR Managed Servers</h4>
+<h4 id="deploy-tls-to-access-individual-managed-servers">Deploy tls to access individual Managed Servers</h4>
 <ol>
 <li>
-<p>Deploy tls to securely access the services. Only one application can be configured with <code>ssl-passthrough</code>. A sample tls file for NGINX is shown below for the service <code>wccinfra-cluster-ucm-cluster</code> and port <code>16201</code>. All the applications running on port <code>16201</code> can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation <code>ssl-passthrough</code>. That is, for <code>wccinfra-cluster-ucm-cluster</code>, <code>wccinfra-cluster-ibr-cluster</code> and <code>wccinfra-adminserver</code>, different ingresses must be created.</p>
+<p>Deploy tls to securely access the services. Only one application can be configured with <code>ssl-passthrough</code>. A sample tls file for NGINX is shown below for the service <code>wccinfra-cluster-ucm-cluster</code> and port <code>16201</code>. All the applications running on port <code>16201</code> can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation <code>ssl-passthrough</code>. That is, for <code>wccinfra-cluster-ucm-cluster</code>, <code>wccinfra-cluster-ibr-cluster</code>, <code>wccinfra-cluster-ipm-cluster</code>, <code>wccinfra-cluster-capture-cluster</code>, <code>wccinfra-cluster-wccadf-cluster</code> and <code>wccinfra-adminserver</code>, different ingresses must be created.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
 </code></pre></div><p>Sample nginx-ucm-tls.yaml:</p>
 
@@ -7381,6 +7408,22 @@ spec:
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8793,19 +8836,19 @@ spec:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1648555071"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1648555071"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645770999" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645770999"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1648555071" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1648555071"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

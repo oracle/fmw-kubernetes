@@ -12,18 +12,18 @@
     <title>Publish logs to Elasticsearch Using Fluentd :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1645770999" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1648555071" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1648555071"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645770999"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1648555071"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1648555071"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1648555071"></script>
 
     
   </div>
@@ -2811,6 +2811,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3185,7 +3204,7 @@
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/appendix/">
-          <b>7. </b>Appendix
+          <b>8. </b>Appendix
           
       </a>
       
@@ -5152,7 +5171,7 @@ data:
      - mountPath: /fluentd/etc/fluentd.conf
        name: fluentd-config-volume
        subPath: fluentd.conf
-     - mountPath: /u01/oracle/user_projects
+     - mountPath: /u01/oracle/user_projects/domains
        name: weblogic-domain-storage-volume
 </code></pre>
     </div>
@@ -5162,7 +5181,7 @@ data:
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   $kubectl edit domain -n wccns
 </code></pre></div><p>After all the servers are shutdown edit domain again and set serverStartPolicy to <strong>IF_NEEDED</strong> for the servers to start again.</p>
 <h4 id="create-index-pattern-in-kibana">Create index pattern in Kibana</h4>
-<p>Create an index pattern &ldquo;wls*&rdquo; in Kibana &gt; Management.
+<p>Create an index pattern &ldquo;wccinfra*&rdquo; in Kibana &gt; Management.
 After the server starts, you will be able to see the log data in the Kibana dashboard,</p>
 <p><img src="images/wcc-kibana-dashboard.png" alt="wcc-kibana-dashboard"></p>
 
@@ -7070,9 +7089,6 @@ After the server starts, you will be able to see the log data in the Kibana dash
             
         
                     
-            
-        
-                    
                         
             
             
@@ -7080,6 +7096,25 @@ After the server starts, you will be able to see the log data in the Kibana dash
                     
                         
                         
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
                     
                 
                 
@@ -8475,7 +8510,7 @@ After the server starts, you will be able to see the log data in the Kibana dash
 			<a class="nav nav-prev" href="/fmw-kubernetes/wccontent-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wccontent-domains/patch_and_upgrade/" title="Patch and upgrade" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -8485,19 +8520,19 @@ After the server starts, you will be able to see the log data in the Kibana dash
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1648555071"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1648555071"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645770999" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645770999"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1648555071" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1648555071"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
