@@ -12,18 +12,18 @@
     <title>Publish logs to Elasticsearch :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1645770999" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1648555071" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1648555071"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645770999"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1648555071"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1648555071"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1648555071"></script>
 
     
   </div>
@@ -2811,6 +2811,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3185,7 +3204,7 @@
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/appendix/">
-          <b>7. </b>Appendix
+          <b>8. </b>Appendix
           
       </a>
       
@@ -5050,7 +5069,7 @@ $ kubectl cp snakeyaml-1.25.jar wccns/wccinfra-adminserver:/u01/oracle/user_proj
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -n wccns -it wccinfra-adminserver  cat /u01/oracle/user_projects/domains/wccinfra/config/config.xml
 </code></pre></div><pre><code>&lt;startup-class&gt;
   &lt;name&gt;weblogic-logging-exporter&lt;/name&gt;
-  &lt;target&gt;AdminServer,ucm_cluster,ibr_cluster&lt;/target&gt;
+  &lt;target&gt;AdminServer,ucm_cluster,ibr_cluster,ipm_cluster,capture_cluster,wccadf_cluster&lt;/target&gt;
   &lt;class-name&gt;weblogic.logging.exporter.Startup&lt;/class-name&gt;
 &lt;/startup-class&gt;
 </code></pre></li>
@@ -5112,8 +5131,7 @@ FilterConfig{expression='NOT(MSGID = 'BEA-000449')', servers=[]}], domainUID='wc
 ================= publishPort in initialize: 9200 
 ================= url in executePutOrPostOnUrl: http://elasticsearch.default.svc.cluster.local:9200/wls
 </code></pre><h4 id="create-an-index-pattern-in-kibana">Create an Index Pattern in Kibana</h4>
-<p>Create an index pattern <code>wls*</code> in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard:</p>
-<p><img src="images/wcc-kibana-dashboard.png" alt="wcc-kibana-dashboard"></p>
+<p>Create an appropriate index pattern in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard.</p>
 
 
 <footer class=" footline" >
@@ -7022,6 +7040,22 @@ FilterConfig{expression='NOT(MSGID = 'BEA-000449')', servers=[]}], domainUID='wc
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8434,19 +8468,19 @@ FilterConfig{expression='NOT(MSGID = 'BEA-000449')', servers=[]}], domainUID='wc
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1648555071"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1648555071"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645770999" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645770999"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1648555071" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1648555071"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

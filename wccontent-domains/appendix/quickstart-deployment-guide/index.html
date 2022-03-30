@@ -12,18 +12,18 @@
     <title>Quick start deployment guide :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1645770999" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1648555071" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1648555071"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645770999"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1648555071"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1648555071"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1648555071"></script>
 
     
   </div>
@@ -2811,6 +2811,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3185,7 +3204,7 @@
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/appendix/">
-          <b>7. </b>Appendix
+          <b>8. </b>Appendix
           
       </a>
       
@@ -5419,7 +5438,7 @@ pod/kube-scheduler-mymasternode             1/1         Running         0       
 <pre><code>   $ cd ${WORKDIR}/weblogic-kubernetes-operator
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=oracle/weblogic-kubernetes-operator:3.2.5 \
+   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=op-sa \
    --set &quot;domainNamespaces={}&quot; \
    --wait
@@ -5434,7 +5453,7 @@ pod/kube-scheduler-mymasternode             1/1         Running         0       
 <pre><code>$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></li>
 </ol>
-<p>The WebLogic Kubernetes Operator v3.2.5 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.</p>
+<p>The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.</p>
 <h3 id="5-install-the-traefik-ingress-based-load-balancer">5. Install the Traefik (ingress-based) load balancer</h3>
 <p>WebLogic Kubernetes Operator supports these load balancers: Traefik, NGINX and Apache. Samples are provided in the documentation.</p>
 <p>This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle WebCenter Content domain.</p>
@@ -5505,30 +5524,13 @@ $ ./create-rcu-credentials.sh \
 </code></pre></li>
 <li>
 <p>Create the Kubernetes persistence volume and persistence volume claim.</p>
-<blockquote>
-<p><strong>Notes:</strong></p>
-<ul>
-<li>If you are using Oracle WebCenter Content pre-built image, downloaded from My Oracle Support (MOS patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32822360">32822360</a>), then please use the below command to create the directory -</li>
-</ul>
-</blockquote>
 <p>a. Create the Oracle WebCenter Content domain home directory.
-Determine if a user already exists on your host system with <code>uid:gid</code> of <code>1000:1000</code>:</p>
+Determine if a user already exists on your host system with <code>uid:gid</code> of <code>1000:0</code>:</p>
 <pre><code>$ sudo getent passwd 1000
 </code></pre><p>If this command returns a username (which is the first field), you can skip the following <code>useradd</code> command. If not, create the oracle user with <code>useradd</code>:</p>
-<pre><code>$ sudo useradd -u 1000 -g 1000 oracle
+<pre><code>$ sudo useradd -u 1000 -g 0 oracle
 </code></pre><p>Create the directory that will be used for the Oracle WebCenter Content domain home:</p>
 <pre><code>$ sudo mkdir /scratch/k8s_dir
-$ sudo chown -R 1000:1000 /scratch/k8s_dir
-</code></pre><blockquote>
-<p><strong>Notes:</strong></p>
-<ul>
-<li>If you choose to build Oracle WebCenter Content image, instead of downloading from My Oracle Support, then please use the below command to create the directory with updated user permission -</li>
-</ul>
-</blockquote>
-<pre><code>#Determine if a user already exists on your host system with `uid:gid` of `1000:0`:
-$ sudo getent passwd 1000
-$ sudo useradd -u 1000 -g 0 oracle
-$ sudo mkdir /scratch/k8s_dir
 $ sudo chown -R 1000:0 /scratch/k8s_dir
 </code></pre><p>b. Update <code>create-pv-pvc-inputs.yaml</code> with the following values:</p>
 <ul>
@@ -5626,6 +5628,9 @@ $ helm install wcc-traefik-ingress  kubernetes/samples/charts/ingress-per-domain
 http://${LOADBALANCER_HOSTNAME}:30305/em
 http://${LOADBALANCER_HOSTNAME}:30305/cs
 http://${LOADBALANCER_HOSTNAME}:30305/ibr
+http://${LOADBALANCER_HOSTNAME}:30305/imaging
+http://${LOADBALANCER_HOSTNAME}:30305/dc-console
+http://${LOADBALANCER_HOSTNAME}:30305/wcc
 </code></pre></li>
 </ol>
 
@@ -7528,6 +7533,22 @@ http://${LOADBALANCER_HOSTNAME}:30305/ibr
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8948,19 +8969,19 @@ http://${LOADBALANCER_HOSTNAME}:30305/ibr
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1648555071"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1648555071"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645770999" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645770999"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1648555071" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1648555071"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

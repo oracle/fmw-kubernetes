@@ -12,18 +12,18 @@
     <title>Elasticsearch integration for logs :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1645770999" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1645770999" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1648555071" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1648555071" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1648555071"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1645770999"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1648555071"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1648555071"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1645770999"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1648555071"></script>
 
     
   </div>
@@ -2811,6 +2811,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3185,7 +3204,7 @@
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/appendix/">
-          <b>7. </b>Appendix
+          <b>8. </b>Appendix
           
       </a>
       
@@ -5051,9 +5070,8 @@ spec:
       - name: logstash
         image: logstash:6.6.0
         command: [&quot;/bin/sh&quot;]
-        args: [&quot;/usr/share/logstash/bin/logstash&quot;, &quot;-f&quot;, &quot;/u01/oracle/user_projects/domains/logstash/logstash.conf&quot;]
+        args: [&quot;/usr/share/logstash/bin/logstash&quot;, &quot;-f&quot;, &quot;/u01/oracle/user_projects/domains/logstash.conf&quot;]
         imagePullPolicy: IfNotPresent
-        serverStartPolicy: &quot;NEVER&quot;
         volumeMounts:
         - mountPath: /u01/oracle/user_projects/domains
           name: weblogic-domain-storage-volume
@@ -5078,6 +5096,18 @@ spec:
     start_position =&gt; beginning
   }
   file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/ipm_server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/capture_server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/wccadf_server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
     path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/AdminServer.out&quot;
     start_position =&gt; beginning
   }
@@ -5089,16 +5119,40 @@ spec:
     path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/ibr_server*.out&quot;
     start_position =&gt; beginning
   }
- file {
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/ipm_server*.out&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/capture_server*.out&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/logs/wccinfra/wccadf_server*.out&quot;
+    start_position =&gt; beginning
+  }
+  file {
     path =&gt; &quot;/u01/oracle/user_projects/domains/wccinfra/servers/AdminServer/logs/AdminServer-diagnostic.log&quot;
     start_position =&gt; beginning
   }
- file {
+  file {
     path =&gt; &quot;/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ucm_server*.log&quot;
     start_position =&gt; beginning
   }
- file {
+  file {
     path =&gt; &quot;/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ibr_server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ipm_server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/capture_server*.log&quot;
+    start_position =&gt; beginning
+  }
+  file {
+    path =&gt; &quot;/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/wccadf_server*.log&quot;
     start_position =&gt; beginning
   }
 }
@@ -5113,7 +5167,7 @@ output {
   }
 }
 </code></pre><p>Here ** means that all ucm_server.log and ibr_server.log from any servers under <code>wccinfra</code> will be pushed to Logstash.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl cp kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/logstash/logstash.conf
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl cp kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/logstash.conf
 </code></pre></div><h4 id="deploy-logstash-pod">Deploy Logstash pod</h4>
 <p>After you have created the Logstash deployment yaml and Logstash configuration file, deploy Logstash using following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create -f kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.yaml
@@ -5134,8 +5188,7 @@ kibana          NodePort    10.98.104.41     &lt;none&gt;        5601:30412/TCP 
 kubernetes      ClusterIP   10.96.0.1        &lt;none&gt;        443/TCP             42d
 </code></pre></div><p>You can access the Kibana dashboard at <code>http://&lt;your_hostname&gt;:30412/</code>. In our example, the node port would be 30412.</p>
 <h4 id="create-an-index-pattern-in-kibana">Create an Index Pattern in Kibana</h4>
-<p>Create an index pattern <code>wls*</code> in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard:</p>
-<p><img src="images/wcc-kibana-dashboard.png" alt="wcc-kibana-dashboard"></p>
+<p>Create an index pattern <code>logstash-*</code> in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard.</p>
 
 
 <footer class=" footline" >
@@ -7044,6 +7097,22 @@ kubernetes      ClusterIP   10.96.0.1        &lt;none&gt;        443/TCP        
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -8456,19 +8525,19 @@ kubernetes      ClusterIP   10.96.0.1        &lt;none&gt;        443/TCP        
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1648555071"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1645770999"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1645770999"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1648555071"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1648555071"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1645770999" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1645770999"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1648555071" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1648555071"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
