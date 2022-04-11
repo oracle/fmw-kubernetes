@@ -1,6 +1,7 @@
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
+{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- if eq .Values.type "NGINX" }}
 {{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
 ---
@@ -13,12 +14,12 @@ metadata:
     kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/affinity: 'cookie'
     nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
-    nginx.ingress.kubernetes.io/affinity-mode: persistent
-{{- if eq .Values.sslType "SSL" }}
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+{{- if eq .Values.sslType "SSL" }}  
     nginx.ingress.kubernetes.io/configuration-snippet: |
-       more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
-       more_set_input_headers "X-Forwarded-Proto: https";
-       more_set_input_headers "WL-Proxy-SSL: true";
+      more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
     nginx.ingress.kubernetes.io/ingress.allow-http: 'false'
 {{- end }}
 spec:
@@ -140,10 +141,10 @@ metadata:
   name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-admin
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/affinity: 'cookie'
     nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
 spec:
   tls:
   - hosts:
@@ -153,11 +154,10 @@ spec:
   - host: '{{ .Values.hostName.admin }}'
     http:
       paths:
-      - path:
+      - path: 
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-ssl'
           servicePort: {{ .Values.wlsDomain.adminServerSSLPort }}
-                  
 {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
 ---
 apiVersion: extensions/v1beta1
@@ -166,10 +166,10 @@ metadata:
   name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-soa
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/affinity: 'cookie'
     nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
 spec:
   tls:
   - hosts:
@@ -183,7 +183,7 @@ spec:
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.soaManagedServerSSLPort  }}
-{{- end}}
+{{- end }}
 {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
 ---
 apiVersion: extensions/v1beta1
@@ -192,10 +192,10 @@ metadata:
   name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-osb
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/affinity: 'cookie'
     nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
 spec:
   tls:
   - hosts:
@@ -204,14 +204,14 @@ spec:
   rules:
   - host: '{{ .Values.hostName.osb }}'
     http:
-      paths:     
+      paths:
       - path: /
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.osbManagedServerSSLPort  }}
- {{- end }}
+{{- end }}
          
 {{- end }}
-
+{{- end }}
 {{- end }}
 

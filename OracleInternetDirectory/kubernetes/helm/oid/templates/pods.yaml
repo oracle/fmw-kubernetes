@@ -1,0 +1,198 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 2) -}}
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+  labels:
+    {{- include "oid.labels" $root | nindent 4 }}
+    oid/instance: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+spec:
+  restartPolicy: {{ $root.Values.restartPolicyName }}
+  {{- with $root.Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  serviceAccountName: {{ include "oid.serviceAccountName" $root }}
+  securityContext:
+    {{- toYaml $root.Values.podSecurityContext | nindent 4 }}
+  hostname: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+  containers:
+    - name: {{ $root.Chart.Name }}
+      securityContext:
+        {{- toYaml $root.Values.securityContext | nindent 8 }}
+      image: "{{ $root.Values.image.repository }}:{{ $root.Values.image.tag }}"
+      imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+      ports:
+        - name: ldap
+          containerPort: {{ $root.Values.oidPorts.ldap }}
+          protocol: TCP
+        - name: ldaps
+          containerPort: {{ $root.Values.oidPorts.ldaps }}
+          protocol: TCP
+      {{- if $root.Values.additionalOID.envVarsConfigMap }}
+      envFrom:
+      - configMapRef:
+          name: {{ $root.Values.additionalOID.envVarsConfigMap }}
+      {{- end }}
+      env:
+        {{- with $root.Values.additionalOID.envVars }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        - name: INSTANCE_TYPE
+          value: SECONDARY
+        - name: sleepBeforeConfig
+          value: {{ ( mul ($root.Values.oidConfig.sleepBeforeConfig |int) $replicaIndx ) | quote }}
+        - name: INSTANCE_NAME
+          value: oid{{ $replicaIndx }}
+        - name: ADMIN_LISTEN_HOST
+          value: {{ include "oid.fullname" $root }}host1
+        - name: ADMIN_LISTEN_PORT
+          value: {{ $root.Values.odsmPorts.http|quote }}
+        - name: ADMIN_LISTEN_SSL_PORT
+          value: {{ $root.Values.odsmPorts.https|quote }}
+        - name: LDAP_PORT
+          value: {{ $root.Values.oidPorts.ldap|quote }}
+        - name: LDAPS_PORT
+          value: {{ $root.Values.oidPorts.ldaps|quote }}
+        - name: DOMAIN_NAME
+          value: {{ $root.Values.oidConfig.domainName }}
+        - name: DOMAIN_HOME
+          value: {{ $root.Values.oidConfig.domainHome }}
+        {{- if $root.Values.secret.enabled }}
+        - name: ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              {{- if $root.Values.secret.name }}
+              name: {{ $root.Values.secret.name }}
+              key: adminUser
+              {{- else }}
+              name:  {{ include "oid.fullname" $root }}-creds
+              key: adminUser
+              {{- end }}
+        {{- else }}
+        - name: ADMIN_USER
+          value: {{ $root.Values.oidConfig.adminUser }}
+        {{- end }}
+        {{- if $root.Values.secret.enabled }}
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if $root.Values.secret.name }}
+              name: {{ $root.Values.secret.name }}
+              key: adminPassword
+              {{- else }}
+              name:  {{ include "oid.fullname" $root }}-creds
+              key: adminPassword
+              {{- end }}
+        {{- else }}
+        - name: ADMIN_PASSWORD
+          value: {{ $root.Values.oidConfig.adminPassword }}
+        {{- end }}
+        {{- if $root.Values.secret.enabled }}
+        - name: ORCL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if $root.Values.secret.name }}
+              name: {{ $root.Values.secret.name }}
+              key: orcladminPassword
+              {{- else }}
+              name:  {{ include "oid.fullname" $root }}-creds
+              key: orcladminPassword
+              {{- end }}
+        {{- else }}
+        - name: ORCL_ADMIN_PASSWORD
+          value: {{ $root.Values.oidConfig.orcladminPassword }}
+        {{- end }}
+       {{- if $root.Values.secret.enabled }}
+        - name: SSL_WALLET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if $root.Values.secret.name }}
+              name: {{ $root.Values.secret.name }}
+              key: sslwalletPassword
+              {{- else }}
+              name:  {{ include "oid.fullname" $root }}-creds
+              key: sslwalletPassword
+              {{- end }}
+        {{- else }}
+        - name: SSL_WALLET_PASSWORD
+          value: {{ $root.Values.oidConfig.sslwalletPassword }}
+        {{- end }}
+        - name: ldapPort
+          value: {{ $root.Values.oidPorts.ldap | quote }}
+        - name: ldapsPort
+          value: {{ $root.Values.oidPorts.ldaps | quote }}
+      volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+        {{- if $root.Values.persistence.enabled }}
+          {{- if $root.Values.persistence.pvname }}
+          name: {{ $root.Values.persistence.pvname }}
+          {{ else }}
+          name: {{ include "oid.fullname" $root }}-pv
+          {{- end }}
+        {{- else }}
+          name: oid-storage
+          subPath: user_projects
+        {{- end }}
+      readinessProbe:
+        tcpSocket:
+          port: {{ $root.Values.oidPorts.ldap | quote }}
+        initialDelaySeconds: {{ ($root.Values.deploymentConfig.livenessProbeInitialDelay|int) }}
+        timeoutSeconds: 15
+        periodSeconds: 30
+        failureThreshold: 10
+      readinessProbe:
+        tcpSocket:
+          port: {{ $root.Values.oidPorts.ldaps | quote }}
+        initialDelaySeconds: {{ ($root.Values.deploymentConfig.livenessProbeInitialDelay|int) }}
+        timeoutSeconds: 15
+        periodSeconds: 30
+        failureThreshold: 10
+      readinessProbe:
+        exec:
+          command:
+            - "/u01/oracle/dockertools/healthcheck_status.sh"
+        initialDelaySeconds: {{ ($root.Values.deploymentConfig.livenessProbeInitialDelay|int) }}
+        timeoutSeconds: 30
+        periodSeconds: 60
+        failureThreshold: 10
+  volumes:
+    {{- if $root.Values.persistence.enabled }}
+      {{- if $root.Values.persistence.pvname }}
+    - name: {{ $root.Values.persistence.pvname }}
+      {{ else }}
+    - name: {{ include "oid.fullname" $root }}-pv
+      {{- end }}
+      persistentVolumeClaim:
+        {{- if $root.Values.persistence.pvcname }}
+        claimName: {{ $root.Values.persistence.pvcname }}
+        {{ else }}
+        claimName: {{ include "oid.fullname" $root }}-pvc
+        {{- end }}
+    {{- else }}
+    - name: oid-storage
+      emptyDir: {}
+    {{- end }}
+  {{- with $root.Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $root.Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $root.Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- end }}

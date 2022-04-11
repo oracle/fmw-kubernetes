@@ -20,14 +20,10 @@ REST_ADDR="https://${HOSTNAME}:${REST_PORT}"
 SECRET=`kubectl get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
 ENCODED_TOKEN=`kubectl get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
 TOKEN=`echo ${ENCODED_TOKEN} | base64 --decode`
-#OPERATOR_CERT_DATA=`kubectl get secret -n operator-ns weblogic-operator-identity -o jsonpath='{.data.tls\.crt}'`
-#OPERATOR_CERT_FILE="/tmp/operator.cert.pem"
-#echo ${OPERATOR_CERT_DATA} | base64 --decode > ${OPERATOR_CERT_FILE}
-#cat ${OPERATOR_CERT_FILE}
+
 
 echo "Ready to call operator REST APIs"
 
-#URL_TAIL=operator/latest/domains
 
 STATUS_CODE=`curl \
   -v \

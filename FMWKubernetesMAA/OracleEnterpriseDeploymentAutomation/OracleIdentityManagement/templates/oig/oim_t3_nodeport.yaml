@@ -1,0 +1,22 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a script to create a NodePort Service for OIM managed servers
+# 
+kind: Service
+apiVersion: v1
+metadata:
+  name: <OIG_DOMAIN_NAME>-oim-t3-nodeport
+  namespace: <NAMESPACE>
+spec:
+  type: NodePort
+  selector:
+    weblogic.clusterName: oim_cluster
+    weblogic.domainUID: <OIG_DOMAIN_NAME>
+    weblogic.serverName: oim_server1
+  ports:
+    - targetPort: 14002
+      port: 14002
+      nodePort: <OIG_OIM_T3_PORT_K8>
+      protocol: TCP
+  sessionAffinity: ClientIP

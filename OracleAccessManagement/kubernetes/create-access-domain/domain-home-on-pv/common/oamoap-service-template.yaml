@@ -1,0 +1,17 @@
+# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: @DOMAINID@-oamoap-service
+  namespace: @OAM_NAMESPACE@
+spec:
+  type: NodePort
+  selector:
+    weblogic.clusterName: oam_cluster
+  ports:
+    - targetPort: 5575
+      port: 5575
+      nodePort: 30540
+      protocol: TCP

@@ -118,3 +118,4 @@ if [ "${SECRET}" != "1" ]; then
 fi
 
 echo "The secret ${secretName} has been successfully created in the ${namespace} namespace."
+

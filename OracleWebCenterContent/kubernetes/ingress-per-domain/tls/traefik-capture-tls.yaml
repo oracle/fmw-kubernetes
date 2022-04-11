@@ -1,0 +1,21 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: wcc-capture-routetcp
+  namespace: wccns
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: HostSNI(`your_host_name`)
+    services:
+    - name: wccinfra-cluster-capture-cluster
+      port: 16401
+      weight: 3
+      TerminationDelay: 400
+  tls:
+    passthrough: true

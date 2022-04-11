@@ -1,0 +1,190 @@
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a helm override file to deploy OUD
+# It will also seed users and groups and create ACIs for integration with other Oracle Identity Products.
+#
+# Dependencies: ./templates/oud/base.ldif
+#               ./templates/oud/99-user.ldif
+#
+# Usage: Used and Input to Helm command
+#
+
+image:
+  repository: <REPOSITORY>
+  tag: <IMAGE_VER>
+
+oudConfig:
+  baseDN: <OUD_SEARCHBASE>
+  rootUserDN: <OUD_ADMIN_USER>
+  rootUserPassword: <OUD_ADMIN_PWD>
+  sleepBeforeConfig: 300
+
+persistence:
+  storageClass: oci
+  type: networkstorage
+  networkstorage:
+    nfs:
+      server: <PVSERVER>
+      path: <OUD_SHARE>
+  size: 30Gi
+
+configVolume:
+  enabled: true
+  storageClass: oci
+  type: networkstorage
+  networkstorage:
+    nfs:
+      server: <PVSERVER>
+      path: <OUD_CONFIG_SHARE>
+  mountPath: /u01/oracle/config-input
+
+replicaCount: <OUD_REPLICAS>
+
+ingress:
+  enabled: <USE_INGRESS>
+  type: nginx
+  tlsEnabled: false
+
+
+baseOUD:
+  envVars:
+    - name: schemaConfigFile_1
+      value: /u01/oracle/config-input/99-user.ldif
+    - name: restartAfterSchemaConfig
+      value: "true"
+    - name: importLdif_1
+      value: --append --replaceExisting --includeBranch ${baseDN} --backendID userRoot --ldifFile /u01/oracle/config-input/base.ldif --rejectFile /u01/oracle/config-input/rejects.ldif --skipFile /u01/oracle/config-input/skip.ldif
+    - name: serverTuning
+      value: -Xms1024m -Xmx2048m -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
+    - name: dsconfig_1
+      value: set-global-configuration-prop --set lookthrough-limit:75000
+    - name: dsconfig_2
+      value: set-access-control-handler-prop --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny (all) userdn=\"ldap:///anyone\";)"
+    - name: dsconfig_3
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)" 
+    - name: dsconfig_4
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\")(version 3.0; acl \"<OUD_OIGADMIN_GRP> control access\"; allow(read)  groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
+    - name: dsconfig_5
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///\")(targetscope=\"base\")(targetattr=\"lastExternalChangelogCookie\")(version 3.0; acl \"User-Visible lastExternalChangelog\"; allow (read,search,compare) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
+    - name: dsconfig_6
+      value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
+    - name: dsconfig_7
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9 || 1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
+    - name: dsconfig_8
+      value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"2.16.840.1.113730.3.4.2 || 2.16.840.1.113730.3.4.17 || 2.16.840.1.113730.3.4.19 || 1.3.6.1.4.1.4203.1.10.2 || 1.3.6.1.4.1.42.2.27.8.5.1 || 2.16.840.1.113730.3.4.16 || 2.16.840.1.113894.1.8.31\") (version 3.0; acl \"Anonymous control access\"; allow(read) userdn=\"ldap:///anyone\";)"
+    - name: dsconfig_9
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"2.16.840.1.113730.3.4.2 || 2.16.840.1.113730.3.4.17 || 2.16.840.1.113730.3.4.19 || 1.3.6.1.4.1.4203.1.10.2 || 1.3.6.1.4.1.42.2.27.8.5.1 || 2.16.840.1.113730.3.4.16 || 2.16.840.1.113894.1.8.31 || 1.2.840.113556.1.4.319\") (version 3.0; acl \"Anonymous control access\"; allow(read) userdn=\"ldap:///anyone\";)"
+    - name: dsconfig_10
+      value: create-local-db-index --element-name userRoot --index-name orclImpersonationGranter --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_11
+      value: create-local-db-index --element-name userRoot --index-name orclImpersonationGrantee --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_12
+      value: create-local-db-index --element-name userRoot --index-name obid --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_13
+      value: create-local-db-index --element-name userRoot --index-name oblocationdn --set index-type:equality  
+    - name: dsconfig_14
+      value: create-local-db-index --element-name userRoot --index-name oblocationname --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_15
+      value: create-local-db-index --element-name userRoot --index-name oblocationtitle --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_16
+      value: create-local-db-index --element-name userRoot --index-name obrectangle --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_17
+      value: create-local-db-index --element-name userRoot --index-name obdirectreports --set index-type:equality 
+    - name: dsconfig_18
+      value: create-local-db-index --element-name userRoot --index-name obindirectmanager --set index-type:equality 
+    - name: dsconfig_19
+      value: create-local-db-index --element-name userRoot --index-name obuseraccountcontrol --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_20
+      value: create-local-db-index --element-name userRoot --index-name obobjectclass --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_21
+      value: create-local-db-index --element-name userRoot --index-name obparentlocationdn --set index-type:equality 
+    - name: dsconfig_22
+      value: create-local-db-index --element-name userRoot --index-name obgroupcreator --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_23
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscriptiontype --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_24
+      value: create-local-db-index --element-name userRoot --index-name obgroupdynamicfilter --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_25
+      value: create-local-db-index --element-name userRoot --index-name obgroupexpandeddynamic --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_26
+      value: create-local-db-index --element-name userRoot --index-name obgroupadministrator --set index-type:equality 
+    - name: dsconfig_27
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscriptionfilter --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_28
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscribemessage --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_29
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscribenotification --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_30
+      value: create-local-db-index --element-name userRoot --index-name obgrouppuredynamic --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: dsconfig_31
+      value: list-local-db-indexes --element-name userRoot 
+    - name: rebuildIndex_1
+      value: --rebuildAll 
+    - name: restartAfterRebuildIndex
+      value: "true"
+
+replOUD:
+  envVars:
+    - name: dsconfig_1
+      value: set-global-configuration-prop --set lookthrough-limit:75000
+    - name: dsconfig_2
+      value: set-access-control-handler-prop --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny (all) userdn=\"ldap:///anyone\";)"
+    - name: dsconfig_3
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
+    - name: dsconfig_4
+      value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
+    - name: dsconfig_5
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9 || 1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
+    - name: dsconfig_6
+      value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"2.16.840.1.113730.3.4.2 || 2.16.840.1.113730.3.4.17 || 2.16.840.1.113730.3.4.19 || 1.3.6.1.4.1.4203.1.10.2 || 1.3.6.1.4.1.42.2.27.8.5.1 || 2.16.840.1.113730.3.4.16 || 2.16.840.1.113894.1.8.31\") (version 3.0; acl \"Anonymous control access\"; allow(read) userdn=\"ldap:///anyone\";)"
+    - name: dsconfig_7
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"2.16.840.1.113730.3.4.2 || 2.16.840.1.113730.3.4.17 || 2.16.840.1.113730.3.4.19 || 1.3.6.1.4.1.4203.1.10.2 || 1.3.6.1.4.1.42.2.27.8.5.1 || 2.16.840.1.113730.3.4.16 || 2.16.840.1.113894.1.8.31 || 1.2.840.113556.1.4.319\") (version 3.0; acl \"Anonymous control access\"; allow(read) userdn=\"ldap:///anyone\";)"
+    - name: post_dsreplication_dsconfig_2
+      value: create-local-db-index --element-name userRoot --index-name orclImpersonationGranter --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_3
+      value: create-local-db-index --element-name userRoot --index-name orclImpersonationGrantee --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_4
+      value: create-local-db-index --element-name userRoot --index-name obid --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_5
+      value: create-local-db-index --element-name userRoot --index-name oblocationdn --set index-type:equality
+    - name: post_dsreplication_dsconfig_6
+      value: create-local-db-index --element-name userRoot --index-name oblocationname --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_7
+      value: create-local-db-index --element-name userRoot --index-name oblocationtitle --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_8
+      value: create-local-db-index --element-name userRoot --index-name obrectangle --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_9
+      value: create-local-db-index --element-name userRoot --index-name obdirectreports --set index-type:equality
+    - name: post_dsreplication_dsconfig_10
+      value: create-local-db-index --element-name userRoot --index-name obindirectmanager --set index-type:equality
+    - name: post_dsreplication_dsconfig_11
+      value: create-local-db-index --element-name userRoot --index-name obuseraccountcontrol --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_12
+      value: create-local-db-index --element-name userRoot --index-name obobjectclass --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_13
+      value: create-local-db-index --element-name userRoot --index-name obparentlocationdn --set index-type:equality
+    - name: post_dsreplication_dsconfig_14
+      value: create-local-db-index --element-name userRoot --index-name obgroupcreator --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_15
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscriptiontype --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_16
+      value: create-local-db-index --element-name userRoot --index-name obgroupdynamicfilter --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_17
+      value: create-local-db-index --element-name userRoot --index-name obgroupexpandeddynamic --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_18
+      value: create-local-db-index --element-name userRoot --index-name obgroupadministrator --set index-type:equality
+    - name: post_dsreplication_dsconfig_19
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscriptionfilter --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_20
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscribemessage --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_21
+      value: create-local-db-index --element-name userRoot --index-name obgroupsubscribenotification --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_22
+      value: create-local-db-index --element-name userRoot --index-name obgrouppuredynamic --set index-type:equality --set index-type:presence --set index-type:substring
+    - name: post_dsreplication_dsconfig_23
+      value: list-local-db-indexes --element-name userRoot
+    - name: rebuildIndex_1
+      value: --rebuildAll
+    - name: restartAfterRebuildIndex
+      value: "true"

@@ -29,7 +29,6 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
    ```bash
      $ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-     $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
      $ helm repo update
    ```
 ### Non-SSL and SSL termination

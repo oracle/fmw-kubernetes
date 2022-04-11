@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 apiVersion: batch/v1
 kind: Job
@@ -81,6 +81,12 @@ spec:
               value: "%MANAGED_SERVER_SSL_PORT%"
             - name: SSL_ENABLED
               value: "%SSL_ENABLED%"
+            - name: IPM_ENABLED
+              value: "%IPM_ENABLED%"
+            - name: CAPTURE_ENABLED
+              value: "%CAPTURE_ENABLED%"
+            - name: ADFUI_ENABLED
+              value: "%ADFUI_ENABLED%"   
       volumes:
         - name: create-fmw-infra-sample-domain-job-cm-volume
           configMap:

@@ -1,7 +1,7 @@
 ---
 title: "Oracle WebCenter Portal"
 date: 2021
-weight: 7
+weight: 8
 description: "The WebLogic Kubernetes operator (the “operator”) supports deployment of Oracle WebCenter Portal. Follow the instructions in this guide to set up Oracle WebCenter Portal domain on Kubernetes."
 ---
 
