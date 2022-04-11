@@ -38,7 +38,7 @@ artifacts of the corresponding domain.
 
 If required, domain creation inputs can be customized by editing `create-domain-inputs.yaml` as described below:  
 
-Please note that the sample scripts for the WebCenter Sites domain deployment are available from the previously downloaded repository at  `kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/`.
+Please note that the sample scripts for the WebCenter Sites domain deployment are available from the previously downloaded repository at  `kubernetes/create-wcsites-domain/domain-home-on-pv/`.
   
 Make a copy of the `create-domain-inputs.yaml` file before updating the default values.
 
@@ -135,11 +135,11 @@ to create the domain home for other use cases. You can modify the generated doma
 1. Now, run the `create-domain.sh` sample script below, pointing it at the create-domain-inputs inputs file and an output directory like below:
 
     ```bash
-    bash-4.2$ rm -rf kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains
+    bash-4.2$ rm -rf kubernetes/create-wcsites-domain/output/weblogic-domains
      
-    bash-4.2$ sh kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/create-domain.sh \
-        -i kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/create-domain-inputs.yaml \
-        -o kubernetes/samples/scripts/create-wcsites-domain/output
+    bash-4.2$ sh kubernetes/create-wcsites-domain/domain-home-on-pv/create-domain.sh \
+        -i kubernetes/create-wcsites-domain/domain-home-on-pv/create-domain-inputs.yaml \
+        -o kubernetes/create-wcsites-domain/output
      
 	Input parameters being used
 	export version="create-weblogic-sample-domain-inputs-v1"
@@ -180,9 +180,9 @@ to create the domain home for other use cases. You can modify the generated doma
 	export unicastPort="50000"
 	export sitesSamples="true"
 	
-	Generating kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
-	Generating kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.yaml
-	Generating kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+	Generating kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
+	Generating kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.yaml
+	Generating kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
 	Checking to see if the secret wcsitesinfra-domain-credentials exists in namespace wcsites-ns
 	configmap/wcsitesinfra-create-fmw-infra-sample-domain-job-cm created
 	Checking the configmap wcsitesinfra-create-fmw-infra-sample-domain-job-cm was created
@@ -190,7 +190,7 @@ to create the domain home for other use cases. You can modify the generated doma
 	Checking if object type job with name wcsitesinfra-create-fmw-infra-sample-domain-job exists
 	No resources found.
 	$loadBalancerType is NOT empty
-	Creating the domain by creating the job kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
+	Creating the domain by creating the job kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
 	job.batch/wcsitesinfra-create-fmw-infra-sample-domain-job created
 	Waiting for the job to complete...
 	status on iteration 1 of 20
@@ -229,9 +229,9 @@ to create the domain home for other use cases. You can modify the generated doma
 	Domain wcsitesinfra was created and will be started by the WebLogic Kubernetes Operator
 	
 	The following files were generated:
-	kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-inputs.yaml
-	kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
-	kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+	kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-inputs.yaml
+	kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
+	kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
 	
 	Completed	
     ```
@@ -421,7 +421,7 @@ to create the domain home for other use cases. You can modify the generated doma
 To start the domain, apply the above `domain.yaml`:
 
 	```bash
-	$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+	$ kubectl apply -f kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
 	domain.weblogic.oracle/wcsitesinfra created
 	```
 
@@ -520,7 +520,7 @@ wcsitesinfra-wcsites-server1                            1/1     Running     0   
 Below are the default values for exposing services required for all the WebCenter Sites Managed Servers. 
 Reset them if any values are modified.
 
-Details on `kubernetes/samples/scripts/create-wcsites-domain/utils/wcs-services.yaml`:
+Details on `kubernetes/create-wcsites-domain/utils/wcs-services.yaml`:
 
 * name: wcsitesinfra-wcsites-server1-np
 * namespace: wcsites-ns
@@ -530,7 +530,7 @@ Details on `kubernetes/samples/scripts/create-wcsites-domain/utils/wcs-services.
 Execute the below command for exposing the services: (If domain is configured for more than 3 Managed Servers then add the service yaml for additional servers.)
 
 ```bash
-$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/utils/wcs-services.yaml
+$ kubectl apply -f kubernetes/create-wcsites-domain/utils/wcs-services.yaml
 service/wcsitesinfra-wcsites-server1-np created
 service/wcsitesinfra-wcsites-server1-svc created
 service/wcsitesinfra-wcsites-server2-svc created
@@ -560,7 +560,7 @@ For information on how to set up Loadbalancer for setting up WebCenter Sites dom
 
 For Traefik, see [Setting Up Loadbalancer Traefik for the WebCenter Sites Domain on K8S]({{< relref "/wcsites-domains/adminguide/configure-load-balancer/traefik.md">}})
 
-For Voyager, see [Setting Up Loadbalancer Voyager for the WebCenter Sites Domain on K8S]({{< relref "/wcsites-domains/adminguide/configure-load-balancer/voyager.md">}})
+For Nginx, see [Setting Up Loadbalancer Nginx for the WebCenter Sites Domain on K8S]({{< relref "/wcsites-domains/adminguide/configure-load-balancer/nginx.md">}})
 
 #### Configure WebCenter Sites 
 
@@ -595,8 +595,6 @@ $ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "rep
 	
 #### Settings in WebCenter Sites Property Management
 
-Incase of Voyager Load Balancer: Use Property Management Tool and update `cookieserver.validnames` property with value `JSESSIONID,SERVERID`.
-
 Incase of Traefik Load Balancer: Use Property Management Tool and update `cookieserver.validnames` property with value `JSESSIONID,sticky`.
 
 Incase of Nginx Load Balancer: Use Property Management Tool and update `cookieserver.validnames` property with value `JSESSIONID,stickyid`.
@@ -615,4 +613,4 @@ wcsitesinfra-wcsites-server1-np   NodePort   10.105.167.205   <none>        8001
 
 #### Customization
 
-A customer specific customizations (extend.sites.webapp-lib.war) has to be placed in `sites-home` directory inside your domain mount path (/scratch/K8SVolume/WCSites/sites-home). 
+A customer specific customizations (extend.sites.webapp-lib.war) has to be placed in sites-home directory inside your domain mount path. 
