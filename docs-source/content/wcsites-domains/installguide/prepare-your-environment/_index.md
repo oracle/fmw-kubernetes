@@ -33,24 +33,24 @@ After creating Kubernetes clusters, you can optionally:
 
 #### Build Oracle WebCenter Sites Image
 
-Build Oracle WebCenter Sites 12.2.1.4 Image by following steps from this [document](https://oracle.github.io/fmw-kubernetes/wcsites-domains/create-or-update-image/#create-an-image).
+Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4).
 
 Alternatively, the Oracle WebCenter Sites Image with latest bundle patch can be obtained from My Oracle Support (MOS).
 
-1. Download patch [32847300](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32847300) from My Oracle Support (MOS).
+1. Download patch [33579457](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33579457) from My Oracle Support (MOS).
 
 1. Unzip the downloaded zip file.
 
 	For example:
     ```bash
-    $ unzip  p32847300_122140_Linux-x86-64.zip
+    $ unzip  p33579457_122140_Linux-x86-64.zip
     ```
 
 1. Load the image archive using the `docker load` command.
 
 	For example:
     ```bash
-    $ docker load < wcsites-20210422.tar.gz
+    $ docker load < wcsites-20211019.tar.gz
     ```
 
 > Note: The default Oracle WebCenter Sites image name used for Oracle WebCenter Sites domains deployment is `oracle/wcsites:12.2.1.4-21.1.1`. The image obtained must be tagged as `oracle/wcsites:12.2.1.4-21.1.1` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wcsites:12.2.1.4-21.1.1` image name is used.
@@ -74,8 +74,8 @@ This step is required once at every node to get access to the Oracle Container R
 
 WebLogic Kubernetes Operator image:
 ```bash
-$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.0.1
-$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.0.1 oracle/weblogic-kubernetes-operator:3.0.1
+$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
+$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
 ```
 
 2. Copy all the above built and pulled images to all the nodes in your cluster or add to a Docker registry that your cluster can access.
@@ -101,25 +101,19 @@ Oracle WebCenter Sites domain deployment on Kubernetes leverages the Oracle WebL
    $ cd <work directory>
    ```
 
-1. Download the supported version of Oracle WebLogic Kubernetes Operator source code archieve file (`.zip`/`.tar.gz`) from the operator [relases page](https://github.com/oracle/weblogic-kubernetes-operator/releases). Currently the supported operator version can be downloaded from [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/archive/v3.0.1.zip).
-
-1. Extract the source code archive file (`.zip`/`.tar.gz`) in to the work directory.
-
-1. Download the WebCenter Sites kubernetes deployment scripts from this [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to WebLogic operator samples location.
+1. Download the WebCenter Sites kubernetes deployment scripts from this [repository](https://github.com/oracle/fmw-kubernetes.git) .
 
    ```bash
    $ git clone https://github.com/oracle/fmw-kubernetes.git
-   $ cp -rf <work directory>/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-wcsites-domain  <work directory>/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
-   $ cp -rf <work directory>/fmw-kubernetes/OracleWebCenterSites/kubernetes/imagetool-scripts  <work directory>/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
    ```
 
-You can now use the deployment scripts from `<work directory>/weblogic-kubernetes-operator-3.0.1` to set up the WebCenter Sites domain as further described in this document.
+You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleWebCenterSites` to set up the WebCenter Sites domain as further described in this document.
 
 This will be your home directory for runnning all the required scripts.
 
-```bash
-$ cd <work directory>/weblogic-kubernetes-operator-3.0.1
-```
+   ```bash
+   $ cd <work directory>/fmw-kubernetes/OracleWebCenterSites
+   ```
 
 #### Clear Stale Resources
 
@@ -166,7 +160,7 @@ $ cd <work directory>/weblogic-kubernetes-operator-3.0.1
 	> Helm install weblogic-operator
 
 	```bash
-	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set image=oracle/weblogic-kubernetes-operator:3.0.1 --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
+	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
  
  
 	NAME: weblogic-kubernetes-operator
@@ -210,7 +204,7 @@ $ cd <work directory>/weblogic-kubernetes-operator-3.0.1
 		Using VM: OpenJDK 64-Bit Server VM
 	
 	{"timestamp":"03-14-2020T06:49:53.438+0000","thread":1,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1584168593438,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-	{"timestamp":"03-14-2020T06:49:53.944+0000","thread":1,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"main","timeInMillis":1584168593944,"message":"Oracle WebLogic Server Kubernetes Operator, version: 3.0.1, implementation: master.4d4fe0a, build time: 2019-11-15T21:19:56-0500","exception":"","code":"","headers":{},"body":""}
+	{"timestamp":"03-14-2020T06:49:53.944+0000","thread":1,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"main","timeInMillis":1584168593944,"message":"Oracle WebLogic Server Kubernetes Operator, version: 3.3.0, implementation: master.4d4fe0a, build time: 2019-11-15T21:19:56-0500","exception":"","code":"","headers":{},"body":""}
 	{"timestamp":"03-14-2020T06:49:53.972+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"begin","timeInMillis":1584168593972,"message":"Operator namespace is: operator-ns","exception":"","code":"","headers":{},"body":""}
 	{"timestamp":"03-14-2020T06:49:54.009+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"begin","timeInMillis":1584168594009,"message":"Operator target namespaces are: operator-ns","exception":"","code":"","headers":{},"body":""}
 	{"timestamp":"03-14-2020T06:49:54.013+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"begin","timeInMillis":1584168594013,"message":"Operator service account is: operator-sa","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:54.031+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.HealthCheckHelper","method":"performK8sVersionCheck","timeInMillis":1584168594031,"message":"Verifying Kubernetes minimum version","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:54.286+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.ClientPool","method":"getApiClient","timeInMillis":1584168594286,"message":"The Kuberenetes Master URL is set to https://10.96.0.1:443","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:54.673+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.HealthCheckHelper","method":"createAndValidateKubernetesVersion","timeInMillis":1584168594673,"message":"Kubernetes version is: v1.13.7","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.259+0000","thread":12,"fiber":"engine-operator-thread-2-fiber-1","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.CrdHelper$CrdContext$CreateResponseStep","method":"onSuccess","timeInMillis":1584168595259,"message":"Create Custom Resource Definition: oracle.kubernetes.operator.calls.CallResponse@470b40c","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.356+0000","thread":16,"fiber":"fiber-1-child-2","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.HealthCheckHelper","method":"performSecurityChecks","timeInMillis":1584168595356,"message":"Verifying that operator service account can access required operations on required resources in namespace operator-ns","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.598+0000","thread":18,"fiber":"fiber-1-child-2","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.ConfigMapHelper$ScriptConfigMapContext$CreateResponseStep","method":"onSuccess","timeInMillis":1584168595598,"message":"Creating domain config map, operator-ns, for namespace: {1}.","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.937+0000","thread":21,"fiber":"fiber-1","domainUID":"","level":"WARNING","class":"oracle.kubernetes.operator.utils.Certificates","method":"getCertificate","timeInMillis":1584168595937,"message":"Can't read certificate at /operator/external-identity/externalOperatorCert","exception":"\njava.nio.file.NoSuchFileException: /operator/external-identity/externalOperatorCert\n\tat java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)\n\tat java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)\n\tat java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)\n\tat java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:215)\n\tat java.base/java.nio.file.Files.newByteChannel(Files.java:370)\n\tat java.base/java.nio.file.Files.newByteChannel(Files.java:421)\n\tat java.base/java.nio.file.Files.readAllBytes(Files.java:3205)\n\tat oracle.kubernetes.operator.utils.Certificates.getCertificate(Certificates.java:48)\n\tat oracle.kubernetes.operator.utils.Certificates.getOperatorExternalCertificateData(Certificates.java:39)\n\tat oracle.kubernetes.operator.rest.RestConfigImpl.getOperatorExternalCertificateData(RestConfigImpl.java:52)\n\tat oracle.kubernetes.operator.rest.RestServer.isExternalSslConfigured(RestServer.java:383)\n\tat oracle.kubernetes.operator.rest.RestServer.start(RestServer.java:199)\n\tat oracle.kubernetes.operator.Main.startRestServer(Main.java:353)\n\tat oracle.kubernetes.operator.Main.completeBegin(Main.java:198)\n\tat oracle.kubernetes.operator.Main$NullCompletionCallback.onCompletion(Main.java:701)\n\tat oracle.kubernetes.operator.work.Fiber.completionCheck(Fiber.java:475)\n\tat oracle.kubernetes.operator.work.Fiber.run(Fiber.java:448)\n\tat oracle.kubernetes.operator.work.ThreadLocalContainerResolver.lambda$wrapExecutor$0(ThreadLocalContainerResolver.java:87)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n","code":"","headers":{},"body":""}
@@ -272,7 +266,7 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     
     Output:
     ```bash
-    $ sh kubernetes/samples/scripts/create-weblogic-domain-credentials/create-weblogic-credentials.sh \
+    $ sh kubernetes/create-weblogic-domain-credentials/create-weblogic-credentials.sh \
         -u weblogic -p Welcome1 -n wcsites-ns \
         -d wcsitesinfra -s wcsitesinfra-domain-credentials
      
@@ -297,8 +291,8 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     Output:
     
     ```bash
-    $ sh kubernetes/samples/scripts/create-rcu-credentials/create-rcu-credentials.sh \
-        -u WCS1 -p Welcome##1 -a sys -q Welcome##1 -n wcsites-ns \
+    $ sh kubernetes/create-rcu-credentials/create-rcu-credentials.sh \
+        -u WCS1 -p Welcome#123 -a sys -q Welcome#123 -n wcsites-ns \
         -d wcsitesinfra -s wcsitesinfra-rcu-credentials
      
     secret/wcsitesinfra-rcu-credentials created
@@ -308,8 +302,8 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     Where:
     
        * WCS1                             is the schema user
-       * Welcome##1                         is the schema password
-       * Welcome##1                       is the database SYS users password
+       * Welcome#123                      is the schema password
+       * Welcome#123                      is the database SYS users password
        * wcsitesinfra                     is the domain name
        * wcsites-ns                       is the domain namespace
        * wcsitesinfra-rcu-credentials     is the secret name
@@ -322,7 +316,7 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
 
 4. Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim):
 
-    a. Update the `kubernetes/samples/scripts/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml`.
+    a. Update the `kubernetes/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml`.
 	
 	Replace the token `%NFS_SERVER%` with the host name/IP of NFS Server created in [Configure NFS Server](#configure-nfs-server) section.   
 	
@@ -338,9 +332,9 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     b. Execute the `create-pv-pvc.sh` script to create the PV and PVC configuration files:
     
     ```bash
-    $ sh kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/create-pv-pvc.sh \
-        -i kubernetes/samples/scripts/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml \
-        -o kubernetes/samples/scripts/create-wcsites-domain/output
+    $ sh kubernetes/create-weblogic-domain-pv-pvc/create-pv-pvc.sh \
+        -i kubernetes/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml \
+        -o kubernetes/create-wcsites-domain/output
      
     Input parameters being used
 	export version="create-weblogic-sample-domain-pv-pvc-inputs-v1"
@@ -352,11 +346,11 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
 	export weblogicDomainStorageReclaimPolicy="Retain"
 	export weblogicDomainStorageSize="10Gi"
 	
-	Generating kubernetes/samples/scripts/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pv.yaml
-	Generating kubernetes/samples/scripts/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pvc.yaml
+	Generating kubernetes/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pv.yaml
+	Generating kubernetes/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pvc.yaml
 	The following files were generated:
-	kubernetes/samples/scripts/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pv.yaml
-	kubernetes/samples/scripts/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pvc.yaml
+	kubernetes/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pv.yaml
+	kubernetes/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pvc.yaml
 	
 	Completed
     ```
@@ -366,8 +360,8 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     Output:
     
     ```bash
-    $ kubectl create -f kubernetes/samples/scripts/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pv.yaml \
-        -f kubernetes/samples/scripts/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pvc.yaml
+    $ kubectl create -f kubernetes/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pv.yaml \
+        -f kubernetes/create-wcsites-domain/output/pv-pvcs/wcsitesinfra-domain-pvc.yaml
      
     persistentvolume/wcsitesinfra-domain-pv created
     persistentvolumeclaim/wcsitesinfra-domain-pvc created
@@ -399,4 +393,4 @@ Oracle WebCenter Sites domains require a database with the necessary schemas ins
 
 For production deployments, you must set up and use the standalone (non-container) based database running outside of Kubernetes.
 
-Before creating a domain, you need to set up the necessary schemas in your database.
+Before creating a domain, you will need to set up the necessary schemas in your database.
