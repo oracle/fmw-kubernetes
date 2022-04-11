@@ -1,0 +1,26 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.domain.domainName }}-domain-pv
+  labels:
+    weblogic.domainUID: {{ .Values.domain.domainName }}
+spec:
+  storageClassName: {{ .Values.domain.domainName }}-domain-storage-class
+  capacity:
+    storage: {{ .Values.domain.storage.capacity }}
+  accessModes:
+    - ReadWriteMany
+  # Valid values are Retain, Delete or Recycle
+  persistentVolumeReclaimPolicy: Retain
+  {{- if eq .Values.domain.storage.type "nfs"}}
+  nfs:
+    server: {{ .Values.domain.storage.nfs.server }}
+    path: {{ .Values.domain.storage.path }}
+  {{- end }}
+  {{- if eq .Values.domain.storage.type "hostpath" }}
+  hostPath:
+    path: {{ .Values.domain.storage.path }}
+  {{- end }}
