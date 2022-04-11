@@ -451,14 +451,14 @@ Follow [these steps]({{< relref "/wcsites-domains/installguide/prepare-your-envi
     b. Pull the operator image:
 
     ```
-    $ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.0.1
-    $ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.0.1 oracle/weblogic-kubernetes-operator:3.0.1
+    $ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
+    $ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
     ```
 
 1. Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4)
 
 1. Copy all the above built and pulled images to all the nodes in your cluster or add to a Docker registry that your cluster can access.
-    
+
 #### 3.3 Set Up the Code Repository to Deploy Oracle WebCenter Sites Domain
 
 Oracle WebCenter Sites domain deployment on Kubernetes leverages the Oracle WebLogic Kubernetes Operator infrastructure. For deploying the Oracle WebCenter Sites domain, you need to set up the deployment scripts as below:
@@ -469,26 +469,20 @@ Oracle WebCenter Sites domain deployment on Kubernetes leverages the Oracle WebL
    $ cd ${WORKDIR}
    ```
 
-1. Download the supported version of Oracle WebLogic Kubernetes Operator source code archieve file (`.zip`/`.tar.gz`) from the operator [relases page](https://github.com/oracle/weblogic-kubernetes-operator/releases). Currently supported operator version can be downloaded from [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/archive/v3.0.1.zip).
-
-1. Extract the source code archive file (`.zip`/`.tar.gz`) in to the work directory.
-
 1. Download the WebCenter Sites kubernetes deployment scripts from this [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to WebLogic operator samples location.
 
    ```bash
    $ git clone https://github.com/oracle/fmw-kubernetes.git
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-wcsites-domain  ${WORKDIR}/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator-3.0.1/kubernetes/samples/scripts/
    ```
 
-You can now use the deployment scripts from `<work directory>/weblogic-kubernetes-operator-3.0.1` to set up the WebCenter Sites domain as further described in this document.
+You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleWebCenterSites` to set up the WebCenter Sites domain as further described in this document.
 
 This will be your home directory for runnning all the required scripts.
 
 ```bash
-$ cd ${WORKDIR}/weblogic-kubernetes-operator-3.0.1
-```
-
+$ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
+```    
+    
 ### 4. Install the WebLogic Kubernetes Operator
 
 #### 4.1 Prepare for the WebLogic Kubernetes Operator.
@@ -507,10 +501,10 @@ $ cd ${WORKDIR}/weblogic-kubernetes-operator-3.0.1
 Use Helm to install and start the operator from the directory you just cloned:
 
 ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
+   $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace operator-ns \
-   --set image=oracle/weblogic-kubernetes-operator:3.0.1 \
+   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=operator-sa \
    --set "domainNamespaces={}" \
    --wait
@@ -527,11 +521,11 @@ Use Helm to install and start the operator from the directory you just cloned:
    $ kubectl logs -n operator-ns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes Operator v3.0.1 has been installed. Continue with the load balancer and Oracle WebCenter Sites domain setup.
+The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Sites domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 
-The Oracle WebLogic Server Kubernetes operator supports three load balancers: Traefik, Voyager, and Apache. Samples are provided in the documentation.
+The Oracle WebLogic Server Kubernetes operator supports two load balancers: Traefik, Nginx. Samples are provided in the documentation.
 
 This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle WebCenter Sites domain.
 
@@ -547,10 +541,10 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Install the Traefik operator in the `traefik` namespace with the provided sample values:
    ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
+   $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
    $ helm install traefik traefik/traefik \
     --namespace traefik \
-    --values kubernetes/samples/scripts/charts/traefik/values.yaml \
+    --values kubernetes/charts/traefik/values.yaml \
     --set "kubernetes.namespaces={traefik}" \
     --set "service.type=NodePort" \
     --wait
@@ -566,7 +560,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Use Helm to configure the operator to manage Oracle WebCenter Sites domains in this namespace:
    ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
+   $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
    $ helm upgrade weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
       --reuse-values \
       --namespace operator-ns \
@@ -579,7 +573,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
    a. Create a Kubernetes secret for the domain in the same Kubernetes namespace as the domain. In this example, the username is `weblogic`, the password in `Welcome1`, and the namespace is `wcsites-ns`:
 
       ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
+      $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-weblogic-domain-credentials
       $ ./create-weblogic-credentials.sh \
            -u weblogic \
            -p Welcome1 \
@@ -598,7 +592,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
      * Secret name          : wcsitesinfra-rcu-credentials
 
      ```
-     $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+     $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-rcu-credentials
      $ ./create-rcu-credentials.sh \
             -u WCS1 \
             -p Oradoc_db1 \
@@ -636,7 +630,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
       * weblogicDomainStoragePath: /scratch/K8SVolume
 
       ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+      $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-weblogic-domain-pv-pvc
       $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
       $ sed -i -e "s:baseName\: weblogic-sample:baseName\: domain:g" create-pv-pvc-inputs.yaml
       $ sed -i -e "s:domainUID\::domainUID\: wcsitesinfra:g" create-pv-pvc-inputs.yaml
@@ -669,12 +663,12 @@ Now the environment is ready to start the Oracle WebCenter Sites domain creation
 
 #### 6.2 Create an Oracle WebCenter Sites domain
 
-1. The sample scripts for Oracle WebCenter Sites domain deployment are available at `<weblogic-kubernetes-operator-project>/kubernetes/samples/scripts/create-wcsites-domain`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
+1. The sample scripts for Oracle WebCenter Sites domain deployment are available at `<weblogic-kubernetes-operator-project>/kubernetes/create-wcsites-domain`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
 
 
 1. Run the `create-domain.sh` script to create a domain:
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/
+    $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-wcsites-domain/domain-home-on-pv/
     $ ./create-domain.sh -i create-domain-inputs.yaml -o output
     ```
 
@@ -683,7 +677,7 @@ Now the environment is ready to start the Oracle WebCenter Sites domain creation
     Once the create-domain.sh is successful, it generates the `output/weblogic-domains/wcsitesinfra/domain.yaml` that you can use to create the Kubernetes resource domain, which starts the domain and servers:
 
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv
+    $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites/kubernetes/create-wcsites-domain/domain-home-on-pv
     $ kubectl create -f output/weblogic-domains/wcsitesinfra/domain.yaml
     ```
 
@@ -718,10 +712,10 @@ Watch the `wcsites-ns` namespace for the status of domain creation:
 
 1. Create an ingress for the domain in the domain namespace by using the sample Helm chart:
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
-    $ helm install wcsitesinfra-ingress kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain \
+    $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
+    $ helm install wcsitesinfra-ingress kubernetes/create-wcsites-domain/ingress-per-domain \
     --namespace wcsites-ns \
-    --values kubernetes/samples/scripts/create-wcsites-domain/ingress-per-domain/values.yaml \
+    --values kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml \
     --set "traefik.hostname=$(hostname -f)" \
     ```
 1. Verify the created ingress per domain details:
