@@ -1,0 +1,71 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.domain.domainName }}-delete-fmw-infra-sample-domain-job
+  namespace: {{ .Values.domain.namespace }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "5"
+    #"helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded  
+spec:
+  template:
+    metadata:
+      labels:
+        weblogic.resourceVersion: domain-v2
+        weblogic.domainUID: {{ .Values.domain.domainName }}
+        weblogic.domainName: {{ .Values.domain.domainName }}
+        app: {{ .Values.domain.domainName }}-delete-fmw-infra-sample-domain-job
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: delete-fmw-infra-sample-domain-job
+          {{- if .Values.image.name }}
+          image: "{{ .Values.image.name }}"
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7001
+          volumeMounts:
+          - mountPath: {{ .Values.domain.scriptDir }}
+            name: create-fmw-infra-sample-domain-job-cm-volume
+          - mountPath: {{ .Values.domain.rootDir }}
+            name: fmw-infra-sample-domain-storage-volume
+          - mountPath: /weblogic-operator/rcu-secrets
+            name: rcu-credentials-volume
+          command: ["/bin/sh"]
+          args: ["{{ .Values.domain.scriptDir }}/drop-rcu-schema.sh"]
+          env:
+            - name: DOMAIN_HOME_DIR
+              value: {{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}
+            - name: DOMAIN_LOGS_DIR
+              value: {{ .Values.domain.rootDir }}/logs/{{ .Values.domain.domainName }}
+            - name: CUSTOM_RCUPREFIX
+              value: "{{ .Values.domain.rcuSchema.prefix }}"
+            - name: CUSTOM_CONNECTION_STRING
+              value: "{{ .Values.oracledb.url }}"
+            - name: CREATE_DOMAIN_SCRIPT_DIR
+              value: "{{ .Values.domain.scriptDir }}"
+
+      volumes:
+        - name: create-fmw-infra-sample-domain-job-cm-volume
+          configMap:
+            name: {{ .Values.domain.domainName }}-create-fmw-infra-sample-domain-job-cm
+        - name: fmw-infra-sample-domain-storage-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.domain.domainName }}-domain-pvc
+        - name: rcu-credentials-volume
+          secret:
+            secretName: {{ .Values.domain.domainName }}-rcu-credentials
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

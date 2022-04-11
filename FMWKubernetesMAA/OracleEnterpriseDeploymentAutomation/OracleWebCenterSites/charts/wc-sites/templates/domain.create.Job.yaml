@@ -1,0 +1,175 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.domain.domainName }}-create-fmw-infra-sample-domain-job
+  namespace: {{ .Values.domain.namespace }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+spec:
+  template:
+    metadata:
+      labels:
+        weblogic.resourceVersion: domain-v2
+        weblogic.domainUID: {{ .Values.domain.domainName }}
+        weblogic.domainName: {{ .Values.domain.domainName }}
+        app: {{ .Values.domain.domainName }}-create-fmw-infra-sample-domain-job
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      restartPolicy: Never
+      {{- if eq .Values.domain.storage.type "nfs" }}
+      initContainers:
+        - name: fix-pvc-owner
+          {{- if .Values.image.name }}
+          image: "{{ .Values.image.name }}"
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          command: ["sh", "-c", "chown 1000:0 /u01/oracle/user_projects/. && find /u01/oracle/user_projects/. -maxdepth 1 ! -name '.snapshot' ! -name '.' -print0 | xargs -r -0 chown -R 1000:0"]
+          volumeMounts:
+          - name: fmw-infra-sample-domain-storage-volume
+            mountPath: {{ .Values.domain.rootDir }}
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+      {{- end }}
+      containers:
+        - name: create-fmw-infra-sample-domain-job
+          {{- if .Values.image.name }}
+          image: "{{ .Values.image.name }}"
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7001
+          volumeMounts:
+          - mountPath: {{ .Values.domain.scriptDir }}
+            name: create-fmw-infra-sample-domain-job-cm-volume
+          - mountPath: {{ .Values.domain.rootDir }}
+            name: fmw-infra-sample-domain-storage-volume
+          - mountPath: /weblogic-operator/secrets
+            name: fmw-infra-credentials-volume
+          - mountPath: /weblogic-operator/rcu-secrets
+            name: rcu-credentials-volume
+          command: ["/bin/sh"]
+          args: ["{{ .Values.domain.scriptDir }}/create-domain-job.sh"]
+          env:
+            - name: DOMAIN_UID
+              value: "{{ .Values.domain.domainName }}"
+            - name: ADMIN_SERVER_NAME_SVC
+              value: "{{ .Values.domain.admin.name }}"
+            - name: T3_CHANNEL_PORT
+              value: "{{ or .Values.domain.t3Channel.port 30012 }}"
+            - name: T3_PUBLIC_ADDRESS
+              value: "{{ or .Values.domain.t3Channel.publicIp "0.0.0.0" }}"
+            - name: MANAGED_SERVER_NAME_BASE_SVC
+              value: "wcsites-server"
+            - name: CREATE_DOMAIN_SCRIPT_DIR
+              value: "{{ .Values.domain.scriptDir }}"
+            - name: DOMAIN_ROOT_DIR
+              value: "{{ .Values.domain.rootDir }}"
+            - name: DOMAIN_HOME_DIR
+              value: "{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}"
+            - name: DOMAIN_LOGS_DIR
+              value: "{{ .Values.domain.rootDir }}/logs/{{ .Values.domain.domainName }}"
+            - name: CUSTOM_DOMAIN_NAME
+              value: "{{ .Values.domain.domainName }}"
+            - name: CUSTOM_ADMIN_LISTEN_PORT
+              value: "{{ .Values.domain.admin.listenPort }}"
+            - name: CUSTOM_ADMIN_NAME
+              value: "{{ .Values.domain.admin.name }}"
+            - name: CUSTOM_ADMIN_HOST
+              value: "%CUSTOM_ADMIN_HOST%"
+            - name: CUSTOM_MANAGEDSERVER_PORT
+              value: "{{ .Values.domain.wcsCluster.managedServers.listenPort }}"
+            - name: CUSTOM_MANAGED_BASE_NAME
+              value: "{{ .Values.domain.wcsCluster.managedServers.name }}"
+            - name: CUSTOM_MANAGED_SERVER_COUNT
+              value: "{{ .Values.domain.wcsCluster.managedServers.count }}"
+            - name: CUSTOM_CLUSTER_NAME
+              value: "{{ .Values.domain.wcsCluster.name }}"
+            - name: CUSTOM_RCUPREFIX
+              value: "{{ .Values.domain.rcuSchema.prefix }}"
+            - name: CUSTOM_PRODUCTION_MODE
+              value: "true"
+            - name: CUSTOM_CONNECTION_STRING
+              value: "{{ .Values.oracledb.url }}"
+            - name: EXPOSE_T3_CHANNEL_PREFIX
+              value: "false"
+            - name: DOMAIN_NAME
+              value: "{{ .Values.domain.domainName }}"
+            - name: ADMIN_SERVER_NAME
+              value: "{{ .Values.domain.admin.name }}"
+            - name: ADMIN_PORT
+              value: "{{ .Values.domain.admin.listenPort }}"
+            - name: CLUSTER_NAME
+              value: "{{ .Values.domain.wcsCluster.name }}"
+            - name: MANAGED_SERVER_NAME_BASE
+              value: "{{ .Values.domain.wcsCluster.managedServers.name }}"
+            - name: CONFIGURED_MANAGED_SERVER_COUNT
+              value: "{{ .Values.domain.wcsCluster.managedServers.count }}"
+            - name: MANAGED_SERVER_PORT
+              value: "{{ .Values.domain.wcsCluster.managedServers.listenPort }}"
+            - name: PRODUCTION_MODE_ENABLED
+              value: "true"
+            - name: LB_HOST
+              value: "{{ .Values.ingress.hostname }}"
+            - name: LB_PORT
+              value: "{{ .Values.ingress.port }}"
+            - name: LB_PROTOCOL
+              value: "{{ .Values.ingress.scheme }}"
+            - name: SITES_CACHE_PORTS
+              value: "50000"
+            - name: SITES_SAMPLES
+              value: "false"
+            - name: SITES_ADMIN_USERNAME
+              value: ContentServer
+            - name: SITES_ADMIN_PASSWORD
+              value: password
+            - name: SITES_APP_USERNAME
+              value: fwadmin
+            - name: SITES_APP_PASSWORD
+              value: xceladmin
+            - name: SITES_SS_USERNAME
+              value: SatelliteServer
+            - name: SITES_SS_PASSWORD
+              value: password
+            - name: ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: wcsitesinfra-domain-credentials
+                  key: username
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wcsitesinfra-domain-credentials
+                  key: password
+            - name: MANAGED_SERVER
+              value: "wcsites-server"
+            - name: DOMAIN_TYPE
+              value: {{ .Values.domain.type }}
+      volumes:
+        - name: create-fmw-infra-sample-domain-job-cm-volume
+          configMap:
+            name: {{ .Values.domain.domainName }}-create-fmw-infra-sample-domain-job-cm
+        - name: fmw-infra-sample-domain-storage-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.domain.domainName }}-domain-pvc
+        - name: fmw-infra-credentials-volume
+          secret:
+            secretName: {{ .Values.domain.domainName }}-domain-credentials
+        - name: rcu-credentials-volume
+          secret:
+            secretName: {{ .Values.domain.domainName }}-rcu-credentials
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

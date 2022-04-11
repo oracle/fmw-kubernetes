@@ -1,0 +1,122 @@
+## Copyright (c) 2022, Oracle and/or its affiliates.
+## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+
+tenancy_ocid     = "ocid1.tenancy.oc1..."
+compartment_ocid = "ocid1.compartment.oc1..."
+region           = "us-ashburn-1"
+
+## Things to provision
+# VCN, OKE cluster, node_pool(s)
+# if false, the template assumes the cluster is provisioned and that kubectl has access to the cluster.
+provision_cluster = true
+
+# File Storage and mount point export
+provision_filesystem = true
+provision_mount_target = true
+provision_export = true
+
+# Database (DBaaS on OCI)
+# If false, a database jdbc_connection URL needs to be provided, and the database needs to be reachable from this VCN
+provision_database = true
+
+# Autonomous Database (User can use DBAAS or Autonomous DB.  Turn this on if provision_adb is false)
+provision_adb = false
+# possible values (OLTP)
+adb_database_db_workload = "OLTP"
+adb_password = "Oradoc_db12W#_"
+
+# WebLogic Operator
+provision_weblogic_operator = true
+# Ingress controller
+provision_traefik = true
+provision_secrets = true
+#This will deploy the site in environment
+provision_sites = true
+
+## File storage details
+# If the VCN is not provided by this template, the following variables must be provided
+fss_subnet_id = null
+# If the cluster and VCN are not provided by this template,
+fss_source_cidr = "0.0.0.0/0"
+# File Storage mount target Availability Domain index
+ad_number = 2
+
+#if using existing file system. exportset and filesystem must belong to same ad.
+#filesystem_ocid = ""
+#if using existing mount target.
+#mount_target_ocid = ""
+#mount_target_ip = ""
+
+## Credentials
+# Input your Container registry login credentials
+# this is the registry where sites images is going to be looked at
+container_registry = "phx.ocir.io"
+container_registry_username    = "devcec/WCSitesUser"
+container_registry_email    = ""
+container_registry_password = "MNOPabcd:>123xyZ"
+container_registry_image = "oracle/wcsites:12.2.1.4"
+
+# Create WCSites domain Admin Console credentials
+sites_domain_admin_username = "weblogic"
+# Password must contain 1 Upper, 1 number and be at least 8 characters long
+sites_domain_admin_password = "Welcome1"
+
+# Create Database credentials
+# Password must be 9 to 30 characters and contain at least 2 uppercase, 2 lowercase, 2 special, and 2 numeric characters.
+# The special characters must be _, #, or -.
+db_sys_password = "Oradoc_db12W#x_"
+
+# Create RCU Schema credentials
+# rcu_prefix must be less than or equals to 5 characters
+rcu_prefix = "WCS1"
+rcu_username = "WCS1"
+# Password must be 9 to 30 characters and contain at least 2 uppercase, 2 lowercase, 2 special, and 2 numeric characters.
+# The special characters must be _, #, or -.
+rcu_password = "Oradoc_db12W#x_"
+# If connecting to an external DB, specify the jdbc_connection_url
+# !!! You will need to adjust the security list on your database VCN/subnet to authorize access from the OKE cluster nodes,
+# which may require VCN peering (not provided here)
+jdbc_connection_url = null
+
+# Database information max 8 charachtor allowed for db system
+database_name        = "sitesdb"
+database_unique_name = "sitesdb"
+
+# Kubernetes namespaces (no need to change)
+#sites_kubernetes_namespace  = "wcsites-ns"
+#weblogic_operator_namespace  = "operator-ns"
+#ingress_controller_namespace = "traefik"
+
+# Domain name
+sites_dns_name =""
+
+# VCN config
+vcn_cidr = "10.0.0.0/16"
+
+# SSH key to access database and Kubernetes nodes
+ssh_authorized_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDtmEF/NbYdBMiF1XjTPgY6M4Nw8RI9AezkXKk7eJ7YylJH8AAApBb0aw7ERgEza3cTkQVK74MH6Rz9nvi7BdoMB/HWv/Ap/StsqFP2oC3BNi+ljVzXreNtVv1G1JqiRbKzjLNtyHw02wtuTKeoXwaex/ElcAObLdqbuxTgw1M1pw+XnSdnBazqAU6otVpnlgkGNiZDE1yvk7t5tL85tZj8dhrIBGEbHu0/lPA/d15PqgAi5bAIO/E0Dt2vh5hJJMjtM0BWf7PyhMgkOeTszERRHuteBroFbZyzxTvJZiUmL16SMcvLnDt3jL4gIzUkOqBIA9haFyo0poGBC8cYECiB vk"
+
+# Cluster config
+oke_cluster = {
+  name                                                    = "OKE_Cluster"
+  k8s_version                                             = "v1.20.8"
+  pods_cidr                                               = "10.1.0.0/16"
+  services_cidr                                           = "10.2.0.0/16"
+  cluster_options_add_ons_is_kubernetes_dashboard_enabled = true
+  cluster_options_add_ons_is_tiller_enabled               = true
+}
+
+# defaults to 1 pool, feel free to add more if needed.
+node_pools = [
+  {
+    pool_name  = "pool1"
+    node_shape = "VM.Standard2.4"
+    node_count = 2
+    node_labels = {
+      "pool_name" = "pool1"
+    }
+  }
+]
+
+# Optional parameter, requires a vault and key to be created in the account.
+secrets_encryption_key_ocid = null
