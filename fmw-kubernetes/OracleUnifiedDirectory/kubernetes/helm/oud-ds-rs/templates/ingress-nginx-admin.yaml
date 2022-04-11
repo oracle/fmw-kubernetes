@@ -1,0 +1,118 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+#
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+#
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-admin-ingress-nginx
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  annotations:
+{{- if (.Values.ingress.tlsEnabled) }}
+  {{- with .Values.ingress.admin.nginxAnnotationsTLS }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- else }}
+  {{- with .Values.ingress.admin.nginxAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+spec:
+  tls:
+{{- if (.Values.ingress.tlsSecret) }}
+  - secretName: {{ .Values.ingress.tlsSecret }}
+{{- else }}
+  - secretName: {{ include "oud-ds-rs.fullname" . }}-tls-cert
+{{- end }}
+    hosts:
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+    - {{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}
+    - {{ .Values.ingress.admin.host }}-0.{{ .Values.ingress.admin.domain }}
+  {{ else }}
+    - {{ .Values.ingress.admin.host }}
+    - {{ .Values.ingress.admin.host }}-0
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" . }}-admin
+    - {{ include "oud-ds-rs.fullname" . }}-admin-0
+{{- end }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.admin.host) }}
+  {{- if ($root.Values.ingress.admin.domain) }}
+    - {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}
+  {{ else }}
+    - {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" $root }}-admin-{{ $replicaIndx }}
+{{- end }}
+{{- end }}
+  rules:
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+  - host: {{ .Values.ingress.admin.host }}-0.{{ .Values.ingress.admin.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.admin.host }}-0
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-admin-0
+{{- end }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-0
+          servicePort: adminhttps
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.admin.host) }}
+  {{- if ($root.Values.ingress.admin.domain) }}
+  - host: {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}
+  {{ else }}
+  - host: {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" $root }}-admin-{{ $replicaIndx }}
+{{- end }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+          servicePort: adminhttps
+{{- end }}
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+  - host: {{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.admin.host }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-admin
+{{- end }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+          servicePort: adminhttps
+  - http:
+      paths:
+      - path: /rest/v1/admin
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+          servicePort: adminhttps
+{{- end }}

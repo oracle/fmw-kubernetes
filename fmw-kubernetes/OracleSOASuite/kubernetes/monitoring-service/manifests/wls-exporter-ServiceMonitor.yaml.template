@@ -1,0 +1,44 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+  namespace: soans
+data:
+  password: %PASSWORD%
+  user: %USERNAME%
+type: Opaque
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: wls-exporter
+  namespace: soans
+  labels:
+    k8s-app: wls-exporter
+    release: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+    - soans
+  selector:
+    matchLabels:
+      weblogic.domainName: soainfra
+  endpoints:
+  - basicAuth:
+      password:
+        name: basic-auth
+        key: password
+      username:
+        name: basic-auth
+        key: user
+    port: default
+    relabelings:
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+    interval: 10s
+    honorLabels: true
+    path: /wls-exporter/metrics
+

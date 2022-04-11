@@ -1,0 +1,193 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: wcsitesinfra-wcsites-server1-np
+  namespace: wcsites-ns
+spec:
+  type: NodePort
+  ports:
+  - name: defaultnp
+    port: 8001
+    protocol: TCP
+  selector:
+    weblogic.domainUID: wcsitesinfra
+    weblogic.serverName: wcsites-server1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wcsitesinfra-wcsites-server1-svc
+  namespace: wcsites-ns
+spec:
+  clusterIP: None
+  ports:
+  - name: ticket-cache
+    port: 50000
+    protocol: TCP
+    targetPort: 50000
+  - name: ticket-cache1
+    port: 50001
+    protocol: TCP
+    targetPort: 50001
+  - name: mcast-linked-cache
+    port: 50002
+    protocol: TCP
+    targetPort: 50002
+  - name: mcast-linked-cache1
+    port: 50003
+    protocol: TCP
+    targetPort: 50003
+  - name: mcast-cs-cache
+    port: 50004
+    protocol: TCP
+    targetPort: 50004
+  - name: mcast-cs-cache1
+    port: 50005
+    protocol: TCP
+    targetPort: 50005
+  - name: mcast-cas-cache
+    port: 50006
+    protocol: TCP
+    targetPort: 50006
+  - name: mcast-cas-cache1
+    port: 50007
+    protocol: TCP
+    targetPort: 50007
+  - name: mcast-ss-cache
+    port: 50008
+    protocol: TCP
+    targetPort: 50008
+  - name: mcast-ss-cache1
+    port: 50009
+    protocol: TCP
+    targetPort: 50009
+  publishNotReadyAddresses: true
+  selector:
+    weblogic.createdByOperator: "true"
+    weblogic.domainUID: wcsitesinfra
+    weblogic.serverName: wcsites-server1
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wcsitesinfra-wcsites-server2-svc
+  namespace: wcsites-ns
+spec:
+  clusterIP: None
+  ports:
+  - name: ticket-cache
+    port: 50000
+    protocol: TCP
+    targetPort: 50000
+  - name: ticket-cache1
+    port: 50001
+    protocol: TCP
+    targetPort: 50001
+  - name: mcast-linked-cache
+    port: 50002
+    protocol: TCP
+    targetPort: 50002
+  - name: mcast-linked-cache1
+    port: 50003
+    protocol: TCP
+    targetPort: 50003
+  - name: mcast-cs-cache
+    port: 50004
+    protocol: TCP
+    targetPort: 50004
+  - name: mcast-cs-cache1
+    port: 50005
+    protocol: TCP
+    targetPort: 50005
+  - name: mcast-cas-cache
+    port: 50006
+    protocol: TCP
+    targetPort: 50006
+  - name: mcast-cas-cache1
+    port: 50007
+    protocol: TCP
+    targetPort: 50007
+  - name: mcast-ss-cache
+    port: 50008
+    protocol: TCP
+    targetPort: 50008
+  - name: mcast-ss-cache1
+    port: 50009
+    protocol: TCP
+    targetPort: 50009
+  publishNotReadyAddresses: true
+  selector:
+    weblogic.createdByOperator: "true"
+    weblogic.domainUID: wcsitesinfra
+    weblogic.serverName: wcsites-server2
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wcsitesinfra-wcsites-server3-svc
+  namespace: wcsites-ns
+spec:
+  clusterIP: None
+  ports:
+  - name: ticket-cache
+    port: 50000
+    protocol: TCP
+    targetPort: 50000
+  - name: ticket-cache1
+    port: 50001
+    protocol: TCP
+    targetPort: 50001
+  - name: mcast-linked-cache
+    port: 50002
+    protocol: TCP
+    targetPort: 50002
+  - name: mcast-linked-cache1
+    port: 50003
+    protocol: TCP
+    targetPort: 50003
+  - name: mcast-cs-cache
+    port: 50004
+    protocol: TCP
+    targetPort: 50004
+  - name: mcast-cs-cache1
+    port: 50005
+    protocol: TCP
+    targetPort: 50005
+  - name: mcast-cas-cache
+    port: 50006
+    protocol: TCP
+    targetPort: 50006
+  - name: mcast-cas-cache1
+    port: 50007
+    protocol: TCP
+    targetPort: 50007
+  - name: mcast-ss-cache
+    port: 50008
+    protocol: TCP
+    targetPort: 50008
+  - name: mcast-ss-cache1
+    port: 50009
+    protocol: TCP
+    targetPort: 50009
+  publishNotReadyAddresses: true
+  selector:
+    weblogic.createdByOperator: "true"
+    weblogic.domainUID: wcsitesinfra
+    weblogic.serverName: wcsites-server3
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

@@ -1,0 +1,271 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if eq .Values.type "NGINX" }}
+{{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+{{- if eq .Values.sslType "SSL" }}  
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
+    nginx.ingress.kubernetes.io/ingress.allow-http: 'false'
+{{- end }}
+spec:
+  rules:
+  - host: '{{ .Values.nginx.hostname }}'
+    http:
+      paths:
+      - path: /console
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /weblogic/ready
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- if or (eq .Values.domainType "soa") }}
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") }}
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.osbManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      - path: /soa-infra
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      - path: /soa/composer
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      - path: /integration/worklistapp
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      - path: /servicebus
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      - path: /lwpfconsole
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      - path: /xbusrouting
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      - path: /xbustransform
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      - path: /ess
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      - path: /EssHealthCheck
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      - path: /b2bconsole
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+{{- if eq .Values.sslType "SSL" }}
+  tls:
+  - hosts:
+    - '{{ .Values.nginx.hostname }}'
+    secretName: domain1-tls-cert
+{{- end }}
+{{- else }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower }}-nginx-ssl
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.adminServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-admin
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.admin }}'
+    secretName: domain1-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.admin }}'
+    http:
+      paths:
+      - path: 
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-ssl'
+            port:
+              number: {{ .Values.wlsDomain.adminServerSSLPort }}
+{{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-soa
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.soa }}'
+    secretName: domain1-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.soa }}'
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerSSLPort  }}
+{{- end }}
+{{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-osb
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.osb }}'
+    secretName: domain1-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.osb }}'
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.osbManagedServerSSLPort  }}
+{{- end }}
+         
+{{- end }}
+{{- end }}
+{{- end }}
+

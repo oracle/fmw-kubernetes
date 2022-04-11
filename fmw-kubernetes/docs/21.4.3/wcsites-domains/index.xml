@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Oracle WebCenter Sites on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/21.4.3/wcsites-domains/</link>
+    <description>Recent content in Oracle WebCenter Sites on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 23 Feb 2019 16:43:45 -0500</lastBuildDate>
+    
+	<atom:link href="/fmw-kubernetes/21.4.3/wcsites-domains/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Release Notes</title>
+      <link>/fmw-kubernetes/21.4.3/wcsites-domains/release-notes/</link>
+      <pubDate>Fri, 15 Mar 2019 11:25:28 -0400</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.3/wcsites-domains/release-notes/</guid>
+      <description>Review the latest changes and known issues for Oracle WebCenter Sites on Kubernetes.
+Recent changes    Date Version Introduces backward incompatibilities Change     Dec 10, 2021 21.4.3 no Certified Oracle WebLogic Kubernetes Operator version 3.3.0. Kubernetes 1.16.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. Only Webcenter Sites 12.2.1.4 is supported.   Jan 15, 2021 21.1.1 no Certified Oracle WebLogic Kubernetes Operator version 3.</description>
+    </item>
+    
+    <item>
+      <title>Uninstall</title>
+      <link>/fmw-kubernetes/21.4.3/wcsites-domains/cleanup-domain-setup/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.3/wcsites-domains/cleanup-domain-setup/</guid>
+      <description>Learn how to clean up the Oracle WebCenter Sites domain setup.
+Stop all Administration and Managed server pods First stop the all pods related to a domain. This can be done by patching domain &amp;ldquo;serverStartPolicy&amp;rdquo; to &amp;ldquo;NEVER&amp;rdquo;. Here is the sample command for the same.
+$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; For example:
+$ kubectl patch domain wcsitesinfra -n wcsites-ns --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; Drop the RCU schemas $ cd work-dir-name/weblogic-kubernetes-operator $ kubectl apply -f kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.</description>
+    </item>
+    
+    <item>
+      <title>Frequently Asked Questions</title>
+      <link>/fmw-kubernetes/21.4.3/wcsites-domains/faq/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/21.4.3/wcsites-domains/faq/</guid>
+      <description>Configure the external URL access for Oracle WebCenter Sites composite applications For Oracle WebCenter Sites composite applications to access the external URLs over the internet (if your cluster is behind a http proxy server), you must configure the following proxy parameters for Administration Server and Managed Server pods.
+-Dhttp.proxyHost=www-your-proxy.com -Dhttp.proxyPort=proxy-port -Dhttps.proxyHost=www-your-proxy.com -Dhttps.proxyPort=proxy-port -Dhttp.nonProxyHosts=&amp;#34;localhost|wcsitesinfra-adminserver|wcsitesinfra-wcsites-server1|*.svc.cluster.local|*.your.domain.com|/var/run/docker.sock&amp;#34; To do this, edit the domain.yaml configuration file and append the proxy parameters to the spec.serverPod.env.JAVA_OPTIONS environment variable value.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,26 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a script to create a NodePort Service for OUD
+# 
+kind: Service
+apiVersion: v1
+metadata:
+  name: <OUD_POD_PREFIX>-oud-ds-rs-lbr-ldap-nodeport
+  namespace: <OUDNS>
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/instance: <OUD_POD_PREFIX>
+    app.kubernetes.io/name: oud-ds-rs
+  ports:
+    - name: ldap
+      targetPort: 1389
+      port: 1389
+      nodePort: <OUD_LDAP_K8>
+      protocol: TCP
+    - name: ldaps
+      targetPort: 1636
+      port: 1636
+      nodePort: <OUD_LDAPS_K8>
+      protocol: TCP

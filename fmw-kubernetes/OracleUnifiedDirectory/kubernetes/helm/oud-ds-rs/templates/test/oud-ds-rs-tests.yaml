@@ -1,0 +1,406 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "oud-ds-rs.fullname" . }}-test"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: test-container
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      env:
+        {{- if .Values.secret.enabled }}
+        - name: rootUserDN
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              key: rootUserDN
+              {{- else }}
+              name:  {{ include "oud-ds-rs.fullname" . }}-creds
+              key: rootUserDN
+              {{- end }}
+        {{- else }}
+        - name: rootUserDN
+          value: {{ .Values.rootUserDN }}
+        {{- end }}
+        {{- if .Values.secret.enabled }}
+        - name: rootUserPassword
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              key: rootUserPassword
+              {{- else }}
+              name:  {{ include "oud-ds-rs.fullname" . }}-creds
+              key: rootUserPassword
+              {{- end }}
+        {{- else }}
+        - name: rootUserPassword
+          value: {{ .Values.rootUserPassword }}
+        {{- end }}
+        {{- if .Values.secret.enabled }}
+        - name: adminUID
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              key: adminUID
+              {{- else }}
+              name:  {{ include "oud-ds-rs.fullname" . }}-creds
+              key: adminUID
+              {{- end }}
+        {{- else }}
+        - name: adminUID
+          value: {{ .Values.adminUID }}
+        {{- end }}
+        {{- if .Values.secret.enabled }}
+        - name: adminPassword
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.secret.name }}
+              name: {{ .Values.secret.name }}
+              key: adminPassword
+              {{- else }}
+              name:  {{ include "oud-ds-rs.fullname" . }}-creds
+              key: adminPassword
+              {{- end }}
+        {{- else }}
+        - name: adminPassword
+          value: {{ .Values.adminPassword }}
+        {{- end }}
+      command: ['sh', '-c', '
+err=0 ;
+replica={{ (.Values.replicaCount|int) }} ;
+output="";
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing admin-REST for {{ include "oud-ds-rs.fullname" . }}-${a} " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-${a}:{{ .Values.oudPorts.adminhttps }}/rest/v1/admin/cn=replication%20server,cn=Multimaster%20Synchronization,cn=Synchronization%20Providers,cn=config?scope=base&attributes=ds-cfg-replication-server-id" --header "Content-Type: application/json" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+  check=$? ;
+  if [ "${check}" -eq 0 ]; then
+   status="SUCCESS!!"; 
+  else
+    status="FAIL!!" ;
+    err=1 ;
+  fi ;
+  echo $status;
+ 
+  output="${output} Test admin-REST for {{ include "oud-ds-rs.fullname" . }}-${a}... ${status}";
+  curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-${a}:{{ .Values.oudPorts.adminhttps }}/rest/v1/admin/cn=replication%20server,cn=Multimaster%20Synchronization,cn=Synchronization%20Providers,cn=config?scope=base&attributes=ds-cfg-replication-server-id" --header "Content-Type: application/json" --header "Authorization: Basic ${x}" ;
+  a=`expr ${a} + 1` ;
+done;
+
+echo -e "\n..................................................................." ; 
+echo "Testing admin-REST for {{ include "oud-ds-rs.fullname" . }}-lbr-admin " ;
+echo "..................................................................." ;
+x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ;
+curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-lbr-admin:{{ .Values.oudPorts.adminhttps }}/rest/v1/admin/cn=replication%20server,cn=Multimaster%20Synchronization,cn=Synchronization%20Providers,cn=config?scope=base&attributes=ds-cfg-replication-server-id" --header "Content-Type: application/json" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!"; 
+else
+  status="FAIL!!" ;
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Test admin-REST for {{ include "oud-ds-rs.fullname" . }}-lbr-admin... ${status}";
+curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-lbr-admin:{{ .Values.oudPorts.adminhttps }}/rest/v1/admin/cn=replication%20server,cn=Multimaster%20Synchronization,cn=Synchronization%20Providers,cn=config?scope=base&attributes=ds-cfg-replication-server-id" --header "Content-Type: application/json" --header "Authorization: Basic ${x}" ;
+
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing DATA-REST for {{ include "oud-ds-rs.fullname" . }}-http-${a} in https port " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.https }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+  check=$? ;
+  if [ "${check}" -eq 0 ]; then
+   status="SUCCESS!!";
+  else
+   status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Test admin-REST for {{ include "oud-ds-rs.fullname" . }}-http-${a} in https port... ${status}";
+  curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.https }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" ;
+  a=`expr ${a} + 1` ;
+done;
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing DATA-REST for {{ include "oud-ds-rs.fullname" . }}-http-${a} in http port " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.http }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+  check=$? ;
+  if [ "${check}" -eq 0 ]; then
+    status="SUCCESS!!";
+  else
+    status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Test admin-REST for {{ include "oud-ds-rs.fullname" . }}-http-${a} in http port... ${status}";
+  curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.http }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" ;
+  a=`expr ${a} + 1` ;
+done;
+
+echo -e "\n..................................................................." ; 
+echo "Testing DATA-REST {{ include "oud-ds-rs.fullname" . }}-lbr-http in https port";
+echo "..................................................................." ;
+x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.https }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Test admin-REST for {{ include "oud-ds-rs.fullname" . }}-lbr-http in https port... ${status}";
+curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.https }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" ;
+
+echo -e "\n..................................................................." ; 
+echo "Testing DATA-REST {{ include "oud-ds-rs.fullname" . }}-lbr-http in http port";
+echo "..................................................................." ;
+x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.http }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Test admin-REST for {{ include "oud-ds-rs.fullname" . }}-lbr-http in http port... ${status}";
+curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.http }}/rest/v1/directory/?scope=base&attributes=%2b" --header "Authorization: Basic ${x}" ;
+
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing DATA-SCIM for {{ include "oud-ds-rs.fullname" . }}-http-${a} in https port " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.https }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ;
+  check=$? ;
+  if [ "${check}" -eq 0 ]; then
+    status="SUCCESS!!";
+  else
+    status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Testing DATA-SCIM for {{ include "oud-ds-rs.fullname" . }}-http-${a} in https port... ${status}";
+  curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.https }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" ;
+  a=`expr ${a} + 1` ;
+done;
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing DATA-SCIM for {{ include "oud-ds-rs.fullname" . }}-http-${a} in http port " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.http }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ;
+  check=$? ;
+  
+  if [ "${check}" -eq 0 ]; then
+    status="SUCCESS!!";
+  else
+    status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Testing DATA-SCIM for {{ include "oud-ds-rs.fullname" . }}-http-${a} in http port... ${status}";
+  curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-http-${a}:{{ .Values.oudPorts.http }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" ;
+  a=`expr ${a} + 1` ;
+done;
+
+echo -e "\n..................................................................." ; 
+echo "Testing DATA-SCIM {{ include "oud-ds-rs.fullname" . }}-lbr-http in https port";
+echo "..................................................................." ;
+x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.https }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Testing DATA-SCIM {{ include "oud-ds-rs.fullname" . }}-lbr-http in https port... ${status}";
+curl -f --noproxy "*" --insecure --location --request GET "https://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.https }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" ;
+
+echo -e "\n..................................................................." ; 
+echo "Testing DATA-SCIM {{ include "oud-ds-rs.fullname" . }}-lbr-http in http port";
+echo "..................................................................." ;
+x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.http }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" > /dev/null 2>&1 ; 
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Testing DATA-SCIM {{ include "oud-ds-rs.fullname" . }}-lbr-http in http port... ${status}";
+curl -f --noproxy "*" --insecure --location --request GET "http://{{ include "oud-ds-rs.fullname" . }}-lbr-http:{{ .Values.oudPorts.http }}/iam/directory/oud/scim/v1/Groups" --header "Authorization: Basic ${x}" ;
+
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing OUD-LDAP for {{ include "oud-ds-rs.fullname" . }}-ldap-${a} " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-ldap-${a} --port {{ .Values.oudPorts.ldap }} -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + > /dev/null 2>&1 ;
+  check=$? ;
+  if [ "${check}" -eq 0 ]; then
+    status="SUCCESS!!";
+  else
+    status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Testing OUD-LDAP for {{ include "oud-ds-rs.fullname" . }}-ldap-${a}... ${status}";
+  oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-ldap-${a} --port {{ .Values.oudPorts.ldap }} -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + ;
+  a=`expr ${a} + 1` ;
+done;
+
+echo -e "\n..................................................................." ; 
+echo "Testing OUD-LDAP {{ include "oud-ds-rs.fullname" . }}-lbr-ldap" ;
+echo "..................................................................." ;
+oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-lbr-ldap --port {{ .Values.oudPorts.ldap }} -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + > /dev/null 2>&1 ;
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Testing OUD-LDAP {{ include "oud-ds-rs.fullname" . }}-lbr-ldap ... ${status}";
+oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-lbr-ldap --port {{ .Values.oudPorts.ldap }} -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" +  ;
+
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing OUD-LDAPS for {{ include "oud-ds-rs.fullname" . }}-ldap-${a} " ;
+  echo "..................................................................." ;
+  x=$(echo -n "${rootUserDN}:${rootUserPassword}" | base64 -w 0) ; 
+  oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-ldap-${a} --port {{ .Values.oudPorts.ldaps }} --useSSL --trustAll -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + > /dev/null 2>&1 ;
+  check=$? ;
+  if [ "${check}" -eq 0 ]; then
+    status="SUCCESS!!";
+  else
+    status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Testing OUD-LDAPS for {{ include "oud-ds-rs.fullname" . }}-ldap-${a} ... ${status}";
+  oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-ldap-${a} --port {{ .Values.oudPorts.ldaps }} --useSSL --trustAll -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + ;
+  a=`expr ${a} + 1` ;
+done;
+
+echo -e "\n..................................................................." ; 
+echo "Testing OUD-LDAPS for {{ include "oud-ds-rs.fullname" . }}-lbr-ldap  " ;
+echo "..................................................................." ;
+oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-lbr-ldap --port {{ .Values.oudPorts.ldaps }} --useSSL --trustAll -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + > /dev/null 2>&1 ;
+check=$? ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Testing OUD-LDAPS {{ include "oud-ds-rs.fullname" . }}-lbr-ldap ... ${status}"
+oud/bin/ldapsearch --hostname {{ include "oud-ds-rs.fullname" . }}-lbr-ldap --port {{ .Values.oudPorts.ldaps }} --useSSL --trustAll -D "${rootUserDN}" -w ${rootUserPassword} -b "" -s base "(objectClass=*)" "*" + ;
+
+a=0 ;
+while [ $a -le $replica ] ;
+do
+  echo -e "\n..................................................................." ; 
+  echo "Testing Admin-LDAPS for {{ include "oud-ds-rs.fullname" . }}-${a} " ;
+  echo "..................................................................." ;
+  touch pass.txt && echo "${rootUserPassword}" > pass.txt && oud/bin/dsconfig --hostname {{ include "oud-ds-rs.fullname" . }}-${a} --port {{ .Values.oudPorts.adminldaps }} --portProtocol LDAP -D "${rootUserDN}" -j pass.txt --trustAll --no-prompt list-replication-server --provider-name Multimaster\ Synchronization > /dev/null 2>&1 ; 
+check=$? ; 
+rm pass.txt ;
+  if [ "${check}" -eq 0 ]; then
+    status="SUCCESS!!";
+  else
+    status="FAIL!!";
+    err=1 ;
+  fi ;
+  echo $status;
+  output="${output} Testing Admin-LDAPS for {{ include "oud-ds-rs.fullname" . }}-${a} ... ${status}"
+  touch pass.txt && echo "${rootUserPassword}" > pass.txt && oud/bin/dsconfig --hostname {{ include "oud-ds-rs.fullname" . }}-${a} --port {{ .Values.oudPorts.adminldaps }} --portProtocol LDAP -D "${rootUserDN}" -j pass.txt --trustAll --no-prompt list-replication-server --provider-name Multimaster\ Synchronization && rm pass.txt ;
+  a=`expr ${a} + 1` ;
+done;
+
+echo -e "\n..................................................................." ; 
+echo "Testing Admin-LDAPS for {{ include "oud-ds-rs.fullname" . }}-lbr-admin " ;
+echo "..................................................................." ;
+touch pass.txt && echo "${rootUserPassword}" > pass.txt && oud/bin/dsconfig --hostname {{ include "oud-ds-rs.fullname" . }}-lbr-admin --port {{ .Values.oudPorts.adminldaps }} --portProtocol LDAP -D "${rootUserDN}" -j pass.txt --trustAll --no-prompt list-replication-server --provider-name Multimaster\ Synchronization > /dev/null 2>&1 ; 
+check=$? ; 
+rm pass.txt ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Testing Admin-LDAPS for {{ include "oud-ds-rs.fullname" . }}-lbr-admin ... ${status}"
+touch pass.txt && echo "${rootUserPassword}" > pass.txt && oud/bin/dsconfig --hostname {{ include "oud-ds-rs.fullname" . }}-lbr-admin --port {{ .Values.oudPorts.adminldaps }} --portProtocol LDAP -D "${rootUserDN}" -j pass.txt --trustAll --no-prompt list-replication-server --provider-name Multimaster\ Synchronization && rm pass.txt ;
+
+
+echo -e "\n..................................................................." ; 
+echo "Testing Replication " ;
+echo "..................................................................." ;
+touch pass.txt && echo "${adminPassword}" > pass.txt && oud/bin/dsreplication status --trustAll --hostname {{ include "oud-ds-rs.fullname" . }}-0 --port {{ .Values.oudPorts.adminldaps }} --adminUID ${adminUID} -j pass.txt --dataToDisplay compat-view --dataToDisplay rs-connections > /dev/null 2>&1 ;
+check=$? ; 
+rm pass.txt ;
+if [ "${check}" -eq 0 ]; then
+  status="SUCCESS!!";
+else
+  status="FAIL!!";
+  err=1 ;
+fi ;
+echo $status;
+output="${output} Testing Replication ... ${status}"
+touch pass.txt && echo "${adminPassword}" > pass.txt && oud/bin/dsreplication status --trustAll --hostname {{ include "oud-ds-rs.fullname" . }}-0 --port {{ .Values.oudPorts.adminldaps }} --adminUID ${adminUID} -j pass.txt --dataToDisplay compat-view --dataToDisplay rs-connections  && rm pass.txt ;
+
+if [ "${err}" -eq 1 ]; then
+ exit 1 ;
+fi ;
+echo $output;
+ ']
+  restartPolicy: Never

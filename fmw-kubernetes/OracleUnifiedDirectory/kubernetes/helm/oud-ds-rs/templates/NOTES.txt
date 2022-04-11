@@ -1,0 +1,71 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+{{- if (and (.Values.ingress.enabled) (eq "nginx" .Values.ingress.type) ) }}
+Since "nginx" has been chosen, follow the steps below to configure nginx ingress controller.
+Add Repo reference to helm for retriving/installing Chart for nginx-ingress implementation.
+command-# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+Command helm install to install nginx-ingress related objects like pod, service, deployment, etc.
+# helm install --namespace <namespace for ingress> --values nginx-ingress-values-override.yaml lbr-nginx ingress-nginx/ingress-nginx
+
+For details of content of nginx-ingress-values-override.yaml refer README.md file of this chart.
+
+Run these commands to check port mapping and services: 
+# kubectl --namespace <namespace for ingress> get services -o wide -w lbr-nginx-ingress-controller
+# kubectl describe --namespace <namespace for oud-ds-rs chart> ingress.extensions/{{ include "oud-ds-rs.fullname" . }}-http-ingress-nginx
+# kubectl describe --namespace <namespace for oud-ds-rs chart> ingress.extensions/{{ include "oud-ds-rs.fullname" . }}-admin-ingress-nginx
+
+Accessible interfaces through ingress:
+(External IP Address for LoadBalancer NGINX Controller can be determined through details associated with lbr-nginx-ingress-controller)
+
+1. OUD Admin REST:
+   Port: http/https 
+
+2. OUD Data REST:
+   Port: http/https 
+
+3. OUD Data SCIM:
+   Port: http/https 
+
+4. OUD LDAP/LDAPS:
+   Port: ldap/ldaps
+
+5. OUD Admin LDAPS:
+   Port: ldaps
+ 
+Please refer to README.md from Helm Chart to find more details about accessing interfaces and configuration parameters. 
+
+{{- else if (and (.Values.ingress.enabled) (eq "voyager" .Values.ingress.type) ) }}
+Since "voyager" has been chosen, follow the steps below to configure voyager ingress controller.
+Add Repo reference to helm for retriving/installing Chart for voyager implementation.
+command-# helm repo add appscode https://charts.appscode.com/stable
+
+Command helm install to install voyager related objects like pod, service, deployment, etc.
+# helm install voyager-operator appscode/voyager --version 12.0.0 --namespace <ingress namespace> --set cloudProvider=baremetal,apiserver.enableValidatingWebhook=false
+
+Run this command to check port mapping and services: 
+# kubectl describe --namespace <namespace for oud-ds-rs chart> ingress.extensions/{{ include "oud-ds-rs.fullname" . }}-ingress-voyager
+# kubectl --namespace <namespace for oud-ds-rs chart> get services -o wide -w {{ include "oud-ds-rs.fullname" . }}-ingress-voyager-lbr
+
+Accessible interfaces through ingress:
+(External IP Address for LoadBalancer Service can be determined through details associated with {{ include "oud-ds-rs.fullname" . }}-ingress-voyager-lbr)
+
+1. OUD Admin REST:
+   Port: http/https 
+
+2. OUD Data REST:
+   Port: http/https 
+
+3. OUD Data SCIM:
+   Port: http/https 
+
+Please refer to README.md from Helm Chart to find more details about accessing interfaces and configuration parameters. 
+
+{{- else if (and (.Values.ingress.enabled) (eq "custom" .Values.ingress.type) ) }}
+
+{{- end }}

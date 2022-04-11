@@ -1,0 +1,20 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating a NodePort Service for external OAP calls
+#
+kind: Service
+apiVersion: v1
+metadata:
+  name: <DOMAIN_NAME>-oap-nodeport
+  namespace: <NAMESPACE>
+spec:
+  type: NodePort
+  selector:
+    weblogic.clusterName: oam_cluster
+  ports:
+    - targetPort: <OAP_PORT>
+      port: <OAP_PORT>
+      nodePort: <OAP_SERVICEPORT>
+      protocol: TCP
+

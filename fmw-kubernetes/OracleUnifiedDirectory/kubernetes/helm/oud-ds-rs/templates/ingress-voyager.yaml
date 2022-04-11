@@ -1,0 +1,254 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "voyager") -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
+# apiVersion: networking.k8s.io/v1beta1
+apiVersion: voyager.appscode.com/v1beta1
+{{- else }}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-ingress-voyager
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  annotations:
+{{- if (.Values.ingress.tlsEnabled) }}
+  {{- with .Values.ingress.voyagerAnnotationsTLS }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- else }}
+  {{- with .Values.ingress.voyagerAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+spec:
+{{- if (.Values.ingress.voyagerExternalIPs) }}
+  externalIPs:
+{{- with .Values.ingress.voyagerExternalIPs }}
+  {{- toYaml . | nindent 4 }}
+{{- end }}
+{{- end }}
+  tls:
+{{- if (.Values.ingress.tlsSecret) }}
+  - secretName: {{ .Values.ingress.tlsSecret }}
+{{- else }}
+  - secretName: {{ include "oud-ds-rs.fullname" . }}-tls-cert
+{{- end }}
+    hosts:
+    - '*'
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+    - {{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}
+    - {{ .Values.ingress.admin.host }}-0.{{ .Values.ingress.admin.domain }}
+  {{ else }}
+    - {{ .Values.ingress.admin.host }}
+    - {{ .Values.ingress.admin.host }}-0
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" . }}-admin
+    - {{ include "oud-ds-rs.fullname" . }}-admin-0
+{{- end }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.admin.host) }}
+  {{- if ($root.Values.ingress.admin.domain) }}
+    - {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}
+  {{ else }}
+    - {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" $root }}-admin-{{ $replicaIndx }}
+{{- end }}
+{{- end }}
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+    - {{ .Values.ingress.http.host }}.{{ .Values.ingress.http.domain }}
+    - {{ .Values.ingress.http.host }}-0.{{ .Values.ingress.http.domain }}
+  {{ else }}
+    - {{ .Values.ingress.http.host }}
+    - {{ .Values.ingress.http.host }}-0
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" . }}-http
+    - {{ include "oud-ds-rs.fullname" . }}-http-0
+{{- end }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.http.host) }}
+  {{- if ($root.Values.ingress.http.domain) }}
+    - {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.http.domain }}
+  {{ else }}
+    - {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+{{- end }}
+{{- end }}
+  rules:
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+  - host: {{ .Values.ingress.admin.host }}-0.{{ .Values.ingress.admin.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.admin.host }}-0
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-admin-0
+{{- end }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-0
+          servicePort: adminhttps
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.admin.host) }}
+  {{- if ($root.Values.ingress.admin.domain) }}
+  - host: {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}
+  {{ else }}
+  - host: {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" $root }}-admin-{{ $replicaIndx }}
+{{- end }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+          servicePort: adminhttps
+{{- end }}
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+  - host: {{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.admin.host }}
+  {{- end }}
+{{ else }}
+  - host: '*'
+{{- end }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+          servicePort: adminhttps
+    http:
+      paths:
+      - path: /rest/v1/admin
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+          servicePort: adminhttps
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+  - host: {{ .Values.ingress.http.host }}-0.{{ .Values.ingress.http.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.http.host }}-0
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-http-0
+{{- end }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-http-0
+          servicePort: {{ .Values.ingress.http.backendPort }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.http.host) }}
+  {{- if ($root.Values.ingress.http.domain) }}
+  - host: {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.http.domain }}
+  {{ else }}
+  - host: {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+{{- end }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+          servicePort: {{ $root.Values.ingress.http.backendPort }}
+{{- end }}
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+  - host: {{ .Values.ingress.http.host }}.{{ .Values.ingress.http.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.http.host }}
+  {{- end }}
+{{ else }}
+  - host: '*'
+{{- end }}
+    http:
+      paths:
+      - path: /rest/v1/directory
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+          servicePort: {{ .Values.ingress.http.backendPort }}
+      - path: /iam/directory
+        backend:
+          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+          servicePort: {{ .Values.ingress.http.backendPort }}
+{{- $ldapPort := .Values.ingress.voyagerTcpPortPrefix.ldap }}
+{{- $ldapsPort := .Values.ingress.voyagerTcpPortPrefix.ldaps }}
+{{- $adminldapsPort := .Values.ingress.voyagerTcpPortPrefix.adminldaps }}
+
+  - host: {{ include "oud-ds-rs.fullname" . }}-ldap-0
+    tcp:
+      port: {{ $ldapPort }}0
+      noTLS: true
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" . }}-ldap-0
+        servicePort: ldap
+  - host: {{ include "oud-ds-rs.fullname" . }}-ldap-0
+    tcp:
+      port: {{ $ldapsPort }}0
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" . }}-ldap-0
+        servicePort: ldaps
+  - host: {{ include "oud-ds-rs.fullname" . }}-0
+    tcp:
+      port: {{ $adminldapsPort }}0
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" . }}-0
+        servicePort: adminldaps
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+  - host: {{ include "oud-ds-rs.fullname" $root }}-ldap-{{ $replicaIndx }}
+    tcp:
+      port: {{ $ldapsPort }}{{ $replicaIndx }}
+      noTLS: true
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" $root }}-ldap-{{ $replicaIndx }}
+        servicePort: ldap
+  - host: {{ include "oud-ds-rs.fullname" $root }}-ldap-{{ $replicaIndx }}
+    tcp:
+      port: {{ $ldapPort }}{{ $replicaIndx }}
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" $root }}-ldap-{{ $replicaIndx }}
+        servicePort: ldaps
+  - host: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+    tcp:
+      port: {{ $adminldapsPort }}{{ $replicaIndx }}
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+        servicePort: adminldaps
+{{- end }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-lbr-ldap
+    tcp:
+      port: {{ .Values.oudPorts.ldap }}
+      noTLS: true
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-ldap
+        servicePort: ldap
+  - host: {{ include "oud-ds-rs.fullname" . }}-lbr-ldap
+    tcp:
+      port: {{ .Values.oudPorts.ldaps }}
+      backend:
+        serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-ldap
+        servicePort: ldaps
+{{- end }}

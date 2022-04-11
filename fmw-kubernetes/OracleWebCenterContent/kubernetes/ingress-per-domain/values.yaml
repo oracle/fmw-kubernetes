@@ -1,0 +1,38 @@
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Load balancer type.  Supported values are: TRAEFIK, NGINX
+type: TRAEFIK
+#type: NGINX
+
+# WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: wccinfra
+  ucmClusterName: ucm_cluster
+  ibrClusterName: ibr_cluster
+  ipmClusterName: ipm_cluster
+  captureClusterName: capture_cluster
+  wccadfClusterName: wccadf_cluster
+  ipmManagedServerPort: 16000
+  captureManagedServerPort: 16400
+  ucmManagedServerPort: 16200
+  ibrManagedServerPort: 16250
+  wccadfManagedServerPort: 16225
+  adminServerName: adminserver
+  adminServerPort: 7001
+
+# Traefik specific values
+#traefik:
+  # hostname used by host-routing
+  # hostname: domain1.org
+
+#nginx:
+  # hostname used by host-routing
+  # hostname: domain1.org
+
+
+

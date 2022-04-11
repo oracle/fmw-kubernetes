@@ -1,0 +1,39 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash-wls
+  namespace: wcsites-ns
+spec:
+  selector:
+      matchLabels:
+        k8s-app: logstash-wls
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        k8s-app: logstash-wls
+    spec:
+      volumes:
+      - name: weblogic-domain-storage-volume
+        persistentVolumeClaim:
+          claimName: wcsitesinfra-domain-pvc
+      - name: shared-logs
+        emptyDir: {}
+      containers:
+      - name: logstash
+        image: logstash:6.6.0
+        command: ["/bin/sh"]
+        args: ["/usr/share/logstash/bin/logstash", "-f", "/u01/oracle/user_projects/logs/logstash.conf"]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+          name: weblogic-domain-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        ports:
+        - containerPort: 5044
+          name: logstash

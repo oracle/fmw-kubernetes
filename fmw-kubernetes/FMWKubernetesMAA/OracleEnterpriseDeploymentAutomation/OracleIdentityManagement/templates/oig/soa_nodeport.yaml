@@ -1,0 +1,19 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a script to create a NodePort Service for SOA
+#
+kind: Service
+apiVersion: v1
+metadata:
+  name: <DOMAIN_NAME>-soa-nodeport
+  namespace: <NAMESPACE>
+spec:
+  type: NodePort
+  selector:
+    weblogic.clusterName: soa_cluster
+  ports:
+    - targetPort: 8001
+      port: 8001
+      nodePort: <OIG_SOA_PORT_K8>
+      protocol: TCP

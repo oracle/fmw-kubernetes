@@ -1,0 +1,36 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: %DOMAINUID%-wcsites-upgrade-job
+  namespace: %NAMESPACE%
+spec:
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: wcsites-upgrade-job
+    spec:
+      restartPolicy: Never
+      volumes:
+      - name: weblogic-domain-storage-volume
+        persistentVolumeClaim:
+          claimName: %DOMAIN_PVC_NAME%
+      - name: upgrade-wcsites-job-cm
+        configMap:
+           name: %DOMAINUID%-upgrade-wcsites-job-cm
+      
+      containers:
+      - name: wcsites-upgrade-job
+        image: %IMAGE%
+        command: ["/bin/sh", "-c", "/sites-home/server-upgrade.sh"]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: %DOMAIN_ROOT_DIR%
+          name: weblogic-domain-storage-volume
+        - mountPath: /sites-home/server-upgrade.sh
+          name: upgrade-wcsites-job-cm
+      

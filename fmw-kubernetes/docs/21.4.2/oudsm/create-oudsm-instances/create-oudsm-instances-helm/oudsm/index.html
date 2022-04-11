@@ -1,0 +1,5543 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="This document provides details of the oudsm Helm chart.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/21.4.2/images/favicon.png" type="image/png">
+
+    <title>Helm Chart: oudsm: For deployment of Oracle Unified Directory Services Manager instances on Kubernetes :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/21.4.2/css/nucleus.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/fontawesome-all.min.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/hybrid.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/featherlight.min.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/perfect-scrollbar.min.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/auto-complete.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/atom-one-dark-reasonable.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/theme.css?1638527940" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.4.2/css/hugo-theme.css?1638527940" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/21.4.2/js/jquery-3.6.0.min.js?1638527940"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/oudsm/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/21.4.2">
+  <img src="/fmw-kubernetes/21.4.2/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/21.4.2/js/lunr.min.js?1638527940"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.4.2/js/auto-complete.js?1638527940"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/21.4.2";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/21.4.2/js/search.js?1638527940"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/" title="Oracle Access Management" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/">
+          Oracle Access Management
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/prepare-your-environment/">
+          <b>3. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/create-oam-domains/" title="Create OAM domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/create-oam-domains/">
+          <b>4. </b>Create OAM domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/configure-ingress/" title="Configure an Ingress for an OAM domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/configure-ingress/">
+          <b>5. </b>Configure an Ingress for an OAM domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/validate-domain-urls/" title="Validate Domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/validate-domain-urls/">
+          <b>6. </b>Validate Domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/post-install-config/" title="Post Install Configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/post-install-config/">
+          <b>7. </b>Post Install Configuration
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/validate-sso-using-webgate/" title="Validate a Basic SSO Flow using WebGate Registration " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/validate-sso-using-webgate/">
+          <b>8. </b>Validate a Basic SSO Flow using WebGate Registration 
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/" title="Manage OAM Domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/">
+          <b>9. </b>Manage OAM Domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/domain-lifecycle/" title="a. Domain Life Cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/domain-lifecycle/">
+        a. Domain Life Cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/wlst-admin-operations/" title="b. WLST Administration Operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/wlst-admin-operations/">
+        b. WLST Administration Operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/logging-and-visualization/" title="c. Logging and Visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/logging-and-visualization/">
+        c. Logging and Visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/monitoring-oam-domains/" title="d. Monitoring an OAM domain" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/monitoring-oam-domains/">
+        d. Monitoring an OAM domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/delete-domain-home/" title="e. Delete the OAM domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/manage-oam-domains/delete-domain-home/">
+        e. Delete the OAM domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/create-or-update-image/">
+          <b>10. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/patch-and-upgrade/">
+          <b>11. </b>Patch and Upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/patch-and-upgrade/patch_an_image/" title="a. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/patch-and-upgrade/patch_an_image/">
+        a. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oam/patch-and-upgrade/upgrade_an_operator_release/" title="b. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oam/patch-and-upgrade/upgrade_an_operator_release/">
+        b. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oam/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oam/troubleshooting/">
+          <b>12. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oid/" title="Oracle Internet Directory" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oid/">
+          Oracle Internet Directory
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oid/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oid/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oid/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oid/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oid/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oid/prepare-your-environment/">
+          <b>3. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oid/create-oid-instances-helm/" title="Create Oracle Internet Directory Instances Using Helm" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oid/create-oid-instances-helm/">
+          <b>4. </b>Create Oracle Internet Directory Instances Using Helm
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oid/create-oid-instances-helm/oid/" title="Helm Chart: oid" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oid/create-oid-instances-helm/oid/">
+          Helm Chart: oid
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oid/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oid/troubleshooting/">
+          <b>5. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/" title="Oracle Identity Governance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/">
+          Oracle Identity Governance
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/prepare-your-environment/">
+          <b>3. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/create-oig-domains/" title="Create OIG domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/create-oig-domains/">
+          <b>4. </b>Create OIG domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/configure-ingress/" title="Configure an ingress for an OIG domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/configure-ingress/">
+          <b>5. </b>Configure an ingress for an OIG domain
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/" title="a. Using an Ingress with NGINX (non-SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/">
+        a. Using an Ingress with NGINX (non-SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/" title="b. Using an Ingress with NGINX (SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/">
+        b. Using an Ingress with NGINX (SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/validate-domain-urls/" title="Validate domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/validate-domain-urls/">
+          <b>6. </b>Validate domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/post-install-config/" title="Post install configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/post-install-config/">
+          <b>7. </b>Post install configuration
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/post-install-config/set_oimfronendurl_using_mbeans/" title="a. Post Install Tasks" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/post-install-config/set_oimfronendurl_using_mbeans/">
+        a. Post Install Tasks
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/post-install-config/install_and_configure_connectors/" title="b. Install and configure connectors" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/post-install-config/install_and_configure_connectors/">
+        b. Install and configure connectors
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/configure-design-console/" title="Configure Design Console" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/configure-design-console/">
+          <b>8. </b>Configure Design Console
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/configure-design-console/using-the-design-console-with-nginx-non-ssl/" title="a. Using Design Console with NGINX(non-SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/configure-design-console/using-the-design-console-with-nginx-non-ssl/">
+        a. Using Design Console with NGINX(non-SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/configure-design-console/using-the-design-console-with-nginx-ssl/" title="b. Using Design Console with NGINX(SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/configure-design-console/using-the-design-console-with-nginx-ssl/">
+        b. Using Design Console with NGINX(SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/" title="Manage OIG domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/">
+          <b>9. </b>Manage OIG domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/domain-lifecycle/" title="Domain life cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/domain-lifecycle/">
+        <b>1. </b>Domain life cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/wlst-admin-operations/" title="WLST administration operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/wlst-admin-operations/">
+        <b>2. </b>WLST administration operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/running-oig-utilities/" title="Runnning OIG utilities" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/running-oig-utilities/">
+        <b>3. </b>Runnning OIG utilities
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/logging-and-visualization/" title="Logging and visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/logging-and-visualization/">
+        <b>4. </b>Logging and visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/monitoring-oim-domains/" title="Monitoring an OIG domain" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/monitoring-oim-domains/">
+        <b>5. </b>Monitoring an OIG domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/delete-domain-home/" title="Delete the OIG domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/manage-oig-domains/delete-domain-home/">
+        <b>6. </b>Delete the OIG domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/create-or-update-image/">
+          <b>10. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/patch-and-upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/patch-and-upgrade/">
+          <b>11. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/patch-and-upgrade/patch_an_image/" title="a. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/patch-and-upgrade/patch_an_image/">
+        a. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oig/patch-and-upgrade/upgrade_an_operator_release/" title="b. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oig/patch-and-upgrade/upgrade_an_operator_release/">
+        b. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oig/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oig/troubleshooting/">
+          <b>12. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache web tier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/" title="Deploy using composites in a persistent volume or image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/">
+        <b>c. </b>Deploy using composites in a persistent volume or image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/adminguide/performing-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/soa-domains/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/soa-domains/troubleshooting/">
+          <b>9. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/" title="Oracle Unified Directory" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/">
+          Oracle Unified Directory
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oud/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oud/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/prepare-your-environment/">
+          <b>3. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/create-oud-instances/" title="Create Oracle Unified Directory Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/create-oud-instances/">
+          <b>4. </b>Create Oracle Unified Directory Instances
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/create-oud-instances/create-oud-instances-using-samples/" title="a. Create Oracle Unified Directory Instances Using Samples" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/create-oud-instances/create-oud-instances-using-samples/">
+          a. Create Oracle Unified Directory Instances Using Samples
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/create-oud-instances/create-oud-instances-helm/" title="b. Create Oracle Unified Directory Instances Using Helm" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/create-oud-instances/create-oud-instances-helm/">
+          b. Create Oracle Unified Directory Instances Using Helm
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/create-oud-instances/create-oud-instances-helm/oud-ds-rs/" title="Helm Chart: oud-ds-rs: For deployment of replicated Oracle Unified Directory (DS&#43;RS) instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/create-oud-instances/create-oud-instances-helm/oud-ds-rs/">
+          Helm Chart: oud-ds-rs: For deployment of replicated Oracle Unified Directory (DS&#43;RS) instances
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/manage-oud-containers/" title="Manage Oracle Unified Directory Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/manage-oud-containers/">
+          <b>5. </b>Manage Oracle Unified Directory Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oud/manage-oud-containers/logging-and-visualization/" title="a) Logging and Visualization for Helm Chart oud-ds-rs Deployment" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oud/manage-oud-containers/logging-and-visualization/">
+        a) Logging and Visualization for Helm Chart oud-ds-rs Deployment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oud/manage-oud-containers/monitoring-oud-instance/" title="b) Monitoring an Oracle Unified Directory Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oud/manage-oud-containers/monitoring-oud-instance/">
+        b) Monitoring an Oracle Unified Directory Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oud/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oud/troubleshooting/">
+          <b>6. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/" title="Oracle Unified Directory Services Manager" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/">
+          Oracle Unified Directory Services Manager
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oudsm/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/prepare-your-environment/">
+          <b>3. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Instances" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/">
+          <b>4. </b>Create Oracle Unified Directory Instances
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-using-samples/" title="a. Create Oracle Unified Directory Services Manager Instances Using Samples" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-using-samples/">
+          a. Create Oracle Unified Directory Services Manager Instances Using Samples
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/" title="b. Create Oracle Unified Directory Services Manager Instances Using Helm" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/">
+          b. Create Oracle Unified Directory Services Manager Instances Using Helm
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/oudsm/" title="Helm Chart: oudsm: For deployment of Oracle Unified Directory Services Manager instances on Kubernetes" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/oudsm/">
+          Helm Chart: oudsm: For deployment of Oracle Unified Directory Services Manager instances on Kubernetes
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/" title="Manage Oracle Unified Directory Services Manager Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/">
+          <b>5. </b>Manage Oracle Unified Directory Services Manager Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/logging-and-visualization/" title="a) Logging and Visualization for Helm Chart oudsm Deployment" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/logging-and-visualization/">
+        a) Logging and Visualization for Helm Chart oudsm Deployment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/" title="b) Monitoring an Oracle Unified Directory Services Manager Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/">
+        b) Monitoring an Oracle Unified Directory Services Manager Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.4.2/oudsm/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.4.2/oudsm/troubleshooting/">
+          <b>6. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/21.4.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/21.4.2/oudsm/'>Oracle Unified Directory Services Manager</a> > <a href='/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/'>Create Oracle Unified Directory Instances</a> > <a href='/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/'>b. Create Oracle Unified Directory Services Manager Instances Using Helm</a> > Helm Chart: oudsm: For deployment of Oracle Unified Directory Services Manager instances on Kubernetes
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#create-kubernetes-namespace">Create Kubernetes Namespace</a></li>
+        <li><a href="#deploy-oudsm-helm-chart">Deploy oudsm Helm Chart</a></li>
+        <li><a href="#verify-the-installation">Verify the Installation</a></li>
+        <li><a href="#ingress-controller-setup">Ingress Controller Setup</a></li>
+        <li><a href="#access-to-interfaces-through-ingress">Access to Interfaces through Ingress</a></li>
+        <li><a href="#configuration-parameters">Configuration Parameters</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Helm Chart: oudsm: For deployment of Oracle Unified Directory Services Manager instances on Kubernetes
+            </h1>
+          
+
+        
+
+
+
+
+	<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#create-kubernetes-namespace">Create Kubernetes Namespace</a></li>
+<li><a href="#deploy-oudsm-helm-chart">Deploy oudsm Helm Chart</a></li>
+<li><a href="#verify-the-installation">Verify the Installation</a></li>
+<li><a href="#ingress-controller-setup">Ingress Controller Setup</a>
+<ol>
+<li><a href="#ingress-with-nginx">Ingress with NGINX</a></li>
+</ol>
+</li>
+<li><a href="#access-to-interfaces-through-ingress">Access to Interfaces through Ingress</a></li>
+<li><a href="#configuration-parameters">Configuration Parameters</a></li>
+</ol>
+<h3 id="introduction">Introduction</h3>
+<p>This Helm chart provides for the deployment of replicated Oracle Unified Directory Services Manager instances on Kubernetes.</p>
+<p>Based on the configuration, this chart deploys the following objects in the specified namespace of a Kubernetes cluster.</p>
+<ul>
+<li>Service Account</li>
+<li>Secret</li>
+<li>Persistent Volume and Persistent Volume Claim</li>
+<li>Pod(s)/Container(s) for Oracle Unified Directory Services Manager Instances</li>
+<li>Services for interfaces exposed through Oracle Unified Directory Services Manager Instances</li>
+<li>Ingress configuration</li>
+</ul>
+<h3 id="create-kubernetes-namespace">Create Kubernetes Namespace</h3>
+<p>Create a Kubernetes namespace to provide a scope for other objects such as pods and services that you create in the environment. To create your namespace issue the following command:</p>
+<pre><code>$ kubectl create ns oudns
+namespace/oudns created
+</code></pre><h3 id="deploy-oudsm-helm-chart">Deploy oudsm Helm Chart</h3>
+<p>Create/Deploy Oracle Unified Directory Services Manager instances along with Kubernetes objects in a specified namespace using the <code>oudsm</code> Helm Chart.</p>
+<p>The deployment can be initiated by running the following Helm command with reference to the <code>oudsm</code> Helm Chart, along with configuration parameters according to your environment. Before deploying the Helm chart, the namespace should be created. Objects to be created by the Helm chart will be created inside the specified namespace.</p>
+<pre><code>cd &lt;work directory&gt;/fmw-kubernetes/OracleUnifiedDirectorySM/kubernetes/helm
+$ helm install --namespace &lt;namespace&gt; \
+&lt;Configuration Parameters&gt; \
+&lt;deployment/release name&gt; \
+&lt;Helm Chart Path/Name&gt;
+</code></pre><p>Configuration Parameters (override values in chart) can be passed on with <code>--set</code> arguments on the command line and/or with <code>-f / --values</code> arguments when referring to files.</p>
+<h4 id="examples">Examples</h4>
+<h5 id="example-where-configuration-parameters-are-passed-with---set-argument">Example where configuration parameters are passed with <code>--set</code> argument:</h5>
+<pre><code>$ helm install --namespace oudns \
+--set oudsm.adminUser=weblogic,oudsm.adminPass=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=oracle/oudsm,image.tag=12.2.1.4.0-PSU2020July-20200730 \
+oudsm oudsm
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.</li>
+<li>In this example, it is assumed that the command is executed from the directory containing the &lsquo;oudsm&rsquo; helm chart directory (<code>OracleUnifiedDirectorySM/kubernetes/helm/</code>).</li>
+</ul>
+<h5 id="example-where-configuration-parameters-are-passed-with---values-argument">Example where configuration parameters are passed with <code>--values</code> argument:</h5>
+<pre><code>$ helm install --namespace oudns \
+--values oudsm-values-override.yaml \
+oudsm oudsm
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.</li>
+<li>In this example, it is assumed that the command is executed from the directory containing the &lsquo;oudsm&rsquo; helm chart directory (<code>OracleUnifiedDirectorySM/kubernetes/helm/</code>).</li>
+<li>The <code>--values</code> argument passes a file path/name which overrides default values in the chart.</li>
+</ul>
+<p><code>oudsm-values-override.yaml</code></p>
+<pre><code>oudsm:
+  adminUser: weblogic
+  adminPass: Oracle123
+persistence:
+  type: filesystem
+  filesystem:
+    hostPath: 
+      path: /scratch/shared/oudsm_user_projects
+</code></pre><h5 id="example-to-updateupgrade-helm-chart-based-deployment">Example to update/upgrade Helm Chart based deployment:</h5>
+<pre><code>$ helm upgrade --namespace oudns \
+--set oudsm.adminUser=weblogic,oudsm.adminPass=Oracle123,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,replicaCount=2 \
+oudsm oudsm
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.</li>
+<li>In this example, it is assumed that the command is executed from the directory containing the &lsquo;oudsm&rsquo; helm chart directory (<code>OracleUnifiedDirectorySM/kubernetes/helm/</code>).</li>
+</ul>
+<h5 id="example-to-apply-new-oracle-unified-directory-services-manager-patch-through-helm-chart-based-deployment">Example to apply new Oracle Unified Directory Services Manager patch through Helm Chart based deployment:</h5>
+<p>In this example, we will apply PSU2020July-20200730 patch on earlier running Oracle Unified Directory Services Manager version. If we <code>describe pod</code> we will observe that the container is up with new version.</p>
+<p>We have two ways to achieve our goal:</p>
+<pre><code>$ helm upgrade --namespace oudns \
+--set image.repository=oracle/oudsm,image.tag=12.2.1.4.0-PSU2020July-20200730 \
+oudsm oudsm
+</code></pre><p>OR</p>
+<pre><code>$ helm upgrade --namespace oudns \
+--values oudsm-values-override.yaml \
+oudsm oudsm
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.<!-- raw HTML omitted --></li>
+<li>In this example, it is assumed that the command is executed from the directory containing the &lsquo;oudsm&rsquo; helm chart directory (<code>OracleUnifiedDirectorySM/kubernetes/helm/</code>).</li>
+</ul>
+<p><code>oudsm-values-override.yaml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
+  <span style="color:#66d9ef">repository</span>: oracle/oudsm
+  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4.0</span>-PSU2020July<span style="color:#ae81ff">-20200730</span>
+</code></pre></div><h5 id="example-for-using-nfs-as-pv-storage">Example for using NFS as PV Storage:</h5>
+<pre><code>$ helm install --namespace oudns \
+--values oudsm-values-override-nfs.yaml \
+oudsm oudsm
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.</li>
+<li>In this example, it is assumed that the command is executed from the directory containing the &lsquo;oudsm&rsquo; helm chart directory (<code>OracleUnifiedDirectorySM/kubernetes/helm/</code>).</li>
+<li>The <code>--values</code> argument passes a file path/name which overrides values in the chart.</li>
+</ul>
+<p><code>oudsm-values-override-nfs.yaml</code></p>
+<pre><code>oudsm:
+  adminUser: weblogic
+  adminPass: Oracle123
+persistence:
+  type: networkstorage
+  networkstorage:
+    nfs: 
+      path: /scratch/shared/oud_user_projects
+      server: &lt;NFS IP address&gt;
+</code></pre><h5 id="example-for-using-pv-type-of-your-choice">Example for using PV type of your choice:</h5>
+<pre><code>$ helm install --namespace oudns \
+--values oudsm-values-override-pv-custom.yaml \
+oudsm oudsm
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.</li>
+<li>In this example, it is assumed that the command is executed from the directory containing the &lsquo;oudsm&rsquo; helm chart directory (<code>OracleUnifiedDirectorySM/kubernetes/helm/</code>).</li>
+<li>The <code>--values</code> argument passes a file path/name which overrides values in the chart.</li>
+</ul>
+<p><code>oudsm-values-override-pv-custom.yaml</code></p>
+<pre><code>oudsm:
+  adminUser: weblogic
+  adminPass: Oracle123
+persistence:
+  type: custom
+  custom:
+    nfs: 
+      # Path of NFS Share location
+      path: /scratch/shared/oudsm_user_projects
+      # IP of NFS Server
+      server: &lt;NFS IP address&gt;
+</code></pre><blockquote>
+<p>Under <code>custom:</code>, the configuration of your choice can be specified. This configuration will be used &lsquo;as-is&rsquo; for the PersistentVolume object.</p>
+</blockquote>
+<h4 id="check-deployment">Check Deployment</h4>
+<h5 id="output-for-the-helm-installupgrade-command">Output for the <code>helm install/upgrade</code> command</h5>
+<p>Ouput similar to the following is observed following successful execution of <code>helm install/upgrade</code> command.</p>
+<pre><code>NAME: oudsm
+LAST DEPLOYED: Wed Oct 14 06:22:10 2020
+NAMESPACE: oudns
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+</code></pre><h5 id="check-for-the-status-of-objects-created-through-oudsm-helm-chart">Check for the status of objects created through oudsm helm chart</h5>
+<p>Command:</p>
+<pre><code>$ kubectl --namespace oudns get nodes,pod,service,secret,pv,pvc,ingress -o wide
+</code></pre><p>Output is similar to the following:</p>
+<pre><code>NAME          READY   STATUS    RESTARTS   AGE   IP            NODE             NOMINATED NODE   READINESS GATES
+pod/oudsm-1   1/1     Running   0          22h   10.244.0.19   100.102.51.238   &lt;none&gt;           &lt;none&gt;
+pod/oudsm-2   1/1     Running   0          22h   10.244.0.20   100.102.51.238   &lt;none&gt;           &lt;none&gt;
+	
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE   SELECTOR
+service/oudsm-1     ClusterIP   10.96.108.200   &lt;none&gt;        7001/TCP,7002/TCP   22h   app.kubernetes.io/instance=oudsm,app.kubernetes.io/name=oudsm,oudsm/instance=oudsm-1
+service/oudsm-2     ClusterIP   10.96.96.12     &lt;none&gt;        7001/TCP,7002/TCP   22h   app.kubernetes.io/instance=oudsm,app.kubernetes.io/name=oudsm,oudsm/instance=oudsm-2
+service/oudsm-lbr   ClusterIP   10.96.41.201    &lt;none&gt;        7001/TCP,7002/TCP   22h   app.kubernetes.io/instance=oudsm,app.kubernetes.io/name=oudsm
+	
+NAME                                 TYPE                                  DATA   AGE
+secret/default-token-w4jft           kubernetes.io/service-account-token   3      32d
+secret/oudsm-creds                   opaque                                2      22h
+secret/oudsm-token-ksr4g             kubernetes.io/service-account-token   3      22h
+secret/sh.helm.release.v1.oudsm.v1   helm.sh/release.v1                    1      22h
+secret/sh.helm.release.v1.oudsm.v2   helm.sh/release.v1                    1      21h
+secret/sh.helm.release.v1.oudsm.v3   helm.sh/release.v1                    1      19h
+	
+NAME                            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                   STORAGECLASS   REASON   AGE   VOLUMEMODE
+persistentvolume/oudsm-pv       30Gi       RWX            Retain           Bound    myoudns/oudsm-pvc     manual                  22h   Filesystem
+
+NAME                              STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/oudsm-pvc   Bound    oudsm-pv   30Gi       RWX            manual         22h   Filesystem
+
+NAME                                     HOSTS                               ADDRESS          PORTS   AGE
+ingress.extensions/oudsm-ingress-nginx   oudsm-1,oudsm-2,oudsm + 1 more...   100.102.51.230   80      19h
+</code></pre><h5 id="kubernetes-objects">Kubernetes Objects</h5>
+<p>Kubernetes objects created by the Helm chart are detailed in the table below:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Type</strong></th>
+<th><strong>Name</strong></th>
+<th><strong>Example Name</strong></th>
+<th><strong>Purpose</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Service Account</td>
+<td>&lt;deployment/release name&gt;</td>
+<td>oudsm</td>
+<td>Kubernetes Service Account for the Helm Chart deployment</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>&lt;deployment/release name&gt;-creds</td>
+<td>oudsm-creds</td>
+<td>Secret object for Oracle Unified Directory Services Manager related critical values like passwords</td>
+</tr>
+<tr>
+<td>Persistent Volume</td>
+<td>&lt;deployment/release name&gt;-pv</td>
+<td>oudsm-pv</td>
+<td>Persistent Volume for user_projects mount.</td>
+</tr>
+<tr>
+<td>Persistent Volume Claim</td>
+<td>&lt;deployment/release name&gt;-pvc</td>
+<td>oudsm-pvc</td>
+<td>Persistent Volume Claim for user_projects mount.</td>
+</tr>
+<tr>
+<td>Pod</td>
+<td>&lt;deployment/release name&gt;-N</td>
+<td>oudsm-1, oudsm-2, &hellip;</td>
+<td>Pod(s)/Container(s) for Oracle Unified Directory Services Manager Instances</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>&lt;deployment/release name&gt;-N</td>
+<td>oudsm-1, oudsm-2, &hellip;</td>
+<td>Service(s) for HTTP and HTTPS interfaces from Oracle Unified Directory Services Manager instance &lt;deployment/release name&gt;-N</td>
+</tr>
+<tr>
+<td>Ingress</td>
+<td>&lt;deployment/release name&gt;-ingress-nginx</td>
+<td>oudsm-ingress-nginx</td>
+<td>Ingress Rules for HTTP and HTTPS interfaces.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>In the table above, the Example Name for each Object is based on the value &lsquo;oudsm&rsquo; as the deployment/release name for the Helm chart installation.</li>
+</ul>
+<h3 id="verify-the-installation">Verify the Installation</h3>
+<h3 id="ingress-controller-setup">Ingress Controller Setup</h3>
+<p>There are two types of Ingress controllers supported by this Helm chart. In the sub-sections below, configuration steps for each Controller are described.</p>
+<p>By default Ingress configuration only supports HTTP and HTTPS Ports/Communication. To allow LDAP and LDAPS communication over TCP, configuration is required at Ingress Controller/Implementation level.</p>
+<h4 id="ingress-with-nginx">Ingress with NGINX</h4>
+<p>Nginx-ingress controller implementation can be deployed/installed in Kubernetes environment.</p>
+<h5 id="create-a-kubernetes-namespace">Create a Kubernetes Namespace</h5>
+<p>Create a Kubernetes namespace to provide a scope for NGINX objects such as pods and services that you create in the environment. To create your namespace issue the following command:</p>
+<pre><code>$ kubectl create ns mynginx
+namespace/mynginx created
+</code></pre><h5 id="add-repo-reference-to-helm-for-retrivinginstalling-chart-for-nginx-ingress-implementation">Add Repo reference to helm for retriving/installing Chart for nginx-ingress implementation.</h5>
+<pre><code>$ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+</code></pre><p>Confirm the charts available by issuing the following command:</p>
+<pre><code>$ helm search repo | grep nginx
+ingress-nginx/ingress-nginx     4.0.1           1.0.0          Ingress controller for Kubernetes using NGINX a...
+stable/ingress-nginx            4.0.1           1.0.0          Ingress controller for Kubernetes using NGINX a...
+</code></pre><h5 id="command-helm-install-to-install-nginx-ingress-related-objects-like-pod-service-deployment-etc">Command <code>helm install</code> to install nginx-ingress related objects like pod, service, deployment, etc.</h5>
+<pre><code>$ helm install --namespace default \
+--values nginx-ingress-values-override.yaml \
+lbr-nginx ingress-nginx/ingress-nginx --version=3.34.0
+</code></pre><ul>
+<li>For more details about the <code>helm</code> command and parameters, please execute <code>helm --help</code> and <code>helm install --help</code>.</li>
+<li>The <code>--values</code> argument passes a file path/name which overrides values in the chart.</li>
+</ul>
+<p><code>nginx-ingress-values-override.yaml</code></p>
+<pre><code>controller:
+  admissionWebhooks:
+    enabled: false
+  extraArgs:
+    # The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.
+    # If this flag is not provided NGINX will use a self-signed certificate.
+    # If the TLS Secret is in different namespace, name can be mentioned as &lt;namespace&gt;/&lt;tlsSecretName&gt;
+    default-ssl-certificate=oudns/oudsm-tls-cert
+  service:
+    # controller service external IP addresses
+    externalIPs:
+      - &lt; External IP Address &gt;
+    # To configure Ingress Controller Service as LoadBalancer type of Service
+    # Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service
+    type: LoadBalancer
+    # Configuration for NodePort to be used for Ports exposed through Ingress
+    # If NodePorts are not defined/configured, Node Port would be assigned automatically by Kubernetes
+    # These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.
+    nodePorts:
+      # For HTTP Interface exposed through LoadBalancer/Ingress
+      http: 30080
+      # For HTTPS Interface exposed through LoadBalancer/Ingress
+      https: 30443
+</code></pre><h3 id="access-to-interfaces-through-ingress">Access to Interfaces through Ingress</h3>
+<p>With the helm chart, Ingress objects are also created according to configuration. Following are the rules configured in Ingress object(s) for access to Oracle Unified Directory Services Manager Interfaces through Ingress.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Port</strong></th>
+<th><strong>NodePort</strong></th>
+<th><strong>Host</strong></th>
+<th><strong>Example Hostname</strong></th>
+<th><strong>Path</strong></th>
+<th><strong>Backend Service:Port</strong></th>
+<th><strong>Example Service Name:Port</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-N</td>
+<td>oudsm-N</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-N:http</td>
+<td>oudsm-1:http</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>*</td>
+<td>*</td>
+<td>/oudsm<!-- raw HTML omitted --> /console</td>
+<td>&lt;deployment/release name&gt;-lbr:http</td>
+<td>oudsm-lbr:http</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>In the table above, the Example Name for each Object is based on the value &lsquo;oudsm&rsquo; as the deployment/release name for the Helm chart installation.</li>
+<li>NodePort mentioned in the table are according to Ingress configuration described in previous section.</li>
+<li>When an External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on the Kubernetes Node.</li>
+</ul>
+<h4 id="changes-in-etchosts-to-validate-hostname-based-ingress-rules">Changes in /etc/hosts to validate hostname based Ingress rules</h4>
+<p>In case, its not possible for you to have LoadBalancer configuration updated to have host names added for Oracle Unified Directory Services Manager Interfaces, following kind of entries can be added in /etc/hosts files on host from where Oracle Unified Directory Services Manager interfaces would be accessed.</p>
+<pre><code>&lt;IP Address of External LBR or Kubernetes Node&gt;	oudsm oudsm-1 oudsm-2 oudsm-N
+</code></pre><ul>
+<li>In the table above, the Example Name for each Object is based on the value &lsquo;oudsm&rsquo; as the deployment/release name for the Helm chart installation.</li>
+<li>When an External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on the Kubernetes Node.</li>
+</ul>
+<h3 id="configuration-parameters">Configuration Parameters</h3>
+<p>The following table lists the configurable parameters of the Oracle Unified Directory Services Manager chart and their default values.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Parameter</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Default Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>replicaCount</td>
+<td>Number of Oracle Unified Directory Services Manager instances/pods/services to be created</td>
+<td>1</td>
+</tr>
+<tr>
+<td>restartPolicyName</td>
+<td>restartPolicy to be configured for each POD containing Oracle Unified Directory Services Manager instance</td>
+<td>OnFailure</td>
+</tr>
+<tr>
+<td>image.repository</td>
+<td>Oracle Unified Directory Services Manager Image Registry/Repository and name. Based on this, image parameter would be configured for Oracle Unified Directory Services Manager pods/containers</td>
+<td>oracle/oudsm</td>
+</tr>
+<tr>
+<td>image.tag</td>
+<td>Oracle Unified Directory Services Manager Image Tag. Based on this, image parameter would be configured for Oracle Unified Directory Services Manager pods/containers</td>
+<td>12.2.1.4.0</td>
+</tr>
+<tr>
+<td>image.pullPolicy</td>
+<td>policy to pull the image</td>
+<td>IfnotPresent</td>
+</tr>
+<tr>
+<td>imagePullSecrets.name</td>
+<td>name of Secret resource containing private registry credentials</td>
+<td>regcred</td>
+</tr>
+<tr>
+<td>nameOverride</td>
+<td>override the fullname with this name</td>
+<td></td>
+</tr>
+<tr>
+<td>fullnameOverride</td>
+<td>Overrides the fullname with the provided string</td>
+<td></td>
+</tr>
+<tr>
+<td>serviceAccount.create</td>
+<td>Specifies whether a service account should be created</td>
+<td>true</td>
+</tr>
+<tr>
+<td>serviceAccount.name</td>
+<td>If not set and create is true, a name is generated using the fullname template</td>
+<td>oudsm-&lt; fullname &gt;-token-&lt; randomalphanum &gt;</td>
+</tr>
+<tr>
+<td>podSecurityContext</td>
+<td>Security context policies to add to the controller pod</td>
+<td></td>
+</tr>
+<tr>
+<td>securityContext</td>
+<td>Security context policies to add by default</td>
+<td></td>
+</tr>
+<tr>
+<td>service.type</td>
+<td>type of controller service to create</td>
+<td>ClusterIP</td>
+</tr>
+<tr>
+<td>nodeSelector</td>
+<td>node labels for pod assignment</td>
+<td></td>
+</tr>
+<tr>
+<td>tolerations</td>
+<td>node taints to tolerate</td>
+<td></td>
+</tr>
+<tr>
+<td>affinity</td>
+<td>node/pod affinities</td>
+<td></td>
+</tr>
+<tr>
+<td>ingress.enabled</td>
+<td></td>
+<td>true</td>
+</tr>
+<tr>
+<td>ingress.type</td>
+<td>Supported value: nginx</td>
+<td>nginx</td>
+</tr>
+<tr>
+<td>ingress.host</td>
+<td>Hostname to be used with Ingress Rules. <!-- raw HTML omitted -->If not set, hostname would be configured according to fullname. <!-- raw HTML omitted --> Hosts would be configured as &lt; fullname &gt;-http.&lt; domain &gt;, &lt; fullname &gt;-http-0.&lt; domain &gt;, &lt; fullname &gt;-http-1.&lt; domain &gt;, etc.</td>
+<td></td>
+</tr>
+<tr>
+<td>ingress.domain</td>
+<td>Domain name to be used with Ingress Rules. <!-- raw HTML omitted -->In ingress rules, hosts would be configured as &lt; host &gt;.&lt; domain &gt;, &lt; host &gt;-0.&lt; domain &gt;, &lt; host &gt;-1.&lt; domain &gt;, etc.</td>
+<td></td>
+</tr>
+<tr>
+<td>ingress.backendPort</td>
+<td></td>
+<td>http</td>
+</tr>
+<tr>
+<td>ingress.nginxAnnotations</td>
+<td></td>
+<td>{ <!-- raw HTML omitted -->kubernetes.io/ingress.class: &ldquo;nginx&quot;<!-- raw HTML omitted --> nginx.ingress.kubernetes.io/affinity-mode: &ldquo;persistent&rdquo; <!-- raw HTML omitted --> nginx.ingress.kubernetes.io/affinity: &ldquo;cookie&rdquo; <!-- raw HTML omitted -->}</td>
+</tr>
+<tr>
+<td>ingress.ingress.tlsSecret</td>
+<td>Secret name to use an already created TLS Secret. If such secret is not provided, one would be created with name &lt; fullname &gt;-tls-cert. If the TLS Secret is in different namespace, name can be mentioned as &lt; namespace &gt;/&lt; tlsSecretName &gt;</td>
+<td></td>
+</tr>
+<tr>
+<td>ingress.certCN</td>
+<td>Subject&rsquo;s common name (cn) for SelfSigned Cert.</td>
+<td>&lt; fullname &gt;</td>
+</tr>
+<tr>
+<td>ingress.certValidityDays</td>
+<td>Validity of Self-Signed Cert in days</td>
+<td>365</td>
+</tr>
+<tr>
+<td>secret.enabled</td>
+<td>If enabled it will use the secret created with base64 encoding. if value is false, secret would not be used and input values (through &ndash;set, &ndash;values, etc.) would be used while creation of pods.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>secret.name</td>
+<td>secret name to use an already created Secret</td>
+<td>oudsm-&lt; fullname &gt;-creds</td>
+</tr>
+<tr>
+<td>secret.type</td>
+<td>Specifies the type of the secret</td>
+<td>Opaque</td>
+</tr>
+<tr>
+<td>persistence.enabled</td>
+<td>If enabled, it will use the persistent volume. if value is false, PV and PVC would not be used and pods would be using the default emptyDir mount volume.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>persistence.pvname</td>
+<td>pvname to use an already created Persistent Volume , If blank will use the default name</td>
+<td>oudsm-&lt; fullname &gt;-pv</td>
+</tr>
+<tr>
+<td>persistence.pvcname</td>
+<td>pvcname to use an already created Persistent Volume Claim , If blank will use default name</td>
+<td>oudsm-&lt; fullname &gt;-pvc</td>
+</tr>
+<tr>
+<td>persistence.type</td>
+<td>supported values: either filesystem or networkstorage or custom</td>
+<td>filesystem</td>
+</tr>
+<tr>
+<td>persistence.filesystem.hostPath.path</td>
+<td>The path location mentioned should be created and accessible from the local host provided with necessary privileges for the user.</td>
+<td>/scratch/shared/oudsm_user_projects</td>
+</tr>
+<tr>
+<td>persistence.networkstorage.nfs.path</td>
+<td>Path of NFS Share location</td>
+<td>/scratch/shared/oudsm_user_projects</td>
+</tr>
+<tr>
+<td>persistence.networkstorage.nfs.server</td>
+<td>IP or hostname of NFS Server</td>
+<td>0.0.0.0</td>
+</tr>
+<tr>
+<td>persistence.custom.*</td>
+<td>Based on values/data, YAML content would be included in PersistenceVolume Object</td>
+<td></td>
+</tr>
+<tr>
+<td>persistence.accessMode</td>
+<td>Specifies the access mode of the location provided</td>
+<td>ReadWriteMany</td>
+</tr>
+<tr>
+<td>persistence.size</td>
+<td>Specifies the size of the storage</td>
+<td>10Gi</td>
+</tr>
+<tr>
+<td>persistence.storageClass</td>
+<td>Specifies the storageclass of the persistence volume.</td>
+<td>empty</td>
+</tr>
+<tr>
+<td>persistence.annotations</td>
+<td>specifies any annotations that will be used</td>
+<td>{ }</td>
+</tr>
+<tr>
+<td>oudsm.adminUser</td>
+<td>Weblogic Administration User</td>
+<td>weblogic</td>
+</tr>
+<tr>
+<td>oudsm.adminPass</td>
+<td>Password for Weblogic Administration User</td>
+<td></td>
+</tr>
+<tr>
+<td>oudsm.startupTime</td>
+<td>Expected startup time. After specified seconds readinessProbe would start</td>
+<td>900</td>
+</tr>
+<tr>
+<td>oudsm.livenessProbeInitialDelay</td>
+<td>Paramter to decide livenessProbe initialDelaySeconds</td>
+<td>1200</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.enabled</td>
+<td>If enabled it will create the elastic search statefulset deployment</td>
+<td>false</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.image.repository</td>
+<td>Elastic Search Image name/Registry/Repository . Based on this elastic search instances will be created</td>
+<td>docker.elastic.co/elasticsearch/elasticsearch</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.image.tag</td>
+<td>Elastic Search Image tag .Based on this, image parameter would be configured for Elastic Search pods/instances</td>
+<td>6.4.3</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.image.pullPolicy</td>
+<td>policy to pull the image</td>
+<td>IfnotPresent</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.esreplicas</td>
+<td>Number of Elastic search Instances will be created</td>
+<td>3</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.minimumMasterNodes</td>
+<td>The value for discovery.zen.minimum_master_nodes. Should be set to (esreplicas / 2) + 1.</td>
+<td>2</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.esJAVAOpts</td>
+<td>Java options for Elasticsearch. This is where you should configure the jvm heap size</td>
+<td>-Xms512m -Xmx512m</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.sysctlVmMaxMapCount</td>
+<td>Sets the sysctl vm.max_map_count needed for Elasticsearch</td>
+<td>262144</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.resources.requests.cpu</td>
+<td>cpu resources requested for the elastic search</td>
+<td>100m</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.resources.limits.cpu</td>
+<td>total cpu limits that are configures for the elastic search</td>
+<td>1000m</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.esService.type</td>
+<td>Type of Service to be created for elastic search</td>
+<td>ClusterIP</td>
+</tr>
+<tr>
+<td>elk.elasticsearch.esService.lbrtype</td>
+<td>Type of load balancer Service to be created for elastic search</td>
+<td>ClusterIP</td>
+</tr>
+<tr>
+<td>elk.kibana.enabled</td>
+<td>If enabled it will create a kibana deployment</td>
+<td>false</td>
+</tr>
+<tr>
+<td>elk.kibana.image.repository</td>
+<td>Kibana Image Registry/Repository and name. Based on this Kibana instance will be created</td>
+<td>docker.elastic.co/kibana/kibana</td>
+</tr>
+<tr>
+<td>elk.kibana.image.tag</td>
+<td>Kibana Image tag. Based on this, Image parameter would be configured.</td>
+<td>6.4.3</td>
+</tr>
+<tr>
+<td>elk.kibana.image.pullPolicy</td>
+<td>policy to pull the image</td>
+<td>IfnotPresent</td>
+</tr>
+<tr>
+<td>elk.kibana.kibanaReplicas</td>
+<td>Number of Kibana instances will be created</td>
+<td>1</td>
+</tr>
+<tr>
+<td>elk.kibana.service.tye</td>
+<td>Type of service to be created</td>
+<td>NodePort</td>
+</tr>
+<tr>
+<td>elk.kibana.service.targetPort</td>
+<td>Port on which the kibana will be accessed</td>
+<td>5601</td>
+</tr>
+<tr>
+<td>elk.kibana.service.nodePort</td>
+<td>nodePort is the port on which kibana service will be accessed from outside</td>
+<td>31119</td>
+</tr>
+<tr>
+<td>elk.logstash.enabled</td>
+<td>If enabled it will create a logstash deployment</td>
+<td>false</td>
+</tr>
+<tr>
+<td>elk.logstash.image.repository</td>
+<td>logstash Image Registry/Repository and name. Based on this logstash instance will be created</td>
+<td>logstash</td>
+</tr>
+<tr>
+<td>elk.logstash.image.tag</td>
+<td>logstash Image tag. Based on this, Image parameter would be configured.</td>
+<td>6.6.0</td>
+</tr>
+<tr>
+<td>elk.logstash.image.pullPolicy</td>
+<td>policy to pull the image</td>
+<td>IfnotPresent</td>
+</tr>
+<tr>
+<td>elk.logstash.containerPort</td>
+<td>Port on which the logstash container will be running</td>
+<td>5044</td>
+</tr>
+<tr>
+<td>elk.logstash.service.tye</td>
+<td>Type of service to be created</td>
+<td>NodePort</td>
+</tr>
+<tr>
+<td>elk.logstash.service.targetPort</td>
+<td>Port on which the logstash will be accessed</td>
+<td>9600</td>
+</tr>
+<tr>
+<td>elk.logstash.service.nodePort</td>
+<td>nodePort is the port on which logstash service will be accessed from outside</td>
+<td>32222</td>
+</tr>
+<tr>
+<td>elk.logstash.logstashConfigMap</td>
+<td>Provide the configmap name which is already created with the logstash conf. if empty default logstash configmap will be created and used</td>
+<td></td>
+</tr>
+<tr>
+<td>elk.elkPorts.rest</td>
+<td>Port for REST</td>
+<td>9200</td>
+</tr>
+<tr>
+<td>elk.elkPorts.internode</td>
+<td>port used for communication between the nodes</td>
+<td>9300</td>
+</tr>
+<tr>
+<td>elk.busybox.image</td>
+<td>busy box image name. Used for initcontianers</td>
+<td>busybox</td>
+</tr>
+<tr>
+<td>elk.elkVolume.enabled</td>
+<td>If enabled, it will use the persistent volume. if value is false, PV and pods would be using the default emptyDir mount volume.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>elk.elkVolume.pvname</td>
+<td>pvname to use an already created Persistent Volume , If blank will use the default name</td>
+<td>oudsm-&lt; fullname &gt;-espv</td>
+</tr>
+<tr>
+<td>elk.elkVolume.type</td>
+<td>supported values: either filesystem or networkstorage or custom</td>
+<td>filesystem</td>
+</tr>
+<tr>
+<td>elk.elkVolume.filesystem.hostPath.path</td>
+<td>The path location mentioned should be created and accessible from the local host provided with necessary privileges for the user.</td>
+<td>/scratch/shared/oud_elk/data</td>
+</tr>
+<tr>
+<td>elk.elkVolume.networkstorage.nfs.path</td>
+<td>Path of NFS Share location</td>
+<td>/scratch/shared/oud_elk/data</td>
+</tr>
+<tr>
+<td>elk.elkVolume.networkstorage.nfs.server</td>
+<td>IP or hostname of NFS Server</td>
+<td>0.0.0.0</td>
+</tr>
+<tr>
+<td>elk.elkVolume.custom.*</td>
+<td>Based on values/data, YAML content would be included in PersistenceVolume Object</td>
+<td></td>
+</tr>
+<tr>
+<td>elk.elkVolume.accessMode</td>
+<td>Specifies the access mode of the location provided</td>
+<td>ReadWriteMany</td>
+</tr>
+<tr>
+<td>elk.elkVolume.size</td>
+<td>Specifies the size of the storage</td>
+<td>20Gi</td>
+</tr>
+<tr>
+<td>elk.elkVolume.storageClass</td>
+<td>Specifies the storageclass of the persistence volume.</td>
+<td>elk</td>
+</tr>
+<tr>
+<td>elk.elkVolume.annotations</td>
+<td>specifies any annotations that will be used</td>
+<td>{ }</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/21.4.2/oudsm/create-oudsm-instances/create-oudsm-instances-helm/" title="b. Create Oracle Unified Directory Services Manager Instances Using Helm"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/21.4.2/oudsm/manage-oudsm-containers/" title="Manage Oracle Unified Directory Services Manager Containers" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/21.4.2/js/clipboard.min.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/perfect-scrollbar.min.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/perfect-scrollbar.jquery.min.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/jquery.sticky.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/featherlight.min.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/highlight.pack.js?1638527940"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/21.4.2/js/modernizr.custom-3.6.0.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/learn.js?1638527940"></script>
+    <script src="/fmw-kubernetes/21.4.2/js/hugo-learn.js?1638527940"></script>
+
+    <link href="/fmw-kubernetes/21.4.2/mermaid/mermaid.css?1638527940" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.4.2/mermaid/mermaid.js?1638527940"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>

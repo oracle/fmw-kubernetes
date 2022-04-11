@@ -1,0 +1,52 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+image:                                                                                                                                                                                                             
+  name: traefik                                                                                                                                                                                                    
+  tag: 2.2.8                                                                                                                                                                                                       
+  pullPolicy: IfNotPresent                                                                                                                                                                                         
+ingressRoute:                                                                                                                                                                                                      
+  dashboard:                                                                                                                                                                                                       
+    enabled: true                                                                                                                                                                                                  
+    # Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)                                                                                                                                   
+    annotations: {}                                                                                                                                                                                                
+    # Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)                                                                                                                            
+    labels: {}                                                                                                                                                                                                     
+providers:                                                                                                                                                                                                         
+  kubernetesCRD:                                                                                                                                                                                                   
+    enabled: true                                                                                                                                                                                                  
+  kubernetesIngress:                                                                                                                                                                                               
+    enabled: true                                                                                                                                                                                                  
+    # IP used for Kubernetes Ingress endpoints                                                                                                                                                                     
+ports:                                                                                                                                                                                                             
+  traefik:                                                                                                                                                                                                         
+    port: 9000                                                                                                                                                                                                     
+    expose: true                                                                                                                                                                                                   
+    # The exposed port for this service                                                                                                                                                                            
+    exposedPort: 9000                                                                                                                                                                                              
+    # The port protocol (TCP/UDP)                                                                                                                                                                                  
+    protocol: TCP                                                                                                                                                                                                  
+  web:                                                                                                                                                                                                             
+    port: 8000                                                                                                                                                                                                     
+    # hostPort: 8000                                                                                                                                                                                               
+    expose: true                                                                                                                                                                                                   
+    exposedPort: 30305                                                                                                                                                                                             
+    nodePort: 30305                                                                                                                                                                                                
+    # The port protocol (TCP/UDP)                                                                                                                                                                                  
+    protocol: TCP                                                                                                                                                                                                  
+    # Use nodeport if set. This is useful if you have configured Traefik in a                                                                                                                                      
+    # LoadBalancer                                                                                                                                                                                                 
+    # nodePort: 32080                                                                                                                                                                                              
+    # Port Redirections                                                                                                                                                                                            
+    # Added in 2.2, you can make permanent redirects via entrypoints.                                                                                                                                              
+    # https://docs.traefik.io/routing/entrypoints/#redirection                                                                                                                                                     
+    # redirectTo: websecure                                                                                                                                                                                        
+  websecure:                                                                                                                                                                                                       
+    port: 8443                                                                                                                                                                                                     
+#    # hostPort: 8443                                                                                                                                                                                              
+    expose: true                                                                                                                                                                                                   
+    exposedPort: 30443                                                                                                                                                                                             
+    # The port protocol (TCP/UDP)                                                                                                                                                                                  
+    protocol: TCP                                                                                                                                                                                                  
+    nodePort: 30443                                                                                                                                                                                                
+

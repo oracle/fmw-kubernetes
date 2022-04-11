@@ -1,0 +1,50 @@
+[final-build-commands]
+
+USER root
+
+COPY --chown=oracle:root files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
+
+USER oracle
+	
+RUN cd /u01/oracle/wcsites/common/templates/wls && \
+	$JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
+	rm /u01/oracle/wcsites/common/templates/wls/startup-plan.xml && \
+	rm /u01/oracle/wcsites/common/templates/wls/file-definition.xml
+
+#
+# Install the required packages
+# -----------------------------
+USER root
+ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
+	SITES_INSTALLER_PKG=wcs-wls-docker-install \
+	DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
+	ADMIN_PORT=7001 \
+	WCSITES_PORT=7002 \
+	ADMIN_SSL_PORT=9001 \
+	WCSITES_SSL_PORT=9002 \
+    PATH=$PATH:/u01/oracle/sites-container-scripts
+	
+RUN yum install -y hostname && \
+    rm -rf /var/cache/yum
+
+RUN mkdir -p ${SITES_CONTAINER_SCRIPTS} && \
+	mkdir -p /u01/wcs-wls-docker-install 
+COPY --chown=oracle:root  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
+COPY --chown=oracle:root  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
+
+RUN chown oracle:root -R /u01/oracle/sites-container-scripts && \
+	chown oracle:root -R /u01/wcs-wls-docker-install && \
+	chmod a+xr /u01/oracle/sites-container-scripts/* && \
+	chmod a+xr /u01/wcs-wls-docker-install/*.sh
+
+# Expose all Ports
+# -------------------------------------------------------------
+EXPOSE $ADMIN_PORT $ADMIN_SSL_PORT $WCSITES_PORT $WCSITES_SSL_PORT
+
+USER oracle
+WORKDIR ${ORACLE_HOME}
+# Define default command to start.
+# -------------------------------------------------------------
+CMD ["/u01/oracle/sites-container-scripts/createOrStartSitesDomain.sh"]
+
+

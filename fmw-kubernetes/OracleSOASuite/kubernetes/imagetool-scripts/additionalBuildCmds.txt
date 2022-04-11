@@ -1,0 +1,36 @@
+[package-manager-packages]
+hostname
+
+[after-fmw-install]
+RUN if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs/XEngine_8_4_1_23.tar.gz" ]; then \
+        cd $ORACLE_HOME/soa/soa/thirdparty/edifecs && \
+        tar -zxvf  XEngine_8_4_1_23.tar.gz; \
+    else \
+        echo -e "\nXEngine_8_4_1_23.tar.gz not present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
+    fi
+# zip as few log files grow larger when patches are installed.
+RUN if ls /u01/oracle/cfgtoollogs/opatch/*.log; then \
+        gzip /u01/oracle/cfgtoollogs/opatch/*.log; \
+    fi
+
+[final-build-commands]
+
+ENV ORACLE_HOME=/u01/oracle \
+    VOLUME_DIR=/u01/oracle/user_projects \
+    SCRIPT_FILE=/u01/oracle/container-scripts/* \
+    HEALTH_SCRIPT_FILE=/u01/oracle/container-scripts/get_healthcheck_url.sh \
+    JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
+    PATH=$PATH:/u01/oracle/container-scripts:/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin
+
+USER root
+RUN mkdir -p $VOLUME_DIR && chown oracle:root /u01 $VOLUME_DIR && \
+    mkdir -p /u01/oracle/container-scripts 
+
+COPY --chown=oracle:root files/container-scripts/ /u01/oracle/container-scripts/
+RUN chmod +xr $SCRIPT_FILE
+
+USER oracle
+
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+WORKDIR ${ORACLE_HOME}
+CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]

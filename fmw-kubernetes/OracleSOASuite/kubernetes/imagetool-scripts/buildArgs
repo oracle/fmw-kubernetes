@@ -1,0 +1,10 @@
+create
+--jdkVersion %JDK_VERSION%
+--type soa_osb_b2b
+--version 12.2.1.4.0
+--tag %BUILDTAG%
+--pull
+--chown oracle:root
+--installerResponseFile %DOCKER_REPO%/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,%DOCKER_REPO%/OracleSOASuite/dockerfiles/12.2.1.4.0/install/soasuite.response,%DOCKER_REPO%/OracleSOASuite/dockerfiles/12.2.1.4.0/install/osb.response,%DOCKER_REPO%/OracleSOASuite/dockerfiles/12.2.1.4.0/install/b2b.response
+--additionalBuildCommands %DOCKER_REPO%/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+--additionalBuildFiles %DOCKER_REPO%/OracleSOASuite/dockerfiles/12.2.1.4.0/container-scripts

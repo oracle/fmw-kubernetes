@@ -1,0 +1,406 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oud-rs-svc-1
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-rs-1
+spec:
+  ports:
+  - port: 1444
+    name: admin-ldaps
+    targetPort: 1444
+  - port: 1888
+    name: admin-https
+    targetPort: 1888
+  - port: 1898
+    name: replication
+    targetPort: 1898
+  type: NodePort
+  selector:
+    app: oud-rs-1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oudpodrs1
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-rs-1
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: oudrs1
+    image: %IMAGE%
+    ports:
+    - containerPort: 1444
+    - containerPort: 1888
+    - containerPort: 1898
+    env:
+    - name: sleepBeforeConfig
+      value: "3"
+    - name: instanceType
+      value: Replication
+    - name: OUD_INSTANCE_NAME
+      value: oudpodrs1
+    - name: hostname
+      value: oud-rs-svc-1
+    - name: baseDN
+      value: dc=example1,dc=com
+    - name: rootUserDN
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserDN
+    - name: rootUserPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserPassword
+    - name: adminUID
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminUID
+    - name: adminPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminPassword
+    - name: bindDN1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN1
+    - name: bindPassword1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword1
+    - name: bindDN2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN2
+    - name: bindPassword2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword2
+    - name: dsreplication_1
+      value: disable --disableAll --hostname ${sourceHost} --port ${adminConnectorPort}
+    - name: dsreplication_2
+      value: enable --host1 ${sourceHost} --port1 ${adminConnectorPort} --noReplicationServer1 --host2 ${hostname} --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --onlyReplicationServer2 --baseDN ${baseDN}
+    - name: dsreplication_3
+      value: status --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN} --dataToDisplay compat-view 
+    - name: dsreplication_4
+      value: verify --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN}
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      tcpSocket:
+        port: 1444
+      initialDelaySeconds: 120
+      periodSeconds: 30
+    readinessProbe:
+      exec:
+        command:
+          - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+      initialDelaySeconds: 120
+      periodSeconds: 60
+  imagePullSecrets:
+  - name: regcred
+  volumes:
+      - name: %PV_NAME%
+        persistentVolumeClaim:
+          claimName: %PVC_NAME%
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oud-ds-svc-1a
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-1a
+spec:
+  ports:
+  - port: 1444
+    name: admin-ldaps
+    targetPort: 1444
+  - port: 1888
+    name: admin-https
+    targetPort: 1888
+  - port: 1389
+    name: ldap
+    targetPort: 1389
+  - port: 1636
+    name: ldaps
+    targetPort: 1636
+  - port: 1080
+    name: data-http
+    targetPort: 1080
+  - port: 1081
+    name: data-https
+    targetPort: 1081
+  type: NodePort
+  selector:
+    app: oud-ds-1a
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oudpodds1a
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-1a
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: oudds1a
+    image: %IMAGE%
+    ports:
+    - containerPort: 1444
+    - containerPort: 1888
+    - containerPort: 1389
+    - containerPort: 1636
+    - containerPort: 1080
+    - containerPort: 1081
+    env:
+    - name: sleepBeforeConfig
+      value: "240"
+    - name: instanceType
+      value: AddDS2RS
+    - name: OUD_INSTANCE_NAME
+      value: oudpodds1a
+    - name: hostname
+      value: oud-ds-svc-1a
+    - name: baseDN
+      value: dc=example1,dc=com
+    - name: rootUserDN
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserDN
+    - name: rootUserPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserPassword
+    - name: adminUID
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminUID
+    - name: adminPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminPassword
+    - name: bindDN1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN1
+    - name: bindPassword1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword1
+    - name: bindDN2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN2
+    - name: bindPassword2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword2
+    - name: sourceHost
+      value: oud-rs-svc-1
+    - name: initializeFromHost
+      value: oud-dir-svc-1
+    - name: dsreplication_1
+      value: verify --hostname ${sourceHost} --port ${adminConnectorPort} --baseDN ${baseDN} --serverToRemove ${hostname}:${adminConnectorPort}
+    - name: dsreplication_2
+      value: enable --host1 ${hostname} --port1 ${adminConnectorPort} --noReplicationServer1 --host2 ${sourceHost} --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --onlyReplicationServer2 --baseDN ${baseDN}
+    - name: dsreplication_3
+      value: initialize --hostSource ${initializeFromHost} --portSource ${adminConnectorPort} --hostDestination ${hostname} --portDestination ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_4
+      value: verify --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_5
+      value: status --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN} --dataToDisplay compat-view 
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      tcpSocket:
+        port: 1444
+      initialDelaySeconds: 240
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1389
+      initialDelaySeconds: 240
+      periodSeconds: 30
+    readinessProbe:
+      exec:
+        command:
+          - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+      initialDelaySeconds: 240
+      periodSeconds: 60
+  imagePullSecrets:
+  - name: regcred
+  volumes:
+      - name: %PV_NAME%
+        persistentVolumeClaim:
+          claimName: %PVC_NAME%
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oud-ds-svc-1b
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-1b
+spec:
+  ports:
+  - port: 1444
+    name: admin-ldaps
+    targetPort: 1444
+  - port: 1888
+    name: admin-https
+    targetPort: 1888
+  - port: 1389
+    name: ldap
+    targetPort: 1389
+  - port: 1636
+    name: ldaps
+    targetPort: 1636
+  - port: 1080
+    name: data-http
+    targetPort: 1080
+  - port: 1081
+    name: data-https
+    targetPort: 1081
+  type: NodePort
+  selector:
+    app: oud-ds-1b
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oudpodds1b
+  namespace: %NAMESPACE%
+  labels:
+    app: oud-ds-1b
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: oudds1b
+    image: %IMAGE%
+    ports:
+    - containerPort: 1444
+    - containerPort: 1888
+    - containerPort: 1389
+    - containerPort: 1636
+    - containerPort: 1080
+    - containerPort: 1081
+    env:
+    - name: sleepBeforeConfig
+      value: "300"
+    - name: instanceType
+      value: AddDS2RS
+    - name: OUD_INSTANCE_NAME
+      value: oudpodds1b
+    - name: hostname
+      value: oud-ds-svc-1b
+    - name: baseDN
+      value: dc=example1,dc=com
+    - name: rootUserDN
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserDN
+    - name: rootUserPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: rootUserPassword
+    - name: adminUID
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminUID
+    - name: adminPassword
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: adminPassword
+    - name: bindDN1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN1
+    - name: bindPassword1
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword1
+    - name: bindDN2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindDN2
+    - name: bindPassword2
+      valueFrom:
+        secretKeyRef:
+          name: %SECRET_NAME%
+          key: bindPassword2
+    - name: sourceHost
+      value: oud-rs-svc-1
+    - name: initializeFromHost
+      value: oud-dir-svc-1
+    - name: dsreplication_1
+      value: verify --hostname ${sourceHost} --port ${adminConnectorPort} --baseDN ${baseDN} --serverToRemove ${hostname}:${adminConnectorPort}
+    - name: dsreplication_2
+      value: enable --host1 ${hostname} --port1 ${adminConnectorPort} --noReplicationServer1 --host2 ${sourceHost} --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --onlyReplicationServer2 --baseDN ${baseDN}
+    - name: dsreplication_3
+      value: initialize --hostSource ${initializeFromHost} --portSource ${adminConnectorPort} --hostDestination ${hostname} --portDestination ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_4
+      value: verify --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN}
+    - name: dsreplication_5
+      value: status --hostname ${hostname} --port ${adminConnectorPort} --baseDN ${baseDN} --dataToDisplay compat-view 
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: %PV_NAME%
+    readinessProbe:
+      tcpSocket:
+        port: 1444
+      initialDelaySeconds: 300
+      periodSeconds: 30
+    readinessProbe:
+      tcpSocket:
+        port: 1389
+      initialDelaySeconds: 300
+      periodSeconds: 30
+    readinessProbe:
+      exec:
+        command:
+          - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+      initialDelaySeconds: 300
+      periodSeconds: 60
+  imagePullSecrets:
+  - name: regcred
+  volumes:
+      - name: %PV_NAME%
+        persistentVolumeClaim:
+          claimName: %PVC_NAME%

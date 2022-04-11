@@ -1,0 +1,27 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+# Load balancer type.  Supported values are: NGINX
+type: NGINX
+
+# Type of Configuration Supported Values are : NONSSL and SSL
+sslType: SSL
+
+#WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: accessinfra
+  adminServerName: AdminServer
+  adminServerPort: 7001
+  adminServerSSLPort: 
+  oamClusterName: oam_cluster
+  oamManagedServerPort: 14100
+  oamManagedServerSSLPort: 
+  policyClusterName: policy_cluster
+  policyManagedServerPort: 15100
+  policyManagedServerSSLPort: 
+

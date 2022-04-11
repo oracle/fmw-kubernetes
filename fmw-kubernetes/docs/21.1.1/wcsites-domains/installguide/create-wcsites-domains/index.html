@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.74.3" />
+    <meta name="description" content="Create an Oracle WebCenter Sites domain home on an existing PV or PVC, and create the domain resource YAML file for deploying the generated Oracle WebCenter Sites domain.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/21.1.1/images/favicon.png" type="image/png">
+
+    <title>Create Oracle WebCenter Sites domains :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/21.1.1/css/nucleus.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/fontawesome-all.min.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/hybrid.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/featherlight.min.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/perfect-scrollbar.min.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/auto-complete.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/atom-one-dark-reasonable.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/theme.css?1612461268" rel="stylesheet">
+    <link href="/fmw-kubernetes/21.1.1/css/hugo-theme.css?1612461268" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/21.1.1/js/jquery-3.3.1.min.js?1612461268"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/create-wcsites-domains/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/21.1.1/">
+  <img src="/fmw-kubernetes/21.1.1//images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/lunr.min.js?1612461268"></script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/auto-complete.js?1612461268"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/21.1.1\/";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/21.1.1/js/search.js?1612461268"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/">
+          Oracle WebCenter Sites
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/" title="Install Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/create-wcsites-domains/" title="Create Oracle WebCenter Sites domains" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/create-wcsites-domains/">
+          <b>  </b>Create Oracle WebCenter Sites domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/voyager/">
+        <b>c. </b>Voyager
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/monitoring-wcsites-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/monitoring-wcsites-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/elasticsearch-integration/">
+        <b> </b>Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/weblogic-logging-exporter-setup/">
+        <b> </b>Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/" title="Upgrade and Patch " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/">
+          <b>4. </b>Upgrade and Patch 
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/" title="Patch a Oracle WebCenter Sites product Docker image" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/">
+        <b>a. </b>Patch a Oracle WebCenter Sites product Docker image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/cleanup-domain-setup/">
+        <b>5. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/">
+          <b>6. </b>Oracle Cloud Infrastructure
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/oke/" title="Preparing an OKE environment" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/oke/">
+        <b>a. </b>Preparing an OKE environment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/bastion/" title="Preparing the Bastion host" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/bastion/">
+        <b>b. </b>Preparing the Bastion host
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/filesystem/" title="Preparing a file system" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/filesystem/">
+        <b>c. </b>Preparing a file system
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/ocir/" title="Creating an OCIR" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/oracle-cloud/ocir/">
+        <b>d. </b>Creating an OCIR
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/wcsites-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/wcsites-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/21.1.1/wcsites-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/21.1.1/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/21.1.1/wcsites-domains/'>Oracle WebCenter Sites</a> > <a href='/fmw-kubernetes/21.1.1/wcsites-domains/installguide/'>Install Guide</a> > Create Oracle WebCenter Sites domains
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Create Oracle WebCenter Sites domains
+            </h1>
+          
+
+        
+
+
+
+
+	<h4 id="contents">Contents</h4>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#prepare-the-webcenter-sites-domain-creation-input-file">Prepare the WebCenter Sites Domain Creation Input File</a></li>
+<li><a href="#create-the-webcenter-sites-domain">Create the WebCenter Sites Domain</a></li>
+<li><a href="#initialize-the-webcenter-sites-domain">Initialize the WebCenter Sites Domain</a></li>
+<li><a href="#verify-the-webcenter-sites-domain">Verify the WebCenter Sites Domain</a></li>
+<li><a href="#expose-webcenter-sites-services">Expose WebCenter Sites Services</a></li>
+<li><a href="#load-balance-with-an-ingress-controller-or-a-web-server">Load Balance With an Ingress Controller or A Web Server</a></li>
+<li><a href="#configure-webcenter-sites">Configure WebCenter Sites</a></li>
+<li><a href="#settings-in-webcenter-sites-property-management">Settings in WebCenter Sites Property Management</a></li>
+<li><a href="#for-publishing-setting-in-webcenter-sites">For Publishing Setting in WebCenter Sites</a></li>
+</ul>
+<h4 id="introduction">Introduction</h4>
+<p>This document details on how to use sample scripts to demonstrate the creation of a WebCenter Sites domain home on an
+existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts
+also generate the domain YAML file, which can then be used to start the Kubernetes
+artifacts of the corresponding domain.</p>
+<h4 id="prerequisites">Prerequisites</h4>
+<ul>
+<li>Ensure that you have completed all of the steps under <a href="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/prepare-your-environment/">prepare-your-environment</a>.</li>
+<li>Ensure that the database and the WebLogic Kubernetes Operator is up.</li>
+</ul>
+<h4 id="prepare-the-webcenter-sites-domain-creation-input-file">Prepare the WebCenter Sites Domain Creation Input File</h4>
+<p>If required, domain creation inputs can be customized by editing <code>create-domain-inputs.yaml</code> as described below:</p>
+<p>Please note that the sample scripts for the WebCenter Sites domain deployment are available from the previously downloaded repository at  <code>kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/</code>.</p>
+<p>Make a copy of the <code>create-domain-inputs.yaml</code> file before updating the default values.</p>
+<p>The default domain created by the script has the following characteristics:</p>
+<ul>
+<li>An Administration Server named <code>AdminServer</code> listening on port <code>7001</code>.</li>
+<li>A configured cluster named <code>wcsites_cluster</code> of size <code>5</code>.</li>
+<li>Managed Server, named <code>wcsites_server1</code>, listening on port <code>8001</code>.</li>
+<li>Log files that are located in <code>/shared/logs/&lt;domainUID&gt;</code>.</li>
+</ul>
+<h5 id="configuration-parameters">Configuration parameters</h5>
+<p>The following parameters can be provided in the inputs file:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Definition</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>adminPort</code></td>
+<td>Port number for the Administration Server inside the Kubernetes cluster.</td>
+<td><code>7001</code></td>
+</tr>
+<tr>
+<td><code>adminServerName</code></td>
+<td>Name of the Administration Server.</td>
+<td><code>AdminServer</code></td>
+</tr>
+<tr>
+<td><code>clusterName</code></td>
+<td>Name of the WebLogic cluster instance to generate for the domain. By default the cluster name is <code>wcsites_cluster</code> for the WebCenter Sites domain.</td>
+<td><code>wcsites_cluster</code></td>
+</tr>
+<tr>
+<td><code>configuredManagedServerCount</code></td>
+<td>Number of Managed Server instances for the domain.</td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td><code>createDomainFilesDir</code></td>
+<td>Directory on the host machine to locate all the files that you need to create a WebLogic domain, including the script that is specified in the <code>createDomainScriptName</code> property. By default, this directory is set to the relative path <code>wlst</code>, and the create script will use the built-in WLST offline scripts in the <code>wlst</code> directory to create the WebLogic domain. An absolute path is also supported to point to an arbitrary directory in the file system. The built-in scripts can be replaced by the user-provided scripts or model files as long as those files are in the specified directory. Files in this directory are put into a Kubernetes config map, which in turn is mounted to the <code>createDomainScriptsMountPath</code>, so that the Kubernetes pod can use the scripts and supporting files to create a domain home.</td>
+<td><code>wlst</code></td>
+</tr>
+<tr>
+<td><code>createDomainScriptsMountPath</code></td>
+<td>Mount path where the create domain scripts are located inside a pod. The <code>create-domain.sh</code> script creates a Kubernetes job to run the script (specified in the <code>createDomainScriptName</code> property) in a Kubernetes pod to create a domain home. Files in the <code>createDomainFilesDir</code> directory are mounted to this location in the pod, so that the Kubernetes pod can use the scripts and supporting files to create a domain home.</td>
+<td><code>/u01/weblogic</code></td>
+</tr>
+<tr>
+<td><code>createDomainScriptName</code></td>
+<td>Script that the create domain script uses to create a WebLogic domain. The <code>create-domain.sh</code> script creates a Kubernetes job to run this script to create a domain home. The script is located in the in-pod directory that is specified in the <code>createDomainScriptsMountPath</code> property. If you need to provide your own scripts to create the domain home, instead of using the built-it scripts, you must use this property to set the name of the script that you want the create domain job to run.</td>
+<td><code>create-domain-job.sh</code></td>
+</tr>
+<tr>
+<td><code>domainHome</code></td>
+<td>Home directory of the WebCenter Sites domain. <code>This field cannot be modified.</code></td>
+<td><code>/u01/oracle/user_projects/domains/wcsitesinfra</code></td>
+</tr>
+<tr>
+<td><code>domainPVMountPath</code></td>
+<td>Mount path of the domain persistent volume. <code>This field cannot be modified.</code></td>
+<td><code>/u01/oracle/user_projects/domains</code></td>
+</tr>
+<tr>
+<td><code>domainUID</code></td>
+<td>Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name.</td>
+<td><code>wcsitesinfra</code></td>
+</tr>
+<tr>
+<td><code>exposeAdminNodePort</code></td>
+<td>Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>exposeAdminT3Channel</code></td>
+<td>Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>WebCenter Sites Docker image. The Operator requires WebCenter Sites release 12.2.1.4.0. Refer to <a href="https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4">WebCenter Sites Docker image</a> for details on how to obtain or create the image.</td>
+<td><code>oracle/wcsites:12.2.1.4-21.1.1</code></td>
+</tr>
+<tr>
+<td><code>imagePullPolicy</code></td>
+<td>WebLogic Docker image pull policy. Legal values are <code>IfNotPresent</code>, <code>Always</code>, or <code>Never</code></td>
+<td><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td><code>imagePullSecretName</code></td>
+<td>Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret will be validated when this parameter is specified.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>includeServerOutInPodLog</code></td>
+<td>Boolean indicating whether to include the server.out to the pod&rsquo;s stdout.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>initialManagedServerReplicas</code></td>
+<td>Number of Managed Server to initially start for the domain.</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>javaOptions</code></td>
+<td>Java options for starting the Administration Server and Managed Servers. A Java option can include references to one or more of the following pre-defined variables to obtain WebLogic domain information: <code>$(DOMAIN_NAME)</code>, <code>$(DOMAIN_HOME)</code>, <code>$(ADMIN_NAME)</code>, <code>$(ADMIN_PORT)</code>, and <code>$(SERVER_NAME)</code>.</td>
+<td><code>-Dweblogic.StdoutDebugEnabled=false</code></td>
+</tr>
+<tr>
+<td><code>logHome</code></td>
+<td>The in-pod location for the domain log, server logs, server out, and Node Manager log files. <code>This field cannot be modified.</code></td>
+<td><code>/u01/oracle/user_projects/logs/wcsitesinfra</code></td>
+</tr>
+<tr>
+<td><code>managedServerNameBase</code></td>
+<td>Base string used to generate Managed Server names.</td>
+<td><code>wcsites_server</code></td>
+</tr>
+<tr>
+<td><code>managedServerPort</code></td>
+<td>Port number for each Managed Server.</td>
+<td><code>8001</code></td>
+</tr>
+<tr>
+<td><code>namespace</code></td>
+<td>Kubernetes namespace in which to create the domain.</td>
+<td><code>wcsites-ns</code></td>
+</tr>
+<tr>
+<td><code>persistentVolumeClaimName</code></td>
+<td>Name of the persistent volume claim created to host the domain home. If not specified, the value is derived from the <code>domainUID</code> as <code>&lt;domainUID&gt;-weblogic-sample-pvc</code>.</td>
+<td><code>wcsitesinfra-domain-pvc</code></td>
+</tr>
+<tr>
+<td><code>productionModeEnabled</code></td>
+<td>Boolean indicating if production mode is enabled for the domain.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>serverStartPolicy</code></td>
+<td>Determines which WebLogic Server instances will be started. Legal values are <code>NEVER</code>, <code>IF_NEEDED</code>, <code>ADMIN_ONLY</code>.</td>
+<td><code>IF_NEEDED</code></td>
+</tr>
+<tr>
+<td><code>t3ChannelPort</code></td>
+<td>Port for the T3 channel of the NetworkAccessPoint.</td>
+<td><code>30012</code></td>
+</tr>
+<tr>
+<td><code>t3PublicAddress</code></td>
+<td>Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <!-- raw HTML omitted -->For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes.</td>
+<td>If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster.</td>
+</tr>
+<tr>
+<td><code>weblogicCredentialsSecretName</code></td>
+<td>Name of the Kubernetes secret for the Administration Server&rsquo;s user name and password. If not specified, then the value is derived from the <code>domainUID</code> as <code>&lt;domainUID&gt;-weblogic-credentials</code>.</td>
+<td><code>wcsites-domain-credentials</code></td>
+</tr>
+<tr>
+<td><code>weblogicImagePullSecretName</code></td>
+<td>Name of the Kubernetes secret for the Docker Store, used to pull the WebLogic Server image.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>serverPodCpuRequest</code>, <code>serverPodMemoryRequest</code>, <code>serverPodCpuCLimit</code>, <code>serverPodMemoryLimit</code></td>
+<td>The maximum amount of compute resources allowed and minimum amount of compute resources required for each server pod. Please refer to the Kubernetes documentation on <code>Managing Compute Resources for Containers</code> for details.</td>
+<td>Resource requests and resource limits are not specified. Refer to <a href="../pre-requisites/#webcenter-sites-cluster-sizing-recommendations">WebCenter Sites Cluster Sizing Recommendations</a> for more details.</td>
+</tr>
+<tr>
+<td><code>rcuSchemaPrefix</code></td>
+<td>The schema prefix to use in the database, for example <code>WCS1</code>.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas.</td>
+<td><code>WCS1</code></td>
+</tr>
+<tr>
+<td><code>rcuDatabaseURL</code></td>
+<td>The database URL.</td>
+<td><code>oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s</code></td>
+</tr>
+<tr>
+<td><code>rcuCredentialsSecret</code></td>
+<td>The loadbalancer hostname to be provided.</td>
+<td><code>wcsites-rcu-credentials</code></td>
+</tr>
+<tr>
+<td><code>loadBalancerHostName</code></td>
+<td>Hostname for the final url accessible outside K8S environment.</td>
+<td><code>abc.def.com</code></td>
+</tr>
+<tr>
+<td><code>loadBalancerPortNumber</code></td>
+<td>Port for the final url accessible outside K8S environment.</td>
+<td><code>30305</code></td>
+</tr>
+<tr>
+<td><code>loadBalancerProtocol</code></td>
+<td>Protocol for the final url accessible outside K8S environment.</td>
+<td><code>http</code></td>
+</tr>
+<tr>
+<td><code>loadBalancerType</code></td>
+<td>Loadbalancer name that will be used. Example: Traefik or &quot;&rdquo;</td>
+<td><code>traefik</code></td>
+</tr>
+<tr>
+<td><code>unicastPort</code></td>
+<td>Starting range of uniciast port that application will use.</td>
+<td><code>50000</code></td>
+</tr>
+<tr>
+<td><code>sitesSamples</code></td>
+<td>Sites to be installed without samples sites by default, else true.</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<p>You can form the names of the Kubernetes resources in the generated YAML files with the value of these properties
+specified in the <code>create-domain-inputs.yaml</code> file: <code>adminServerName</code> , <code>clusterName</code> and <code>managedServerNameBase</code> . Characters that are invalid in a Kubernetes service name are converted to valid values in the
+generated YAML files. For example, an uppercase letter is converted to a lowercase letter and an underscore (&quot;_&quot;) is converted to a
+hyphen (&quot;-&quot;) .</p>
+<p>The sample demonstrates how to create a WebCenter Sites domain home and associated Kubernetes resources for a domain
+that has one cluster only. In addition, the sample provides the capability for users to supply their own scripts
+to create the domain home for other use cases. You can modify the generated domain YAML file to include more use cases.</p>
+<h4 id="create-the-webcenter-sites-domain">Create the WebCenter Sites Domain</h4>
+<ol>
+<li>
+<p>Understanding the syntax of the create-domain.sh  script:</p>
+<pre><code>$ ./create-domain.sh \
+ -i create-domain-inputs.yaml \
+ -o /&lt;path to output-directory&gt;
+</code></pre><p>The script performs the following functions:</p>
+<ul>
+<li>
+<p>Creates a directory for the generated Kubernetes YAML files for this domain if it does not
+already exist.  The path name is <code>/&lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;</code>.
+If the directory already exists, remove its content before using this script.</p>
+</li>
+<li>
+<p>Creates a Kubernetes job that will start up a utility WebCenter Sites container and run
+offline WLST scripts to create the domain on the shared storage.</p>
+</li>
+<li>
+<p>Runs and waits for the job to finish.</p>
+</li>
+<li>
+<p>Creates a Kubernetes domain YAML file, <code>domain.yaml</code>, in the directory that is created above.
+This YAML file can be used to create the Kubernetes resource using the <code>kubectl create -f</code>
+or <code>kubectl apply -f</code> command:</p>
+<pre><code>$ kubectl apply -f ../&lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;/domain.yaml
+</code></pre></li>
+<li>
+<p>Creates a convenient utility script, <code>delete-domain-job.yaml</code>, to clean up the domain home
+created by the create script.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Now, run the <code>create-domain.sh</code> sample script below, pointing it at the create-domain-inputs inputs file and an output directory like below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash-4.2$ rm -rf kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains
+    
+bash-4.2$ sh kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/create-domain.sh <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -i kubernetes/samples/scripts/create-wcsites-domain/domain-home-on-pv/create-domain-inputs.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -o kubernetes/samples/scripts/create-wcsites-domain/output
+    
+Input parameters being used
+export version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;create-weblogic-sample-domain-inputs-v1&#34;</span>
+export adminPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;7001&#34;</span>
+export adminServerName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;adminserver&#34;</span>
+export domainUID<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsitesinfra&#34;</span>
+export domainHome<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/u01/oracle/user_projects/domains/</span>$domainUID<span style="color:#e6db74">&#34;</span>
+export serverStartPolicy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IF_NEEDED&#34;</span>
+export clusterName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsites_cluster&#34;</span>
+export configuredManagedServerCount<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3&#34;</span>
+export initialManagedServerReplicas<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>
+export managedServerNameBase<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsites_server&#34;</span>
+export managedServerPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8001&#34;</span>
+export image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle/wcsites:12.2.1.4-21.1.1&#34;</span>
+export imagePullPolicy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
+export productionModeEnabled<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
+export weblogicCredentialsSecretName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsitesinfra-domain-credentials&#34;</span>
+export includeServerOutInPodLog<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
+export logHome<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/u01/oracle/user_projects/domains/logs/</span>$domainUID<span style="color:#e6db74">&#34;</span>
+export t3ChannelPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;30012&#34;</span>
+export exposeAdminT3Channel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;false&#34;</span>
+export adminNodePort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;30701&#34;</span>
+export exposeAdminNodePort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;false&#34;</span>
+export namespace<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsites-ns&#34;</span>
+javaOptions<span style="color:#f92672">=</span>-Dweblogic.StdoutDebugEnabled<span style="color:#f92672">=</span>false -Xms2g
+export persistentVolumeClaimName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsitesinfra-domain-pvc&#34;</span>
+export domainPVMountPath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/u01/oracle/user_projects/domains&#34;</span>
+export createDomainScriptsMountPath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/u01/weblogic&#34;</span>
+export createDomainScriptName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;create-domain-job.sh&#34;</span>
+export createDomainFilesDir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wlst&#34;</span>
+export rcuSchemaPrefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;WCS1&#34;</span>
+export rcuDatabaseURL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s&#34;</span>
+export rcuCredentialsSecret<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsitesinfra-rcu-credentials&#34;</span>
+export loadBalancerHostName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;abc.def.com&#34;</span>
+export loadBalancerPortNumber<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;30305&#34;</span>
+export loadBalancerProtocol<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http&#34;</span>
+export loadBalancerType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;traefik&#34;</span>
+export unicastPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;50000&#34;</span>
+export sitesSamples<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
+   
+Generating kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
+Generating kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.yaml
+Generating kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+Checking to see <span style="color:#66d9ef">if</span> the secret wcsitesinfra-domain-credentials exists in namespace wcsites-ns
+configmap/wcsitesinfra-create-fmw-infra-sample-domain-job-cm created
+Checking the configmap wcsitesinfra-create-fmw-infra-sample-domain-job-cm was created
+configmap/wcsitesinfra-create-fmw-infra-sample-domain-job-cm labeled
+Checking <span style="color:#66d9ef">if</span> object type job with name wcsitesinfra-create-fmw-infra-sample-domain-job exists
+No resources found.
+$loadBalancerType is NOT empty
+Creating the domain by creating the job kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
+job.batch/wcsitesinfra-create-fmw-infra-sample-domain-job created
+Waiting <span style="color:#66d9ef">for</span> the job to complete...
+status on iteration <span style="color:#ae81ff">1</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">2</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">3</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">4</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">5</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">6</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">7</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">8</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">9</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">10</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">11</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">12</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">13</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">14</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">15</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Running
+status on iteration <span style="color:#ae81ff">16</span> of <span style="color:#ae81ff">20</span>
+pod wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh status is Completed
+   
+Domain wcsitesinfra was created and will be started by the WebLogic Kubernetes Operator
+   
+The following files were generated:
+kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-inputs.yaml
+kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/create-domain-job.yaml
+kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+   
+Completed	
+</code></pre></div></li>
+<li>
+<p>To monitor the above domain creation logs:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n wcsites-ns |grep wcsitesinfra-create
+    
+wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh   1/1     Running   <span style="color:#ae81ff">0</span>          6s
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n wcsites-ns | grep wcsitesinfra-create | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | xargs kubectl -n wcsites-ns logs -f 
+</code></pre></div><p>SAMPLE OUTPUT:</p>
+<pre><code>The domain will be created using the script /u01/weblogic/createSitesDomain.sh
+Install Automation -&gt; Starting automation script
+    [mkdir] Created dir: /u01/wcs-wls-docker-install/work
+    [echo] [3/14/20 7:54 AM] Work Directory=/u01/wcs-wls-docker-install/work
+    [echo] [3/14/20 7:54 AM] DB URL: jdbc:oracle:thin:@
+    [echo] [3/14/20 7:54 AM] Info -&gt; The script.db.connectstring has been set.
+    [echo] [3/14/20 7:54 AM] Info.setDBConnectStringPropertey -&gt; setting oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s
+    [echo] [3/14/20 7:54 AM] Validation -&gt; Checking if full path to JAVA executable is correctly specified
+    [exec] java version &quot;1.8.0_241&quot;
+    [exec] Java(TM) SE Runtime Environment (build 1.8.0_241-b07)
+    [exec] Java HotSpot(TM) 64-Bit Server VM (build 25.241-b07, mixed mode)
+    [echo] [3/14/20 7:54 AM] Validation -&gt; Checking database connection
+    [echo] [3/14/20 7:54 AM] dbUrl-----------------: jdbc:oracle:thin:@oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s
+    [echo] [3/14/20 7:54 AM] Database Connection --&gt; Success!
+    [echo] [3/14/20 7:54 AM] 1st phase: WebCenter Sites installation started...
+    [copy] Copying 1 file to /u01/wcs-wls-docker-install/work
+    [copy] Copying /u01/wcs-wls-docker-install/rcu.rsp to /u01/wcs-wls-docker-install/work/rcu.rsp
+    [echo] [3/14/20 7:54 AM] 1st phase: WebCenter Sites installation completed
+    [echo] [3/14/20 7:54 AM] 2nd phase: WebCenter Sites RCU configuration started...
+    [echo] [3/14/20 7:54 AM] Installation -&gt; Repository Creation Utility - creates schema
+    [echo] [3/14/20 7:54 AM] connectString-----------------: oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s
+[replace] Replaced 1 occurrences in 1 files.
+[replace] Replaced 1 occurrences in 1 files.
+[replace] Replaced 1 occurrences in 1 files.
+[replace] Replaced 1 occurrences in 1 files.
+[replace] Replaced 1 occurrences in 1 files.
+    [echo] [3/14/20 7:54 AM] Create schema using command: /u01/oracle/oracle_common/bin/rcu -silent -responseFile /u01/wcs-wls-docker-install/work/rcu.rsp -f &lt; /u01/wcs-wls-docker-install/work/rcuPasswords8852085298596415722.txt &gt;/u01/wcs-wls-docker-install/work/rcu_output.log
+    [echo] [3/14/20 7:54 AM] RCU Create Schema -&gt; Please wait ... may take several minutes
+    [echo] [3/14/20 8:00 AM]
+    [echo]     RCU Logfile: /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/rcu.log
+    [echo] Processing command line ....
+    [echo] Repository Creation Utility - Checking Prerequisites
+    [echo] Checking Global Prerequisites
+    [echo] Repository Creation Utility - Checking Prerequisites
+    [echo] Checking Component Prerequisites
+    [echo] Repository Creation Utility - Creating Tablespaces
+    [echo] Validating and Creating Tablespaces
+    [echo] Create tablespaces in the repository database
+    [echo] Repository Creation Utility - Create
+    [echo] Repository Create in progress.
+    [echo] Executing pre create operations
+    [echo]         Percent Complete: 20
+    [echo]         Percent Complete: 20
+    [echo]         Percent Complete: 22
+    [echo]         Percent Complete: 24
+    [echo]         Percent Complete: 26
+    [echo]         Percent Complete: 26
+    [echo]         Percent Complete: 28
+    [echo]         Percent Complete: 28
+    [echo] Creating Common Infrastructure Services(STB)
+    [echo]         Percent Complete: 36
+    [echo]         Percent Complete: 36
+    [echo]         Percent Complete: 46
+    [echo]         Percent Complete: 46
+    [echo]         Percent Complete: 46
+    [echo] Creating Audit Services Append(IAU_APPEND)
+    [echo]         Percent Complete: 54
+    [echo]         Percent Complete: 54
+    [echo]         Percent Complete: 64
+    [echo]         Percent Complete: 64
+    [echo]         Percent Complete: 64
+    [echo] Creating Audit Services Viewer(IAU_VIEWER)
+    [echo]         Percent Complete: 72
+    [echo]         Percent Complete: 72
+    [echo]         Percent Complete: 72
+    [echo]         Percent Complete: 73
+    [echo]         Percent Complete: 73
+    [echo]         Percent Complete: 74
+    [echo]         Percent Complete: 74
+    [echo]         Percent Complete: 74
+    [echo] Creating WebLogic Services(WLS)
+    [echo]         Percent Complete: 79
+    [echo]         Percent Complete: 79
+    [echo]         Percent Complete: 83
+    [echo]         Percent Complete: 83
+    [echo]         Percent Complete: 92
+    [echo]         Percent Complete: 99
+    [echo]         Percent Complete: 99
+    [echo] Creating Audit Services(IAU)
+    [echo]         Percent Complete: 100
+    [echo] Creating Oracle Platform Security Services(OPSS)
+    [echo] Creating WebCenter Sites(WCSITES)
+    [echo] Executing post create operations
+    [echo] Repository Creation Utility: Create - Completion Summary
+    [echo] Database details:
+    [echo] -----------------------------
+    [echo] Host Name                                    : oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s
+    [echo] Port                                         : 1521
+    [echo] Service Name                                 : devpdb.k8s
+    [echo] Connected As                                 : sys
+    [echo] Prefix for (prefixable) Schema Owners        : WCS1
+    [echo] RCU Logfile                                  : /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/rcu.log
+    [echo] Component schemas created:
+    [echo] -----------------------------
+    [echo] Component                                    Status         Logfile
+    [echo] Common Infrastructure Services               Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/stb.log
+    [echo] Oracle Platform Security Services            Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/opss.log
+    [echo] WebCenter Sites                              Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/wcsites.log
+    [echo] Audit Services                               Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/iau.log
+    [echo] Audit Services Append                        Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/iau_append.log
+    [echo] Audit Services Viewer                        Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/iau_viewer.log
+    [echo] WebLogic Services                            Success        /u01/wcs-wls-docker-install/work/rcu/RCU2020-03-14_07-54_2112542638/logs/wls.log
+    [echo] Repository Creation Utility - Create : Operation Completed
+    [echo] [3/14/20 8:00 AM] Successfully created schemas
+    [echo] [3/14/20 8:00 AM] 2nd phase: WebCenter Sites RCU configuration completed successfully.
+    [echo] [3/14/20 8:00 AM] Oracle WebCenter Sites Installation complete. You can connect to the WebCenter Sites instance at http://10.244.0.252:7002/sites/
+   
+Sites RCU Phase completed successfull!!!
+   
+   
+   
+Sites Installation completed in 366 seconds.
+---------------------------------------------------------
+   
+The domain will be created using the script /u01/weblogic/create-domain-script.sh
+wlst.sh -skipWLSModuleScanning /u01/weblogic/createSitesDomain.py -oh /u01/oracle -jh /u01/jdk -parent /u01/oracle/user_projects/domains/wcsitesinfra/.. -name wcsitesinfra -user weblogic -password Welcome1 -rcuDb oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s -rcuPrefix WCS1 -rcuSchemaPwd Welcome1 -adminListenPort 7001 -adminName adminserver -managedNameBase wcsites_server -managedServerPort 8001 -prodMode true -managedServerCount 3 -clusterName wcsites_cluster -exposeAdminT3Channel false -t3ChannelPublicAddress 10.123.152.96 -t3ChannelPort 30012 -domainType wcsites -machineName wcsites_machine
+   
+Initializing WebLogic Scripting Tool (WLST) ...
+   
+Welcome to WebLogic Server Administration Scripting Shell
+   
+Type help() for help on available commands
+   
+Creating Admin Server...
+Creating cluster...
+Creating Node Managers...
+managed server name is wcsites_server1
+managed server name is wcsites_server2
+managed server name is wcsites_server3
+['wcsites_server1', 'wcsites_server2', 'wcsites_server3']
+Will create Base domain at /u01/oracle/user_projects/domains/wcsitesinfra
+Writing base domain...
+Base domain created at /u01/oracle/user_projects/domains/wcsitesinfra
+Extending domain at /u01/oracle/user_projects/domains/wcsitesinfra
+Database  oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s
+ExposeAdminT3Channel false with 10.123.152.96:30012
+Applying JRF templates...
+Extension Templates added
+Applying Oracle WebCenter Sites templates...
+Extension Templates added
+Configuring the Service Table DataSource...
+fmwDb...jdbc:oracle:thin:@oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s
+Set user...WCS140_OPSS
+Set user...WCS140_IAU_APPEND
+Set user...WCS140_IAU_VIEWER
+Set user...WCS140_STB
+Set user...WCS140_WCSITES
+Getting Database Defaults...
+Targeting Server Groups...
+Targeting Server Groups...
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcsites_server1
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcsites_server2
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcsites_server3
+Targeting Cluster ...
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcsites_cluster
+Set WLS clusters as target of defaultCoherenceCluster:[wcsites_cluster]
+Preparing to update domain...
+Mar 14, 2020 8:01:52 AM oracle.security.jps.az.internal.runtime.policy.AbstractPolicyImpl initializeReadStore
+INFO: Property for read store in parallel: oracle.security.jps.az.runtime.readstore.threads = null
+Domain updated successfully
+Copying /u01/weblogic/server-config-update.sh to PV /u01/oracle/user_projects/domains/wcsitesinfra
+Copying /u01/weblogic/unicast.py to PV /u01/oracle/user_projects/domains/wcsitesinfra
+replacing tokens in /u01/oracle/user_projects/domains/wcsitesinfra/server-config-update.sh
+Successfully Completed
+</code></pre></li>
+</ol>
+<h4 id="initialize-the-webcenter-sites-domain">Initialize the WebCenter Sites Domain</h4>
+<p>To start the domain, apply the above <code>domain.yaml</code>:</p>
+<pre><code>```bash
+$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/domain.yaml
+domain.weblogic.oracle/wcsitesinfra created
+```
+</code></pre>
+<h4 id="verify-the-webcenter-sites-domain">Verify the WebCenter Sites Domain</h4>
+<p>Verify that the domain and servers pods and services are created and in the READY state:</p>
+<p>Sample run below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get pods -n wcsites-ns -w
+NAME                                                    READY   STATUS      	RESTARTS	AGE
+wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh   0/1     Completed   	<span style="color:#ae81ff">0</span>          	15m
+wcsitesinfra-introspect-domain-job-7tvdt                1/1     Running     	<span style="color:#ae81ff">0</span>          	15s
+wcsitesinfra-introspect-domain-job-7tvdt   				0/1   	Completed   	<span style="color:#ae81ff">0</span>     	   	25s
+wcsitesinfra-introspect-domain-job-7tvdt   				0/1   	Terminating 	<span style="color:#ae81ff">0</span>     		5s
+wcsitesinfra-adminserver  								0/1   	Pending   		<span style="color:#ae81ff">0</span>     		0s
+wcsitesinfra-adminserver  								0/1   	Init:0/1  		<span style="color:#ae81ff">0</span>     		0s
+wcsitesinfra-adminserver  								0/1   	PodInitializing <span style="color:#ae81ff">0</span>     		12s
+wcsitesinfra-adminserver  								0/1   	Running   		<span style="color:#ae81ff">0</span>     		13s
+wcsitesinfra-adminserver  								1/1   	Running   		<span style="color:#ae81ff">0</span>     		108s
+wcsitesinfra-wcsites-server1   							0/1   	Pending   		<span style="color:#ae81ff">0</span>     		0s
+wcsitesinfra-wcsites-server1   							0/1   	Init:0/1  		<span style="color:#ae81ff">0</span>     		1s
+wcsitesinfra-wcsites-server1   							0/1   	PodInitializing <span style="color:#ae81ff">0</span>     		13s
+wcsitesinfra-wcsites-server1   							0/1   	Running   		<span style="color:#ae81ff">0</span>     		14s
+wcsitesinfra-wcsites-server1   							1/1   	Running   		<span style="color:#ae81ff">0</span>     		96s
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get all -n wcsites-ns
+NAME                                                        READY   STATUS      RESTARTS   AGE
+pod/wcsitesinfra-adminserver                                1/1     Running     <span style="color:#ae81ff">0</span>          7m5s
+pod/wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh   0/1     Completed   <span style="color:#ae81ff">0</span>          22m
+pod/wcsitesinfra-wcsites-server1                            1/1     Running     <span style="color:#ae81ff">0</span>          5m17s
+
+NAME                                           TYPE        CLUSTER-IP     EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>    AGE
+service/wcsitesinfra-adminserver               ClusterIP   None           &lt;none&gt;        7001/TCP   7m5s
+service/wcsitesinfra-cluster-wcsites-cluster   ClusterIP   10.109.210.3   &lt;none&gt;        8001/TCP   5m17s
+service/wcsitesinfra-wcsites-server1           ClusterIP   None           &lt;none&gt;        8001/TCP   5m17s
+
+NAME                                                        COMPLETIONS   DURATION   AGE
+job.batch/wcsitesinfra-create-fmw-infra-sample-domain-job   1/1           7m40s      22m
+</code></pre></div><p>To see the Admin and Managed Servers logs, you can check the pod logs:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs -f wcsitesinfra-adminserver -n wcsites-ns
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -it wcsitesinfra-adminserver  -n wcsites-ns -- /bin/bash
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs -f wcsitesinfra-wcsites-server1 -n wcsites-ns
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -it wcsitesinfra-wcsites-server1  -n wcsites-ns -- /bin/bash
+</code></pre></div><h5 id="verify-the-pods">Verify the Pods</h5>
+<p>Use the following command to see the pods running the servers:</p>
+<pre><code>$ kubectl get pods -n NAMESPACE
+</code></pre><p>Here is an example of the output of this command:</p>
+<pre><code>-bash-4.2$ kubectl get pods -n wcsites-ns
+NAME                                                    READY   STATUS      RESTARTS   AGE
+wcsitesinfra-adminserver                                1/1     Running     0          56m
+wcsitesinfra-create-fmw-infra-sample-domain-job-rq4xv   0/1     Completed   0          65m
+wcsitesinfra-wcsites-server1                            1/1     Running     0          41m
+wcsitesinfra-wcsites-server2                            1/1     Running     0          41m
+</code></pre><h5 id="verify-the-services">Verify the Services</h5>
+<p>Use the following command to see the services for the domain:</p>
+<pre><code>$ kubectl get services -n NAMESPACE
+</code></pre><p>Here is an example of the output of this command:</p>
+<pre><code>-bash-4.2$ kubectl get services -n wcsites-ns
+NAME                                                    READY   STATUS      RESTARTS   AGE
+wcsitesinfra-adminserver                                1/1     Running     0          7m38s
+wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh   0/1     Completed   0          23m
+wcsitesinfra-wcsites-server1                            1/1     Running     0          5m50s
+</code></pre><h4 id="expose-webcenter-sites-services">Expose WebCenter Sites Services</h4>
+<p>Below are the default values for exposing services required for all the WebCenter Sites Managed Servers.
+Reset them if any values are modified.</p>
+<p>Details on <code>kubernetes/samples/scripts/create-wcsites-domain/utils/wcs-services.yaml</code>:</p>
+<ul>
+<li>name: wcsitesinfra-wcsites-server1-np</li>
+<li>namespace: wcsites-ns</li>
+<li>weblogic.domainUID: wcsitesinfra</li>
+<li>weblogic.serverName: wcsites_server1</li>
+</ul>
+<p>Execute the below command for exposing the services: (If domain is configured for more than 3 Managed Servers then add the service yaml for additional servers.)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f kubernetes/samples/scripts/create-wcsites-domain/utils/wcs-services.yaml
+service/wcsitesinfra-wcsites-server1-np created
+service/wcsitesinfra-wcsites-server1-svc created
+service/wcsitesinfra-wcsites-server2-svc created
+service/wcsitesinfra-wcsites-server3-svc created
+</code></pre></div><p>To verify the services created, here is an example of the output of this command:</p>
+<pre><code>-bash-4.2$ kubectl get services -n wcsites-ns
+NAME                                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                                                               AGE
+wcsitesinfra-adminserver               ClusterIP   None             &lt;none&gt;        7001/TCP                                                                                              11m
+wcsitesinfra-cluster-wcsites-cluster   ClusterIP   10.109.210.3     &lt;none&gt;        8001/TCP                                                                                              9m14s
+wcsitesinfra-wcsites-server1           ClusterIP   None             &lt;none&gt;        8001/TCP                                                                                              9m14s
+wcsitesinfra-wcsites-server1-np        NodePort    10.105.167.205   &lt;none&gt;        8001:30155/TCP                                                                                        2m47s
+wcsitesinfra-wcsites-server1-svc       ClusterIP   None             &lt;none&gt;        50000/TCP,50001/TCP,50002/TCP,50003/TCP,50004/TCP,50005/TCP,50006/TCP,50007/TCP,50008/TCP,50009/TCP   2m47s
+wcsitesinfra-wcsites-server2-svc       ClusterIP   None             &lt;none&gt;        50000/TCP,50001/TCP,50002/TCP,50003/TCP,50004/TCP,50005/TCP,50006/TCP,50007/TCP,50008/TCP,50009/TCP   2m47s
+wcsitesinfra-wcsites-server3-svc       ClusterIP   None             &lt;none&gt;        50000/TCP,50001/TCP,50002/TCP,50003/TCP,50004/TCP,50005/TCP,50006/TCP,50007/TCP,50008/TCP,50009/TCP   2m47s
+</code></pre><h4 id="load-balance-with-an-ingress-controller-or-a-web-server">Load Balance With an Ingress Controller or A Web Server</h4>
+<p>You can choose a load balancer provider for your WebLogic domains running in a Kubernetes cluster.
+Please refer to the <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/master/kubernetes/samples/charts/README.md">WebLogic Kubernetes Operator Load Balancer Samples</a> for information about the current capabilities and setup instructions for each of the supported load balancers.</p>
+<p>For information on how to set up Loadbalancer for setting up WebCenter Sites domain on K8S:</p>
+<p>For Traefik, see <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/traefik/">Setting Up Loadbalancer Traefik for the WebCenter Sites Domain on K8S</a></p>
+<p>For Voyager, see <a href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/configure-load-balancer/voyager/">Setting Up Loadbalancer Voyager for the WebCenter Sites Domain on K8S</a></p>
+<h4 id="configure-webcenter-sites">Configure WebCenter Sites</h4>
+<ol>
+<li>
+<p>Configure WebCenter Sites by hitting url <code>http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}/sites/sitesconfigsetup</code></p>
+<p>When installing, select sample sites to be installed and enter the required passwords. Do not change the sites-config location. If you change the location, installation will fail.</p>
+</li>
+<li>
+<p>After the configuration is complete, edit the domain, and restart the Managed Server.</p>
+</li>
+</ol>
+<p>To stop Managed Servers:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcsitesinfra -n wcsites-ns --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/clusters/0/replicas&#34;, &#34;value&#34;: 0 }]&#39;</span>
+</code></pre></div><p>To start all configured Managed Servers:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcsitesinfra -n wcsites-ns --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/clusters/0/replicas&#34;, &#34;value&#34;: 3 }]&#39;</span> 
+</code></pre></div><ol start="3">
+<li>Wait till the Managed Server pod is killed and then restart it. Monitor with below command:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get pods -n wcsites-ns -w
+NAME                                                    READY   STATUS      RESTARTS   AGE
+wcsitesinfra-adminserver                                1/1     Running     <span style="color:#ae81ff">0</span>          111m
+wcsitesinfra-create-fmw-infra-sample-domain-job-6l7zh   0/1     Completed   <span style="color:#ae81ff">0</span>          126m
+wcsitesinfra-wcsites-server1                            1/1     Running     <span style="color:#ae81ff">0</span>          3m7s
+wcsitesinfra-wcsites-server2                            1/1     Running     <span style="color:#ae81ff">0</span>          3m7s
+wcsitesinfra-wcsites-server3                            1/1     Running     <span style="color:#ae81ff">0</span>          3m7s
+</code></pre></div></li>
+</ol>
+<h4 id="settings-in-webcenter-sites-property-management">Settings in WebCenter Sites Property Management</h4>
+<p>Incase of Voyager Load Balancer: Use Property Management Tool and update <code>cookieserver.validnames</code> property with value <code>JSESSIONID,SERVERID</code>.</p>
+<p>Incase of Traefik Load Balancer: Use Property Management Tool and update <code>cookieserver.validnames</code> property with value <code>JSESSIONID,sticky</code>.</p>
+<p>Incase of Nginx Load Balancer: Use Property Management Tool and update <code>cookieserver.validnames</code> property with value <code>JSESSIONID,stickyid</code>.</p>
+<h4 id="for-publishing-setting-in-webcenter-sites">For Publishing Setting in WebCenter Sites</h4>
+<p>While configuring publishing destination use NodePort <code>port</code> of target cluster which can be found by executing below command:</p>
+<p>(In this example for publishihng the port <code>30155</code> has to be used.)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get service/wcsitesinfra-wcsites-server1-np -n wcsites-ns
+NAME                              TYPE       CLUSTER-IP       EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>          AGE
+wcsitesinfra-wcsites-server1-np   NodePort   10.105.167.205   &lt;none&gt;        8001:30155/TCP   32h
+</code></pre></div><h4 id="customization">Customization</h4>
+<p>A customer specific customizations (extend.sites.webapp-lib.war) has to be placed in sites-home directory inside your domain mount path.</p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/21.1.1/wcsites-domains/installguide/prepare-your-environment/" title="Prepare your environment"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/21.1.1/wcsites-domains/adminguide/" title="Administration Guide" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/21.1.1/js/clipboard.min.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/perfect-scrollbar.min.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/perfect-scrollbar.jquery.min.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/jquery.sticky.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/featherlight.min.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/highlight.pack.js?1612461268"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/21.1.1/js/modernizr.custom-3.6.0.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/learn.js?1612461268"></script>
+    <script src="/fmw-kubernetes/21.1.1/js/hugo-learn.js?1612461268"></script>
+
+    <link href="/fmw-kubernetes/21.1.1/mermaid/mermaid.css?1612461268" rel="stylesheet" />
+    <script src="/fmw-kubernetes/21.1.1/mermaid/mermaid.js?1612461268"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>

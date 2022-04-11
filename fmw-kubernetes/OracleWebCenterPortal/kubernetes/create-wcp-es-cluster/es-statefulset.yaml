@@ -1,0 +1,114 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-statefulset
+  namespace: wcpns
+  labels:
+    service: elasticsearch
+spec:
+  serviceName: es-svc
+  replicas: 3
+  selector:
+    matchLabels:
+      service: elasticsearch
+  template:
+    metadata:
+      labels:
+        service: elasticsearch
+    spec:
+      initContainers:
+      - name: increase-the-vm-max-map-count
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
+      - name: increase-the-ulimit
+        image: busybox
+        command:
+        - sh
+        - -c
+        - ulimit -n 65536
+        securityContext:
+          privileged: true
+      volumes:
+      - name: es-node
+        persistentVolumeClaim:
+          claimName: es-data-pvc
+      - name: wcp-domain
+        persistentVolumeClaim:
+          claimName: wcp-domain-domain-pvc
+      containers:
+      - name: es-container
+        image: oracle/wcportal:12.2.1.4
+        imagePullPolicy: IfNotPresent
+        command: [ "/bin/sh", "-c", "/u01/oracle/container-scripts/configureOrStartElasticsearch.sh" ]
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9200
+            httpHeaders:
+            - name: Authorization
+              value: Basic d2NjcmF3bGFkbWluOndlbGNvbWUx
+          initialDelaySeconds: 150
+          periodSeconds: 30
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: [ "/bin/sh", "-c", "/u01/oracle/container-scripts/elasticsearchPreStopHandler.sh" ]
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: tcp
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: UNICAST_HOST_LIST
+          value: "es-svc"
+        - name: ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: es-secret
+              key: wls-admin
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: es-secret
+              key: wls-admin-pwd
+        - name: SEARCH_APP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: es-secret
+              key: search-admin
+        - name: SEARCH_APP_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: es-secret
+              key: search-admin-pwd
+        - name: ADMIN_SERVER_CONTAINER_NAME
+          value: wcp-domain-adminserver
+        - name: ADMIN_PORT
+          value: "7001"
+        - name: ES_CLUSTER_NAME
+          value: es-cluster
+        - name: DOMAIN_NAME
+          value: wcp-domain
+        - name: CONFIGURE_ES_CONNECTION
+          value: "true"
+        - name: LOAD_BALANCER_IP
+          value: "es-loadbalancer.wcpns.svc.cluster.local"
+        volumeMounts:
+        - name: es-node
+          mountPath: /u01/esHome/esNode
+        - name: wcp-domain
+          mountPath: /u01/oracle/user_projects/domains

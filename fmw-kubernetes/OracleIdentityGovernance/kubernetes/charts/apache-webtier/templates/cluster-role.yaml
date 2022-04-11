@@ -1,0 +1,29 @@
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+{{ if .Values.createRBAC }}
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "apache.fullname" . }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - endpoints
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+{{ end }}

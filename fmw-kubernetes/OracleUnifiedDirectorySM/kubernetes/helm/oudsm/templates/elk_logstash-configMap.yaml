@@ -1,0 +1,41 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+{{- if and .Values.elk.logstash.enabled (not .Values.elk.logstash.logstashConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oudsm.fullname" . }}-logstash-configmap
+data:
+  logstash-config.conf: | 
+    input {
+      file {
+        path => "/u01/oracle/user_projects/domains/oudsmdomain-1/servers/AdminServer/logs/*.log"
+        type => "setup-logs"
+        start_position => beginning
+        sincedb_path => "/dev/null"
+      }
+    }
+    filter {
+      if [type] == "setup-logs" {
+        grok {
+          match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:hostserver}> %{GREEDYDATA:message}" ]
+          }
+      }
+      if "_grokparsefailure" in [tags] {
+        mutate {
+          remove_tag => [ "_grokparsefailure" ]
+          }
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => ["{{ include "oudsm.fullname" . }}-elasticsearch:9200"]
+        }
+      }
+{{- end -}}
+

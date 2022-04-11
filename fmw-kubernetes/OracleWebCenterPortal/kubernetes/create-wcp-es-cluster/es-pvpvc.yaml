@@ -1,0 +1,29 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: es-data-pv
+  namespace: wcpns
+spec:
+  storageClassName: es-data-pv-storage-class
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/scratch/esdata"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: es-data-pvc
+  namespace: wcpns
+spec:
+  storageClassName: es-data-pv-storage-class
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
