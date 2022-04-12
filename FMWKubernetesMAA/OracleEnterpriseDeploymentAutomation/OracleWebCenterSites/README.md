@@ -1,4 +1,4 @@
-# Terraform scripts for Deploying WebCenter Sites on Kubernetes
+# Terraform scripts for Deploying Oracle WebCenter Sites on Kubernetes
 
 #### Disclaimer
 
