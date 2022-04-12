@@ -1,0 +1,17 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.domain.domainName }}-create-fmw-infra-sample-domain-job-cm
+  labels:
+    weblogic.domainName: {{ .Values.domain.domainName }}
+    weblogic.domainUID: {{ .Values.domain.domainName }}
+
+data:
+  {{- $files := .Files }}
+  {{- range tuple "create-domain-job.sh" "createSitesDomain.sh" "drop-rcu-schema.sh" "dropRepository.sh" "read-domain-secret.py" "server-config-update.sh" "createSitesDomain.py" "create-domain-script.sh" "utility.sh" "unicast.py" }}
+  {{ . }}: |-
+{{ $files.Get . | indent 8 }}
+  {{- end }}

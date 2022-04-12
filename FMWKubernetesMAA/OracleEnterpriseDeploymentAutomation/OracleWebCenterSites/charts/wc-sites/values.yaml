@@ -1,0 +1,147 @@
+## Copyright (c) 2022, Oracle and/or its affiliates.
+## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+
+# Default values for wcsites.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+kubernetesVersion: "1.20"
+
+image:
+  repository: "oracle/wcsites"
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "12.2.1.4"
+  name: "oracle/wcsites:12.2.1.4"
+# List of secrets to use to pull images from private registry
+imagePullSecrets:
+  -name: image-secret
+
+# Service Account for this specific deployment
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+domain:
+  # Set this flag to false to remove the domain before tear-down (default true)
+  enabled: true
+  # supported types: sites
+  type: wcsites
+
+  # domainName should have no space, _ or - it is same domainUUID
+  domainName: wcsitesinfra
+  namespace: wcsites-ns
+  productionMode: true
+
+  rootDir: /u01/oracle/user_projects
+  scriptDir: /u01/weblogic
+
+  # Weblogic user credentials for the domain
+  # Either provide username and password, 
+  # or provide the name of a secret containing username and password key/value pairs
+  credentials: 
+    secretName:
+    username: weblogic
+    password: Welcome1
+
+  t3Channel:
+    exposed: false
+    port: 30012
+    publicIp: "0.0.0.0"
+
+  sslEnabled: false
+
+  # 'jdbc' for persistence in database, otherwise null
+  persistenceStore: jdbc
+
+  # Logs
+  logHomeEnabled: true
+  logHome: /u01/oracle/user_projects/domains/logs
+  includeServerOutInPodLog: true
+  httpAccessLogInLogHome: true
+
+  # serverStartPolicy legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
+  # This determines which WebLogic Servers the Operator will start up when it discovers this Domain
+  # - "NEVER" will not start any server in the domain
+  # - "ADMIN_ONLY" will start up only the administration server (no managed servers will be started)
+  # - "IF_NEEDED" will start all non-clustered servers, including the administration server and clustered servers up to the replica count
+  serverStartPolicy: IF_NEEDED
+  javaOptions: "-Dweblogic.StdoutDebugEnabled=false"
+  maxManagedServerCount: 5
+
+  admin:
+    name: AdminServer
+    listenPort: 7001
+    sslListenPort: 7002
+    exposeNodePort: false
+    nodePort: 30701
+    
+  wcsCluster:
+    name: wcsites_cluster
+    managedServers:
+      count: 3
+      name: wcsites-server
+      listenPort: 8001
+      sslListenPort: 8002
+
+  storage:
+    capacity: 10Gi
+    # The valid values are: 'Retain', 'Delete', and 'Recycle'
+    reclaimPolicy: Retain
+    # valid types are nfs or hostpath
+    type: nfs
+    path: /scratch/K8SVolume/WCSites
+    nfs:
+      server:  10.0.10.190
+
+  rcuSchema:
+    prefix: WCS
+    # profileType: supported values: SMALL(default), MED, LARGE
+    profileType: SMALL
+    credentials:
+      # provide either the secretName of the secret containing 'username' and 'password' 
+      # or provide 'username' and 'password' values
+      # If a secret is specified it takes precedence over the plaintext entries
+      secretName: 
+      username: "WCS1"
+      password: "Oradoc_db12W#-"
+
+oracledb:
+  # select enabled: true if the database should be provisioned
+  provision: false
+  url: db.db.oke.oraclevcn.com:1521/pdb.db.oke.oraclevcn.com 
+  # If url is not provided, deploy the DB and use the following params:
+  # name of the Container DB
+  cdb: cdb
+  # name of the Pluggable DB
+  pdb: pdb
+  # domain
+  domain: k8s
+  credentials:
+    # provide either the secretName of the secret containing 'username' and 'password' 
+    # or provide 'username' and 'password' values
+    secretName: 
+    username: SYS
+    password: "Oradoc_db12W#-"
+
+ingress:
+  type: traefik
+  tls: false
+  hostname: ""
+  dnsname: ""
+  port: 30305
+  scheme: http
