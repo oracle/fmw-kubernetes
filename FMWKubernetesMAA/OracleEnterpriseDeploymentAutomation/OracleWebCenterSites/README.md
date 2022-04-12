@@ -346,7 +346,7 @@ On the Kubernetes cluster provisioned, the template also create or deploy:
 
 ### Deploying with Sub-domain and SSL
 
-`If you are deploying WCSites with Sub-domain and SSL then follow below steps else move to Configure WebCenter Sites directly.`      
+If you are deploying WCSites with Sub-domain and SSL then follow below steps else move to Configure WebCenter Sites directly.   
 - Map the loadbalancer EXTERNAL-IP with the sub-domain. 
 - Get SSL certificates from your DNS provider.
 - That includes 3 files :
@@ -368,7 +368,7 @@ Login to OCI console and go to the Load Balancer created be terraform script in 
 ![README](images/wcs-2.PNG)
 
 - Configure WebCenter Sites by hitting url : `http://PUBLIC_IP:30305/sites/sitesconfigsetup`
-- **update hostname as sub-domain name, port as 443 and secure connection as yes.**
+- Update hostname as sub-domain name, port as 443 and secure connection as yes.
 
 ![README](images/wcs-3.PNG)
 
