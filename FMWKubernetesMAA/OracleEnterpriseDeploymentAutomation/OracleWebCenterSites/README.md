@@ -1,4 +1,4 @@
-# Terraform scripts for WCS-K8S
+# Terraform scripts for Deploying WebCenter Sites on Kubernetes
 
 #### Disclaimer
 
@@ -13,7 +13,7 @@ Although this release follows the same flow as the [fmw-kubernetes](https://gith
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
 * [Access the Deployment](#access-the-deployment)
-* [If deploying with Sub-domain and SSL](#if-deploying-with-sub-domain-and-ssl)
+* [Deploying with Sub-domain and SSL](#deploying-with-sub-domain-and-ssl)
 * [Configure WebCenter Sites](#configure-webcenter-sites)
 
 
@@ -54,7 +54,7 @@ This terraform deployment requires the prior installation of the following:
 	$ git clone https://github.com/oracle/fmw-kubernetes.git
 	```
 		
-* You can now use the deployment scripts from fmw-kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleWebCenterSites to set up the WebCenter Sites domain as further described in this document. This will be your home directory to run the terraform scripts.
+* You can now use the deployment scripts from `fmw-kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleWebCenterSites` to set up the WebCenter Sites domain as further described in this document. This will be your home directory to run the terraform scripts.
 
 	```bash
 	$ cd fmw-kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleWebCenterSites
@@ -199,16 +199,16 @@ secrets_encryption_key_ocid = null
 
 - **Create Oracle Cloud Infrastructure Registry**
 
-	Under Solutions and Platform, go to Developer Services and click Container Registry
-	Click on Create repository
-	Enter Repository name and Access type to create a repository.
+	- Under `Solutions and Platform`, go to `Developer Services` and click `Container Registry`.
+	- Click on `Create repository`.
+	- Enter Repository name and Access type to create a repository.
 
 	![README](images/wcs-1.PNG)
 
 - **Push wcsites docker image to OCIR**
 
-	Download latest sites docker image from [here](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33579457).
-	Unzip the downloaded zip file.
+	- Download latest sites docker image from [here](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33579457).
+	- Unzip the downloaded zip file.
 
 	```bash
 	$ unzip p33579457_122140_Linux-x86-64.zip
@@ -222,10 +222,10 @@ secrets_encryption_key_ocid = null
 
 - **Create an "Auth token" which will be used as docker password to push/pull images from OCIR**	
 
-	Login to OCI Console, navigate to Profile, User Settings, Auth Tokens, click on Generate Tokens button.
-	Enter Description and then click Generate Tokens.
-	Token will get generated
-	Copy the generated token. `NOTE: It will only be displayed one time, so you need to copy it to a secure place for further use.` 
+	- Login to OCI Console, navigate to Profile, User Settings, Auth Tokens, click on Generate Tokens button.
+	- Enter Description and then click Generate Tokens.
+	- Token will get generated.
+	- Copy the generated token. `NOTE: It will only be displayed one time, so you need to copy it to a secure place for further use.` 
 
 - **Docker login**
 
@@ -319,8 +319,8 @@ On the Kubernetes cluster provisioned, the template also create or deploy:
 	traefik   LoadBalancer   10.2.13.1    132.226.115.178   9000:31473/TCP,30305:30305/TCP,30443:30443/TCP   7d19h
 	```
 	
-	If it is still pending, wait a few more minutes before checking again.
-	Get the EXTERNAL-IP value for the load balancer
+	- If it is still pending, wait a few more minutes before checking again.
+	- Get the EXTERNAL-IP value for the load balancer.
 
 * Make sure the WebCenter Sites domain servers are running:
 	You can check running pods with:
@@ -337,39 +337,38 @@ On the Kubernetes cluster provisioned, the template also create or deploy:
 	wcsitesinfra-wcsites-server1                            1/1     Running     0          7d18h
 	```
 	
-	Make sure the STATUS is RUNNING and that READY is 1/1 for pods above before checking the UR
+	Make sure the STATUS is RUNNING and that READY is 1/1 for pods above before checking the URL.
 
-* With the public IP gathered earlier, browse to http://PUBLIC_IP:30305/console to get to the WebLogic console.
+* With the public IP gathered earlier, browse to `http://PUBLIC_IP:30305/console` to get to the WebLogic console.
 
 * You can log into the console with the `sites_domain_admin_username` and `sites_domain_admin_password` you specified in the `terraform.tfvars` file.
 
 
-### If deploying with Sub-domain and SSL
+### Deploying with Sub-domain and SSL
 
-If you are deploying WCSites with Sub-domain and SSL then follow these steps else move to Configure WebCenter Sites directly.      
-Map the loadbalancer EXTERNAL-IP with the sub-domain. 
-Get SSL certificates from your DNS provider.
-That includes 3 files :
+`If you are deploying WCSites with Sub-domain and SSL then follow below steps else move to Configure WebCenter Sites directly.`      
+- Map the loadbalancer EXTERNAL-IP with the sub-domain. 
+- Get SSL certificates from your DNS provider.
+- That includes 3 files :
+	* SSL Certificate
+	* CA Certificate
+	* Private Key
 
-* SSL Certificate
-* CA Certificate
-* Private Key
+Login to OCI console and go to the Load Balancer created be terraform script in your compartment.
 
-Login to OCI console and go to the Load Balancer created be terraform script in your compartment
-
-* Go to Certificates, Certificate Resource - Load Balancer Managed Certificate
-* Click on add Certificate. Give a name and add all 3 files
-* Click on Listeners
-* Add a new Listener "TCP-443"
-* Port - 443 (select SSL checkbox)
-* Add certificate here
-* Backend Set - TCP-30305
-* Click on Save Changes to save	
+* Go to `Certificates`, Certificate Resource - `Load Balancer Managed Certificate`.
+* Click on `add Certificate`. Give a name and add all 3 files.
+* Click on `Listeners`.
+* Add a new Listener "TCP-443".
+* Port - 443 (select SSL checkbox).
+* Add certificate here.
+* Backend Set - TCP-30305.
+* Click on `Save Changes` to save.	
 
 ![README](images/wcs-2.PNG)
 
-Configure WebCenter Sites by hitting url : http://PUBLIC_IP:30305/sites/sitesconfigsetup
-**update hostname as sub-domain name, port as 443 and secure connection as yes.**
+- Configure WebCenter Sites by hitting url : `http://PUBLIC_IP:30305/sites/sitesconfigsetup`
+- **update hostname as sub-domain name, port as 443 and secure connection as yes.**
 
 ![README](images/wcs-3.PNG)
 
@@ -378,8 +377,9 @@ Configure WebCenter Sites by hitting url : http://PUBLIC_IP:30305/sites/sitescon
 
 ### Configure WebCenter Sites
 
-* Configure WebCenter Sites by hitting url : http://PUBLIC_IP:30305/sites/sitesconfigsetup
-When installing, select sample sites to be installed and enter the required passwords. Do not change the sites-config location. If you change the location, installation will fail.
+* Configure WebCenter Sites by hitting url : `http://PUBLIC_IP:30305/sites/sitesconfigsetup`
+	- When installing, select sample sites to be installed and enter the required passwords. 
+	- Do not change the sites-config location. If you change the location, installation will fail.
 
 * After the configuration is complete, edit the domain, and restart the Managed Server.
 To stop Managed Servers:
@@ -411,6 +411,6 @@ To stop Managed Servers:
 	wcsitesinfra-wcsites-server3                            1/1     Running     0          11m
 	```
 
-* Access WebCenter Sites by hitting url : http://PUBLIC_IP:30305/sites/
+* Access WebCenter Sites by hitting url : `http://PUBLIC_IP:30305/sites/`
 
-  Incase of Sub-domain with SSL : https://SUB-DOMAIN/sites/	
+  Incase of Sub-domain with SSL : `https://SUB-DOMAIN/sites/`	
