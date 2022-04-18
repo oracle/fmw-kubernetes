@@ -48,13 +48,13 @@ Sometimes in production, but most likely in testing environments, you might want
 1. Delete the contents of the persistent volume, for example:
 
    ```bash
-   $ rm -rf <workdir>/accessdomainpv/*
+   $ rm -rf <persistent_volume>/accessdomainpv/*
    ```
 
    For example:
    
    ```bash
-   $ rm -rf /scratch/OAMK8S/accessdomainpv/*
+   $ rm -rf /scratch/shared/accessdomainpv/*
    ```
 
    

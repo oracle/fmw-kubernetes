@@ -1,9 +1,10 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl
 #
+{{- if .Values.elk.enabled }}
 #
 {{- if and .Values.elkVolume.enabled (not .Values.elkVolume.pvname) }}
 {{- $root := . -}}
@@ -26,11 +27,19 @@ spec:
     - {{ $root.Values.elkVolume.accessMode | quote }}
   {{- if (eq "networkstorage" $root.Values.elkVolume.type) }}
   nfs:
+  {{- if eq ($root.Values.elk.elasticsearch.esreplicas|int) 1 }}
+    path: {{ $root.Values.elkVolume.networkstorage.nfs.path }}
+  {{- else if gt ($root.Values.elk.elasticsearch.esreplicas|int) 1 }}
     path: {{ $root.Values.elkVolume.networkstorage.nfs.path }}{{ $replicaIndx }}
+  {{- end }}
     server: {{ $root.Values.elkVolume.networkstorage.nfs.server }}
   {{- else if (eq "filesystem" $root.Values.elkVolume.type) }}
   hostPath:
+  {{- if eq ($root.Values.elk.elasticsearch.esreplicas|int) 1 }}
+    path: {{ $root.Values.elkVolume.filesystem.hostPath.path }}
+  {{- else if gt ($root.Values.elk.elasticsearch.esreplicas|int) 1 }}
     path: {{ $root.Values.elkVolume.filesystem.hostPath.path }}{{ $replicaIndx }}
+  {{- end }}
   {{- else if (eq "custom" $root.Values.elkVolume.type) }}
     {{- with $root.Values.elkVolume.custom }}
     {{- toYaml . | nindent 2 }}
@@ -38,4 +47,5 @@ spec:
    {{- end }}
 ---
    {{- end }}
+{{- end }}
 {{- end }}

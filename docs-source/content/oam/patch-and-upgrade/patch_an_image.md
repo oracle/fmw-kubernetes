@@ -1,17 +1,16 @@
 ---
 title: "a. Patch an image"
-description: "Instructions on how to update your OAM Kubernetes cluster with a new OAM Docker image."
+description: "Instructions on how to update your OAM Kubernetes cluster with a new OAM container image."
 ---
 
-To update your OAM Kubernetes cluster with a new OAM Docker image, first install the new Docker image on all nodes in your Kubernetes cluster. 
-
-Once the new image is installed, choose one of the following options to update your OAM kubernetes cluster to use the new image:
+Choose one of the following options to update your OAM kubernetes cluster to use the new image:
 
 1. Run the `kubectl edit domain` command
 2. Run the `kubectl patch domain` command
 
 In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
 
+**Note**: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster. 
 
 ### Run the kubectl edit domain command
 
@@ -26,18 +25,25 @@ In all of the above cases, the WebLogic Kubernetes Operator will restart the Adm
    ```bash
    $ kubectl edit domain accessdomain -n oamns
    ```
-
-1. Update the `image` tag to point at the new image, for example:
+   
+   If using Oracle Container Registry or your own container registry for your OAM container image, update the `image` <tag> to point at the new image, for example:
 
    ```
    domainHomeInImage: false
-   image: oracle/oam:12.2.1.4.0-new
+   image: container-registry.oracle.com/middleware/oam_cpu:<tag>
    imagePullPolicy: IfNotPresent
    ```
-
+   
+   If you are not using a container registry and have loaded the image on each of the master and worker nodes, update the `image` <tag> to point at the new image:
+   
+   ```
+   domainHomeInImage: false
+   image: oracle/oam:<tag>
+   imagePullPolicy: IfNotPresent
+   ```
+   
+   
 1. Save the file and exit (:wq!)
-
-
 
 ### Run the kubectl patch command
 
@@ -46,11 +52,18 @@ In all of the above cases, the WebLogic Kubernetes Operator will restart the Adm
    ```bash
    $ kubectl patch domain <domain> -n <namespace> --type merge  -p '{"spec":{"image":"newimage:tag"}}'
    ```
+   
 
-   For example:
+   For example, if using Oracle Container Registry or your own container registry for your OAM container image:
 
    ```bash
-   $ kubectl patch domain accessdomain -n oamns --type merge  -p '{"spec":{"image":"oracle/oam:12.2.1.4-new"}}'
+   $ kubectl patch domain accessdomain -n oamns --type merge  -p '{"spec":{"image":"container-registry.oracle.com/middleware/oam_cpu:<tag>"}}'
+   ```
+   
+   For example, if you are not using a container registry and have loaded the image on each of the master and worker nodes:
+   
+   ```bash
+   $ kubectl patch domain accessdomain -n oamns --type merge  -p '{"spec":{"image":"oracle/oam:<tag>"}}'
    ```
 
    The output will look similar to the following:

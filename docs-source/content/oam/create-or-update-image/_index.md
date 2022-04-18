@@ -2,17 +2,10 @@
 title = "Create or update an image"
 weight = 10 
 pre = "<b>10. </b>"
-description=  "Create or update an Oracle Access Management (OAM) container image used for deploying OAM domains. An OAM container image can be created using the WebLogic Image Tool or using the Dockerfile approach."
+description=  "Create or update an Oracle Access Management (OAM) container image used for deploying OAM domains."
 +++
 
-
-As described in [Prepare Your Environment]({{< relref "/oam/prepare-your-environment" >}}) you can obtain or build OAM container images in the following ways:
-
-1. Download the latest prebuilt OAM container image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU.
-
-1. Build your own OAM image using the WebLogic Image Tool or by using the dockerfile, scripts and base images from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. [Building the OAM Image](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement/#building-the-oam-image).
-
-If you have access to the My Oracle Support (MOS), and there is a need to build a new image with an interim or one off patch, it is recommended to use the WebLogic Image Tool to build an Oracle Access Management image for production deployments.
+As described in [Prepare Your Environment]({{< relref "/oam/prepare-your-environment" >}}) you can create your own OAM container image. If you have access to the My Oracle Support (MOS), and there is a need to build a new image with an interim or one off patch, it is recommended to use the WebLogic Image Tool to build an Oracle Access Management image for production deployments.
 
 
 ### Create or update an Oracle Access Management image using the WebLogic Image Tool
@@ -121,7 +114,7 @@ $ export WLSIMG_CACHEDIR="/path/to/cachedir"
 
 ##### Set up additional build scripts
 
-Creating an Oracle Access Management Docker image using the WebLogic Image Tool requires additional container scripts for Oracle Access Management domains.
+Creating an Oracle Access Management container image using the WebLogic Image Tool requires additional container scripts for Oracle Access Management domains.
 
 1. Clone the [docker-images](https://github.com/oracle/docker-images.git) repository to set up those scripts. In these steps, this directory is `DOCKER_REPO`:
 
@@ -214,7 +207,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 1. Add the downloaded OPatch patch to the WebLogic Image Tool cache. For example:
 
    ``` bash
-   $ imagetool cache addEntry --key 28186730_13.9.4.2.7 --value <download location>/p28186730_139427_Generic.zip
+   $ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value <download location>/p28186730_139428_Generic.zip
    ```
 
 1. Add the rest of the downloaded product patches to the WebLogic Image Tool cache:
@@ -249,7 +242,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 
    ```
    --patches 32971905_12.2.1.4.0,20812896_12.2.1.4.0,32880070_12.2.1.4.0,33059296_12.2.1.4.0,32905339_12.2.1.4.0,33084721_12.2.1.4.0,31544353_12.2.1.4.0,32957281_12.2.1.4.0,33093748_12.2.1.4.0
-   --opatchBugNumber=28186730_13.9.4.2.7
+   --opatchBugNumber=28186730_13.9.4.2.8
    ```
 
    An example `buildArgs` file is now as follows:
@@ -265,27 +258,26 @@ The following files in the code repository location `<imagetool-setup-location>/
    --additionalBuildCommands /scratch/imagetool-setup/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/additionalBuildCmds.txt
    --additionalBuildFiles /scratch/imagetool-setup/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/container-scripts
    --patches 32971905_12.2.1.4.0,20812896_12.2.1.4.0,32880070_12.2.1.4.0,33059296_12.2.1.4.0,32905339_12.2.1.4.0,33084721_12.2.1.4.0,31544353_12.2.1.4.0,32957281_12.2.1.4.0,33093748_12.2.1.4.0
-   --opatchBugNumber=28186730_13.9.4.2.7
+   --opatchBugNumber=28186730_13.9.4.2.8
    ```
    
    >Note: In the `buildArgs` file:  
    > * `--jdkVersion` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type jdk`.  
-   > * `--version` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type OAM`.  
-   > * `--pull` always pulls the latest base Linux image `oraclelinux:7-slim` from the Docker registry.
+   > * `--version` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type OAM`.
 
     Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Create the Oracle Access Management image:
 
    ```bash
-   $ imagetool @<absolute path to buildargs file>
+   $ imagetool @<absolute path to buildargs file> --fromImage ghcr.io/oracle/oraclelinux:7-slim
    ```
    >Note: Make sure that the absolute path to the `buildargs` file is prepended with a `@` character, as shown in the example above.
 
    For example:
 
    ```bash
-   $ imagetool @<imagetool-setup-location>/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs
+   $ imagetool @<imagetool-setup-location>/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs --fromImage ghcr.io/oracle/oraclelinux:7-slim
    ```
 
 1. Check the created image using the `docker images` command:
@@ -300,9 +292,25 @@ The following files in the code repository location `<imagetool-setup-location>/
    oam-latestpsu                                       12.2.1.4.0                     ad732fc7c16b        About a minute ago   3.35GB
    ```
 
+1. Run the following command to save the container image to a tar file:
+
+   ```bash
+   $ docker save -o <path>/<file>.tar <image>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ docker save -o $WORKDIR/oam-latestpsu.tar oam-latestpsu:12.2.1.4.0
+   ```
+
 #### Update an image
 
-The steps below show how to update an existing Oracle Access Management image with an interim patch. In the examples below the image `oracle/oam:12.2.1.4.0` is updated with an interim patch.
+The steps below show how to update an existing Oracle Access Management image with an interim patch.
+
+The container image to be patched must be loaded in the local docker images repository before attempting these steps.
+
+In the examples below the image `oracle/oam:12.2.1.4.0` is updated with an interim patch.
 
 ```bash
 $ docker images
@@ -311,6 +319,7 @@ REPOSITORY     TAG          IMAGE ID          CREATED             SIZE
 oracle/oam     12.2.1.4.0   b051804ba15f      3 months ago        3.34GB
 ```
 
+
 1. [Set up the WebLogic Image Tool]({{< relref "/oam/create-or-update-image/#set-up-the-weblogic-image-tool" >}}).
 
 1. Download the required interim patch and latest Opatch (28186730) from [My Oracle Support](https://support.oracle.com). and save them in a <download location> directory of your choice.
@@ -318,7 +327,7 @@ oracle/oam     12.2.1.4.0   b051804ba15f      3 months ago        3.34GB
 1. Add the OPatch patch to the WebLogic Image Tool cache, for example:
 
    ```bash
-   $ imagetool cache addEntry --key 28186730_13.9.4.2.7 --value <downloaded-patches-location>/p28186730_139427_Generic.zip
+   $ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value <downloaded-patches-location>/p28186730_139428_Generic.zip
    ```
 
 1. Execute the `imagetool cache addEntry` command for each patch to add the required patch(es) to the WebLogic Image Tool cache. For example, to add patch `p32701831_12214210607_Generic.zip`:
@@ -340,7 +349,7 @@ oracle/oam     12.2.1.4.0   b051804ba15f      3 months ago        3.34GB
    For example:
 	
    ```bash
-   $ imagetool update --fromImage oracle/oam:12.2.1.4.0 --tag=oracle/oam-new:12.2.1.4.0 --patches=32701831_12.2.1.4.210607 --opatchBugNumber=28186730_13.9.4.2.7
+   $ imagetool update --fromImage oracle/oam:12.2.1.4.0 --tag=oracle/oam-new:12.2.1.4.0 --patches=32701831_12.2.1.4.210607 --opatchBugNumber=28186730_13.9.4.2.8
    ```
 
    > Note: If the command fails because the files in the image being upgraded are not owned by `oracle:oracle`, then add the parameter `--chown <userid>:<groupid>` to correspond with the values returned in the error.
@@ -357,4 +366,16 @@ oracle/oam     12.2.1.4.0   b051804ba15f      3 months ago        3.34GB
    REPOSITORY         TAG          IMAGE ID        CREATED             SIZE
    oracle/oam-new     12.2.1.4.0   78ccd1ad67eb    5 minutes ago       3.8GB
    oracle/oam         12.2.1.4.0   b051804ba15f    3 months ago        3.34GB
+   ```
+
+1. Run the following command to save the patched container image to a tar file:
+
+   ```bash
+   $ docker save -o <path>/<file>.tar <image>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ docker save -o $WORKDIR/oam-new.tar oracle/oam-new:12.2.1.4.0
    ```

@@ -10,7 +10,7 @@ Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your 
 1. [Setup routing rules for the Design Console ingress](#setup-routing-rules-for-the-design-console-ingress)
 1. [Create the ingress](#create-the-ingress)
 1. [Update the T3 channel](#update-the-t3-channel)
-1. [Restart the OIG domain](#restart-the-oig-domain)
+1. [Restart the OIG Managed Server](#restart-the-oig-managed-server)
 1. [Design Console client](#design-console-client)
    
    a. [Using an on-premises installed Design Console](#using-an-on-premises-installed-design-console)
@@ -24,6 +24,8 @@ Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your 
 If you haven't already configured an NGINX ingress controller (Non-SSL) for OIG, follow [Using an Ingress with NGINX (non-SSL)]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S">}}).
 
 Make sure you know the master hostname and ingress port for NGINX before proceeding e.g `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`.
+
+**Note**: In all steps below if you are using a load balancer for your ingress instead of NodePort then replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}.
 
 ### Setup routing rules for the Design Console ingress
 
@@ -60,8 +62,6 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
    $ cd $WORKDIR
    $ helm install governancedomain-nginx-designconsole kubernetes/design-console-ingress  --namespace oigns  --values kubernetes/design-console-ingress/values.yaml
    ```
-   
-   **Note**: If using Kubernetes 1.18 then add `--version=3.34.0` to the end of command.
   
    For example:
    
@@ -69,7 +69,7 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 
    ```
    NAME: governancedomain-nginx-designconsole
-   LAST DEPLOYED: Mon Nov 15 06:07:09 2021
+   LAST DEPLOYED: Thu Mar 10 14:32:16 2022
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -123,33 +123,42 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 
 1. Click **Lock and Edit**.
 
-1. Set the **External Listen Address** to a worker node where `oim_server1` is running.
-   
-   **Note**: Use `kubectl get pods -n <domain_namespace> -o wide` to see the worker node it is running on. For example, below the `governancedomain-oim-server1` is running on `worker-node2`:
-   
-   ```bash
-   $ kubectl get pods -n oigns -o wide
-   NAME                                                        READY   STATUS      RESTARTS   AGE     IP            NODE           NOMINATED NODE   READINESS GATES
-   governancedomain-adminserver                                1/1     Running     0          33m     10.244.2.96   worker-node2   <none>           <none>
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          11d     10.244.2.45   worker-node2   <none>           <none>
-   governancedomain-oim-server1                                1/1     Running     0          31m     10.244.2.98   worker-node2   <none>           <none>
-   governancedomain-soa-server1                                1/1     Running     0          31m     10.244.2.97   worker-node2   <none>           <none>
-   helper                                                      1/1     Running     0          11d     10.244.2.30   worker-node2   <none>           <none>
-   logstash-wls-f448b44c8-92l27                                1/1     Running     0          7d23h   10.244.1.27   worker-node1   <none>           <none>
-   ```
+1. Set the **External Listen Address** to the ingress controller hostname `${MASTERNODE-HOSTNAME}`.
 
-
-1. Set the **External Listen Port** to the ingress controller port. 
+1. Set the **External Listen Port** to the ingress controller port `${MASTERNODE-PORT}`. 
 
 1. Click **Save**.
 
 1. Click **Activate Changes.**
 
 
-### Restart the OIG domain
+### Restart the OIG Managed Server
 
-Restart the domain for the above changes to take effect by following [Stopping and starting the administration server and managed servers]({{< relref "/oig/manage-oig-domains/domain-lifecycle#stopping-and-starting-the-administration-server-and-managed-servers" >}}).
+Restart the OIG Managed Server for the above changes to take effect:
 
+```bash
+$ cd $WORKDIR/kubernetes/domain-lifecycle
+$ ./restartServer.sh -s oim_server1 -d <domain_uid> -n <domain_namespace>
+```
+
+For example:
+
+```bash
+$ cd $WORKDIR/kubernetes/domain-lifecycle
+./restartServer.sh -s oim_server1 -d governancedomain -n oigns
+```
+
+Make sure the `<domain_uid>-oim-server1` has a `READY` status of `1/1` before continuing:
+   
+```bash
+$ kubectl get pods -n oigns | grep oim-server1   
+```
+
+The output will look similar to the following:
+   
+```
+governancedomain-oim-server1                                1/1     Running     0          8m
+```
 
 ### Design Console client
 
@@ -163,11 +172,32 @@ It is possible to use Design Console from an on-premises install, or from a cont
 
 #### Using a container image for Design Console
 
+##### Using Docker
+
 The Design Console can be run from a container using X windows emulation.
 
-1. On the parent machine where the Design Console is to be displayed, run `xhost+`.
+1. On the parent machine where the Design Console is to be displayed, run `xhost +`.
 
-1. Execute the following command to start a container to run Design Console:
+1. Find which worker node the `<domain>-oim-server1` pod is running. For example:
+
+   ```
+   $ kubectl get pods -n oigns -o wide | grep governancedomain-oim-server1 
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   governancedomain-oim-server1                                1/1     Running     0          31m     10.244.2.98   worker-node2   <none>           <none>
+   ```
+
+
+1. On the worker node returned above e.g `worker-node2`, execute the following command to find the OIG container image name:
+
+   ```bash
+   $ docker images
+   ```
+
+   Then execute the following command to start a container to run Design Console:
 
    ```bash
    $ docker run -u root --name oigdcbase -it <image> bash
@@ -176,7 +206,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase oracle/oig:12.2.1.4.0-8-ol7-211022.0723 bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359 bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -242,6 +272,104 @@ The Design Console can be run from a container using X windows emulation.
    
    The Design Console login should be displayed. Now follow [Login to the Design Console](#login-to-the-design-console).   
    
+   
+##### Using podman
+
+1. On the parent machine where the Design Console is to be displayed, run `xhost +`.
+
+1. Find which worker node the `<domain>-oim-server1` pod is running. For example:
+
+   ```
+   $ kubectl get pods -n oigns -o wide | grep governancedomain-oim-server1 
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   governancedomain-oim-server1                                1/1     Running     0          31m     10.244.2.98   worker-node2   <none>           <none>
+   ```
+
+1. On the worker node returned above e.g `worker-node2`, execute the following command to find the OIG container image name:
+
+   ```bash
+   $ podman images
+   ```
+
+   Then execute the following command to start a container to run Design Console:
+
+   ```bash
+   $ podman run -u root --name oigdcbase -it <image> bash
+   ```
+   
+   For example:
+   
+   ```bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359 bash
+   ```
+
+   This will take you into a bash shell inside the container:
+   
+   ```bash
+   bash-4.2#
+   ```
+   
+1. Inside the container set the proxy, for example:
+
+   ```bash
+   bash-4.2# export https_proxy=http://proxy.example.com:80
+   ```
+
+1. Install the relevant X windows packages in the container:
+
+   ```bash
+   bash-4.2# yum install libXext libXrender libXtst
+   ```
+   
+1. Execute the following outside the container to create a new Design Console image from the container:
+
+   ```bash
+   $ podman commit <container_name> <design_console_image_name>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ podman commit oigdcbase oigdc
+   ```
+   
+1. Exit the container bash session:
+
+   ```bash
+   bash-4.2# exit
+   ```
+   
+1. Start a new container using the Design Console image:
+
+   ```bash
+   $ podman run --name oigdc -it oigdc /bin/bash
+   ```
+   
+   This will take you into a bash shell for the container:
+   
+   ```bash
+   bash-4.2#
+   ```
+   
+1. In the container run the following to export the DISPLAY:
+
+   ```bash
+   $ export DISPLAY=<parent_machine_hostname:1>
+   ```   
+
+1. Start the Design Console from the container:
+
+   ```bash
+   bash-4.2# cd idm/designconsole
+   bash-4.2# sh xlclient.sh
+   ```
+   
+   The Design Console login should be displayed. Now follow [Login to the Design Console](#login-to-the-design-console).
+   
 ### Login to the Design Console
 
 1. Launch the Design Console and in the Oracle Identity Manager Design Console login page enter the following details: 
@@ -252,7 +380,6 @@ The Design Console can be run from a container using X windows emulation.
    * `Password`: `<password>`.
 
     where `<url>` is `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
-
 
 1. If successful the Design Console will be displayed.
 

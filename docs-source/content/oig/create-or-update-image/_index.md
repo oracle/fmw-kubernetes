@@ -2,17 +2,10 @@
 title = "Create or update an image"
 weight = 10 
 pre = "<b>10. </b>"
-description=  "Create or update an Oracle Identity Governance (OIG) container image used for deploying OIG domains. An OIG container image can be created using the WebLogic Image Tool or using the Dockerfile approach."
+description=  "Create or update an Oracle Identity Governance (OIG) container image used for deploying OIG domains"
 +++
 
-
-As described in [Prepare Your Environment]({{< relref "/oig/prepare-your-environment" >}}) you can obtain or build OIG container images in the following ways:
-
-1. Download the latest prebuilt OIG container image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0 and the latest PSU.
-
-1. Build your own OIG image using the WebLogic Image Tool or by using the dockerfile, scripts and base images from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. [Building the OIG Image](https://github.com/oracle/docker-images/tree/master/OracleIdentityGovernance/#building-the-oig-image).
-
-If you have access to the My Oracle Support (MOS), and there is a need to build a new image with an interim or one off patch, it is recommended to use the WebLogic Image Tool to build an Oracle Identity Governance image for production deployments.
+As described in [Prepare Your Environment]({{< relref "/oig/prepare-your-environment" >}}) you can create your own OIG container image. If you have access to the My Oracle Support (MOS), and there is a need to build a new image with an interim or one off patch, it is recommended to use the WebLogic Image Tool to build an Oracle Identity Governance image for production deployments.
 
 
 ### Create or update an Oracle Identity Governance image using the WebLogic Image Tool
@@ -121,7 +114,7 @@ $ export WLSIMG_CACHEDIR="/path/to/cachedir"
 
 ##### Set up additional build scripts
 
-Creating an Oracle Identity Governance Docker image using the WebLogic Image Tool requires additional container scripts for Oracle Identity Governance domains.
+Creating an Oracle Identity Governance container image using the WebLogic Image Tool requires additional container scripts for Oracle Identity Governance domains.
 
 1. Clone the [docker-images](https://github.com/oracle/docker-images.git) repository to set up those scripts. In these steps, this directory is `DOCKER_REPO`:
 
@@ -225,7 +218,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 1. Add the downloaded OPatch patch to the WebLogic Image Tool cache. For example:
 
    ``` bash
-   $ imagetool cache addEntry --key 28186730_13.9.4.2.7 --value <download location>/p28186730_139427_Generic.zip
+   $ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value <download location>/p28186730_139428_Generic.zip
    ```
 
 1. Add the rest of the downloaded product patches to the WebLogic Image Tool cache:
@@ -255,7 +248,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 
    ```
    --patches 33416868_12.2.1.4.0,33453703_12.2.1.4.0,32999272_12.2.1.4.0,33093748_12.2.1.4.0,33281560_12.2.1.4.0,31544353_12.2.1.4.0,33313802_12.2.1.4.0,33408307_12.2.1.4.0,33286160_12.2.1.4.0,32880070_12.2.1.4.0,32905339_12.2.1.4.0,32784652_12.2.1.4.0
-   --opatchBugNumber=28186730_13.9.4.2.7
+   --opatchBugNumber=28186730_13.9.4.2.8
    ```
 
    An example `buildArgs` file is now as follows:
@@ -271,27 +264,26 @@ The following files in the code repository location `<imagetool-setup-location>/
    --additionalBuildCommands /scratch/imagetool-setup/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt
    --additionalBuildFiles /scratch/imagetool-setup/docker-images/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
    --patches 33416868_12.2.1.4.0,33453703_12.2.1.4.0,32999272_12.2.1.4.0,33093748_12.2.1.4.0,33281560_12.2.1.4.0,31544353_12.2.1.4.0,33313802_12.2.1.4.0,33408307_12.2.1.4.0,33286160_12.2.1.4.0,32880070_12.2.1.4.0,32905339_12.2.1.4.0,32784652_12.2.1.4.0
-   --opatchBugNumber=28186730_13.9.4.2.7
+   --opatchBugNumber=28186730_13.9.4.2.8
    ```
    
    >Note: In the `buildArgs` file:  
    > * `--jdkVersion` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type jdk`.  
    > * `--version` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type idm`.  
-   > * `--pull` always pulls the latest base Linux image `oraclelinux:7-slim` from the Docker registry.
 
     Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Create the Oracle Identity Governance image:
 
    ```bash
-   $ imagetool @<absolute path to buildargs file>
+   $ imagetool @<absolute path to buildargs file> --fromImage ghcr.io/oracle/oraclelinux:7-slim
    ```
    >Note: Make sure that the absolute path to the `buildargs` file is prepended with a `@` character, as shown in the example above.
 
    For example:
 
    ```bash
-   $ imagetool @<imagetool-setup-location>/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs
+   $ imagetool @<imagetool-setup-location>/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs --fromImage ghcr.io/oracle/oraclelinux:7-slim
    ```
 
 1. Check the created image using the `docker images` command:
@@ -306,9 +298,25 @@ The following files in the code repository location `<imagetool-setup-location>/
    oig-latestpsu                                    12.2.1.4.0                     e391ed154bcb        50 seconds ago      4.43GB
    ```
 
+1. Run the following command to save the container image to a tar file:
+
+   ```bash
+   $ docker save -o <path>/<file>.tar <image>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ docker save -o $WORKDIR/oig-latestpsu.tar oig-latestpsu:12.2.1.4.0
+   ```
+   
 #### Update an image
 
-The steps below show how to update an existing Oracle Identity Governance image with an interim patch. In the examples below the image `oracle/oig:12.2.1.4.0` is updated with an interim patch.
+The steps below show how to update an existing Oracle Identity Governance image with an interim patch. 
+
+The container image to be patched must be loaded in the local docker images repository before attempting these steps.
+
+In the examples below the image `oracle/oig:12.2.1.4.0` is updated with an interim patch.
 
 ```bash
 $ docker images
@@ -324,7 +332,7 @@ oracle/oig     12.2.1.4.0   298fdb98e79c      3 months ago        4.42GB
 1. Add the OPatch patch to the WebLogic Image Tool cache, for example:
 
    ```bash
-   $ imagetool cache addEntry --key 28186730_13.9.4.2.7 --value <downloaded-patches-location>/p28186730_139427_Generic.zip
+   $ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value <downloaded-patches-location>/p28186730_139428_Generic.zip
    ```
 
 1. Execute the `imagetool cache addEntry` command for each patch to add the required patch(es) to the WebLogic Image Tool cache. For example, to add patch `p32701831_12214210607_Generic.zip`:
@@ -346,7 +354,7 @@ oracle/oig     12.2.1.4.0   298fdb98e79c      3 months ago        4.42GB
    For example:
 	
    ```bash
-   $ imagetool update --fromImage oracle/oig:12.2.1.4.0 --tag=oracle/oig-new:12.2.1.4.0 --patches=33165837_12.2.1.4.210708 --opatchBugNumber=28186730_13.9.4.2.7
+   $ imagetool update --fromImage oracle/oig:12.2.1.4.0 --tag=oracle/oig-new:12.2.1.4.0 --patches=33165837_12.2.1.4.210708 --opatchBugNumber=28186730_13.9.4.2.8
    ```
 
    > Note: If the command fails because the files in the image being upgraded are not owned by `oracle:oracle`, then add the parameter `--chown <userid>:<groupid>` to correspond with the values returned in the error.
@@ -363,4 +371,16 @@ oracle/oig     12.2.1.4.0   298fdb98e79c      3 months ago        4.42GB
    REPOSITORY         TAG          IMAGE ID        CREATED             SIZE
    oracle/oig-new     12.2.1.4.0   0c8381922e95    16 seconds ago      4.91GB
    oracle/oig         12.2.1.4.0   298fdb98e79c    3 months ago        4.42GB
+   ```
+
+1. Run the following command to save the patched container image to a tar file:
+
+   ```bash
+   $ docker save -o <path>/<file>.tar <image>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ docker save -o $WORKDIR/oig-new.tar oracle/oig-new:12.2.1.4.0
    ```

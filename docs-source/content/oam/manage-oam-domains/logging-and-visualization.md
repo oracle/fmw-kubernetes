@@ -5,27 +5,31 @@ description: "Describes the steps for logging and visualization with Elasticsear
 
 After the OAM domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
 
-In [Prepare your environment](../../prepare-your-environment) if you decided to use the Elasticsearch and Kibana by setting the parameter `elkIntegrationEnabled` to `true`, then the steps below must be followed to complete the setup.
+### Install Elasticsearch and Kibana
 
-If you did not set `elkIntegrationEnabled` to `true` and want to do so post configuration, run the following command from the `$WORKDIR` directory:
+
+1. If your domain namespace is anything other than `oamns`, edit the `$WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml` and change all instances of `oamns` to your domain namespace.
+
+1. Create a Kubernetes secret to access the Elasticsearch and Kibana container images:
+
+   **Note:** You must first have a user account on [hub.docker.com](https://hub.docker.com).
 
    ```bash
-   $ helm upgrade --reuse-values --namespace operator --set "elkIntegrationEnabled=true" --set "logStashImage=logstash:6.6.0" --set "elasticSearchHost=elasticsearch.default.svc.cluster.local" --set "elasticSearchPort=9200" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="<docker_username>" --docker-password=<password> --docker-email=<docker_email_credentials> --namespace=<domain_namespace>
+   ```   
+   
+   For example:
+   
+   ```
+   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="username" --docker-password=<password> --docker-email=user@example.com --namespace=oamns
    ```
    
    The output will look similar to the following:
    
-   ```
-   Release "weblogic-kubernetes-operator" has been upgraded. Happy Helming!
-   NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Tue Nov 2 03:49:45 2021
-   NAMESPACE: operator
-   STATUS: deployed
-   REVISION: 3
-   TEST SUITE: None
-   ```
+   ```bash
+   secret/dockercred created
+   ```  
 
-### Install Elasticsearch and Kibana
    
 1. Create the Kubernetes resource using the following command:
 
@@ -65,7 +69,7 @@ If you did not set `elkIntegrationEnabled` to `true` and want to do so post conf
    externalRestEnabled: false
    externalRestHttpsPort: 31001
    externalServiceNameSuffix: -ext
-   image: weblogic-kubernetes-operator:3.3.0
+   image: ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
    imagePullPolicy: IfNotPresent
    internalDebugHttpPort: 30999
    introspectorJobNameSuffix: -introspector
@@ -81,13 +85,18 @@ If you did not set `elkIntegrationEnabled` to `true` and want to do so post conf
 1. To check that Elasticsearch and Kibana are deployed in the Kubernetes cluster, run the following command:
 
    ```
-   $ kubectl get pods
+   $ kubectl get pods -n <namespace> | grep 'elasticsearch\|kibana'
+   ```
+   
+   For example:
+   
+   ```
+   $ kubectl get pods -n oamns | grep 'elasticsearch\|kibana'
    ```
    
    The output will look similar to the following:
    
    ```
-   NAME                             READY   STATUS    RESTARTS   AGE 
    elasticsearch-f7b7c4c4-tb4pp   1/1     Running   0          85s
    kibana-57f6685789-mgwdl        1/1     Running   0          85s
    ```
@@ -160,6 +169,8 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
              claimName: accessdomain-domain-pvc
          - name: shared-logs
            emptyDir: {}
+         imagePullSecrets:
+         - name: dockercred
          containers:
          - name: logstash
            image: logstash:6.6.0
@@ -179,10 +190,10 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
 1. In the NFS persistent volume directory that corresponds to the mountPath `/u01/oracle/user_projects/domains`, create a `logstash` directory. For example:
    
    ```
-   $ mkdir -p  /scratch/OAMK8S/accessdomainpv/logstash
+   $ mkdir -p  /scratch/shared/accessdomainpv/logstash
    ```
    
-1. Create a `logstash.conf` in the newly created `logstash` directory that contains the following. Make sure the paths correspond to your `mountPath` and `domain` name:
+1. Create a `logstash.conf` in the newly created `logstash` directory that contains the following. Make sure the paths correspond to your `mountPath` and `domain` name. Also, if your namespace is anything other than `oamns` change `"elasticsearch.oamns.svc.cluster.local:9200"` to `"elasticsearch.<namespace>.svc.cluster.local:9200"`:
    
    ```
    input {
@@ -239,10 +250,13 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    }
    output {
      elasticsearch {
-       hosts => ["elasticsearch.default.svc.cluster.local:9200"]
+       hosts => ["elasticsearch.oamns.svc.cluster.local:9200"]
      }
    }
    ```   
+   
+   
+   
    
 1. Deploy the `logstash` pod by executing the following command:
    
@@ -278,31 +292,27 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    accessdomain-oam-policy-mgr2                             1/1     Running     0          18h
    accessdomain-oam-server1                                 1/1     Running     1          18h
    accessdomain-oam-server2                                 1/1     Running     1          18h
+   elasticsearch-f7b7c4c4-tb4pp                             1/1     Running     0          5m
    helper                                                   1/1     Running     0          23h
+   kibana-57f6685789-mgwdl                                  1/1     Running     0          5m
    logstash-wls-6687c5bf6-jmmdp                             1/1     Running     0          12s
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          20h
    ```
    
-   Then run the following to get the Elasticsearch pod name:
-   
-   ```bash
-   $ kubectl get pods
-   ```
-   
-   The output should look similar to the following:
-   
-   ```
-   NAME                             READY   STATUS    RESTARTS   AGE
-   elasticsearch-f7b7c4c4-tb4pp   1/1     Running   0          9m28s
-   kibana-57f6685789-mgwdl        1/1     Running   0          9m28s
-   ```
+  
 
 ### Verify and access the Kibana console
     
-1. Check if the indices are created correctly in the elasticsearch pod:
+1. Check if the indices are created correctly in the elasticsearch pod shown above:
    
    ```bash
-   $ kubectl exec -it elasticsearch-f7b7c4c4-tb4pp -- /bin/bash
+   $ kubectl exec -it <elasticsearch-pod> -n <namespace> -- /bin/bash
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl exec -it elasticsearch-f7b7c4c4-tb4pp -n oamns -- /bin/bash
    ```
    
    This will take you into a bash shell in the elasticsearch pod:
@@ -327,8 +337,8 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
    health status index                uuid                   pri rep docs.count docs.deleted store.size pri.store.size
    green  open   .kibana_task_manager -IPDdiajTSyIRjelI2QJIg   1   0          2            0     12.6kb         12.6kb
    green  open   .kibana_1            YI9CZAjsTsCCuAyBb1ho3A   1   0          2            0      7.6kb          7.6kb
-   yellow open   logstash-2021.11.01  4pDJSTGVR3-oOwTtHnnTkQ   5   1        148            0    173.9kb        173.9kb
-   yellow open   logstash-2021.11.02  raOvTDoOTuC49nq241h4wg   5   1     115834            0     31.7mb         31.7mb
+   yellow open   logstash-2022.03.08  4pDJSTGVR3-oOwTtHnnTkQ   5   1        148            0    173.9kb        173.9kb
+   
    ```
    
    Exit the bash shell by typing `exit`.
@@ -336,7 +346,13 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
 1. Find the Kibana port by running the following command:
    
    ```bash
-   $ kubectl get svc | grep kibana
+   $ kubectl get svc -n <namespace> | grep kibana
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl get svc -n oamns | grep kibana
    ```
    
    The output will look similar to the following:
@@ -358,6 +374,39 @@ OAM Server logs can be pushed to the Elasticsearch server using the `logstash` p
 1. Once the index pattern is created click on **Discover** in the navigation menu to view the logs.
 
 For more details on how to use the Kibana console see the [Kibana Guide](https://www.elastic.co/guide/en/kibana/current/index.html)
+
+
+### Cleanup
+
+To clean up the Elasticsearch and Kibana install:
+
+1. Run the following command to delete logstash:
+
+   ```bash
+   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash.yaml
+   ```
+
+   The output will look similar to the following:
+
+   ```
+   deployment.apps "logstash-wls" deleted
+   ```
+
+1. Run the following command to delete Elasticsearch and Kibana:
+
+   ```bash
+   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+   ```
+
+   The output will look similar to the following:
+
+   ```
+   deployment.apps "elasticsearch" deleted
+   service "elasticsearch" deleted
+   deployment.apps "kibana" deleted
+   service "kibana" deleted
+   ```
+
    
    
    

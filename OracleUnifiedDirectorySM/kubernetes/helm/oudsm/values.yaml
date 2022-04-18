@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -94,28 +94,6 @@ ingress:
       more_set_input_headers "WL-Proxy-SSL: true";
     # nginx.ingress.kubernetes.io/x-forwarded-proto: "https"
     # nginx.ingress.kubernetes.io/x-forwarded-port: "https"
-  voyagerAnnotations:
-    kubernetes.io/ingress.class: "voyager"
-    ingress.appscode.com/affinity: "cookie"
-    ingress.appscode.com/type: "NodePort"
-    # To ensure that HAProxy matches against the NodePort
-    # ingress.appscode.com/use-node-port: "true"
-    # Yet to explore
-    # ingress.appscode.com/stats: "true"
-  voyagerAnnotationsTLS:
-    kubernetes.io/ingress.class: "voyager"
-    ingress.appscode.com/affinity: "cookie"
-    ingress.appscode.com/type: "NodePort"
-    # To ensure that HAProxy matches against the NodePort
-    # ingress.appscode.com/use-node-port: "true"
-    # Yet to explore
-    # ingress.appscode.com/stats: "true"
-  voyagerNodePortHttp: 31080
-  voyagerNodePortHttps: 31443
-  voyagerHttpPort: 80
-  voyagerHttpsPort: 443
-  voyagerExternalIPs:
-#  - a.b.c.d
 
 nodeSelector: {}
 
@@ -133,7 +111,6 @@ affinity:
               operator: In
               values:
               - oudsm
-
 secret:
   # If enabled it will use the secret created with base64 encoding. if value is false, secret would not be used and input values (through --set, --values, etc.) would be used while creation of pods.
   enabled: true
@@ -182,17 +159,22 @@ oudsm:
 
 
 elk:
+  # Enabled flag to enable the integrated ELK stack for OUDSM
+  enabled: false 
   elasticsearch:
-    enabled: false
     image:
       repository: docker.elastic.co/elasticsearch/elasticsearch
-      tag: 6.4.3
+      tag: 6.8.0
       pullPolicy: IfNotPresent
-
+    # esreplicas is the number of replicas of ElasticSearch deployment to be created
     esreplicas: 1
+    #minimumMasterNodes is the the minimum number of master nodes that needs to configured. This will use the number of replicas (esreplicas / 2) + 1
     minimumMasterNodes: 1
+    # Java options for Elasticsearch. This is where you should configure the jvm heap size
     esJAVAOpts: "-Xms512m -Xmx512m"
+    #sysctl vm.max_map_count needed for Elasticsearch
     sysctlVmMaxMapCount: 262144
+    ## cpu resources for elastic search
     resources:
       requests:
         cpu: "100m"
@@ -200,44 +182,54 @@ elk:
         cpu: "1000m"
     
     esService:
-  # Type of Service to be created for OUD Interfaces (like LDAP, HTTP, Admin)
+  # Type of Service to be created for elastic search interfaces
       type: ClusterIP
-  # Service Type for loadbalancer services exposing LDAP, HTTP interfaces from available/accessible OUD pods.
+  # Service Type for loadbalancer services exposing elastic search.
       lbrtype: ClusterIP
     
+  # Kibana configuration parameters
   kibana:
-    enabled: false
     image:
       repository: docker.elastic.co/kibana/kibana
-      tag: 6.4.3
+      tag: 6.8.0
       pullPolicy: IfNotPresent
+    #Number of Kibana instances will be created
     kibanaReplicas : 1
+    #Type of kibana service to be created
+    #Port on which the kibana will be accessed inside the cluster
+    #nodePort is the port on which kibana service will be accessed from outside
     service:
       type: NodePort
       targetPort: 5601
-      nodePort: 31199
+      nodePort: 31195
     
-
+  # Logstash Configuration parameters
   logstash:
-    enabled: false
     image:
       repository: logstash
       tag: 6.6.0
       pullPolicy: IfNotPresent
+    ##Port on which the logstash container will be running
     containerPort : 5044
+    #targetPort Port on which the logstash will be accessed with in the cluster
+    #nodePort Port on which the logstash will be accessed outside the cluster
     service:
       type: NodePort
       targetPort: 9600
       nodePort: 32222
   # If logstashConfigMap is empty, Then default logstashConfigMap will be created and used.
-    logstashConfigMap: 
-
+    logstashConfigMap:
+ 
+  # ELK Ports on which elastic search will be listening across the nodes and outside the nodes
   elkPorts:
     rest: 9200
     internode: 9300
-
+  #Image used for initiContainers
   busybox:
     image: busybox 
+
+  imagePullSecrets:
+    - name: dockercred
 
 
 elkVolume:
@@ -252,8 +244,7 @@ elkVolume:
   #pvcname: 
   accessMode: ReadWriteMany
   size: 20Gi
-  #storageClass: nfs-client
-  storageClass: elk
+  storageClass: elk-oudsm 
 # default supported values: either filesystem or networkstorage or custom
   type: filesystem
   networkstorage:

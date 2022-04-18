@@ -9,23 +9,25 @@ description: "Describes the steps for WLST administration using helper pod runni
 
 To use WLST to administer the OIG domain, use a helper pod in the same Kubernetes cluster as the OIG Domain.
 
-1. Run the following command to create a helper pod if one doesn't already exist:
+1. Check to see if the helper pod exists by running:
 
    ```bash
-   $ kubectl run helper --image <image_name> -n <domain_namespace> -- sleep infinity
+   $ kubectl get pods -n <domain_namespace> | grep helper
    ```
-
+   
    For example:
-
+   
    ```bash
-   $ kubectl run helper --image 12.2.1.4.0-8-ol7-211022.0723 -n oigns -- sleep infinity
+   $ kubectl get pods -n oigns | grep helper
    ```
-
-   The output will look similar to the following:
-
+   
+   The output should look similar to the following:
+   
    ```
-   pod/helper created
+   helper                                  1/1     Running     0          26h
    ```
+   
+   If the helper pod doesn't exist then see Step 1 in [Prepare your environment ](../../prepare-your-environment/#rcu-schema-creation) to create it.
 
 1. Run the following command to start a bash shell in the helper pod:
 
@@ -257,9 +259,9 @@ wls:/governancedomain/serverConfig/Servers>
    ```bash
    wls:/offline> connect('weblogic','<password>','t3s://governancedomain-adminserver-ssl:7002')
    Connecting to t3s://governancedomain-adminserver-ssl:7002 with userid weblogic ...
-   <Nov 15, 2021 4:51:43 PM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
-   <Nov 15, 2021 4:51:43 PM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
-   <Nov 15, 2021 4:51:43 PM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
+   <Mar 10, 2022 4:51:43 PM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
+   <Mar 10, 2022 4:51:43 PM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
+   <Mar 10, 2022 4:51:43 PM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
    Successfully connected to Admin Server "AdminServer" that belongs to domain "governancedomain".
 
    wls:/governancedomain/serverConfig/>
@@ -270,9 +272,9 @@ wls:/governancedomain/serverConfig/Servers>
    ```bash
    wls:/offline> connect('weblogic','<password>','t3s://governancedomain-cluster-oim-cluster-ssl:14101')
    Connecting to t3s://governancedomain-cluster-oim-cluster-ssl:14101 with userid weblogic ...
-   <Nov 15, 2021 4:53:06 PM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
-   <Nov 15, 2021 4:53:06 PM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
-   <Nov 15, 2021 4:53:06 PM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
+   <Mar 10, 2022 4:53:06 PM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
+   <Mar 10, 2022 4:53:06 PM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
+   <Mar 10, 2022 4:53:06 PM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
    Successfully connected to managed Server "oim_server1" that belongs to domain "governancedomain".
 
    wls:/governancedomain/serverConfig/>

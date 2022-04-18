@@ -5,9 +5,26 @@ pre = "<b>4. </b>"
 description = "Sample for creating an OAM domain home on an existing PV or PVC, and the domain resource YAML file for deploying the generated OAM domain."
 +++
 
+1. [Introduction](#introduction)
+1. [Prerequisites](#prerequisites)
+1. [Prepare the create domain script](#prepare-the-create-domain-script)
+1. [Run the create domain script](#run-the-create-domain-script)
+1. [Set the OAM server memory parameters](#set-the-oam-server-memory-parameters)
+1. [Initializing the domain](#initializing-the-domain)
+1. [Verify the results](#verify-the-results)
+    
+	a. [Verify the domain, pods and services](#verify-the-domain-pods-and-services)
+	
+	b. [Verify the domain](#verify-the-domain)
+	
+	c. [Verify the pods](#verify-the-pods)
+	
+	
+### Introduction
+
 The OAM deployment scripts demonstrate the creation of an OAM domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.
 
-#### Prerequisites
+### Prerequisites
 
 Before you begin, perform the following steps:
 
@@ -16,7 +33,7 @@ Before you begin, perform the following steps:
 1. Ensure that the database is up and running.
 
 
-#### Prepare to use the create domain script
+### Prepare the create domain script
 
 The sample scripts for Oracle Access Management domain deployment are available at `$WORKDIR/kubernetes/create-access-domain`.
 
@@ -26,19 +43,14 @@ The sample scripts for Oracle Access Management domain deployment are available 
    $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv
    $ cp create-domain-inputs.yaml create-domain-inputs.yaml.orig   
    ```
-    
-You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
-Please refer to the configuration parameters below to understand the information that you must
-provide in this file.
-
-#### Edit configuration parameters
 
 1. Edit the `create-domain-inputs.yaml` and modify the following parameters. Save the file when complete:   
 
    ```bash
    domainUID: <domain_uid>
    domainHome: /u01/oracle/user_projects/domains/<domain_uid>
-   image: <image_name>
+   image: <image_name>:<tag>
+   imagePullSecretName: <container_registry_secret>
    weblogicCredentialsSecretName: <kubernetes_domain_secret>
    logHome: /u01/oracle/user_projects/domains/logs/<domain_uid>
    namespace: <domain_namespace>
@@ -47,13 +59,17 @@ provide in this file.
    rcuDatabaseURL: <rcu_db_host>:<rcu_db_port>/<rcu_db_service_name>
    rcuCredentialsSecret: <kubernetes_rcu_secret>   
    ```
-
+   
+   **Note** : `imagePullSecretName` is not required if you are not using a container registry.
+   
    For example:
-
+   
+   
    ```bash   
    domainUID: accessdomain
    domainHome: /u01/oracle/user_projects/domains/accessdomain
-   image: oracle/oam:12.2.1.4.0-8-ol7-210721.0755
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-220119.2059
+   imagePullSecretName: orclcred
    weblogicCredentialsSecretName: accessdomain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/accessdomain
    namespace: oamns
@@ -82,9 +98,9 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `domainType` | Type of the domain. Mandatory input for OAM domains. You must provide one of the supported domain type value: `oam` (deploys an OAM domain)| `oam`
 | `exposeAdminNodePort` | Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster. | `false` |
 | `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `true` |
-| `image` | OAM Docker image. The operator requires OAM 12.2.1.4. Refer to [OAM domains]({{< relref "/oam/prepare-your-environment#install-the-oam-docker-image" >}}) for details on how to obtain or create the image. | `oracle/oam:12.2.1.4.0` |
-| `imagePullPolicy` | WebLogic Docker image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
-| `imagePullSecretName` | Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret will be validated when this parameter is specified. |  |
+| `image` | OAM container image. The operator requires OAM 12.2.1.4. Refer to [Obtain the OAM container image]({{< relref "/oam/prepare-your-environment#obtain-the-oam-container-image" >}}) for details on how to obtain or create the image. | `oracle/oam:12.2.1.4.0` |
+| `imagePullPolicy` | WebLogic container image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
+| `imagePullSecretName` | Name of the Kubernetes secret to access the container registry to pull the OAM container image. The presence of the secret will be validated when this parameter is specified. |  |
 | `includeServerOutInPodLog` | Boolean indicating whether to include the server .out to the pod's stdout. | `true` |
 | `initialManagedServerReplicas` | Number of Managed Servers to initially start for the domain. | `2` |
 | `javaOptions` | Java options for starting the Administration Server and Managed Servers. A Java option can have references to one or more of the following pre-defined variables to obtain WebLogic domain information: `$(DOMAIN_NAME)`, `$(DOMAIN_HOME)`, `$(ADMIN_NAME)`, `$(ADMIN_PORT)`, and `$(SERVER_NAME)`. | `-Dweblogic.StdoutDebugEnabled=false` |
@@ -98,7 +114,7 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `t3ChannelPort` | Port for the T3 channel of the NetworkAccessPoint. | `30012` |
 | `t3PublicAddress` | Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <p/>For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes. | If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster |
 | `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | `accessinfra-domain-credentials` |
-| `weblogicImagePullSecretName` | Name of the Kubernetes secret for the Docker Store, used to pull the WebLogic Server image. |   |
+| `weblogicImagePullSecretName` | Name of the Kubernetes secret for the container registry, used to pull the WebLogic Server image. |   |
 | `serverPodCpuRequest`, `serverPodMemoryRequest`, `serverPodCpuCLimit`, `serverPodMemoryLimit` |  The maximum amount of compute resources allowed, and minimum amount of compute resources required, for each server pod. Please refer to the Kubernetes documentation on `Managing Compute Resources for Containers` for details. | Resource requests and resource limits are not specified. |
 | `rcuSchemaPrefix` | The schema prefix to use in the database, for example `OAM1`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `OAM1` |
 | `rcuDatabaseURL` | The database URL. | `oracle-db.default.svc.cluster.local:1521/devpdb.k8s` |
@@ -115,13 +131,13 @@ The sample demonstrates how to create an OAM domain home and associated Kubernet
 that has one cluster only. In addition, the sample provides the capability for users to supply their own scripts
 to create the domain home for other use cases. The generated domain YAML file could also be modified to cover more use cases.
 
-#### Run the create domain script
+### Run the create domain script
 
 1. Run the create domain script, specifying your inputs file and an output directory to store the
 generated artifacts:
 
    ```bash
-   cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv
+   $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv
    $ ./create-domain.sh -i create-domain-inputs.yaml -o /<path to output-directory>
    ```
 
@@ -148,8 +164,9 @@ generated artifacts:
    export initialManagedServerReplicas="2"
    export managedServerNameBase="oam_server"
    export managedServerPort="14100"
-   export image="oracle/oam:12.2.1.4.0-8-ol7-210721.0755"
+   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-220119.2059"
    export imagePullPolicy="IfNotPresent"
+   export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
    export weblogicCredentialsSecretName="accessdomain-credentials"
    export includeServerOutInPodLog="true"
@@ -209,7 +226,7 @@ generated artifacts:
    
    The command creates a `domain.yaml` file required for domain creation. 
 
-#### Set the OAM server memory parameters
+### Set the OAM server memory parameters
 
 By default, the java memory parameters assigned to the oam_server cluster are very small. The minimum recommended values are `-Xms4096m -Xmx8192m`. However, Oracle recommends you to set these to `-Xms8192m -Xmx8192m` in a production environment.
 
@@ -312,17 +329,23 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      # Set to PersistentVolume for domain-in-pv, Image for domain-in-image, or FromModel for model-in-image
      domainHomeSourceType: PersistentVolume
 
-     # The WebLogic Server Docker image that the Operator uses to start the domain
+     # The WebLogic Server container image that the Operator uses to start the domain
      image: "oracle/oam:12.2.1.4.0"
      ....
    ```	 
 1. Save the changes to `domain.yaml`
 
 
-#### Initializing the domain
+### Initializing the domain
 
 1. Create the Kubernetes resource using the following command:
-
+   
+   ```bash
+   $ kubectl apply -f $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/<domain_uid>/domain.yaml
+   ```
+   
+   For example:
+   
    ```bash
    $ kubectl apply -f $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain/domain.yaml
    ```
@@ -333,8 +356,9 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
    domain.weblogic.oracle/accessdomain created
    ```
 
-#### Verify the domain
+### Verify the results
 
+#### Verify the domain, pods and services
 
 1. Verify the domain, servers pods and services are created and in the `READY` state with a status of `1/1`, by running the following command:
 
@@ -401,7 +425,8 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
    * Two started Policy Manager managed servers named `oam-policy-mgr1` and `oam-policy-mgr2`, listening on port `15100`.
    * Log files that are located in `<persistent_volume>/logs/<domainUID>`.
   
-  
+#### Verify the domain
+
 1. Run the following command to describe the domain: 
 
    ```bash
@@ -423,7 +448,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
    API Version:  weblogic.oracle/v8
    Kind:         Domain
    Metadata:
-     Creation Timestamp:  2021-11-01T11:59:51Z
+     Creation Timestamp:  2022-03-07T11:59:51Z
      Generation:          1
      Managed Fields:
        API Version:  weblogic.oracle/v8
@@ -438,7 +463,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
            f:startTime:
        Manager:      Kubernetes Java Client
        Operation:    Update
-       Time:         2021-11-01T11:59:51Z
+       Time:         2022-03-07T11:59:51Z
        API Version:  weblogic.oracle/v8
        Fields Type:  FieldsV1
        fieldsV1:
@@ -451,7 +476,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
              f:weblogic.domainUID:
        Manager:         kubectl-client-side-apply
        Operation:       Update
-       Time:            2021-11-01T11:59:51Z
+       Time:            2022-03-07T11:59:51Z
      Resource Version:  1495179
      UID:               a90107d5-dbaf-4d86-9439-d5369faabd35
    Spec:
@@ -507,8 +532,10 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Domain Home:                    /u01/oracle/user_projects/domains/accessdomain
      Domain Home Source Type:        PersistentVolume
      Http Access Log In Log Home:    true
-     Image:                          oracle/oam:12.2.1.4.0-8-ol7-210721.0755
+     Image:                          container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-220119.2059
      Image Pull Policy:              IfNotPresent
+	 Image Pull Secrets:
+       Name:                         orclcred
      Include Server Out In Pod Log:  true
      Log Home:                       /u01/oracle/user_projects/domains/logs/accessdomain
      Log Home Enabled:               true
@@ -543,7 +570,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Replicas:          2
        Replicas Goal:     2
      Conditions:
-       Last Transition Time:        2021-11-01T12:11:52.623959Z
+       Last Transition Time:        2022-03-07T12:11:52.623959Z
        Reason:                      ServersReady
        Status:                      True
        Type:                        Available
@@ -551,7 +578,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Servers:
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-01T12:08:29.271000Z
+         Activation Time:  2022-03-07T12:08:29.271000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -562,7 +589,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   oam_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-01T12:11:02.696000Z
+         Activation Time:  2022-03-07T12:11:02.696000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -573,7 +600,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   oam_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-01T12:11:46.175000Z
+         Activation Time:  2022-03-07T12:11:46.175000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -593,7 +620,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   policy_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-01T12:11:20.404000Z
+         Activation Time:  2022-03-07T12:11:20.404000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -604,7 +631,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   policy_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-01T12:11:09.719000Z
+         Activation Time:  2022-03-07T12:11:09.719000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -621,7 +648,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   policy_cluster
        Desired State:  SHUTDOWN
        Server Name:    oam_policy_mgr5
-     Start Time:       2021-11-01T11:59:51.682687Z
+     Start Time:       2022-03-07T11:59:51.682687Z
    Events:
      Type    Reason                     Age                 From               Message
      ----    ------                     ----                ----               -------
@@ -631,6 +658,8 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
    ```
 
    In the `Status` section of the output, the available servers and clusters are listed.
+
+#### Verify the pods
 
 1. Run the following command to see the pods running the servers and which nodes they are running on:
 

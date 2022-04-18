@@ -556,10 +556,10 @@ def usage():
           '-t3ChannelPort <t3 channel port> '
     sys.exit(0)
 
-
-print str(sys.argv[0]) + " called with the following sys.argv array:"
-for index, arg in enumerate(sys.argv):
-    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
+# Uncomment for Debug only
+#print str(sys.argv[0]) + " called with the following sys.argv array:"
+#for index, arg in enumerate(sys.argv):
+#    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
 
 if len(sys.argv) < 17:
     usage()

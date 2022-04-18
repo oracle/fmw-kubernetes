@@ -51,13 +51,13 @@ Sometimes in production, but most likely in testing environments, you might want
 1. Delete the contents of the persistent volume:
 
    ```bash
-   $ rm -rf /<workdir>/governancedomainpv/*
+   $ rm -rf <persistent_volume>/governancedomainpv/*
    ```
 
    For example:
    
    ```bash
-   $ rm -rf /scratch/OIGK8S/governancedomainpv/*
+   $ rm -rf /scratch/shared/governancedomainpv/*
    ```
 
    

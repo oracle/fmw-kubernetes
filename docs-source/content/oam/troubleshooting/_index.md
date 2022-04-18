@@ -41,21 +41,21 @@ If the OAM domain creation fails when running `create-domain.sh`, run the follow
 
    ```
    Failed to start container "create-fmw-infra-sample-domain-job": Error response from daemon: error while creating mount source path
-   '/scratch/OAMK8S/accessdomainpv ': mkdir /scratch/OAMK8S/accessdomainpv : permission denied
+   '/scratch/shared/accessdomainpv ': mkdir /scratch/shared/accessdomainpv : permission denied
    ```
     
    then there is a permissions error on the directory for the PV and PVC and the following should be checked:
    
-   a) The directory has 777 permissions: `chmod -R 777 <workdir>/accessdomainpv`.
+   a) The directory has 777 permissions: `chmod -R 777 <persistent_volume>/accessdomainpv`.
    
-   b) If it does have the permissions, check if an `oracle` user exists and the `uid` and `gid` equal `1000`.
+   b) If it does have the permissions, check if an oracle user exists and the uid is 1000 and gid is 0.
    
-   Create the `oracle` user if it doesn't exist and set the `uid` and `gid` to `1000`.
+   Create the oracle user if it doesn't exist and set the uid to 1000 and gid to 0.
    
    c) Edit the `$WORKDIR/kubernetes/create-weblogic-domain-pv-pvc/create-pv-pvc-inputs.yaml` and add a slash to the end of the directory for the `weblogicDomainStoragePath` parameter:
    
    ```
-   weblogicDomainStoragePath: /scratch/OAMK8S/accessdomainpv/
+   weblogicDomainStoragePath: /scratch/shared/accessdomainpv/
    ```
    
    Clean down the failed domain creation by following steps 1-3 in [Delete the OAM domain home]({{< relref "/oam/manage-oam-domains/delete-domain-home" >}}). Then follow [RCU schema creation]({{< relref "/oam/prepare-your-environment/#rcu-schema-creation" >}}) onwards to recreate the RCU schema, kubernetes secrets for domain and RCU, the persistent volume and the persistent volume claim. Then execute the [OAM domain creation]({{< relref "/oam/create-oam-domains" >}}) steps again.

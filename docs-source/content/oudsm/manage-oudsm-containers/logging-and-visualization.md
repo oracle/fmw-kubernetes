@@ -1,24 +1,19 @@
 ---
-title: "a) Logging and Visualization for Helm Chart oudsm Deployment"
-date: 2019-02-22T15:44:42-05:00
-draft: false
+title: "b) Logging and Visualization for Helm Chart oudsm Deployment"
 description: "Describes the steps for logging and visualization with Elasticsearch and Kibana."
 ---
 
 1. [Introduction](#introduction)
 1. [Installation](#installation)
+    1. [Create a Kubernetes secret](#create-a-kubernetes-secret)
 	1. [Enable Elasticsearch, Logstash, and Kibana](#enable-elasticsearch-logstash-and-kibana)
-	1. [Create Data Mount Points](#create-data-mount-points)
-	1. [Configure Logstash](#configure-logstash)
-	1. [Install or Upgrade Oracle Unified Directory Services Manager Container with ELK Configuration](#install-or-upgrade-oracle-unified-directory-services-manager-container-with-elk-configuration)
-	1. [Configure ElasticSearch](#configure-elasticsearch)
-1. [Verify Using the Kibana Application](#verify-using-the-kibana-application)
+	1. [Upgrade OUDSM deployment with ELK configuration](#upgrade-oudsm-deployment-with-elk-configuration)
+	1. [Verify the pods](#verify-the-pods)
+1. [Verify using the Kibana application](#verify-using-the-kibana-application)
 
 ### Introduction
 
-This section describes how to install and configure logging and visualization for the [oudsm]({{< relref "/oudsm/create-oudsm-instances/create-oudsm-instances-helm/oudsm" >}}) Helm Chart deployment.
-
-
+This section describes how to install and configure logging and visualization for the [oudsm](../../create-oudsm-instances) Helm Chart deployment.
 
 The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK we can gain insights in real-time from the log data from your applications.
 
@@ -28,165 +23,221 @@ The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK we can 
 
 ### Installation
 
-ELK can be enabled for environments created using the Helm charts provided with this project.  The example below will demonstrate installation and configuration of ELK for the `oudsm` chart.
+ELK can be enabled for environments created using the Helm charts provided. The example below will demonstrate installation and configuration of ELK for the `oudsm` chart.
 
-Edit `logging-override-values.yaml` and set the `enabled` flag for each component to 'true'.
 
-```
-elk:
-  elasticsearch:
-    enabled: true
-...
-kibana:
-    enabled: true
-...
-  logstash:
-    enabled: true
-...
-elkVolume:
-  # If enabled, it will use the persistent volume.
-  # if value is false, PV and PVC would not be used and there would not be any mount point available for config
-  enabled: true
-  type: networkstorage
-  networkstorage:
-    nfs:
-      server: myserver
-      path: /scratch/oud_elk_data
-```
+#### Create a Kubernetes secret
 
-**Note**: If `elkVolume.enabled` is set to 'true' you should supply a directory for the ELK log files.  The userid for the directory can be anything but it must have uid:guid as 1000:1000, which is the same as the ‘oracle’ user running in the container. This ensures the ‘oracle’ user has access to the shared volume/directory.
+1. Create a Kubernetes secret to access the required images on [hub.docker.com](https://hub.docker.com):
 
-#### Install or Upgrade Oracle Unified Directory Services Manager Container with ELK Configuration
+   **Note:** You must first have a user account on [hub.docker.com](https://hub.docker.com).
 
-If you have not installed the `oudsm` chart then you should install with the following command, picking up the ELK configuration from the previous steps:
+   ```bash
+   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="<docker_username>" --docker-password=<password> --docker-email=<docker_email_credentials> --namespace=<domain_namespace>
+   ```   
+   
+   For example:
+   
+   ```
+   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="username" --docker-password=<password> --docker-email=user@example.com --namespace=oudsmns
+   ```
+   
+   The output will look similar to the following:
+   
+   ```bash
+   secret/dockercred created
+   ```  
 
-```
-$ helm install --namespace <namespace> --values <valuesfile.yaml> <releasename> oudsm
-```
+#### Enable Elasticsearch, Logstash, and Kibana
 
-For example:
+1. Create a directory on the persistent volume to store the ELK log files:
 
-```
-$ helm install --namespace oudsm --values logging-override-values.yaml my-oud-ds-rs oudsm
-```
+   ```bash
+   $ mkdir -p <persistent_volume>/oudsm_elk_data
+   $ chmod 777 <persistent_volume>/oudsm_elk_data
+   ```
+   
+   For example:
+   
+   ```bash
+   $ mkdir -p /scratch/shared/oudsm_elk_data
+   $ chmod 777 /scratch/shared/oudsm_elk_data
+   ```
 
-If the `oudsm` chart is already installed then update the configuration with the ELK configuration from the previous steps:
+1. Navigate to the `$WORKDIR/kubernetes/helm` directory and create a `logging-override-values.yaml` with the following:
 
-```
-$ helm upgrade --namespace <namespace> --values <valuesfile.yaml> <releasename> oudsm
-```
 
-For example:
+   ```yaml
+   elk:
+     enabled: true
+	 imagePullSecrets:
+	   - name: dockercred
 
-```
-$ helm upgrade --namespace oudsm --values logging-override-values.yaml my-oud-ds-rs oudsm
-```
+   elkVolume:
+     # If enabled, it will use the persistent volume.
+     # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+     enabled: true
+     type: filesystem
+     filesystem:
+       hostPath:
+         path: <persistent_volume>/oudsm_elk_data
+   ```
 
-#### Configure ElasticSearch
+   For example:
 
-List the PODs in your namespace:
+   ```yaml
+   elk:
+     enabled: true
+	 imagePullSecrets:
+	   - name: dockercred
 
-```
-$ kubectl get pods -o wide -n <namespace>
-```
+   elkVolume:
+     # If enabled, it will use the persistent volume.
+     # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+     enabled: true
+     type: filesystem
+     filesystem:
+       hostPath:
+         path: /scratch/shared/oudsm_elk_data
+   ```
 
-For example:
+   If using NFS for the persistent volume change the `elkVolume` section as follows:
 
-```
-$ kubectl get pods -o wide -n oudsm
-```
 
-Output will be similar to the following:
+   ```yaml
+   elkVolume:
+   # If enabled, it will use the persistent volume.
+   # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+   enabled: true
+   type: networkstorage
+   networkstorage:
+     nfs:
+       server: myserver
+       path: <persistent_volume>/oudsm_elk_data
+   ```
 
-```
-$ kubectl get pods -o wide -n oudsm
-NAME                                 READY   STATUS    RESTARTS   AGE   IP             NODE           NOMINATED NODE   READINESS GATES
-oudsm-1                           1/1     Running   0          19m   10.244.1.66    10.89.73.203   <none>           <none>
-oudsm-es-cluster-0                1/1     Running   0          19m   10.244.1.69    10.89.73.203   <none>           <none>
-oudsm-es-cluster-1                1/1     Running   0          18m   10.244.2.125   10.89.73.204   <none>           <none>
-oudsm-es-cluster-2                1/1     Running   0          17m   10.244.1.70    10.89.73.203   <none>           <none>
-oudsm-kibana-6bbd487d66-dr662     1/1     Running   0          19m   10.244.1.68    10.89.73.203   <none>           <none>
-oudsm-logstash-56f4665997-vbx4q   1/1     Running   0          19m   10.244.1.67    10.89.73.203   <none>           <none>
-```
+#### Upgrade OUDSM deployment with ELK configuration
 
-From this, identify the ElastiSearch POD, `oudsm-es-cluster-0`.
+1. Run the following command to upgrade the OUDSM deployment with the ELK configuration:
 
-Run the `port-forward` command to allow ElasticSearch to be listening on port 9200:
+   ```bash
+   $ helm upgrade --namespace <namespace> --values logging-override-values.yaml <release_name> oudsm --reuse-values
+   ```
 
-```
-$ kubectl port-forward oudsm-es-cluster-0 9200:9200 --namespace=<namespace> &
-```
+   For example:
 
-For example:
+   ```bash
+   $ helm upgrade --namespace oudsmns --values logging-override-values.yaml oudsm oudsm --reuse-values
+   ```
 
-```
-$ kubectl port-forward oudsm-es-cluster-0 9200:9200 --namespace=oudsm &
-[1] 98458
-bash-4.2$ Forwarding from 127.0.0.1:9200 -> 9200
-Forwarding from [::1]:9200 -> 9200
-```
+#### Verify the pods
 
-Verify that ElasticSearch is running by interrogating port 9200:
+1. Run the following command to verify the elasticsearch, logstash and kibana pods are running:
 
-```
-$ curl http://localhost:9200
-Handling connection for 9200
-{
-  "name" : "oudsm-es-cluster-0",
-  "cluster_name" : "OUD-elk",
-  "cluster_uuid" : "w5LKK98RRp-LMoCGA2AnsA",
-  "version" : {
-    "number" : "6.4.3",
-    "build_flavor" : "default",
-    "build_type" : "tar",
-    "build_hash" : "fe40335",
-    "build_date" : "2018-10-30T23:17:19.084789Z",
-    "build_snapshot" : false,
-    "lucene_version" : "7.4.0",
-    "minimum_wire_compatibility_version" : "5.6.0",
-    "minimum_index_compatibility_version" : "5.0.0"
-  },
-  "tagline" : "You Know, for Search"
-}
-```
+   ```bash
+   $ kubectl get pods -o wide -n <namespace> | grep 'es\|kibana\|logstash'
+   ```
 
-### Verify Using the Kibana Application
+   For example:
 
-List the Kibana application service using the following command:
+   ```bash
+   $ kubectl get pods -o wide -n oudsmns | grep 'es\|kibana\|logstash'
+   ```
 
-```
-$ kubectl get svc -o wide -n <namespace> | grep kibana
-```
+   The output will look similar to the following:
 
-For example:
+   ```
+   NAME                              READY   STATUS    RESTARTS   AGE   IP             NODE               NOMINATED NODE   READINESS GATES
+   oudsm-es-cluster-0                1/1     Running   0          4m5s  10.244.1.124   <worker-node>      <none>           <none>
+   oudsm-kibana-7bf95b4c45-sfst6     1/1     Running   1          4m5s  10.244.2.137   <worker-node>      <none>           <none>
+   oudsm-logstash-5bb6bc67bf-l4mdv   1/1     Running   0          4m5s  10.244.2.138   <worker-node>      <none>           <none>
+   ```
 
-```
-$ kubectl get svc -o wide -n oudsm | grep kibana
-```
+   From the above identify the elasticsearch pod, for example: `oudsm-es-cluster-0`.
 
-Output will be similar to the following:
 
-```
-oudsm-kibana             NodePort    10.103.92.84     <none>        5601:31199/TCP      21m   app=kibana
-```
+1. Run the `port-forward` command to allow ElasticSearch to be listening on port 9200:
 
-In this example, the port to access Kibana application via a Web browser will be `31199`.
+   ```bash
+   $ kubectl port-forward oudsm-es-cluster-0 9200:9200 --namespace=<namespace> &
+   ```
 
-Enter the following URL in a browser to access the Kibana application:
+   For example:
 
-`http://<hostname>:<NodePort>/app/kibana`
+   ```bash
+   $ kubectl port-forward oudsm-es-cluster-0 9200:9200 --namespace=oudsmns &
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   [1] 98458
+   bash-4.2$ Forwarding from 127.0.0.1:9200 -> 9200
+   Forwarding from [::1]:9200 -> 9200
+   ```
 
-For example:
+1. Verify that ElasticSearch is running by interrogating port 9200:
 
-`http://myserver:31199/app/kibana`
 
-From the Kibana Portal navigate to:
+   ```bash
+   $ curl http://localhost:9200
+   ```
+   
+   The output will look similar to the following:
+   
+   ```bash
+   {
+     "name" : "oudsm-es-cluster-0",
+     "cluster_name" : "OUD-elk",
+     "cluster_uuid" : "TIKKJuK4QdWcOZrEOA1zeQ",
+     "version" : {
+       "number" : "6.8.0",
+       "build_flavor" : "default",
+       "build_type" : "docker",
+       "build_hash" : "65b6179",
+       "build_date" : "2019-05-15T20:06:13.172855Z",
+       "build_snapshot" : false,
+       "lucene_version" : "7.7.0",
+       "minimum_wire_compatibility_version" : "5.6.0",
+       "minimum_index_compatibility_version" : "5.0.0"
+     },
+     "tagline" : "You Know, for Search"
+   }
+   ```
 
-`Management -> Index Patterns`
 
-Create an Index Pattern using the pattern '*'
+### Verify using the Kibana application
 
-Navigate to `Discover` : from here you should be able to see logs from the Oracle Unified Directory Services Manager environment.
+1. List the Kibana application service using the following command:
+
+   ```bash
+   $ kubectl get svc -o wide -n <namespace> | grep kibana
+   ```
+
+   For example:
+
+   ```bash
+   $ kubectl get svc -o wide -n oudsmns | grep kibana
+   ```
+
+   The output will look similar to the following:
+
+   ```
+   oudsm-kibana             NodePort    10.101.248.248   <none>        5601:31195/TCP      7m56s   app=kibana
+   ```
+
+   In this example, the port to access Kibana application via a Web browser will be `31195`.
+
+1. Access the Kibana console in a browser with: `http://${MASTERNODE-HOSTNAME}:${KIBANA-PORT}/app/kibana`.
+
+1. From the Kibana portal navigate to `Management`> `Kibana` > `Index Patterns`.
+
+1. In the **Create Index Pattern** page enter `*` for the **Index pattern**  and click **Next Step**.
+
+1. In the **Configure settings** page, from the **Time Filter field name** drop down menu select `@timestamp` and click **Create index pattern**.
+
+1. Once the index pattern is created click on **Discover** in the navigation menu to view the OUDSM logs.
+
 
 
 

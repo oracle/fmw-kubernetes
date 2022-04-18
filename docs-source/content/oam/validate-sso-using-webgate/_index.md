@@ -30,9 +30,9 @@ In all the examples below, change the directory path as appropriate for your ins
 1. Run the following command on the server with Oracle HTTP Server and WebGate installed:
 
    ```bash
-   $ cd /scratch/export/home/oracle/product/middleware/webgate/ohs/tools/deployWebGate
+   $ cd <OHS_ORACLE_HOME>/webgate/ohs/tools/deployWebGate
 
-   $ ./deployWebGateInstance.sh -w /scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8s -oh /scratch/export/home/oracle/product/middleware -ws ohs
+   $ ./deployWebGateInstance.sh -w <OHS_DOMAIN_HOME>/config/fmwconfig/components/OHS/ohs_k8s -oh <OHS_ORACLE_HOME> -ws ohs
    ```
 
    The output will look similar to the following:
@@ -44,21 +44,21 @@ In all the examples below, change the directory path as appropriate for your ins
 1. Run the following command to update the OHS configuration files appropriately:
 
    ```bash  
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/scratch/export/home/oracle/product/middleware/lib
-   $ cd /scratch/export/home/oracle/product/middleware/webgate/ohs/tools/setup/InstallTools/
-   $ ./EditHttpConf -w /scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8s -oh /scratch/export/home/oracle/product/middleware
+   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<OHS_ORACLE_HOME>/lib
+   $ cd <OHS_ORACLE_HOME>/webgate/ohs/tools/setup/InstallTools/
+   $ ./EditHttpConf -w <OHS_DOMAIN_HOME>/config/fmwconfig/components/OHS/ohs_k8s -oh <OHS_ORACLE_HOME>
    ```
    
    The output will look similar to the following:
 
    ```
    The web server configuration file was successfully updated
-   /scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8s/httpd.conf has been backed up as /scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8s/httpd.conf.ORIG   
+   <OHS_DOMAIN_HOME>/config/fmwconfig/components/OHS/ohs_k8s/httpd.conf has been backed up as <OHS_DOMAIN_HOME>/config/fmwconfig/components/OHS/ohs_k8s/httpd.conf.ORIG   
    ```
 
-1. Launch a browser, and access the OAM console. Navigate to **Application Security** → **Quick Start Wizards** → **SSO Agent Registration**. Register the agent in the usual way, download the configuration zip file and copy to the OHS WebGate server, for example: `/scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8/webgate/config`. Extract the zip file.
+1. Launch a browser, and access the OAM console. Navigate to **Application Security** → **Quick Start Wizards** → **SSO Agent Registration**. Register the agent in the usual way, download the configuration zip file and copy to the OHS WebGate server, for example: `<OHS_DOMAIN_HOME>/config/fmwconfig/components/OHS/ohs_k8/webgate/config`. Extract the zip file.
 
-1. Copy the Certificate Authority (CA) certificate (`cacert.pem`) for the load balancer/ingress certificate to the same directory e.g: `/scratch/export/home/oracle/admin/domains/oam_domain/config/fmwconfig/components/OHS/ohs_k8/webgate/config`.
+1. Copy the Certificate Authority (CA) certificate (`cacert.pem`) for the load balancer/ingress certificate to the same directory e.g: `<OHS_DOMAIN_HOME>/config/fmwconfig/components/OHS/ohs_k8/webgate/config`.
 
    If you used a self signed certificate for the ingress, instead copy the self signed certificate (e.g: `/scratch/ssl/tls.crt`) to the above directory. Rename the certificate to `cacert.pem`.
 
@@ -86,9 +86,9 @@ To change the WebGate agent to use OAP:
    
    b) `OAMRestEndPointHostName=<hostname>` to the `{$MASTERNODE-HOSTNAME}`. For example `OAMRestEndPointHostName=masternode.example.com`
 
-1. In the **Server Lists** section click *Add* to a add new server with the following values:
+1. In the **Server Lists** section click *Add* to add a new server with the following values:
 
-   * `Access Server`: `oam_server`
+   * `Access Server`: `Other`
    * `Host Name`: `<{$MASTERNODE-HOSTNAME}>`
    * `Host Port`: `<oamoap-service NodePort>`
 
@@ -123,5 +123,7 @@ To change the WebGate agent to use OAP:
    
 1. Delete all servers in **Server Lists** except for the one just created, and click `Apply`.
 
-1. Click Download to download the webgate zip file. Copy the zip file to the desired WebGate.
+1. Click **Download** to download the webgate zip file. Copy the zip file to the desired WebGate.
+
+1. Delete the cache from `<OHS_DOMAIN_HOME>/servers/ohs1/cache` and restart Oracle HTTP Server.
 

@@ -9,6 +9,7 @@ description: "Learn about the domain life cyle of an OIG domain."
 1. [Starting/Scaling up OIG Managed servers](#startingscaling-up-oig-managed-servers)
 1. [Stopping/Scaling down OIG Managed servers](#stoppingscaling-down-oig-managed-servers)
 1. [Stopping and starting the Administration Server and Managed Servers](#stopping-and-starting-the-administration-server-and-managed-servers)
+1. [Domain lifecycle sample scripts](#domain-lifecycle-sample-scripts)
 
 As OIG domains use the WebLogic Kubernetes Operator, domain lifecyle operations are managed using the WebLogic Kubernetes Operator itself.
 
@@ -360,3 +361,12 @@ To stop all the OIG Managed Servers and the Administration Server in one operati
    governancedomain-oim-server1                                1/1     Running     0          4m33s
    governancedomain-soa-server1                                1/1     Running     0          4m33s
    ```
+
+
+### Domain lifecycle sample scripts
+
+The WebLogic Kubernetes Operator provides sample scripts to start up or shut down a specific Managed Server or cluster in a deployed domain, or the entire deployed domain.
+
+**Note**: Prior to running these scripts, you must have previously created and deployed the domain.
+
+The scripts are located in the `$WORKDIR/kubernetes/domain-lifecycle` directory. For more information, see the [README]( https://github.com/oracle/fmw-kubernetes/tree/master/OracleIdentityGovernance/kubernetes/domain-lifecycle).

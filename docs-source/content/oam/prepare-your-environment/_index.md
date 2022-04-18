@@ -7,14 +7,12 @@ PVC, and the domain resource YAML file for deploying the generated OAM domain."
 ---
 To prepare for Oracle Access Management deployment in a Kubernetes environment, complete the following steps:
 
-1. [Set up your Kubernetes cluster](#set-up-your-kubernetes-cluster)
-1. [Install Helm](#install-helm)
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
-1. [Install the OAM Docker image](#install-the-oam-docker-image)
-1. [Install the WebLogic Kubernetes Operator docker image](#install-the-weblogic-kubernetes-operator-docker-image)
+1. [Obtain the OAM container image](#obtain-the-oam-container-image)
 1. [Set up the code repository to deploy OAM domains](#set-up-the-code-repository-to-deploy-oam-domains)
 1. [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
 1. [Create a namespace for Oracle Access Management](#create-a-namespace-for-oracle-access-management)
+1. [Create a Kubernetes secret for the container registry](#create-a-kubernetes-secret-for-the-container-registry)
 1. [RCU schema creation](#rcu-schema-creation)
 1. [Preparing the environment for domain creation](#preparing-the-environment-for-domain-creation)
     
@@ -22,24 +20,13 @@ To prepare for Oracle Access Management deployment in a Kubernetes environment, 
     
 	b. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
 
-### Set up your Kubernetes cluster
 
-If you need help setting up a Kubernetes environment, refer to the official Kubernetes [documentation](https://kubernetes.io/docs/setup/#production-environment) to set up a production grade Kubernetes cluster.
-
-It is recommended you have a master node and one or more worker nodes. The examples in this documentation assume one master and two worker nodes.
-
-Verify that the system clocks on each host computer are synchronized. You can do this by running the date command simultaneously on all the hosts in each cluster.
-
-After creating Kubernetes clusters, you can optionally:
-
-* Configure an Ingress to direct traffic to backend domains.
-* Configure Kibana and Elasticsearch for your operator logs.
-
-### Install Helm
-
-As per the [prerequisites](../prerequisites) an installation of Helm is required to create and deploy the necessary resources and then run the operator in a Kubernetes cluster. For Helm installation and usage information, refer to the [README](https://github.com/helm/helm).
 
 ### Check the Kubernetes cluster is ready
+
+As per the [Prerequisites](../prerequisites/#system-requirements-for-oam-domains) a Kubernetes cluster should have already been configured.
+
+Check that all the nodes in the Kubernetes cluster are running.
 
 1. Run the following command on the master node to check the cluster and worker nodes are running:
     
@@ -70,79 +57,41 @@ As per the [prerequisites](../prerequisites) an installation of Helm is required
     pod/kube-scheduler-master                1/1     Running   0          21
     ```
 	
-### Install the OAM Docker image
+### Obtain the OAM container image
 
-You can deploy OAM Docker images in the following ways:
+The OAM Kubernetes deployment requires access to an OAM container image. The image can be obtained in the following ways:
 
-1. Download the latest prebuilt OAM Docker image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU.
+- Prebuilt OAM container image
+- Build your own OAM container image using WebLogic Image Tool
 
-1. Build your own OAM image using the WebLogic Image Tool or by using the dockerfile, scripts and base images from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. For more information about the various ways in which you can build your own container image, see [Building the OAM Image](https://github.com/oracle/docker-images/tree/master/OracleAccessManagement/#building-the-oam-image).
-
-Choose one of these options based on your requirements.
-
-{{% notice note %}}
-The OAM Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
-{{% /notice %}}
-
-After installing the OAM Docker image run the following command to make sure the image is installed correctly on the master and worker nodes:
- 
-```bash
-$ docker images
-```
-The output will look similar to the following:
-
-   ```
-   REPOSITORY                                       TAG                            IMAGE ID            CREATED             SIZE
-   oracle/oam                                       12.2.1.4.0-8-ol7-210721.0755   720a172374e6        2 weeks ago         3.38GB
-   quay.io/coreos/flannel                           v0.15.0                        09b38f011a29        6 days ago          69.5MB
-   rancher/mirrored-flannelcni-flannel-cni-plugin   v1.2                           98660e6e4c3a        13 days ago         8.98MB
-   k8s.gcr.io/kube-proxy                            v1.20.10                       945c9bce487a        2 months ago        99.7MB
-   k8s.gcr.io/kube-controller-manager               v1.20.10                       2f450864515d        2 months ago        116MB
-   k8s.gcr.io/kube-apiserver                        v1.20.10                       644cadd07add        2 months ago        122MB
-   k8s.gcr.io/kube-scheduler                        v1.20.10                       4c9be8dc650b        2 months ago        47.3MB
-   k8s.gcr.io/etcd                                  3.4.13-0                       0369cf4303ff        14 months ago       253MB
-   k8s.gcr.io/coredns                               1.7.0                          bfe3a36ebd25        16 months ago       45.2MB
-   k8s.gcr.io/pause                                 3.2                            80d28bedfe5d        20 months ago       683kB
-   ```
+#### Prebuilt OAM container image
 
 
+The latest prebuilt OAM container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU. 
 
-### Install the WebLogic Kubernetes Operator Docker image
+**Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
 
-{{% notice note %}}
-The WebLogic Kubernetes Operator Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
-{{% /notice %}}
+Alternatively the same image can also be downloaded from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1.
 
-1. Pull the WebLogic Kubernetes Operator image by running the following command on the master node:
-   ```bash
-   $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-   ```
-  
-   The output will look similar to the following:
+You can use this image in the following ways:
+
+- Pull the container image from the Oracle Container Registry automatically during the OAM Kubernetes deployment.
+- Manually pull the container image from the Oracle Container Registry or My Oracle Support, and then upload it to your own container registry.
+- Manually pull the container image from the Oracle Container Registry or My Oracle Support and manually stage it on the master node and each worker node. 
+
+#### Build your own OAM container image using WebLogic Image Tool
 
 
-   ```
-   Trying to pull repository ghcr.io/oracle/weblogic-kubernetes-operator ...
-   3.3.0: Pulling from ghcr.io/oracle/weblogic-kubernetes-operator
-   c828c776e142: Pull complete
-   175676c54fa1: Pull complete
-   b3231f480c32: Pull complete
-   ea4423fa8daa: Pull complete
-   f3ca38f7f95f: Pull complete
-   effd851583ec: Pull complete
-   4f4fb700ef54: Pull complete
-   Digest: sha256:3e93848ad2f5b272c88680e7b37a4ee428dd12e4c4c91af6977fd2fa9ec1f9dc
-   Status: Downloaded newer image for ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-   ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-   ```
+You can build your own OAM container image using the WebLogic Image Tool. This is recommended if you need to apply one off patches to a [Prebuilt OAM container image](#prebuilt-oam-container-image). For more information about building your own container image with WebLogic Image Tool, see [Create or update image](../create-or-update-image/).
 
-1. Run the docker tag command as follows:
+You can use an image built with WebLogic Image Tool in the following ways:
 
-   ```bash
-   $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 weblogic-kubernetes-operator:3.3.0
-   ```
+- Manually upload them to your own container registry. 
+- Manually stage them on the master node and each worker node. 
 
-   After installing the WebLogic Kubernetes Operator image, repeat the above on the worker nodes.
+
+**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
+
 
 
 ### Set up the code repository to deploy OAM domains
@@ -211,6 +160,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    customresourcedefinition.apiextensions.k8s.io "domains.weblogic.oracle" deleted
    ```
    
+   
 ### Install the WebLogic Kubernetes Operator
 
 1. On the **master** node run the following command to create a namespace for the operator:
@@ -249,35 +199,13 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    serviceaccount/op-sa created
    ```
 
-1. If you want to to setup logging and visualisation with Elasticsearch and Kibana (post domain creation) edit the `$WORKDIR/kubernetes/charts/weblogic-operator/values.yaml` and set the parameter `elkIntegrationEnabled` to `true` and make sure the following parameters are set:
-
-   ```
-   # elkIntegrationEnabled specifies whether or not ELK integration is enabled.
-   elkIntegrationEnabled: true
-   
-   # logStashImage specifies the docker image containing logstash.
-   # This parameter is ignored if 'elkIntegrationEnabled' is false.
-   logStashImage: "logstash:6.6.0"
- 
-   # elasticSearchHost specifies the hostname of where elasticsearch is running.
-   # This parameter is ignored if 'elkIntegrationEnabled' is false.
-   elasticSearchHost: "elasticsearch.default.svc.cluster.local"
- 
-   # elasticSearchPort specifies the port number of where elasticsearch is running.
-   # This parameter is ignored if 'elkIntegrationEnabled' is false.
-   elasticSearchPort: 9200
-   ```
-   
-   After the domain creation see [Logging and Visualization](../manage-oam-domains/logging-and-visualization) in order to complete the setup of Elasticsearch and Kibana.
-   
-
 1. Run the following helm command to install and start the operator:   
   
    ```bash
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=weblogic-kubernetes-operator:3.3.0 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -291,7 +219,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=weblogic-kubernetes-operator:3.3.0 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -304,7 +232,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    
    ```
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Fri Oct 29 03:10:39 2021
+   LAST DEPLOYED: Mon Mar 06 10:25:39
    NAMESPACE: opns
    STATUS: deployed
    REVISION: 1
@@ -355,10 +283,10 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
 	
    ```
    ...
-   {"timestamp":"2021-11-01T10:26:10.917829423Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762370917,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2021-11-01T10:26:20.920145876Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762380920,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2021-11-01T10:26:30.922360564Z","thread":19,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762390922,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2021-11-01T10:26:40.924847211Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762400924,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-03-06T10:26:10.917829423Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762370917,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-03-06T10:26:20.920145876Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762380920,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-03-06T10:26:30.922360564Z","thread":19,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762390922,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-03-06T10:26:40.924847211Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762400924,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
    ```
 
 ### Create a namespace for Oracle Access Management
@@ -425,7 +353,40 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    No LimitRange resource.
    ``` 
 
+### Create a Kubernetes secret for the container registry
+
+In this section you create a secret that stores the credentials for the container registry where the OAM image is stored. This step must be followed if using Oracle Container Registry or your own private registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.
+
+1. Run the following command to create the secret:
+
+   ```bash
+   kubectl create secret docker-registry "orclcred" --docker-server=<CONTAINER_REGISTRY> \
+   --docker-username="<USER_NAME>" \
+   --docker-password=<PASSWORD> --docker-email=<EMAIL_ID> \
+   --namespace=<domain_namespace>
+   ```
    
+   For example, if using Oracle Container Registry:
+   
+   ```bash
+   kubectl create secret docker-registry "orclcred" --docker-server=container-registry.oracle.com \
+   --docker-username="user@example.com" \
+   --docker-password=password --docker-email=user@example.com \
+   --namespace=oamns
+   ```
+   
+   
+   Replace `<USER_NAME>` and `<PASSWORD>` with the credentials for the registry with the following caveats:
+
+   -  If using Oracle Container Registry to pull the OAM container image, this is the username and password used to login to [Oracle Container Registry](https://container-registry.oracle.com). Before you can use this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
+
+   - If using your own container registry to store the OAM container image, this is the username and password (or token) for your container registry.   
+
+   The output will look similar to the following:
+   
+   ```bash
+   secret/orclcred created
+   ```
 
 ### RCU schema creation
 	
@@ -433,18 +394,31 @@ In this section you create the RCU schemas in the Oracle Database.
 	
 Before following the steps in this section, make sure that the database and listener are up and running and you can connect to the database via SQL*Plus or other client tool.
 
-1. Run the following command to create a helper pod to run RCU:
+
+1. If using Oracle Container Registry or your own container registry for your OAM container image, run the following command to create a helper pod to run RCU:
 
    ```bash
-   $ kubectl run helper --image <image_name> -n <domain_namespace> -- sleep infinity
+   $ kubectl run --image=<image_name-from-registry>:<tag> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1", "spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n <domain_namespace> -- sleep infinity
    ```
 	
    For example:
 	
    ```bash
-   $ kubectl run helper --image oracle/oam:12.2.1.4.0-8-ol7-210721.0755 -n oamns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-220119.2059 --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
    ```
-	
+   
+   If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
+   
+   ```bash
+   $ kubectl run helper --image <image>:<tag> -n oamns -- sleep infinity
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol7-220119.2059 -n oamns -- sleep infinity
+   ```
+   
    The output will look similar to the following:
 	
    ```
@@ -467,9 +441,14 @@ Before following the steps in this section, make sure that the database and list
 	
    ```
    NAME     READY   STATUS    RESTARTS   AGE
-   helper   1/1     Running   0          8s
+   helper   1/1     Running   0          3m
    ```
-	
+   
+   **Note**: If you are pulling the image from a container registry it may take several minutes before the pod has a `STATUS` of `1\1`. While the pod is starting you can check the status of the pod, by running the following command:
+   
+   ```bash
+   $ kubectl describe pod helper -n oamns
+   ```
 	
 1. Run the following command to start a bash shell in the helper pod:
 
@@ -531,7 +510,7 @@ Before following the steps in this section, make sure that the database and list
 	The output will look similar to the following:
 	
    ```
-   RCU Logfile: /tmp/RCU2021-11-01_10-29_561898106/logs/rcu.log
+   RCU Logfile: /tmp/RCU2022-03-06_10-29_561898106/logs/rcu.log
    Processing command line ....
    Repository Creation Utility - Checking Prerequisites
    Checking Global Prerequisites
@@ -600,18 +579,18 @@ Before following the steps in this section, make sure that the database and list
    Service Name : ORCL.EXAMPLE.COM
    Connected As : sys
    Prefix for (prefixable) Schema Owners : OAMK8S
-   RCU Logfile :  /tmp/RCU2021-11-01_10-29_561898106/logs/rcu.log
+   RCU Logfile :  /tmp/RCU2022-03-06_10-29_561898106/logs/rcu.log
    Component schemas created:
    -----------------------------
    Component Status Logfile
-   Common Infrastructure Services Success /tmp/RCU2021-11-01_10-29_561898106/logs/stb.log
-   Oracle Platform Security Services Success /tmp/RCU2021-11-01_10-29_561898106/logs/opss.log
-   Oracle Access Manager Success /tmp/RCU2021-11-01_10-29_561898106/logs/oam.log
-   Audit Services Success /tmp/RCU2021-11-01_10-29_561898106/logs/iau.log
-   Audit Services Append Success /tmp/RCU2021-11-01_10-29_561898106/logs/iau_append.log
-   Audit Services Viewer Success /tmp/RCU2021-11-01_10-29_561898106/logs/iau_viewer.log
-   Metadata Services Success /tmp/RCU2021-11-01_10-29_561898106/logs/mds.log
-   WebLogic Services Success /tmp/RCU2021-11-01_10-29_561898106/logs/wls.log
+   Common Infrastructure Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/stb.log
+   Oracle Platform Security Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/opss.log
+   Oracle Access Manager Success /tmp/RCU2022-03-06_10-29_561898106/logs/oam.log
+   Audit Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/iau.log
+   Audit Services Append Success /tmp/RCU2022-03-06_10-29_561898106/logs/iau_append.log
+   Audit Services Viewer Success /tmp/RCU2022-03-06_10-29_561898106/logs/iau_viewer.log
+   Metadata Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/mds.log
+   WebLogic Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/wls.log
    Repository Creation Utility - Create : Operation Completed
    [oracle@helper ~]$
    ```
@@ -687,37 +666,14 @@ In this section you prepare the environment for the OAM domain creation. This in
      username: d2VibG9naWM=
    kind: Secret
    metadata:
-     creationTimestamp: "2021-11-01T10:32:35Z"
+     creationTimestamp: "2022-03-06T10:41:11Z"
      labels:
        weblogic.domainName: accessdomain
        weblogic.domainUID: accessdomain
-     managedFields:
-     - apiVersion: v1
-       fieldsType: FieldsV1
-       fieldsV1:
-         f:data:
-           .: {}
-           f:password: {}
-           f:username: {}
-         f:type: {}
-       manager: kubectl-create
-       operation: Update
-       time: "2021-11-01T10:32:35Z"
-      - apiVersion: v1
-       fieldsType: FieldsV1
-       fieldsV1:
-         f:metadata:
-           f:labels:
-             .: {}
-             f:weblogic.domainName: {}
-             f:weblogic.domainUID: {}
-       manager: kubectl-label
-       operation: Update
-       time: "2021-11-01T10:32:35Z"
      name: accessdomain-credentials
      namespace: oamns
-     resourceVersion: "990770"
-     uid: b2ffcd87-8c61-4fb1-805e-3768295982e2
+     resourceVersion: "2913144"
+     uid: 5f8d9874-9cd7-42be-af4b-54f787e71ac2
    type: Opaque
    ```
 
@@ -774,56 +730,37 @@ In this section you prepare the environment for the OAM domain creation. This in
    ```
    apiVersion: v1
    data:
-     password: V2VsY29tZTE=
-     sys_password: V2VsY29tZTE=
+     password: T3JhY2xlXzEyMw==
+     sys_password: T3JhY2xlXzEyMw==
      sys_username: c3lz
      username: T0FNSzhT
    kind: Secret
    metadata:
-     creationTimestamp: "2021-11-01T10:33:37Z"
+     creationTimestamp: "2022-03-06T10:50:34Z"
      labels:
        weblogic.domainName: accessdomain
        weblogic.domainUID: accessdomain
-     managedFields:
-     - apiVersion: v1
-       fieldsType: FieldsV1
-       fieldsV1:
-         f:data:
-           .: {}
-           f:password: {}
-           f:sys_password: {}
-           f:sys_username: {}
-           f:username: {}
-         f:type: {}
-       manager: kubectl-create
-       operation: Update
-       time: "2021-11-01T10:33:37Z"
-     - apiVersion: v1
-       fieldsType: FieldsV1
-       fieldsV1:
-         f:metadata:
-           f:labels:
-             .: {}
-             f:weblogic.domainName: {}
-             f:weblogic.domainUID: {}
-       manager: kubectl-label
-       operation: Update
-       time: "2021-11-01T10:33:37Z"
      name: accessdomain-rcu-credentials
      namespace: oamns
-     resourceVersion: "992205"
-     uid: ee283fbd-6211-4172-9c28-a65c84ecd794
+     resourceVersion: "2913938"
+     uid: 3798af1b-2783-415f-aea8-31e0610220a7
    type: Opaque
    ```
 
 	
 ### Create a Kubernetes persistent volume and persistent volume claim
+
+   As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system. 
   
    A persistent volume is the same as a disk mount but is inside a container. A Kubernetes persistent volume is an arbitrary name (determined in this case, by Oracle) that is mapped to a physical volume on a disk.
 
    When a container is started, it needs to mount that volume. The physical volume should be on a shared disk accessible by all the Kubernetes worker nodes because it is not known on which worker node the container will be started. In the case of Identity and Access Management, the persistent volume does not get erased when a container stops. This enables persistent configurations.
    
-   The example below uses an NFS mounted volume (<workdir>/accessdomainpv). Other volume types can also be used. See the official [Kubernetes documentation for Volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
+   The example below uses an NFS mounted volume (<persistent_volume>/accessdomainpv). Other volume types can also be used. See the official [Kubernetes documentation for Volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
+   
+   **Note**: The persistent volume directory needs to be accessible to both the master and worker node(s). Make sure this path has **full** access permissions, and that the folder is empty. In this example `/scratch/shared/accessdomainpv` is accessible from all nodes via NFS. 
+
+   
    
    To create a Kubernetes persistent volume, perform the following steps:
 
@@ -833,8 +770,8 @@ In this section you prepare the environment for the OAM domain creation. This in
    $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
    $ mkdir output
-   $ mkdir -p /<workdir>/accessdomainpv
-   $ chmod -R 777 /<workdir>/accessdomainpv
+   $ mkdir -p <persistent_volume>/accessdomainpv
+   $ chmod -R 777 <persistent_volume>/accessdomainpv
    ```
 
 	For example:
@@ -843,16 +780,14 @@ In this section you prepare the environment for the OAM domain creation. This in
    $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
    $ mkdir output
-   $ mkdir -p /scratch/OAMK8S/accessdomainpv
-   $ chmod -R 777 /scratch/OAMK8S/accessdomainpv
+   $ mkdir -p /scratch/shared/accessdomainpv
+   $ chmod -R 777 /scratch/shared/accessdomainpv
    ```
-	
-	**Note**: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has full access permissions, and that the folder is empty. In this example `/scratch/OAMK8S/accessdomainpv` is accessible from all nodes via NFS. 
 
 1. On the master node run the following command to ensure it is possible to read and write to the persistent volume:
 
    ```bash 
-   cd <workdir>/accessdomainpv
+   cd <persistent_volume>/accessdomainpv
    touch filemaster.txt
    ls filemaster.txt
    ```
@@ -860,7 +795,7 @@ In this section you prepare the environment for the OAM domain creation. This in
    For example:
    
    ```bash
-   cd /scratch/OAMK8S/accessdomainpv
+   cd /scratch/shared/accessdomainpv
    touch filemaster.txt
    ls filemaster.txt
    ```
@@ -868,7 +803,7 @@ In this section you prepare the environment for the OAM domain creation. This in
    On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
    
    ```bash
-   cd /scratch/OAMK8S/accessdomainpv
+   cd /scratch/shared/accessdomainpv
    ls filemaster.txt
    touch fileworker1.txt
    ls fileworker1.txt
@@ -876,41 +811,47 @@ In this section you prepare the environment for the OAM domain creation. This in
    
    Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it's possible to read and write from each node to the persistent volume, delete the files created.
 
-1. Edit the `create-pv-pvc-inputs.yaml` file and update the following parameters to reflect your settings. Save the file when complete:
+1. Navigate to `$WORKDIR/kubernetes/create-weblogic-domain-pv-pvc`:
 
-    ```
-	baseName: <domain>
-	domainUID: <domain_uid>
-    namespace: <domain_namespace>
-	weblogicDomainStorageType: NFS
-	weblogicDomainStorageNFSServer: <nfs_server>
-    weblogicDomainStoragePath: <physical_path_of_persistent_storage>
-	weblogicDomainStorageSize: 10Gi
-    ```
+   ```bash
+   $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
+   ```
+   
+   and edit the `create-pv-pvc-inputs.yaml` file and update the following parameters to reflect your settings. Save the file when complete:
+
+   ```
+   baseName: <domain>
+   domainUID: <domain_uid>
+   namespace: <domain_namespace>
+   weblogicDomainStorageType: NFS
+   weblogicDomainStorageNFSServer: <nfs_server>
+   weblogicDomainStoragePath: <physical_path_of_persistent_storage>
+   weblogicDomainStorageSize: 10Gi
+   ```
     
-	For example:
+   For example:
 	
-	```
+   ```
 	
-    # The base name of the pv and pvc
-    baseName: domain
+   # The base name of the pv and pvc
+   baseName: domain
 
-	# Unique ID identifying a domain.
-    # If left empty, the generated pv can be shared by multiple domains
-    # This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
-    domainUID: accessdomain
+   # Unique ID identifying a domain.
+   # If left empty, the generated pv can be shared by multiple domains
+   # This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
+   domainUID: accessdomain
 	
-    # Name of the namespace for the persistent volume claim
-    namespace: oamns
-    ...
-    # Persistent volume type for the persistent storage.
-    # The value must be 'HOST_PATH' or 'NFS'.
-    # If using 'NFS', weblogicDomainStorageNFSServer must be specified.
-    weblogicDomainStorageType: NFS
+   # Name of the namespace for the persistent volume claim
+   namespace: oamns
+   ...
+   # Persistent volume type for the persistent storage.
+   # The value must be 'HOST_PATH' or 'NFS'.
+   # If using 'NFS', weblogicDomainStorageNFSServer must be specified.
+   weblogicDomainStorageType: NFS
 
-    # The server name or ip address of the NFS server to use for the persistent storage.
-    # The following line must be uncomment and customized if weblogicDomainStorateType is NFS:
-    weblogicDomainStorageNFSServer: mynfsserver
+   # The server name or ip address of the NFS server to use for the persistent storage.
+   # The following line must be uncomment and customized if weblogicDomainStorateType is NFS:
+   weblogicDomainStorageNFSServer: mynfsserver
 
    # Physical path of the persistent storage.
    # When weblogicDomainStorageType is set to HOST_PATH, this value should be set the to path to the
@@ -921,7 +862,7 @@ In this section you prepare the environment for the OAM domain creation. This in
    # Note that the path where the domain is mounted in the WebLogic containers is not affected by this
    # setting, that is determined when you create your domain.
    # The following line must be uncomment and customized:
-   weblogicDomainStoragePath: /scratch/OAMK8S/accessdomainpv
+   weblogicDomainStoragePath: /scratch/shared/accessdomainpv
    
    # Reclaim policy of the persistent storage
    # The valid values are: 'Retain', 'Delete', and 'Recycle'
@@ -947,15 +888,15 @@ In this section you prepare the environment for the OAM domain creation. This in
    export namespace="oamns"
    export weblogicDomainStorageType="NFS"
    export weblogicDomainStorageNFSServer="mynfsserver"
-   export weblogicDomainStoragePath="/scratch/OAMK8S/accessdomainpv"
+   export weblogicDomainStoragePath="/scratch/shared/accessdomainpv"
    export weblogicDomainStorageReclaimPolicy="Retain"
    export weblogicDomainStorageSize="10Gi"
 
-   Generating output/pv-pvcs/accessdomain-weblogic-sample-pv.yaml
-   Generating output/pv-pvcs/accessdomain-weblogic-sample-pvc.yaml
+   Generating output/pv-pvcs/accessdomain-domain-pv.yaml
+   Generating output/pv-pvcs/accessdomain-domain-pvc.yaml
    The following files were generated:
-     output/pv-pvcs/accessdomain-weblogic-sample-pv.yaml
-     output/pv-pvcs/accessdomain-weblogic-sample-pvc.yaml
+     output/pv-pvcs/accessdomain-domain-pv.yaml.yaml
+     output/pv-pvcs/accessdomain-domain-pvc.yaml
    ```
 
 1. Run the following to show the files are created:
@@ -1002,7 +943,7 @@ In this section you prepare the environment for the OAM domain creation. This in
    
    The output will look similar to the following:
 
-   ```
+   ```bash
    $ kubectl describe pv accessdomain-domain-pv
    
    Name:           accessdomain-domain-pv
@@ -1021,7 +962,7 @@ In this section you prepare the environment for the OAM domain creation. This in
    Source:
        Type:      NFS (an NFS mount that lasts the lifetime of a pod)
 	   Server:    mynfsserver
-       Path:      /scratch/OAMK8S/accessdomainpv
+       Path:      /scratch/shared/accessdomainpv
        ReadOnly:  false
    Events: <none>
    ```

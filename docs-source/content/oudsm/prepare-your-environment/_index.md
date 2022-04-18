@@ -1,120 +1,128 @@
 +++
 title=  "Prepare Your Environment"
-date = 2019-04-18T06:46:23-05:00
 weight = 3
 pre = "<b>3. </b>"
 description = "Prepare your environment"
 +++
 
 
-1. [Set up your Kubernetes Cluster](#set-up-your-kubernetes-cluster)
-1. [Check the Kubernetes Cluster is Ready](#check-the-kubernetes-cluster-is-ready)
-1. [Install the Oracle Unified Directory Services Manager Image](#install-the-oracle-unified-directory-services-manager-image)
-1. [Setup the Code Repository To Deploy Oracle Unified Directory Services Manager](#setup-the-code-repository-to-deploy-oracle-unified-directory-services-manager)
 
-### Set up your Kubernetes Cluster
+1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
+1. [Obtain the OUDSM container image](#obtain-the-oudsm-container-image)
+1. [Setup the code repository to deploy OUDSM](#setup-the-code-repository-to-deploy-oudsm)
 
-If you need help setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup/).
 
-It is recommended you have a master node and one or more worker nodes. The examples in this documentation assume one master and two worker nodes.
+### Check the Kubernetes cluster is ready
 
-Verify that the system clocks on each host computer are synchronized. You can do this by running the date command simultaneously on all the hosts in each cluster.
-
-After creating Kubernetes clusters, you can optionally:
-
-* Configure an Ingress to direct traffic to backend instances.
-
-### Check the Kubernetes Cluster is Ready
+As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unified-directory-services-manager-on-kubernetes) a Kubernetes cluster should have already been configured.
 
 1. Run the following command on the master node to check the cluster and worker nodes are running:
 
-```
-$ kubectl get nodes,pods -n kube-system
-```
+   ```bash
+   $ kubectl get nodes,pods -n kube-system
+   ```
 
-The output will look similar to the following:
+   The output will look similar to the following:
 
-```
-NAME                STATUS   ROLES    AGE   VERSION
-node/10.89.73.203   Ready    <none>   66d   v1.18.4
-node/10.89.73.204   Ready    <none>   66d   v1.18.4
-node/10.89.73.42    Ready    master   67d   v1.18.4
+   ```
+   NAME                  STATUS   ROLES                  AGE   VERSION
+   node/worker-node1     Ready    <none>                 17h   v1.20.10
+   node/worker-node2     Ready    <none>                 17h   v1.20.10
+   node/master-node      Ready    control-plane,master   23h   v1.20.10
 
-NAME                                      READY   STATUS    RESTARTS   AGE
-pod/coredns-66bff467f8-slxdq              1/1     Running   1          67d
-pod/coredns-66bff467f8-v77qt              1/1     Running   1          67d
-pod/etcd-10.89.73.42                      1/1     Running   1          67d
-pod/kube-apiserver-10.89.73.42            1/1     Running   1          67d
-pod/kube-controller-manager-10.89.73.42   1/1     Running   27         67d
-pod/kube-flannel-ds-amd64-r2m8r           1/1     Running   2          48d
-pod/kube-flannel-ds-amd64-rdhrf           1/1     Running   2          6d1h
-pod/kube-flannel-ds-amd64-vpcbj           1/1     Running   3          66d
-pod/kube-proxy-jtcxm                      1/1     Running   1          67d
-pod/kube-proxy-swfmm                      1/1     Running   1          66d
-pod/kube-proxy-w6x6t                      1/1     Running   1          66d
-pod/kube-scheduler-10.89.73.42            1/1     Running   29         67d
-```
+   NAME                                      READY   STATUS    RESTARTS   AGE
+   pod/coredns-66bff467f8-slxdq              1/1     Running   1          67d
+   pod/coredns-66bff467f8-v77qt              1/1     Running   1          67d
+   pod/etcd-10.89.73.42                      1/1     Running   1          67d
+   pod/kube-apiserver-10.89.73.42            1/1     Running   1          67d
+   pod/kube-controller-manager-10.89.73.42   1/1     Running   27         67d
+   pod/kube-flannel-ds-amd64-r2m8r           1/1     Running   2          48d
+   pod/kube-flannel-ds-amd64-rdhrf           1/1     Running   2          6d1h
+   pod/kube-flannel-ds-amd64-vpcbj           1/1     Running   3          66d
+   pod/kube-proxy-jtcxm                      1/1     Running   1          67d
+   pod/kube-proxy-swfmm                      1/1     Running   1          66d
+   pod/kube-proxy-w6x6t                      1/1     Running   1          66d
+   pod/kube-scheduler-10.89.73.42            1/1     Running   29         67d
+   ```
 
-### Install the Oracle Unified Directory Services Manager Image
+### Obtain the OUDSM container image
 
-You can deploy [Oracle Unified Directory Services Manager](https://github.com/oracle/docker-images/tree/master/OracleUnifiedDirectorySM) images in the following ways:
+The Oracle Unified Directory Services Manager (OUDSM) Kubernetes deployment requires access to an OUDSM container image. The image can be obtained in the following ways:
 
-1. Download a pre-built Oracle Unified Directory Services Manager image from [My Oracle Support](https://support.oracle.com).  by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0 and the latest PSU.
-1. Build your own Oracle Unified Directory Services Manager container image either by using the WebLogic Image Tool or by using the dockerfile, scripts and base image from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. For more information about the various ways in which you can build your own container image, see [Installing the Oracle Unified Directory Services Manager Image](https://github.com/oracle/docker-images/tree/master/OracleUnifiedDirectorySM/README.md#installing-the-oracle-unified-directory-services-manager-image).
+- Prebuilt OUDSM container image
+- Build your own OUDSM container image using WebLogic Image Tool
 
-Choose one of these options based on your requirements.
+#### Prebuilt OUDSM container image
 
-{{% notice note %}}
-The Oracle Unified Directory Services Manager image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a docker registry that your cluster can access.
-{{% /notice %}}
 
-After installing the Oracle Unified Directory Services Manager image run the following command to make sure the image is installed correctly on the master and worker nodes:
+The latest prebuilt OUDSM container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0 and the latest PSU. 
 
-```
-$ docker images
-```
+**Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oudsm_cpu` and accept the license agreement.
 
-The output will look similar to the following:
+Alternatively the same image can also be downloaded from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1.
 
-```
-REPOSITORY                                                                   TAG                       IMAGE ID            CREATED             SIZE
-oracle/oudsm                                                                 12.2.1.4.0                7157885054a2        2 weeks ago         2.74GB
-k8s.gcr.io/kube-proxy                                                        v1.18.4                   718fa77019f2        3 months ago        117MB
-k8s.gcr.io/kube-scheduler                                                    v1.18.4                   c663567f869e        3 months ago        95.3MB
-k8s.gcr.io/kube-controller-manager                                           v1.18.4                   e8f1690127c4        3 months ago        162MB
-k8s.gcr.io/kube-apiserver                                                    v1.18.4                   408913fc18eb        3 months ago        173MB
-quay.io/coreos/flannel                                                       v0.12.0-amd64             4e9f801d2217        6 months ago        52.8MB
-k8s.gcr.io/pause                                                             3.2                       80d28bedfe5d        7 months ago        683kB
-k8s.gcr.io/coredns                                                           1.6.7                     67da37a9a360        8 months ago        43.8MB
-k8s.gcr.io/etcd                                                              3.4.3-0                   303ce5db0e90        11 months ago       288MB
-quay.io/prometheus/node-exporter                                             v0.18.1                   e5a616e4b9cf        16 months ago       22.9MB
-quay.io/coreos/kube-rbac-proxy                                               v0.4.1                    70eeaa7791f2        20 months ago       41.3MB
-...
-```
+You can use this image in the following ways:
 
-### Setup the Code Repository To Deploy Oracle Unified Directory Services Manager
+- Pull the container image from the Oracle Container Registry automatically during the OUDSM Kubernetes deployment.
+- Manually pull the container image from the Oracle Container Registry or My Oracle Support, and then upload it to your own container registry.
+- Manually pull the container image from the Oracle Container Registry or My Oracle Support and manually stage it on the master node and each worker node.
 
-Oracle Unified Directory Services Manager deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory Services Manager containers using samples or Helm charts provided.  To deploy Oracle Unified Directory Services Manager on Kubernetes you should set up the deployment scripts on the **master** node as below:
+#### Build your own OUDSM container image using WebLogic Image Tool
 
-Create a working directory to setup the source code.
+You can build your own OUDSM container image using the WebLogic Image Tool. This is recommended if you need to apply one off patches to a [Prebuilt OUDSM container image](#prebuilt-oudsm-container-image). For more information about building your own container image with WebLogic Image Tool, see [Create or update image](../create-or-update-image/)
 
-```
-$ mkdir <work directory>
-```
+You can use an image built with WebLogic Image Tool in the following ways:
 
-For example:
+- Manually upload them to your own container registry.
+- Manually stage them on the master node and each worker node.
 
-```
-$ mkdir /scratch/OUDSMContainer
-```
+**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
 
-From the directory you created, download the Oracle Unified Directory Services Manager deployment scripts from the Oracle Unified Directory Services Manager [repository](https://github.com/oracle/fmw-kubernetes.git).
 
-```
-$ git clone https://github.com/oracle/fmw-kubernetes.git
-```
+### Setup the code repository to deploy OUDSM
 
-You can now use the deployment scripts from `<work directory>/fmw-kubernetes/OracleUnifiedDirectorySM/kubernetes/samples/scripts/` to set up the Oracle Unified Directory Services Manager environments as further described in this document.
+Oracle Unified Directory Services Manager deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory Services Manager containers using the Helm charts provided.  To deploy Oracle Unified Directory Services Manager on Kubernetes you should set up the deployment scripts on the **master** node as below:
+
+1. Create a working directory to setup the source code.
+
+   ```bash
+   $ mkdir <workdir>
+   ```
+
+   For example:
+
+   ```bash
+   $ mkdir /scratch/OUDSMContainer
+   ```
+
+1. Download the latest OUDSM deployment scripts from the OUDSM repository:
+
+   ```bash
+   $ cd <workdir>
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   ```
+   
+   For example:
+   
+   ```bash
+   $ cd /scratch/OUDSMContainer
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   ```
+
+1. Set the `$WORKDIR` environment variable as follows:
+
+   ```bash
+   $ export WORKDIR=<workdir>/fmw-kubernetes/OracleUnifiedDirectorySM
+   ```
+   
+   For example:
+
+   ```bash
+   $ export WORKDIR=/scratch/OUDSMContainer/fmw-kubernetes/OracleUnifiedDirectorySM
+   ```
+
+   You are now ready to create the OUDSM deployment as per [Create OUDSM instances](../create-oudsm-instances).
+
 
 
 

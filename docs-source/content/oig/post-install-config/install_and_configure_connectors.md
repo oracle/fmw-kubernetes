@@ -13,6 +13,7 @@ description = "Install and Configure Connectors."
    $ cp $HOME/Downloads/<connector>.zip <workdir>/<stage>/
    $ cd <workdir>/<stage>
    $ unzip <connector>.zip
+   $ chmod -R 755 *
    ```
    
    For example:
@@ -21,25 +22,9 @@ description = "Install and Configure Connectors."
    $ cp $HOME/Downloads/Exchange-12.2.1.3.0.zip /scratch/OIGK8S/stage/
    $ cd /scratch/OIGK8S/stage/
    $ unzip exchange-12.2.1.3.0.zip
+   $ chmod -R 755 *
    ```
-
-   
-### Create a directory in the persistent volume
-
-1. On the master node run the following command to create a `ConnectorDefaultDirectory`:
-
-   ```bash
-   $ kubectl exec -ti governancedomain-oim-server1 -n <domain_namespace> -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
-   ```
-   
-   For example:
-   
-   ```bash
-   $ kubectl exec -ti governancedomain-oim-server1 -n oigns -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory 
-   ```
-   
-   **Note**: This will create a directory in the persistent volume e:g `/scratch/OIGK8S/governancedomainpv/ConnectorDefaultDirectory`,
-   
+    
    
 ### Copy OIG connectors
 
@@ -57,13 +42,13 @@ It is recommended to use option a), however there may be cases, for example when
 1. Copy the connector zip file to the persistent volume. For example:
 
    ```bash
-   $ cp -R <path_to>/<connector> <workdir>/governancedomainpv/ConnectorDefaultDirectory/
+   $ cp -R <path_to>/<connector> <persistent_volume>/governancedomainpv/ConnectorDefaultDirectory/
    ```
    
    For example:
    
    ```bash
-   $ cp -R /scratch/OIGK8S/stage/Exchange-12.2.1.3.0 /scratch/OIGK8S/governancedomainpv/ConnectorDefaultDirectory/
+   $ cp -R /scratch/OIGK8S/stage/Exchange-12.2.1.3.0 /scratch/shared/governancedomainpv/ConnectorDefaultDirectory/
    ```
    
 

@@ -9,13 +9,19 @@ Run OIG utlities inside the OIG Kubernetes cluster.
 
 ### Run utilities in an interactive bash shell
 
-1. Access a bash shell inside the `governancedomain-oim-server1` pod:
+1. Access a bash shell inside the `<domain_uid>-oim-server1` pod:
 
+   ```bash
+   $ kubectl -n oigns exec -it <domain_uid>-oim-server1 -- bash
+   ```
+   
+   For example:
+   
    ```bash
    $ kubectl -n oigns exec -it governancedomain-oim-server1 -- bash
    ```
    
-   This will take you into a bash shell in the running `governancedomain-oim-server1` pod:
+   This will take you into a bash shell in the running `<domain_uid>-oim-server1` pod:
    
    ```bash
    [oracle@governancedomain-oim-server1 oracle]$
@@ -27,6 +33,40 @@ Run OIG utlities inside the OIG Kubernetes cluster.
    [oracle@governancedomain-oim-server1 oracle] cd /u01/oracle/idm/server/bin
    [oracle@governancedomain-oim-server1 bin]$ ./<filename>.sh
    ```
+   
+   **Note**: Some utilties such as PurgeCache.sh, GenerateSnapshot.sh etc, may prompt to enter the t3 URL, for example:
+   
+   ```
+   [oracle@governancedomain-oim-server1 bin]$ sh GenerateSnapshot.sh
+   For running the Utilities the following environment variables need to be set
+   APP_SERVER is weblogic
+   OIM_ORACLE_HOME is /u01/oracle/idm/
+   JAVA_HOME is /u01/jdk
+   MW_HOME is /u01/oracle
+   WL_HOME is /u01/oracle/wlserver
+   DOMAIN_HOME is /u01/oracle/user_projects/domains/governancedomain
+   Executing -Dweblogic.security.SSL.trustedCAKeyStore= in IPv4 mode
+   [Enter Xellerate admin username :]xelsysadm
+   [Enter password for xelsysadm :]
+   [Threads to use [ 8 ]]
+   [Enter serverURL :[t3://oimhostname:oimportno ]]
+   ```
+   
+   To find the t3 URL run:
+   
+   ```
+   $ kubectl get services -n oigns | grep oim-cluster
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   governancedomain-cluster-oim-cluster   ClusterIP   10.110.161.82    <none>        14002/TCP,14000/TCP   4d
+   ```
+   
+   In this case the t3 URL is: `t3://governancedomain-cluster-oim-cluster:14000`.
+
+   
 
 ### Passing inputs as a jar/xml file
 

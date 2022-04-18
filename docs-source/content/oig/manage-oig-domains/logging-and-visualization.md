@@ -7,28 +7,30 @@ description: "Describes the steps for logging and visualization with Elasticsear
 
 After the OIG domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
 
-In [Prepare your environment](../../prepare-your-environment) if you decided to use the Elasticsearch and Kibana by setting the parameter `elkIntegrationEnabled` to `true`, then the steps below must be followed to complete the setup.
+### Install Elasticsearch and Kibana
 
-If you did not set `elkIntegrationEnabled` to `true` and want to do so post configuration, run the following command from the `$WORKDIR` directory:
+1. If your domain namespace is anything other than `oigns`, edit the `$WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml` and change all instances of `oigns` to your domain namespace.
+
+1. Create a Kubernetes secret to access the elasticsearch and kibana container images:
+
+   **Note:** You must first have a user account on [hub.docker.com](https://hub.docker.com).
 
    ```bash
-   $ helm upgrade --reuse-values --namespace operator --set "elkIntegrationEnabled=true" --set "logStashImage=logstash:6.6.0" --set "elasticSearchHost=elasticsearch.default.svc.cluster.local" --set "elasticSearchPort=9200" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="<docker_username>" --docker-password=<password> --docker-email=<docker_email_credentials> --namespace=<domain_namespace>
+   ```   
+   
+   For example:
+   
+   ```
+   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="username" --docker-password=<password> --docker-email=user@example.com --namespace=oigns
    ```
    
    The output will look similar to the following:
    
-   ```
-   Release "weblogic-kubernetes-operator" has been upgraded. Happy Helming!
-   NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Mon Nov 15 09:04:11 2021
-   NAMESPACE: operator
-   STATUS: deployed
-   REVISION: 3
-   TEST SUITE: None
-   ```
-
-### Install Elasticsearch and Kibana
-
+   ```bash
+   secret/dockercred created
+   ```  
+   
 1. Create the Kubernetes resource using the following command:
 
    ```bash
@@ -67,7 +69,7 @@ If you did not set `elkIntegrationEnabled` to `true` and want to do so post conf
    externalRestEnabled: false
    externalRestHttpsPort: 31001
    externalServiceNameSuffix: -ext
-   image: weblogic-kubernetes-operator:3.3.0
+   image: ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
    imagePullPolicy: IfNotPresent
    internalDebugHttpPort: 30999
    introspectorJobNameSuffix: -introspector
@@ -83,13 +85,18 @@ If you did not set `elkIntegrationEnabled` to `true` and want to do so post conf
 1. To check that Elasticsearch and Kibana are deployed in the Kubernetes cluster, run the following command:
 
    ```bash
-   $ kubectl get pods
+   $ kubectl get pods -n <namespace> | grep 'elasticsearch\|kibana'
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl get pods -n oigns | grep 'elasticsearch\|kibana'
    ```
    
    The output will look similar to the following:
    
    ```
-   NAME                             READY   STATUS    RESTARTS   AGE
    elasticsearch-857bd5ff6b-tvqdn   1/1     Running   0          2m9s
    kibana-594465687d-zc2rt          1/1     Running   0          2m9s
    ```
@@ -139,9 +146,9 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
    ```
    
 1. Navigate to the `$WORKDIR/kubernetes/elasticsearch-and-kibana` directory and create a `logstash.yaml` file as follows.
-   Change the `claimName` and `mountPath` values to match the values returned in the previous commands:
+   Change the `claimName` and `mountPath` values to match the values returned in the previous commands. Change `namespace` to your domain namespace e.g `oigns`:
    
-   ```
+   ```  
    apiVersion: apps/v1
    kind: Deployment
    metadata:
@@ -162,6 +169,8 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
              claimName: governancedomain-domain-pvc
          - name: shared-logs
            emptyDir: {}
+           imagePullSecrets:
+         - name: dockercred
          containers:
          - name: logstash
            image: logstash:6.6.0
@@ -178,13 +187,13 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
              name: logstash
    ```   
    
-1. In the NFS persistent volume directory that corresponds to the mountPath `/u01/oracle/user_projects/domains`, create a `logstash` directory. For example:
+1. In the persistent volume directory that corresponds to the mountPath `/u01/oracle/user_projects/domains`, create a `logstash` directory. For example:
    
    ```bash
-   $ mkdir -p  /scratch/OIGK8S/governancedomainpv/logstash
+   $ mkdir -p  /scratch/shared/governancedomainpv/logstash
    ```
    
-1. Create a `logstash.conf` in the newly created `logstash` directory that contains the following. Make sure the paths correspond to your `mountPath` and `domain` name:
+1. Create a `logstash.conf` in the newly created `logstash` directory that contains the following. Make sure the paths correspond to your `mountPath` and `domain` name. Also, if your namespace is anything other than `oigns` change `"elasticsearch.oigns.svc.cluster.local:9200"` to `"elasticsearch.<namespace>.svc.cluster.local:9200"`::
    
    ```
    input {
@@ -236,7 +245,7 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
    }
    output {
      elasticsearch {
-       hosts => ["elasticsearch.default.svc.cluster.local:9200"]
+       hosts => ["elasticsearch.oigns.svc.cluster.local:9200"]
      }
    }
    ```   
@@ -269,45 +278,41 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
    
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
+   elasticsearch-678ff4fb5-89rpf                               1/1     Running     0          13m
    governancedomain-adminserver                                1/1     Running     0          90m
    governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          25h
    governancedomain-oim-server1                                1/1     Running     0          87m
    governancedomain-soa-server1                                1/1     Running     0          87m
+   kibana-589466bb89-k8wdr                                     1/1     Running     0          13m
    logstash-wls-f448b44c8-92l27                                1/1     Running     0          7s
    ```
    
-   Then run the following to get the Elasticsearch pod name:
    
-   ```bash
-   $ kubectl get pods
-   ```
-   
-   The output should look similar to the following:
-   
-   ```
-   NAME                             READY   STATUS    RESTARTS   AGE
-   elasticsearch-857bd5ff6b-tvqdn   1/1     Running   0          7m48s
-   kibana-594465687d-zc2rt          1/1     Running   0          7m48s
-   ```
 
 ### Verify and access the Kibana console
     
-1. Check if the indices are created correctly in the elasticsearch pod:
+1. Check if the indices are created correctly in the elasticsearch pod shown above:
    
    ```bash
-   $ kubectl exec -it elasticsearch-857bd5ff6b-tvqdn -- /bin/bash
+   $ kubectl exec -it <elasticsearch-pod> -n <namespace> -- /bin/bash
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl exec -it elasticsearch-678ff4fb5-89rpf -n oigns -- /bin/bash
    ```
    
    This will take you into a bash shell in the elasticsearch pod:
    
    ```bash
-   [root@elasticsearch-857bd5ff6b-tvqdn elasticsearch]#
+   [root@elasticsearch-678ff4fb5-89rpf elasticsearch]#
    ```
    
 1. In the elasticsearch bash shell run the following to check the indices:
    
    ```bash
-   [root@elasticsearch-857bd5ff6b-tvqdn elasticsearch]# curl -i "127.0.0.1:9200/_cat/indices?v"
+   [root@elasticsearch-678ff4fb5-89rpf elasticsearch]# curl -i "127.0.0.1:9200/_cat/indices?v"
    ```
    
    The output will look similar to the following:
@@ -318,10 +323,9 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
    content-length: 580
 
    health status index                uuid                   pri rep docs.count docs.deleted store.size pri.store.size
-   green  open   .kibana_1            Nb3C1lpMQrmptapuYb2PIQ   1   0          2            0      7.6kb          7.6kb
-   yellow open   logstash-2021.11.11  OWbA_M5EQ2m6l2xZdS2zXw   5   1        150            0    107.6kb        107.6kb
-   green  open   .kibana_task_manager Qn_oHzAvQlWVcj_lItVdKQ   1   0          2            0     12.5kb         12.5kb
-   yellow open   logstash-2021.11.15  5-V6CXrnQrOOmZDW4JOUgw   5   1     126338            0     45.6mb         45.6mb
+   yellow open   logstash-2022.03.10  7oXXCureSWKwNY0626Szeg   5   1      46887            0     11.7mb         11.7mb
+   green  open   .kibana_task_manager alZtnv2WRy6Y4iSRIbmCrQ   1   0          2            0     12.6kb         12.6kb
+   green  open   .kibana_1            JeZKrO4fS_GnRL92qRmQDQ   1   0          2            0      7.6kb          7.6kb
    ```
    
    Exit the bash shell by typing `exit`.
@@ -329,16 +333,19 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
 1. Find the Kibana port by running the following command:
    
    ```bash
-   $ kubectl get svc
+   $ kubectl get svc -n <namespace> | grep kibana
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl get svc -n oigns | grep kibana
    ```
    
    The output will look similar to the following:
    
    ```
-   NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
-   elasticsearch   ClusterIP   10.111.37.189   <none>        9200/TCP,9300/TCP   11m
    kibana          NodePort    10.111.224.230  <none>        5601:31490/TCP      11m
-   kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP             7d5h
    ```
    
    In the example above the Kibana port is `31490`.
@@ -356,7 +363,36 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
 
 For more details on how to use the Kibana console see the [Kibana Guide](https://www.elastic.co/guide/en/kibana/current/index.html)
    
-   
+### Cleanup
+
+To clean up the Elasticsearch and Kibana install:
+
+1. Run the following command to delete logstash:
+
+   ```bash
+   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash.yaml
+   ```
+
+   The output will look similar to the following:
+
+   ```
+   deployment.apps "logstash-wls" deleted
+   ```
+
+1. Run the following command to delete Elasticsearch and Kibana:
+
+   ```bash
+   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+   ```
+
+   The output will look similar to the following:
+
+   ```
+   deployment.apps "elasticsearch" deleted
+   service "elasticsearch" deleted
+   deployment.apps "kibana" deleted
+   service "kibana" deleted
+   ```
    
    
    
