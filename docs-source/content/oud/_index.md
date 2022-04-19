@@ -37,5 +37,5 @@ If performing an Enterprise Deployment, refer to the [Enterprise Deployment Guid
 To view documentation for an earlier release, see:
 
 * [Version 21.4.2](https://oracle.github.io/fmw-kubernetes/21.4.2/oud/)
-* [Version 21.4.1](https://oracle.github.io/fmw-kubernetes/21.4.1/oudsm/)
+* [Version 21.4.1](https://oracle.github.io/fmw-kubernetes/21.4.1/oud/)
 
