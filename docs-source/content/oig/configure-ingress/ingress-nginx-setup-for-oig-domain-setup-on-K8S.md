@@ -80,15 +80,13 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    ```bash
    $ helm install nginx-ingress -n nginx --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
-   ```
-
-   **Note**: If using Kubernetes 1.18 then add `--version=3.34.0` to the end of command.   
+   ``` 
 
    The output will look similar to the following:
    
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Fri Nov 12 07:55:04 2021
+   LAST DEPLOYED: Thu, 10 Mar 2022 14:13:33 GMT
    NAMESPACE: nginx
    STATUS: deployed
    REVISION: 1
@@ -147,15 +145,13 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    ```bash
    $ helm install nginx-ingress -n nginx --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
-   ```
-   
-   **Note**: If using Kubernetes 1.18 then add `--version=3.34.0` to the end of command.   
+   ```   
 
    The output will look similar to the following:
 
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Fri Nov 12 07:59:17 2021
+   LAST DEPLOYED: Thu Mar 10 14:15:33 2022
    NAMESPACE: nginx
    STATUS: deployed
    REVISION: 1
@@ -221,6 +217,9 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    # Type of Configuration Supported Values are : NONSSL, SSL
    sslType: NONSSL
+   
+   # TimeOut value to be set for nginx parameters proxy-read-timeout and proxy-send-timeout
+   nginxTimeOut: 180
 
    # TLS secret name if the mode is SSL
    secretName: domain1-tls-cert
@@ -260,7 +259,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    ```
    $ helm install governancedomain-nginx kubernetes/charts/ingress-per-domain --namespace oigns --values kubernetes/charts/ingress-per-domain/values.yaml
    NAME: governancedomain-nginx
-   LAST DEPLOYED:  Fri Nov 12 08:14:53 2021
+   LAST DEPLOYED:  Thu Mar 10 14:18:23 2022
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -357,6 +356,8 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
 1. To confirm that the new ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the `WebLogic ReadyApp framework`:
 
+   **Note**: If using a load balancer for your ingress replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
+
    ```bash
    $ curl -v http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/weblogic/ready
    ```
@@ -389,7 +390,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    >
    < HTTP/1.1 200 OK
    < Server: nginx/1.19.2
-   < Date: Fri Nov 12 08:10:17 2021
+   < Date: Thu Mar 10 14:21:14 2022
    < Content-Length: 0
    < Connection: keep-alive
    <

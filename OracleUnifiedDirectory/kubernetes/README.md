@@ -33,17 +33,10 @@ Oracle Unified Directory Docker Image has been tested and is known to run on fol
 
 |       | Version                        | Command to verify version |
 | :---: | :----------------------------: | :-----------------------: |
-| OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
 | Docker| Docker version 18.03 or higher | docker version            |
 | K8s   | Kubernetes version 1.16.0+     | kubectl version
 
 # Prerequisites
-
-## Verify OS Version
-OS version should be Oracle Linux 7.3 or higher.  To check this, issue the following command:
-
-        # more /etc/oracle-release
-        Oracle Linux Server release 7.5
 
 ## Verify Docker Version and OUD Image
 Docker version should be 18.03 or higher.  To check this, issue the following command:

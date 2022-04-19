@@ -454,19 +454,6 @@ controller:
 > Above mentioned configuration is according to assumption of having oud-ds-rs installed with value 'my-oud-ds-rs' as deployment/release name.
 > Based on the deployment/release name in your env, TCP port mapping would be required to be changed/updated.
 
-## 4.2 Voyager
-
-Voyager ingress implementation can be deployed/installed in Kubernetes environment.
-
-### Add Repo reference to helm for retrieving/installing Chart for voyager implementation.
-
-    # helm repo add appscode https://charts.appscode.com/stable
-
-### Command `helm install` to install voyager related objects like pod, service, deployment, etc.
-
-	# helm install --namespace ingressns \
-		--version 12.0.0 --set cloudProvider=baremetal,apiserver.enableValidatingWebhook=false \
-		voyager-operator appscode/voyager
 > For more details about helm command and parameters, please execute `helm --help` and `helm install --help`.
 
 # 5. Access to Interfaces through Ingress
@@ -513,7 +500,6 @@ Note: Kubernetes will assign NodePorts in the range 3#### against TCP ports.
 > When External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on Kubernetes Node.
 
 > Above Example Port to service mapping have to be specifically provided as a override config for Ingress nginx while installing as mentioned in the section ( **4.1 nginx-ingress** ).<br>
-> Incase of Voyager this port mapping configuration will be done by default installation.
 
 ## 5.1 Changes in /etc/hosts to validate hostname based Ingress rules
 
@@ -985,11 +971,6 @@ For Logging, OUD will be integrating ELK stack.The ELK stack consists of Elastic
 ### 6.1.1. Values.yaml Configurations to enable ELK stack 
 
     # elk:
-        elasticsearch:
-          enabled: true
-        Logstash:
-          enabled: true
-        Kibana:
           enabled: true
     
 This configuration will enable the ELK stack integration with OUD.
@@ -1150,7 +1131,7 @@ The following table lists the configurable parameters of the OUD-DS-RS chart and
 | tolerations | node taints to tolerate  | |
 | affinity | node/pod affinities  | |
 | ingress.enabled | | true | 
-| ingress.type | Supported value: either nginx or voyager | nginx | 
+| ingress.type | Supported value: nginx  | 
 | ingress.nginx.http.host | Hostname to be used with Ingress Rules. <br>If not set, hostname would be configured according to fullname. <br> Hosts would be configured as < fullname >-http.< domain >, < fullname >-http-0.< domain >, < fullname >-http-1.< domain >, etc. | |
 | ingress.nginx.http.domain | Domain name to be used with Ingress Rules. <br>In ingress rules, hosts would be configured as < host >.< domain >, < host >-0.< domain >, < host >-1.< domain >, etc. | |
 | ingress.nginx.http.backendPort | | http |
@@ -1158,11 +1139,6 @@ The following table lists the configurable parameters of the OUD-DS-RS chart and
 | ingress.nginx.admin.host | Hostname to be used with Ingress Rules. <br>If not set, hostname would be configured according to fullname. <br> Hosts would be configured as < fullname >-admin.< domain >, < fullname >-admin-0.< domain >, < fullname >-admin-1.< domain >, etc. | |
 | ingress.nginx.admin.domain | Domain name to be used with Ingress Rules. <br>In ingress rules, hosts would be configured as < host >.< domain >, < host >-0.< domain >, < host >-1.< domain >, etc. | |
 | ingress.nginx.admin.nginxAnnotations | | { <br>kubernetes.io/ingress.class: "nginx" <br> nginx.ingress.kubernetes.io/backend-protocol: "https"<br>} |
-| ingress.voyagerAnnotations | | { <br>kubernetes.io/ingress.class: "voyager" <br> ingress.appscode.com/type: "NodePort" <br>} |
-| ingress.voyagerNodePortHttp | NodePort value for HTTP Port exposed through Voyager LoadBalancer Service | 30080 |
-| ingress.voyagerNodePortHttps | NodePort value for HTTPS Port exposed through Voyager LoadBalancer Service | 30443 |
-| ingress.voyagerHttpPort | Port value for HTTP Port exposed through Voyager LoadBalancer Service | 80 |
-| ingress.voyagerHttpsPort | Port value for HTTPS Port exposed through Voyager LoadBalancer Service | 443 |
 | ingress.ingress.tlsSecret | Secret name to use an already created TLS Secret. If such secret is not provided, one would be created with name < fullname >-tls-cert. If the TLS Secret is in different namespace, name can be mentioned as < namespace >/< tlsSecretName > | |
 | ingress.certCN | Subject's common name (cn) for SelfSigned Cert. | < fullname > |
 | ingress.certValidityDays | Validity of Self-Signed Cert in days | 365 |
@@ -1213,7 +1189,7 @@ The following table lists the configurable parameters of the OUD-DS-RS chart and
 | replOUD.envVarsConfigMap | Reference to ConfigMap which can contain additional environment variables to be passed on to PODs for Replicated OUD Instances. Following are the environment variables which would not be honored from the ConfigMap. <br> instanceType, sleepBeforeConfig, OUD_INSTANCE_NAME, hostname, baseDN, rootUserDN, rootUserDN, rootUserPassword, adminConnectorPort, httpAdminConnectorPort, ldapPort, ldapsPort, httpPort, httpsPort, replicationPort, sampleData, sourceHost, sourceServerPorts, sourceAdminConnectorPort, sourceReplicationPort, dsreplication_1, dsreplication_2, dsreplication_3, dsreplication_4, post_dsreplication_dsconfig_1, post_dsreplication_dsconfig_2 | - |
 | replOUD.envVars | Environment variables in Yaml Map format. This is helpful when its requried to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. | - |
 | replOUD.groupId | Group ID to be used/configured with each OUD instance in replicated topology. | 1 |
-| elk.elasticsearch.enabled | If enabled it will create the elastic search statefulset deployment | false |
+| elk.enabled | If enabled it will create the elk stack integrated with OUD | false |
 | elk.elasticsearch.image.repository | Elastic Search Image name/Registry/Repository . Based on this elastic search instances will be created | docker.elastic.co/elasticsearch/elasticsearch |
 | elk.elasticsearch.image.tag | Elastic Search Image tag .Based on this, image parameter would be configured for Elastic Search pods/instances | 6.4.3 |
 | elk.elasticsearch.image.pullPolicy | policy to pull the image | IfnotPresent |
@@ -1225,7 +1201,6 @@ The following table lists the configurable parameters of the OUD-DS-RS chart and
 | elk.elasticsearch.resources.limits.cpu | total cpu limits that are configures for the elastic search | 1000m |
 | elk.elasticsearch.esService.type | Type of Service to be created for elastic search | ClusterIP |
 | elk.elasticsearch.esService.lbrtype | Type of load balancer Service to be created for elastic search | ClusterIP |
-| elk.kibana.enabled | If enabled it will create a kibana deployment | false |
 | elk.kibana.image.repository | Kibana Image Registry/Repository and name. Based on this Kibana instance will be created  | docker.elastic.co/kibana/kibana |
 | elk.kibana.image.tag | Kibana Image tag. Based on this, Image parameter would be configured. | 6.4.3 |
 | elk.kibana.image.pullPolicy | policy to pull the image | IfnotPresent |
@@ -1233,7 +1208,6 @@ The following table lists the configurable parameters of the OUD-DS-RS chart and
 | elk.kibana.service.tye | Type of service to be created | NodePort |
 | elk.kibana.service.targetPort | Port on which the kibana will be accessed | 5601 |
 | elk.kibana.service.nodePort | nodePort is the port on which kibana service will be accessed from outside | 31119 |
-| elk.logstash.enabled | If enabled it will create a logstash deployment | false |
 | elk.logstash.image.repository | logstash Image Registry/Repository and name. Based on this logstash instance will be created  | logstash |
 | elk.logstash.image.tag | logstash Image tag. Based on this, Image parameter would be configured. | 6.6.0 |
 | elk.logstash.image.pullPolicy | policy to pull the image | IfnotPresent |
@@ -1258,5 +1232,5 @@ The following table lists the configurable parameters of the OUD-DS-RS chart and
 | elk.elkVolume.annotations | specifies any annotations that will be used| { } |
 
 # Copyright
-Copyright (c) 2020, Oracle and/or its affiliates.
+Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl

@@ -1,0 +1,61 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+
+--- 
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata: 
+  name: oud-pod-cron-job
+  namespace: {{ .Release.Namespace }}
+spec: 
+  jobTemplate: 
+    spec: 
+      template: 
+        spec:
+        {{- with .Values.cronJob.imagePullSecrets }}
+          imagePullSecrets:
+{{- toYaml . | nindent 12 }}
+        {{- end }}
+          serviceAccountName: {{ include "oud-ds-rs.serviceAccountName" . }}-job
+          containers: 
+            - name: cron-kubectl 
+              command: 
+                - "/bin/bash"
+                - "-c"
+                - "for i in `kubectl get pods -n {{ .Release.Namespace }} | grep oud | grep Terminating | awk '{print $1}'` ;do arr+=($i) ;done ;size=${#arr[@]} ;if [ ${size} -ge 1 ]; then for j in ${arr[@]} ; do `kubectl delete pod ${j##*.} --grace-period=0 --force -n={{ .Release.Namespace }}`; done;fi"
+              image: "{{ .Values.cronJob.kubectlImage.repository }}:{{ .Values.cronJob.kubectlImage.tag }}"
+              imagePullPolicy: {{ .Values.cronJob.kubectlImage.pullPolicy }}
+            - name: cron-helm
+              image: "{{ .Values.cronJob.helmImage.repository }}:{{ .Values.cronJob.helmImage.tag }}"
+              imagePullPolicy: {{ .Values.cronJob.helmImage.pullPolicy }}
+              args:
+                - "upgrade"
+                - "{{ .Release.Name }}"
+                - "/apps/oud-ds-rs"
+                - "--reuse-values"
+              volumeMounts:
+                - mountPath: "/apps/"
+                  name: {{ include "oud-ds-rs.fullname" . }}-job-pv
+          volumes:
+            {{- if .Values.cronJob.cronPersistence.enabled }}
+              {{- if .Values.cronJob.cronPersistence.pvname }}
+                - name: {{ .Values.cronJob.cronPersistence.pvname }}
+              {{ else }}
+                - name: {{ include "oud-ds-rs.fullname" . }}-job-pv
+              {{- end }}
+                  persistentVolumeClaim:
+                  {{- if .Values.cronJob.cronPersistence.pvcname }}
+                    claimName: {{ .Values.cronJob.cronPersistence.pvcname }}
+                  {{ else }}
+                    claimName: {{ include "oud-ds-rs.fullname" . }}-job-pvc
+                  {{- end }}
+           {{- else }}
+               - name: oud-job-storage
+                 emptyDir: {}
+           {{- end }}
+          restartPolicy: OnFailure
+  schedule: {{ .Values.cronJob.schedule }}

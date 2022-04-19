@@ -17,6 +17,8 @@ Login to the WebLogic Administration Console and Oracle Enterprise Manager Conso
 
 Login to Oracle Identity Governance with the xelsysadm username and password (`xelsysadm/<password>`).
 
+**Note**: If using a load balancer for your ingress replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
+
 | Console or Page | URL | 
 | --- | --- | 
 | WebLogic Administration Console | `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` | 
@@ -28,3 +30,4 @@ Login to Oracle Identity Governance with the xelsysadm username and password (`x
  
  The browser will give certificate errors if you used a self signed certifcate and have not imported it into the browsers Certificate Authority store. If this occurs you can proceed with the connection and ignore the errors.
 
+ After the URL's have been verified follow [Post install configuration]({{< relref "/oig/post-install-config" >}}).

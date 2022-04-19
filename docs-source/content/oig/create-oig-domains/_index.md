@@ -9,11 +9,6 @@ description = "Sample for creating an OIG domain home on an existing PV or PVC, 
 1. [Introduction](#introduction)
 1. [Prerequisites](#prerequisites)
 1. [Prepare the create domain script](#prepare-the-create-domain-script)
-
-	a. [Create Docker registry secret](#create-docker-registry-secret)
-	
-    b. [Edit configuration parameters](#edit-configuration-parameters)
-	
 1. [Run the create domain script](#run-the-create-domain-script)
 
     a. [Generate the create domain script](#generate-the-create-domain-script)
@@ -42,28 +37,6 @@ Before you begin, perform the following steps:
 1. Ensure that you have executed all the preliminary steps documented in [Prepare your environment]({{< relref "/oig/prepare-your-environment" >}}).
 1. Ensure that the database is up and running.
 
-#### Create Docker registry secret
-
-This section should only be followed if you are using a registry to store your container images and have not downloaded the container image to the master and worker nodes. 
-
-1. Create a Docker Registry Secret with name `oig-docker`:
-
-   ```bash
-   $ kubectl create secret docker-registry oig-docker -n <domain_namespace> --docker-username='<user_name>' --docker-password='<password>' --docker-server='<docker_registry_url>' --docker-email='<email_address>'
-   ```
-   
-   For example:
-   
-   ```bash
-   $ kubectl create secret docker-registry oig-docker -n oigns --docker-username='user1' --docker-password='<password>' --docker-server='https://registry.example.com' --docker-email='user1@example.com'
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   secret/oig-docker created
-   ```
-
 ### Prepare the create domain script
 
 The sample scripts for Oracle Identity Governance domain deployment are available at `$WORKDIR/kubernetes/create-oim-domain`.
@@ -74,11 +47,6 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    $ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv
    $ cp create-domain-inputs.yaml create-domain-inputs.yaml.orig   
    ```
-    
-   You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain. Please refer to the configuration parameters below to understand the information that you must
-   provide in this file.
-
-#### Edit configuration parameters
 
 1. Edit the `create-domain-inputs.yaml` and modify the following parameters. Save the file when complete:   
 
@@ -86,7 +54,7 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    domainUID: <domain_uid>
    domainHome: /u01/oracle/user_projects/domains/<domain_uid>
    image: <image_name>
-   imagePullSecretName: <docker-secret>
+   imagePullSecretName: <container_registry_secret>
    weblogicCredentialsSecretName: <kubernetes_domain_secret>
    logHome: /u01/oracle/user_projects/domains/logs/<domain_id>
    namespace: <domain_namespace>
@@ -97,14 +65,16 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    frontEndHost: <front_end_hostname>
    frontEndPort: <front_end_port>
    ```
+   
+   **Note** : `imagePullSecretName` is not required if you are not using a container registry.
 
    For example:
 
    ```
    domainUID: governancedomain
    domainHome: /u01/oracle/user_projects/domains/governancedomain
-   image: oracle/oig:12.2.1.4.0-8-ol7-211022.0723
-   imagePullSecretName: oig-docker
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359
+   imagePullSecretName: orclcred
    weblogicCredentialsSecretName: oig-domain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/governancedomain
    namespace: oigns
@@ -112,13 +82,11 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    rcuSchemaPrefix: OIGK8S
    rcuDatabaseURL: mydatabasehost.example.com:1521/orcl.example.com
    rcuCredentialsSecret: oig-rcu-credentials
-   frontEndHost: masternode.example.com
+   frontEndHost: example.com
    frontEndPort: 14100
    ```
    
-   **Note**: `frontEndHost` and `front_end_port` should be set to the entry point host and port for OIM. This can be changed later in [Set OIMFrontendURL using MBeans](../post-install-config).
-   
-   **Note**: If using a container registry for your container images then you need to set `image` to the repository image name and `imagePullSecretName` to the name of the secret created earlier e.g: `oig-docker`. If not using a docker registry to pull docker images, comment out `imagePullSecretName: <docker-secret>`.
+   **Note**: For now `frontEndHost` and `front_end_port` should be set to `example.com` and `14100` respectively. These values will be changed to the correct values in post installation tasks in [Set OIMFrontendURL using MBeans](../post-install-config).
 
 A full list of parameters in the `create-domain-inputs.yaml` file are shown below:
 
@@ -133,13 +101,13 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `createDomainScriptsMountPath` | Mount path where the create domain scripts are located inside a pod. The `create-domain.sh` script creates a Kubernetes job to run the script (specified in the `createDomainScriptName` property) in a Kubernetes pod to create a domain home. Files in the `createDomainFilesDir` directory are mounted to this location in the pod, so that the Kubernetes pod can use the scripts and supporting files to create a domain home. | `/u01/weblogic` |
 | `createDomainScriptName` | Script that the create domain script uses to create a WebLogic domain. The `create-domain.sh` script creates a Kubernetes job to run this script to create a domain home. The script is located in the in-pod directory that is specified in the `createDomainScriptsMountPath` property. If you need to provide your own scripts to create the domain home, instead of using the built-it scripts, you must use this property to set the name of the script that you want the create domain job to run. | `create-domain-job.sh` |
 | `domainHome` | Home directory of the OIG domain. If not specified, the value is derived from the `domainUID` as `/shared/domains/<domainUID>`. | `/u01/oracle/user_projects/domains/oimcluster` |
-| `domainPVMountPath` | Mount path of the domain persistent volume. | `/u01/oracle/user_projects` |
+| `domainPVMountPath` | Mount path of the domain persistent volume. | `/u01/oracle/user_projects/domains` |
 | `domainUID` | Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name. | `oimcluster` |
 | `exposeAdminNodePort` | Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster. | `false` |
 | `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `true` |
-| `image` | OIG Docker image. The operator requires OIG 12.2.1.4. Refer to [OIG domains]({{< relref "/oig/prepare-your-environment#install-the-oig-docker-image" >}}) for details on how to obtain or create the image. | `oracle/oig:12.2.1.4.0` |
-| `imagePullPolicy` | WebLogic Docker image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
-| `imagePullSecretName` | Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret will be validated when this parameter is specified. |  |
+| `image` | OIG container image. The operator requires OIG 12.2.1.4. Refer to [OIG domains]({{< relref "/oig/prepare-your-environment#obtain-the-container-image" >}}) for details on how to obtain or create the image. | `oracle/oig:12.2.1.4.0` |
+| `imagePullPolicy` | WebLogic container image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
+| `imagePullSecretName` | Name of the Kubernetes secret to access the container registry to pull the OIG container image. The presence of the secret will be validated when this parameter is specified. |  |
 | `includeServerOutInPodLog` | Boolean indicating whether to include the server .out to the pod's stdout. | `true` |
 | `initialManagedServerReplicas` | Number of Managed Servers to initially start for the domain. | `2` |
 | `javaOptions` | Java options for starting the Administration Server and Managed Servers. A Java option can have references to one or more of the following pre-defined variables to obtain WebLogic domain information: `$(DOMAIN_NAME)`, `$(DOMAIN_HOME)`, `$(ADMIN_NAME)`, `$(ADMIN_PORT)`, and `$(SERVER_NAME)`. | `-Dweblogic.StdoutDebugEnabled=false` |
@@ -153,7 +121,7 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `t3ChannelPort` | Port for the T3 channel of the NetworkAccessPoint. | `30012` |
 | `t3PublicAddress` | Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <p/>For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes. | If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster |
 | `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | `oimcluster-domain-credentials` |
-| `weblogicImagePullSecretName` | Name of the Kubernetes secret for the Docker Store, used to pull the WebLogic Server image. |   |
+| `weblogicImagePullSecretName` | Name of the Kubernetes secret for the container registry, used to pull the WebLogic Server image. |   |
 | `serverPodCpuRequest`, `serverPodMemoryRequest`, `serverPodCpuCLimit`, `serverPodMemoryLimit` |  The maximum amount of compute resources allowed, and minimum amount of compute resources required, for each server pod. Please refer to the Kubernetes documentation on `Managing Compute Resources for Containers` for details. | Resource requests and resource limits are not specified. |
 | `rcuSchemaPrefix` | The schema prefix to use in the database, for example `OIGK8S`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `OIGK8S` |
 | `rcuDatabaseURL` | The database URL. | `oracle-db.default.svc.cluster.local:1521/devpdb.k8s` |
@@ -208,9 +176,9 @@ generated artifacts:
    export initialManagedServerReplicas="1"
    export managedServerNameBase="oim_server"
    export managedServerPort="14000"
-   export image="oracle/oig:12.2.1.4.0-8-ol7-211022.0723"
+   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359"
    export imagePullPolicy="IfNotPresent"
-   export imagePullSecretName="oig-docker"
+   export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
    export weblogicCredentialsSecretName="oig-domain-credentials"
    export includeServerOutInPodLog="true"
@@ -227,9 +195,9 @@ generated artifacts:
    export createDomainScriptName="create-domain-job.sh"
    export createDomainFilesDir="wlst"
    export rcuSchemaPrefix="OIGK8S"
-   export rcuDatabaseURL="slc12cpn.us.oracle.com:1521/orcl.us.oracle.com"
+   export rcuDatabaseURL="mydatabasehost.example.com:1521/orcl.example.com"
    export rcuCredentialsSecret="oig-rcu-credentials"
-   export frontEndHost="masternode.example.com"
+   export frontEndHost="example.com"
    export frontEndPort="14100"
 
 
@@ -284,7 +252,13 @@ generated artifacts:
 
 #### Setting the OIM server memory parameters
 
-1. Navigate to the `output` directory:
+1. Navigate to the `/output/weblogic-domains/<domain_uid>` directory:
+
+   ```bash
+   $ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/<domain_uid>
+   ```
+   
+   For example:
 
    ```bash
    $ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
@@ -333,7 +307,7 @@ generated artifacts:
 1. Create the Kubernetes resource using the following command:
 
    ```bash
-   $ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
+   $ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/<domain_uid>
    $ kubectl apply -f domain.yaml
    ```
 
@@ -410,6 +384,12 @@ generated artifacts:
 1. Verify the domain, servers pods and services are created and in the `READY` state with a `STATUS` of `1/1`, by running the following command:
 
    ```bash
+   $ kubectl get all,domains -n <domain_namespace>
+   ```
+   
+   For example:
+   
+   ```bash
    $ kubectl get all,domains -n oigns
    ```
    
@@ -423,7 +403,7 @@ generated artifacts:
    pod/governancedomain-soa-server1                                1/1     Running     0          13m
    pod/helper                                                      1/1     Running     0          3h40m
 
-   NAME                                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+   NAME                                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
    service/governancedomain-adminserver           ClusterIP   None             <none>        7001/TCP    16m
    service/governancedomain-cluster-oim-cluster   ClusterIP   10.97.121.159    <none>        14000/TCP   13m
    service/governancedomain-cluster-soa-cluster   ClusterIP   10.111.231.242   <none>        8001/TCP    13m
@@ -438,7 +418,7 @@ generated artifacts:
    service/governancedomain-soa-server4           ClusterIP   10.96.178.0      <none>        8001/TCP    13m
    service/governancedomain-soa-server5           ClusterIP   10.107.83.62     <none>        8001/TCP    13m
 
-   NAME                                                      COMPLETIONS   DURATION   AGE
+   NAME                                                            COMPLETIONS   DURATION   AGE
    job.batch/governancedomain-create-fmw-infra-sample-domain-job   1/1           5m30s      36m
 
    NAME                                AGE
@@ -485,7 +465,7 @@ The default domain created by the script has the following characteristics:
    API Version:  weblogic.oracle/v8
    Kind:         Domain
    Metadata:
-     Creation Timestamp:  2021-11-12T14:50:18Z
+     Creation Timestamp:  2022-03-10T11:44:17Z
      Generation:          2
      Managed Fields:
        API Version:  weblogic.oracle/v8
@@ -500,7 +480,7 @@ The default domain created by the script has the following characteristics:
              f:weblogic.domainUID:
        Manager:      kubectl-client-side-apply
        Operation:    Update
-       Time:         2021-11-12T14:59:44Z
+       Time:         2022-03-10T14:59:44Z
        API Version:  weblogic.oracle/v8
        Fields Type:  FieldsV1
        fieldsV1:
@@ -513,7 +493,7 @@ The default domain created by the script has the following characteristics:
            f:startTime:
        Manager:         Kubernetes Java Client
        Operation:       Update
-       Time:            2021-11-12T14:59:49Z
+       Time:            2022-03-10T11:51:12Z
      Resource Version:  383381
      UID:               ea95c549-c414-42a6-8de4-beaf1204872e
    Spec:
@@ -567,8 +547,10 @@ The default domain created by the script has the following characteristics:
      Domain Home:                    /u01/oracle/user_projects/domains/governancedomain
      Domain Home Source Type:        PersistentVolume
      Http Access Log In Log Home:    true
-     Image:                          oracle/oig:12.2.1.4.0-8-ol7-211022.0723
+     Image:                          container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359
      Image Pull Policy:              IfNotPresent
+	 Image Pull Secrets:
+       Name:                         orclcred
      Include Server Out In Pod Log:  true
      Log Home:                       /u01/oracle/user_projects/domains/logs/governancedomain
      Log Home Enabled:               true
@@ -603,7 +585,7 @@ The default domain created by the script has the following characteristics:
        Replicas:          1
        Replicas Goal:     1
      Conditions:
-       Last Transition Time:        2021-11-12T15:06:30.709900Z
+       Last Transition Time:        2022-03-10T11:59:53.249700Z
        Reason:                      ServersReady
        Status:                      True
        Type:                        Available
@@ -611,7 +593,7 @@ The default domain created by the script has the following characteristics:
      Servers:
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-12T14:54:46.370000Z
+         Activation Time:  2022-03-10T11:46:49.874000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -622,7 +604,7 @@ The default domain created by the script has the following characteristics:
        Cluster Name:   oim_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-12T15:06:21.693000Z
+         Activation Time:  2022-03-10T15:06:21.693000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -645,7 +627,7 @@ The default domain created by the script has the following characteristics:
        Cluster Name:   soa_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2021-11-12T14:57:49.506000Z
+         Activation Time:  2022-03-10T11:49:26.340000Z
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -665,7 +647,7 @@ The default domain created by the script has the following characteristics:
        Cluster Name:   soa_cluster
        Desired State:  SHUTDOWN
        Server Name:    soa_server5
-     Start Time:       2021-11-12T14:50:19.148541Z
+     Start Time:       2022-03-10T14:50:19.148541Z
    Events:
      Type    Reason                     Age                From               Message
      ----    ------                     ----               ----               -------
@@ -679,30 +661,30 @@ The default domain created by the script has the following characteristics:
 
 #### Verify the pods
 
-Use the following command to see the pods running the servers and which nodes they are running on:
+1. Run the following command to see the pods running the servers and which nodes they are running on:
 
-```bash
-$ kubectl get pods -n <namespace> -o wide
-```
+   ```bash
+   $ kubectl get pods -n <namespace> -o wide
+   ```
 
-For example:
+   For example:
 
-```bash
-$ kubectl get pods -n oigns -o wide
-```
+   ```bash
+   $ kubectl get pods -n oigns -o wide
+   ```
 
-The output will look similar to the following:
+   The output will look similar to the following:
 
-```
-NAME                                                        READY   STATUS      RESTARTS   AGE   IP              NODE           NOMINATED NODE   READINESS GATES
-helper                                                      1/1     Running     0          3h50m   10.244.1.39   worker-node2   <none>           <none>
-governancedomain-adminserver                                1/1     Running     0          27m     10.244.1.42   worker-node2   <none>           <none>
-governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          47m     10.244.1.40   worker-node2   <none>           <none>
-governancedomain-oim-server1                                1/1     Running     0          16m     10.244.1.44   worker-node2   <none>           <none>
-governancedomain-soa-server1                                1/1     Running     0          24m     10.244.1.43   worker-node2   <none>           <none>
-```
+   ```
+   NAME                                                        READY   STATUS      RESTARTS   AGE   IP              NODE           NOMINATED NODE   READINESS GATES
+   helper                                                      1/1     Running     0          3h50m   10.244.1.39   worker-node2   <none>           <none>
+   governancedomain-adminserver                                1/1     Running     0          27m     10.244.1.42   worker-node2   <none>           <none>
+   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          47m     10.244.1.40   worker-node2   <none>           <none>
+   governancedomain-oim-server1                                1/1     Running     0          16m     10.244.1.44   worker-node2   <none>           <none>
+   governancedomain-soa-server1                                1/1     Running     0          24m     10.244.1.43   worker-node2   <none>           <none>
+   ```
 
-You are now ready to configure an Ingress to direct traffic for your OIG domain as per [Configure an ingress for an OIG domain](../configure-ingress).
+   You are now ready to configure an Ingress to direct traffic for your OIG domain as per [Configure an ingress for an OIG domain](../configure-ingress).
 
 
 

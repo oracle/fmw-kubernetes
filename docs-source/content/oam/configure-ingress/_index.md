@@ -119,14 +119,12 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    $ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    ```
    
-   **Note**: If using Kubernetes 1.18 then add `--version=3.34.0` to the end of command.
-   
     
    The output will look similar to the following:
    
    ``` 
    NAME: nginx-ingress
-   LAST DEPLOYED: Mon Nov  1 07:34:25 2021
+   LAST DEPLOYED: Mon Mar 7 13:57:21 2022
 
    NAMESPACE: oamns
    STATUS: deployed
@@ -189,15 +187,13 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    $ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    ```
    
-   **Note**: If using Kubernetes 1.18 then add `--version=3.34.0` to the end of command.
-   
    The output will look similar to the following:
    
    ```
    $ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    
    NAME: nginx-ingress
-   LAST DEPLOYED: Mon Nov  1 07:34:25 2021
+   LAST DEPLOYED: Mon Mar 7 13:57:21 2022
    NAMESPACE: nginxssl
    STATUS: deployed
    REVISION: 1
@@ -300,7 +296,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ```
    NAME: oam-nginx
-   LAST DEPLOYED: Mon Nov  1 07:57:30 2021
+   LAST DEPLOYED: Mon Mar 7 14:01:01 2022
    NAMESPACE: oamns
    STATUS: deployed
    REVISION: 1
@@ -413,7 +409,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    b) For LoadBalancer:
    
    ```bash
-   $ curl -v -k https://masternode.example.com/weblogic/ready
+   $ curl -v -k https://loadbalancer.example.com/weblogic/ready
    ```
 
    The output will look similar to the following:

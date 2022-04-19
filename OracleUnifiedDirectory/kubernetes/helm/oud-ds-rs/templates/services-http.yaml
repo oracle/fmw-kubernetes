@@ -15,10 +15,6 @@ metadata:
   labels:
     {{- include "oud-ds-rs.labels" $root | nindent 4 }}
     oud/instance: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
-  annotations:
-{{- if and ($root.Values.ingress.enabled) (eq $root.Values.ingress.type "voyager") (eq $root.Values.ingress.http.backendPort "https") }}
-    ingress.appscode.com/backend-tls: "ssl verify none"
-{{- end }}
 spec:
   type: {{ $root.Values.service.type }}
   ports:

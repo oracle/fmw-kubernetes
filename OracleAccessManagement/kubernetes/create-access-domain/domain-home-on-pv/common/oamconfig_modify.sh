@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 cur_dir=`dirname $(readlink -f "$0")`
@@ -61,7 +61,7 @@ if [ $ING_TYPE == "NodePort" ]; then
 	 exit 1 
 	fi
 elif [ $ING_TYPE == "LoadBalancer" ]; then	
-	LBR_PORT = $SSL_PORT
+	LBR_PORT=$SSL_PORT
 else
  echo "Error: Invalid INGRESS TYPE : $ING_TYPE"		
  exit 1 

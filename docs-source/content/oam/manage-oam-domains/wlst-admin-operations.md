@@ -5,7 +5,26 @@ description: "Describes the steps for WLST administration using helper pod runni
 
 To use WLST to administer the OAM domain, use the helper pod in the same Kubernetes cluster as the OAM Domain.
 
+1. Check to see if the helper pod exists by running:
 
+   ```bash
+   $ kubectl get pods -n <domain_namespace> | grep helper
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl get pods -n oamns | grep helper
+   ```
+   
+   The output should look similar to the following:
+   
+   ```
+   helper                                  1/1     Running     0          26h
+   ```
+   
+   If the helper pod doesn't exist then see Step 1 in [Prepare your environment ](../../prepare-your-environment/#rcu-schema-creation) to create it.
+   
 1. Run the following command to start a bash shell in the helper pod:
 
     
@@ -221,11 +240,11 @@ $ kubectl exec -it accessdomain-adminserver -n oamns -- /bin/bash
 [oracle@accessdomain-adminserver oracle]$
 [oracle@accessdomain-adminserver oracle]$ cd /u01/oracle/user_projects/domains/accessdomain/servers/oam_server1/logs
 [oracle@accessdomain-adminserver logs]$ tail oam_server1-diagnostic.log
-2021-11-02T10:26:14.793+00:00] [oam_server1] [TRACE:32] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.observable.ObservableConfigStore$StoreWatcher] [SRC_METHOD: run] Start of run before start of detection at 1,635,848,774,793. Detector: oracle.security.am.admin.config.util.observable.DbStoreChangeDetector:Database configuration store:DSN:jdbc/oamds. Monitor: { StoreMonitor: { disabled: 'false' } }
-[2021-11-02T10:26:14.793+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.StoreUtil] [SRC_METHOD: getContainerProperty] Configuration property CONFIG_HISTORY not specified
-[2021-11-02T10:26:14.793+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.StoreUtil] [SRC_METHOD: getContainerProperty] Configuration property CONFIG not specified
-[2021-11-02T10:26:14.795+00:00] [oam_server1] [TRACE:32] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: getSelectSQL] SELECT SQL:SELECT  version  from  IDM_OBJECT_STORE  where id = ? and version = (select max(version) from  IDM_OBJECT_STORE  where id = ?)
-[2021-11-02T10:26:14.797+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: load] Time (ms) to load key CONFIG:-1{FIELD_TYPES=INT, SELECT_FIELDS=SELECT  version  from  IDM_OBJECT_STORE }:4
+2022-03-07T10:26:14.793+00:00] [oam_server1] [TRACE:32] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.observable.ObservableConfigStore$StoreWatcher] [SRC_METHOD: run] Start of run before start of detection at 1,635,848,774,793. Detector: oracle.security.am.admin.config.util.observable.DbStoreChangeDetector:Database configuration store:DSN:jdbc/oamds. Monitor: { StoreMonitor: { disabled: 'false' } }
+[2022-03-07T10:26:14.793+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.StoreUtil] [SRC_METHOD: getContainerProperty] Configuration property CONFIG_HISTORY not specified
+[2022-03-07T10:26:14.793+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.StoreUtil] [SRC_METHOD: getContainerProperty] Configuration property CONFIG not specified
+[2022-03-07T10:26:14.795+00:00] [oam_server1] [TRACE:32] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: getSelectSQL] SELECT SQL:SELECT  version  from  IDM_OBJECT_STORE  where id = ? and version = (select max(version) from  IDM_OBJECT_STORE  where id = ?)
+[2022-03-07T10:26:14.797+00:00] [oam_server1] [TRACE] [] [oracle.oam.config] [tid: Configuration Store Observer] [userId: <anonymous>] [ecid: 8b3ac37b-c7cf-46dd-aeee-5ed67886be21-0000000b,0:1795] [APP: oam_server] [partition-name: DOMAIN] [tenant-name: GLOBAL] [SRC_CLASS: oracle.security.am.admin.config.util.store.DbStore] [SRC_METHOD: load] Time (ms) to load key CONFIG:-1{FIELD_TYPES=INT, SELECT_FIELDS=SELECT  version  from  IDM_OBJECT_STORE }:4
 ```
 
 ### Performing WLST Administration via SSL
@@ -371,9 +390,9 @@ $ kubectl exec -it accessdomain-adminserver -n oamns -- /bin/bash
    ```bash
    wls:/offline> connect('weblogic','<password>','t3s://accessdomain-adminserverssl:7002')
    Connecting to t3s://accessdomain-adminserverssl:7002 with userid weblogic ...
-   <Nov 2, 2021 10:42:05 AM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
-   <Nov 2, 2021 10:42:05 AM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
-   <Nov 2, 2021 10:42:05 AM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
+   <Mar 7, 2022 10:42:05 AM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
+   <Mar 7, 2022 10:42:05 AM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
+   <Mar 7, 2022 10:42:05 AM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
    Successfully connected to Admin Server "AdminServer" that belongs to domain "accessdomain".
 
    wls:/accessdomain/serverConfig/>
@@ -384,9 +403,9 @@ $ kubectl exec -it accessdomain-adminserver -n oamns -- /bin/bash
    ```bash
    wls:/offline> connect('weblogic','<password>','t3s://accessdomain-oamcluster-ssl:14101')   
    Connecting to t3s://accessdomain-oamcluster-ssl:14101 with userid weblogic ...
-   <Nov 2, 2021 10:43:16 AM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
-   <Nov 2, 2021 10:43:16 AM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
-   <Nov 2, 2021 10:43:16 AM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
+   <Mar 7, 2022 10:43:16 AM GMT> <Info> <Security> <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.>
+   <Mar 7, 2022 10:43:16 AM GMT> <Info> <Security> <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.>
+   <Mar 7, 2022 10:43:16 AM GMT> <Info> <Security> <BEA-090909> <Using the configured custom SSL Hostname Verifier implementation: weblogic.security.utils.SSLWLSHostnameVerifier$NullHostnameVerifier.>
    Successfully connected to managed Server "oam_server1" that belongs to domain "accessdomain".
    ```
    

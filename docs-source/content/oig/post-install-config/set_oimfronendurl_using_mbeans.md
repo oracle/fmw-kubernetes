@@ -141,38 +141,12 @@ Follow these post install configuration steps.
 
 1. Enter a new value for the `OimFrontEndURL` attribute, in the format:
 
-   `http://<OIM-Cluster-Service-Name>:<Cluster-Service-Port>`
+   * If using an External LoadBalancer for your ingress: `https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`
+   * If using NodePort for your ingress: `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
+  
 
-   For example:
- 
-   `http://governancedomain-cluster-oim-cluster:14000`
-   
    Then click `Apply`.
    
-   **Note**: To find the `<OIM-Cluster-Service-Name>` run the following command:
-
-   ```bash
-   $ kubectl -n oigns get svc
-   ```
-
-   Your output will look similar to this:
-
-   ```
-   NAME                                   TYPE        CLUSTER-IP       EXTERNAL-IP         PORT(S)               AGE
-   governancedomain-adminserver           ClusterIP   None             <none>        7001/TCP              9m41s
-   governancedomain-cluster-oim-cluster   ClusterIP   10.107.205.207   <none>        14002/TCP,14000/TCP   2d20h
-   governancedomain-cluster-soa-cluster   ClusterIP   10.102.221.184   <none>        8001/TCP              2d20h
-   governancedomain-oim-server1           ClusterIP   None             <none>        14002/TCP,14000/TCP   6m58s
-   governancedomain-oim-server2           ClusterIP   10.100.28.88     <none>        14002/TCP,14000/TCP   6m58s
-   governancedomain-oim-server3           ClusterIP   10.99.226.29     <none>        14002/TCP,14000/TCP   6m58s
-   governancedomain-oim-server4           ClusterIP   10.96.253.210    <none>        14002/TCP,14000/TCP   6m58s
-   governancedomain-oim-server5           ClusterIP   10.98.66.13      <none>        14002/TCP,14000/TCP   6m58s
-   governancedomain-soa-server1           ClusterIP   None             <none>        8001/TCP              6m58s
-   governancedomain-soa-server2           ClusterIP   10.111.168.68    <none>        8001/TCP              6m58s
-   governancedomain-soa-server3           ClusterIP   10.96.183.16     <none>        8001/TCP              6m58s
-   governancedomain-soa-server4           ClusterIP   10.98.35.5       <none>        8001/TCP              6m58s
-   governancedomain-soa-server5           ClusterIP   10.98.200.195    <none>        8001/TCP              6m58s
-   ```
-
+   
 
 

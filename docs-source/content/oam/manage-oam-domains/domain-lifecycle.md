@@ -3,6 +3,13 @@ title: "a. Domain Life Cycle"
 description: "Learn about the domain life cycle of an OAM domain."
 ---
 
+1. [View existing OAM servers](#view-existing-oam-servers)
+1. [Starting/Scaling up OAM Managed servers](#startingscaling-up-oam-managed-servers)
+1. [Stopping/Scaling down OAM Managed servers](#stoppingscaling-down-oam-managed-servers)
+1. [Stopping and starting the Administration Server and Managed Servers](#stopping-and-starting-the-administration-server-and-managed-servers)
+1. [Domain lifecycle sample scripts](domain-lifecycle-sample-scripts)
+
+
 As OAM domains use the WebLogic Kubernetes Operator, domain lifecyle operations are managed using the WebLogic Kubernetes Operator itself.
 
 This document shows the basic operations for starting, stopping and scaling servers in the OAM domain. 
@@ -477,3 +484,11 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    helper                                                   1/1     Running     0          4h28m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          92m
    ```
+
+### Domain lifecycle sample scripts
+
+The WebLogic Kubernetes Operator provides sample scripts to start up or shut down a specific Managed Server or cluster in a deployed domain, or the entire deployed domain.
+
+**Note**: Prior to running these scripts, you must have previously created and deployed the domain.
+
+The scripts are located in the `$WORKDIR/kubernetes/domain-lifecycle` directory. For more information, see the [README](https://github.com/oracle/fmw-kubernetes/tree/master/OracleAccessManagement/kubernetes/domain-lifecycle).

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -57,7 +57,7 @@ service:
 
 ingress:
   enabled: true
-  # Supported values: nginx or voyager
+  # Supported values: nginx 
   type: nginx
   # Configuration for Ingress rules about Data HTTP/HTTPS interfaces
   http:
@@ -122,31 +122,6 @@ ingress:
   certCN:
   # Validity of Self-Signed Cert in days
   certValidityDays: 365
-  # Voyager specific configuration
-  voyagerAnnotations:
-    kubernetes.io/ingress.class: "voyager"
-    ingress.appscode.com/type: "NodePort"
-    # To ensure that HAProxy matches against the NodePort
-    # ingress.appscode.com/use-node-port: "true"
-    # Yet to explore
-    # ingress.appscode.com/stats: "true"
-  voyagerAnnotationsTLS:
-    kubernetes.io/ingress.class: "voyager"
-    ingress.appscode.com/type: "NodePort"
-    # To ensure that HAProxy matches against the NodePort
-    # ingress.appscode.com/use-node-port: "true"
-    # Yet to explore
-    # ingress.appscode.com/stats: "true"
-  voyagerNodePortHttp: 30080
-  voyagerNodePortHttps: 30443
-  voyagerHttpPort: 80
-  voyagerHttpsPort: 443
-  voyagerExternalIPs:
-#  - a.b.c.d
-  voyagerTcpPortPrefix:
-    ldap: 389
-    ldaps: 636
-    adminldaps: 444
 
 
 nodeSelector: {}
@@ -170,9 +145,9 @@ affinity:
 persistence:
   # If enabled, it will use the persistent volume. if value is false, PV and PVC would not be used and pods would be using the default emptyDir mount volume
   enabled: true
-  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  # provide the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
   pvname: 
-  # provided the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+  # provide the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
   pvcname: 
   accessMode: ReadWriteMany
   size: 20Gi
@@ -200,9 +175,9 @@ configVolume:
   enabled: false
   # Path at which the volume would be mounted inside containers
   mountPath: /u01/oracle/config-input
-  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  # provide the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
   pvname: 
-  # provided the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+  # provide the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
   pvcname: 
   accessMode: ReadWriteMany
   size: 10Gi
@@ -225,7 +200,7 @@ configVolume:
 secret:
   # If enabled it will use the secret created with base64 encoding. if value is false, secret would not be used and input values (through --set, --values, etc.) would be used while creation of pods.
   enabled: true
-  # provided the secret name to use an already created Secret
+  # provide the secret name to use an already created Secret
   name:
   type: opaque
 
@@ -326,75 +301,88 @@ replOUD:
   envVars:
 
 elk:
+  # Enabled flag to enable the integrated ELK stack for OUD
+  enabled: false
   elasticsearch:
-    enabled: false
     image:
       repository: docker.elastic.co/elasticsearch/elasticsearch
-      tag: 6.4.3
+      tag: 6.8.0
       pullPolicy: IfNotPresent
-
+    # esreplicas is the number of replicas of ElasticSearch deployment to be created
     esreplicas: 1
+    #minimumMasterNodes is the the minimum number of master nodes that needs to configured. This will use the number of replicas (esreplicas / 2) + 1
     minimumMasterNodes: 1
+    # Java options for Elasticsearch. This is where you should configure the jvm heap size
     esJAVAOpts: "-Xms512m -Xmx512m"
+    #sysctl vm.max_map_count needed for Elasticsearch
     sysctlVmMaxMapCount: 262144
+    # cpu resources for elastic search
     resources:
       requests:
         cpu: "100m"
       limits:
         cpu: "1000m"
-    
     esService:
-  # Type of Service to be created for OUD Interfaces (like LDAP, HTTP, Admin)
+  # Type of Service to be created for Elastic Search interfaces
       type: ClusterIP
-  # Service Type for loadbalancer services exposing LDAP, HTTP interfaces from available/accessible OUD pods.
+  # Service Type for loadbalancer services accessing Elastic Search pods.
       lbrtype: ClusterIP
     
+  # Kibana configuration parameters
   kibana:
-    enabled: false
     image:
       repository: docker.elastic.co/kibana/kibana
-      tag: 6.4.3
+      tag: 6.8.0
       pullPolicy: IfNotPresent
+    #Number of Kibana instances will be created
     kibanaReplicas : 1
+    #Type of kibana service to be created
     service:
       type: NodePort
+    #Port on which the kibana will be accessed inside the cluster
       targetPort: 5601
+    #nodePort is the port on which kibana service will be accessed from outside
       nodePort: 31199
     
-
+  # Logstash Configuration parameters
   logstash:
-    enabled: false
     image:
       repository: logstash
       tag: 6.6.0
       pullPolicy: IfNotPresent
+    #Port on which the logstash container will be running
     containerPort : 5044
+    #Type of service to be created
     service:
       type: NodePort
+    #Port on which the logstash will be accessed with in the cluster
       targetPort: 9600
+    #Port on which the logstash will be accessed outside the cluster
       nodePort: 32222
   # If logstashConfigMap is empty, Then default logstashConfigMap will be created and used.
     logstashConfigMap: 
-
+  # ELK Ports on which elastic search will be listening across the nodes and outside the nodes
   elkPorts:
     rest: 9200
     internode: 9300
-
+  #Image used for initiContainers
   busybox:
     image: busybox 
 
+  imagePullSecrets:
+    - name: dockercred
 
 elkVolume:
   # If enabled, it will use the persistent volume.
   # if value is false, PV and PVC would not be used and there would not be any mount point available for config
-  enabled: false
+  enabled: true
   # Path at which the volume would be mounted
   mountPath: /usr/share/elasticsearch/data
-  # provided the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
+  # provide the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
   pvname: 
   accessMode: ReadWriteMany
   size: 20Gi
-  storageClass: elk
+  storageClass: elk-oud 
 # default supported values: either filesystem or networkstorage or custom
   type: filesystem
   networkstorage:
@@ -408,3 +396,56 @@ elkVolume:
   custom:
     # YAML content to be included in PersistenceVolume Object
   annotations: {}
+
+
+# Cron job will run based on the schedule defined. By default it will run every 30 minutes
+
+cronJob:
+  schedule: '"*/30 * * * *"'
+
+# Kubectl image details for job
+
+  kubectlImage:
+    repository: bitnami/kubectl
+    tag: 1.19.16
+    pullPolicy: IfNotPresent
+
+# helm image details for job
+
+  helmImage:
+    repository: alpine/helm
+    tag: 3.2.4
+    pullPolicy: IfNotPresent
+
+# PV and PVC configured for cron-job
+# PV folder should have oud-ds-rs helm charts
+
+  cronPersistence:
+    enabled: true
+    pvname:
+  # provide the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+    pvcname:
+  # provide the pvcname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
+    accessMode: ReadWriteMany
+    size: 2Gi
+    storageClass: manual
+    reclaimPolicy: "Delete"
+  #default supported values: either filesystem or networkstorage or custom
+    type: filesystem
+    networkstorage:
+      nfs:
+     # Chart path location
+        path: /scratch/shared/data
+        server: 0.0.0.0
+    filesystem:
+      hostPath:
+      # The chart path location mentioned should be created and made accessible with necessary privileges for access from pods/containers for the cron job.
+        path: /scratch/shared/data
+    custom:
+    annotations: {}
+
+# Image pull secrets for the above 2 kubectlImage and helmImage
+
+  imagePullSecrets:
+    - name: regcred
+

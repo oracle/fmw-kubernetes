@@ -5,7 +5,7 @@
 # https://oss.oracle.com/licenses/upl
 #
 #
-{{- if .Values.elk.elasticsearch.enabled }}
+{{- if .Values.elk.enabled }}
 kind: Service
 apiVersion: v1
 metadata:
@@ -23,7 +23,7 @@ spec:
       name: inter-node
 {{- end }}
 ---
-{{- if .Values.elk.kibana.enabled }}
+{{- if .Values.elk.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -42,7 +42,7 @@ spec:
 {{- end }}
 ---
 
-{{- if .Values.elk.logstash.enabled }}
+{{- if .Values.elk.enabled }}
 kind: Service
 apiVersion: v1
 metadata:

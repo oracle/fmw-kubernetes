@@ -1,46 +1,33 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
 {{- $root := . -}}
-{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "voyager") -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- $fullName := include "oudsm.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- $svcSslPort := .Values.service.sslPort -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
-# apiVersion: networking.k8s.io/v1beta1
-apiVersion: voyager.appscode.com/v1beta1
-{{- else }}
-apiVersion: extensions/v1beta1
-{{- end }}
+#
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-ingress-voyager
+  name: {{ $fullName }}-ingress-nginx
   labels:
     {{- include "oudsm.labels" . | nindent 4 }}
   annotations:
 {{- if (.Values.ingress.tlsEnabled) }}
-  {{- with .Values.ingress.voyagerAnnotationsTLS }}
+  {{- with .Values.ingress.nginxAnnotationsTLS }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- else }}
-  {{- with .Values.ingress.voyagerAnnotations }}
+  {{- with .Values.ingress.nginxAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
 spec:
-  frontendRules:
-  - port: {{ .Values.ingress.voyagerHttpsPort }}
-    rules:
-    - http-request set-header WL-Proxy-SSL true
-{{- if (.Values.ingress.voyagerExternalIPs) }}
-  externalIPs:
-{{- with .Values.ingress.voyagerExternalIPs }}
-  {{- toYaml . | nindent 4 }}
-{{- end }}
-{{- end }}
   tls:
 {{- if (.Values.ingress.tlsSecret) }}
   - secretName: {{ .Values.ingress.tlsSecret }}
@@ -48,7 +35,6 @@ spec:
   - secretName: {{ include "oudsm.fullname" . }}-tls-cert
 {{- end }}
     hosts:
-    -  '*'
 {{- if (.Values.ingress.host) }}
   {{- if (.Values.ingress.domain) }}
     - {{ .Values.ingress.host }}.{{ .Values.ingress.domain }}
@@ -85,9 +71,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
-          servicePort: {{ $root.Values.ingress.backendPort }}
+          service:
+            name: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+            port:
+              name: {{ $root.Values.ingress.backendPort }}     
 {{- end }}
 {{- if (.Values.ingress.host) }}
   {{- if (.Values.ingress.domain) }}
@@ -96,20 +85,32 @@ spec:
   - host: {{ .Values.ingress.host }}
   {{- end }}
 {{ else }}
-  - host: '*'
+  - host: {{ include "oudsm.fullname" . }}
 {{- end }}
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oudsm.fullname" . }}-lbr
-          servicePort: {{ .Values.ingress.backendPort }}
+          service:
+            name: {{ include "oudsm.fullname" . }}-lbr
+            port:
+              name: {{ .Values.ingress.backendPort }}  
+  - http:
+      paths:
       - path: /oudsm
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oudsm.fullname" . }}-lbr
-          servicePort: {{ .Values.ingress.backendPort }}
+          service:
+            name: {{ include "oudsm.fullname" . }}-lbr
+            port:
+              name: {{ .Values.ingress.backendPort }}
       - path: /console
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oudsm.fullname" . }}-lbr
-          servicePort: {{ .Values.ingress.backendPort }}
+          service: 
+            name: {{ include "oudsm.fullname" . }}-lbr
+            port:
+              name: {{ .Values.ingress.backendPort }}
+{{- end }}
 {{- end }}

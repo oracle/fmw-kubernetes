@@ -41,12 +41,12 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
 
    ```
    Failed to start container "create-fmw-infra-sample-domain-job": Error response from daemon: error while creating mount source path
-   '/scratch/OIGK8S/governancedomainpv ': mkdir /scratch/OIGK8S/governancedomainpv : permission denied
+   '/scratch/shared/governancedomainpv ': mkdir /scratch/shared/governancedomainpv : permission denied
    ```
     
    then there is a permissions error on the directory for the PV and PVC and the following should be checked:
    
-   a) The directory has 777 permissions: `chmod -R 777 <workdir>/governancedomainpv`.
+   a) The directory has 777 permissions: `chmod -R 777 <persistent_volume>/governancedomainpv`.
    
    b) If it does have the permissions, check if an `oracle` user exists and the `uid` and `gid` equal `1000`, for example:
    
@@ -59,7 +59,7 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
    c) Edit the `$WORKDIR/kubernetes/create-weblogic-domain-pv-pvc/create-pv-pvc-inputs.yaml` and add a slash to the end of the directory for the `weblogicDomainStoragePath` parameter:
    
    ```
-   weblogicDomainStoragePath: /scratch/OIGK8S/governancedomainpv/
+   weblogicDomainStoragePath: /scratch/shared/governancedomainpv/
    ```
    
    Clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home]({{< relref "/oig/manage-oig-domains/delete-domain-home" >}}). Then follow [RCU schema creation]({{< relref "/oig/prepare-your-environment/#rcu-schema-creation" >}}) onwards to recreate the RCU schema, kubernetes secrets for domain and RCU, the persistent volume and the persistent volume claim. Then execute the [OIG domain creation]({{< relref "/oig/create-oig-domains" >}}) steps again.

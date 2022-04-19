@@ -1,11 +1,11 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl
 #
 #
-{{- if .Values.elk.kibana.enabled }}
+{{- if .Values.elk.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,4 +32,8 @@ spec:
             value: http://{{ include "oudsm.fullname" . }}-elasticsearch:{{ .Values.elk.elkPorts.rest }}
         ports:
         - containerPort: {{ .Values.elk.kibana.service.targetPort }}
+    {{- with .Values.elk.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+    {{- end }}
 {{- end }}

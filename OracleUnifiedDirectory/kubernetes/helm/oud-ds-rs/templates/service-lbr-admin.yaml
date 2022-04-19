@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -10,10 +10,6 @@ metadata:
   name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
   labels:
     {{- include "oud-ds-rs.labels" . | nindent 4 }}
-  annotations:
-{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "voyager") }}
-    ingress.appscode.com/backend-tls: "ssl verify none"
-{{- end }}
 spec:
   type:  {{ .Values.service.lbrtype }}
   ports:
