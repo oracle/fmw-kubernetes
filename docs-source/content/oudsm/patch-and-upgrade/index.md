@@ -1,7 +1,7 @@
 +++
 title = "Patch and Upgrade"
-weight = 7 
-pre = "<b>7. </b>"
+weight = 8 
+pre = "<b>8. </b>"
 description=  "This document provides steps to patch or upgrade an OUDSM image"
 +++
 
