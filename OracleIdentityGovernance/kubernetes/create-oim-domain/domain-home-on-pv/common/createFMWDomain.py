@@ -168,7 +168,7 @@ class OIMProvisioner:
 
 
         if isJMSStorePersistenceConfigurable() and not isJMSStoreDBPersistenceSet():(enableJMSStoreDBPersistence(true))
-        
+        if isJTATLogPersistenceConfigurable() and not isJTATLogDBPersistenceSet():(enableJTATLogDBPersistence(true))
 
 	# Create a OIM cluster
         # ======================
