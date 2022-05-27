@@ -45,7 +45,7 @@ create_helper()
 
    kubectl create -f $filename > $LOGDIR/create_helper.log
    print_status $? $LOGDIR/create_helper.log
-   check_running $OIRINS oiri-cli
+   check_running $OIRINS oiri-cli 15
 
    ET=`date +%s`
    print_time STEP "Create Helper container" $ST $ET >> $LOGDIR/timings.log
@@ -71,7 +71,7 @@ create_ding_helper()
 
    kubectl create -f $filename > $LOGDIR/create_helper.log
    print_status $? $LOGDIR/create_helper.log
-   check_running $OIRINS oiri-cli
+   check_running $OIRINS oiri-cli 15
    ET=`date +%s`
    print_time STEP "Create DING Helper container" $ST $ET >> $LOGDIR/timings.log
 }
@@ -181,7 +181,6 @@ copy_cacert()
 { 
    print_msg "Copying Kubernetes ca.crt File to DING"
    ST=`date +%s`
-   #grep certificate-authority-data $KUBECONFIG | tr -d " " | sed 's/certificate-authority-data://' | base64 -d > $WORKDIR/ca.crt
    copy_to_oiri $WORKDIR/ca.crt /app $DINGNS oiri-ding-cli
    print_status $? 
    ET=`date +%s`
@@ -251,7 +250,7 @@ setup_helm_files()
               --dingnfsstoragepath $OIRI_DING_SHARE \
               --dingnfsstoragecapacity $OIRI_DING_SHARE_SIZE \
               --ingressenabled false \
-              --ingresshostname $K8_WORKER_HOST1 \
+              --ingresshostname $OIRI_INGRESS_HOST \
               --sslenabled false "  > $LOGDIR/setup_helm_files.sh
     oiri_cli "/oiri-cli/scripts/setupValuesYaml.sh  \
               --oiriapiimage $OIRI_IMAGE:$OIRI_VER \
@@ -269,7 +268,7 @@ setup_helm_files()
               --dingnfsstoragepath $OIRI_DING_SHARE \
               --dingnfsstoragecapacity $OIRI_DING_SHARE_SIZE \
               --ingressenabled false \
-              --ingresshostname $K8_WORKER_HOST1 \
+              --ingresshostname $OIRI_INGRESS_HOST \
               --sslenabled false "  >> $LOGDIR/setup_helm_files.sh 2>&1
    print_status $? $LOGDIR/setup_helm_files.sh
    ET=`date +%s`
@@ -417,8 +416,8 @@ create_users()
    # Perform variable substitution in template files
    #
    update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $USERFILE
-   update_variable "<OUD_XELSYSADM_USER>" $OUD_XELSYSADM_USER $USERFILE
-   update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $USERFILE
+   update_variable "<LDAP_XELSYSADM_USER>" $LDAP_XELSYSADM_USER $USERFILE
+   update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $USERFILE
    update_variable "<OIRI_ENG_USER>" $OIRI_ENG_USER $USERFILE
    update_variable "<OIRI_ENG_PWD>" $OIRI_ENG_PWD $USERFILE
    update_variable "<OIRI_ENG_GROUP>" $OIRI_ENG_GROUP $USERFILE
@@ -551,7 +550,6 @@ get_ding_token()
    print_status $? 
 
    truncate -s -1 $WORKDIR/ding-sa-token
-   #ding_cli "cp  /app/k8s/ding-sa-token /app/data/conf"
    copy_to_oiri $WORKDIR/ding-sa-token /app/data/conf $DINGNS oiri-ding-cli
 
    ET=`date +%s`
@@ -616,17 +614,23 @@ create_ohs_entries()
 
    cp $TEMPLATE_DIR/ohs1.conf $UIFILE
    cp $TEMPLATE_DIR/ohs2.conf $APIFILE
-   update_variable "<OIRI_UI_K8>" $OIRI_UI_K8 $UIFILE
    update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $UIFILE
    update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $UIFILE
-   update_variable "<OIRI_K8>" $OIRI_K8 $APIFILE
    update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $APIFILE
    update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $APIFILE
  
+   if [ "$USE_INGRESS" = "true" ]
+   then
+      update_variable "<OIRI_UI_K8>" $INGRESS_HTTP_PORT $UIFILE
+      update_variable "<OIRI_K8>" $INGRESS_HTTP_PORT $APIFILE
+   else
+      update_variable "<OIRI_UI_K8>" $OIRI_UI_K8 $UIFILE
+      update_variable "<OIRI_K8>" $OIRI_K8 $APIFILE
+   fi
    OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
    OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2
 
-   if [ ! "$OHS_HOST2" = "" ]
+   if [ ! "$OHS_HOST1" = "" ]
    then
       sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/igdadmin_vh.conf
       sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/igdinternal_vh.conf
@@ -646,5 +650,5 @@ create_ohs_entries()
    print_status $?
 
    ET=`date +%s`
-   print_time STEP "Update OHS Files" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Create OHS Entries" $ST $ET >> $LOGDIR/timings.log
 }

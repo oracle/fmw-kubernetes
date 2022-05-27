@@ -17,6 +17,10 @@ RSPFILE=responsefile/idm.rsp
 echo "Checking Pre-requisites"
 echo "-----------------------"
 
+echo " "
+echo " NOTE: PASSWORDS CONTAINING RESERVED CHARACTERS MUST BE ESCAPED"
+echo " "
+
 echo -n "Have you downloaded and staged the container images (y/n) :"
 read ANS
 if ! check_yes $ANS
@@ -115,6 +119,39 @@ then
 fi
 
 echo 
+echo -n  "Do you wish to create a GITHUB secret (y/n) : "
+read ANS
+if  check_yes $ANS
+then
+    CREATE_GITSECRET=true
+else
+    CREATE_GITSECRET=false
+fi
+replace_value CREATE_GITSECRET $CREATE_GITSECRET $RSPFILE
+
+if [ "$CREATE_GITSECRET" = "true" ]
+then
+    echo -n "Enter GIT Username [$GIT_USER]:"
+    read ANS
+
+    if  [ ! "$ANS" = "" ]
+    then
+        replace_value GIT_USER $ANS $RSPFILE
+    fi
+
+    echo -n "Enter GIT Token :" 
+    read -s ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+         replace_value GIT_TOKEN $ANS $RSPFILE
+     else
+         echo "Leaving value as previously defined"
+     fi
+fi
+     
+
+echo 
 echo -n  "Do you wish to change the default ports (y/n) : "
 read ANS
 if  check_yes $ANS
@@ -142,9 +179,31 @@ else
     GET_USER=false
 fi
 
+echo -n "Do you wish to configure products using Ingress (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    USE_INGRESS=true
+else
+    USE_INGRESS=false
+fi
+
+echo 
 echo "Products to Install and Configure"
 echo "---------------------------------"
 echo " "
+echo -n  "  Do you wish to install/config an Ingress Controller (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_INGRESS=true
+else
+    INSTALL_INGRESS=false
+fi
+
+echo
 echo -n  "  Do you wish to install/config OUD (y/n) : "
 read ANS
 
@@ -166,6 +225,16 @@ else
     INSTALL_OUDSM=false
 fi
 
+echo " "
+echo -n  "  Do you wish to install/config Oracle WebLogic Operator (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_WLSOPER=true
+else
+    INSTALL_WLSOPER=false
+fi
 
 echo " "
 echo -n  "  Do you wish to install/config Oracle Access Manager (y/n) : "
@@ -200,11 +269,27 @@ else
     INSTALL_OIRI=false
 fi
 
+echo
+echo -n  "  Do you wish to install/config Oracle Advanced Authentication (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_OAA=true
+else
+    INSTALL_OAA=false
+fi
+
+replace_value INSTALL_INGRESS $INSTALL_INGRESS $RSPFILE
 replace_value INSTALL_OUD $INSTALL_OUD $RSPFILE
 replace_value INSTALL_OUDSM $INSTALL_OUDSM $RSPFILE
+replace_value INSTALL_WLSOPER $INSTALL_WLSOPER $RSPFILE
 replace_value INSTALL_OAM $INSTALL_OAM $RSPFILE
 replace_value INSTALL_OIG $INSTALL_OIG $RSPFILE
 replace_value INSTALL_OIRI $INSTALL_OIRI $RSPFILE
+replace_value INSTALL_OAA $INSTALL_OAA $RSPFILE
+
+replace_value USE_INGRESS $USE_INGRESS $RSPFILE
 
 echo " "
 echo "File Locations"
@@ -237,12 +322,137 @@ echo " "
 echo "NFS Locations"
 echo "--------------"
 
-echo -n "Enter IP of NFS Server [$PVSERVER]:"
+echo -n "Enter Name/IP of NFS Server [$PVSERVER]:"
 read ANS
 
 if [ ! "$ANS" = "" ]
 then
      replace_value PVSERVER $ANS $RSPFILE
+fi
+
+echo " "
+echo "SSL Parameters"
+echo "--------------"
+
+echo -n "Enter SSL Country Code [$SSL_COUNTRY]:"
+read ANS
+
+if [ ! "$ANS" = "" ]
+then
+     replace_value SSL_COUNTRY $ANS $RSPFILE
+fi
+
+echo -n "Enter SSL Organisation Name [$SSL_ORG]:"
+read ANS
+
+if [ ! "$ANS" = "" ]
+then
+     replace_value SSL_ORG "$ANS" $RSPFILE
+fi
+
+
+echo -n "Enter SSL City Name [$SSL_CITY]:"
+read ANS
+
+if [ ! "$ANS" = "" ]
+then
+     replace_value SSL_CITY "$ANS" $RSPFILE
+fi
+
+echo -n "Enter SSL State Name [$SSL_STATE]:"
+read ANS
+
+if [ ! "$ANS" = "" ]
+then
+     replace_value SSL_STATE "$ANS" $RSPFILE
+fi
+
+
+if [ "$INSTALL_INGRESS" = "true" ]
+then
+
+      echo " "
+      echo "Ingress - NGINX"
+      echo "---------------"
+
+      if [ "$GET_NS" = "true" ]
+      then
+          echo -n "Enter Kubernetes Namespace for Ingress [$INGRESSNS]:"
+          read ANS
+
+          if [ ! "$ANS" = "" ]
+          then
+               replace_value INGRESSNS $ANS $RSPFILE
+          fi
+      fi
+
+      echo -n "Do you wish to Enable SSL Support (y/n) : "
+      read ANS
+
+      if check_yes $ANS 
+      then
+          INGRESS_SSL=true
+      else
+          INGRESS_SSL=false
+      fi
+      replace_value INGRESS_SSL $INGRESS_SSL $RSPFILE
+
+      echo -n "Do you wish to Enable TCP Support for LDAP Connections (y/n) : "
+      read ANS
+
+      if check_yes $ANS 
+      then
+          INGRESS_ENABLE_TCP=true
+      else
+          INGRESS_ENABLE_TCP=false
+      fi
+      replace_value INGRESS_ENABLE_TCP $INGRESS_ENABLE_TCP $RSPFILE
+
+      echo -n "Enter Ingress Name [$INGRESS_NAME]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value INGRESS_NAME $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Ingress Domain Name [$INGRESS_DOMAIN]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value INGRESS_DOMAIN $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Number of Ingress Replicas required  [$INGRESS_REPLICAS]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value INGRESS_REPLICAS $ANS $RSPFILE
+      fi
+
+      if [ "$GET_PORT" = "true" ]
+      then
+         echo -n "Enter Ingress HTTP Port [$INGRESS_HTTP_K8]:"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              replace_value INGRESS_HTTP_K8 $ANS $RSPFILE
+         fi
+
+         if [ "$INGRESS_SSL" ="true" ]
+         then
+             echo -n "Enter Ingress HTTPS Port [$INGRESS_HTTPS_K8]:"
+             read ANS
+
+             if [ ! "$ANS" = "" ]
+             then
+                  replace_value INGRESS_HTTPS_K8 $ANS $RSPFILE
+             fi
+         fi
+      fi
 fi
 
 if [ "$INSTALL_OUD" = "true" ]
@@ -268,6 +478,35 @@ then
 
       fi
 
+      echo -n "Enter Docker Hub Username [$DH_USER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value DH_USER $ANS $RSPFILE
+
+      fi
+
+      echo -n "Enter Password of Docker Hub :" 
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password of Docker Hub :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_value DH_PWD $ANS $RSPFILE
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
       echo -n "Enter Kubernetes OUD POD Prefix [$OUD_POD_PREFIX]:"
       read ANS
 
@@ -283,12 +522,12 @@ then
            replace_value OUD_SHARE $ANS $RSPFILE
       fi
 
-      echo -n "Enter OUD PV local Mount Point [$OUD_LOCAL_SHARE]:"
+      echo -n "Enter OUD PV local Mount Point [$OUD_LOCAL_PVSHARE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_LOCAL_SHARE $ANS $RSPFILE
+           replace_value OUD_LOCAL_PVSHARE $ANS $RSPFILE
       fi
 
       echo -n "Enter OUD Config PV Local Mount Point [$OUD_CONFIG_SHARE]:"
@@ -320,16 +559,16 @@ then
 
       if [ "$GET_USER" = "true" ]
       then
-           echo -n "Enter Name of OUD Admin User to be used [$OUD_ADMIN_USER]:"
+           echo -n "Enter Name of OUD Admin User to be used [$LDAP_ADMIN_USER]:"
            read ANS
 
            if [ ! "$ANS" = "" ]
            then
-                replace_value OUD_ADMIN_USER $ANS $RSPFILE
+                replace_value LDAP_ADMIN_USER $ANS $RSPFILE
            fi
       fi
 
-      echo -n "Enter Password of OUD Admin User ($OUD_ADMIN_USER) :" 
+      echo -n "Enter Password of OUD Admin User ($LDAP_ADMIN_USER) :" 
       read -s ANS
 
       if [ ! "$ANS" = "" ]
@@ -343,7 +582,7 @@ then
               exit
            else
                echo
-               replace_value OUD_ADMIN_PWD $ANS $RSPFILE
+               replace_value LDAP_ADMIN_PWD $ANS $RSPFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -385,68 +624,68 @@ then
           fi
       fi
 
-      OLD_SEARCHBASE=$OUD_SEARCHBASE
-      echo -n "OUD Base DN [$OUD_SEARCHBASE]:"
+      OLD_SEARCHBASE=$LDAP_SEARCHBASE
+      echo -n "OUD Base DN [$LDAP_SEARCHBASE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
            global_replace_value $OLD_SEARCHBASE $ANS $RSPFILE
-           OUD_SEARCHBASE=$ANS
+           LDAP_SEARCHBASE=$ANS
            OUD_REGION=`echo $ANS | cut -f1 -d, | cut -f2 -d=`
            replace_value OUD_REGION $OUD_REGION $RSPFILE
-           OAM_COOKIE_DOMAIN=`echo $OUD_SEARCHBASE | sed 's/dc=/./g;s/,//g'`
+           OAM_COOKIE_DOMAIN=`echo $LDAP_SEARCHBASE | sed 's/dc=/./g;s/,//g'`
            replace_value OAM_COOKIE_DOMAIN $OAM_COOKIE_DOMAIN $RSPFILE
       fi
 
-      echo -n "Container to store systems IDS  [$OUD_SYSTEMIDS]:"
+      echo -n "Container to store systems IDS  [$LDAP_SYSTEMIDS]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_SYSTEMIDS $ANS $RSPFILE
+           replace_value LDAP_SYSTEMIDS $ANS $RSPFILE
       fi
 
       if [ "$GET_USER" = "true" ]
       then
-           echo -n "OAM Administrator User [$OUD_OAMADMIN_USER]:"
+           echo -n "OAM Administrator User [$LDAP_OAMADMIN_USER]:"
            read ANS
 
            if [ ! "$ANS" = "" ]
            then
-                replace_value OUD_OAMADMIN_USER $ANS $RSPFILE
+                replace_value LDAP_OAMADMIN_USER $ANS $RSPFILE
            fi
 
-           echo -n "OAM LDAP Connection User [$OUD_OAMLDAP_USER]:"
+           echo -n "OAM LDAP Connection User [$LDAP_OAMLDAP_USER]:"
            read ANS
 
            if [ ! "$ANS" = "" ]
            then
-                replace_value OUD_OAMLDAP_USER $ANS $RSPFILE
+                replace_value LDAP_OAMLDAP_USER $ANS $RSPFILE
            fi
 
-           echo -n "OIG LDAP Connection User [$OUD_OIGLDAP_USER]:"
+           echo -n "OIG LDAP Connection User [$LDAP_OIGLDAP_USER]:"
            read ANS
 
            if [ ! "$ANS" = "" ]
            then
-                replace_value OUD_OIGLDAP_USER $ANS $RSPFILE
+                replace_value LDAP_OIGLDAP_USER $ANS $RSPFILE
            fi
 
-           echo -n "LDAP WebLogic Administration User [$OUD_WLSADMIN_USER]:"
+           echo -n "LDAP WebLogic Administration User [$LDAP_WLSADMIN_USER]:"
            read ANS
 
            if [ ! "$ANS" = "" ]
            then
-                replace_value OUD_WLSADMIN_USER $ANS $RSPFILE
+                replace_value LDAP_WLSADMIN_USER $ANS $RSPFILE
            fi
 
-           echo -n "LDAP OIG Administration User [$OUD_XELSYSADM_USER]:"
+           echo -n "LDAP OIG Administration User [$LDAP_XELSYSADM_USER]:"
            read ANS
 
            if [ ! "$ANS" = "" ]
            then
-                replace_value OUD_XELSYSADM_USER $ANS $RSPFILE
+                replace_value LDAP_XELSYSADM_USER $ANS $RSPFILE
            fi
 
     fi
@@ -464,7 +703,7 @@ then
          exit
       else
          echo
-         replace_value OUD_USER_PWD $ANS $RSPFILE
+         replace_value LDAP_USER_PWD $ANS $RSPFILE
       fi
     else
       echo "Leaving value as previously defined"
@@ -480,28 +719,28 @@ then
 
     if [ "$GET_USER" = "true" ]
     then
-      echo -n "LDAP OAM Administration Group [$OUD_OAMADMIN_GRP]:"
+      echo -n "LDAP OAM Administration Group [$LDAP_OAMADMIN_GRP]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_OAMADMIN_GRP $ANS $RSPFILE
+           replace_value LDAP_OAMADMIN_GRP $ANS $RSPFILE
       fi
 
-      echo -n "LDAP OIG Administration Group [$OUD_OIGADMIN_GRP]:"
+      echo -n "LDAP OIG Administration Group [$LDAP_OIGADMIN_GRP]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_OIGADMIN_GRP $ANS $RSPFILE
+           replace_value LDAP_OIGADMIN_GRP $ANS $RSPFILE
       fi
 
-      echo -n "LDAP WebLogic Administration Group [$OUD_WLSADMIN_GRP]:"
+      echo -n "LDAP WebLogic Administration Group [$LDAP_WLSADMIN_GRP]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_WLSADMIN_GRP $ANS $RSPFILE
+           replace_value LDAP_WLSADMIN_GRP $ANS $RSPFILE
       fi
    fi
 fi
@@ -721,7 +960,7 @@ then
            replace_value OAM_DB_SCAN $ANS $RSPFILE
       fi
 
-      echo -n "Enter Database Listener Port[$OAM_DB_LISTENER]:"
+      echo -n "Enter Database Listener Port [$OAM_DB_LISTENER]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -729,7 +968,7 @@ then
            replace_value OAM_DB_LISTENER $ANS $RSPFILE
       fi
 
-      echo -n "Enter OAM Database Service Name[$OAM_DB_SERVICE]:"
+      echo -n "Enter OAM Database Service Name [$OAM_DB_SERVICE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -863,7 +1102,7 @@ then
          echo "Leaving value as previously defined"
       fi
 
-      echo OAM_COOKIE_DOMAIN=`echo $OUD_SEARCHBASE | sed 's/dc=/./g;s/,//g'`
+      echo OAM_COOKIE_DOMAIN=`echo $LDAP_SEARCHBASE | sed 's/dc=/./g;s/,//g'`
       replace_value OAM_COOKIE_DOMAIN $OAM_COOKIE_DOMAIN $RSPFILE
 
 fi
@@ -946,7 +1185,7 @@ then
            replace_value OIG_DB_SCAN $ANS $RSPFILE
       fi
 
-      echo -n "Enter Database Listener Port[$OIG_DB_LISTENER]:"
+      echo -n "Enter Database Listener Port [$OIG_DB_LISTENER]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -954,7 +1193,7 @@ then
            replace_value OIG_DB_LISTENER $ANS $RSPFILE
       fi
 
-      echo -n "Enter OIG Database Service Name[$OIG_DB_SERVICE]:"
+      echo -n "Enter OIG Database Service Name [$OIG_DB_SERVICE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -1378,7 +1617,7 @@ then
            replace_value OIRI_DB_SCAN $ANS $RSPFILE
       fi
 
-      echo -n "Enter Database Listener Port[$OIRI_DB_LISTENER]:"
+      echo -n "Enter Database Listener Port [$OIRI_DB_LISTENER]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -1386,7 +1625,7 @@ then
            replace_value OIRI_DB_LISTENER $ANS $RSPFILE
       fi
 
-      echo -n "Enter OIRI Database Service Name[$OIRI_DB_SERVICE]:"
+      echo -n "Enter OIRI Database Service Name [$OIRI_DB_SERVICE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -1487,7 +1726,7 @@ then
               exit
            else
                echo
-               replace_value OIRI_SERVICE_USER $ANS $RSPFILE
+               replace_value OIRI_SERVICE_PWD $ANS $RSPFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -1518,7 +1757,7 @@ then
               exit
            else
                echo
-               replace_value OIRI_ENG_USER $ANS $RSPFILE
+               replace_value OIRI_ENG_PWD $ANS $RSPFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -1539,11 +1778,499 @@ then
       then
            if [ "$ANS" = "true" ] ||  [ "$ANS" = "false" ]
            then
-               replace_value OIRI_LOAD_DAYA $ANS $RSPFILE
+               replace_value OIRI_LOAD_DATA $ANS $RSPFILE
            else
                echo "Enter true or false."
            fi
       fi
+fi
+if [ "$INSTALL_OAA" = "true" ] 
+then
+      echo
+      echo "Oracle Advanced Authentication Parameters"
+      echo "-----------------------------------------"
+      echo
+
+      echo -n "Enter OAA Management Image Name [$OAA_MGT_IMAGE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_MGT_IMAGE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Management Image Version [$OAAMGT_VER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAAMGT_VER $ANS $RSPFILE
+
+      fi
+
+      echo -n "Enter OAA Images Version [$OAA_VER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_VER $ANS $RSPFILE
+
+      fi
+
+
+      if [ "$GET_NS" = "true" ]
+      then
+         echo -n "Enter OAA Namespace [$OAANS]:"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              replace_value OAANS $ANS $RSPFILE
+         fi
+
+         echo -n "Enter Coherence Namespace [$OAACONS]:"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              replace_value OAACONS $ANS $RSPFILE
+         fi
+      fi
+
+      echo -n "Enter OAA Deployment Name [$OAA_DEPLOYMENT]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           if [ "$ANS" = "oaa" ]
+           then
+               echo "A deployment name of oaa is not permitted, using - $OAA_DEPLOYMENT"
+           else
+               replace_value OAA_DEPLOYMENT $ANS $RSPFILE
+           fi
+      fi
+
+      echo -n "Enter OAA Domain Name [$OAA_DOMAIN]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DOMAIN $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Vault Type (file/oci) [$OAA_VAULT_TYPE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           if [ "$ANS" = "file" ] || [ "$ANS" = "oci" ]
+           then
+               replace_value OAA_DOMAIN $ANS $RSPFILE
+           else
+               echo "Invalid Value - Defaulting to OAA_VAULT_TYPE"
+           fi
+      fi
+
+      if [ "$USE_INGRESS" = "true" ]
+      then
+         echo -n "Enter OAA Runtime Host Name [$OAA_RUNTIME_HOST]:"
+         read ANS
+   
+         if [ ! "$ANS" = "" ]
+         then
+             replace_value OAA_RUNTIME_HOST $ANS $RSPFILE
+         fi
+   
+         echo -n "Enter OAA Admin Host Name [$OAA_ADMIN_HOST]:"
+         read ANS
+   
+         if [ ! "$ANS" = "" ]
+         then
+             replace_value OAA_ADMIN_HOST $ANS $RSPFILE
+         fi
+
+         echo -n "Do you wish to create OHS Sample Files (y/n) : "
+         read ANS
+
+         if check_yes $ANS 
+         then
+             OAA_CREATE_OHS=true
+         else
+             OAA_CREATE_OHS=false
+         fi
+         replace_value OAA_CREATE_OHS $OAA_CREATE_OHS $RSPFILE
+      fi
+   
+      echo -n "Enter OAA Configuration Persistent Volume NFS Mount Point [$OAA_CONFIG_SHARE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_CONFIG_SHARE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA PV local Mount Point [$OAA_LOCAL_CONFIG_SHARE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_LOCAL_CONFIG_SHARE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Credential Persistent Volume NFS Mount Point [$OAA_CRED_SHARE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_CRED_SHARE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Credential PV local Mount Point [$OAA_LOCAL_CRED_SHARE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_LOCAL_CRED_SHARE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Log Persistent Volume NFS Mount Point [$OAA_LOG_SHARE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_LOG_SHARE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Log PV local Mount Point [$OAA_LOCAL_LOG_SHARE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_LOCAL_LOG_SHARE $ANS $RSPFILE
+      fi
+
+      if [ "$OAA_VAULT_TYPE" = "file" ]
+      then
+           echo -n "Enter OAA Vault Persistent Volume NFS Mount Point [$OAA_VAULT_SHARE]:"
+           read ANS
+
+           if [ ! "$ANS" = "" ]
+           then
+                replace_value OAA_VAULT_SHARE $ANS $RSPFILE
+           fi
+
+           echo -n "Enter OAA Vault PV local Mount Point [$OAA_LOCAL_VAULT_SHARE]:"
+           read ANS
+
+           if [ ! "$ANS" = "" ]
+           then
+                replace_value OAA_LOCAL_VAULT_SHARE $ANS $RSPFILE
+           fi
+
+           echo -n "Enter Vault Password :"
+           read -s ANS
+
+           if [ ! "$ANS" = "" ]
+           then
+                echo
+                echo -n "Confirm Password of Vault Users :"
+                read -s ACHECK
+                if [ ! "$ANS" = "$ACHECK" ]
+                then
+                   echo "Passwords do not match!"
+                   exit
+                else
+                    echo
+                    replace_value OAA_VAULT_PWD $ANS $RSPFILE
+                fi
+            else
+               echo "Leaving value as previously defined"
+            fi
+      fi
+
+      echo -n "Enter Number of OAA Servers to start  [$OAA_REPLICAS]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_REPLICAS $ANS $RSPFILE
+           replace_value OAA_ADMIN_REPLICAS $ANS $RSPFILE
+           replace_value OAA_POLICY_REPLICAS $ANS $RSPFILE
+           replace_value OAA_SPUI_REPLICAS $ANS $RSPFILE
+           replace_value OAA_TOTP_REPLICAS $ANS $RSPFILE
+           replace_value OAA_YOTP_REPLICAS $ANS $RSPFILE
+           replace_value OAA_FIDO_REPLICAS $ANS $RSPFILE
+           replace_value OAA_EMAIL_REPLICAS $ANS $RSPFILE
+           replace_value OAA_SMS_REPLICAS $ANS $RSPFILE
+           replace_value OAA_PUSH_REPLICAS $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Number of OAA Risk Servers to start  [$OAA_RISK_REPLICAS]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_RISK_REPLICAS $ANS $RSPFILE
+           replace_value OAA_RISKCC_REPLICAS $ANS $RSPFILE
+      fi
+
+      echo ""
+
+      echo -n "Enter OAA Database Scan Address (Use Hostname for non-RAC)  [$OAA_DB_SCAN]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_SCAN $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Database Listener Port [$OAA_DB_LISTENER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_LISTENER $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Database Service Name [$OAA_DB_SERVICE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_SERVICE $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA a Database Host Name [$OAA_DB_HOST]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_HOST $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Database Host User Name [$OAA_DB_USER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_USER $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Database ORACLE_SID [$OAA_DB_SID]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_SID $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OAA Database ORACLE_HOME [$OAA_DB_HOME]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_DB_HOME $ANS $RSPFILE
+      fi
+
+      echo -n "Enter SYS Password :"
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password of SYS Users :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_value OAA_DB_SYS_PWD $ANS $RSPFILE
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
+      echo -n "Enter RCU Prefix [$OAA_RCU_PREFIX]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_RCU_PREFIX $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Password for OAA Schemas: "
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password of OAA Schemas :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_value OAA_SCHEMA_PWD $ANS $RSPFILE
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
+      echo -n "Enter Password for OAA Keystores: "
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password of OAA Keystore :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_value OAA_KEYSTORE_PWD $ANS $RSPFILE
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
+      if [ "$GET_USER" = "true" ]
+      then
+         echo -n "Enter OAA Admin User [$OAA_ADMIN_USER]:"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              replace_value OAA_ADMIN_USER $ANS $RSPFILE
+         fi
+      fi 
+
+      echo -n "Enter Password for $OAA_ADMIN_USER account: "
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_value OAA_ADMIN_PWD $ANS $RSPFILE
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
+      echo -n "Do you wish to Create an OAA Test User (y/n) : "
+      read ANS
+
+      if check_yes $ANS 
+      then
+          OAA_CREATE_TESTUSER=true
+      else
+          OAA_CREATE_TESTUSER=false
+      fi
+      replace_value OAA_CREATE_TESTUSER $OAA_CREATE_TESTUSER $RSPFILE
+
+      if [ "$OAA_CREATE_TESTUSER" = "true" ]
+      then
+         if [ "$GET_USER" = "true" ] 
+         then
+            echo -n "Enter OAA Test User name [$OAA_USER]:"
+            read ANS
+   
+            if [ ! "$ANS" = "" ]
+            then
+                 replace_value OAA_USER $ANS $RSPFILE
+            fi
+         fi 
+
+         echo -n "Enter Password for $OAA_USER account: "
+         read -s ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              echo
+              echo -n "Confirm Password :"
+              read -s ACHECK
+              if [ ! "$ANS" = "$ACHECK" ]
+              then
+                 echo "Passwords do not match!"
+                 exit
+              else
+                  echo
+                  replace_value OAA_USER $ANS $RSPFILE
+              fi
+         else
+            echo "Leaving value as previously defined"
+         fi
+
+         echo -n "Enter Email Address for $OAA_USER account [$OAA_USER_EMAIL] : "
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+             replace_value OAA_USER_EMAIL $ANS $RSPFILE
+         fi
+
+         echo -n "Enter Post Code for $OAA_USER account [$OAA_USER_POSTCODE] : "
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+             replace_value OAA_USER_POSTCODE $ANS $RSPFILE
+         fi
+      fi
+
+      echo -n "Enter Unified Messaging Service URL [$OAA_EMAIL_SERVER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_EMAIL_SERVER $ANS $RSPFILE
+           replace_value OAA_SMS_SERVER $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Unified Messaging Service User [$OAA_EMAIL_USER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_EMAIL_USER $ANS $RSPFILE
+           replace_value OAA_SMS_USER $ANS $RSPFILE
+      fi
+
+      echo -n "Enter Password for $OAA_EMAIL_USER account: "
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_value OAA_EMAIL_PWD $ANS $RSPFILE
+               replace_value OAA_SMS_PWD $ANS $RSPFILE
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
 fi
 echo
 echo "Oracle HTTP Server Parameters"

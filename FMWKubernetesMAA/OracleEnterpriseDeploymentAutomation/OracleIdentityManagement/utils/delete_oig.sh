@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OIG deployment
@@ -39,9 +39,14 @@ ST=`date +%s`
 echo "Delete Domain Creation Job"
 kubectl delete jobs $OIG_DOMAIN_NAME-create-fmw-infra-sample-domain-job -n $OIGNS > $LOG 2>&1
 
-echo "Delete NodePort Services"
-if [ -f $WORKDIR/oim_nodeport.yaml ]
+if [ "$USE_INGRESS" = "true" ]
 then
+   echo "Delete Ingress Services"
+   kubectl delete ingress -n $OIGNS oigadmin-ingress >> $LOG 2>&1
+   kubectl delete ingress -n $OIGNS oiginternal-ingress >> $LOG 2>&1
+   kubectl delete ingress -n $OIGNS oigruntime-ingress >> $LOG 2>&1
+else
+   echo "Delete NodePort Services"
    kubectl delete service -n $OIGNS $OIG_DOMAIN_NAME-oim-nodeport >> $LOG 2>&1
    kubectl delete service -n $OIGNS $OIG_DOMAIN_NAME-soa-nodeport >> $LOG 2>&1
 fi
@@ -65,11 +70,33 @@ check_stopped $OIGNS adminserver
 
 # Drop the OIG schemas
 #
-echo "Drop Schemas"
+printf "Drop Schemas - "
 
 ST=`date +%s`
 drop_schemas  $OIGNS $OIG_DB_SCAN $OIG_DB_LISTENER $OIG_DB_SERVICE $OIG_RCU_PREFIX OIG $OIG_DB_SYS_PWD $OIG_SCHEMA_PWD >> $LOG 2>&1
 ET=`date +%s`
+
+grep -q "Prefix validation failed." $LOG
+if [ $? -eq 0 ]
+then
+     echo "Schema Does not exist"
+else
+     grep -q "ORA-01940" $LOG
+     if [ $? -eq 0 ]
+     then
+          echo "Failed User Connected logfile $LOG"
+          exit 1
+     fi
+
+     grep -q "Repository Creation Utility - Drop : Operation Completed" $LOG
+     if [ $? -eq 0 ]
+     then
+          echo "Success"
+     else
+          echo "Failed see logfile $LOG"
+          exit 1
+     fi
+fi
 
 print_time STEP "Drop Schemas" $ST $ET 
 
@@ -81,7 +108,7 @@ echo "Deleting Volumes"
 # Delete the files in the persistent volumes
 rm -rf  $OIG_LOCAL_SHARE/*  >> $LOG 2>&1
 rm  -rf $WORKDIR/*  >> $LOG 2>&1
-rm  -rf $WORKDIR/* $LOCAL_WORKDIR/OHS/*/prov_vh.conf $LOCAL_WORKDIR/OHS/*/igd*_vh.conf>> $LOG 2>&1
+rm  -rf $WORKDIR/* $LOCAL_WORKDIR/OHS/*/prov_vh.conf $LOCAL_WORKDIR/OHS/*/igd*_vh.conf $LOCAL_WORKDIR/oig_installed>> $LOG 2>&1
 
 ET=`date +%s`
 print_time STEP "Delete Volume" $ST $ET 

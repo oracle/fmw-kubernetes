@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example file to compile java program and Run Recon Jobs
@@ -10,17 +10,17 @@ echo "Compiling Java Code:"
 javac /u01/oracle/user_projects/workdir/runJob.java -Xlint:deprecation -Xlint:unchecked > runJob_compile.log 2> runJob_compile_err.log
 
 
-java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <OUD_XELSYSADM_USER> <OUD_USER_PWD> "SSO Connector Integration Group Full Reconciliation"
+java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <LDAP_XELSYSADM_USER> <LDAP_USER_PWD> "SSO Connector Integration Group Full Reconciliation"
 
 sleep 20
 
-java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <OUD_XELSYSADM_USER> <OUD_USER_PWD> "SSO Connector Integration User Reconciliation"
+java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <LDAP_XELSYSADM_USER> <LDAP_USER_PWD> "SSO Connector Integration User Reconciliation"
 
 sleep 20
 
-java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <OUD_XELSYSADM_USER> <OUD_USER_PWD> "SSO Connector Integration Group Membership Full Reconciliation"
+java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <LDAP_XELSYSADM_USER> <LDAP_USER_PWD> "SSO Connector Integration Group Membership Full Reconciliation"
 
 sleep 20
 
-java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <OUD_XELSYSADM_USER> <OUD_USER_PWD> "SSO Connector Integration Group Hierarchy Sync Full Reconciliation"
+java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 runJob t3://<OIG_DOMAIN_NAME>-oim-server1.<OIGNS>.svc.cluster.local:14000/ <LDAP_XELSYSADM_USER> <LDAP_USER_PWD> "SSO Connector Integration Group Hierarchy Sync Full Reconciliation"
 

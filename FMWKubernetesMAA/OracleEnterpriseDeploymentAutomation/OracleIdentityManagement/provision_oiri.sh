@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which can be used to deploy Oracle Identity Role Intelligence
@@ -28,6 +28,17 @@ if [ "$INSTALL_OIRI" != "true" ] && [ "$INSTALL_OIRI" != "TRUE" ]
 then
      echo "You have not requested Oracle Identity Role Intelligence installation"
      exit 1
+fi
+
+if [ "$USE_INGRESS" = "true" ]
+then
+   INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
+   INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+   if [ "$INGRESS_HTTP_PORT" = "" ]
+   then
+       echo "Unable to get Ingress Ports - Check Ingress is running"
+       exit 1
+   fi
 fi
 
 echo
@@ -86,6 +97,9 @@ then
    update_progress
 fi
 
+
+# Create Service Account
+#
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
@@ -205,11 +219,14 @@ fi
 
 # Create NodePort Services
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$USE_INGRESS" = "false" ] 
 then
-   create_oiri_nodeport
-   update_progress
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+       create_oiri_nodeport
+       update_progress
+    fi
 fi
 
 
@@ -269,11 +286,14 @@ fi
 
 # Add OHS entries for OIRI to OIG ohs config files
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$USE_INGRESS" = "false" ] || [ "$OIRI_CREATE_OHS" = "true" ]
 then
-   create_ohs_entries
-   update_progress
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+       create_ohs_entries
+       update_progress
+    fi
 fi
 
 new_step
@@ -290,3 +310,4 @@ FINISH_TIME=`date +%s`
 print_time TOTAL "Create OIRI" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
 cat $LOGDIR/timings.log
+touch $LOCAL_WORKDIR/oiri_installed

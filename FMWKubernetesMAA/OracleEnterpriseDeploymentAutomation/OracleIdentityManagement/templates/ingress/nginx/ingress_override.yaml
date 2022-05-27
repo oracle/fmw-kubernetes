@@ -1,0 +1,23 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of deploying Ingress to support HTTP and HTTPS connections
+imagePullSecrets: 
+ - name: gitcred
+controller:
+  name: <INGRESS_NAME>
+  ingressClassResource:
+    name: nginx
+  config:
+    use-forwarded-headers: true
+    enable-underscores-in-headers: true
+  wildcardTLS:
+    secret: tls-cert
+  replicaCount: <INGRESS_REPLICAS>
+  service:
+    type: NodePort
+    nodePorts:
+      http: <INGRESS_HTTP_K8>
+      https: <INGRESS_HTTPS_K8>
+  admissionWebhooks:
+    enabled: false

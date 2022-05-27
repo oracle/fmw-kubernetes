@@ -1,0 +1,41 @@
+<!--
+ Copyright (c) 2022, Oracle and/or its affiliates.
+ Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+ This is an example of creating and OAM Authentication Scheme
+
+-->
+<AuthenticationScheme>
+   <name>OAA-MFA-Scheme</name>
+   <description>OAA MFA Authentication Scheme</description>
+   <authnModuleName>OAA-MFA-Auth-Module</authnModuleName>
+   <authnSchemeLevel>2</authnSchemeLevel>
+   <challengeMechanism>FORM</challengeMechanism>
+   <ChallengeParameters>
+      <challengeParameter>
+         <key>password</key>
+         <value>secure_string</value>
+      </challengeParameter>
+      <challengeParameter>
+         <key>contextType</key>
+         <value>default</value>
+      </challengeParameter>
+      <challengeParameter>
+         <key>contextValue</key>
+         <value>/oam</value>
+      </challengeParameter>
+      <challengeParameter>
+         <key>initial_command</key>
+         <value>NONE</value>
+      </challengeParameter>
+      <challengeParameter>
+         <key>username</key>
+         <value>string</value>
+      </challengeParameter>
+      <challengeParameter>
+         <key>challenge_url</key>
+         <value>/pages/login.jsp</value>
+      </challengeParameter>
+   </ChallengeParameters>
+   <challengeRedirectURL>/oam/server</challengeRedirectURL>
+</AuthenticationScheme>

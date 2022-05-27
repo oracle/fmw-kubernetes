@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of provisioning Oracle Unified Directory Services Manager
@@ -26,6 +26,17 @@ if [ "$INSTALL_OUDSM" != "true" ] && [ "$INSTALL_OUDSM" != "TRUE" ]
 then
      echo "You have not requested OUDSM installation"
      exit 1
+fi
+
+if [ "$USE_INGRESS" = "true" ]
+then
+   INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
+   INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+   if [ "$INGRESS_HTTP_PORT" = "" ]
+   then
+       echo "Unable to get Ingress Ports - Check Ingress is running"
+       exit 1
+   fi
 fi
 
 echo
@@ -88,6 +99,9 @@ if [ $STEPNO -gt $PROGRESS ] && [ "$USE_INGRESS" = "false" ]
 then
     create_oudsm_nodeport
     update_progress
+else 
+    update_progress
+    create_oudsm_ingress 
 fi
 
 # Create OUDSM OHS Entries
@@ -101,3 +115,5 @@ fi
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUDSM" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
+touch $LOCAL_WORKDIR/oudsm_installed
+cat $LOGDIR/timings.log

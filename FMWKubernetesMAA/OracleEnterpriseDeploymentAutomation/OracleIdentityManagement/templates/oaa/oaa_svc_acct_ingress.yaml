@@ -1,0 +1,84 @@
+# Copyright (c) 2022, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating a Kubernetes Service Account
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oaa-service-account
+  namespace: <OAANS>
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: oaa-ns-role
+  namespace: <OAANS>
+rules:
+- apiGroups: ["*"]
+  resources: ["*","secrets"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: coherence-ns-role
+  namespace: <OAACONS>
+rules:
+- apiGroups: ["*"]
+  resources: ["*","secrets"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oaa-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:persistent-volume-provisioner
+subjects:
+- namespace: <OAANS>
+  kind: ServiceAccount
+  name: oaa-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oaa-clusteradmin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- namespace: <OAANS>
+  kind: ServiceAccount
+  name: oaa-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oaa-rolebinding
+  namespace: <OAANS>
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: oaa-ns-role
+subjects:
+- namespace: <OAANS>
+  kind: ServiceAccount
+  name: oaa-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: coherence-rolebinding
+  namespace: <OAACONS>
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: coherence-ns-role
+subjects:
+- namespace: <OAANS>
+  kind: ServiceAccount
+  name: oaa-service-account

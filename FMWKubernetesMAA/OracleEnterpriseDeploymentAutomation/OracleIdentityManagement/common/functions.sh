@@ -20,6 +20,7 @@ export SAMPLES_DIR=`echo $SAMPLES_REP | awk -F  "/" '{print $NF}' | sed 's/.git/
 
 SSH="ssh -q"
 
+
 # Create local Directories
 #
 create_local_workdir()
@@ -64,10 +65,12 @@ create_registry_secret()
     pass=$3
     namespace=$4
 
+    credname=${5:-"regcred"}
+
     ST=`date +%s`
     print_msg "Creating Container Registry Secret in namespace $namespace"
     
-    kubectl create secret -n $namespace docker-registry regcred --docker-server=$registry --docker-username=$username --docker-password=$pass > $LOGDIR/create_reg_secret.log 2>&1
+    kubectl create secret -n $namespace docker-registry $credname --docker-server=$registry --docker-username=$username --docker-password=$pass > $LOGDIR/create_reg_secret.log 2>&1
     grep -q created $LOGDIR/create_reg_secret.log
     if [ $? = 0 ]
     then 
@@ -82,8 +85,40 @@ create_registry_secret()
                exit 1
           fi
     fi
+    ET=`date +%s`
+    print_time STEP "Creating Container Registry Secret in namespace $namespace" $ST $ET >> $LOGDIR/timings.log
 }
 
+#
+# Create github Registry Secret
+#
+create_git_secret()
+{
+    username=$1
+    token=$2
+    namespace=$3
+
+    ST=`date +%s`
+    print_msg "Creating GitHub Secret in namespace $namespace"
+    
+    kubectl create secret -n $namespace docker-registry github --docker-server=ghcr.io --docker-username=$username --docker-password="$token" > $LOGDIR/create_git_secret.log 2>&1
+    grep -q created $LOGDIR/create_git_secret.log
+    if [ $? = 0 ]
+    then 
+         echo "Success"
+    else
+          grep -q exists $LOGDIR/create_git_secret.log
+          if [ $? = 0 ]
+          then 
+               echo "Already Exists"
+          else
+               echo "Failed - See $LOGDIR/create_git_secret.log."
+               exit 1
+          fi
+    fi
+    ET=`date +%s`
+    print_time STEP "Creating GitHub Secret" $ST $ET >> $LOGDIR/timings.log
+}
 #
 check_oper_exists()
 {
@@ -116,18 +151,6 @@ install_operator()
     ET=`date +%s`
     print_time STEP "Install Operator" $ST $ET >> $LOGDIR/timings.log
 
-}
-upgrade_operator()
-{
-    nslist=$1
-    ST=`date +%s`
-    
-    print_msg  "Adding Namespaces:$nslist to Operator"
-    cd $WORKDIR/weblogic-kubernetes-operator
-    helm upgrade --reuse-values --namespace $OPERNS --set "domainNamespaces={$nslist}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator > $LOGDIR/upgrade_operator.log 2>&1
-    print_status $? $LOGDIR/upgrade_operator.log
-    ET=`date +%s`
-    print_time STEP "Add Namespaces:$nslist to Operator" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Kubernetes Functions
@@ -179,8 +202,10 @@ get_k8_port()
 {
    SVC=$1
    NS=$2
+   TYP=${3:-"http"}
 
-   PORTS=`kubectl get service -n $NS | grep NodePort | grep $SVC | awk '{ print $5 }'`
+
+   PORTS=`kubectl get service -n $NS | grep NodePort | grep "$SVC " | awk '{ print $5 }'`
 
    PORT1=(`echo $PORTS | cut -f1 -d, | sed 's/\/TCP//;s/:/ /'`)
    PORT2=(`echo $PORTS | cut -f2 -d, | sed 's/\/TCP//;s/:/ /'`)
@@ -191,7 +216,7 @@ get_k8_port()
    then 
         echo  ${PORT1[1]}
    else
-       if [ ${PORT1[0]} = 80 ]
+       if [ ${PORT1[0]} = 80 ] && [ "$TYP" = "http" ]
        then
           echo  ${PORT1[1]}
        else
@@ -704,6 +729,11 @@ update_variable()
      VAR=$1
      VAL=$2
      FILE=$3
+     if [ "$VAL" = "" ]
+     then
+        echo "Unable to update variable: $VAR with $VAL"
+        exit 1
+     fi
      NEWVAL=$(echo $VAL | sed 's/\//\\\//g')
      sed -i "s/$VAR/$NEWVAL/g" $FILE
      if [ "$?" = "1" ]
@@ -749,48 +779,48 @@ create_schemas ()
       printf "$RCUPWD\n" >> /tmp/pwd.txt
       print_msg "Creating $SCHEMA_TYPE Schemas"
 
-      printf "#!/bin/bash\n" > $WORKDIR/create_schema.sh
-      printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> $WORKDIR/create_schema.sh
-      printf " -connectString $DB_HOST:$DB_PORT/$DB_SERVICE " >> $WORKDIR/create_schema.sh
-      printf " -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true " >> $WORKDIR/create_schema.sh
-      printf " -schemaPrefix $RCU_PREFIX" >> $WORKDIR/create_schema.sh
+      printf "#!/bin/bash\n" > /tmp/create_schema.sh
+      printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> /tmp/create_schema.sh
+      printf " -connectString $DB_HOST:$DB_PORT/$DB_SERVICE " >> /tmp/create_schema.sh
+      printf " -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true " >> /tmp/create_schema.sh
+      printf " -schemaPrefix $RCU_PREFIX" >> /tmp/create_schema.sh
  
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
-           printf "$OIG_SCHEMAS" >> $WORKDIR/create_schema.sh
+           printf "$OIG_SCHEMAS" >> /tmp/create_schema.sh
       elif [ "$SCHEMA_TYPE" = "OAM" ]
       then
-           printf "$OAM_SCHEMAS" >> $WORKDIR/create_schema.sh
+           printf "$OAM_SCHEMAS" >> /tmp/create_schema.sh
       else
            printf "\nInvalid Schema Type: $SCHEMA_TYPE \n"
            exit 1
       fi
 
-      printf " -f < /tmp/pwd.txt \n" >> $WORKDIR/create_schema.sh
-      printf " exit \n" >> $WORKDIR/create_schema.sh
+      printf " -f < /tmp/pwd.txt \n" >> /tmp/create_schema.sh
+      printf " exit \n" >> /tmp/create_schema.sh
 
       kubectl cp /tmp/pwd.txt  $NAMESPACE/helper:/tmp
-      kubectl cp $WORKDIR/create_schema.sh  $NAMESPACE/helper:/tmp
+      kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
       kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/create_schema.sh > $LOGDIR/create_schemas.log 2>&1
       print_status $? $LOGDIR/create_schemas.log
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
          printf "\t\t\tPatching OIM Schema - " 
-         printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> $WORKDIR/patch_schema.sh
-         printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> $WORKDIR/patch_schema.sh
-         printf " run-patched-sql-files " >> $WORKDIR/patch_schema.sh
-         printf " -logger org.apache.tools.ant.NoBannerLogger " >> $WORKDIR/patch_schema.sh
-         printf " -logfile /tmp/patch_oim_wls.log " >> $WORKDIR/patch_schema.sh
-         printf " -DoperationsDB.host=$DB_HOST" >> $WORKDIR/patch_schema.sh
-         printf " -DoperationsDB.port=$DB_PORT " >> $WORKDIR/patch_schema.sh
-         printf " -DoperationsDB.serviceName=$DB_SERVICE " >> $WORKDIR/patch_schema.sh
-         printf " -DoperationsDB.user=${RCU_PREFIX}_OIM " >> $WORKDIR/patch_schema.sh
-         printf " -DOIM.DBPassword=$RCUPWD " >> $WORKDIR/patch_schema.sh
-         printf " -Dojdbc=/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar \n" >> $WORKDIR/patch_schema.sh
-         printf "exit \n" >> $WORKDIR/patch_schema.sh
+         printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> /tmp/patch_schema.sh
+         printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> /tmp/patch_schema.sh
+         printf " run-patched-sql-files " >> /tmp/patch_schema.sh
+         printf " -logger org.apache.tools.ant.NoBannerLogger " >> /tmp/patch_schema.sh
+         printf " -logfile /tmp/patch_oim_wls.log " >> /tmp/patch_schema.sh
+         printf " -DoperationsDB.host=$DB_HOST" >> /tmp/patch_schema.sh
+         printf " -DoperationsDB.port=$DB_PORT " >> /tmp/patch_schema.sh
+         printf " -DoperationsDB.serviceName=$DB_SERVICE " >> /tmp/patch_schema.sh
+         printf " -DoperationsDB.user=${RCU_PREFIX}_OIM " >> /tmp/patch_schema.sh
+         printf " -DOIM.DBPassword=$RCUPWD " >> /tmp/patch_schema.sh
+         printf " -Dojdbc=/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar \n" >> /tmp/patch_schema.sh
+         printf "exit \n" >> /tmp/patch_schema.sh
 
 
-         kubectl cp $WORKDIR/patch_schema.sh  $NAMESPACE/helper:/tmp
+         kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
          kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/patch_schema.sh > $LOGDIR/patch_schema.log 2>&1
          kubectl cp  $NAMESPACE/helper:/tmp/patch_oim_wls.log $LOGDIR/patch_oim_wls.log > /dev/null
          grep -q "BUILD SUCCESSFUL" $LOGDIR/patch_oim_wls.log
@@ -860,19 +890,20 @@ check_running()
 {
     NAMESPACE=$1
     SERVER_NAME=$2
+    DELAY=$3
     
     printf "\t\t\tChecking $SERVER_NAME "
     if [ "$SERVER_NAME" = "adminserver" ]
     then
         sleep 120
     else 
-        sleep 10
+        sleep ${DELAY:=10}
     fi
     X=0
     while [ "$X" = "0" ]
     do
 
-        POD=`kubectl --namespace $NAMESPACE get pod -o wide | grep $SERVER_NAME `
+        POD=`kubectl --namespace $NAMESPACE get pod -o wide | grep $SERVER_NAME | head -1 `
         if [ "$POD" = "" ]
         then
              JOB_STATUS=`kubectl --namespace $NAMESPACE get pod -o wide | grep infra-domain-job | awk '{ print $3 }'`
@@ -944,7 +975,7 @@ check_stopped()
         if [ "$RUNNING" = "1/1" ]
         then
            echo -e ".\c"
-           sleep 60
+           sleep 10
         else
              echo "Stopped"
            X=1
@@ -1081,7 +1112,7 @@ copy_ohs_config()
      print_msg "Copying OHS configuration Files to OHS Servers"
      printf "\n\t\t\tOHS Server $OHS_HOST1 - "
 
-     scp $LOCAL_WORKDIR/OHS/$OHS_HOST1/* $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs.log 2>&1
+     scp $LOCAL_WORKDIR/OHS/$OHS_HOST1/*vh.conf $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs.log 2>&1
      print_status $? $LOGDIR/copy_ohs.log
 
      if [ "$COPY_WG_FILES" = "true" ]
@@ -1100,7 +1131,7 @@ copy_ohs_config()
      then
          printf "\n\t\t\tOHS Server $OHS_HOST2 - "
 
-         scp $LOCAL_WORKDIR/OHS/$OHS_HOST2/* $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/moduleconf/ >> $LOGDIR/copy_ohs.log 2>&1
+         scp $LOCAL_WORKDIR/OHS/$OHS_HOST2/*vh.conf $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/moduleconf/ >> $LOGDIR/copy_ohs.log 2>&1
          print_status $? $LOGDIR/copy_ohs.log
     
          if [ "$COPY_WG_FILES" = "true" ]
@@ -1169,4 +1200,5 @@ function check_lbr()
        return 1
     fi
 }
+
 

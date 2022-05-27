@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OUD deployment
@@ -51,17 +51,11 @@ check_stopped $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0
 check_stopped $OUDNS $OUD_POD_PREFIX-oud-ds-rs-1
 
 echo "Delete Namespace $OUDNS"
-
 kubectl delete namespace $OUDNS
-if [ "$USE_INGRESS" = "true" ]
-then
-   echo "Delete Namespace $OUDINGNS"
-   helm uninstall edg-nginx -n $OUDINGNS
-   kubectl delete namespace $OUDINGNS
-fi
+
 
 echo "Delete Volumes"
-rm -rf $LOCAL_WORKDIR/OUD
+rm -rf $LOCAL_WORKDIR/OUD $LOCAL_WORKDIR/oud_installed
 rm -rf $OUD_LOCAL_PVSHARE/*
 
 FINISH_TIME=`date +%s`

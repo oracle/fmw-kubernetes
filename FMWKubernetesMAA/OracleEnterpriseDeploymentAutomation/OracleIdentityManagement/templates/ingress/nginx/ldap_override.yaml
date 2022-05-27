@@ -1,0 +1,31 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of an override file to deploy Ingress with HTTP/HTTPS/LDAP and LDAPS
+imagePullSecrets: 
+ - name: gitcred
+tcp: 
+  1389: <OUDNS>/<OUD_POD_PREFIX>-oud-ds-rs-lbr-ldap:ldap
+  1636: <OUDNS>/<OUD_POD_PREFIX>-oud-ds-rs-lbr-ldap:ldaps
+controller:
+  name: <INGRESS_NAME>
+  ingressClassResource:
+    name: nginx
+  config:
+    use-forwarded-headers: true
+    enable-underscores-in-headers: true
+  wildcardTLS:
+    secret: tls-cert
+  replicaCount: <INGRESS_REPLICAS>
+  service:
+    type: NodePort
+    nodePorts:
+      http: <INGRESS_HTTP_K8>
+      https: <INGRESS_HTTPS_K8>
+      tcp:
+        # For LDAP Interface
+        1389: <OUD_LDAP_K8>
+        # For LDAPS Interface
+        1636: <OUD_LDAPS_K8>
+  admissionWebhooks:
+    enabled: false

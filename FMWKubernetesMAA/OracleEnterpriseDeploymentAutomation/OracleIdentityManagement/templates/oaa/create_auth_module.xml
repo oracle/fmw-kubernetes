@@ -1,0 +1,83 @@
+<!--
+ Copyright (c) 2022, Oracle and/or its affiliates.
+ Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+ This is an example of creating and OAM Authentication Module 
+
+-->
+<Configuration>
+                <Setting Name="OAA-MFA-Auth-Module" Type="htf:map" Path="/DeployedComponent/Server/NGAMServer/Profile/AuthenticationModules/CompositeModules/OAA-MFA-Auth-Module">
+                  <Setting Name="Steps" Type="htf:list">
+                    <Setting Name="0" Type="htf:map">
+                      <Setting Name="PluginName" Type="xsd:string">UserIdentificationPlugIn</Setting>
+                      <Setting Name="Description" Type="xsd:string">Identify User</Setting>
+                      <Setting Name="Parameters" Type="htf:map">
+                        <Setting Name="KEY_IDENTITY_STORE_REF" Type="xsd:string"/>
+                        <Setting Name="KEY_LDAP_FILTER" Type="xsd:string"/>
+                        <Setting Name="KEY_SEARCH_BASE_URL" Type="xsd:string"/>
+                      </Setting>
+                      <Setting Name="StepName" Type="xsd:string">UserIdentificationStep</Setting>
+                    </Setting>
+                    <Setting Name="1" Type="htf:map">
+                      <Setting Name="PluginName" Type="xsd:string">OAAAuthnPlugin</Setting>
+                      <Setting Name="Description" Type="xsd:string">MFA with OAA</Setting>
+                      <Setting Name="Parameters" Type="htf:map">
+                        <Setting Name="CLIENT_SECRET" Type="xsd:string"><CLIENT_SECRET></Setting>
+                        <Setting Name="APPLICATION_ID" Type="xsd:string">myoaaprotectedapp1</Setting>
+                        <Setting Name="OAA_URL" Type="xsd:string"><OAM_LOGIN_LBR_PROTOCOL>://<OAM_LOGIN_LBR_HOST>:<OAM_LOGIN_LBR_PORT>/oaa/rui/authn/v1</Setting>
+                        <Setting Name="TAP_AGENT" Type="xsd:string">OAM-OAA-TAP</Setting>
+                        <Setting Name="ASSURANCE_LEVEL" Type="xsd:string"><ASSURANCE_LEVEL></Setting>
+                        <Setting Name="IDENTITY_STORE_REF" Type="xsd:string">OAMIDSTORE</Setting>
+                        <Setting Name="CLIENT_ID" Type="xsd:string"><CLIENT_ID></Setting>
+                        <Setting Name="LDAP_ATTRS_ENC" Type="xsd:string"/>
+                        <Setting Name="REDIRECT_TOKEN_VALIDITY_SECONDS" Type="xsd:string">30</Setting>
+                        <Setting Name="LDAP_GROUP_PATTERN" Type="xsd:string"/>
+                        <Setting Name="LDAP_ATTRS" Type="xsd:string">mail,postalcode</Setting>
+                        <Setting Name="MAX_GROUP_SIZE" Type="xsd:string">10</Setting>
+                        <Setting Name="MIGRATE_PUSH_PREFERENCES" Type="xsd:string">true</Setting>
+                        <Setting Name="COOKIE_VALIDITY_IN_MINUTES" Type="xsd:string">-1</Setting>
+                      </Setting>
+                      <Setting Name="StepName" Type="xsd:string">User OAA MFA Step</Setting>
+                    </Setting>
+                    <Setting Name="2" Type="htf:map">
+                      <Setting Name="PluginName" Type="xsd:string">UserAuthenticationPlugIn</Setting>
+                      <Setting Name="Description" Type="xsd:string">Validate user password on OAM</Setting>
+                      <Setting Name="Parameters" Type="htf:map">
+                        <Setting Name="KEY_PROP_AUTHN_EXCEPTION" Type="xsd:string"/>
+                        <Setting Name="KEY_ENABLE_AUTHN_FAILOVER" Type="xsd:string"/>
+                        <Setting Name="KEY_IDENTITY_STORE_REF" Type="xsd:string"/>
+                        <Setting Name="KEY_PROP_AUTHN_LEVEL" Type="xsd:string"/>
+                      </Setting>
+                      <Setting Name="StepName" Type="xsd:string">PasswordValidation</Setting>
+                    </Setting>
+                  </Setting>
+                  <Setting Name="Description" Type="xsd:string">OAA MFA Authentication Module</Setting>
+                  <Setting Name="Strategy" Type="htf:map">
+                    <Setting Name="Orchestration" Type="htf:list">
+                      <Setting Name="0" Type="htf:map">
+                        <Setting Name="Description" Type="xsd:string">Identify User</Setting>
+                        <Setting Name="OnSuccess" Type="xsd:string">PasswordValidation</Setting>
+                        <Setting Name="StepName" Type="xsd:string">UserIdentificationStep</Setting>
+                        <Setting Name="OnError" Type="xsd:string">failure</Setting>
+                        <Setting Name="OnFailure" Type="xsd:string">failure</Setting>
+                      </Setting>
+                      <Setting Name="1" Type="htf:map">
+                        <Setting Name="Description" Type="xsd:string">MFA with OAA</Setting>
+                        <Setting Name="OnSuccess" Type="xsd:string">success</Setting>
+                        <Setting Name="StepName" Type="xsd:string">User OAA MFA Step</Setting>
+                        <Setting Name="OnError" Type="xsd:string">failure</Setting>
+                        <Setting Name="OnFailure" Type="xsd:string">UserIdentificationStep</Setting>
+                      </Setting>
+                      <Setting Name="2" Type="htf:map">
+                        <Setting Name="Description" Type="xsd:string">Validate user password on OAM</Setting>
+                        <Setting Name="OnSuccess" Type="xsd:string">User OAA MFA Step</Setting>
+                        <Setting Name="StepName" Type="xsd:string">PasswordValidation</Setting>
+                        <Setting Name="OnError" Type="xsd:string">failure</Setting>
+                        <Setting Name="OnFailure" Type="xsd:string">failure</Setting>
+                      </Setting>
+                    </Setting>
+                    <Setting Name="StrategyName" Type="xsd:string">SequentialPlugInExecutionStrategy</Setting>
+                    <Setting Name="StartingStep" Type="xsd:string">User OAA MFA Step</Setting>
+                  </Setting>
+                </Setting>
+</Configuration>

@@ -1,0 +1,16 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# Load balancer type. Supported values are: NGINX
+type: NGINX
+# Type of Configuration Supported Values are : NONSSL,SSL
+# tls: NONSSL
+tls: NONSSL
+# TLS secret name if the mode is SSL
+secretName: dc-tls-cert
+
+# WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: <OIG_DOMAIN_NAME>
+  oimClusterName: oim_cluster
+  oimServerT3Port: 14002

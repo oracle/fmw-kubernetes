@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OUDSM deployment
@@ -32,6 +32,9 @@ if [ "$USE_INGRESS" = "false" ]
 then
    echo "Delete NodePort Services"
    kubectl delete service -n $OUDNS oudsm-nodeport >> $LOG 2>&1
+else
+   echo "Delete Ingress Services"
+   kubectl delete ingress -n $OUDNS oudsm-ingress >> $LOG 2>&1
 fi
 
 echo "Delete OUDSM Application"
@@ -41,7 +44,7 @@ echo "Check Server Stopped"
 check_stopped $OUDNS oudsm-1 >> $LOG 2>&1
 
 echo "Delete Volumes"
-rm -rf $OUDSM_LOCAL_SHARE/* $LOCAL_WORKDIR/OUDSM/* >> $LOG 2>&1
+rm -rf $OUDSM_LOCAL_SHARE/* $LOCAL_WORKDIR/OUDSM/* $LOCAL_WORKDIR/oudsm_installed>> $LOG 2>&1
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Delete OUDSM " $START_TIME $FINISH_TIME
