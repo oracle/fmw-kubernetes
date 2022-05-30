@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of provisioning Oracle Identity Governance and wiring it to Oracle Unified Directory
@@ -26,9 +26,20 @@ WORKDIR=$LOCAL_WORKDIR/OIG
 LOGDIR=$WORKDIR/logs
 OPER_DIR=OracleIdentityGovernance
 
+if [ "$USE_INGRESS" = "true" ]
+then
+   INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
+   INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+   if [ "$INGRESS_HTTP_PORT" = "" ]
+   then
+       echo "Unable to get Ingress Ports - Check Ingress is running"
+       exit 1
+   fi
+fi
+
 if [ "$INSTALL_OIG" != "true" ] && [ "$INSTALL_OIG" != "TRUE" ]
 then
-     echo "You have not requested OAM installation"
+     echo "You have not requested OIG installation"
      exit 1
 fi
 
@@ -174,18 +185,21 @@ then
     update_progress
 fi
 
-# Create NodePort Services
+# Create Services
 #
 
-if [ ! "$USE_INGRESS" = "true" ]
+new_step
+if [ $STEPNO -gt $PROGRESS ]
 then
-   new_step
-   if [ $STEPNO -gt $PROGRESS ]
+   if [ "$USE_INGRESS" = "true" ]
    then
-      create_oig_nodeport
-      update_progress
+       create_oig_ingress
+   else
+       create_oig_nodeport
    fi
+   update_progress
 fi
+
 
 # Create Working Directory inside container
 #
@@ -525,3 +539,5 @@ fi
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OIG" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 cat $LOGDIR/timings.log
+
+touch $LOCAL_WORKDIR/oig_installed

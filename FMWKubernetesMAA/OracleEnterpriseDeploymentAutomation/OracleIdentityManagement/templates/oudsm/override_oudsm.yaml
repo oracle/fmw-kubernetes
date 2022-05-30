@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a helm override file to deploy OUDSM
@@ -9,10 +9,15 @@
 image:
   repository: <REPOSITORY>
   tag: <IMAGE_VER>
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
 
 oudsm:
   adminUser: <OUDSM_USER>
   adminPass: <OUDSM_PWD>
+  startupTime: 200
 persistence:
   type: networkstorage
   networkstorage:
@@ -22,7 +27,10 @@ persistence:
   size: 5Gi
 replicaCount: 1
 
+elk:
+  enabled: false
+
 ingress:
-  enabled: <USE_INGRESS>
+  enabled: false
   type: nginx
-  tlsEnabled: true
+  tlsEnabled: false

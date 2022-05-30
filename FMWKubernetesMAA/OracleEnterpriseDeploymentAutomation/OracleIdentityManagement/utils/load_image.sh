@@ -1,14 +1,14 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-# This is an example of a script which will check that will load container images into the local 
+# This is an example of a script which will check that will load container images into the local
 # repository on each kubernetes node
 #
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: load_image.sh 
+# Usage: load_image.sh
 #
 . ../common/functions.sh
 . $RSPFILE

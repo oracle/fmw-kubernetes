@@ -1,0 +1,330 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oigadmin-ingress
+  namespace: <OIGNS>
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "sticky"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "2000k"
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: <OIG_ADMIN_LBR_HOST>
+    http:
+      paths:
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-adminserver
+            port:
+              number: <OIG_ADMIN_PORT>
+        path: /console
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-adminserver
+            port:
+              number: <OIG_ADMIN_PORT>
+        path: /consolehelp
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-adminserver
+            port:
+              number: 14000
+        path: /em
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /oim
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /sysadmin
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /admin
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-adminserver
+            port:
+              number: <OIG_ADMIN_PORT>
+        path: /dms
+        pathType: Prefix
+      - backend:
+          service:
+            name: <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /soa-infra
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /identity
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /xlWebApp
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /OIGUI
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /Nexaweb
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /FacadeWebApp
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /SchedulerService-web
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oigruntime-ingress
+  namespace: <OIGNS>
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "sticky"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "2000k"
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: <OIG_LBR_HOST>
+    http:
+      paths:
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /identity
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /xlWebApp
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /HTTPClnt
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /reqsvc
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /FacadeWebApp
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /iam
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /OIGUI
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oiginternal-ingress
+  namespace: <OIGNS>
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "sticky"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "2000k"
+    #nginx.ingress.kubernetes.io/affinity-mode: persistent
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: <OIG_LBR_INT_HOST>
+    http:
+      paths:
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /wsm-pm
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /sodcheck
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /role-sod
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /workflowservice
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /callbackResponseService
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /spml-xsd
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /spmlws
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /reqsvc
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /soa-infra
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /ucs
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /provisioning-callback
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /CertificationCallbackService
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /IdentityAuditCallbackService
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /soa/composer
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /integration
+        pathType: Prefix
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-soa-cluster
+            port:
+              number: 8001
+        path: /sdpmessaging/userprefs-ui
+        pathType: Prefix      
+      - backend:
+          service:
+            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
+            port:
+              number: 14000
+        path: /iam
+        pathType: Prefix
+---

@@ -20,24 +20,22 @@ edit_seedfile()
 
    # Perform variable substitution in template files
    #
-   update_variable "<OUDADMINUSER>" $OUD_ADMIN_USER $SEEDFILE
-   update_variable "<SEARCH_BASE>" $OUD_SEARCHBASE $SEEDFILE
-   update_variable "<REGION>" $OUD_REGION $SEEDFILE
-   update_variable "<GROUP_SEARCHBASE>" $OUD_GROUP_SEARCHBASE $SEEDFILE
-   update_variable "<GROUP_SEARCHBASE>" $OUD_GROUP_SEARCHBASE $SEEDFILE
-   update_variable "<USER_SEARCHBASE>" $OUD_USER_SEARCHBASE $SEEDFILE
-   update_variable "<RESERVE_SEARCHBASE>" $OUD_RESERVE_SEARCHBASE $SEEDFILE
-   update_variable "<SYSTEMIDS>" $OUD_SYSTEMIDS $SEEDFILE
-   update_variable "<OAMADMIN>" $OUD_OAMADMIN_USER $SEEDFILE
-   update_variable "<OAMADMINGRP>" $OUD_OAMADMIN_GRP $SEEDFILE
-   update_variable "<OIGADMINGRP>" $OUD_OIGADMIN_GRP $SEEDFILE
-   update_variable "<OAMLDAPUSER>" $OUD_OAMLDAP_USER  $SEEDFILE
-   update_variable "<OIGLDAPUSER>" $OUD_OIGLDAP_USER  $SEEDFILE
-   update_variable "<OAMADMINUSER>" $OUD_OAMADMIN_USER  $SEEDFILE
-   update_variable "<WLSADMIN>" $OUD_WLSADMIN_USER  $SEEDFILE
-   update_variable "<WLSADMINGRP>" $OUD_WLSADMIN_GRP  $SEEDFILE
-   update_variable "<XELSYSADM>" $OUD_XELSYSADM_USER  $SEEDFILE
-   update_variable "<PASSWORD>" $OUD_USER_PWD  $SEEDFILE
+   update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $SEEDFILE
+   update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE $SEEDFILE
+   update_variable "<OUD_REGION>" $OUD_REGION $SEEDFILE
+   update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $SEEDFILE
+   update_variable "<LDAP_USER_SEARCHBASE>" $LDAP_USER_SEARCHBASE $SEEDFILE
+   update_variable "<LDAP_RESERVE_SEARCHBASE>" $LDAP_RESERVE_SEARCHBASE $SEEDFILE
+   update_variable "<LDAP_SYSTEMIDS>" $LDAP_SYSTEMIDS $SEEDFILE
+   update_variable "<LDAP_OAMADMIN_USER>" $LDAP_OAMADMIN_USER $SEEDFILE
+   update_variable "<LDAP_OAMADMIN_GRP>" $LDAP_OAMADMIN_GRP $SEEDFILE
+   update_variable "<LDAP_OIGADMIN_GRP>" $LDAP_OIGADMIN_GRP $SEEDFILE
+   update_variable "<LDAP_OAMLDAP_USER>" $LDAP_OAMLDAP_USER  $SEEDFILE
+   update_variable "<LDAP_OIGLDAP_USER>" $LDAP_OIGLDAP_USER  $SEEDFILE
+   update_variable "<LDAP_WLSADMIN_USER>" $LDAP_WLSADMIN_USER  $SEEDFILE
+   update_variable "<LDAP_WLSADMIN_GRP>" $LDAP_WLSADMIN_GRP  $SEEDFILE
+   update_variable "<LDAP_XELSYSADM_USER>" $LDAP_XELSYSADM_USER  $SEEDFILE
+   update_variable "<PASSWORD>" $LDAP_USER_PWD  $SEEDFILE
    update_variable "<OUD_PWD_EXPIRY>" $OUD_PWD_EXPIRY  $SEEDFILE
 
    echo "Success"
@@ -53,18 +51,24 @@ create_override()
    print_msg "Creating Helm Override file"
    cp $TEMPLATES_DIR/override_oud.yaml $WORKDIR
    OVERRIDE_FILE=$WORKDIR/override_oud.yaml
-   update_variable "<OUD_SEARCHBASE>" $OUD_SEARCHBASE  $OVERRIDE_FILE
-   update_variable "<OUD_ADMIN_USER>" $OUD_ADMIN_USER $OVERRIDE_FILE
-   update_variable "<OUD_ADMIN_PWD>" $OUD_ADMIN_PWD $OVERRIDE_FILE
+   update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE  $OVERRIDE_FILE
+   update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $OVERRIDE_FILE
+   update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $OVERRIDE_FILE
    update_variable "<PVSERVER>" $PVSERVER $OVERRIDE_FILE
    update_variable "<OUD_SHARE>" $OUD_SHARE $OVERRIDE_FILE
    update_variable "<OUD_CONFIG_SHARE>" $OUD_CONFIG_SHARE $OVERRIDE_FILE
    update_variable "<OUD_REPLICAS>" $OUD_REPLICAS $OVERRIDE_FILE
-   update_variable "<OUD_OIGADMIN_GRP>" $OUD_OIGADMIN_GRP $OVERRIDE_FILE
+   update_variable "<LDAP_OIGADMIN_GRP>" $LDAP_OIGADMIN_GRP $OVERRIDE_FILE
    update_variable "<REPOSITORY>" $OUD_IMAGE $OVERRIDE_FILE
    update_variable "<IMAGE_VER>" $OUD_VER $OVERRIDE_FILE
    update_variable "<USE_INGRESS>" $USE_INGRESS $OVERRIDE_FILE
+   update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $OVERRIDE_FILE
 
+   KUBERNETES_VER=`kubectl version --short=true | grep Server | cut -f2 -d: | cut -f1 -d + | sed 's/ v//' | cut -f 1-3 -d.`
+   update_variable "<KUBERNETES_VER>" $KUBERNETES_VER $OVERRIDE_FILE
+
+   HELM_VER=`helm version --short=true | cut -f2 -d: | cut -f1 -d + | sed 's/v//' | cut -f 1-3 -d.`
+   update_variable "<HELM_VER>" $HELM_VER $OVERRIDE_FILE
    echo "Success"
    ET=`date +%s`
    print_time STEP "Create Helm Override File" $ST $ET >> $LOGDIR/timings.log
@@ -98,8 +102,12 @@ copy_files_to_share()
    cp $SEEDFILE $OUD_LOCAL_SHARE
    cp $TEMPLATES_DIR/99-user.ldif $OUD_LOCAL_SHARE
    chmod 777 $OUD_LOCAL_SHARE/*.ldif
+   print_status $?
 
-   echo "Success"
+   printf "\t\t\tCopy Helm Files to Local Share - "
+   cp -r $WORKDIR/samples/kubernetes/helm/* $OUD_LOCAL_SHARE
+   print_status $?
+
    ET=`date +%s`
    print_time STEP "Copy files to local share " $ST $ET >> $LOGDIR/timings.log
 }
@@ -114,7 +122,7 @@ create_oud()
 
    rm -f $OUD_LOCAL_SHARE/rejects.ldif $OUD_LOCAL_SHARE/skip.ldif 2> /dev/null > /dev/null
    cd $WORKDIR/samples/kubernetes/helm/
-   helm install --namespace $OUDNS --values $WORKDIR/override_oud.yaml $OUD_POD_PREFIX oud-ds-rs > $LOGDIR/create_oud.log 
+   helm install --namespace $OUDNS --values $WORKDIR/override_oud.yaml $OUD_POD_PREFIX oud-ds-rs > $LOGDIR/create_oud.log 2>&1
    print_status $? $LOGDIR/create_oud.log
    ET=`date +%s`
    print_time STEP "Create OUD Instances" $ST $ET >> $LOGDIR/timings.log
@@ -218,24 +226,6 @@ validate_oud()
    ET=`date +%s`
    print_time STEP "Validating OUD" $ST $ET >> $LOGDIR/timings.log
 }
-create_ingress()
-{
-    ST=`date +%s`
-    echo -n "Adding Ingress Repository - "
-    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx > $LOGDIR/ingress.log 2>&1
-    helm repo update  > $LOGDIR/ingress.log 2>&1
-
-    helm search repo | grep -q nginx
-    print_status $? $LOGDIR/ingress.log
-
-    echo -n "Installing Ingress - "
-    helm install --namespace $OUDINGNS  --values $WORKDIR/oud_nginx.yaml  edg-nginx ingress-nginx/ingress-nginx >> $LOGDIR/ingress.log 2>&1
-    grep -q DEPLOYED $LOGDIR/ingress.log
-    print_status $? $LOGDIR/ingress.log
-
-    ET=`date +%s`
-    print_time STEP "Creating Ingress" $ST $ET >> $LOGDIR/timings.log
-}
 
 # Create a Helm override file to deploy OUDSM
 #
@@ -254,6 +244,7 @@ create_oudsm_override()
    update_variable "<REPOSITORY>" $OUDSM_IMAGE $WORKDIR/override_oudsm.yaml
    update_variable "<IMAGE_VER>" $OUDSM_VER $WORKDIR/override_oudsm.yaml
    update_variable "<USE_INGRESS>" $USE_INGRESS $WORKDIR/override_oudsm.yaml
+   update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $WORKDIR/override_oudsm.yaml
 
    echo "Success"
    ET=`date +%s`
@@ -306,6 +297,24 @@ create_oudsm_nodeport()
    print_time STEP "Create OUDSM Nodeport services" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Create an ingress service for OUDSM
+#
+create_oudsm_ingress()
+{
+   ST=`date +%s`
+   print_msg "Create OUDSM Ingress Service"
+   filename=oudsm_ingress.yaml
+   cp $TEMPLATE_DIR/$filename $WORKDIR
+   update_variable "<OUDNS>" $OUDNS $WORKDIR/$filename
+   update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $WORKDIR/$filename
+
+   kubectl create -f $WORKDIR/$filename > $LOGDIR/create_ingress.log 2>&1
+   print_status $? $LOGDIR/create_ingress.log
+
+   ET=`date +%s`
+   print_time STEP "Create OUDSM Ingress services" $ST $ET >> $LOGDIR/timings.log
+}
+
 create_oudsm_ohs_entries()
 {
    print_msg "Create OUDSM OHS entries"
@@ -316,7 +325,12 @@ create_oudsm_ohs_entries()
    cp $TEMPLATE_DIR/ohs_oudsm.conf $CONFFILE
    if [ "$USE_INGRESS" = "true" ] 
    then
-      update_variable "<OUDSM_SERVICE_PORT>" $OUD_HTTP_K8 $CONFFILE
+      if [ "$INGRESS_SSL" = "true" ]
+      then
+          update_variable "<OUDSM_SERVICE_PORT>" $INGRESS_HTTPS_PORT $CONFFILE
+      else
+          update_variable "<OUDSM_SERVICE_PORT>" $INGRESS_HTTP_PORT $CONFFILE
+      fi
    else
       update_variable "<OUDSM_SERVICE_PORT>" $OUDSM_SERVICE_PORT $CONFFILE
    fi
@@ -326,26 +340,17 @@ create_oudsm_ohs_entries()
    OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
    OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2
 
-   if [ -f $OHSHOST1FILES/iadadmin_vh.conf ]
+   if [ -d $OHSHOST1FILES ]
    then
-        printf "Adding to iadadmin_vh.conf "
-        sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/iadadmin_vh.conf
-        sed -i '/<\/VirtualHost>/d' $OHSHOST2FILES/iadadmin_vh.conf
-
-        cat $CONFFILE >> $OHSHOST1FILES/iadadmin_vh.conf
-        cat $CONFFILE >> $OHSHOST2FILES/iadadmin_vh.conf
-
-        print_status $?
-   else
-        if [ -d $OHSHOST1FILES ]
-        then
-            printf "Copying to $OHSHOST1FILES $OHSHOST2FILES"
-            cp $CONFFILE $OHSHOST1FILES
-            cp $CONFFILE $OHSHOST2FILES
-        else
-            echo "$CONFFILE Created"
-        fi
+       printf "Copying to $OHSHOST1FILES"
+       cp $CONFFILE $OHSHOST1FILES
    fi
+   if [ -d $OHSHOST2FILES ]
+   then
+       printf "Copying to $OHSHOST2FILES"
+       cp $CONFFILE $OHSHOST2FILES
+   fi
+   echo "$CONFFILE Created"
    ET=`date +%s`
    print_time STEP "Create OHS Entries" $ST $ET >> $LOGDIR/timings.log
 }

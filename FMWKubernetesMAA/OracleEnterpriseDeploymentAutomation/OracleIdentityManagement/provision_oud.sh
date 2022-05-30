@@ -80,6 +80,13 @@ then
    update_progress
 fi
 
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OUDNS dockercred
+   update_progress
+fi
+
 # Modify base data template
 #
 new_step
@@ -138,28 +145,8 @@ fi
 
 # Setup Ingress if required Otherwise create NodePort Services
 #
-if [ "$USE_INGRESS" = "true" ] 
+if [ "$USE_INGRESS" = "false" ] 
 then
-    new_step
-    if [ $STEPNO -gt $PROGRESS ]
-    then
-        create_nginx_override
-        update_progress
-    fi
-    new_step
-    if [ $STEPNO -gt $PROGRESS ]
-    then
-        create_namespace $OUDINGNS
-        update_progress
-    fi
-    
-    new_step
-    if [ $STEPNO -gt $PROGRESS ]
-    then
-        create_ingress 
-        update_progress
-    fi
-else 
     new_step
     if [ $STEPNO -gt $PROGRESS ]
     then
@@ -172,3 +159,4 @@ FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUD" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
 cat $LOGDIR/timings.log
+touch $LOCAL_WORKDIR/oud_installed

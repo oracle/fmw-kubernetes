@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete the WebLogic Operator
@@ -36,3 +36,6 @@ kubectl delete namespace $OPERNS >> $LOG 2>&1
 
 echo "Delete Work Directory"
 rm -rf $LOCAL_WORKDIR/OPER/* >> $LOG 2>&1
+
+echo "Delete Samples Directory"
+rm -rf $LOCAL_WORKDIR/$SAMPLES_DIR $LOCAL_WORKDIR/samples $LOCAL_WORKDIR/operator_installed>> $LOG 2>&1

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OIRI deployment
@@ -65,7 +65,7 @@ kubectl delete namespace $DINGNS >> $LOG 2>&1
 
 echo "Deleting Volumes"
 ST=`date +%s`
-rm -rf $LOGDIR/progressfile $WORKDIR/* >> $LOG 2>&1
+rm -rf $LOGDIR/progressfile $WORKDIR/* $LOCAL_WORKDIR/oiri_installed >> $LOG 2>&1
 rm -rf $OIRI_LOCAL_SHARE/* $OIRI_DING_LOCAL_SHARE/*  >> $LOG 2>&1
 ET=`date +%s`
 print_time STEP "Delete Volumes" $ST $ET

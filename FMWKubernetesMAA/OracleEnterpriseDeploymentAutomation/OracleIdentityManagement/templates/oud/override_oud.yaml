@@ -13,11 +13,15 @@
 image:
   repository: <REPOSITORY>
   tag: <IMAGE_VER>
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
 
 oudConfig:
-  baseDN: <OUD_SEARCHBASE>
-  rootUserDN: <OUD_ADMIN_USER>
-  rootUserPassword: <OUD_ADMIN_PWD>
+  baseDN: <LDAP_SEARCHBASE>
+  rootUserDN: <LDAP_ADMIN_USER>
+  rootUserPassword: <LDAP_ADMIN_PWD>
   sleepBeforeConfig: 300
 
 persistence:
@@ -42,10 +46,31 @@ configVolume:
 replicaCount: <OUD_REPLICAS>
 
 ingress:
-  enabled: <USE_INGRESS>
+  enabled: false
   type: nginx
   tlsEnabled: false
 
+cronJob:
+  kubectlImage:
+    repository: bitnami/kubectl
+    tag: <KUBERNETES_VER>
+    pullPolicy: IfNotPresent
+  helmImage:
+    repository: alpine/helm
+    tag: <HELM_VER>
+    pullPolicy: IfNotPresent
+
+  cronPersistence:
+    enabled: true
+    type: networkstorage
+    networkstorage:
+      nfs:
+        server: <PVSERVER>
+        path: <OUD_CONFIG_SHARE>
+
+
+    imagePullSecrets:
+    - name: dockercred
 
 baseOUD:
   envVars:
@@ -62,11 +87,11 @@ baseOUD:
     - name: dsconfig_2
       value: set-access-control-handler-prop --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny (all) userdn=\"ldap:///anyone\";)"
     - name: dsconfig_3
-      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)" 
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<LDAP_OIGADMIN_GRP>,cn=groups,${baseDN}\";)" 
     - name: dsconfig_4
-      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\")(version 3.0; acl \"<OUD_OIGADMIN_GRP> control access\"; allow(read)  groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
+      value: set-access-control-handler-prop --add global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4 || 1.3.6.1.4.1.26027.2.3.4\")(version 3.0; acl \"<LDAP_OIGADMIN_GRP> control access\"; allow(read)  groupdn=\"ldap:///cn=<LDAP_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
     - name: dsconfig_5
-      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///\")(targetscope=\"base\")(targetattr=\"lastExternalChangelogCookie\")(version 3.0; acl \"User-Visible lastExternalChangelog\"; allow (read,search,compare) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///\")(targetscope=\"base\")(targetattr=\"lastExternalChangelogCookie\")(version 3.0; acl \"User-Visible lastExternalChangelog\"; allow (read,search,compare) groupdn=\"ldap:///cn=<LDAP_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
     - name: dsconfig_6
       value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
     - name: dsconfig_7
@@ -131,7 +156,7 @@ replOUD:
     - name: dsconfig_2
       value: set-access-control-handler-prop --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny (all) userdn=\"ldap:///anyone\";)"
     - name: dsconfig_3
-      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<OUD_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
+      value: set-access-control-handler-prop --add global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=<LDAP_OIGADMIN_GRP>,cn=groups,${baseDN}\";)"
     - name: dsconfig_4
       value: set-access-control-handler-prop --remove global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
     - name: dsconfig_5

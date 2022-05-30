@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of deploying the Oracle WebLogic Operator
@@ -20,6 +20,12 @@ OPER_DIR=OracleAccessManagement
 if [ "$INSTALL_OAM" != "true" ] && [ "$INSTALL_OAM" != "TRUE" ] &&  [ "$INSTALL_OIG" != "true" ] && [ "$INSTALL_OIG" != "TRUE" ]
 then
      echo "You have not requested OAM or OIG installation"
+     exit 1
+fi
+
+if [ "$INSTALL_WLSOPER" != "true" ]
+then
+     echo "You have not requested WebLogic Operator installation"
      exit 1
 fi
 
@@ -103,7 +109,7 @@ then
     update_progress
 fi
 
-
+touch $LOCAL_WORKDIR/operator_installed
 exit
 
 #

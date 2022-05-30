@@ -57,7 +57,12 @@ edit_domain_creation_file()
      replace_value2 rcuSchemaPrefix $OIG_RCU_PREFIX   $filename
      replace_value2 rcuDatabaseURL $OIG_DB_SCAN:$OIG_DB_LISTENER/$OIG_DB_SERVICE  $filename
      replace_value2 rcuCredentialsSecret $OIG_DOMAIN_NAME-rcu-credentials  $filename
-     replace_value2 exposeAdminNodePort true $filename
+     if [ "$USE_INGRESS" = "true" ]
+     then
+          replace_value2 exposeAdminNodePort false $filename
+     else
+          replace_value2 exposeAdminNodePort true $filename
+     fi
      replace_value2 configuredManagedServerCount $OIG_SERVER_COUNT $filename
      replace_value2 initialManagedServerReplicas 1 $filename
      replace_value2 productionModeEnabled true $filename
@@ -104,12 +109,13 @@ create_oig_domain()
         exit 1
      fi
 
-     if [ "$status" = "Pending" ]
+     create_job=`kubectl get pod -n $OIGNS | grep create | awk  '{ print $1}'`
+     if [ "$status" = "Pending" ] || [ "$status" = "Error" ]
      then
-         echo "Domain creation failed"
-         echo "Run the following commands to debug"
-         echo "kubectl describe job -n $OIGNS $OIG_DOMAIN_ID-create-fmw-infra-sample-domain-job"
-         echo "kubectl -n $OIGNS describe domain $OIG_DOMAIN_ID"
+         kubectl describe job -n $OIGNS $create_job  >> $LOGDIR/create_domain.log 2>&1
+         kubectl -n $OIGNS describe domain $OIG_DOMAIN_ID >> $LOGDIR/create_domain.log 2>&1
+         kubectl logs -n $OIGNS $create_job >> $LOGDIR/create_domain.log 2>&1
+         echo "Failed - See logfile $LOGDIR/create_domain.log"
          exit 1
      else
          echo "Success"
@@ -173,6 +179,37 @@ perform_initial_start()
      print_time STEP "First Domain Start " $ST $ET >> $LOGDIR/timings.log
 }
 
+# Create Ingress Services for OIG
+#
+create_oig_ingress()
+{
+     ST=`date +%s`
+     print_msg  "Creating OIG Ingress Services "
+     cp $TEMPLATE_DIR/oig_ingress.yaml $WORKDIR
+     filename=$WORKDIR/oig_ingress.yaml
+
+     update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $filename
+     update_variable "<OIGNS>" $OIGNS $filename
+     update_variable "<OIG_LBR_HOST>" $OIG_LBR_HOST $filename
+     update_variable "<OIG_ADMIN_LBR_HOST>" $OIG_ADMIN_LBR_HOST $filename
+     update_variable "<OIG_LBR_INT_HOST>" $OIG_LBR_INT_HOST $filename
+     update_variable "<OIG_ADMIN_PORT>" $OIG_ADMIN_PORT $filename
+
+     kubectl create -f $filename > $LOGDIR/ingress.log 2>&1
+     print_status $? $LOGDIR/ingress.log
+
+     if [ "$OIG_ENABLE_T3" = "true" ]
+     then
+          printf "\t\t\tExposing OIM T3 - :"
+          cp $TEMPLATE_DIR/design-console-ingress.yaml $WORKDIR
+          update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/design-console-ingress.yaml
+          cd $WORKDIR/samples
+          helm install oig-designconsole-ingress design-console-ingress --namespace oigns --values $WORKDIR/design-console-ingress.yaml >> $LOGDIR/ingress.log 2>&1
+          print_status $? $LOGDIR/ingress.log
+     fi
+     ET=`date +%s`
+     print_time STEP "Create Kubernetes OIG Ingress Services " $ST $ET >> $LOGDIR/timings.log
+}
 
 # Create NodePort Services for OIG
 #
@@ -194,17 +231,17 @@ create_oig_nodeport()
      update_variable "<OIG_OIM_T3_PORT_K8>" $OIG_OIM_T3_PORT_K8 $WORKDIR/oim_t3_nodeport.yaml
 
      printf "\t\t\t\tSOA :"
-     kubectl create -f $WORKDIR/soa_nodeport.yaml >> $LOGDIR/nodeport.log 2>>$LOGDIR/nodeport.log
+     kubectl create -f $WORKDIR/soa_nodeport.yaml >> $LOGDIR/nodeport.log 2>&1
      print_status $? $LOGDIR/nodeport.log
 
      printf "\t\t\t\tOIM :"
-     kubectl create -f $WORKDIR/oim_nodeport.yaml >> $LOGDIR/nodeport.log 2>>$LOGDIR/nodeport.log
+     kubectl create -f $WORKDIR/oim_nodeport.yaml >> $LOGDIR/nodeport.log 2>&1
      print_status $? $LOGDIR/nodeport.log
 
      if [ "$OIG_ENABLE_T3" = "true" ]
      then
           printf "\t\t\t\tOIM T3:"
-          kubectl create -f $WORKDIR/oim_t3_nodeport.yaml >> $LOGDIR/nodeport.log 2>>$LOGDIR/nodeport.log
+          kubectl create -f $WORKDIR/oim_t3_nodeport.yaml >> $LOGDIR/nodeport.log 2>&1
           print_status $? $LOGDIR/nodeport.log
      fi
      ET=`date +%s`
@@ -220,14 +257,14 @@ copy_connector()
     print_msg "Installing Connector into Container" 
 
    
-    kubectl exec -ti $OIG_DOMAIN_NAME-oim-server1 -n $OIGNS -- mkdir -p /u01/oracle/user_projects/ConnectorDefaultDirectory
+    kubectl exec -ti $OIG_DOMAIN_NAME-oim-server1 -n $OIGNS -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     if ! [ "$?" = "0" ]
     then
        echo "Fail"
        exit 1
     fi
  
-    kubectl cp $CONNECTOR_DIR/OID-12.2*  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/ConnectorDefaultDirectory
+    kubectl cp $CONNECTOR_DIR/OID-12.2*  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     print_status $?
 
     ET=`date +%s`
@@ -244,10 +281,10 @@ create_connector_files()
       cp $TEMPLATE_DIR/autn.sedfile $WORKDIR
       cp $TEMPLATE_DIR/oamoig.sedfile $WORKDIR
 
-     update_variable "<OUD_OIGLDAP_USER>" $OUD_OIGLDAP_USER $WORKDIR/autn.sedfile
-     update_variable "<OUD_SYSTEMIDS>" $OUD_SYSTEMIDS $WORKDIR/autn.sedfile
-     update_variable "<OUD_SEARCHBASE>" $OUD_SEARCHBASE $WORKDIR/autn.sedfile
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $WORKDIR/autn.sedfile
+     update_variable "<LDAP_OIGLDAP_USER>" $LDAP_OIGLDAP_USER $WORKDIR/autn.sedfile
+     update_variable "<LDAP_SYSTEMIDS>" $LDAP_SYSTEMIDS $WORKDIR/autn.sedfile
+     update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE $WORKDIR/autn.sedfile
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/autn.sedfile
 
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/oamoig.sedfile
      update_variable "<OIGNS>" $OIGNS $WORKDIR/oamoig.sedfile
@@ -255,23 +292,23 @@ create_connector_files()
      update_variable "<OIG_WEBLOGIC_PWD>" $OIG_WEBLOGIC_PWD $WORKDIR/oamoig.sedfile
      update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/oamoig.sedfile
      update_variable "<OUDNS>" $OUDNS $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_ADMIN_USER>" $OUD_ADMIN_USER $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_ADMIN_PWD>" $OUD_ADMIN_PWD $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_USER_SEARCHBASE>" $OUD_USER_SEARCHBASE $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_GROUP_SEARCHBASE>" $OUD_GROUP_SEARCHBASE $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_SEARCHBASE>" $OUD_SEARCHBASE $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_SYSTEMIDS>" $OUD_SYSTEMIDS $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_XELSYSADM_USER>" $OUD_XELSYSADM_USER $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_XELSYSADM_PWD>" $OUD_USER_PWD $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_USER_SEARCHBASE>" $LDAP_USER_SEARCHBASE $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_SYSTEMIDS>" $LDAP_SYSTEMIDS $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_XELSYSADM_USER>" $LDAP_XELSYSADM_USER $WORKDIR/oamoig.sedfile
+     update_variable "<OUD_XELSYSADM_PWD>" $LDAP_USER_PWD $WORKDIR/oamoig.sedfile
      update_variable "<OAM_DOMAIN_NAME>" $OAM_DOMAIN_NAME $WORKDIR/oamoig.sedfile
      update_variable "<OAMNS>" $OAMNS $WORKDIR/oamoig.sedfile
      update_variable "<OAM_OAP_PORT>" $OAM_OAP_PORT $WORKDIR/oamoig.sedfile
      update_variable "<OAM_LOGIN_LBR_HOST>" $OAM_LOGIN_LBR_HOST $WORKDIR/oamoig.sedfile
      update_variable "<OAM_LOGIN_LBR_PORT>" $OAM_LOGIN_LBR_PORT $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/oamoig.sedfile
      update_variable "<OAM_COOKIE_DOMAIN>" $OAM_COOKIE_DOMAIN $WORKDIR/oamoig.sedfile
      update_variable "<OAM_WEBLOGIC_PWD>" $OAM_WEBLOGIC_PWD $WORKDIR/oamoig.sedfile
-     update_variable "<OUD_OAMADMIN_USER>" $OUD_OAMADMIN_USER $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_OAMADMIN_USER>" $LDAP_OAMADMIN_USER $WORKDIR/oamoig.sedfile
 
      copy_to_k8 $WORKDIR/oamoig.sedfile workdir $OIGNS $OIG_DOMAIN_NAME
      copy_to_k8 $WORKDIR/autn.sedfile workdir $OIGNS $OIG_DOMAIN_NAME
@@ -390,12 +427,12 @@ create_oud_authenticator()
      update_variable "<OIG_WEBLOGIC_PWD>" $OIG_WEBLOGIC_PWD $WORKDIR/create_oud_authenticator.py
      update_variable "<OIGNS>" $OIGNS $WORKDIR/create_oud_authenticator.py
      update_variable "<OIG_ADMIN_PORT>" $OIG_ADMIN_PORT $WORKDIR/create_oud_authenticator.py
-     update_variable "<OUD_GROUP_SEARCHBASE>" $OUD_GROUP_SEARCHBASE $WORKDIR/create_oud_authenticator.py
-     update_variable "<OUD_USER_SEARCHBASE>" $OUD_USER_SEARCHBASE $WORKDIR/create_oud_authenticator.py
-     update_variable "<OUD_OIGLDAP_USER>" $OUD_OIGLDAP_USER $WORKDIR/create_oud_authenticator.py
-     update_variable "<OUD_SYSTEMIDS>" $OUD_SYSTEMIDS $WORKDIR/create_oud_authenticator.py
-     update_variable "<OUD_SEARCHBASE>" $OUD_SEARCHBASE $WORKDIR/create_oud_authenticator.py
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_USER_SEARCHBASE>" $LDAP_USER_SEARCHBASE $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_OIGLDAP_USER>" $LDAP_OIGLDAP_USER $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_SYSTEMIDS>" $LDAP_SYSTEMIDS $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/create_oud_authenticator.py
      update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/create_oud_authenticator.py
      update_variable "<OUDNS>" $OUDNS $WORKDIR/create_oud_authenticator.py
   
@@ -439,8 +476,8 @@ update_soa_urls()
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/update_soa.py
      update_variable "<OIG_WEBLOGIC_USER>" $OIG_WEBLOGIC_USER $WORKDIR/update_soa.py
      update_variable "<OIG_WEBLOGIC_PWD>" $OIG_WEBLOGIC_PWD $WORKDIR/update_soa.py
-     update_variable "<OUD_WLSADMIN_USER>" $OUD_WLSADMIN_USER $WORKDIR/update_soa.py
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $WORKDIR/update_soa.py
+     update_variable "<LDAP_WLSADMIN_USER>" $LDAP_WLSADMIN_USER $WORKDIR/update_soa.py
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/update_soa.py
      update_variable "<OIGNS>" $OIGNS $WORKDIR/update_soa.py
      update_variable "<OIG_ADMIN_PORT>" $OIG_ADMIN_PORT $WORKDIR/update_soa.py
      update_variable "<OIG_LBR_INT_HOST>" $OIG_LBR_INT_HOST $WORKDIR/update_soa.py
@@ -468,11 +505,11 @@ assign_wsmroles()
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $filename
      update_variable "<OIG_WEBLOGIC_USER>" $OIG_WEBLOGIC_USER $filename
      update_variable "<OIG_WEBLOGIC_PWD>" $OIG_WEBLOGIC_PWD $filename
-     update_variable "<OUD_WLSADMIN_USER>" $OUD_WLSADMIN_USER $filename
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $filename
+     update_variable "<LDAP_WLSADMIN_USER>" $LDAP_WLSADMIN_USER $filename
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $filename
      update_variable "<OIGNS>" $OIGNS $filename
      update_variable "<OIG_ADMIN_PORT>" $OIG_ADMIN_PORT $filename
-     update_variable "<OUD_WLSADMIN_GRP>" $OUD_WLSADMIN_GRP $filename
+     update_variable "<LDAP_WLSADMIN_GRP>" $LDAP_WLSADMIN_GRP $filename
   
      copy_to_k8 $filename workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/assign_wsm_roles.py > $LOGDIR/assign_wsm_roles.log
@@ -529,7 +566,7 @@ configure_connector()
      grep -q FAILED $LOGDIR/configure_connector.log
      if [ "$?" = "0" ]
      then
-        echo "Failed"
+        echo "Failed - See Logfile $LOGDIR/configure_connector.log"
         exit 1
      else
         echo "Success"
@@ -618,13 +655,13 @@ update_match_attr()
 {
      ST=`date +%s`
      print_msg "Update Match Attribute"
-     MA=`curl -i -s -u $OUD_OAMADMIN_USER:$OUD_USER_PWD  http://$K8_WORKER_HOST1:$OAM_ADMIN_K8/iam/admin/config/api/v1/config?path=/DeployedComponent/Server/NGAMServer/Profile/AuthenticationModules/DAPModules | awk '/Name=\"DAPModules/{p=2} p > 0 { print $0; p--}' | tail -1 | cut -f2 -d\"`
+     MA=`curl -i -s -u $LDAP_OAMADMIN_USER:$LDAP_USER_PWD  http://$K8_WORKER_HOST1:$OAM_ADMIN_K8/iam/admin/config/api/v1/config?path=/DeployedComponent/Server/NGAMServer/Profile/AuthenticationModules/DAPModules | awk '/Name=\"DAPModules/{p=2} p > 0 { print $0; p--}' | tail -1 | cut -f2 -d\"`
 
      echo "<Configuration>" > /tmp/MatchLDAPAttribute_input.xml
      echo "  <Setting Name=\"MatchLDAPAttribute\" Type=\"xsd:string\" Path=\"/DeployedComponent/Server/NGAMServer/Profile/AuthenticationModules/DAPModules/${MA}/MatchLDAPAttribute\">uid</Setting>" >> /tmp/MatchLDAPAttribute_input.xml
      echo "</Configuration>" >> /tmp/MatchLDAPAttribute_input.xml
 
-     curl -s -u $OUD_OAMADMIN_USER:$OUD_USER_PWD -H 'Content-Type: text/xml' -X PUT http://$K8_WORKER_HOST1:$OAM_ADMIN_K8/iam/admin/config/api/v1/config -d @/tmp/MatchLDAPAttribute_input.xml > $LOGDIR/update_matchattr.log
+     curl -s -u $LDAP_OAMADMIN_USER:$LDAP_USER_PWD -H 'Content-Type: text/xml' -X PUT http://$K8_WORKER_HOST1:$OAM_ADMIN_K8/iam/admin/config/api/v1/config -d @/tmp/MatchLDAPAttribute_input.xml > $LOGDIR/update_matchattr.log
      print_status $?  $LOGDIR/update_matchattr.log
      ET=`date +%s`
      print_time STEP "Update Match Attribute" $ST $ET >> $LOGDIR/timings.log
@@ -640,8 +677,8 @@ run_recon_jobs()
      print_msg "Run Recon Jobs"
 
      cp $TEMPLATE_DIR/runJob.sh $WORKDIR/
-     update_variable "<OUD_XELSYSADM_USER>" $OUD_XELSYSADM_USER $WORKDIR/runJob.sh
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $WORKDIR/runJob.sh
+     update_variable "<LDAP_XELSYSADM_USER>" $LDAP_XELSYSADM_USER $WORKDIR/runJob.sh
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/runJob.sh
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/runJob.sh
      update_variable "<OIGNS>" $OIGNS $WORKDIR/runJob.sh
 
@@ -768,11 +805,11 @@ update_soaconfig()
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/update_soaconfig.py
      update_variable "<OIG_WEBLOGIC_USER>" $OIG_WEBLOGIC_USER $WORKDIR/update_soaconfig.py
      update_variable "<OIG_WEBLOGIC_PWD>" $OIG_WEBLOGIC_PWD $WORKDIR/update_soaconfig.py
-     update_variable "<OUD_WLSADMIN_USER>" $OUD_WLSADMIN_USER $WORKDIR/update_soaconfig.py
-     update_variable "<OUD_USER_PWD>" $OUD_USER_PWD $WORKDIR/update_soaconfig.py
+     update_variable "<LDAP_WLSADMIN_USER>" $LDAP_WLSADMIN_USER $WORKDIR/update_soaconfig.py
+     update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/update_soaconfig.py
      update_variable "<OIGNS>" $OIGNS $WORKDIR/update_soaconfig.py
      update_variable "<OIG_ADMIN_PORT>" $OIG_ADMIN_PORT $WORKDIR/update_soaconfig.py
-     update_variable "<OUD_WLSADMIN_GRP>" $OUD_WLSADMIN_GRP $WORKDIR/update_soaconfig.py
+     update_variable "<LDAP_WLSADMIN_GRP>" $LDAP_WLSADMIN_GRP $WORKDIR/update_soaconfig.py
 
      copy_to_k8 $WORKDIR/update_soaconfig.py  workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/update_soaconfig.py > $LOGDIR/update_soaconfig.log 2>&1
@@ -836,8 +873,6 @@ create_oig_ohs_config()
       update_variable "<OIG_ADMIN_LBR_PORT>" $OIG_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
-      update_variable "<OIG_ADMIN_K8>" $OIG_ADMIN_K8 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
-      update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
 
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/prov_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
@@ -846,8 +881,6 @@ create_oig_ohs_config()
       update_variable "<OIG_LBR_PORT>" $OIG_LBR_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/prov_vh.conf
       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/prov_vh.conf
-      update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/prov_vh.conf
-      update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST1/prov_vh.conf
 
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
@@ -856,8 +889,24 @@ create_oig_ohs_config()
       update_variable "<OIG_LBR_INT_PORT>" $OIG_LBR_INT_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-      update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-      update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
+
+      if [ "$USE_INGRESS" = "true" ]
+      then
+         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
+         update_variable "<OIG_ADMIN_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
+      else
+         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/prov_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST1/prov_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
+         update_variable "<OIG_ADMIN_K8>" $OIG_ADMIN_K8 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
+      fi
+
    fi
 
    if [ ! "$OHS_HOST2" = "" ]
@@ -871,8 +920,6 @@ create_oig_ohs_config()
       update_variable "<OIG_ADMIN_LBR_PORT>" $OIG_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<OIG_ADMIN_K8>" $OIG_ADMIN_K8 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
 
       update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/prov_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
@@ -881,8 +928,6 @@ create_oig_ohs_config()
       update_variable "<OIG_LBR_PORT>" $OIG_LBR_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/prov_vh.conf
       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST2/prov_vh.conf
 
       update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
@@ -891,8 +936,23 @@ create_oig_ohs_config()
       update_variable "<OIG_LBR_INT_PORT>" $OIG_LBR_INT_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
+
+      if [ "$USE_INGRESS" = "true" ]
+      then
+         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
+         update_variable "<OIG_ADMIN_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
+      else
+         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/prov_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST2/prov_vh.conf
+         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
+         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
+         update_variable "<OIG_ADMIN_K8>" $OIG_ADMIN_K8 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
+      fi
    fi
    
    print_status $?

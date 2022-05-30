@@ -1,26 +1,26 @@
-dn: <SEARCH_BASE>
+dn: <LDAP_SEARCHBASE>
 objectClass: domain
 objectClass: orclSubscriber
 objectClass: top
-dc: <REGION>
-aci: (targetattr="*")(version 3.0; acl "Allow OIMAdminGroup add, read and write access to all attributes"; allow(add,read,search,compare,write,delete,import,export) groupdn="ldap:///cn=<OIGADMINGRP>,<GROUP_SEARCHBASE>";)
+dc: <OUD_REGION>
+aci: (targetattr="*")(version 3.0; acl "Allow OIMAdminGroup add, read and write access to all attributes"; allow(add,read,search,compare,write,delete,import,export) groupdn="ldap:///cn=<LDAP_OIGADMIN_GRP>,<LDAP_GROUP_SEARCHBASE>";)
 
-dn: cn=OracleContext,<SEARCH_BASE>
+dn: cn=OracleContext,<LDAP_SEARCHBASE>
 cn: OracleContext
 objectclass: top
 objectclass: orclContext
 objectclass: orclContextAux82
 orclVersion: 90600
-aci: (targetattr="*")(version 3.0; acl "OracleContext accessible by OracleContextAdmins"; allow (all) groupdn="ldap:///cn=OracleContextAdmins,cn=groups,cn=OracleContext,<SEARCH_BASE>";)
+aci: (targetattr="*")(version 3.0; acl "OracleContext accessible by OracleContextAdmins"; allow (all) groupdn="ldap:///cn=OracleContextAdmins,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";)
 
-dn: cn=Groups,cn=OracleContext,<SEARCH_BASE>
+dn: cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>
 cn: Groups
 objectclass: top
 objectclass: orclContainer
 
-dn: cn=OracleContextAdmins,cn=Groups,cn=OracleContext,<SEARCH_BASE>
+dn: cn=OracleContextAdmins,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>
 cn: OracleContextAdmins
-uniquemember: <OUDADMINUSER>
+uniquemember: <LDAP_ADMIN_USER>
 objectclass: top
 objectclass: groupofUniqueNames
 objectclass: orclGroup
@@ -28,17 +28,17 @@ displayname: Oracle Context Administrators
 description: Users who can administer all entities in this Oracle Context
 
 
-dn: cn=Products,cn=OracleContext,<SEARCH_BASE>
+dn: cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
 cn: Products
 objectclass: top
 objectclass: orclContainer
 
-dn: cn=Common,cn=Products,cn=OracleContext,<SEARCH_BASE>
+dn: cn=Common,cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
 cn: Common
 orclCommonNickNameAttribute: uid
 orclCommonApplicationGuidAttribute: orclGlobalID
-orclCommonUserSearchBase:<SEARCH_BASE>
-orclCommonGroupSearchBase:<SEARCH_BASE>
+orclCommonUserSearchBase:<LDAP_SEARCHBASE>
+orclCommonGroupSearchBase:<LDAP_SEARCHBASE>
 orclVersion: 90000
 objectclass: top
 objectclass: orclCommonAttributes
@@ -50,55 +50,55 @@ orclUserObjectClasses: organizationalperson
 orclUserObjectClasses: orcluser
 orclUserObjectClasses: orcluserv2
 orclcommonnamingattribute: cn
-orclCommonGroupCreateBase: <GROUP_SEARCHBASE>
-orclCommonDefaultGroupCreateBase: <GROUP_SEARCHBASE>
+orclCommonGroupCreateBase: <LDAP_GROUP_SEARCHBASE>
+orclCommonDefaultGroupCreateBase: <LDAP_GROUP_SEARCHBASE>
 orclCommonKrbPrincipalAttribute: krbPrincipalName
 orclCommonWindowsPrincipalAttribute: orclSAMAccountName
 
-dn: cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<SEARCH_BASE>
+dn: cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
 cn: pwdPolicies
 objectclass: top
 objectclass: orclContainer
 
-dn: <USER_SEARCHBASE>
+dn: <LDAP_USER_SEARCHBASE>
 objectClass: orclContainer
 objectClass: top
 cn: users
-aci: (targetattr="obUserAccountControl||obLoginTryCount||obLockoutTime||oblastsuccessfullogin||oblastfailedlogin||obpasswordexpirydate||obver||obLastLoginAttemptDate||oblockedon||obpsftid") (version 3.0; acl "oam userWritePrivilegeGroup acl"; allow (search,read,compare,write) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>"; allow (search,read,compare) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<GROUP_SEARCHBASE>"; allow (search,read,compare,write) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetattr="orclguid||modifytimestamp") (version 3.0; acl "orclguid acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read) userdn="ldap:///anyone";)
-aci: (targetfilter="(objectclass=orcluser*)")(version 3.0; acl "add orcluser aci";allow(read,add) groupdn="ldap:///cn=oracledascreateuser,cn=groups,cn=OracleContext,<SEARCH_BASE>";)
-aci: (targetattr="displayName||preferredlanguage||orcltimezone||orcldateofbirth||orclgender||orclwirelessaccountnumber||cn||uid||homephone||telephonenumber") (version 3.0; acl "useraccount acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (read) userdn="ldap:///anyone";)
-aci: (version 3.0; acl "read aci"; allow(read) groupdn="ldap:///cn=Common User Attributes,cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow(read groupdn="cn=PKIAdmins,cn=groups,cn=OracleContext,<SEARCH_BASE>");)
-aci: (targetattr="*") (targetfilter="(objectclass=inetorgperson)") (version 3.0; acl "inetorgperson acl";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (read) userdn="ldap:///anyone";)
-aci: (targetattr="orclaccountstatusevent") (version 3.0; acl "orclaccountstatusevent acl";allow (write) groupdn="ldap:///cn=verifierServices,cn=Groups,cn=OracleContext,<SEARCH_BASE>";)
-aci: (targetattr="orclAccessibilityMode||orclColorContrast||orclFontSize||orclNumberFormat||orclCurrency||orclDateFormat||orclTimeFormat||orclEmbeddedHelp||orclFALanguage||orclFATerritory||orclTimeZone||orclDisplayNameLanguagePreference||orclImpersonationGrantee||orclImpersonationGranter") (targetfilter="(objectclass=inetorgperson)") (version 3.0; acl "orclIDXPerson attributes acl";allow (search,read,compare,write) groupdn="ldap:///cn=orclFAUserWritePrefsPrivilegeGroup,<GROUP_SEARCHBASE>" ;)
-aci: (targetattr!="orclpasswordverifier||orclpassword||authpassword||pwdhistory||orclpwdaccountunlock||orclaccountstatusevent")(version 3.0; acl "orclPwdPolicyAttributes acl";allow (search,read,compare) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<GROUP_SEARCHBASE>" ;allow (search,read,compare,write) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<GROUP_SEARCHBASE>" ;)
-aci: (targetattr="mail") (version 3.0; acl "orclaccountstatusevent acl";allow (write) groupdn="ldap:///cn=EmailAdminsGroup,cn=EmailServerContainer,cn=Products,cn=OracleContext";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read) userdn="ldap:///anyone";)
-aci: (targetattr="orclpasswordhintanswer") (version 3.0; acl "orclpasswordhintanswer acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";)
-aci: (targetattr="orclpasswordhint") (version 3.0; acl "orclpasswordhint acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (read,search,write,compare) groupdn="ldap:///cn=OracleUserSecurityAdmins,cn=Groups,cn=OracleContext,<SEARCH_BASE>";)
-aci: (targetattr="userPassword") (targetfilter="(objectclass=inetorgperson)") (version 3.0; acl "userpassword acl";allow (read,search,write,compare) groupdn="ldap:///cn=OracleUserSecurityAdmins,cn=Groups,cn=OracleContext<SEARCH_BASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (compare) groupdn="ldap:///cn=authenticationServices, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (compare) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<GROUP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetattr="authpassword||orclpasswordverifier||orclpassword") (version 3.0; acl "orclpassword acl";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser,cn=groups,cn=OracleContext,<SEARCH_BASE>" ;allow (search, read, compare) groupdn="ldap:///cn=verifierServices,cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (search,read,write,compare) userdn="ldap:///self";)
-aci: (targetattr="usercertificate||usersmimecertificate") (version 3.0; acl "usercertificate acl";allow (read, search, write, compare) groupdn="ldap:///cn=PKIAdmins,cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow(read, search, compare) userdn="ldap:///self";allow (read, search, compare) userdn="ldap:///anyone";)
-aci: (targetfilter="(|(objectclass=person)(objectclass=orclcontainer))")(version 3.0; acl "person and orclcontainer acl";allow(search,read,add) groupdn="ldap:///cn=oracledascreateuser,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,delete) groupdn="ldap:///cn=oracledasdeleteuser,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,write) groupdn="ldap:///cn=oracledasedituser,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,proxy) groupdn="ldap:///cn=UserProxyPrivilege,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,proxy) userdn="ldap:///orclApplicationCommonName=DASApp,cn=DAS,cn=Products,cn=oraclecontext";allow(read,selfwrite) userdn="ldap:///self";allow(search,read) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<GROUP_SEARCHBASE>";allow(search,read,write,add,delete) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetattr="orclisenabled") (version 3.0; acl "orclisenabled acl";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasaccountadmingroup, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read) userdn="ldap:///anyone";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<SEARCH_BASE>";allow (read) userdn="ldap:///anyone";)
-aci: (targetattr = "*")(targetfilter= "(objectclass=inetorgperson)")(targetscope = "subtree") (version 3.0; acl "iam admin changepwd"; allow (compare,search,read,selfwrite,add,write,delete) userdn = "ldap:///cn=<OAMLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>";)
+aci: (targetattr="obUserAccountControl||obLoginTryCount||obLockoutTime||oblastsuccessfullogin||oblastfailedlogin||obpasswordexpirydate||obver||obLastLoginAttemptDate||oblockedon||obpsftid") (version 3.0; acl "oam userWritePrivilegeGroup acl"; allow (search,read,compare,write) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>"; allow (search,read,compare) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>"; allow (search,read,compare,write) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetattr="orclguid||modifytimestamp") (version 3.0; acl "orclguid acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read) userdn="ldap:///anyone";)
+aci: (targetfilter="(objectclass=orcluser*)")(version 3.0; acl "add orcluser aci";allow(read,add) groupdn="ldap:///cn=oracledascreateuser,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";)
+aci: (targetattr="displayName||preferredlanguage||orcltimezone||orcldateofbirth||orclgender||orclwirelessaccountnumber||cn||uid||homephone||telephonenumber") (version 3.0; acl "useraccount acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (read) userdn="ldap:///anyone";)
+aci: (version 3.0; acl "read aci"; allow(read) groupdn="ldap:///cn=Common User Attributes,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(read groupdn="cn=PKIAdmins,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>");)
+aci: (targetattr="*") (targetfilter="(objectclass=inetorgperson)") (version 3.0; acl "inetorgperson acl";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (read) userdn="ldap:///anyone";)
+aci: (targetattr="orclaccountstatusevent") (version 3.0; acl "orclaccountstatusevent acl";allow (write) groupdn="ldap:///cn=verifierServices,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";)
+aci: (targetattr="orclAccessibilityMode||orclColorContrast||orclFontSize||orclNumberFormat||orclCurrency||orclDateFormat||orclTimeFormat||orclEmbeddedHelp||orclFALanguage||orclFATerritory||orclTimeZone||orclDisplayNameLanguagePreference||orclImpersonationGrantee||orclImpersonationGranter") (targetfilter="(objectclass=inetorgperson)") (version 3.0; acl "orclIDXPerson attributes acl";allow (search,read,compare,write) groupdn="ldap:///cn=orclFAUserWritePrefsPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>" ;)
+aci: (targetattr!="orclpasswordverifier||orclpassword||authpassword||pwdhistory||orclpwdaccountunlock||orclaccountstatusevent")(version 3.0; acl "orclPwdPolicyAttributes acl";allow (search,read,compare) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>" ;allow (search,read,compare,write) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>" ;)
+aci: (targetattr="mail") (version 3.0; acl "orclaccountstatusevent acl";allow (write) groupdn="ldap:///cn=EmailAdminsGroup,cn=EmailServerContainer,cn=Products,cn=OracleContext";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read) userdn="ldap:///anyone";)
+aci: (targetattr="orclpasswordhintanswer") (version 3.0; acl "orclpasswordhintanswer acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";)
+aci: (targetattr="orclpasswordhint") (version 3.0; acl "orclpasswordhint acl";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (read,search,write,compare) groupdn="ldap:///cn=OracleUserSecurityAdmins,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";)
+aci: (targetattr="userPassword") (targetfilter="(objectclass=inetorgperson)") (version 3.0; acl "userpassword acl";allow (read,search,write,compare) groupdn="ldap:///cn=OracleUserSecurityAdmins,cn=Groups,cn=OracleContext<LDAP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,selfwrite,compare) userdn="ldap:///self";allow (compare) groupdn="ldap:///cn=authenticationServices, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (compare) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetattr="authpassword||orclpasswordverifier||orclpassword") (version 3.0; acl "orclpassword acl";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>" ;allow (search, read, compare) groupdn="ldap:///cn=verifierServices,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (search,read,write,compare) userdn="ldap:///self";)
+aci: (targetattr="usercertificate||usersmimecertificate") (version 3.0; acl "usercertificate acl";allow (read, search, write, compare) groupdn="ldap:///cn=PKIAdmins,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(read, search, compare) userdn="ldap:///self";allow (read, search, compare) userdn="ldap:///anyone";)
+aci: (targetfilter="(|(objectclass=person)(objectclass=orclcontainer))")(version 3.0; acl "person and orclcontainer acl";allow(search,read,add) groupdn="ldap:///cn=oracledascreateuser,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,delete) groupdn="ldap:///cn=oracledasdeleteuser,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,write) groupdn="ldap:///cn=oracledasedituser,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,proxy) groupdn="ldap:///cn=UserProxyPrivilege,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,proxy) userdn="ldap:///orclApplicationCommonName=DASApp,cn=DAS,cn=Products,cn=oraclecontext";allow(read,selfwrite) userdn="ldap:///self";allow(search,read) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read) groupdn="ldap:///cn=orclFAUserReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow(search,read,write,add,delete) groupdn="ldap:///cn=orclFAUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetattr="orclisenabled") (version 3.0; acl "orclisenabled acl";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasaccountadmingroup, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read) userdn="ldap:///anyone";allow (read, search, compare) groupdn="ldap:///cn=Common User Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read,search,write,compare) groupdn="ldap:///cn=oracledasedituser, cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow (read) userdn="ldap:///anyone";)
+aci: (targetattr = "*")(targetfilter= "(objectclass=inetorgperson)")(targetscope = "subtree") (version 3.0; acl "iam admin changepwd"; allow (compare,search,read,selfwrite,add,write,delete) userdn = "ldap:///cn=<LDAP_OAMLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>";)
 
-dn: <GROUP_SEARCHBASE>
+dn: <LDAP_GROUP_SEARCHBASE>
 objectClass: orclContainer
 objectClass: top
 cn: groups
-aci: (version 3.0; acl "fa acl";allow(search,read) groupdn="ldap:///cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE>";allow(search,read,add,delete) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetfilter="(&(objectclass=orclgroup)(!(orclisvisible=false)))")(version 3.0; acl "visible orclgroup acl";allow(read,search,add) groupdn="ldap:///cn=oracledascreategroup,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow(read,search,delete) groupdn="ldap:///cn=oracledasdeletegroup,cn=groups,cn=OracleContext,<SEARCH_BASE>";allow(read,search,write) groupdn="ldap:///cn=oracledaseditgroup, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,add,delete) userattr="owner#USERDN";allow(search,read,add,delete) userattr="owner#GROUPDN";allow(search,read) groupdn="ldap:///cn=Common Group Attributes,cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,add,delete) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (version 3.0; acl "orclgroup read acl";allow(search,read) groupdn="ldap:///cn=Common Group Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>" ;)
-aci: (targetattr="*") (targetfilter="(&(objectclass=orclgroup)(!(orclisvisible=false)))")(version 3.0; acl "attrs for visible orclcontainer acl";allow(search,read,write,compare) userattr="owner#USERDN";allow(search,read,write,compare) userattr="owner#GROUPDN";allow(search,read,write,compare) groupdn="ldap:///cn=oracledaseditgroup,cn=groups,cn=OracleContext,<SEARCH_BASE> || ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>";allow(search,read,compare) groupdn="ldap:///cn=Common Group Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE> || ldap:///cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetfilter="(&(objectclass=orclgroup)(orclisvisible=false))")(version 3.0; acl "visible orclgroup acl";allow(search,read,add,delete) userattr="owner#USERDN";allow(search,read,add,delete) userattr="owner#GROUPDN";allow(search,read) groupdn="ldap:///cn=Common Group Attributes,cn=Groups,cn=OracleContext,<SEARCH_BASE> || ldap:///cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE>";allow(search,read,add,delete) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetfilter="(objectclass=orclcontainer)")(version 3.0; acl "orclcontainer add acl";allow(search,read,add) groupdn="ldap:///cn=IASAdmins,cn=groups,cn=OracleContext,<SEARCH_BASE>" ;)
-aci: (targetattr="*")(version 3.0; acl "attr fa acl";allow(search,read,compare) groupdn="ldap:///cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE>";allow(search,read,compare,write) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
-aci: (targetfilter="(objectclass=orclgroup*)")(version 3.0; acl "orclgroup add acl";allow(search,read,add) groupdn="ldap:///cn=oracledascreategroup,cn=groups,cn=OracleContext,<SEARCH_BASE>" ;)
-aci: (targetattr="mail") (targetfilter="(objectclass=orclgroup)")(version 3.0; acl "mail attr for orclcontainer acl";allow(search,read,write,compare) userattr="owner#USERDN";allow(search,read,write,compare) userattr="owner#GROUPDN";allow(search,read,compare) groupdn="ldap:///cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE> || ldap:///cn=Common Group Attributes, cn=Groups,cn=OracleContext,<SEARCH_BASE>";allow(search,read,compare,write) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE> || ldap:///cn=EmailAdminsGroup,cn=EMailServerContainer,cn=Products,cn=OracleContext";)
-aci: (targetattr="*") (targetfilter="(&(objectclass=orclgroup)(orclisvisible=false))")(version 3.0; acl "attrs for non visible orclcontainer acl";allow(search,read,write,compare) userattr="owner#USERDN";allow(search,read,write,compare) userattr="owner#GROUPDN";allow(search,read, compare) groupdn="ldap:///cn=Common Group Attributes,cn=Groups,cn=OracleContext,<SEARCH_BASE> || ldap:///cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE>";allow(search,read,compare,write) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (version 3.0; acl "fa acl";allow(search,read) groupdn="ldap:///cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow(search,read,add,delete) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetfilter="(&(objectclass=orclgroup)(!(orclisvisible=false)))")(version 3.0; acl "visible orclgroup acl";allow(read,search,add) groupdn="ldap:///cn=oracledascreategroup,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(read,search,delete) groupdn="ldap:///cn=oracledasdeletegroup,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(read,search,write) groupdn="ldap:///cn=oracledaseditgroup, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,add,delete) userattr="owner#USERDN";allow(search,read,add,delete) userattr="owner#GROUPDN";allow(search,read) groupdn="ldap:///cn=Common Group Attributes,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,add,delete) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (version 3.0; acl "orclgroup read acl";allow(search,read) groupdn="ldap:///cn=Common Group Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>" ;)
+aci: (targetattr="*") (targetfilter="(&(objectclass=orclgroup)(!(orclisvisible=false)))")(version 3.0; acl "attrs for visible orclcontainer acl";allow(search,read,write,compare) userattr="owner#USERDN";allow(search,read,write,compare) userattr="owner#GROUPDN";allow(search,read,write,compare) groupdn="ldap:///cn=oracledaseditgroup,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE> || ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow(search,read,compare) groupdn="ldap:///cn=Common Group Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE> || ldap:///cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetfilter="(&(objectclass=orclgroup)(orclisvisible=false))")(version 3.0; acl "visible orclgroup acl";allow(search,read,add,delete) userattr="owner#USERDN";allow(search,read,add,delete) userattr="owner#GROUPDN";allow(search,read) groupdn="ldap:///cn=Common Group Attributes,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE> || ldap:///cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow(search,read,add,delete) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetfilter="(objectclass=orclcontainer)")(version 3.0; acl "orclcontainer add acl";allow(search,read,add) groupdn="ldap:///cn=IASAdmins,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>" ;)
+aci: (targetattr="*")(version 3.0; acl "attr fa acl";allow(search,read,compare) groupdn="ldap:///cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow(search,read,compare,write) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
+aci: (targetfilter="(objectclass=orclgroup*)")(version 3.0; acl "orclgroup add acl";allow(search,read,add) groupdn="ldap:///cn=oracledascreategroup,cn=groups,cn=OracleContext,<LDAP_SEARCHBASE>" ;)
+aci: (targetattr="mail") (targetfilter="(objectclass=orclgroup)")(version 3.0; acl "mail attr for orclcontainer acl";allow(search,read,write,compare) userattr="owner#USERDN";allow(search,read,write,compare) userattr="owner#GROUPDN";allow(search,read,compare) groupdn="ldap:///cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE> || ldap:///cn=Common Group Attributes, cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE>";allow(search,read,compare,write) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE> || ldap:///cn=EmailAdminsGroup,cn=EMailServerContainer,cn=Products,cn=OracleContext";)
+aci: (targetattr="*") (targetfilter="(&(objectclass=orclgroup)(orclisvisible=false))")(version 3.0; acl "attrs for non visible orclcontainer acl";allow(search,read,write,compare) userattr="owner#USERDN";allow(search,read,write,compare) userattr="owner#GROUPDN";allow(search,read, compare) groupdn="ldap:///cn=Common Group Attributes,cn=Groups,cn=OracleContext,<LDAP_SEARCHBASE> || ldap:///cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";allow(search,read,compare,write) groupdn="ldap:///cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 
-dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<SEARCH_BASE>
+dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
 pwdfailurecountinterval: 0
 pwdlockoutduration: 86400
 objectclass: top
@@ -115,57 +115,57 @@ pwdmaxage: 0
 #displayname: Password Policy for Fusion Apps
 pwdAttribute: userPassword
 
-dn: cn=orclFAUserReadPrivilegeGroup,<GROUP_SEARCHBASE>
+dn: cn=orclFAUserReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
 cn: orclFAUserReadPrivilegeGroup
-uniquemember: cn=<OAMLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>
+uniquemember: cn=<LDAP_OAMLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 
-dn: cn=orclFAUserWritePrivilegeGroup,<GROUP_SEARCHBASE>
+dn: cn=orclFAUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
 cn: orclFAUserWritePrivilegeGroup
 
-dn: cn=orclFAUserWritePrefsPrivilegeGroup,<GROUP_SEARCHBASE>
+dn: cn=orclFAUserWritePrefsPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
 cn: orclFAUserWritePrefsPrivilegeGroup
 
-dn: cn=orclFAGroupReadPrivilegeGroup,<GROUP_SEARCHBASE>
+dn: cn=orclFAGroupReadPrivilegeGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
 cn: orclFAGroupReadPrivilegeGroup
-uniquemember: cn=<OAMLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>
+uniquemember: cn=<LDAP_OAMLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 
-dn: cn=orclFAGroupWritePrivilegeGroup,<GROUP_SEARCHBASE>
+dn: cn=orclFAGroupWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
 cn: orclFAGroupWritePrivilegeGroup
 
-dn: cn=<SYSTEMIDS>,<SEARCH_BASE>
+dn: cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 objectClass: orclContainer
 objectClass: top
-cn: <SYSTEMIDS>
-ds-pwp-password-policy-dn: cn=SystemIDPolicy,cn=pwdPolicies,cn=common,cn=products,cn=OracleContext,<SEARCH_BASE>
+cn: <LDAP_SYSTEMIDS>
+ds-pwp-password-policy-dn: cn=SystemIDPolicy,cn=pwdPolicies,cn=common,cn=products,cn=OracleContext,<LDAP_SEARCHBASE>
 
-dn: cn=<WLSADMINGRP>,<GROUP_SEARCHBASE>
+dn: cn=<LDAP_WLSADMIN_GRP>,<LDAP_GROUP_SEARCHBASE>
 objectClass: orclGroup
 objectClass: groupOfUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
 description: WLS Administrators Group for the IDM Domain in LDAP
 displayName: WLS Administrators
-cn: <WLSADMINGRP>
-uniquemember: cn=<OAMADMINGRP>,<GROUP_SEARCHBASE>
-uniquemember: cn=<WLSADMIN>,<USER_SEARCHBASE>
-uniquemember: cn=<XELSYSADM>,<USER_SEARCHBASE>
+cn: <LDAP_WLSADMIN_GRP>
+uniquemember: cn=<LDAP_OAMADMIN_GRP>,<LDAP_GROUP_SEARCHBASE>
+uniquemember: cn=<LDAP_WLSADMIN_USER>,<LDAP_USER_SEARCHBASE>
+uniquemember: cn=<LDAP_XELSYSADM_USER>,<LDAP_USER_SEARCHBASE>
 
-dn: cn=<WLSADMIN>,<USER_SEARCHBASE>
+dn: cn=<LDAP_WLSADMIN_USER>,<LDAP_USER_SEARCHBASE>
 objectClass: orclUserV2
 objectClass: person
 objectClass: oblixorgperson
@@ -177,19 +177,19 @@ objectClass: orclUser
 objectClass: orclIDXPerson
 objectClass: top
 objectClass: OIMPersonPwdPolicy
-givenName: <WLSADMIN>
+givenName: <LDAP_WLSADMIN_USER>
 obpasswordchangeflag: false
-uid: <WLSADMIN>
+uid: <LDAP_WLSADMIN_USER>
 orclIsEnabled: ENABLED
-sn: <WLSADMIN>
+sn: <LDAP_WLSADMIN_USER>
 userPassword: <PASSWORD>
-mail: <WLSADMIN>@company.com
-orclSAMAccountName: <WLSADMIN>
+mail: <LDAP_WLSADMIN_USER>@company.com
+orclSAMAccountName: <LDAP_WLSADMIN_USER>
 obpasswordexpirydate: <OUD_PWD_EXPIRY>T00:00:00Z
-cn: <WLSADMIN>
+cn: <LDAP_WLSADMIN_USER>
 oblogintrycount: 0
 
-dn: cn=OblixAnonymous,<SEARCH_BASE>
+dn: cn=OblixAnonymous,<LDAP_SEARCHBASE>
 objectClass: orcluserV2
 objectClass: oblixOrgPerson
 objectClass: person
@@ -209,7 +209,7 @@ uid: OblixAnonymous
 sn: OblixAnonymous
 cn: OblixAnonymous
 
-dn: cn=<OAMADMINUSER>,<USER_SEARCHBASE>
+dn: cn=<LDAP_OAMADMIN_USER>,<LDAP_USER_SEARCHBASE>
 objectClass: orclUserV2
 objectClass: oblixorgperson
 objectClass: person
@@ -221,19 +221,19 @@ objectClass: orclUser
 objectClass: orclIDXPerson
 objectClass: top
 objectClass: OIMPersonPwdPolicy
-givenName: <OAMADMINUSER>
-uid: <OAMADMINUSER>
+givenName: <LDAP_OAMADMIN_USER>
+uid: <LDAP_OAMADMIN_USER>
 orclIsEnabled: ENABLED
-sn: <OAMADMINUSER>
+sn: <LDAP_OAMADMIN_USER>
 userPassword: <PASSWORD>
-mail: <OAMADMINUSER>@company.com
-orclSAMAccountName: <OAMADMINUSER>
-cn: <OAMADMINUSER>
+mail: <LDAP_OAMADMIN_USER>@company.com
+orclSAMAccountName: <LDAP_OAMADMIN_USER>
+cn: <LDAP_OAMADMIN_USER>
 obpasswordchangeflag: false
 obpasswordexpirydate: <OUD_PWD_EXPIRY>T00:00:00Z
-ds-pwp-password-policy-dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<SEARCH_BASE>
+ds-pwp-password-policy-dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
 
-dn: cn=<OAMLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>
+dn: cn=<LDAP_OAMLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 objectClass: orclUserV2
 objectClass: oblixorgperson
 objectClass: person
@@ -253,25 +253,25 @@ uid: oamLDAP
 sn: oamLDAP
 cn: oamLDAP
 ds-privilege-name: password-reset
-ds-pwp-password-policy-dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<SEARCH_BASE>
+ds-pwp-password-policy-dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
 
-dn: cn=<OAMADMINGRP>,<GROUP_SEARCHBASE>
+dn: cn=<LDAP_OAMADMIN_GRP>,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
-cn: <OAMADMINGRP>
-uniqueMember: cn=<OAMADMINUSER>,<USER_SEARCHBASE>
+cn: <LDAP_OAMADMIN_GRP>
+uniqueMember: cn=<LDAP_OAMADMIN_USER>,<LDAP_USER_SEARCHBASE>
 
-dn: cn=OTPRestUserGroup,<GROUP_SEARCHBASE>
+dn: cn=OTPRestUserGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: top
 objectClass: orclgroup
 objectClass: groupofuniquenames
 cn: OTPRestUserGroup
 description: Forgotten Password Admin group
 displayName: OTPRestUserGroup
-uniquemember: cn=<OAMADMINUSER>,<USER_SEARCHBASE>
+uniquemember: cn=<LDAP_OAMADMIN_USER>,<LDAP_USER_SEARCHBASE>
 
-dn: cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>
+dn: cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>
 objectClass: orclGroup
 objectClass: groupOfUniqueNames
 objectClass: orclIDXGroup
@@ -279,18 +279,18 @@ objectClass: top
 description: This is the role granted to have write permission on some User Attributes
 displayName: OAM User Modify Role
 cn: orclFAOAMUserWritePrivilegeGroup
-uniquemember: cn=<OAMLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>
+uniquemember: cn=<LDAP_OAMLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 
-dn: ou=CO,<SEARCH_BASE>
+dn: ou=CO,<LDAP_SEARCHBASE>
 objectClass: organizationalUnit
 objectClass: top
 ou: CO
-aci: (targetfilter="(objectclass=*)")(version 3.0; acl "oam userWritePrivilegeGroup entry acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (targetfilter="(objectclass=*)")(version 3.0; acl "oam userWritePrivilegeGroup entry acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 aci: (targetattr="*")(version 3.0; acl "<DenySSORead ACI>"; deny (read,search) (userdn!="ldap:///all");)
 aci: (targetattr="*")(version 3.0; acl "<AllowSSORead ACI>"; allow (read,search) (userdn="ldap:///all");)
-aci: (targetattr="*")(version 3.0; acl "oam userWritePrivilegeGroup attribute acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (targetattr="*")(version 3.0; acl "oam userWritePrivilegeGroup attribute acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 
-dn: ou=People,<SEARCH_BASE>
+dn: ou=People,<LDAP_SEARCHBASE>
 objectClass: organizationalUnit
 objectClass: top
 ou: People
@@ -298,26 +298,26 @@ aci: (targetattr="*")(version 3.0; acl "<AllowSSOAll ACI>"; allow (all) (userdn=
 aci: (targetattr="*")(version 3.0; acl "<DenySSORead ACI>"; deny (read,search) (userdn != "ldap:///all");)
 aci: (targetattr="*")(version 3.0; acl "<AllowSSORead ACI>"; allow (read,search) (userdn="ldap:///all");)
 
-dn: ou=vgoLocator,<SEARCH_BASE>
+dn: ou=vgoLocator,<LDAP_SEARCHBASE>
 objectClass: organizationalUnit
 objectClass: top
 ou: vgoLocator
-aci: (targetfilter="(objectclass=*)")(version 3.0; acl "oam userWritePrivilegeGroup entry acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (targetfilter="(objectclass=*)")(version 3.0; acl "oam userWritePrivilegeGroup entry acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 aci: (targetattr="*")(version 3.0; acl "<DenySSORead ACI>"; deny (read,search) (userdn!="ldap:///all");)
 aci: (targetattr="*")(version 3.0; acl "<AllowSSORead ACI>"; allow (read,search) (userdn="ldap:///all");)
-aci: (targetattr="*")(version 3.0; acl "oam userWritePrivilegeGroup attribute acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (targetattr="*")(version 3.0; acl "oam userWritePrivilegeGroup attribute acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 
-dn: cn=default,ou=vgoLocator,<SEARCH_BASE>
+dn: cn=default,ou=vgoLocator,<LDAP_SEARCHBASE>
 objectClass: top
 objectClass: vgoLocatorClass
-vGoLocatorAttribute: <SEARCH_BASE>
+vGoLocatorAttribute: <LDAP_SEARCHBASE>
 cn: default
-aci: (targetfilter="(objectclass=*)")(version 3.0; acl "oam userWritePrivilegeGroup entry acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (targetfilter="(objectclass=*)")(version 3.0; acl "oam userWritePrivilegeGroup entry acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 aci: (targetattr="*")(version 3.0; acl "<DenySSORead ACI>"; deny (read,search) (userdn!="ldap:///all");)
 aci: (targetattr="*")(version 3.0; acl "<AllowSSORead ACI>"; allow (read,search) (userdn="ldap:///all");)
-aci: (targetattr="*")(version 3.0; acl "oam userWritePrivilegeGroup attribute acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<GROUP_SEARCHBASE>";)
+aci: (targetattr="*")(version 3.0; acl "oam userWritePrivilegeGroup attribute acl"; allow (all) groupdn="ldap:///cn=orclFAOAMUserWritePrivilegeGroup,<LDAP_GROUP_SEARCHBASE>";)
 
-dn: cn=<OIGLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>
+dn: cn=<LDAP_OIGLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 objectClass: orclUserV2
 objectClass: oblixorgperson
 objectClass: person
@@ -330,28 +330,28 @@ objectClass: orclIDXPerson
 objectClass: top
 objectClass: OIMPersonPwdPolicy
 userPassword: <PASSWORD>
-mail: <OIGLDAPUSER>@company.com
-givenName: <OIGLDAPUSER>
-orclSAMAccountName: <OIGLDAPUSER>
-uid: <OIGLDAPUSER>
-sn: <OIGLDAPUSER>
-cn: <OIGLDAPUSER>
+mail: <LDAP_OIGLDAP_USER>@company.com
+givenName: <LDAP_OIGLDAP_USER>
+orclSAMAccountName: <LDAP_OIGLDAP_USER>
+uid: <LDAP_OIGLDAP_USER>
+sn: <LDAP_OIGLDAP_USER>
+cn: <LDAP_OIGLDAP_USER>
 ds-privilege-name: password-reset
 
-dn: cn=<OIGADMINGRP>,<GROUP_SEARCHBASE>
+dn: cn=<LDAP_OIGADMIN_GRP>,<LDAP_GROUP_SEARCHBASE>
 objectClass: groupofUniqueNames
 objectClass: orclIDXGroup
 objectClass: top
-cn: <OIGADMINGRP>
-uniquemember: cn=<OIGLDAPUSER>,cn=<SYSTEMIDS>,<SEARCH_BASE>
+cn: <LDAP_OIGADMIN_GRP>
+uniquemember: cn=<LDAP_OIGLDAP_USER>,cn=<LDAP_SYSTEMIDS>,<LDAP_SEARCHBASE>
 
-dn: <RESERVE_SEARCHBASE>
+dn: <LDAP_RESERVE_SEARCHBASE>
 objectClass: orclContainer
 objectClass: top
 cn: reserve
-aci: (targetattr="*") (version 3.0; acl "oim admin group reserve container acl"; allow (add,read,search,compare,write,delete,import,export) groupdn="ldap:///cn=<OIGADMINGRP>,<GROUP_SEARCHBASE>" ;)
+aci: (targetattr="*") (version 3.0; acl "oim admin group reserve container acl"; allow (add,read,search,compare,write,delete,import,export) groupdn="ldap:///cn=<LDAP_OIGADMIN_GRP>,<LDAP_GROUP_SEARCHBASE>" ;)
 
-dn: cn=<XELSYSADM>,<USER_SEARCHBASE>
+dn: cn=<LDAP_XELSYSADM_USER>,<LDAP_USER_SEARCHBASE>
 objectClass: oblixorgperson
 objectClass: person
 objectClass: organizationalPerson
@@ -362,15 +362,15 @@ objectClass: orclIDXPerson
 objectClass: top
 objectClass: OIMPersonPwdPolicy
 obpasswordchangeflag: false
-givenName: <XELSYSADM>
+givenName: <LDAP_XELSYSADM_USER>
 orclIsEnabled: ENABLED
-uid: <XELSYSADM>
+uid: <LDAP_XELSYSADM_USER>
 sn: admin
 userPassword: <PASSWORD>
-mail: <XELSYSADM>@company.com
+mail: <LDAP_XELSYSADM_USER>@company.com
 obuseraccountcontrol: activated
-displayName: <XELSYSADM>
+displayName: <LDAP_XELSYSADM_USER>
 obpasswordexpirydate:<OUD_PWD_EXPIRY>T00:00:00Z
-cn: <XELSYSADM>
+cn: <LDAP_XELSYSADM_USER>
 oblogintrycount: 0
 

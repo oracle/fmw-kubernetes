@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which can be used to deploy Oracle Access Manager and wire it to 
@@ -25,7 +25,18 @@ WORKDIR=$LOCAL_WORKDIR/OAM
 LOGDIR=$WORKDIR/logs
 OPER_DIR=OracleAccessManagement
 
-if [ "$INSTALL_OAM" != "true" ] && [ "$INSTALL_OAM" != "TRUE" ]
+if [ "$USE_INGRESS" = "true" ]
+then
+   INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
+   INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+   if [ "$INGRESS_HTTP_PORT" = "" ]
+   then
+       echo "Unable to get Ingress Ports - Check Ingress is running"
+       exit 1
+   fi
+fi
+
+if [ "$INSTALL_OAM" != "true" ] 
 then
      echo "You have not requested OAM installation"
      exit 1
@@ -168,20 +179,32 @@ then
     update_progress
 fi
 
-# Create Node Port Services
+# Start Domain
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    perform_first_start
+    update_progress
+fi
+
+# Create Services
 #
 
-if [ ! "$USE_INGRESS" = "true" ]
+new_step
+if [ $STEPNO -gt $PROGRESS ]
 then
-    new_step
-    if [ $STEPNO -gt $PROGRESS ]
-    then
+   if [ "$USE_INGRESS" = "true" ]
+   then
+       create_oam_ingress
+   else
        create_oam_nodeport
-       update_progress
-    fi
+   fi
+   update_progress
 fi
 
 # Set memory params and disable derby db
+#
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
@@ -190,14 +213,13 @@ then
 fi
 
 # Update default OAM config using OAM APIs
-
+#
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    update_default_oam_domain http://$K8_WORKER_HOST1:$OAM_ADMIN_K8 $OAM_WEBLOGIC_USER:$OAM_WEBLOGIC_PWD
    update_progress
 fi
-
 
 # Update OAM HostIds
 #
@@ -359,3 +381,4 @@ FINISH_TIME=`date +%s`
 print_time TOTAL "Create OAM" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
 cat $LOGDIR/timings.log
+touch $LOCAL_WORKDIR/oam_installed

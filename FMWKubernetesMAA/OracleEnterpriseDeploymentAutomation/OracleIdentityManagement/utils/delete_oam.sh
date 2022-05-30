@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OAM deployment
@@ -34,9 +34,18 @@ echo
 #
 echo "Deleting Kubernetes Services"
 kubectl delete jobs $OAM_DOMAIN_NAME-create-oam-infra-domain-job -n $OAMNS > $LOG 2>&1
-kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-policy-nodeport >> $LOG 2>&1
-kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-oam-nodeport >> $LOG 2>&1
-kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-oap >> $LOG 2>&1
+
+if [ "$USE_INGRESS" = "true" ]
+then
+     echo "Deleting Ingress Services"
+     kubectl delete ingress -n $OAMNS oamadmin-ingress >> $LOG 2>&1
+     kubectl delete ingress -n $OAMNS oamruntime-ingress >> $LOG 2>&1
+else
+     echo "Deleting NodePort Services"
+     kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-policy-nodeport >> $LOG 2>&1
+     kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-oam-nodeport >> $LOG 2>&1
+     kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-oap >> $LOG 2>&1
+fi
 
 echo "Deleting OAM Domain"
 kubectl delete domain $OAM_DOMAIN_NAME -n $OAMNS >> $LOG 2>&1
@@ -49,9 +58,32 @@ check_stopped $OAMNS adminserver
 # Drop OAM Schemas
 #
 ST=`date +%s`
-echo "Dropping Schemas"
+printf "Dropping Schemas - "
 drop_schemas  $OAMNS $OAM_DB_SCAN $OAM_DB_LISTENER $OAM_DB_SERVICE $OAM_RCU_PREFIX OAM $OAM_DB_SYS_PWD $OAM_SCHEMA_PWD >> $LOG 2>&1
 ET=`date +%s`
+
+grep -q "Prefix validation failed." $LOG
+if [ $? -eq 0 ]
+then
+     echo "Schema Does not exist"
+else
+     grep -q "ORA-01940" $LOG
+     if [ $? -eq 0 ]
+     then
+          echo "Failed User Connected logfile $LOG"
+          exit 1
+     fi
+
+     grep -q "Repository Creation Utility - Drop : Operation Completed" $LOG
+     if [ $? -eq 0 ]
+     then
+          echo "Success"
+     else
+          echo "Failed see logfile $LOG"
+          exit 1
+     fi
+fi
+
 
 print_time STEP "Drop Schemas" $ST $ET 
 
@@ -61,7 +93,7 @@ print_time STEP "Drop Schemas" $ST $ET
 ST=`date +%s`
 echo "Deleting Volumes"
 rm -rf $OAM_LOCAL_SHARE/>> $LOG 2>&1
-rm  -rf $WORKDIR/* $LOCAL_WORKDIR/OHS/*/login_vh.conf $LOCAL_WORKDIR/OHS/*/iadadmin_vh.conf>> $LOG 2>&1
+rm  -rf $WORKDIR/* $LOCAL_WORKDIR/OHS/*/login_vh.conf $LOCAL_WORKDIR/OHS/*/iadadmin_vh.conf $LOCAL_WORKDIR/oam_installed>> $LOG 2>&1
 ET=`date +%s`
 print_time STEP "Delete Volume" $ST $ET 
 

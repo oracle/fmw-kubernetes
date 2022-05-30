@@ -1,0 +1,46 @@
+# Copyright (c) 2022, Oracle Corporation and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating an OAA Management Pod
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oaa-mgmt
+  namespace: <OAANS>
+  labels:
+    app: oaamgmt
+spec:
+  restartPolicy: OnFailure
+  volumes:
+    - name: oaaconfigpv
+      nfs: 
+        server: <PVSERVER>
+        path: <OAA_CONFIG_SHARE>
+    - name: oaacred
+      nfs: 
+        server: <PVSERVER>
+        path: <OAA_CRED_SHARE>
+    - name: oaalogpv
+      nfs: 
+        server: <PVSERVER>
+        path: <OAA_LOG_SHARE>
+    - name: oaavaultpv
+      nfs: 
+        server: <PVSERVER>
+        path: <OAA_VAULT_SHARE>
+  containers:
+  - name: oaamgmt
+    image: <OAA_MGT_IMAGE>:<OAAMGT_VER>
+    volumeMounts:
+      - name: oaaconfigpv
+        mountPath: /u01/oracle/scripts/settings
+      - name: oaacred
+        mountPath: /u01/oracle/scripts/creds
+      - name: oaalogpv
+        mountPath: /u01/oracle/logs
+      - name: oaavaultpv
+        mountPath: /u01/oracle/service/store/oaa
+    command: ["/bin/bash", "-ec", "tail -f /dev/null"]
+  imagePullSecrets:
+    - name: regcred
