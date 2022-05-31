@@ -33,16 +33,6 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
 1. Deploy the `ingress-nginx` controller by using Helm on the domain namespace:
 
-   For Kubernetes versions up to v1.18.x:
-   ```bash
-    $ helm install nginx-ingress -n soans \
-           --version=3.34.0 \
-           --set controller.service.type=NodePort \
-           --set controller.admissionWebhooks.enabled=false \
-	   ingress-nginx/ingress-nginx
-   ```
-
-   For Kubernetes versions v1.19.x+ onwards (NGINX version 4.0.6+):
    ```bash
     $ helm install nginx-ingress -n soans \
            --set controller.service.type=NodePort \
@@ -52,7 +42,7 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
     {{%expand "Click here to see the sample output." %}}
       NAME: nginx-ingress
-      LAST DEPLOYED: Tue Sep 15 08:40:47 2020
+      LAST DEPLOYED: Thu May  5 13:27:30 2022
       NAMESPACE: soans
       STATUS: deployed
       REVISION: 1
@@ -69,21 +59,23 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
       An example ingress that makes use of the controller:
 
-        apiVersion: networking.k8s.io/v1beta1
+        apiVersion: networking.k8s.io/v1
         kind: Ingress
         metadata:
-          annotations:
-            kubernetes.io/ingress.class: nginx
           name: example
           namespace: foo
         spec:
+          ingressClassName: nginx
           rules:
           - host: www.example.com
             http:
             paths:
-              - backend:
-                serviceName: exampleService
-                servicePort: 80
+              - pathType: Prefix
+                backend:
+                  service:
+                    name: exampleService
+                    port:
+                      number: 80
               path: /
        # This section is only required if TLS is to be enabled for the ingress
        tls:
@@ -109,29 +101,18 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
    ```bash
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj "/CN=domain1.org"
-    $ kubectl -n soans create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+    $ kubectl -n soans create secret tls soainfra-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
    ```
-   >  Note: The value of `CN` is the host on which this ingress is to be deployed.
+   >  Note: The value of `CN` is the host on which this ingress is to be deployed and secret name should be \<domainUID\>-tls-cert.
 
 
 #### Install NGINX load balancer for end-to-end SSL configuration
 
 1. Deploy the ingress-nginx controller by using Helm on the domain namespace:
 
-    For Kubernetes versions up to v1.18.x:
     ```bash
      $ helm install nginx-ingress -n soans \
-           --version=3.34.0 \
-           --set controller.extraArgs.default-ssl-certificate=soans/domain1-tls-cert \
-           --set controller.service.type=NodePort \
-           --set controller.admissionWebhooks.enabled=false \
-           --set controller.extraArgs.enable-ssl-passthrough=true  \
-            ingress-nginx/ingress-nginx
-    ```
-    For Kubernetes versions v1.19.x+ onwards (NGINX version 4.0.6+):
-    ```bash
-     $ helm install nginx-ingress -n soans \
-           --set controller.extraArgs.default-ssl-certificate=soans/domain1-tls-cert \
+           --set controller.extraArgs.default-ssl-certificate=soans/soainfra-tls-cert \
            --set controller.service.type=NodePort \
            --set controller.admissionWebhooks.enabled=false \
            --set controller.extraArgs.enable-ssl-passthrough=true  \
@@ -140,7 +121,7 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
    {{%expand "Click here to see the sample output." %}}
   ```bash
       NAME: nginx-ingress
-      LAST DEPLOYED: Tue Sep 15 08:40:47 2020
+      LAST DEPLOYED: Thu May  5 12:21:50 2022
       NAMESPACE: soans
       STATUS: deployed
       REVISION: 1
@@ -157,21 +138,23 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
       An example Ingress that makes use of the controller:
 
-        apiVersion: networking.k8s.io/v1beta1
+        apiVersion: networking.k8s.io/v1
         kind: Ingress
         metadata:
-          annotations:
-            kubernetes.io/ingress.class: nginx
           name: example
           namespace: foo
         spec:
+          ingressClassName: nginx
           rules:
           - host: www.example.com
             http:
             paths:
-              - backend:
-                serviceName: exampleService
-                servicePort: 80
+              - pathType: Prefix
+                backend:
+                  service:
+                    name: exampleService
+                    port:
+                      number: 80
               path: /
        # This section is only required if TLS is to be enabled for the Ingress
        tls:
@@ -204,17 +187,29 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 
 #### Configure NGINX to manage ingresses
 
+1. Choose an appropriate `LOADBALANCER_HOSTNAME` for accessing the Oracle SOA Suite domain application URLs.   
+
+   ```bash
+   $ export LOADBALANCER_HOSTNAME=<LOADBALANCER_HOSTNAME>
+   ```
+  
+   For example, if you are executing the commands from a master node terminal, where the master hostname is `LOADBALANCER_HOSTNAME`:
+  
+   ```bash
+   $ export LOADBALANCER_HOSTNAME=$(hostname -f)
+   ```
+
 1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file `${WORKDIR}/charts/ingress-per-domain/values.yaml`. By default, `type` is `TRAEFIK` , `sslType` is `NONSSL`, and `domainType` is `soa`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml`.   
 If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at `${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml`.
 
-    > Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v22.1.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration) for all the configuration parameters.
+    > Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v22.2.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration) for all the configuration parameters.
 
    ```bash
     $ cd ${WORKDIR}
     $ helm install soa-nginx-ingress  charts/ingress-per-domain \
         --namespace soans \
         --values charts/ingress-per-domain/values.yaml \
-        --set "nginx.hostname=$(hostname -f)" \
+        --set "nginx.hostname=${LOADBALANCER_HOSTNAME}" \
         --set type=NGINX
     ```
 
@@ -234,7 +229,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
     $ helm install soa-nginx-ingress  charts/ingress-per-domain \
         --namespace soans \
         --values charts/ingress-per-domain/values.yaml \
-        --set "nginx.hostname=$(hostname -f)" \
+        --set "nginx.hostname=${LOADBALANCER_HOSTNAME}" \
         --set type=NGINX --set sslType=SSL
    ```
    Sample output:
@@ -311,7 +306,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      Address:          100.111.150.225
      Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
      TLS:
-       domain1-tls-cert terminates domain1.org
+       soainfra-tls-cert terminates domain1.org
      Rules:
         Host                                                   Path  Backends
         ----                                                   ----  --------
@@ -347,7 +342,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      Address:
      Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
      TLS:
-      domain1-tls-cert terminates admin.org
+      soainfra-tls-cert terminates admin.org
      Rules:
        Host        Path  Backends
        ----        ----  --------
@@ -367,7 +362,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      Address:
      Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
      TLS:
-      domain1-tls-cert terminates soa.org
+      soainfra-tls-cert terminates soa.org
      Rules:
       Host        Path  Backends
       ----        ----  --------
@@ -387,58 +382,77 @@ If needed, you can update the ingress YAML file to define more path rules (in se
 
 ##### NONSSL configuration
 
-Verify that the Oracle SOA Suite domain application URLs are accessible through the `LOADBALANCER-Non-SSLPORT` `32125`:
+* Get the `LOADBALANCER_NON_SSLPORT` NodePort of NGINX using the command:
 
-```bash
-  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/weblogic/ready
-  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/console
-  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em
-  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/soa-infra
-  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/soa/composer
-  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/integration/worklistapp
-```
+  ```bash
+  $ LOADBALANCER_NON_SSLPORT=$(kubectl --namespace soans  get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-ingress-nginx-controller)
+  $ echo ${LOADBALANCER_NON_SSLPORT}
+  ```
+
+* Verify that the Oracle SOA Suite domain application URLs are accessible through the `LOADBALANCER_NON_SSLPORT`:
+
+  ```bash
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/weblogic/ready
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/console
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/em
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/soa-infra
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/soa/composer
+  http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/integration/worklistapp
+  ```
 
 ##### SSL configuration
 
-Verify that the Oracle SOA Suite domain application URLs are accessible through the `LOADBALANCER-SSLPORT` `30233`:
+* Get the `LOADBALANCER_SSLPORT` NodePort of NGINX using the command:
 
-```bash
-  https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/weblogic/ready
-  https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/console
-  https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/em
-  https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/soa-infra
-  https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/soa/composer
-  https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/integration/worklistapp
-```
+  ```bash
+  $ LOADBALANCER_SSLPORT=$(kubectl --namespace soans  get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
+  $ echo ${LOADBALANCER_SSLPORT}
+  ```
+
+* Verify that the Oracle SOA Suite domain application URLs are accessible through the `LOADBALANCER_SSLPORT`:
+
+  ```bash
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/weblogic/ready
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/console
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/em
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/soa-infra
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/soa/composer
+  https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/integration/worklistapp
+  ```
 
 ##### E2ESSL configuration
 
-Before accessing the SOA Suite domain application URLs, update the system host config file with the IP address of the host on which the ingress is deployed.
-
-   * To access the application URLs from the browser, update `/etc/hosts` on the browser host (in Windows, `C:\Windows\System32\Drivers\etc\hosts`) with the entries below
+* To access the SOA Suite domain application URLs from a remote browser, update the browser host config file `/etc/hosts` (In Windows, `C:\Windows\System32\Drivers\etc\hosts`) with the IP address of the host on which the ingress is deployed with below entries:
 
      ```
      X.X.X.X  admin.org
      X.X.X.X  soa.org
      X.X.X.X  osb.org
      ```
-      >  Note: The value of X.X.X.X is the host IP address on which this ingress is deployed.
 
-      >  Note: If you are behind any corporate proxy, make sure to update the browser proxy settings appropriately to access the host names updated `/etc/hosts` file.
+     >  Note: 
+     >  * The value of X.X.X.X is the host IP address on which this ingress is deployed.
+     >  * If you are behind any corporate proxy, make sure to update the browser proxy settings appropriately to access the host names updated `/etc/hosts` file.
 
-Verify that the Oracle SOA Suite domain application URLs are accessible through `LOADBALANCER-E2ESSLPORT` `30233`:
-
+* Get the `LOADBALANCER_SSLPORT` NodePort of NGINX using the command:
 
   ```bash
-  https://admin.org:${LOADBALANCER-SSLPORT}/weblogic/ready
-  https://admin.org:${LOADBALANCER-SSLPORT}/console
-  https://admin.org:${LOADBALANCER-SSLPORT}/em
-  https://soa.org:${LOADBALANCER-SSLPORT}/soa-infra
-  https://soa.org:${LOADBALANCER-SSLPORT}/soa/composer
-  https://soa.org:${LOADBALANCER-SSLPORT}/integration/worklistapp
+  $ LOADBALANCER_SSLPORT=$(kubectl --namespace soans  get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
+  $ echo ${LOADBALANCER_SSLPORT}
+  ```
+
+* Verify that the Oracle SOA Suite domain application URLs are accessible through `LOADBALANCER_SSLPORT`:
+
+  ```bash
+  https://admin.org:${LOADBALANCER_SSLPORT}/weblogic/ready
+  https://admin.org:${LOADBALANCER_SSLPORT}/console
+  https://admin.org:${LOADBALANCER_SSLPORT}/em
+  https://soa.org:${LOADBALANCER_SSLPORT}/soa-infra
+  https://soa.org:${LOADBALANCER_SSLPORT}/soa/composer
+  https://soa.org:${LOADBALANCER_SSLPORT}/integration/worklistapp
 
   ```
->  Note: This is the default host name. If you have updated the host name in `value.yaml`, then use the updated values.
+>  Note: This is the default host name. If you have updated the host name in `values.yaml`, then use the updated values.
 
 ####  Uninstall NGINX ingress
 Uninstall and delete the `ingress-nginx` deployment:

@@ -25,7 +25,7 @@ The operator has several key features to assist you with deploying and managing 
 
 #### Current production release
 
-The current production release for the Oracle SOA Suite domains deployment on Kubernetes is [22.1.2](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0).
+The current production release for the Oracle SOA Suite domains deployment on Kubernetes is [22.2.2](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version [3.4.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.4.0).
 
 
 #### Recent changes and known issues
@@ -58,6 +58,7 @@ please consult this table of contents:
 
 To view documentation for an earlier release, see:
 
+* [Version 22.1.2](https://oracle.github.io/fmw-kubernetes/22.1.2/soa-domains/)
 * [Version 21.4.2](https://oracle.github.io/fmw-kubernetes/21.4.2/soa-domains/)
 * [Version 21.3.2](https://oracle.github.io/fmw-kubernetes/21.3.2/soa-domains/)
 * [Version 21.2.2](https://oracle.github.io/fmw-kubernetes/21.2.2/soa-domains/)

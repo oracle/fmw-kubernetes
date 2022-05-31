@@ -121,10 +121,10 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 You must download the required Oracle SOA Suite installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
 
-The installation binaries and patches required for release 22.1.2 are:
+The installation binaries and patches required for release 22.2.2 are:
 
 * JDK:  
-    * jdk-8u321-linux-x64.tar.gz
+    * jdk-8u331-linux-x64.tar.gz
 
 * Fusion Middleware Infrastructure installer:  
     * fmw_12.2.1.4.0_infrastructure.jar
@@ -140,23 +140,24 @@ In this release, Oracle B2B is not supported to be configured, but the installer
 
 * Fusion Middleware Infrastructure patches:  
     * p28186730_139428_Generic.zip  (OPATCH 13.9.4.2.8 FOR EM 13.4, 13.5 AND FMW/WLS 12.2.1.3.0, 12.2.1.4.0 AND 14.1.1.0.0)
-    * p33727616_122140_Generic.zip  (WLS PATCH SET UPDATE 12.2.1.4.220105)
-    * p33723124_122140_Generic.zip  (FMW Thirdparty Bundle Patch 12.2.1.4.220104)
-    * p32784652_122140_Generic.zip  (OPSS BUNDLE PATCH 12.2.1.4.210418)
-    * p32905339_122140_Generic.zip  (OWSM BUNDLE PATCH 12.2.1.4.210520)
-    * p33697227_122140_Generic.zip  (ADF BUNDLE PATCH 12.2.1.4.211221)
-    * p33591019_122140_Generic.zip  (Coherence 12.2.1.4 Cumulative Patch 12 (12.2.1.4.12))
+    * p34012040_122140_Generic.zip  (WLS PATCH SET UPDATE 12.2.1.4.220329)
+    * p34044738_122140_Generic.zip  (FMW Thirdparty Bundle Patch 12.2.1.4.220406)
+    * p33950717_122140_Generic.zip  (OPSS BUNDLE PATCH 12.2.1.4.220311)
+    * p33618954_122140_Generic.zip  (OWSM BUNDLE PATCH 12.2.1.4.211129)
+    * p33958532_122140_Generic.zip  (ADF BUNDLE PATCH 12.2.1.4.220314)
+    * p33902201_122140_Generic.zip  (Coherence 12.2.1.4 Cumulative Patch 12 (12.2.1.4.13))
     * p33093748_122140_Generic.zip  (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)
     * p31544353_122140_Linux-x86-64.zip  (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 JULY CPU 2020)
-    * p33735326_12214220105_Generic.zip  (WLS One Off)
     * p32720458_122140_Generic.zip  (JDBC One Off)
     * p33678607_204070122_Generic.zip  (FMW Thirdparty One Off)
+    * p33546536_12214211129_Generic.zip (OWSM One Off)
+    * p34077658_122140_Generic.zip (RDA release 22.2-20220307 for FMW 12.2.1.4.0)
+    * p34065178_122140_Generic.zip (OVD One Off)
 
 * Oracle SOA Suite and Oracle Service Bus patches  
-    * p33696548_122140_Generic.zip  (SOA BUNDLE PATCH 12.2.1.4.211221)
+    * p33965482_122140_Generic.zip  (SOA BUNDLE PATCH 12.2.1.4.220315)
     * p32121987_122140_Generic.zip  (Oracle Service Bus BUNDLE PATCH 12.2.1.4.201105)
     * p33404495_122140_Generic.zip  (SOA One-off)
-    * p31192457_12214211221_Generic.zip  (SOA One-off)
     * p31857456_122140_Generic.zip  (Oracle Service Bus One-off)
     * p30741105_122140_Generic.zip  (Oracle Service Bus One-off)
     * p31713053_122140_Linux-x86-64.zip  (One-off patch)
@@ -189,7 +190,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 1. Add a JDK package to the WebLogic Image Tool cache:
 
     ``` bash
-    $ imagetool cache addInstaller --type jdk --version 8u321 --path <download location>/jdk-8u321-linux-x64.tar.gz
+    $ imagetool cache addInstaller --type jdk --version 8u331 --path <download location>/jdk-8u331-linux-x64.tar.gz
     ```
 
 1. Add the downloaded installation binaries to the WebLogic Image Tool cache:
@@ -233,29 +234,31 @@ The following files in the code repository location `<imagetool-setup-location>/
     
     $ imagetool cache addEntry --key 32720458_12.2.1.4.0 --value <download location>/p32720458_122140_Generic.zip
     
-    $ imagetool cache addEntry --key 32784652_12.2.1.4.0 --value <download location>/p32784652_122140_Generic.zip
-   
-    $ imagetool cache addEntry --key 32905339_12.2.1.4.0 --value <download location>/p32905339_122140_Generic.zip
-    
     $ imagetool cache addEntry --key 33093748_12.2.1.4.0 --value <download location>/p33093748_122140_Generic.zip
     
     $ imagetool cache addEntry --key 33404495_12.2.1.4.0 --value <download location>/p33404495_122140_Generic.zip
-    
-    $ imagetool cache addEntry --key 33591019_12.2.1.4.0 --value <download location>/p33591019_122140_Generic.zip
-    
+  
     $ imagetool cache addEntry --key 33678607_20.4.0.7.0 --value <download location>/p33678607_204070122_Generic.zip
     
-    $ imagetool cache addEntry --key 33696548_12.2.1.4.0 --value <download location>/p33696548_122140_Generic.zip
+    $ imagetool cache addEntry --key 33546536_12.2.1.4.0 --value <download location>/p33546536_122140_Generic.zip
     
-    $ imagetool cache addEntry --key 33697227_12.2.1.4.0 --value <download location>/p33697227_122140_Generic.zip
+    $ imagetool cache addEntry --key 33618954_12.2.1.4.0 --value <download location>/p33618954_122140_Generic.zip
     
-    $ imagetool cache addEntry --key 33723124_12.2.1.4.0 --value <download location>/p33723124_122140_Generic.zip
+    $ imagetool cache addEntry --key 33902201_12.2.1.4.0 --value <download location>/p33902201_122140_Generic.zip
     
-    $ imagetool cache addEntry --key 33727616_12.2.1.4.0 --value <download location>/p33727616_122140_Generic.zip
+    $ imagetool cache addEntry --key 33950717_12.2.1.4.0 --value <download location>/p33950717_122140_Generic.zip
     
-    $ imagetool cache addEntry --key 33735326_12.2.1.4.0 --value <download location>/p33735326_12214220105_Generic.zip
+    $ imagetool cache addEntry --key 33958532_12.2.1.4.0 --value <download location>/p33958532_122140_Generic.zip
+    
+    $ imagetool cache addEntry --key 33965482_12.2.1.4.0 --value <download location>/p33965482_122140_Generic.zip
+    
+    $ imagetool cache addEntry --key 34012040_12.2.1.4.0 --value <download location>/p34012040_122140_Generic.zip
 
-    $ imagetool cache addEntry --key 31192457_12.2.1.4.0 --value <download location>/p31192457_12214211221_Generic.zip
+    $ imagetool cache addEntry --key 34044738_12.2.1.4.0 --value <download location>/p34044738_122140_Generic.zip
+
+    $ imagetool cache addEntry --key 34065178_12.2.1.4.0 --value <download location>/p34065178_122140_Generic.zip
+
+    $ imagetool cache addEntry --key 34077658_12.2.1.4.0 --value <download location>/p34077658_122140_Generic.zip
 
     ```
 
@@ -264,23 +267,24 @@ The following files in the code repository location `<imagetool-setup-location>/
    Sample `--patches` list for the product patches added in to the cache:
 
       ```
-      --patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32720458_12.2.1.4.0,32784652_12.2.1.4.0,32905339_12.2.1.4.0,33093748_12.2.1.4.0,33404495_12.2.1.4.0,33591019_12.2.1.4.0,33678607_20.4.0.7.0,33696548_12.2.1.4.0,33697227_12.2.1.4.0,33723124_12.2.1.4.0,33727616_12.2.1.4.0,33735326_12.2.1.4.0,31192457_12.2.1.4.0
+      --patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32720458_12.2.1.4.0,33093748_12.2.1.4.0,33404495_12.2.1.4.0,33546536_12.2.1.4.0,33618954_12.2.1.4.0,33678607_20.4.0.7.0,33902201_12.2.1.4.0,33950717_12.2.1.4.0,33958532_12.2.1.4.0,33965482_12.2.1.4.0,34012040_12.2.1.4.0,34044738_12.2.1.4.0,34065178_12.2.1.4.0,34077658_12.2.1.4.0
       ```
 
     Example `buildArgs` file after appending the OPatch patch and product patches:
 
     ```
     create
-    --jdkVersion 8u321
+    --jdkVersion 8u331
     --type soa_osb_b2b
     --version 12.2.1.4.0
     --tag oracle/soasuite:12.2.1.4.0
     --pull
+    --fromImage ghcr.io/oracle/oraclelinux:7-slim
     --chown oracle:root
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
     --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
     --installerResponseFile <imagetool-setup-location>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/b2b.response
-    --patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32720458_12.2.1.4.0,32784652_12.2.1.4.0,32905339_12.2.1.4.0,33093748_12.2.1.4.0,33404495_12.2.1.4.0,33591019_12.2.1.4.0,33678607_20.4.0.7.0,33696548_12.2.1.4.0,33697227_12.2.1.4.0,33723124_12.2.1.4.0,33727616_12.2.1.4.0,33735326_12.2.1.4.0,31192457_12.2.1.4.0
+    --patches 30741105_12.2.1.4.0,31544353_12.2.1.4.0,31713053_12.2.1.4.0,31857456_12.2.1.4.0,32121987_12.2.1.4.0,32720458_12.2.1.4.0,33093748_12.2.1.4.0,33404495_12.2.1.4.0,33546536_12.2.1.4.0,33618954_12.2.1.4.0,33678607_20.4.0.7.0,33902201_12.2.1.4.0,33950717_12.2.1.4.0,33958532_12.2.1.4.0,33965482_12.2.1.4.0,34012040_12.2.1.4.0,34044738_12.2.1.4.0,34065178_12.2.1.4.0,34077658_12.2.1.4.0
     ```
     >Note: In the `buildArgs` file:  
     > * `--jdkVersion` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type jdk`.  

@@ -60,8 +60,8 @@ Obtain dependent images and add them to your local registry.
 1. Pull the operator image:
 
     ```bash
-    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0  oracle/weblogic-kubernetes-operator:3.3.0
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0
+    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0  oracle/weblogic-kubernetes-operator:3.4.0
     ```
 
 ### Set up the code repository to deploy Oracle SOA Suite domains
@@ -70,36 +70,36 @@ Oracle SOA Suite domain deployment on Kubernetes leverages the WebLogic Kubernet
 
 1. Create a working directory to set up the source code:
     ```bash
-    $ mkdir $HOME/soa_22.1.2
-    $ cd $HOME/soa_22.1.2
+    $ mkdir $HOME/soa_22.2.2
+    $ cd $HOME/soa_22.2.2
     ```
 1. Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA [repository](https://github.com/oracle/fmw-kubernetes.git). Required artifacts are available at `OracleSOASuite/kubernetes`.
 
     ``` bash
     $ git clone https://github.com/oracle/fmw-kubernetes.git
-    $ export WORKDIR=$HOME/soa_22.1.2/fmw-kubernetes/OracleSOASuite/kubernetes
+    $ export WORKDIR=$HOME/soa_22.2.2/fmw-kubernetes/OracleSOASuite/kubernetes
     ```
 
 ### Obtain the Oracle SOA Suite Docker image
 
 The Oracle SOA Suite image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle SOA Suite image from My Oracle Support.
 
-1. Download patch [33749496](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33749496) from My Oracle Support (MOS).
+1. Download patch [34077593](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34077593) from My Oracle Support (MOS).
 1. Unzip the downloaded patch zip file.
 1. Load the image archive using the `docker load` command.
 
    For example:
    ```bash
-   $ docker load < soasuite-12.2.1.4-jdk8-ol7-220216.1814.tar
-   Loaded image: oracle/soasuite:12.2.1.4-jdk8-ol7-220216.1814
+   $ docker load < soasuite-12.2.1.4-jdk8-ol7-220420.2140.tar
+   Loaded image: oracle/soasuite:12.2.1.4-jdk8-ol7-220420.2140
    $
    ```
-1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `689e9d04-8b02-4421-8f1f-12266de62f46`.
+1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `43e56369-4b97-4c40-93b7-60b17912f31b`.
 
    For example:
    ```bash
-   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/soasuite:12.2.1.4-jdk8-ol7-220216.1814
-    689e9d04-8b02-4421-8f1f-12266de62f46
+   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/soasuite:12.2.1.4-jdk8-ol7-220420.2140
+    43e56369-4b97-4c40-93b7-60b17912f31b
    $
 
    ```
@@ -111,7 +111,7 @@ If you want to build and use an Oracle SOA Suite Docker image with any additiona
 
 ### Install the WebLogic Kubernetes Operator
 
-The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/documentation/3.3/content/quickstart/install.md#install-the-operator) to install the operator.
+The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.0/documentation/3.4/content/quickstart/install.md#install-the-operator) to install the operator.
 > Note: Optionally, you can execute these [steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/) to send the contents of the operator’s logs to Elasticsearch.
 
 In the following example commands to install the WebLogic Kubernetes Operator, `opns` is the namespace and `op-sa` is the service account created for the Operator:
@@ -119,7 +119,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   $ kubectl create namespace opns
   $ kubectl create serviceaccount -n opns  op-sa
   $ cd ${WORKDIR}
-  $ helm install weblogic-kubernetes-operator charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.4.0 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
   ```
 
 ### Prepare the environment for Oracle SOA Suite domains
@@ -170,7 +170,7 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
     $ ./create-weblogic-credentials.sh -u weblogic -p Welcome1 -n soans -d soainfra -s soainfra-domain-credentials
   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 

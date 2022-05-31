@@ -12,6 +12,7 @@ Review the latest changes and known issues for Oracle SOA Suite on Kubernetes.
 
 | Date | Version | Change |
 | --- | --- | --- |
+|May 31, 2022 | 22.2.2 | Supports Oracle SOA Suite 12.2.1.4 domains deployment using April 2022 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [34077593](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34077593)).
 |February 25, 2022 | 22.1.2 | Supports Oracle SOA Suite 12.2.1.4 domains deployment using January 2022 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [33749496](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33749496)).
 |November 30, 2021 | 21.4.2 | Supports Oracle SOA Suite 12.2.1.4 domains deployment using October 2021 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [33467899](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33467899)).
 |August 6, 2021 | 21.3.2 | Supports Oracle SOA Suite 12.2.1.4 domains deployment using July 2021 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch [33125465](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33125465)).

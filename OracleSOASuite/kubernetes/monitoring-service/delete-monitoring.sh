@@ -62,7 +62,7 @@ function usage {
 }
 
 
-function deleteKubePrometheusStack {
+function deletePrometheusGrafana {
    helm delete ${monitoringNamespace}  --namespace ${monitoringNamespace}
 }
 
@@ -115,7 +115,7 @@ fi
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then
   echo "Deleting Prometheus and grafana started"
-  deleteKubePrometheusStack
+  deletePrometheusGrafana
   echo "Deleting Prometheus and grafana completed"
 fi
 cd $OLD_PWD

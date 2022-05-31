@@ -18,48 +18,7 @@ After the Oracle SOA Suite domain is set up, you can:
 Using the `WebLogic Monitoring Exporter` you can scrape runtime information from a running Oracle SOA Suite instance and monitor them using Prometheus and Grafana.
 
 #### Set up monitoring
-Follow these [steps](https://github.com/oracle/fmw-kubernetes/blob/v22.1.2/OracleSOASuite/kubernetes/monitoring-service/README.md) to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see [here](https://github.com/oracle/weblogic-monitoring-exporter).
-
-#### Deploy Prometheus and Grafana
-
->NOTE: Follow the steps in this section, if you intend to manually set up the monitoring for an Oracle SOA Suite instance. Otherwise, you can skip it.
-
-Refer to the compatibility matrix of [Kube Prometheus](https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix) and clone the [release](https://github.com/coreos/kube-prometheus/releases) version of the `kube-prometheus` repository according to the Kubernetes version of your cluster.
-
-1. Clone the `kube-prometheus` repository:
-    ```
-    $ git clone https://github.com/coreos/kube-prometheus.git
-    ```
-
-1. Change to folder `kube-prometheus` and enter the following commands to create the namespace and CRDs, and then wait for their availability before creating the remaining resources:
-
-    ```
-    $ cd kube-prometheus
-    $ kubectl create -f manifests/setup
-    $ until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
-    $ kubectl create -f manifests/
-    ```
-
-1. `kube-prometheus` requires all nodes in the Kubernetes cluster to be labeled with `kubernetes.io/os=linux`. If any node is not labeled with this, then you need to label it using the following command:
-
-    ```
-    $ kubectl label nodes --all kubernetes.io/os=linux
-    ```
-
-1. Enter the following commands to provide external access for Grafana, Prometheus, and Alertmanager:
-
-    ```
-    $ kubectl patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
-
-    $ kubectl patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
-
-    $ kubectl patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
-    ```
-
-    Note:
-    * `32100` is the external port for Grafana
-    * `32101` is the external port for Prometheus
-    * `32102` is the external port for Alertmanager
+Follow these [steps](https://github.com/oracle/fmw-kubernetes/blob/v22.2.2/OracleSOASuite/kubernetes/monitoring-service/README.md) to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see [here](https://github.com/oracle/weblogic-monitoring-exporter).
 
 ### Publish WebLogic Server logs into Elasticsearch
 

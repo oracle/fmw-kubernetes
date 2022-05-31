@@ -27,7 +27,7 @@ Use the `values.yaml` file in the sample but set `kubernetes.namespaces` specifi
    ```bash
     $ cd ${WORKDIR}
     $ kubectl create namespace traefik
-    $ helm repo add traefik https://containous.github.io/traefik-helm-chart
+    $ helm repo add traefik https://helm.traefik.io/traefik --force-update
    ```
     Sample output:
    ```bash
@@ -52,11 +52,11 @@ Use the `values.yaml` file in the sample but set `kubernetes.namespaces` specifi
    ```
     {{% /expand %}}
 
-    A sample `values.yaml` for deployment of Traefik 2.2.x:
+    A sample `values.yaml` for deployment of Traefik 2.6.x:
    ```yaml
    image:
    name: traefik
-   tag: 2.2.8
+   tag: 2.6.0
    pullPolicy: IfNotPresent
    ingressRoute:
    dashboard:
@@ -126,12 +126,12 @@ Use the `values.yaml` file in the sample but set `kubernetes.namespaces` specifi
    ```
    {{% /expand %}}
 
-4. Access the Traefik dashboard through the URL `http://$(hostname -f):31288`, with the HTTP host `traefik.example.com`:
+4. Access the Traefik dashboard through the URL `http://<MASTERNODE-HOSTNAME>:31288`, with the HTTP host `traefik.example.com`:
 
     ```bash
-    $ curl -H "host: $(hostname -f)" http://$(hostname -f):31288/dashboard/
+    $ curl -H "host: <MASTERNODE-HOSTNAME>" http://<MASTERNODE-HOSTNAME>:31288/dashboard/
     ```
-   >  Note: Make sure that you specify a fully qualified node name for `$(hostname -f)`
+   >  Note: Make sure that you specify a fully qualified node name for `<MASTERNODE-HOSTNAME>`
 
 5. Configure Traefik to manage ingresses created in this namespace, where `traefik` is the Traefik namespace and `soans` is the namespace of the domain:
   ```bash
@@ -157,7 +157,20 @@ Sample values for default configuration are shown in the file `${WORKDIR}/charts
 By default, `type` is `TRAEFIK`, `sslType` is `NONSSL`, and `domainType` is `soa`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml` based on the type of configuration (NONSSL, SSL, and E2ESSL).  
 If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at `${WORKDIR}/charts/ingress-per-domain/templates/traefik-ingress.yaml`.
 
-> Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v22.1.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration) for all the configuration parameters.
+> Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v22.2.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration) for all the configuration parameters.
+
+1. Choose an appropriate `LOADBALANCER_HOSTNAME` for accessing the Oracle SOA Suite domain application URLs.
+
+   ```bash
+   $ export LOADBALANCER_HOSTNAME=<LOADBALANCER_HOSTNAME>
+   ```
+
+   For example, if you are executing the commands from a master node terminal, where the master hostname is `LOADBALANCER_HOSTNAME`:
+  
+   ```bash
+   $ export LOADBALANCER_HOSTNAME=$(hostname -f)
+   ```
+
 
 1. Install `ingress-per-domain` using Helm for `NONSSL` configuration:
 
@@ -167,7 +180,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
         charts/ingress-per-domain \
         --namespace soans \
         --values charts/ingress-per-domain/values.yaml \
-        --set "traefik.hostname=$(hostname -f)"
+        --set "traefik.hostname=${LOADBALANCER_HOSTNAME}"
    ```
    Sample output:
    ```bash
@@ -223,7 +236,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
         charts/ingress-per-domain \
         --namespace soans \
         --values charts/ingress-per-domain/values.yaml \
-        --set "traefik.hostname=$(hostname -f)" \
+        --set "traefik.hostname=${LOADBALANCER_HOSTNAME}" \
         --set sslType=SSL
    ```
    Sample output:
@@ -385,7 +398,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      > User-Agent: curl/7.29.0
      > Accept: */*
      > Proxy-Connection: Keep-Alive
-     > host: $(hostname -f)
+     > host: ${LOADBALANCER_HOSTNAME}
      >
      < HTTP/1.1 200 OK
      < Date: Sat, 14 Mar 2020 08:35:03 GMT
@@ -402,12 +415,12 @@ If needed, you can update the ingress YAML file to define more path rules (in se
 After setting up the Traefik (ingress-based) load balancer, verify that the domain application URLs are accessible through the non-SSL load balancer port `30305` for HTTP access. The sample URLs for Oracle SOA Suite domain of type `soa` are:
 
 ```bash
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/weblogic/ready
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/console
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/em
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/soa-infra
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/soa/composer
-    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/integration/worklistapp
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/weblogic/ready
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/console
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/em
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/soa-infra
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/soa/composer
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_NON_SSLPORT}/integration/worklistapp
 ```
 
 ##### For SSL configuration
@@ -415,12 +428,12 @@ After setting up the Traefik (ingress-based) load balancer, verify that the doma
 After setting up the Traefik (ingress-based) load balancer, verify that the domain applications are accessible through the SSL load balancer port `30443` for HTTPS access. The sample URLs for Oracle SOA Suite domain of type `soa` are:
 
 ```bash
-    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/weblogic/ready
-    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/console
-    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/em
-    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/soa-infra
-    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/soa/composer
-    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/integration/worklistapp
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/weblogic/ready
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/console
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/em
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/soa-infra
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/soa/composer
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER_SSLPORT}/integration/worklistapp
 ```
 ##### For E2ESSL configuration
 
@@ -440,12 +453,12 @@ After setting up the Traefik (ingress-based) load balancer, verify that the doma
  The sample URLs for Oracle SOA Suite domain of type `soa` are:
 
 ```bash
-  https://admin.org:${LOADBALANCER-SSLPORT}/weblogic/ready
-  https://admin.org:${LOADBALANCER-SSLPORT}/console
-  https://admin.org:${LOADBALANCER-SSLPORT}/em
-  https://soa.org:${LOADBALANCER-SSLPORT}/soa-infra
-  https://soa.org:${LOADBALANCER-SSLPORT}/soa/composer
-  https://soa.org:${LOADBALANCER-SSLPORT}/integration/worklistapp
+  https://admin.org:${LOADBALANCER_SSLPORT}/weblogic/ready
+  https://admin.org:${LOADBALANCER_SSLPORT}/console
+  https://admin.org:${LOADBALANCER_SSLPORT}/em
+  https://soa.org:${LOADBALANCER_SSLPORT}/soa-infra
+  https://soa.org:${LOADBALANCER_SSLPORT}/soa/composer
+  https://soa.org:${LOADBALANCER_SSLPORT}/integration/worklistapp
 ```
 #### Uninstall the Traefik ingress
 

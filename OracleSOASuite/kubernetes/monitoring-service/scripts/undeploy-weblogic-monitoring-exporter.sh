@@ -36,3 +36,4 @@ eval ${EXEC_UNDEPLOY}
 
 # Cleanup the local wars
 rm -rf ${scriptDir}/wls-exporter-deploy
+

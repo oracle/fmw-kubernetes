@@ -110,7 +110,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
 #### 1.2 Install and configure Docker
 
-> Note: If you have already installed Docker with version 18.03+ and configured the Docker daemon root to sufficient disk space along with proxy settings, continue to [Install and configure Kubernetes](#13-install-and-configure-kubernetes).
+> Note: If you have already installed Docker with version 19.03.1+ and configured the Docker daemon root to sufficient disk space along with proxy settings, continue to [Install and configure Kubernetes](#13-install-and-configure-kubernetes).
 
 1. Make sure that you have the right operating system version:
     ```shell
@@ -277,11 +277,11 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ export HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
     $ export HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-    ### install kubernetes 1.18.4-1
-    $ VERSION=1.18.4-1
+    ### Install Kubernetes
+    $ VERSION=1.23.6-0
     $ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes=kubernetes
 
-    ### enable kubelet service so that it auto-restart on reboot
+    ### Enable kubelet service so that it automatically restarts on reboot
     $ systemctl enable --now kubelet
     ```
 
@@ -297,6 +297,15 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 1. Disable swap check:
     ```shell
     $ sed -i 's/KUBELET_EXTRA_ARGS=/KUBELET_EXTRA_ARGS="--fail-swap-on=false"/' /etc/sysconfig/kubelet
+    $ cat /etc/sysconfig/kubelet
+    ### Reload and restart kubelet
+    $ systemctl daemon-reload
+    $ systemctl restart kubelet
+    ```
+
+1. From Kubernetes version v1.22 onward, `kubeadm` will default `cgroup-driver` to `systemd`. If your Docker is using cgroup driver as `cgroupfs`, set `--cgroup-driver=cgroupfs` for kubelet.
+    ```shell
+    $ sed -i 's/^KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS="--fail-swap-on=false --cgroup-driver=cgroupfs"/' /etc/sysconfig/kubelet
     $ cat /etc/sysconfig/kubelet
     ### Reload and restart kubelet
     $ systemctl daemon-reload
@@ -349,8 +358,8 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     export PATH=$PATH:/sbin:/usr/sbin
 
     ### Set the proxies
-    export NO_PROXY=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
-    export no_proxy=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
+    export NO_PROXY=localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
+    export no_proxy=localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
     export http_proxy=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
     export https_proxy=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
     export HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
@@ -396,7 +405,9 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
    > Note: If you are using a different CIDR block than `10.244.0.0/16`, then download and update `kube-flannel.yml` with the correct CIDR address before deploying into the cluster:
    ```shell
-   $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.12.0/Documentation/kube-flannel.yml
+   $ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.17.0/Documentation/kube-flannel.yml
+   $ ### Update the CIDR address if you are using a CIDR block other than the default 10.244.0.0/16
+   $ kubectl apply -f kube-flannel.yml
    ```
 
 1. Verify that the master node is in Ready status:
@@ -405,8 +416,8 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
    ```
    Sample output:
    ```shell
-   NAME        STATUS   ROLES    AGE     VERSION
-   mymasternode Ready    master   8m26s   v1.18.4
+   NAME                 STATUS   ROLES                  AGE   VERSION
+   mymasternode      Ready    control-plane,master   12h   v1.23.6
    ```
    or:
    ```shell
@@ -420,7 +431,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
    pod/etcd-mymasternode                       1/1         Running         0       3m4s
    pod/kube-apiserver-node                     1/1         Running         0       3m21s
    pod/kube-controller-manager-mymasternode    1/1         Running         0       3m25s
-   pod/kube-flannel-ds-amd64-6npx4             1/1         Running         0       49s
+   pod/kube-flannel-ds-6npx4                   1/1         Running         0       49s
    pod/kube-proxy-4vsgm                        1/1         Running         0       3m59s
    pod/kube-scheduler-mymasternode             1/1         Running         0       2m58s
    ```
@@ -432,7 +443,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
 Congratulations! Your Kubernetes cluster environment is ready to deploy your Oracle SOA Suite domain.
 
-For additional references on Kubernetes cluster setup, check the [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/kubernetes/k8s-setup/).
+Refer to the official [documentation](https://kubernetes.io/docs/setup/#production-environment) to set up a Kubernetes cluster.
 
 ### 3. Get scripts and images
 
@@ -445,8 +456,8 @@ Follow [these steps]({{< relref "/soa-domains/installguide/prepare-your-environm
 1. Pull the WebLogic Kubernetes Operator image:
 
     ```shell
-    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0
+    $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0 oracle/weblogic-kubernetes-operator:3.4.0
     ```
 
 1. Obtain the Oracle Database image and Oracle SOA Suite Docker image from the [Oracle Container Registry](https://container-registry.oracle.com):
@@ -494,7 +505,7 @@ Use Helm to install and start the operator from the directory you just cloned:
    $ cd ${WORKDIR}
    $ helm install weblogic-kubernetes-operator charts/weblogic-operator \
    --namespace opns \
-   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
+   --set image=oracle/weblogic-kubernetes-operator:3.4.0 \
    --set serviceAccount=op-sa \
    --set "domainNamespaces={}" \
    --wait
@@ -511,7 +522,7 @@ Use Helm to install and start the operator from the directory you just cloned:
    $ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.
+The WebLogic Kubernetes Operator v3.4.0 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 
@@ -526,7 +537,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Set up Helm for 3rd party services:
    ```shell
-   $ helm repo add traefik https://containous.github.io/traefik-helm-chart
+   $ helm repo add traefik https://helm.traefik.io/traefik --force-update
    ```
 
 1. Install the Traefik operator in the `traefik` namespace with the provided sample values:
@@ -689,7 +700,7 @@ Now the environment is ready to start the Oracle SOA Suite domain creation.
 
 #### 6.2 Create an Oracle SOA Suite domain
 
-1. The sample scripts for Oracle SOA Suite domain deployment are available at `OracleSOASuite/create-soa-domain`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
+1. The sample scripts for Oracle SOA Suite domain deployment are available at `${WORKDIR}/create-soa-domain/domain-home-on-pv`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
 
     Update `create-domain-inputs.yaml` with the following values for domain creation:
 
@@ -753,10 +764,11 @@ Watch the `soans` namespace for the status of domain creation:
 1. Create an ingress for the domain in the domain namespace by using the sample Helm chart:
     ```shell
     $ cd ${WORKDIR}
+    $ export LOADBALANCER_HOSTNAME=$(hostname -f)
     $ helm install soa-traefik-ingress charts/ingress-per-domain \
     --namespace soans \
     --values charts/ingress-per-domain/values.yaml \
-    --set "traefik.hostname=$(hostname -f)" \
+    --set "traefik.hostname=${LOADBALANCER_HOSTNAME}" \
     --set domainType=soaosb
     ```
 1. Verify the created ingress per domain details:
@@ -768,7 +780,7 @@ Watch the `soans` namespace for the status of domain creation:
 
 1. Get the `LOADBALANCER_HOSTNAME` for your environment:
     ```shell
-    export LOADBALANCER_HOSTNAME=$(hostname -f)
+    $ export LOADBALANCER_HOSTNAME=$(hostname -f)
     ```
 1. Verify the following URLs are available for Oracle SOA Suite domains of domain type `soaosb`:
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 #
@@ -182,6 +182,23 @@ function checkPvState {
   done
   if [ "$pv_state" != "$2" ]; then
     fail "The persistent volume state should be $2 but is $pv_state"
+  fi
+}
+
+#
+# Check the state of a persistent volume claim.
+# $1 - name of volume claim
+# $2 - expected state of volume claim
+function checkPvcState {
+  echo "Checking if the persistent volume claim ${1:?} is ${2:?}"
+  local end_secs=$((SECONDS + 30))
+  local pvc_state=`kubectl get pvc $1 -o jsonpath='{.status.phase}'`
+  while [ ! "$pvc_state" = "$2" ] && [ $SECONDS -le $end_secs ]; do
+    sleep 1
+    pvc_state=`kubectl get pvc $1 -o jsonpath='{.status.phase}'`
+  done
+  if [ "$pvc_state" != "$2" ]; then
+    fail "The persistent volume state should be $2 but is $pvc_state"
   fi
 }
 
@@ -925,4 +942,45 @@ function checkService(){
    fi
  done
  echo "Service [$svc] found"
+}
+
+# Get pod name when pod available in a given namespace
+function getPodName(){
+
+ local max=$((SECONDS + 120))
+
+ local pod=$1
+ local ns=$2
+
+ local pname=""
+ while [ $SECONDS -le $max ] ; do
+   pname=`kubectl get po -n ${ns} | grep -w ${pod} | awk '{print $1}'`
+   [ -z "${pname}" ] || break
+   sleep 1
+ done
+
+ if [ -z "${pname}" ] ; then
+  echo "[ERROR] Could not find Pod [$pod] after $max seconds";
+  exit 1
+ fi
+
+ echo "${pname}"
+}
+
+# Checks if a pod is available in a given namespace
+function detectPod() {
+ ns=$1
+ startSecs=$SECONDS
+ maxWaitSecs=10
+ while [ -z "`kubectl get pod -n ${ns} -o jsonpath={.items[0].metadata.name}`" ]; do
+   if [ $((SECONDS - startSecs)) -lt $maxWaitSecs ]; then
+     echo "Pod not found after $((SECONDS - startSecs)) seconds, retrying ..."
+     sleep 2
+   else
+     echo "[Error] Could not find Pod after $((SECONDS - startSecs)) seconds"
+     exit 1
+   fi
+ done
+ retVal=`kubectl get pod -n ${ns} -o jsonpath={.items[0].metadata.name}`
+ echo "$retVal"
 }
