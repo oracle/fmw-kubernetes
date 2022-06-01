@@ -1,0 +1,19 @@
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating a node port Kubernetes service for OIRI
+# 
+kind: Service
+apiVersion: v1
+metadata:
+  name: oiri-nodeport
+  namespace: <NAMESPACE>
+spec:
+  type: NodePort
+  selector:
+    app: oiri
+  ports:
+    - targetPort: 8005
+      port: 8005
+      nodePort: <OIRI_K8>
+      protocol: TCP

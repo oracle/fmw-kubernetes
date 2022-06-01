@@ -269,19 +269,6 @@ controller:
       https: 30443
 ```
 
-## 3.2 voyager
-
-Voyager ingress implementation can be deployed/installed in Kubernetes environment.
-
-### Add Repo reference to helm for retriving/installing Chart for voyager implementation.
-
-    # helm repo add appscode https://charts.appscode.com/stable
-
-### Command `helm install` to install voyager related objects like pod, service, deployment, etc.
-
-	# helm install --namespace ingressns \
-		--version 12.0.0 --set cloudProvider=baremetal,apiserver.enableValidatingWebhook=false \
-		voyager-operator appscode/voyager
 > For more details about helm command and parameters, please execute `helm --help` and `helm install --help`.
 
 # 4. Access to Interfaces through Ingress
@@ -322,14 +309,9 @@ For Logging, OUD will be integrating ELK stack.The ELK stack consists of Elastic
 ### 5.1.1. Values.yaml Configurations to enable ELK stack 
 
     # elk:
-        elasticsearch:
-          enabled: true
-        Logstash:
-          enabled: true
-        Kibana:
-          enabled: true
+        enabled: true
     
-This configuration will enable the ELK stack integration with OUD.
+This configuration will enable the ELK stack integration with OUDSM.
 
 ### 5.1.2. Prepare a host directory to be used for Filesystem based PersistentVolume for Elastic Search
 
@@ -441,16 +423,11 @@ The following table lists the configurable parameters of the OUDSM chart and the
 | tolerations | node taints to tolerate  | |
 | affinity | node/pod affinities  | |
 | ingress.enabled | | true | 
-| ingress.type | Supported value: either nginx or voyager | nginx | 
+| ingress.type | Supported value: nginx  | 
 | ingress.host | Hostname to be used with Ingress Rules. <br>If not set, hostname would be configured according to fullname. <br> Hosts would be configured as < fullname >-http.< domain >, < fullname >-http-0.< domain >, < fullname >-http-1.< domain >, etc. | |
 | ingress.domain | Domain name to be used with Ingress Rules. <br>In ingress rules, hosts would be configured as < host >.< domain >, < host >-0.< domain >, < host >-1.< domain >, etc. | |
 | ingress.backendPort | | http |
 | ingress.nginxAnnotations | | { <br>kubernetes.io/ingress.class: "nginx"<br> nginx.ingress.kubernetes.io/affinity-mode: "persistent" <br> nginx.ingress.kubernetes.io/affinity: "cookie" <br>}|
-| ingress.voyagerAnnotations | | { <br>kubernetes.io/ingress.class: "voyager" <br> ingress.appscode.com/affinity: "cookie" <br> ingress.appscode.com/type: "NodePort" <br>} |
-| ingress.voyagerNodePortHttp | NodePort value for HTTP Port exposed through Voyager LoadBalancer Service | 30080 |
-| ingress.voyagerNodePortHttps | NodePort value for HTTPS Port exposed through Voyager LoadBalancer Service | 30443 |
-| ingress.voyagerHttpPort | Port value for HTTP Port exposed through Voyager LoadBalancer Service | 80 |
-| ingress.voyagerHttpsPort | Port value for HTTPS Port exposed through Voyager LoadBalancer Service | 443 |
 | ingress.ingress.tlsSecret | Secret name to use an already created TLS Secret. If such secret is not provided, one would be created with name < fullname >-tls-cert. If the TLS Secret is in different namespace, name can be mentioned as < namespace >/< tlsSecretName > | |
 | ingress.certCN | Subject's common name (cn) for SelfSigned Cert. | < fullname > |
 | ingress.certValidityDays | Validity of Self-Signed Cert in days | 365 |
@@ -469,15 +446,11 @@ The following table lists the configurable parameters of the OUDSM chart and the
 | persistence.size  | Specifies the size of the storage | 10Gi |
 | persistence.storageClass | Specifies the storageclass of the persistence volume. | empty |
 | persistence.annotations | specifies any annotations that will be used | { } |
-| ingress.voyagerNodePortHttp |  | 31080 |
-| ingress.voyagerNodePortHttps |  | 31443 |
-| ingress.voyagerHttpPort |  | 80 |
-| ingress.voyagerHttpsPort |  | 443 |
 | oudsm.adminUser | Weblogic Administration User | weblogic |
 | oudsm.adminPass | Password for Weblogic Administration User |  |
 | oudsm.startupTime | Expected startup time. After specified seconds readinessProbe would start | 900 |
 | oudsm.livenessProbeInitialDelay | Paramter to decide livenessProbe initialDelaySeconds | 1200
-| elk.elasticsearch.enabled | If enabled it will create the elastic search statefulset deployment | false |
+| elk.enabled | If enabled it will create the elk stack integrated with OUDSM | false |
 | elk.elasticsearch.image.repository | Elastic Search Image name/Registry/Repository . Based on this elastic search instances will be created | docker.elastic.co/elasticsearch/elasticsearch |
 | elk.elasticsearch.image.tag | Elastic Search Image tag .Based on this, image parameter would be configured for Elastic Search pods/instances | 6.4.3 |
 | elk.elasticsearch.image.pullPolicy | policy to pull the image | IfnotPresent |
@@ -489,7 +462,6 @@ The following table lists the configurable parameters of the OUDSM chart and the
 | elk.elasticsearch.resources.limits.cpu | total cpu limits that are configures for the elastic search | 1000m |
 | elk.elasticsearch.esService.type | Type of Service to be created for elastic search | ClusterIP |
 | elk.elasticsearch.esService.lbrtype | Type of load balancer Service to be created for elastic search | ClusterIP |
-| elk.kibana.enabled | If enabled it will create a kibana deployment | false |
 | elk.kibana.image.repository | Kibana Image Registry/Repository and name. Based on this Kibana instance will be created  | docker.elastic.co/kibana/kibana |
 | elk.kibana.image.tag | Kibana Image tag. Based on this, Image parameter would be configured. | 6.4.3 |
 | elk.kibana.image.pullPolicy | policy to pull the image | IfnotPresent |
@@ -497,7 +469,6 @@ The following table lists the configurable parameters of the OUDSM chart and the
 | elk.kibana.service.tye | Type of service to be created | NodePort |
 | elk.kibana.service.targetPort | Port on which the kibana will be accessed | 5601 |
 | elk.kibana.service.nodePort | nodePort is the port on which kibana service will be accessed from outside | 31119 |
-| elk.logstash.enabled | If enabled it will create a logstash deployment | false |
 | elk.logstash.image.repository | logstash Image Registry/Repository and name. Based on this logstash instance will be created  | logstash |
 | elk.logstash.image.tag | logstash Image tag. Based on this, Image parameter would be configured. | 6.6.0 |
 | elk.logstash.image.pullPolicy | policy to pull the image | IfnotPresent |
@@ -522,5 +493,5 @@ The following table lists the configurable parameters of the OUDSM chart and the
 | elk.elkVolume.annotations | specifies any annotations that will be used| { } |
 
 # Copyright
-Copyright (c) 2020, Oracle and/or its affiliates.
+Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl

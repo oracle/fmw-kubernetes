@@ -5,15 +5,7 @@
 # Initialize
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
-
-domainType=${1:-soa}
-namespace=${2:-soans}
-domainUID=${3:-soainfra}
-adminServerName=${4:-AdminServer}
-adminServerPort=${5:-7001}
-username=${6:-weblogic}
-password=${7:Welcome1}
-
+source ${scriptDir}/utils.sh
 
 # Function to lowercase a value and make it a legal DNS1123 name
 # $1 - value to convert to lowercase
@@ -23,16 +15,24 @@ function toDNS1123Legal {
   echo "$val"
 }
 
+initialize
+
+# username and password from Kubernetes secret
+username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+
 adminServerPodName="${domainUID}-$(toDNS1123Legal ${adminServerName})"
 
-# Copy weblogic monitoring exporter jars for deployment
-echo "Undeploying WebLogic Monitoring Exporter: namespace[$namespace], domainUID[$domainUID], domainType[$domainType]"
+InputParameterList="-domainName ${domainUID} -adminServerName ${adminServerName} -adminURL ${adminServerPodName}:${adminServerPort} -username ${username} -password ${password}"
+InputParameterList="${InputParameterList} -soaClusterName ${soaClusterName} -wlsMonitoringExporterTosoaCluster ${wlsMonitoringExporterTosoaCluster}"
+InputParameterList="${InputParameterList} -osbClusterName ${osbClusterName} -wlsMonitoringExporterToosbCluster ${wlsMonitoringExporterToosbCluster}"
 
-kubectl cp $scriptDir/undeploy-weblogic-monitoring-exporter.py ${namespace}/${adminServerPodName}:/u01/oracle/undeploy-weblogic-monitoring-exporter.py
-EXEC_UNDEPLOY="kubectl exec -it -n ${namespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/undeploy-weblogic-monitoring-exporter.py -domainType ${domainType} -domainName ${domainUID} -adminServerName ${adminServerName} -adminURL ${adminServerPodName}:${adminServerPort} -username ${username} -password ${password}"
+# Copy weblogic monitoring exporter jars for deployment
+echo "Undeploying WebLogic Monitoring Exporter: domainNamespace[$domainNamespace], domainUID[$domainUID], adminServerPodName[$adminServerPodName]"
+
+kubectl cp $scriptDir/undeploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/undeploy-weblogic-monitoring-exporter.py
+EXEC_UNDEPLOY="kubectl exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/undeploy-weblogic-monitoring-exporter.py ${InputParameterList}"
 eval ${EXEC_UNDEPLOY}
 
 # Cleanup the local wars
-rm -f  ${scriptDir}/wls-exporter-deploy/*
-rmdir -f ${scriptDir}/wls-exporter-deploy
-
+rm -rf ${scriptDir}/wls-exporter-deploy

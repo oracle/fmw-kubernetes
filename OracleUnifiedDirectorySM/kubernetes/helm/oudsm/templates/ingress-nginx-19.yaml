@@ -1,0 +1,116 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- $fullName := include "oudsm.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- $svcSslPort := .Values.service.sslPort -}}
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-ingress-nginx
+  labels:
+    {{- include "oudsm.labels" . | nindent 4 }}
+  annotations:
+{{- if (.Values.ingress.tlsEnabled) }}
+  {{- with .Values.ingress.nginxAnnotationsTLS }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- else }}
+  {{- with .Values.ingress.nginxAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+spec:
+  tls:
+{{- if (.Values.ingress.tlsSecret) }}
+  - secretName: {{ .Values.ingress.tlsSecret }}
+{{- else }}
+  - secretName: {{ include "oudsm.fullname" . }}-tls-cert
+{{- end }}
+    hosts:
+{{- if (.Values.ingress.host) }}
+  {{- if (.Values.ingress.domain) }}
+    - {{ .Values.ingress.host }}.{{ .Values.ingress.domain }}
+  {{ else }}
+    - {{ .Values.ingress.host }}
+  {{- end }}
+{{ else }}
+    - {{ include "oudsm.fullname" . }}
+{{- end }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.host) }}
+  {{- if ($root.Values.ingress.domain) }}
+    - {{ $root.Values.ingress.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.domain }}
+  {{ else }}
+    - {{ $root.Values.ingress.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+    - {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+{{- end }}
+{{- end }}
+  rules:
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.host) }}
+  {{- if ($root.Values.ingress.domain) }}
+  - host: {{ $root.Values.ingress.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.domain }}
+  {{ else }}
+  - host: {{ $root.Values.ingress.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+{{- end }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+            port:
+              name: {{ $root.Values.ingress.backendPort }}     
+{{- end }}
+{{- if (.Values.ingress.host) }}
+  {{- if (.Values.ingress.domain) }}
+  - host: {{ .Values.ingress.host }}.{{ .Values.ingress.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.host }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oudsm.fullname" . }}
+{{- end }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oudsm.fullname" . }}-lbr
+            port:
+              name: {{ .Values.ingress.backendPort }}  
+  - http:
+      paths:
+      - path: /oudsm
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oudsm.fullname" . }}-lbr
+            port:
+              name: {{ .Values.ingress.backendPort }}
+      - path: /console
+        pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: {{ include "oudsm.fullname" . }}-lbr
+            port:
+              name: {{ .Values.ingress.backendPort }}
+{{- end }}
+{{- end }}

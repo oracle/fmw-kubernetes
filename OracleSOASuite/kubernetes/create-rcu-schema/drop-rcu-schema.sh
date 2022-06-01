@@ -12,7 +12,7 @@ function usage {
   echo "usage: ${script} -s <schemaPrefix> -d <dburl> -n <namespace> -q <sysPassword> -r <schemaPassword> -c <customVariables> [-h]"
   echo "  -s RCU Schema Prefix (required)"
   echo "  -t RCU Schema Type (optional)"
-  echo "      (supported values: osb,soa,soaosb) "
+  echo "      (supported values: osb,soa,soaosb,soab2b,soaosbb2b) "
   echo "  -d Oracle Database URL (optional)"
   echo "      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s) "
   echo "  -n Namespace where RCU pod is deployed (optional)"
@@ -21,7 +21,7 @@ function usage {
   echo "      (default: Oradoc_db1)"
   echo "  -r password for all schema owner (regular user). (optional)"
   echo "      (default: Oradoc_db1)"
-  echo "  -c Comma-separated variables in the format variablename=value. (optional)."
+  echo "  -c Comma-separated custom variables in the format variablename=value. (optional)."
   echo "      (default: none)"
   echo "  -h Help"
   exit $1
@@ -105,3 +105,4 @@ fi
 
 kubectl delete pod rcu -n ${namespace}
 checkPodDelete rcu ${namespace}
+

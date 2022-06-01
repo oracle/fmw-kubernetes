@@ -1,0 +1,108 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# The version of this inputs file.  Do not modify.
+version: deploy-artifacts-inputs-v1
+
+# Port number for admin server
+adminPort: 7001
+
+# Name of the Admin Server
+adminServerName: AdminServer
+
+# Unique ID identifying a domain.
+# This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
+domainUID: soainfra
+
+# Domain Type must be specified depending on the usecase. Based on this value deployment is triggered on Cluster.
+# In case of SOASuite domains, the supported Domain types are soa,osb,soaosb.
+# soa       : Deploys artifacts into a SOA Domain
+# osb       : Deploys artifcats into an OSB Domain (Oracle Service Bus)
+# soaosb    : Deploys artifacts into both SOA and OSB Domain
+domainType: soa
+
+# SOA Cluster name
+soaClusterName: soa_cluster
+
+# Port number for each SOA managed server
+soaManagedServerPort: 8001
+
+# SOA Suite image.
+# Artifacts deployment requires SOA Suite 12.2.1.4.0.
+# Refer to https://oracle.github.io/fmw-kubernetes/soa-domains/userguide/prepare-your-environment/#obtaining-the-soa-suite-docker-image/  for details on how to obtain or create the image.
+image: soasuite:12.2.1.4
+
+# Image pull policy
+# Legal values are "IfNotPresent", "Always", or "Never"
+imagePullPolicy: IfNotPresent
+
+# Name of the Kubernetes secret to access the container registry to pull the SOA Suite image
+# The presence of the secret will be validated when this parameter is enabled.
+#imagePullSecretName:
+
+# Name of the Kubernetes secret for the Admin Server's username and password
+# The name must be lowercase.
+weblogicCredentialsSecretName: soainfra-domain-credentials
+
+# Name of the domain namespace
+namespace: soans
+
+# The deploy artifacts source type
+# Set to PersistentVolume for deploy artifacts available in Persistent Volume and Image for deploy artifacts available as an image
+#artifactsSourceType: PersistentVolume
+artifactsSourceType: Image
+
+# Name of the persistent volume claim
+# Required if ArtifactsSourceType is PersistentVolume
+#persistentVolumeClaimName: soainfra-deploy-artifacts-pvc
+
+# Deploy artifacts image
+# Required if ArtifactsSourceType is Image
+artifactsImage: artifacts:12.2.1.4
+
+# Image pull policy
+# Legal values are "IfNotPresent", "Always", or "Never"
+artifactsImagePullPolicy: IfNotPresent
+
+# Name of the Kubernetes secret to access the container registry to pull the Artifacts image
+# The presence of the secret will be validated when this parameter is enabled.
+#artifactsImagePullSecretName:
+
+# Mount path where the deploy artifacts scripts are located inside a pod
+#
+# The `deploy-artifacts.sh` script creates a Kubernetes job to run the script (specified in the
+# `deployScriptName` property) in a Kubernetes pod to deploy artifacts into respective cluster. Files
+# in the `deployScriptFilesDir` directory are mounted to this location in the pod, so that
+# a Kubernetes pod can use the scripts and supporting files to deploy artifacts.
+deployScriptsMountPath: /u01/weblogic
+
+# Script that deploys artifacts into the Cluster
+#
+# The `deploy-artifacts.sh` script creates a Kubernetes job to run this script to deploy
+# artifacts into respective cluster. The script is located in the in-pod directory that
+# is specified in the `deployScriptsMountPath` property.
+#
+# If you need to provide your own scripts to deploy the artifacts, instead of using the
+# built-in scripts, you must use this property to set the name of the script that you want
+# the deploy artifacts job to run.
+deployScriptName: deploy.sh
+
+# Directory on the host machine to locate all the files to deploy artifacts
+# It contains the script that is specified in the `deployScriptName` property.
+#
+# By default, this directory is set to the relative path `deploy`, and the deploy artifacts script will
+# use the built-in deploy.sh scripts in the `deploy` directory to deploy artifacts into the cluster.
+#
+# An absolute path is also supported to point to an arbitrary directory in the file system.
+#
+# The built-in scripts can be replaced by the user-provided scripts or files as long
+# as those files are in the specified directory. Files in this directory are put into a
+# Kubernetes config map, which in turn is mounted to the `deployScriptsMountPath`,
+# so that the Kubernetes pod can use the scripts and supporting files for deploying artifacts.
+deployScriptFilesDir: deploy
+
+# Directory inside container where SOA Archives are placed
+soaArtifactsArchivePath: /u01/sarchives
+
+# Directory inside container where Service Bus Archives are placed
+osbArtifactsArchivePath: /u01/sbarchives

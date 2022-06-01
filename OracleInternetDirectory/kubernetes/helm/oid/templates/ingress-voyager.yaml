@@ -1,0 +1,109 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "voyager") -}}
+{{- $fullName := include "oid.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- $svcSslPort := .Values.service.sslPort -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
+# apiVersion: networking.k8s.io/v1beta1
+apiVersion: voyager.appscode.com/v1beta1
+{{- else }}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-ingress-voyager
+  labels:
+    {{- include "oid.labels" . | nindent 4 }}
+  annotations:
+{{- if (.Values.ingress.tlsEnabled) }}
+  {{- with .Values.ingress.voyagerAnnotationsTLS }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- else }}
+  {{- with .Values.ingress.voyagerAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+spec:
+  frontendRules:
+  - port: {{ .Values.ingress.voyagerHttpsPort }}
+    rules:
+    - http-request del-header WL-Proxy-Client-IP
+    - http-request del-header WL-Proxy-SSL
+    - http-request set-header WL-Proxy-SSL true
+  tls:
+{{- if (.Values.ingress.tlsSecret) }}
+  - secretName: {{ .Values.ingress.tlsSecret }}
+    hosts:
+    -  '*'
+{{- else }}
+  - secretName: {{ include "oid.fullname" . }}-tls-cert
+    hosts:
+    -  '*'
+{{- end }}
+  rules:
+  - host: '*'
+    http:
+      paths:
+      - path: /odsm
+        backend:
+          serviceName: {{ include "oid.fullname" . }}host1
+          servicePort: {{ .Values.ingress.http.backendPort }}
+      - path: /console
+        backend:
+          serviceName: {{ include "oid.fullname" . }}host1
+          servicePort: {{ .Values.ingress.http.backendPort }}
+  - host: '{{ include "oid.fullname" . }}*'
+    tcp:
+      port: {{ .Values.oidPorts.ldap }}
+      noTLS: true
+      backend:
+        serviceName: {{ include "oid.fullname" . }}-lbr-ldap
+        servicePort: {{ .Values.oidPorts.ldap }}
+  - host: '{{ include "oid.fullname" . }}*'
+    tcp:
+      port: {{ .Values.oidPorts.ldaps }}
+      backend:
+        serviceName: {{ include "oid.fullname" . }}-lbr-ldap
+        servicePort: {{ .Values.oidPorts.ldaps }}
+
+{{- $ldapPort := .Values.ingress.voyagerTcpPortPrefix.ldap }}
+{{- $ldapsPort := .Values.ingress.voyagerTcpPortPrefix.ldaps }}
+
+  - host: {{ include "oid.fullname" . }}host1
+    tcp:
+      port: {{ $ldapPort }}1
+      noTLS: true
+      backend:
+        serviceName: {{ include "oid.fullname" . }}host1
+        servicePort: ldap
+  - host: {{ include "oid.fullname" . }}host1
+    tcp:
+      port: {{ $ldapsPort }}1
+      backend:
+        serviceName: {{ include "oid.fullname" . }}host1
+        servicePort: ldaps
+
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 2) }}
+  - host: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+    tcp:
+      port: {{ $ldapPort }}{{ $replicaIndx }}
+      noTLS: true
+      backend:
+        serviceName: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+        servicePort: ldap
+  - host: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+    tcp:
+      port: {{ $ldapsPort }}{{ $replicaIndx }}
+      backend:
+        serviceName: {{ include "oid.fullname" $root }}host{{ $replicaIndx }}
+        servicePort: ldaps
+{{- end }}
+{{- end }}

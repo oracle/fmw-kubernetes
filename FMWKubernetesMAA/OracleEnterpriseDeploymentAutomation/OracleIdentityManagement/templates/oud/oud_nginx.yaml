@@ -1,0 +1,45 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating an NGINX controller for OUD
+#
+
+# Configuration for additional TCP ports to be exposed through Ingress
+# Format for each port would be like:
+# <PortNumber>: <Namespace>/<Service>
+tcp: 
+  # Map 1389 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port
+  1389: <OUDNS>/<OUD_POD_PREFIX>-oud-ds-rs-lbr-ldap:ldap
+  # Map 1636 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port
+  1636: <OUDNS>/<OUD_POD_PREFIX>-oud-ds-rs-lbr-ldap:ldaps
+controller:
+  admissionWebhooks:
+    enabled: false
+  class: nginx-oud
+  scope:
+     namespace: <OUDNS>
+     enabled: true
+  extraArgs:
+    # The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.
+    # If this flag is not provided NGINX will use a self-signed certificate.
+    # If the TLS Secret is in different namespace, name can be mentioned as <namespace>/<tlsSecretName>
+    default-ssl-certificate: <OUDNS>/<OUD_POD_PREFIX>-oud-ds-rs-tls-cert
+  service:
+    # controller service external IP addresses
+    # externalIPs:
+    # To configure Ingress Controller Service as LoadBalancer type of Service
+    # Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service
+    type: NodePort
+    # Configuration for NodePort to be used for Ports exposed through Ingress
+    # If NodePorts are not defied/configured, Node Port would be assigend automatically by Kubernetes
+    # These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.
+    nodePorts:
+      # For HTTP Interface exposed through LoadBalancer/Ingress
+      http: <OUD_HTTP_K8>
+      # For HTTPS Interface exposed through LoadBalancer/Ingress
+      https: <OUD_HTTPS_K8>
+      tcp:
+        # For LDAP Interface
+        1389: <OUD_LDAP_K8>
+        # For LDAPS Interface
+        1636: <OUD_LDAPS_K8>

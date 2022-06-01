@@ -1,0 +1,71 @@
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating an service account for OIRI
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oiri-service-account
+  namespace: <OIRINS>
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: oiri-ns-role
+  namespace: <OIRINS>
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ding-ns-role
+  namespace: <DINGNS>
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oiri-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:persistent-volume-provisioner
+subjects:
+- namespace: <OIRINS>
+  kind: ServiceAccount
+  name: oiri-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oiri-rolebinding
+  namespace: <OIRINS>
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: oiri-ns-role
+subjects:
+- namespace: <OIRINS>
+  kind: ServiceAccount
+  name: oiri-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ding-rolebinding
+  namespace: <DINGNS>
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ding-ns-role
+subjects:
+- namespace: <OIRINS>
+  kind: ServiceAccount
+  name: oiri-service-account

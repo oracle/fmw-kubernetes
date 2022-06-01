@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 {{- if eq .Values.type "NGINX" }}
@@ -8,7 +8,7 @@ kind: Ingress
 metadata:
   name: {{ .Values.wlsDomain.domainUID }}-nginx
   namespace: {{ .Release.Namespace }}
-  
+
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/affinity: "cookie"
@@ -76,6 +76,22 @@ spec:
         backend:
           serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
           servicePort: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /imaging
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ipmClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.ipmManagedServerPort }}
+      - path: /dc-console
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.captureClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.captureManagedServerPort }}
+      - path: /dc-client
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.captureClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.captureManagedServerPort }}
+      - path: /wcc
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wccadfClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wccadfManagedServerPort }}
 
 {{- if eq .Values.tls "SSL" }}
   tls:

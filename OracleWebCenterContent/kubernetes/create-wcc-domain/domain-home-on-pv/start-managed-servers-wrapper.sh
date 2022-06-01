@@ -1,10 +1,11 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
 function  usage {
-  echo usage: ${script} -p [-u] [-i] [-h]
+  echo usage: ${script} -o path_to_output_dir -p load_balancer_port [-u ucm_intradocport] [-i ibr_intradocport] [-h]
+  echo "  -o output directory which was used during domain creation to generate yaml files, must be specified."
   echo "  -p load balancer port, must be specified."
   echo "  -u ucm intradocport, optional"
   echo "  -i ibr intradocport, optional"
@@ -12,22 +13,27 @@ function  usage {
   exit $1
 }
 
-while getopts "hp:u:i:" opt; do
-  #echo "-----opt=$opt"
+while getopts "ho:p:u:i:" opt; do
   case $opt in
-    p) LoadBalancerPort="${OPTARG}"
-    ;;
-    u) UCMIntradocPort="${OPTARG}"
-    ;;
-    i) IBRIntradocPort="${OPTARG}"
-    ;;
-    h) usage 0
-    ;;
-    *) usage 1
-    ;;
+	o) outputDir="${OPTARG}"
+	;;
+	p) LoadBalancerPort="${OPTARG}"
+	;;
+	u) UCMIntradocPort="${OPTARG}"
+	;;
+	i) IBRIntradocPort="${OPTARG}"
+	;;
+	h) usage 0
+	;;
+	*) usage 1
+	;;
   esac
 done
 
+if [ -z ${outputDir} ]; then
+  echo "${script}: -o(outputDir) must be specified."
+  usage 1
+fi
 
 if [ -z ${LoadBalancerPort} ]; then
   echo "${script}: -p(LoadBalancerPort) must be specified."
@@ -35,18 +41,14 @@ if [ -z ${LoadBalancerPort} ]; then
 fi
 
 if [ -z ${UCMIntradocPort} ]; then
-    #echo "inside the if ucm intradoc port is EMPTY"
     UCMIntradocPort=4444
 fi
 
 if [ -z ${IBRIntradocPort} ]; then
-     #echo "inside the if ibr intradoc port is EMPTY"
      IBRIntradocPort=5555
 fi
 
-#Loop determining state of Admin POD
 function wait_admin_pod {
-# wait untill pods are ready
 echo "Waiting for $adminPod Pod startup to kick in."
 sleep 50s
 counter=0
@@ -66,9 +68,7 @@ while true; do
 done
 }
 
-#Loop determining state of MS PODS
 function wait_managed_pods {
-   #get replicas number
    rep=$(grep  'initialManagedServerReplicas:' create-domain-inputs.yaml);
    rep=${rep//*initialManagedServerReplicas: /};
    echo "replicas=$rep"
@@ -78,7 +78,7 @@ for ((i = 1 ; i <= $rep ; i++)); do
   counter=0
 while true; do
     ready_status=$(kubectl -n $domainNS get pods $ucmPod$i -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}')
-    #echo "ready_status=$ready_status"
+
         if [ "True"  == "$ready_status" ]; then
            echo "$ucmPod$i Pod started [OK]"
            break;
@@ -95,7 +95,6 @@ done
 
 }
 
-# Get the values from domain-inputs.yaml 
 
 domainUID=$(grep  'domainUID:' create-domain-inputs.yaml);
 domainUID=${domainUID//*domainUID: /};
@@ -112,11 +111,9 @@ managedServerNameBase=${managedServerNameBase//*managedServerNameBase: /};
 adminPod=$domainUID-$adminServerName
 ucmPod=$domainUID-$managedServerNameBase
 
-# Enabling Sequential Startup
-sed -i '/domainHome:/a \ \ maxClusterConcurrentStartup: 1' output/weblogic-domains/$domainUID/domain.yaml
+sed -i '/domainHome:/a \ \ maxClusterConcurrentStartup: 1' ${outputDir}/weblogic-domains/$domainUID/domain.yaml
 
-# Apply the Domain
-kubectl apply -f output/weblogic-domains/$domainUID/domain.yaml
+kubectl apply -f ${outputDir}/weblogic-domains/$domainUID/domain.yaml
 
 wait_admin_pod
 wait_managed_pods
@@ -127,10 +124,8 @@ IBR_PORT=$LoadBalancerPort
 UCM_INTRADOC_PORT=$UCMIntradocPort
 IBR_INTRADOC_PORT=$IBRIntradocPort
 
-# remove the space from hostname
 hostname=`echo $hostname | sed  's/^[[:space:]]*//'`
 
-# find & replace '.' from hostname
 hostalias=`echo $hostname | sed  's/[.]//g'`
 truncatedhostname=${hostalias}
 
@@ -147,7 +142,6 @@ sed -i "s/@UCM_INTRADOC_PORT@/$UCM_INTRADOC_PORT/g" autoinstall.cfg.cs
 
 kubectl cp  autoinstall.cfg.cs $domainNS/$domainUID-ucm-server1:/u01/oracle/user_projects/domains/$domainUID/ucm/cs/bin/autoinstall.cfg
 
-# for IBR
 sed -i "s/@IBR_PORT@/$IBR_PORT/g" autoinstall.cfg.ibr
 sed -i "s/@INSTALL_HOST_FQDN@/$hostname/g" autoinstall.cfg.ibr
 sed -i "s/@INSTALL_HOST_NAME@/$hostalias/g" autoinstall.cfg.ibr
@@ -155,7 +149,6 @@ sed -i "s/@IBR_INTRADOC_PORT@/$IBR_INTRADOC_PORT/g" autoinstall.cfg.ibr
 
 kubectl cp  autoinstall.cfg.ibr $domainNS/$domainUID-ibr-server1:/u01/oracle/user_projects/domains/$domainUID/ucm/ibr/bin/autoinstall.cfg
 
-#expose service for IBR intradoc port
 ip_addr=`hostname -i`
 
 kubectl expose  service/wccinfra-cluster-ibr-cluster --name wccinfra-cluster-ibr-cluster-ext --port=$IBRIntradocPort --target-port=$IBRIntradocPort  --external-ip=$ip_addr -n $domainNS
@@ -163,6 +156,24 @@ kubectl expose  service/wccinfra-cluster-ibr-cluster --name wccinfra-cluster-ibr
 kubectl get service/wccinfra-cluster-ibr-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ibr-cluster-ext.yaml
 sed -i "0,/$IBRIntradocPort/s//16250/" wccinfra-cluster-ibr-cluster-ext.yaml
 kubectl -n $domainNS apply -f wccinfra-cluster-ibr-cluster-ext.yaml
+
+echo " Expose the UCM intradoc port"
+kubectl expose  service/wccinfra-cluster-ucm-cluster --name wccinfra-cluster-ucm-cluster-ext --port=$UCMIntradocPort --target-port=$UCMIntradocPort  --external-ip=$ip_addr -n $domainNS
+
+
+kubectl get service/wccinfra-cluster-ucm-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ucm-cluster-ext.yaml
+sed -i "0,/$UCMIntradocPort/s//16200/" wccinfra-cluster-ucm-cluster-ext.yaml
+kubectl -n $domainNS apply -f wccinfra-cluster-ucm-cluster-ext.yaml
+
+# Load the script to configure wccadf domain if adfui is enabled
+wccadfEnabled=$(grep  'adfuiEnabled:' create-domain-inputs.yaml);
+wccadfEnabled=${wccadfEnabled//*adfuiEnabled: /};
+
+script="${BASH_SOURCE[0]}"
+scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
+if [ true  == "$wccadfEnabled" ]; then
+   source ${scriptDir}/configure-wccadf-domain.sh
+fi
 
 #STOP
 kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'

@@ -1,197 +1,136 @@
 +++
 title=  "Prepare your environment"
-weight = 2
-pre = "<b>2. </b>"
+weight = 3
+pre = "<b>3. </b>"
 description = "Preparation to deploy OIG on Kubernetes"
 +++
 
-1. [Set up your Kubernetes cluster](#set-up-your-kubernetes-cluster)
-1. [Install Helm](#install-helm)
+To prepare for Oracle Identity Governance deployment in a Kubernetes environment, complete the following steps:
+
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
-1. [Install the OIG Docker image](#install-the-oig-docker-image)
-1. [Install the Oracle WebLogic Server Kubernetes Operator Docker Image](#install-the-oracle-weblogic-server-kubernetes-operator-docker-image)
-1. [Setup the Code Repository to Deploy Oracle Identity Governance Domains](#setup-the-code-repository-to-deploy-oracle-identity-governance-domains)
-1. [Install the Oracle WebLogic Kubernetes Operator](#install-the-oracle-weblogic-kubernetes-operator)
+1. [Obtain the OIG container image](#obtain-the-oig-container-image)
+1. [Setup the code repository to deploy OIG domains](#setup-the-code-repository-to-deploy-oig-domains)
+1. [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
+1. [Create a namespace for Oracle Identity Governance](#create-a-namespace-for-oracle-identity-governance)
+1. [Create a Kubernetes secret for the container registry](#create-a-kubernetes-secret-for-the-container-registry)
 1. [RCU schema creation](#rcu-schema-creation)
 1. [Preparing the environment for domain creation](#preparing-the-environment-for-domain-creation)
-    1. [Configure the operator for the domain namespace](#configure-the-operator-for-the-domain-namespace)
-	1. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
-	1. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
-
-### Set up your Kubernetes cluster
-
-If you need help setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/k8s-setup/).
-
-It is recommended you have a master node and one or more worker nodes. The examples in this documentation assume one master and two worker nodes.
-
-After creating Kubernetes clusters, you can optionally:
-
-* Configure an Ingress to direct traffic to backend domains.
-* Configure Kibana and Elasticsearch for your operator logs.
-
-### Install Helm
-
-As per the [prerequisites](../prerequisites) an installation of Helm is required to create and deploy the necessary resources and then run the operator in a Kubernetes cluster. For Helm installation and usage information, refer to the [README](https://github.com/helm/helm).
+    
+	a. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
+	
+	b. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
 
 ### Check the Kubernetes cluster is ready
 
-Run the following command on the master node to check the cluster and worker nodes are running:
+As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains) a Kubernetes cluster should have already been configured.
+
+1. Run the following command on the master node to check the cluster and worker nodes are running:
     
-```
-$ kubectl get nodes,pods -n kube-system
-```
-
-The output will look similar to the following:
-	
-```
-$ kubectl get nodes,pods -n kube-system
-NAME                STATUS   ROLES    AGE   VERSION
-node/worker-node1   Ready    <none>   10d   v1.18.4
-node/worker-node2   Ready    <none>   10d   v1.18.4
-node/master-node    Ready    master   11d   v1.18.4
-
-NAME                                      READY   STATUS    RESTARTS   AGE
-pod/coredns-66bff467f8-slxdq              1/1     Running   0          11d
-pod/coredns-66bff467f8-v77qt              1/1     Running   0          11d
-pod/etcd-master-node                      1/1     Running   0          11d
-pod/kube-apiserver-master-node            1/1     Running   0          11d
-pod/kube-controller-manager-master-node   1/1     Running   0          11d
-pod/kube-flannel-ds-amd64-dcqjn           1/1     Running   0          10d
-pod/kube-flannel-ds-amd64-g4ztq           1/1     Running   0          11d
-pod/kube-flannel-ds-amd64-vpcbj           1/1     Running   1          10d
-pod/kube-proxy-jtcxm                      1/1     Running   0          11d
-pod/kube-proxy-swfmm                      1/1     Running   0          10d
-pod/kube-proxy-w6x6t                      1/1     Running   0          10d
-pod/kube-scheduler-master-node            1/1     Running   0          11d
-$
-```
-
-### Install the OIG Docker Image
-
-You can deploy OIG Docker images in the following ways:
-
-1. Download a prebuilt OIG Docker image from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1. This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0 and the latest PSU.
-
-1. Build your own OIG image using the WebLogic Image Tool or by using the dockerfile, scripts and base images from Oracle Container Registry (OCR). You can also build your own image by using only the dockerfile and scripts. For more information about the various ways in which you can build your own container image, see [Building the OIG Docker Image](https://github.com/oracle/docker-images/tree/master/OracleIdentityGovernance/#building-the-oig-image).
-
-Choose one of these options based on your requirements.
-
-{{% notice note %}}
-The OIG Docker image must be installed on the master node AND each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
-{{% /notice %}}
-
-After installing the OIG Docker image run the following command to make sure the image is installed correctly on the master and worker nodes:
- 
-```
-$ docker images
-```
-
-The output will look similar to the following:
-
-```
-REPOSITORY                            TAG                 IMAGE ID            CREATED             SIZE
-oracle/oig                            12.2.1.4.0          59ffc14dddbb        3 days ago          4.96GB
-k8s.gcr.io/kube-proxy                 v1.18.4             718fa77019f2        6 weeks ago         117MB
-k8s.gcr.io/kube-scheduler             v1.18.4             c663567f869e        6 weeks ago         95.3MB
-k8s.gcr.io/kube-controller-manager    v1.18.4             e8f1690127c4        6 weeks ago         162MB
-k8s.gcr.io/kube-apiserver             v1.18.4             408913fc18eb        6 weeks ago         173MB
-quay.io/coreos/flannel                v0.12.0-amd64       4e9f801d2217        4 months ago        52.8MB
-k8s.gcr.io/pause                      3.2                 80d28bedfe5d        5 months ago        683kB
-k8s.gcr.io/coredns                    1.6.7               67da37a9a360        6 months ago        43.8MB
-k8s.gcr.io/etcd                       3.4.3-0             303ce5db0e90        9 months ago        288MB
-```
-
-### Install the Oracle WebLogic Server Kubernetes Operator Docker Image
-
-In this release only Oracle WebLogic Server Kubernetes Operator 3.0.1 is supported.
-
-{{% notice note %}}
-The Oracle WebLogic Server Kubernetes Operator Docker image must be installed on the master node and each of the worker nodes in your Kubernetes cluster. Alternatively you can place the image in a Docker registry that your cluster can access.
-{{% /notice %}}
-
-1. Pull the Oracle WebLogic Server Kubernetes Operator 3.0.1 image by running the following command on the master node:
-
    ```bash
-   $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
+   $ kubectl get nodes,pods -n kube-system
    ```
- 
+
    The output will look similar to the following:
+	
+   ```
+   NAME                  STATUS   ROLES    AGE   VERSION
+   node/worker-node1     Ready    <none>   17h   v1.20.10
+   node/worker-node2     Ready    <none>   17h   v1.20.10
+   node/master-node      Ready    master   23h   v1.20.10
 
-   ```bash
-   Trying to pull repository ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1 ...
-   3.0.1: Pulling from ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
-   bce8f778fef0: Already exists
-   de14ddc50a70: Pull complete
-   77401a861078: Pull complete
-   9c5ac1423af4: Pull complete
-   2b6f244f998f: Pull complete
-   625e05083092: Pull complete
-   Digest: sha256:27047d032ac5a9077b39bec512b99d8ca54bf9bf71227f5fd1b7b26ac80c20d3
-   Status: Downloaded newer image for ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
-   ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1
+   NAME                                     READY   STATUS    RESTARTS   AGE
+   pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
+   pod/coredns-66bff467f8-xtc8k             1/1     Running   0          23h
+   pod/etcd-master                          1/1     Running   0          21h
+   pod/kube-apiserver-master-node           1/1     Running   0          21h
+   pod/kube-controller-manager-master-node  1/1     Running   0          21h
+   pod/kube-flannel-ds-amd64-lxsfw          1/1     Running   0          17h
+   pod/kube-flannel-ds-amd64-pqrqr          1/1     Running   0          17h
+   pod/kube-flannel-ds-amd64-wj5nh          1/1     Running   0          17h
+   pod/kube-proxy-2kxv2                     1/1     Running   0          17h
+   pod/kube-proxy-82vvj                     1/1     Running   0          17h
+   pod/kube-proxy-nrgw9                     1/1     Running   0          23h
+   pod/kube-scheduler-master                1/1     Running   0          21$
    ```
 
-1. Run the docker tag command as follows:
+### Obtain the OIG container image
 
-   ```bash
-   $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.0.1 weblogic-kubernetes-operator:3.0.1
-   ```
+The OIG Kubernetes deployment requires access to an OIG container image. The image can be obtained in the following ways:
 
-   After installing the Oracle WebLogic Server Kubernetes Operator 3.0.1 Docker image, repeat the above on the worker nodes.
+- Prebuilt OIG container image
+- Build your own OIG container image using WebLogic Image Tool
 
-### Setup the Code Repository to Deploy Oracle Identity Governance Domains
 
-Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle WebLogic Kubernetes Operator infrastructure. For deploying the Oracle Identity Governance domains, you need to set up the deployment scripts on the **master** node as below:
+#### Prebuilt OIG container image
+
+
+The latest prebuilt OIG container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0 and the latest PSU. 
+
+**Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
+
+Alternatively the same image can also be downloaded from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1.
+
+You can use this image in the following ways:
+
+- Pull the container image from the Oracle Container Registry automatically during the OIG Kubernetes deployment.
+- Manually pull the container image from the Oracle Container Registry or My Oracle Support, and then upload it to your own container registry.
+- Manually pull the container image from the Oracle Container Registry or My Oracle Support and manually stage it on the master node and each worker node. 
+
+
+#### Build your own OIG container image using WebLogic Image Tool
+
+
+You can build your own OIG container image using the WebLogic Image Tool. This is recommended if you need to apply one off patches to a [Prebuilt OIG container image](#prebuilt-oig-container-image). For more information about building your own container image with WebLogic Image Tool, see [Create or update image](../create-or-update-image/).
+
+You can use an image built with WebLogic Image Tool in the following ways:
+
+- Manually upload them to your own container registry.
+- Manually stage them on the master node and each worker node. 
+
+**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
+
+### Setup the code repository to deploy OIG domains
+
+Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. For deploying the OIG domains, you need to set up the deployment scripts on the **master** node as below:
 
 1. Create a working directory to setup the source code.
 
    ```bash
-   $ mkdir <work directory>
+   $ mkdir <workdir>
    ```
    
    For example:
+   
    ```bash
-   $ mkdir /scratch/OIGDockerK8S
+   $ mkdir /scratch/OIGK8S
    ```
 
-1. Download the supported version of the Oracle WebLogic Kubernetes Operator source code from the operator github project. Currently the supported operator version is [3.0.1](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.0.1):
+1. Download the latest OIG deployment scripts from the OIG repository.
 
     ```bash
-   $ cd <work directory>
-   $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch release/3.0.1
+   $ cd <workdir>
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
 
    For example:
 
    ```bash
-   $ cd /scratch/OIGDockerK8S
-   $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch release/3.0.1
+   $ cd /scratch/OIGK8S
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
 
-   This will create the directory `<work directory>/weblogic-kubernetes-operator`
-
-1. Clone the Oracle Identity Governance deployment scripts from the OIG [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them into the WebLogic operator samples location.
+1. Set the `$WORKDIR` environment variable as follows:
 
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git
-   $ cp -rf <work directory>/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/create-oim-domain  <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-   $ mv -f <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
-   $ cp -rf <work directory>/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/ingress-per-domain <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain
-   $ cp -rf <work directory>/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/design-console-ingress <work directory>/weblogic-kubernetes-operator/kubernetes/samples/charts/design-console-ingress
+   $ export WORKDIR=<workdir>/fmw-kubernetes/OracleIdentityGovernance
    ```
 
-   For example:   
-  
+   For example:
+   
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git
-   $ cp -rf /scratch/OIGDockerK8S/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/create-oim-domain  /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-   $ mv -f /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain  /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain_backup
-   $ cp -rf /scratch/OIGDockerK8S/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/ingress-per-domain /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain
-   cp -rf /scratch/OIGDockerK8S/fmw-kubernetes/OracleIdentityGovernance/kubernetes/3.0.1/design-console-ingress /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/charts/design-console-ingress
+   $ export WORKDIR=/scratch/OIGK8S/fmw-kubernetes/OracleIdentityGovernance
    ```
    
-   You can now use the deployment scripts from `<work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/` to set up the OIG domains as further described in this document.
-
 1. Run the following command and see if the WebLogic custom resource definition name already exists:
 
    ```bash
@@ -200,13 +139,13 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle 
 	
    In the output you should see:
 	
-   ```bash
+   ```
    No resources found in default namespace.
    ```
    
    If you see the following:
 	
-   ```bash
+   ```
    NAME                    AGE
    domains.weblogic.oracle 5d
    ```
@@ -218,7 +157,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle 
    customresourcedefinition.apiextensions.k8s.io "domains.weblogic.oracle" deleted
    ```
 
-### Install the Oracle WebLogic Kubernetes Operator
+### Install the WebLogic Kubernetes Operator
 
 1. On the **master** node run the following command to create a namespace for the operator:
 
@@ -229,13 +168,13 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle 
    For example:
   
    ```bash
-   $ kubectl create namespace operator
+   $ kubectl create namespace opns
    ```
   
    The output will look similar to the following:
   
    ```
-   namespace/operator created
+   namespace/opns created
    ```
 
 1. Create a service account for the operator in the operator's namespace by running the following command:
@@ -247,70 +186,55 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle 
    For example:
    
    ```bash
-   $ kubectl create serviceaccount -n operator operator-serviceaccount
+   $ kubectl create serviceaccount -n opns op-sa
    ```
    
    The output will look similar to the following:
    
-   ```bash
-   serviceaccount/operator-serviceaccount created
    ```
-
-1. If you want to setup logging and visualisation with Elasticsearch and Kibana (post domain creation) edit the `<work directory>/weblogic-kubernetes-operator/kubernetes/charts/weblogic-operator/values.yaml` and set the parameter `elkIntegrationEnabled` to `true` and make sure the following parameters are set:
-
-   ```bash
-   # elkIntegrationEnabled specifies whether or not ELK integration is enabled.
-   elkIntegrationEnabled: true
-   
-   # logStashImage specifies the docker image containing logstash.
-   # This parameter is ignored if 'elkIntegrationEnabled' is false.
-   logStashImage: "logstash:6.6.0"
- 
-   # elasticSearchHost specifies the hostname of where elasticsearch is running.
-   # This parameter is ignored if 'elkIntegrationEnabled' is false.
-   elasticSearchHost: "elasticsearch.default.svc.cluster.local"
- 
-   # elasticSearchPort specifies the port number of where elasticsearch is running.
-   # This parameter is ignored if 'elkIntegrationEnabled' is false.
-   elasticSearchPort: 9200
+   serviceaccount/op-sa created
    ```
-   
-   After the domain creation see [Logging and Visualization](../manage-oam-domains/logging-and-visualization) in order to complete the setup of Elasticsearch and Kibana.
 
 1. Run the following helm command to install and start the operator:   
   
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm install kubernetes/charts/weblogic-operator \
+   $ cd $WORKDIR
+   $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=weblogic-kubernetes-operator:3.0.1 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
-   --set "domainNamespaces={}"
+   --set “enableClusterRoleBinding=true” \
+   --set "domainNamespaceSelectionStrategy=LabelSelector" \
+   --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
+   --set "javaLoggingLevel=FINE" --wait
    ```
   
    For example:
   
    ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
+   $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
-   --namespace operator \
-   --set image=weblogic-kubernetes-operator:3.0.1 \
-   --set serviceAccount=operator-serviceaccount \
-   --set "domainNamespaces={}" 
+   --namespace opns \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 \
+   --set serviceAccount=op-sa \
+   --set "enableClusterRoleBinding=true" \
+   --set "domainNamespaceSelectionStrategy=LabelSelector" \
+   --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
+   --set "javaLoggingLevel=FINE" --wait
    ```
 
    The output will look similar to the following:
    
-   ```bash
+   ```
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Tue Sep 29 02:33:06 2020
-   NAMESPACE: operator
+   LAST DEPLOYED: Wed Mar 9 11:51:37 2022
+   NAMESPACE: opns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    ```
    
-1. Verify that the operator's pod is running by executing the following command to list the pods in the operator's namespace:
+1. Verify that the operator's pod and services are running by executing the following command:
 
    ```bash
    $ kubectl get all -n <sample-kubernetes-operator-ns>
@@ -319,26 +243,26 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle 
    For example:
 
    ```bash
-   $ kubectl get all -n operator
+   $ kubectl get all -n opns
    ```
 	
    The output will look similar to the following:
 
-   ```bash
+   ```
    NAME                                     READY   STATUS    RESTARTS   AGE
-   pod/weblogic-operator-5d5dfb74ff-t7ct5   2/2     Running   0          17m
+   pod/weblogic-operator-676d5cc6f4-rwzxf   2/2     Running   0          59s
 
-   NAME                                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-   service/internal-weblogic-operator-svc   ClusterIP   10.101.11.127   <none>        8082/TCP   17m
+   NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+   service/internal-weblogic-operator-svc   ClusterIP   10.102.7.232   <none>        8082/TCP   59s
 
    NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-   deployment.apps/weblogic-operator   1/1     1            1           17m
+   deployment.apps/weblogic-operator   1/1     1            1           59s
 
    NAME                                           DESIRED   CURRENT   READY   AGE
-   replicaset.apps/weblogic-operator-5d5dfb74ff   1         1         1       17m
+   replicaset.apps/weblogic-operator-676d5cc6f4   1         1         1       59s
    ```
 
-1. Verify that the operator is up and running by viewing the operator pod's log:
+1. Verify the operator pod's log:
 	
    ```bash
    $ kubectl logs -n <sample-kubernetes-operator-ns> -c weblogic-operator deployments/weblogic-operator
@@ -347,23 +271,19 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the Oracle 
    For example:
 	
    ```bash
-   $ kubectl logs -n operator -c weblogic-operator deployments/weblogic-operator
+   $ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
    ```
 	
    The output will look similar to the following:
 	
-   ```bash
-   {"timestamp":"09-29-2020T09:33:26.284+0000","thread":27,"fiber":"fiber-1","namespace":"operator","domainUID":"","level":"WARNING","class":"oracle.kubernetes.operator.utils.Certificates","method":"getCertificate","timeInMillis":1601372006284,"message":"No external certificate configured for REST endpoint. Endpoint will be disabled.","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"09-29-2020T09:33:28.611+0000","thread":27,"fiber":"fiber-1","namespace":"operator","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.rest.RestServer","method":"start","timeInMillis":1601372008611,"message":"Started the internal ssl REST server on https://0.0.0.0:8082/operator","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"09-29-2020T09:33:28.613+0000","thread":27,"fiber":"fiber-1","namespace":"operator","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"markReadyAndStartLivenessThread","timeInMillis":1601372008613,"message":"Starting Operator Liveness Thread","exception":"","code":"","headers":{},"body":""}
+   ```
+   {"timestamp":"2022-03-09T11:52:53.167756673Z","thread":23,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650293167,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-03-09T11:53:03.170083172Z","thread":30,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650303170,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-03-09T11:52:13.172302644Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650313172,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
    ```
 
-### RCU schema creation
-	
-In this section you create the RCU schemas in the Oracle Database.
-	
-Before following the steps in this section, make sure that the database and listener are up and running and you can connect to the database via SQL*Plus or other client tool.
-	
+### Create a namespace for Oracle Identity Governance
+
 1. Run the following command to create a namespace for the domain:
 	
    ```bash
@@ -372,32 +292,154 @@ Before following the steps in this section, make sure that the database and list
 	
    For example:
 	
-   ```
-   $ kubectl create namespace oimcluster
+   ```bash
+   $ kubectl create namespace oigns
    ```
 	
    The output will look similar to the following:
 	
    ```
-   namespace/oimcluster created
+   namespace/oigns created
    ```
 
-   Run the following command to create a helper pod:
+1. Run the following command to tag the namespace so the WebLogic Kubernetes Operator can manage it:
 
    ```bash
-   $ kubectl run helper --image <image_name> -n <domain_namespace> -- sleep infinity
+   $ kubectl label namespaces <domain_namespace> weblogic-operator=enabled
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl label namespaces oigns weblogic-operator=enabled
+   ```
+   
+   The output will look similar to the following:
+	
+   ```
+   namespace/oigns labeled
+   ```
+
+1. Run the following command to check the label was created:
+
+   ```bash
+   $ kubectl describe namespace <domain_namespace>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl describe namespace oigns
+   ```
+   
+   
+   The output will look similar to the following:
+	
+   ```
+   Name:         oigns
+   Labels:       weblogic-operator=enabled
+   Annotations:  <none>
+   Status:       Active
+
+   No resource quota.
+
+   No LimitRange resource.
+   ``` 
+
+### Create a Kubernetes secret for the container registry
+
+In this section you create a secret that stores the credentials for the container registry where the OIG image is stored. This step must be followed if using Oracle Container Registry or your own private registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.
+
+1. Run the following command to create the secret:
+
+   ```bash
+   kubectl create secret docker-registry "orclcred" --docker-server=<CONTAINER_REGISTRY> \
+   --docker-username="<USER_NAME>" \
+   --docker-password=<PASSWORD> --docker-email=<EMAIL_ID> \
+   --namespace=<domain_namespace>
+   ```
+   
+   For example, if using Oracle Container Registry:
+   
+   ```bash
+   kubectl create secret docker-registry "orclcred" --docker-server=container-registry.oracle.com \
+   --docker-username="user@example.com" \
+   --docker-password=password --docker-email=user@example.com \
+   --namespace=oigns
+   ```
+   
+   
+   Replace `<USER_NAME>` and `<PASSWORD>` with the credentials for the registry with the following caveats:
+
+   -  If using Oracle Container Registry to pull the OIG container image, this is the username and password used to login to [Oracle Container Registry](https://container-registry.oracle.com). Before you can use this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
+
+   - If using your own container registry to store the OIG container image, this is the username and password (or token) for your container registry.   
+
+   The output will look similar to the following:
+   
+   ```bash
+   secret/orclcred created
+   ```
+      
+### RCU schema creation
+	
+In this section you create the RCU schemas in the Oracle Database.
+	
+Before following the steps in this section, make sure that the database and listener are up and running and you can connect to the database via SQL*Plus or other client tool.
+	
+1. If using Oracle Container Registry or your own container registry for your OIG container image, run the following command to create a helper pod to run RCU:
+
+   ```bash
+   $ kubectl run --image=<image_name-from-registry> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1", "spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n <domain_namespace> -- sleep infinity
    ```
 	
    For example:
 	
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4.0 -n oimcluster -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359 --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   ```
+
+   If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
+   
+   ```bash
+   $ kubectl run helper --image <image> -n oigns -- sleep infinity
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-220120.1359 -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:
 	
-   ```bash
+   ```
    pod/helper created
+   ```
+   
+1. Run the following command to check the pod is running:
+
+   ```bash
+   $ kubectl get pods -n <domain_namespace>
+   ```
+	
+   For example:
+	
+   ```bash
+   $ kubectl get pods -n oigns
+   ```
+	
+   The output will look similar to the following:
+	
+   ```
+   NAME     READY   STATUS    RESTARTS   AGE
+   helper   1/1     Running   0          3m
+   ```
+   
+   **Note**: If you are pulling the image from a container registry it may take several minutes before the pod has a `STATUS` of `1\1`. While the pod is starting you can check the status of the pod, by running the following command:
+   
+   ```bash
+   $ kubectl describe pod helper -n oigns
    ```
 	
 1. Run the following command to start a bash shell in the helper pod:
@@ -409,10 +451,10 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl exec -it helper -n oimcluster -- /bin/bash
+   $ kubectl exec -it helper -n oigns -- /bin/bash
    ```
 	
-   This will take you into a bash shell in the running rcu pod:
+   This will take you into a bash shell in the running helper pod:
 	
    ```bash
    [oracle@helper oracle]$
@@ -469,8 +511,8 @@ Before following the steps in this section, make sure that the database and list
 	
    The output will look similar to the following:
 	
-   ```bash
-   RCU Logfile: /tmp/RCU2020-09-29_10-51_508080961/logs/rcu.log
+   ```
+   RCU Logfile: /tmp/RCU2022-03-09_17-09_964981565/logs/rcu.log
 
    Processing command line ....
    Repository Creation Utility - Checking Prerequisites
@@ -552,22 +594,22 @@ Before following the steps in this section, make sure that the database and list
    Service Name                                 : ORCL.EXAMPLE.COM
    Connected As                                 : sys
    Prefix for (prefixable) Schema Owners        : OIGK8S
-   RCU Logfile                                  : /tmp/RCU2020-09-29_10-51_508080961/logs/rcu.log
+   RCU Logfile                                  : /tmp/RCU2022-03-09_17-09_964981565/logs/rcu.log
 
    Component schemas created:
    -----------------------------
    Component                                    Status         Logfile
 
-   Common Infrastructure Services               Success        /tmp/RCU2020-09-29_10-51_508080961/logs/stb.log
-   Oracle Platform Security Services            Success        /tmp/RCU2020-09-29_10-51_508080961/logs/opss.log
-   SOA Infrastructure                           Success        /tmp/RCU2020-09-29_10-51_508080961/logs/soainfra.log
-   Oracle Identity Manager                      Success        /tmp/RCU2020-09-29_10-51_508080961/logs/oim.log
-   User Messaging Service                       Success        /tmp/RCU2020-09-29_10-51_508080961/logs/ucsums.log
-   Audit Services                               Success        /tmp/RCU2020-09-29_10-51_508080961/logs/iau.log
-   Audit Services Append                        Success        /tmp/RCU2020-09-29_10-51_508080961/logs/iau_append.log
-   Audit Services Viewer                        Success        /tmp/RCU2020-09-29_10-51_508080961/logs/iau_viewer.log
-   Metadata Services                            Success        /tmp/RCU2020-09-29_10-51_508080961/logs/mds.log
-   WebLogic Services                            Success        /tmp/RCU2020-09-29_10-51_508080961/logs/wls.log
+   Common Infrastructure Services               Success        /tmp/RCU2022-03-09_17-09_964981565/logs/stb.log
+   Oracle Platform Security Services            Success        /tmp/RCU2022-03-09_17-09_964981565/logs/opss.log
+   SOA Infrastructure                           Success        /tmp/RCU2022-03-09_17-09_964981565/logs/soainfra.log
+   Oracle Identity Manager                      Success        /tmp/RCU2022-03-09_17-09_964981565/logs/oim.log
+   User Messaging Service                       Success        /tmp/RCU2022-03-09_17-09_964981565/logs/ucsums.log
+   Audit Services                               Success        /tmp/RCU2022-03-09_17-09_964981565/logs/iau.log
+   Audit Services Append                        Success        /tmp/RCU2022-03-09_17-09_964981565/logs/iau_append.log
+   Audit Services Viewer                        Success        /tmp/RCU2022-03-09_17-09_964981565/logs/iau_viewer.log
+   Metadata Services                            Success        /tmp/RCU2022-03-09_17-09_964981565/logs/mds.log
+   WebLogic Services                            Success        /tmp/RCU2022-03-09_17-09_964981565/logs/wls.log
 
    Repository Creation Utility - Create : Operation Completed
    [oracle@helper oracle]$
@@ -609,14 +651,15 @@ Before following the steps in this section, make sure that the database and list
    The output should look similar to below:
    
    ```
-   run-patched-sql-files:
-      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/StoredProcedures/API/oim_role_mgmt_pkg_body.sql
-      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_dml_pty_insert_sysprop_ssointg_grprecon_matching_rolename.sql
-      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_dml_pty_insert_sysprop_oimadpswdpolicy.sql
-      [sql] 3 of 3 SQL statements executed successfully
+   ...
+      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/StoredProcedures/OfflineDataPurge/oim_pkg_offline_datapurge_pkg_body.sql
+      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_dml_pty_insert_sysprop_RequestJustificationLocale.sql
+      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_dml_pty_insert_sysprop_reportee_chain_for_mgr.sql
+      [sql] 36 of 36 SQL statements executed successfully
+
 
    BUILD SUCCESSFUL
-   Total time: 1 second
+   Total time: 5 second
    ```
    
    
@@ -626,44 +669,16 @@ Before following the steps in this section, make sure that the database and list
 
 In this section you prepare the environment for the OIG domain creation. This involves the following steps:
 
-   1. Configure the operator for the domain namespace
-   2. Create Kubernetes secrets for the domain and RCU
-   3. Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim)
-
-#### Configure the operator for the domain namespace
-
-1. Configure the Oracle WebLogic Kubernetes Operator to manage the domain in the domain namespace by running the following command:
-
-   ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator
-   $ helm upgrade --reuse-values --namespace <operator_namespace> --set "domainNamespaces={oimcluster}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
-   ```
-
-   For example:
-
-   ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator
-   $ helm upgrade --reuse-values --namespace operator --set "domainNamespaces={oimcluster}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
-   ```
+   a. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
 	
-   The output will look similar to the following:
-	
-   ```bash
-   Release "weblogic-kubernetes-operator" has been upgraded. Happy Helming!
-   NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Tue Sep 29 04:01:43 2020
-   NAMESPACE: operator
-   STATUS: deployed
-   REVISION: 2
-   TEST SUITE: None
-   ```	
+   b. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
 
 #### Creating Kubernetes secrets for the domain and RCU
 
 1. Create a Kubernetes secret for the domain using the create-weblogic-credentials script in the same Kubernetes namespace as the domain:
 
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
+   $ cd $WORKDIR/kubernetes/create-weblogic-domain-credentials
    $ ./create-weblogic-credentials.sh -u weblogic -p <pwd> -n <domain_namespace> -d <domain_uid> -s <kubernetes_domain_secret>
    ```
 
@@ -682,16 +697,16 @@ In this section you prepare the environment for the OIG domain creation. This in
    For example:
 	
    ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
-   $ ./create-weblogic-credentials.sh -u weblogic -p <password> -n oimcluster -d oimcluster -s oimcluster-domain-credentials
+   $ cd $WORKDIR/kubernetes/create-weblogic-domain-credentials
+   $ ./create-weblogic-credentials.sh -u weblogic -p <password> -n oigns -d governancedomain -s oig-domain-credentials
    ```
 
    The output will look similar to the following:
 	
-   ```bash
-   secret/oimcluster-domain-credentials created
-   secret/oimcluster-domain-credentials labeled
-   The secret oimcluster-domain-credentials has been successfully created in the oimcluster namespace.
+   ```
+   secret/oig-domain-credentials created
+   secret/oig-domain-credentials labeled
+   The secret oig-domain-credentials has been successfully created in the oigns namespace.
    ```
 
 1. Verify the secret is created using the following command:
@@ -703,52 +718,34 @@ In this section you prepare the environment for the OIG domain creation. This in
    For example:
 	
    ```bash
-   $ kubectl get secret oimcluster-domain-credentials -o yaml -n oimcluster
+   $ kubectl get secret oig-domain-credentials -o yaml -n oigns
    ```
 
    The output will look similar to the following:
 	
-   ```bash
-   $ kubectl get secret oimcluster-domain-credentials -o yaml -n oimcluster
+   ```
+   $ kubectl get secret oig-domain-credentials -o yaml -n oigns
    apiVersion: v1
    data:
      password: V2VsY29tZTE=
      username: d2VibG9naWM=
    kind: Secret
    metadata:
-     creationTimestamp: "2020-09-29T11:04:44Z"
+     creationTimestamp: "2022-03-09T17:47:29Z"
      labels:
-       weblogic.domainName: oimcluster
-       weblogic.domainUID: oimcluster
-     managedFields:
-     - apiVersion: v1
-       fieldsType: FieldsV1
-       fieldsV1:
-         f:data:
-           .: {}
-           f:password: {}
-           f:username: {}
-         f:metadata:
-           f:labels:
-             .: {}
-             f:weblogic.domainName: {}
-             f:weblogic.domainUID: {}
-         f:type: {}
-       manager: kubectl
-       operation: Update
-       time: "2020-09-29T11:04:44Z"
-     name: oimcluster-domain-credentials
-     namespace: oimcluster
-     resourceVersion: "1249007"
-     selfLink: /api/v1/namespaces/oimcluster/secrets/oimcluster-domain-credentials
-     uid: 4ade08f3-7b11-4bb0-9340-7304a2ef9b64
+       weblogic.domainName: governancedomain
+       weblogic.domainUID: governancedomain
+     name: oig-domain-credentials
+     namespace: oigns
+     resourceVersion: "3216738"
+     uid: c2ec07e0-0135-458d-bceb-c648d2a9ac54
    type: Opaque
    ```
 
 1. Create a Kubernetes secret for RCU in the same Kubernetes namespace as the domain, using the `create-weblogic-credentials.sh` script:
 
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+   $ cd $WORKDIR/kubernetes/create-rcu-credentials
    $ ./create-rcu-credentials.sh -u <rcu_prefix> -p <rcu_schema_pwd> -a sys -q <sys_db_pwd> -d <domain_uid> -n <domain_namespace> -s <kubernetes_rcu_secret>
    ```
    
@@ -757,6 +754,8 @@ In this section you prepare the environment for the OIG domain creation. This in
    `-u <rcu_prefix>` is the name of the RCU schema prefix created previously
 
    `-p <rcu_schema_pwd>` is the password for the RCU schema prefix
+   
+   `-a <sys_db_user>` is the database user with sys dba privilege
 	
    `-q <sys_db_pwd>` is the sys database password
 	
@@ -769,16 +768,16 @@ In this section you prepare the environment for the OIG domain creation. This in
    For example:
 	
    ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
-   $ ./create-rcu-credentials.sh -u OIGK8S -p <password> -a sys -q <password> -d oimcluster -n oimcluster -s oimcluster-rcu-credentials
+   $ cd $WORKDIR/kubernetes/create-rcu-credentials
+   $ ./create-rcu-credentials.sh -u OIGK8S -p <password> -a sys -q <password> -d governancedomain -n oigns -s oig-rcu-credentials
    ```
 
    The output will look similar to the following:
 	
-   ```bash
-   secret/oimcluster-rcu-credentials created
-   secret/oimcluster-rcu-credentials labeled
-   The secret oimcluster-rcu-credentials has been successfully created in the oimcluster namespace.
+   ```
+   secret/oig-rcu-credentials created
+   secret/oig-rcu-credentials labeled
+   The secret oig-rcu-credentials has been successfully created in the oigns namespace.
    ```
 	
 1. Verify the secret is created using the following command:
@@ -790,12 +789,12 @@ In this section you prepare the environment for the OIG domain creation. This in
    For example:
 	
    ```bash
-   $ kubectl get secret oimcluster-rcu-credentials -o yaml -n oimcluster
+   $ kubectl get secret oig-rcu-credentials -o yaml -n oigns
    ```
 	
    The output will look similar to the following:
 	
-   ```bash
+   ```
    apiVersion: v1
    data:
      password: V2VsY29tZTE=
@@ -804,75 +803,65 @@ In this section you prepare the environment for the OIG domain creation. This in
      username: T0lHSzhT
    kind: Secret
    metadata:
-      creationTimestamp: "2020-09-29T11:18:45Z"
+     creationTimestamp: "2022-03-09T17:50:50Z"
      labels:
-       weblogic.domainName: oimcluster
-       weblogic.domainUID: oimcluster
-     managedFields:
-     - apiVersion: v1
-       fieldsType: FieldsV1
-       fieldsV1:
-         f:data:
-           .: {}
-           f:password: {}
-           f:sys_password: {}
-           f:sys_username: {}
-           f:username: {}
-         f:metadata:
-           f:labels:
-             .: {}
-             f:weblogic.domainName: {}
-             f:weblogic.domainUID: {}
-         f:type: {}
-       manager: kubectl
-       operation: Update
-       time: "2020-09-29T11:18:45Z"
-     name: oimcluster-rcu-credentials
-     namespace: oimcluster
-     resourceVersion: "1251020"
-     selfLink: /api/v1/namespaces/oimcluster/secrets/oimcluster-rcu-credentials
-     uid: aee4213e-ffe2-45a6-9b96-11c4e88d12f2
+       weblogic.domainName: governancedomain
+       weblogic.domainUID: governancedomain
+     name: oig-rcu-credentials
+     namespace: oigns
+     resourceVersion: "3217023"
+     uid: ce70b91a-fbbc-4839-9616-4cc2c1adeb4f
    type: Opaque
    ```
 
 ### Create a Kubernetes persistent volume and persistent volume claim
   
-In the Kubernetes domain namespace created above, create the persistent volume (PV) and persistent volume claim (PVC)  by running the `create-pv-pvc.sh` script.
+As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system. 
+
+A persistent volume is the same as a disk mount but is inside a container. A Kubernetes persistent volume is an arbitrary name (determined in this case, by Oracle) that is mapped to a physical volume on a disk.
+
+When a container is started, it needs to mount that volume. The physical volume should be on a shared disk accessible by all the Kubernetes worker nodes because it is not known on which worker node the container will be started. In the case of Identity and Access Management, the persistent volume does not get erased when a container stops. This enables persistent configurations.
+   
+The example below uses an NFS mounted volume (<persistent_volume>/governancedomainpv). Other volume types can also be used. See the official [Kubernetes documentation for Volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
+   
+**Note**: The persistent volume directory needs to be accessible to both the master and worker node(s). Make sure this path has **full** access permissions, and that the folder is empty. In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS. 
+
+
 
 1. Make a backup copy of the `create-pv-pvc-inputs.yaml` file and create required directories:
    
    ```bash
-   $ cd <work directory>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+   $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
-   $ mkdir output_oimcluster
-   $ mkdir -p /<work directory>/oimclusterdomainpv
-   $ chmod -R 777 /<work directory>/oimclusterdomainpv
+   $ mkdir output
+   $ mkdir -p <persistent_volume>/governancedomainpv
+   $ chmod -R 777 <persistent_volume>/governancedomainpv
    ```
 
    For example:
 	
    ```bash
-   $ cd /scratch/OIGDockerK8S/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+   $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
-   $ mkdir output_oimcluster
-   $ mkdir -p /scratch/OIGDockerK8S/oimclusterdomainpv
-   $ chmod -R 777 /scratch/OIGDockerK8S/oimclusterdomainpv
+   $ mkdir output
+   $ mkdir -p /scratch/shared/governancedomainpv
+   $ chmod -R 777 /scratch/shared/governancedomainpv
    ```
    
-   **Note**: The persistent volume directory needs to be accessible to both the master and worker node(s) via NFS. Make sure this path has **full** access permissions, and that the folder is empty. In this example `/scratch/OIGDockerK8S/oimclusterdomainpv` is accessible from all nodes via NFS. 
+   
    
 1. On the master node run the following command to ensure it is possible to read and write to the persistent volume:
 
    ```bash 
-   cd /<work directory>/oimclusterdomainpv
-   touch filemaster.txt
+   cd <persistent_volume>/governancedomainpv
+   touch file.txt
    ls filemaster.txt
    ```
    
    For example:
    
    ```bash
-   cd /scratch/OIGDockerK8S/oimclusterdomainpv
+   cd /scratch/shared/governancedomainpv
    touch filemaster.txt
    ls filemaster.txt
    ```
@@ -880,7 +869,7 @@ In the Kubernetes domain namespace created above, create the persistent volume (
    On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
    
    ```bash
-   cd /scratch/OIGDockerK8S/oimclusterdomainpv
+   cd /scratch/shared/governancedomainpv
    ls filemaster.txt
    touch fileworker1.txt
    ls fileworker1.txt
@@ -888,30 +877,38 @@ In the Kubernetes domain namespace created above, create the persistent volume (
    
    Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it's possible to read and write from each node to the persistent volume, delete the files created.
    
-1. Edit the `create-pv-pvc-inputs.yaml` file and update the following parameters to reflect your settings. Save the file when complete:
+
+1. Navigate to `$WORKDIR/kubernetes/create-weblogic-domain-pv-pvc`:
 
    ```bash
+   $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
+   ```
+   
+   and edit the `create-pv-pvc-inputs.yaml` file and update the following parameters to reflect your settings. Save the file when complete:
+
+   ```
    baseName: <domain>
    domainUID: <domain_uid>
    namespace: <domain_namespace>
    weblogicDomainStorageType: NFS
    weblogicDomainStorageNFSServer: <nfs_server>
    weblogicDomainStoragePath: <physical_path_of_persistent_storage>
+   weblogicDomainStorageSize: 10Gi
    ```
     
    For example:
 	
-   ```bash
+   ```
    # The base name of the pv and pvc
-   baseName: oim
+   baseName: domain
 
    # Unique ID identifying a domain.
    # If left empty, the generated pv can be shared by multiple domains
    # This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
-   domainUID: oimcluster
+   domainUID: governancedomain
 
    # Name of the namespace for the persistent volume claim
-   namespace: oimcluster
+   namespace: oigns
 
    # Persistent volume type for the persistent storage.
    # The value must be 'HOST_PATH' or 'NFS'.
@@ -931,34 +928,41 @@ In the Kubernetes domain namespace created above, create the persistent volume (
    # Note that the path where the domain is mounted in the WebLogic containers is not affected by this
    # setting, that is determined when you create your domain.
    # The following line must be uncomment and customized:
-   weblogicDomainStoragePath: /scratch/OIGDockerK8S/oimclusterdomainpv
+   weblogicDomainStoragePath: /scratch/shared/governancedomainpv
+     
+   # Reclaim policy of the persistent storage
+   # The valid values are: 'Retain', 'Delete', and 'Recycle'
+   weblogicDomainStorageReclaimPolicy: Retain
+
+   # Total storage allocated to the persistent storage.
+   weblogicDomainStorageSize: 10Gi
    ```
 
 1. Execute the `create-pv-pvc.sh` script to create the PV and PVC configuration files:
 
    ```bash
-   $ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output_oimcluster
+   $ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output
    ```
 	
    The output will be similar to the following:
 	
-   ```bash
+   ```
    Input parameters being used
    export version="create-weblogic-sample-domain-pv-pvc-inputs-v1"
-   export baseName="oim"
-   export domainUID="oimcluster"
-   export namespace="oimcluster"
+   export baseName="domain"
+   export domainUID="governancedomain"
+   export namespace="oigns"
    export weblogicDomainStorageType="NFS"
    export weblogicDomainStorageNFSServer="mynfsserver"
-   export weblogicDomainStoragePath="/scratch/OIGDockerK8S/oimclusterdomainpv"
+   export weblogicDomainStoragePath="/scratch/shared/governancedomainpv"
    export weblogicDomainStorageReclaimPolicy="Retain"
    export weblogicDomainStorageSize="10Gi"
 
-   Generating output_oimcluster/pv-pvcs/oimcluster-oim-pv.yaml
-   Generating output_oimcluster/pv-pvcs/oimcluster-oim-pvc.yaml
+   Generating output/pv-pvcs/governancedomain-domain-pv.yaml
+   Generating output/pv-pvcs/governancedomain-domain-pvc.yaml
    The following files were generated:
-     output_oimcluster/pv-pvcs/oimcluster-oim-pv.yaml
-     output_oimcluster/pv-pvcs/oimcluster-oim-pvc.yaml
+     output/pv-pvcs/governancedomain-domain-pv.yaml
+     output/pv-pvcs/governancedomain-domain-pvc.yaml
 
    Completed
    ```
@@ -966,28 +970,28 @@ In the Kubernetes domain namespace created above, create the persistent volume (
 1. Run the following to show the files are created:
 
    ```bash
-   $ ls output_oimcluster/pv-pvcs
-   create-pv-pvc-inputs.yaml  oimcluster-oim-pvc.yaml  oimcluster-oim-pv.yaml
+   $ ls output/pv-pvcs
+   create-pv-pvc-inputs.yaml  governancedomain-domain-pv.yaml  governancedomain-domain-pvc.yaml
    ```
 1. Run the following `kubectl` command to create the PV and PVC in the domain namespace:
 
    ```bash
-   $ kubectl create -f output_oimcluster/pv-pvcs/oimcluster-oim-pv.yaml -n <domain_namespace>
-   $ kubectl create -f output_oimcluster/pv-pvcs/oimcluster-oim-pvc.yaml -n <domain_namespace>
+   $ kubectl create -f output/pv-pvcs/governancedomain-domain-pv.yaml -n <domain_namespace>
+   $ kubectl create -f output/pv-pvcs/governancedomain-domain-pvc.yaml -n <domain_namespace>
    ```
    
    For example:
    
    ```bash
-   $ kubectl create -f output_oimcluster/pv-pvcs/oimcluster-oim-pv.yaml -n oimcluster
-   $ kubectl create -f output_oimcluster/pv-pvcs/oimcluster-oim-pvc.yaml -n oimcluster
+   $ kubectl create -f output/pv-pvcs/governancedomain-domain-pv.yaml -n oigns
+   $ kubectl create -f output/pv-pvcs/governancedomain-domain-pvc.yaml -n oigns
    ```
 
    The output will look similar to the following:
    
-   ```bash
-   persistentvolume/oimcluster-oim-pv created
-   persistentvolumeclaim/oimcluster-oim-pvc created
+   ```
+   persistentvolume/governancedomain-domain-pv created
+   persistentvolumeclaim/governancedomain-domain-pvc created
    ```
    
 1. Run the following commands to verify the PV and PVC were created successfully:
@@ -1000,22 +1004,22 @@ In the Kubernetes domain namespace created above, create the persistent volume (
    For example:
    
    ```bash
-   $ kubectl describe pv oimcluster-oim-pv 
-   $ kubectl describe pvc oimcluster-oim-pvc -n oimcluster
+   $ kubectl describe pv governancedomain-domain-pv 
+   $ kubectl describe pvc governancedomain-domain-pvc -n oigns
    ```
    
    The output will look similar to the following:
 
-   ```bash
-   $ kubectl describe pv oimcluster-oim-pv
+   ```
+   $ kubectl describe pv governancedomain-domain-pv
    
-   Name:            oimcluster-oim-pv
-   Labels:          weblogic.domainUID=oimcluster
+   Name:            governancedomain-domain-pv
+   Labels:          weblogic.domainUID=governancedomain
    Annotations:     pv.kubernetes.io/bound-by-controller: yes
    Finalizers:      [kubernetes.io/pv-protection]
-   StorageClass:    oimcluster-oim-storage-class
+   StorageClass:    governancedomain-domain-storage-class
    Status:          Bound
-   Claim:           oimcluster/oimcluster-oim-pvc
+   Claim:           oigns/governancedomain-domain-pvc
    Reclaim Policy:  Retain
    Access Modes:    RWX
    VolumeMode:      Filesystem
@@ -1025,20 +1029,20 @@ In the Kubernetes domain namespace created above, create the persistent volume (
    Source:
        Type:      NFS (an NFS mount that lasts the lifetime of a pod)
        Server:    mynfsserver
-       Path:      /scratch/OIGDockerK8S/oimclusterdomainpv
+       Path:      /scratch/shared/governancedomainpv
        ReadOnly:  false
    Events:        <none>
    ```
    
-   ```bash
-   $ kubectl describe pvc oimcluster-oim-pvc -n oimcluster
+   ```
+   $ kubectl describe pvc governancedomain-domain-pvc -n oigns
 
-   Name:          oimcluster-oim-pvc
-   Namespace:     oimcluster
-   StorageClass:  oimcluster-oim-storage-class
+   Name:          governancedomain-domain-pvc
+   Namespace:     oigns
+   StorageClass:  governancedomain-domain-storage-class
    Status:        Bound
-   Volume:        oimcluster-oim-pv
-   Labels:        weblogic.domainUID=oimcluster
+   Volume:        governancedomain-domain-pv
+   Labels:        weblogic.domainUID=governancedomain
    Annotations:   pv.kubernetes.io/bind-completed: yes
                   pv.kubernetes.io/bound-by-controller: yes
    Finalizers:    [kubernetes.io/pvc-protection]

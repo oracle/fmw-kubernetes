@@ -21,19 +21,19 @@ This script generates the RCU schema based `schemaPrefix` and `dburl`.
 
 The script assumes that either the image, `soasuite:12.2.1.4`, is available in the nodes or an `ImagePullSecret` is created to pull the image. To create a secret, see the script `create-image-pull-secret.sh`.
 
-```shell
+```
 $ ./create-rcu-schema.sh -h
-usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables>  [-h]
+usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables> [-l] <timeoutLimit> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-      (supported values: osb,soa,soaosb)
+      (supported values: osb,soa,soaosb,soab2b,soaosbb2b)
   -d RCU Oracle Database URL (optional)
       (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
-  -p FMW Infrastructure ImagePullSecret (optional)
+  -p OracleSOASuite ImagePullSecret (optional)
       (default: none)
-  -i FMW Infrastructure Image (optional)
+  -i OracleSOASuite Image (optional)
       (default: soasuite:12.2.1.4)
-  -u FMW Infrastructure ImagePullPolicy (optional)
+  -u OracleSOASuite ImagePullPolicy (optional)
       (default: IfNotPresent)
   -n Namespace for RCU pod (optional)
       (default: default)
@@ -44,7 +44,9 @@ usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <i
   -o Output directory for the generated YAML file. (optional)
       (default: rcuoutput)
   -c Comma-separated variables in the format variablename=value. (optional).
-      (default: none)      
+      (default: none)
+  -l Timeout limit in seconds. (optional).
+      (default: 300)      
   -h Help
 
 $ ./create-rcu-schema.sh -s domain1
@@ -76,7 +78,7 @@ You can connect to the database in your app using:
     Class.forName("oracle.jdbc.OracleDriver").newInstance();
   java.sql.Connection conn =
     Driver.connect("sys as sysdba", props);
-Creating RCU Schema for FMW Domain ...
+Creating RCU Schema for OracleSOASuite Domain ...
 Extra RCU Schema Component Choosen[]
 
 Processing command line ....
@@ -128,12 +130,12 @@ Repository Creation Utility - Create : Operation Completed
 
 Use this script to drop the RCU schema based `schemaPrefix` and `dburl`.
 
-```shell
+```
 $ ./drop-rcu-schema.sh -h
 usage: ./drop-rcu-schema.sh -s <schemaPrefix> -d <dburl> -n <namespace> -q <sysPassword> -r <schemaPassword> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-      (supported values: osb,soa,soaosb)
+      (supported values: osb,soa,soaosb,soab2b,soaosbb2b)
   -d Oracle Database URL (optional)
       (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
   -n Namespace where RCU pod is deployed (optional)
@@ -166,7 +168,7 @@ You can connect to the database in your app using:
     Class.forName("oracle.jdbc.OracleDriver").newInstance();
   java.sql.Connection conn =
     Driver.connect("sys as sysdba", props);
-Dropping RCU Schema for FMW Domain ...
+Dropping RCU Schema for OracleSOASuite Domain ...
 Extra RCU Schema Component(s) Choosen[]
 
 Processing command line ....
@@ -216,3 +218,4 @@ Pod [rcu] removed from nameSpace [default]
 ## Stop an Oracle Database service in a Kubernetes cluster
 
 Use the script ``samples/scripts/create-oracle-db-service/stop-db-service.sh``
+

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl
@@ -40,20 +40,8 @@ Accessible interfaces through ingress:
  
 Please refer to README.md from Helm Chart to find more details about accessing interfaces and configuration parameters. 
 
-{{- else if (and (.Values.ingress.enabled) (eq "voyager" .Values.ingress.type) ) }}
-Since "voyager" has been chosen, follow the steps below to configure voyager ingress controller.
-Add Repo reference to helm for retriving/installing Chart for voyager implementation.
-command-# helm repo add appscode https://charts.appscode.com/stable
-
-Command helm install to install voyager related objects like pod, service, deployment, etc.
-# helm install voyager-operator appscode/voyager --version 12.0.0 --namespace <ingress namespace> --set cloudProvider=baremetal,apiserver.enableValidatingWebhook=false
-
-Run this command to check port mapping and services: 
-# kubectl describe --namespace <namespace for oud-ds-rs chart> ingress.extensions/{{ include "oud-ds-rs.fullname" . }}-ingress-voyager
-# kubectl --namespace <namespace for oud-ds-rs chart> get services -o wide -w {{ include "oud-ds-rs.fullname" . }}-ingress-voyager-lbr
 
 Accessible interfaces through ingress:
-(External IP Address for LoadBalancer Service can be determined through details associated with {{ include "oud-ds-rs.fullname" . }}-ingress-voyager-lbr)
 
 1. OUD Admin REST:
    Port: http/https 

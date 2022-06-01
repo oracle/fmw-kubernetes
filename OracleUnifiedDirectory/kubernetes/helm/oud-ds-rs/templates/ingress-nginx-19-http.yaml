@@ -1,0 +1,136 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-http-ingress-nginx
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  annotations:
+{{- if (.Values.ingress.tlsEnabled) }}
+  {{- with .Values.ingress.http.nginxAnnotationsTLS }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- else }}
+  {{- with .Values.ingress.http.nginxAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+spec:
+  tls:
+{{- if (.Values.ingress.tlsSecret) }}
+  - secretName: {{ .Values.ingress.tlsSecret }}
+{{- else }}
+  - secretName: {{ include "oud-ds-rs.fullname" . }}-tls-cert
+{{- end }}
+    hosts:
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+    - {{ .Values.ingress.http.host }}.{{ .Values.ingress.http.domain }}
+    - {{ .Values.ingress.http.host }}-0.{{ .Values.ingress.http.domain }}
+  {{ else }}
+    - {{ .Values.ingress.http.host }}
+    - {{ .Values.ingress.http.host }}-0
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" . }}-http
+    - {{ include "oud-ds-rs.fullname" . }}-http-0
+{{- end }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.http.host) }}
+  {{- if ($root.Values.ingress.http.domain) }}
+    - {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.http.domain }}
+  {{ else }}
+    - {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+    - {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+{{- end }}
+{{- end }}
+  rules:
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+  - host: {{ .Values.ingress.http.host }}-0.{{ .Values.ingress.http.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.http.host }}-0
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-http-0
+{{- end }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-http-0
+            port:
+              name: {{ .Values.ingress.http.backendPort }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.http.host) }}
+  {{- if ($root.Values.ingress.http.domain) }}
+  - host: {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.http.domain }}
+  {{ else }}
+  - host: {{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+{{- end }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+            port:
+              name: {{ $root.Values.ingress.http.backendPort }}
+{{- end }}
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+  - host: {{ .Values.ingress.http.host }}.{{ .Values.ingress.http.domain }}
+  {{ else }}
+  - host: {{ .Values.ingress.http.host }}
+  {{- end }}
+{{ else }}
+  - host: {{ include "oud-ds-rs.fullname" . }}-http
+{{- end }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+            port:
+              name: {{ .Values.ingress.http.backendPort }}
+  - http:
+      paths:
+      - path: /rest/v1/directory
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+            port:
+              name: {{ .Values.ingress.http.backendPort }}
+  - http:
+      paths:
+      - path: /iam/directory
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+            port:
+              name: {{ .Values.ingress.http.backendPort }}
+{{- end }}
+{{- end }}

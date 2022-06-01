@@ -1,0 +1,162 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of how to define a Domain resource.
+#
+apiVersion: "weblogic.oracle/v8"
+kind: Domain
+metadata:
+  name: {{ .Values.domain.domainName }}
+  namespace: {{ .Values.domain.namespace }}
+  labels:
+    weblogic.domainUID: {{ .Values.domain.domainName }}
+spec:
+  managedServers:
+  {{- if gt (.Values.domain.wcsCluster.managedServers.count | int) 0}}
+  - serverName: wcsites-server1
+    serverStartPolicy: "IF_NEEDED"
+  {{- end }}
+  {{- if gt (.Values.domain.wcsCluster.managedServers.count | int) 1}}
+  - serverName: wcsites-server2
+    serverStartPolicy: "IF_NEEDED"
+  {{- end }}
+  {{- if gt (.Values.domain.wcsCluster.managedServers.count | int) 2}}
+  - serverName: wcsites-server3
+    serverStartPolicy: "IF_NEEDED"
+  {{- end }}
+ 
+  # The WebLogic Domain Home
+  domainHome: {{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}
+
+  # The domain home source type
+  # Set to PersistentVolume for domain-in-pv
+  domainHomeSourceType: PersistentVolume
+
+  # The WebLogic Server Docker image that the Operator uses to start the domain
+  {{- if .Values.image.name }}
+  image: "{{ .Values.image.name }}"
+  {{- else }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  {{- end }}
+
+  # imagePullPolicy defaults to "Always" if image version is :latest
+  imagePullPolicy: "IfNotPresent"
+
+  # Identify which Secret contains the credentials for pulling an image
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+
+  # Identify which Secret contains the WebLogic Admin credentials (note that there is an example of
+  # how to create that Secret at the end of this file)
+  webLogicCredentialsSecret: 
+    name: {{ .Values.domain.domainName }}-domain-credentials
+
+  configuration:
+    introspectorJobActiveDeadlineSeconds: 300
+
+  # Whether to include the server out file into the pod's stdout, default is true
+  includeServerOutInPodLog: {{ .Values.domain.includeServerOutInPodLog }}
+
+  # Whether to enable log home
+  logHomeEnabled: {{ .Values.domain.logHomeEnabled }}
+
+  # Whether to write HTTP access log file to log home
+  httpAccessLogInLogHome: {{ .Values.domain.httpAccessLogInLogHome }}
+
+  # The in-pod location for domain log, server logs, server out, and Node Manager log files
+  logHome: {{ .Values.domain.rootDir }}/logs/{{ .Values.domain.domainName }}
+  # An (optional) in-pod location for data storage of default and custom file stores.
+  # If not specified or the value is either not set or empty (e.g. dataHome: "") then the
+  # data storage directories are determined from the WebLogic domain home configuration.
+  dataHome: ""
+
+
+  # serverStartPolicy legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
+  # This determines which WebLogic Servers the Operator will start up when it discovers this Domain
+  # - "NEVER" will not start any server in the domain
+  # - "ADMIN_ONLY" will start up only the administration server (no managed servers will be started)
+  # - "IF_NEEDED" will start all non-clustered servers, including the administration server and clustered servers up to the replica count
+  serverStartPolicy: "IF_NEEDED"
+
+  serverPod: 
+    initContainers:
+      - name: server-config-update
+        {{- if .Values.image.name }}
+        image: "{{ .Values.image.name }}"
+        {{- else }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        {{- end }}
+        env:
+        - name: DOMAIN_UID
+          value: {{ .Values.domain.domainName }}
+        - name: ADMIN_SERVER_NAME
+          value: "{{ .Values.domain.admin.name }}"
+        command: ['bash', '-c', '{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}/server-config-update.sh']
+        volumeMounts:
+        - name: weblogic-domain-storage-volume
+          mountPath: {{ .Values.domain.rootDir }}
+      
+    # an (optional) list of environment variable to be set on the servers
+    env:
+    - name: JAVA_OPTIONS
+      value: "{{ .Values.domain.javaOptions }}"
+    - name: USER_MEM_ARGS
+      value: "-Djava.security.egd=file:/dev/./urandom -Xms256m -Xmx1024m "
+    resources:
+      requests: 
+        memory: "12G"
+        cpu: "1000m"
+      limits: 
+        memory: "16G"
+        cpu: "2000m"
+    volumes:
+    - name: weblogic-domain-storage-volume
+      persistentVolumeClaim:
+        claimName: {{ .Values.domain.domainName }}-domain-pvc
+    volumeMounts:
+    - mountPath: {{ .Values.domain.rootDir }}
+      name: weblogic-domain-storage-volume
+
+  # adminServer is used to configure the desired behavior for starting the administration server.
+  adminServer:
+    # serverStartState legal values are "RUNNING" or "ADMIN"
+    # "RUNNING" means the listed server will be started up to "RUNNING" mode
+    # "ADMIN" means the listed server will be start up to "ADMIN" mode
+    serverStartState: "RUNNING"
+    
+  # clusters is used to configure the desired behavior for starting member servers of a cluster.  
+  # If you use this entry, then the rules will be applied to ALL servers that are members of the named clusters.
+  clusters:
+  - clusterName: {{ .Values.domain.wcsCluster.name }}
+    clusterService:
+      annotations: 
+        traefik.ingress.kubernetes.io/affinity: "true"
+        traefik.ingress.kubernetes.io/session-cookie-name: sticky
+    serverStartState: "RUNNING"
+    serverPod:
+      # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
+      # already members of the same cluster.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "weblogic.clusterName"
+                      operator: In
+                      values:
+                        - $(CLUSTER_NAME)
+                topologyKey: "kubernetes.io/hostname"
+    replicas: 1
+  # The number of managed servers to start for unlisted clusters
+  # replicas: 1
+
+  # Istio
+  # configuration:
+  #   istio:
+  #     enabled: 
+  #     readinessPort: 
+

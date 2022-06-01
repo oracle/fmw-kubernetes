@@ -1,0 +1,84 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: %DOMAIN_UID%-deploy-artifacts-job-%RUN_UID%
+  namespace: %NAMESPACE%
+spec:
+  template:
+    metadata:
+      labels:
+        weblogic.domainUID: %DOMAIN_UID%
+        weblogic.domainName: %DOMAIN_NAME%
+        app: %DOMAIN_UID%-deploy-artifacts-job
+    spec:
+      restartPolicy: Never
+      %ARTIFACTS_IN_IMAGE_PREFIX%initContainers:
+      %ARTIFACTS_IN_IMAGE_PREFIX%- name: prepare-artifacts
+      %ARTIFACTS_IN_IMAGE_PREFIX%  image: %ARTIFACTS_IMAGE%
+      %ARTIFACTS_IN_IMAGE_PREFIX%  imagePullPolicy: %ARTIFACTS_IMAGE_PULL_POLICY%
+      %ARTIFACTS_IN_IMAGE_PREFIX%  command: [ "/bin/sh" ]
+      %ARTIFACTS_IN_IMAGE_PREFIX%  args: ["-c","cp -rf %SOA_ARTIFACTS_ARCHIVE_PATH% /artifacts/soa; cp -rf %OSB_ARTIFACTS_ARCHIVE_PATH% /artifacts/osb; ls -R /artifacts" ]
+      %ARTIFACTS_IN_IMAGE_PREFIX%  volumeMounts:
+      %ARTIFACTS_IN_IMAGE_PREFIX%  - mountPath: "/artifacts"
+      %ARTIFACTS_IN_IMAGE_PREFIX%    name: deploy-artifacts-job-storage-volume
+      containers:
+        %OSB_DEPLOY_PREFIX%- name: osb-deploy-artifacts-job
+        %OSB_DEPLOY_PREFIX%  image: "%WEBLOGIC_IMAGE%"
+        %OSB_DEPLOY_PREFIX%  imagePullPolicy: %WEBLOGIC_IMAGE_PULL_POLICY%
+        %OSB_DEPLOY_PREFIX%  volumeMounts:
+        %OSB_DEPLOY_PREFIX%  - mountPath: "%DEPLOY_ARTIFACTS_SCRIPT_DIR%"
+        %OSB_DEPLOY_PREFIX%    name: deploy-scripts-osb-job-cm-volume
+        %OSB_DEPLOY_PREFIX%  - mountPath: "%OSB_ARTIFACTS_ARCHIVE_PATH%"
+        %OSB_DEPLOY_PREFIX%    name: deploy-artifacts-job-storage-volume
+        %OSB_DEPLOY_PREFIX%    subPath: osb
+        %OSB_DEPLOY_PREFIX%  - mountPath: /weblogic-operator/secrets
+        %OSB_DEPLOY_PREFIX%    name: soa-infra-credentials-volume
+        %OSB_DEPLOY_PREFIX%  command: ["/bin/sh"]
+        %OSB_DEPLOY_PREFIX%  args: ["%DEPLOY_ARTIFACTS_SCRIPT_DIR%/%DEPLOY_SCRIPT%"]
+        %OSB_DEPLOY_PREFIX%  env:
+        %OSB_DEPLOY_PREFIX%    - name: DOMAIN_UID
+        %OSB_DEPLOY_PREFIX%      value: "%DOMAIN_UID%"
+        %OSB_DEPLOY_PREFIX%    - name: ADMIN_SERVER_NAME_SVC
+        %OSB_DEPLOY_PREFIX%      value: "%ADMIN_SERVER_NAME_SVC%"
+        %OSB_DEPLOY_PREFIX%    - name: ADMIN_LISTEN_PORT
+        %OSB_DEPLOY_PREFIX%      value: "%ADMIN_PORT%"
+        %SOA_DEPLOY_PREFIX%- name: soa-deploy-artifacts-job
+        %SOA_DEPLOY_PREFIX%  image: "%WEBLOGIC_IMAGE%"
+        %SOA_DEPLOY_PREFIX%  imagePullPolicy: %WEBLOGIC_IMAGE_PULL_POLICY%
+        %SOA_DEPLOY_PREFIX%  volumeMounts:
+        %SOA_DEPLOY_PREFIX%  - mountPath: "%DEPLOY_ARTIFACTS_SCRIPT_DIR%"
+        %SOA_DEPLOY_PREFIX%    name: deploy-scripts-soa-job-cm-volume
+        %SOA_DEPLOY_PREFIX%  - mountPath: "%SOA_ARTIFACTS_ARCHIVE_PATH%"
+        %SOA_DEPLOY_PREFIX%    name: deploy-artifacts-job-storage-volume
+        %SOA_DEPLOY_PREFIX%    subPath: soa
+        %SOA_DEPLOY_PREFIX%  - mountPath: /weblogic-operator/secrets
+        %SOA_DEPLOY_PREFIX%    name: soa-infra-credentials-volume
+        %SOA_DEPLOY_PREFIX%  command: ["/bin/sh"]
+        %SOA_DEPLOY_PREFIX%  args: ["%DEPLOY_ARTIFACTS_SCRIPT_DIR%/%DEPLOY_SCRIPT%"]
+        %SOA_DEPLOY_PREFIX%  env:
+        %SOA_DEPLOY_PREFIX%    - name: DOMAIN_UID
+        %SOA_DEPLOY_PREFIX%      value: "%DOMAIN_UID%"
+        %SOA_DEPLOY_PREFIX%    - name: SOA_MANAGED_SERVER_PORT
+        %SOA_DEPLOY_PREFIX%      value: "%SOA_MANAGED_SERVER_PORT%"
+        %SOA_DEPLOY_PREFIX%    - name: SOA_CLUSTER_NAME
+        %SOA_DEPLOY_PREFIX%      value: "%SOA_CLUSTER_NAME%"
+      volumes:
+        - name: deploy-artifacts-job-storage-volume
+      %ARTIFACTS_IN_PV_PREFIX%    persistentVolumeClaim:
+      %ARTIFACTS_IN_PV_PREFIX%      claimName: "%ARCHIVES_PVC_NAME%"
+      %ARTIFACTS_IN_IMAGE_PREFIX%    emptyDir: {}
+        %SOA_DEPLOY_PREFIX%- name: deploy-scripts-soa-job-cm-volume
+        %SOA_DEPLOY_PREFIX%  configMap:
+        %SOA_DEPLOY_PREFIX%    name: %DOMAIN_UID%-deploy-scripts-soa-job-cm
+        %OSB_DEPLOY_PREFIX%- name: deploy-scripts-osb-job-cm-volume
+        %OSB_DEPLOY_PREFIX%  configMap:
+        %OSB_DEPLOY_PREFIX%    name: %DOMAIN_UID%-deploy-scripts-osb-job-cm
+        - name: soa-infra-credentials-volume
+          secret:
+            secretName: %WEBLOGIC_CREDENTIALS_SECRET_NAME%
+      %IMAGE_PULL_SECRET_PREFIX%imagePullSecrets:
+      %WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%- name: %WEBLOGIC_IMAGE_PULL_SECRET_NAME%
+      %ARTIFACTS_IMAGE_PULL_SECRET_PREFIX%- name: %ARTIFACTS_IMAGE_PULL_SECRET_NAME%
+                                                                                         

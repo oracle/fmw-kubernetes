@@ -4,13 +4,10 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 
-#KUBERNETES_SERVER=$1
-#URL_TAIL=$2
 
 KUBERNETES_SERVER=${KUBERNETES_SERVER_HOSTNAME}
 URL_TAIL=operator/latest/domains/wcsitesinfra/clusters/wcsites_cluster/scale
 
-#/operator/{version}/domains/{domainUID}/clusters/{cluster}/scale
 
 REST_PORT=`kubectl get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
 REST_ADDR="https://${KUBERNETES_SERVER}:${REST_PORT}"
@@ -24,17 +21,6 @@ cat ${OPERATOR_CERT_FILE}
 
 echo "Ready to call operator REST APIs"
 
-#URL_TAIL=operator/latest/domains/wcsitesinfra/clusters
-
-#STATUS_CODE=`curl \
-#  -v \
-#  -k \
-#  -H "Authorization: Bearer ${TOKEN}" \
-#  -H Accept:application/json \
-#  -X GET ${REST_ADDR}/${URL_TAIL} \
-#  -o curl.out \
-#  --stderr curl.err \
-#  -w "%{http_code}"`
 
 STATUS_CODE=`curl \
   -v \

@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Configure the ingress-based Traefik load balancer for Oracle WebCenter Content domains.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.1.3/images/favicon.png" type="image/png">
+
+    <title>Traefik :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.1.3/css/nucleus.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/fontawesome-all.min.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/hybrid.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/featherlight.min.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/perfect-scrollbar.min.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/auto-complete.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/atom-one-dark-reasonable.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/theme.css?1648555073" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.1.3/css/hugo-theme.css?1648555073" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.1.3/js/jquery-3.6.0.min.js?1648555073"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.1.3">
+  <img src="/fmw-kubernetes/22.1.3/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.1.3/js/lunr.min.js?1648555073"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.1.3/js/auto-complete.js?1648555073"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.1.3";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.1.3/js/search.js?1648555073"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/" title="Oracle WebCenter Content" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/">
+          Oracle WebCenter Content
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/create-wccontent-domains/">
+          <b>  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/" title="Launch Oracle Webcenter Content Native Applications in Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/">
+          <b>  </b>Launch Oracle Webcenter Content Native Applications in Containers
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/" title="Monitor an Oracle WebCenter Content domain" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/">
+        <b> </b>Monitor an Oracle WebCenter Content domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/elasticsearch-integration/">
+        Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/weblogic-logging-exporter-setup/">
+        Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/logging-fluentd-setup/" title="Publish logs to Elasticsearch Using Fluentd" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/logging-fluentd-setup/">
+        Publish logs to Elasticsearch Using Fluentd
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an WebLogic Kubernetes Operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an WebLogic Kubernetes Operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/">
+          <b>7. </b>Oracle Cloud Infrastructure
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/prepare-oke-environment/" title="Preparing an OKE environment" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/prepare-oke-environment/">
+        <b>1 a.  </b>Preparing an OKE environment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/filesystem/" title="Preparing a file system" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/filesystem/">
+        <b>1 b. </b>Preparing a file system
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/ocir/" title="Preparing OCIR" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/ocir/">
+        <b>1 c. </b>Preparing OCIR
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/prepare-environment-wcc-domain/" title="Prepare environment for WCC domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/prepare-environment-wcc-domain/">
+          <b>2.  </b>Prepare environment for WCC domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/">
+          <b>3. </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/" title="Traefik" class="dd-item active">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/create-wccontent-domains/">
+          <b>4.  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-wcc-for-idcs/" title="Configuring Oracle WebCenter Content for  Oracle Identity Cloud Service (IDCS)" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-wcc-for-idcs/">
+          <b>5.  </b>Configuring Oracle WebCenter Content for  Oracle Identity Cloud Service (IDCS)
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/wcc-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/wcc-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/quickstart-deployment-guide/" title="Quick start deployment guide" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/quickstart-deployment-guide/">
+        <b> </b>Quick start deployment guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.1.3/wccontent-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.1.3/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.1.3/wccontent-domains/'>Oracle WebCenter Content</a> > <a href='/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/'>Oracle Cloud Infrastructure</a> > <a href='/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/'>Set up a load balancer</a> > Traefik
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Traefik
+            </h1>
+          
+
+        
+
+
+
+<p>This section provides information about how to install and configure the ingress-based <em>Traefik</em> load balancer (version 2.2.8 or later for production deployments) to load balance Oracle WebCenter Content domain clusters.</p>
+<p>Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Content	domain in a Kubernetes cluster:</p>
+<h4 id="contents">Contents</h4>
+<ol>
+<li><a href="#install-the-traefik-ingress-based-load-balancer">Install the Traefik (ingress-based) load balancer</a></li>
+<li><a href="#configure-traefik-to-manage-ingresses">Configure Traefik to manage ingresses</a></li>
+<li><a href="#create-an-ingress-for-the-domain">Create an Ingress for the domain</a></li>
+<li><a href="#verify-domain-application-url-access">Verify domain application URL access</a></li>
+<li><a href="#uninstall-the-traefik-ingress">Uninstall the Traefik ingress</a></li>
+</ol>
+<h4 id="install-the-traefik-ingress-based-load-balancer">Install the Traefik (ingress-based) load balancer</h4>
+<ol>
+<li>
+<p>Use Helm to install the Traefik (ingress-based) load balancer. For detailed information, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/master/kubernetes/samples/charts/traefik/README.md">here</a>.
+Use the <code>values.yaml</code> file in the sample but set <code>kubernetes.namespaces</code> specifically.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ kubectl create namespace traefik
+ $ helm repo add traefik https://containous.github.io/traefik-helm-chart
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> <span style="color:#e6db74">&#34;traefik&#34;</span> has been added to your repositories
+</code></pre></div></li>
+<li>
+<p>Install Traefik:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ helm install traefik  traefik/traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --namespace traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --values kubernetes/samples/scripts/charts/traefik/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --set  <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>      --set <span style="color:#e6db74">&#34;service.type=LoadBalancer&#34;</span> --wait
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: traefik-operator
+LAST DEPLOYED: Mon Jun  <span style="color:#ae81ff">1</span> 19:31:20 <span style="color:#ae81ff">2020</span>
+NAMESPACE: traefik
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+NOTES:
+1. Get Traefik load balancer IP or hostname:
+
+  NOTE: It may take a few minutes <span style="color:#66d9ef">for</span> this to become available.
+
+  You can watch the status by running:
+
+      $ kubectl get svc traefik-operator --namespace traefik -w
+
+  Once <span style="color:#e6db74">&#39;EXTERNAL-IP&#39;</span> is no longer <span style="color:#e6db74">&#39;&lt;pending&gt;&#39;</span>:
+
+      $ kubectl describe svc traefik-operator --namespace traefik | grep Ingress | awk <span style="color:#e6db74">&#39;{print $3}&#39;</span>
+
+2. Configure DNS records corresponding to Kubernetes ingress resources to point to the load balancer IP or hostname found in step <span style="color:#ae81ff">1</span>  
+</code></pre></div>
+    </div>
+</div>
+<p>A sample <code>values.yaml</code> for deployment of Traefik 2.2.x:
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see values.yaml
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
+<span style="color:#66d9ef">name</span>: traefik
+<span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">2.2.8</span>
+<span style="color:#66d9ef">pullPolicy</span>: IfNotPresent
+<span style="color:#66d9ef">ingressRoute</span>:
+<span style="color:#66d9ef">dashboard</span>:
+   <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#75715e"># Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)</span>
+   <span style="color:#66d9ef">annotations</span>: {}
+   <span style="color:#75715e"># Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)</span>
+   <span style="color:#66d9ef">labels</span>: {}
+<span style="color:#66d9ef">providers</span>:
+<span style="color:#66d9ef">kubernetesCRD</span>:
+   <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">true</span>
+<span style="color:#66d9ef">kubernetesIngress</span>:
+   <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#75715e"># IP used for Kubernetes Ingress endpoints</span>
+<span style="color:#66d9ef">ports</span>:
+<span style="color:#66d9ef">traefik</span>:
+   <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">9000</span>
+   <span style="color:#66d9ef">expose</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#75715e"># The exposed port for this service</span>
+   <span style="color:#66d9ef">exposedPort</span>: <span style="color:#ae81ff">9000</span>
+   <span style="color:#75715e"># The port protocol (TCP/UDP)</span>
+   <span style="color:#66d9ef">protocol</span>: TCP
+<span style="color:#66d9ef">web</span>:
+   <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">8000</span>
+   <span style="color:#75715e"># hostPort: 8000</span>
+   <span style="color:#66d9ef">expose</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#66d9ef">exposedPort</span>: <span style="color:#ae81ff">30305</span>
+   <span style="color:#66d9ef">nodePort</span>: <span style="color:#ae81ff">30305</span>
+   <span style="color:#75715e"># The port protocol (TCP/UDP)</span>
+   <span style="color:#66d9ef">protocol</span>: TCP
+   <span style="color:#75715e"># Use nodeport if set. This is useful if you have configured Traefik in a</span>
+   <span style="color:#75715e"># LoadBalancer</span>
+   <span style="color:#75715e"># nodePort: 32080</span>
+   <span style="color:#75715e"># Port Redirections</span>
+   <span style="color:#75715e"># Added in 2.2, you can make permanent redirects via entrypoints.</span>
+   <span style="color:#75715e"># https://docs.traefik.io/routing/entrypoints/#redirection</span>
+   <span style="color:#75715e"># redirectTo: websecure</span>
+<span style="color:#66d9ef">websecure</span>:
+   <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">8443</span>
+<span style="color:#75715e">#    # hostPort: 8443</span>
+   <span style="color:#66d9ef">expose</span>: <span style="color:#66d9ef">true</span>
+   <span style="color:#66d9ef">exposedPort</span>: <span style="color:#ae81ff">30443</span>
+   <span style="color:#75715e"># The port protocol (TCP/UDP)</span>
+   <span style="color:#66d9ef">protocol</span>: TCP
+   <span style="color:#66d9ef">nodePort</span>: <span style="color:#ae81ff">30443</span>
+</code></pre></div>
+    </div>
+</div></p>
+</li>
+<li>
+<p>Verify the Traefik (load balancer) services:</p>
+</li>
+</ol>
+<p>Please note the EXTERNAL-IP of the traefik-operator service.
+This is the public IP address of the load balancer that you will use to access the WebLogic Server Administration Console and WebCenter Content URLs.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get service -n traefik
+NAME      TYPE           CLUSTER-IP   EXTERNAL-IP     PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>                                          AGE
+traefik   LoadBalancer   10.96.8.30   123.456.xx.xx   9000:30734/TCP,30305:30305/TCP,30443:30443/TCP   6d23h
+</code></pre></div><p>To print only the Traefik EXTERNAL-IP, execute this command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ TRAEFIK_PUBLIC_IP<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>kubectl describe svc traefik --namespace traefik | grep Ingress | awk <span style="color:#e6db74">&#39;{print $3}&#39;</span><span style="color:#e6db74">`</span>
+$ echo $TRAEFIK_PUBLIC_IP
+123.456.xx.xx
+</code></pre></div><ol>
+<li>
+<p>Verify the helm charts:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm list -n traefik
+NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+traefik traefik         <span style="color:#ae81ff">2</span>               2021-10-11 12:22:41.122310912 +0000 UTC deployed        traefik-9.1.1   2.2.8
+</code></pre></div></li>
+<li>
+<p>Verify the Traefik status and find the port number</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl get all -n traefik
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME                          READY   STATUS    RESTARTS   AGE
+pod/traefik-f9cf58697-xjhpl   1/1     Running   <span style="color:#ae81ff">0</span>          7d
+
+
+NAME              TYPE           CLUSTER-IP   EXTERNAL-IP     PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>                                          AGE
+service/traefik   LoadBalancer   10.96.8.30   123.456.xx.xx   9000:30734/TCP,30305:30305/TCP,30443:30443/TCP   7d
+
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/traefik   1/1     <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           7d
+
+NAME                                DESIRED   CURRENT   READY   AGE
+replicaset.apps/traefik-f9cf58697   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       7d 
+</code></pre></div>
+    </div>
+</div>
+</li>
+</ol>
+<h4 id="configure-traefik-to-manage-ingresses">Configure Traefik to manage ingresses</h4>
+<p>Configure Traefik to manage ingresses created in this namespace, where <code>traefik</code> is the Traefik namespace and <code>wccns</code> is the namespace of the domain:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    $ helm upgrade traefik traefik/traefik --namespace traefik --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik,wccns}&#34;</span>
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    Release <span style="color:#e6db74">&#34;traefik&#34;</span> has been upgraded. Happy Helming!
+    NAME: traefik
+    LAST DEPLOYED: Sun Jan <span style="color:#ae81ff">17</span> 23:43:02 <span style="color:#ae81ff">2021</span>
+    NAMESPACE: traefik
+    STATUS: deployed
+    REVISION: <span style="color:#ae81ff">2</span>
+    TEST SUITE: None
+</code></pre></div>
+    </div>
+</div>
+<h4 id="create-an-ingress-for-the-domain">Create an ingress for the domain</h4>
+<p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress.
+Sample values for default configuration are shown in the file <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml</code>.
+By default, <code>type</code> is <code>TRAEFIK</code> , <code>tls</code> is <code>Non-SSL</code>, and <code>domainType</code> is <code>wccinfra</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code> based on the type of configuration (non-SSL or SSL).
+If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/traefik-ingress.yaml</code></p>
+<ol>
+<li>
+<p>Install <code>ingress-per-domain</code> using Helm for non-SSL configuration:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ helm install wcc-traefik-ingress  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>TRAEFIK <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace wccns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;traefik.hostname=&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set tls<span style="color:#f92672">=</span>NONSSL
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  NAME: wcc-traefik-ingress
+  LAST DEPLOYED: Sun Jan <span style="color:#ae81ff">17</span> 23:49:09 <span style="color:#ae81ff">2021</span>
+  NAMESPACE: wccns
+  STATUS: deployed
+  REVISION: <span style="color:#ae81ff">1</span>
+  TEST SUITE: None
+</code></pre></div></li>
+</ol>
+<h4 id="verify-domain-application-url-access">Verify domain application URL access</h4>
+<p>After setting up the Traefik (ingress-based) load balancer, verify that the domain application URLs are accessible through the load balancer port <code>30305</code> for HTTP access. The sample URLs for Oracle WebCenter Content domain of type <code>wcc</code> are:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">http://<span style="color:#e6db74">${</span>TRAEFIK_PUBLIC_IP<span style="color:#e6db74">}</span>:30305/weblogic/ready
+http://<span style="color:#e6db74">${</span>TRAEFIK_PUBLIC_IP<span style="color:#e6db74">}</span>:30305/console
+http://<span style="color:#e6db74">${</span>TRAEFIK_PUBLIC_IP<span style="color:#e6db74">}</span>:30305/cs
+http://<span style="color:#e6db74">${</span>TRAEFIK_PUBLIC_IP<span style="color:#e6db74">}</span>:30305/ibr	
+</code></pre></div><h4 id="uninstall-the-traefik-ingress">Uninstall the Traefik ingress</h4>
+<p>Uninstall and delete the ingress deployment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete wcc-traefik-ingress  -n wccns
+</code></pre></div>
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/configure-load-balancer/" title="Set up a load balancer"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.1.3/wccontent-domains/oracle-cloud/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.1.3/js/clipboard.min.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/perfect-scrollbar.min.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/perfect-scrollbar.jquery.min.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/jquery.sticky.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/featherlight.min.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/highlight.pack.js?1648555073"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.1.3/js/modernizr.custom-3.6.0.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/learn.js?1648555073"></script>
+    <script src="/fmw-kubernetes/22.1.3/js/hugo-learn.js?1648555073"></script>
+
+    <link href="/fmw-kubernetes/22.1.3/mermaid/mermaid.css?1648555073" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.1.3/mermaid/mermaid.js?1648555073"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

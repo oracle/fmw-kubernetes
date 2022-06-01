@@ -1,18 +1,14 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
 {{- $root := . -}}
 {{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-#
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
+{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 #
 apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "oud-ds-rs.fullname" . }}-http-ingress-nginx
@@ -121,4 +117,5 @@ spec:
         backend:
           serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-http
           servicePort: {{ .Values.ingress.http.backendPort }}
+{{- end }}
 {{- end }}

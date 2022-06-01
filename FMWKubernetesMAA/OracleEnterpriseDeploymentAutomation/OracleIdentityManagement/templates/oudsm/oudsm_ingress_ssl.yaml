@@ -1,0 +1,42 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oudsm-ingress
+  namespace: <OUDNS>
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "2000k"
+    #nginx.ingress.kubernetes.io/affinity-mode: persistent
+    nginx.ingress.kubernetes.io/enable-access-log: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ingress.allow-http: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: <OUDSM_INGRESS_HOST>
+    http:
+      paths:
+      - backend:
+          service:
+            name: oudsm-1
+            port:
+              number: 7001
+        path: /console
+        pathType: Prefix
+      - backend:
+          service:
+            name: oudsm-1
+            port:
+              number: 7001
+        path: /oudsm
+        pathType: Prefix
+  tls:
+  - hosts:
+    - <OUDSM_INGRESS_HOST>
+    secretName: common-tls-cert
+---

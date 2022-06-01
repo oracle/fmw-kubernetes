@@ -1,10 +1,10 @@
 # An Ingress per domain chart
-This chart is for deploying an Ingress resource in front of an Oracle SOA Suite domain cluster. We support three Ingress types: Traeafik, Voyager and Nginx.
+This chart is for deploying an Ingress resource in front of an Oracle SOA Suite domain cluster. We support three Ingress types: Traeafik and Nginx.
 
 ## Prerequisites
 - Have Docker and a Kubernetes cluster running and have `kubectl` installed and configured.
 - Have Helm installed.
-- The corresponding Ingress controller, [Traefik](https://github.com/oracle/weblogic-kubernetes-operator/tree/main/kubernetes/samples/charts/traefik) or [Voyager](https://github.com/oracle/weblogic-kubernetes-operator/blob/main/kubernetes/samples/charts/voyager/README.md#a-step-by-step-guide-to-install-the-voyager-operator), is installed in the Kubernetes cluster.
+- The corresponding Ingress controller, [Traefik](https://github.com/oracle/weblogic-kubernetes-operator/tree/main/kubernetes/samples/charts/traefik), is installed in the Kubernetes cluster.
 - An Oracle SOA Suite domain cluster deployed by `weblogic-operator` is running in the Kubernetes cluster.
 - For Secured access (SSL) to the SOA applications enable `WebLogic plugin`.
 
@@ -15,7 +15,7 @@ This chart is for deploying an Ingress resource in front of an Oracle SOA Suite 
    ```
 ## Installing the chart
 
-To install the chart with the release name, `soa-traefik-ingress` or `soa-voyager-ingress` or `soa-nginx-ingress`, with the given `values.yaml`:
+To install the chart with the release name, `soa-traefik-ingress` or `soa-nginx-ingress`, with the given `values.yaml`:
 ```
 # Change directory to the cloned git Oracle SOA Suite Kubernetes deployment scripts repo.
 $ cd $WORKDIR
@@ -25,9 +25,6 @@ $ cd $WORKDIR
 # Using Helm 3.x:
 # Traefik:
 $ helm install soa-traefik-ingress  charts/ingress-per-domain --namespace soans --values charts/ingress-per-domain/values.yaml --set "traefik.hostname=$(hostname -f)"  
-
-# Voyager:
-$ helm install soa-voyager-ingress charts/ingress-per-domain  --namespace soans  --values charts/ingress-per-domain/values.yaml
 
 #NGINX
 $ helm install soa-nginx-ingress  charts/ingress-per-domain --namespace soans --values charts/ingress-per-domain/values.yaml --set "nginx.hostname=$(hostname -f)"
@@ -55,12 +52,11 @@ $ kubectl -n soans create secret tls domain1-tls-cert --key /tmp/tls1.key --cert
 
 ```
 
-Sample `values.yaml` for the Traefik , Nginx and Voyager Ingress:
+Sample `values.yaml` for the Traefik and Nginx Ingress:
 ```
-# Load balancer type.  Supported values are: TRAEFIK, VOYAGER
-# For Type Voyager Uncomment type VOYAGER and Comment typeTRAEFIK
+# Load balancer type.  Supported values are: TRAEFIK
+# For Type NGINX Uncomment type NGINX and Comment type TRAEFIK
 type: TRAEFIK
-#type: VOYAGER
 #type: NGINX
 
 # Type of Configuration Supported Values are : NONSSL,SSL and E2ESSL
@@ -93,30 +89,18 @@ hostName:
   soa: soa.org
   osb: osb.org
 
-# Voyager specific values
-voyager:
-   # web port
-    webPort: 30305
-    webSSLPort: 30443
-# For Voyager E2E Access 
-    adminSSLPort: 30445
-    soaSSLPort: 30447
-    osbSSLPort: 30449
-   # stats port
-    statsPort: 30319
-
 ```
 ## Uninstalling the chart
 To uninstall and delete the `my-ingress` deployment:
 ```
-$ helm delete --purge <soa-traefik-ingress or soa-voyager-ingress or soa-nginx-ingress >
+$ helm delete --purge <soa-traefik-ingress or soa-nginx-ingress >
 ```
 ## Configuration
 The following table lists the configurable parameters of this chart and their default values.
 
 | Parameter | Description | Default |
 | --- | --- | --- |
-| `type` | Type of Ingress controller. Legal values are `TRAEFIK` or `VOYAGER` or `NGINX`. | `TRAEFIK` |
+| `type` | Type of Ingress controller. Legal values are `TRAEFIK` or `NGINX`. | `TRAEFIK` |
 | `sslType` | Type of Configuration. values are `NONSSL` , `SSL` and `E2ESSL`. | `NONSSL` |
 | `domainType` | Type of SOA Domain. values are `soa` or `osb` or`soaosb`. | `soa` |
 | `hostName.admin` | Admin host name. | `admin.org` |
@@ -131,11 +115,5 @@ The following table lists the configurable parameters of this chart and their de
 | `wlsDomain.soaManagedServerSSLPort` | SSL Port number of the managed servers in the Soa domain cluster. | `8002` |
 | `wlsDomain.osbManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `9001` |
 | `wlsDomain.osbManagedServerSSLPort` | Port number of the managed servers in the Soa domain cluster. | `9002` |
-| `voyager.webPort` | Web port to access the Voyager load balancer. | `30305` |
-| `voyager.webSSLPort` | SSL Web port to access the Voyager load balancer on SSL Termination. | `30443` |
-| `voyager.adminSSLPort` | SSL Web port to access the Administration server for E2E. | `30445` |
-| `voyager.soaSSLPort` | SSL Web port to access the Soa server for E2E . | `30447` |
-| `voyager.osbSSLPort` | SSL Web port to access the Osb server E2E . | `30449` |
-| `voyager.statsPort` | Port to access the Voyager/HAProxy stats page. | `30315` |
 
 >**NOTE:** The input values `domainUID` and `clusterName` will be used to generate the Kubernetes `serviceName` of the WLS cluster with the format `domainUID-cluster-clusterName`.

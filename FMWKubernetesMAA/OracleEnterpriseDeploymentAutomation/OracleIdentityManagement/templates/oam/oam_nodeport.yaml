@@ -1,0 +1,20 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating a node port Kubernetes service for OAM
+# 
+kind: Service
+apiVersion: v1
+metadata:
+  name: <DOMAIN_NAME>-oam-nodeport
+  namespace: <NAMESPACE>
+spec:
+  type: NodePort
+  selector:
+    weblogic.clusterName: oam_cluster
+    weblogic.domainUID: <DOMAIN_NAME>
+  ports:
+    - targetPort: 14100
+      port: 14100
+      nodePort: <OAM_OAM_K8>
+      protocol: TCP
