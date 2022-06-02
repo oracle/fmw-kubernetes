@@ -1,0 +1,3190 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Configure the ingress-based NGINX load balancer for Oracle SOA Suite domains.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.2.2/images/favicon.png" type="image/png">
+
+    <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.2.2/css/nucleus.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/fontawesome-all.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/hybrid.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/featherlight.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/perfect-scrollbar.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/auto-complete.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/atom-one-dark-reasonable.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/theme.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.2/css/hugo-theme.css?1654168836" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.2.2/js/jquery-3.6.0.min.js?1654168836"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.2.2">
+  <img src="/fmw-kubernetes/22.2.2/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.2.2/js/lunr.min.js?1654168836"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.2/js/auto-complete.js?1654168836"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.2.2";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.2/js/search.js?1654168836"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item active">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache web tier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/" title="Deploy using composites in a persistent volume or image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/">
+        <b>c. </b>Deploy using composites in a persistent volume or image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/performing-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/soa-domains/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/soa-domains/troubleshooting/">
+          <b>9. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/" title="Oracle WebCenter Sites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/">
+          Oracle WebCenter Sites
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/create-wcsites-domains/" title="Create Oracle WebCenter Sites domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/installguide/create-wcsites-domains/">
+          <b>  </b>Create Oracle WebCenter Sites domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/monitoring-wcsites-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/monitoring-wcsites-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/elasticsearch-integration/">
+        <b> </b>Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/adminguide/weblogic-logging-exporter-setup/">
+        <b> </b>Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/" title="Upgrade and Patch " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/">
+          <b>4. </b>Upgrade and Patch 
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/" title="Patch a Oracle WebCenter Sites product Docker image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/patch-an-image/patch-wcsites-product-image/">
+        <b>a. </b>Patch a Oracle WebCenter Sites product Docker image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/patch-and-upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/cleanup-domain-setup/">
+        <b>5. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/">
+          <b>6. </b>Oracle Cloud Infrastructure
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/oke/" title="Preparing an OKE environment" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/oke/">
+        <b>a. </b>Preparing an OKE environment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/bastion/" title="Preparing the Bastion host" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/bastion/">
+        <b>b. </b>Preparing the Bastion host
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/filesystem/" title="Preparing a file system" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/filesystem/">
+        <b>c. </b>Preparing a file system
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/ocir/" title="Creating an OCIR" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/oracle-cloud/ocir/">
+        <b>d. </b>Creating an OCIR
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/faq/">
+        <b>7. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/wcsites-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/wcsites-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.2/wcsites-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.2.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.2.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/22.2.2/soa-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/'>Set up a load balancer</a> > NGINX
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              NGINX
+            </h1>
+          
+
+        
+
+
+
+<p>This section provides information about how to install and configure the ingress-based <em>NGINX</em> load balancer to load balance Oracle SOA Suite domain clusters. You can configure NGINX for non-SSL, SSL termination, and end-to-end SSL access of the application URL.</p>
+<p>Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite domain in a Kubernetes cluster:</p>
+<p>See the official <a href="https://github.com/kubernetes/ingress-nginx/tree/master/charts/ingress-nginx#prerequisites">installation document</a> for prerequisites.</p>
+<ol>
+<li><a href="#install-the-nginx-load-balancer-for-non-ssl-and-ssl-termination-configuration">Install the NGINX load balancer for non-SSL and SSL termination configuration</a></li>
+<li><a href="#generate-secret-for-ssl-access">Generate secret for SSL access</a></li>
+<li><a href="#install-nginx-load-balancer-for-end-to-end-ssl-configuration">Install NGINX load balancer for end-to-end SSL configuration</a></li>
+<li><a href="#configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</a></li>
+<li><a href="#verify-domain-application-url-access">Verify domain application URL access</a></li>
+<li><a href="#uninstall-nginx-ingress">Uninstall NGINX ingress</a></li>
+<li><a href="#uninstall-nginx">Uninstall NGINX</a></li>
+</ol>
+<p>To get repository information, enter the following Helm commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+  $ helm repo update
+</code></pre></div><h4 id="install-the-nginx-load-balancer-for-non-ssl-and-ssl-termination-configuration">Install the NGINX load balancer for non-SSL and SSL termination configuration</h4>
+<ol>
+<li>
+<p>Deploy the <code>ingress-nginx</code> controller by using Helm on the domain namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        ingress-nginx/ingress-nginx
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>  NAME: nginx-ingress
+  LAST DEPLOYED: Thu May  5 13:27:30 2022
+  NAMESPACE: soans
+  STATUS: deployed
+  REVISION: 1
+  TEST SUITE: None
+  NOTES:
+  The ingress-nginx controller has been installed.
+  Get the application URL by running these commands:
+  export HTTP_NODE_PORT=$(kubectl --namespace soans get services -o jsonpath=&quot;{.spec.ports[0].nodePort}&quot; nginx-ingress-ingress-nginx-controller)
+  export HTTPS_NODE_PORT=$(kubectl --namespace soans get services -o jsonpath=&quot;{.spec.ports[1].nodePort}&quot; nginx-ingress-ingress-nginx-controller)
+  export NODE_IP=$(kubectl --namespace soans get nodes -o jsonpath=&quot;{.items[0].status.addresses[1].address}&quot;)
+
+  echo &quot;Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP.&quot;
+  echo &quot;Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS.&quot;
+
+  An example ingress that makes use of the controller:
+
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: example
+      namespace: foo
+    spec:
+      ingressClassName: nginx
+      rules:
+      - host: www.example.com
+        http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                name: exampleService
+                port:
+                  number: 80
+          path: /
+   # This section is only required if TLS is to be enabled for the ingress
+   tls:
+    - hosts:
+        - www.example.com
+      secretName: example-tls
+
+   If TLS is enabled for the ingress, a secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+   tls.crt: &lt;base64 encoded cert&gt;
+   tls.key: &lt;base64 encoded key&gt;
+  type: kubernetes.io/tls
+</code></pre>
+
+    </div>
+</div>
+</li>
+</ol>
+<h4 id="generate-secret-for-ssl-access">Generate secret for SSL access</h4>
+<ol>
+<li>
+<p>For <strong>secured access (SSL and E2ESSL)</strong> to the Oracle SOA Suite application, create a certificate and generate secrets:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=domain1.org&#34;</span>
+ $ kubectl -n soans create secret tls soainfra-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+</code></pre></div><blockquote>
+<p>Note: The value of <code>CN</code> is the host on which this ingress is to be deployed and secret name should be &lt;domainUID&gt;-tls-cert.</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="install-nginx-load-balancer-for-end-to-end-ssl-configuration">Install NGINX load balancer for end-to-end SSL configuration</h4>
+<ol>
+<li>
+<p>Deploy the ingress-nginx controller by using Helm on the domain namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>       --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>soans/soainfra-tls-cert <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>       --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>       --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>       --set controller.extraArgs.enable-ssl-passthrough<span style="color:#f92672">=</span>true  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        ingress-nginx/ingress-nginx
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    NAME: nginx-ingress
+    LAST DEPLOYED: Thu May  <span style="color:#ae81ff">5</span> 12:21:50 <span style="color:#ae81ff">2022</span>
+    NAMESPACE: soans
+    STATUS: deployed
+    REVISION: <span style="color:#ae81ff">1</span>
+    TEST SUITE: None
+    NOTES:
+    The ingress-nginx controller has been installed.
+    Get the application URL by running these commands:
+    export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+    export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+    export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
+
+    echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
+    echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
+
+    An example Ingress that makes use of the controller:
+
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: example
+        namespace: foo
+      spec:
+        ingressClassName: nginx
+        rules:
+        - host: www.example.com
+          http:
+          paths:
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: <span style="color:#ae81ff">80</span>
+            path: /
+     <span style="color:#75715e"># This section is only required if TLS is to be enabled for the Ingress</span>
+     tls:
+      - hosts:
+          - www.example.com
+        secretName: example-tls
+
+     If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret containing the certificate and key must also be provided:
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: example-tls
+      namespace: foo
+    data:
+     tls.crt: &lt;base64 encoded cert&gt;
+     tls.key: &lt;base64 encoded key&gt;
+    type: kubernetes.io/tls
+</code></pre></div>
+    </div>
+</div>
+</li>
+<li>
+<p>Check the status of the deployed ingress controller:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace soans get services | grep ingress-nginx-controller
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> nginx-ingress-ingress-nginx-controller   NodePort    10.106.186.235   &lt;none&gt;        80:32125/TCP,443:31376/TCP   19m
+</code></pre></div></li>
+</ol>
+<h4 id="configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</h4>
+<ol>
+<li>
+<p>Choose an appropriate <code>LOADBALANCER_HOSTNAME</code> for accessing the Oracle SOA Suite domain application URLs.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span>&lt;LOADBALANCER_HOSTNAME&gt;
+</code></pre></div><p>For example, if you are executing the commands from a master node terminal, where the master hostname is <code>LOADBALANCER_HOSTNAME</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
+</code></pre></div></li>
+<li>
+<p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code> , <code>sslType</code> is <code>NONSSL</code>, and <code>domainType</code> is <code>soa</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>.<br>
+If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at <code>${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml</code>.</p>
+<blockquote>
+<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v22.2.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
+ $ helm install soa-nginx-ingress  charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: soa-nginx-ingress
+LAST DEPLOYED: Fri Jul <span style="color:#ae81ff">24</span> 09:34:03 <span style="color:#ae81ff">2020</span>
+NAMESPACE: soans
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+</code></pre></div></li>
+<li>
+<p>Install <code>ingress-per-domain</code> using Helm for SSL termination configuration:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
+ $ helm install soa-nginx-ingress  charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX --set sslType<span style="color:#f92672">=</span>SSL
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: soa-nginx-ingress
+ LAST DEPLOYED: Fri Jul <span style="color:#ae81ff">24</span> 09:34:03 <span style="color:#ae81ff">2020</span>
+ NAMESPACE: soans
+ STATUS: deployed
+ REVISION: <span style="color:#ae81ff">1</span>
+ TEST SUITE: None
+</code></pre></div></li>
+<li>
+<p>Install <code>ingress-per-domain</code> using Helm for <code>E2ESSL</code> configuration.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
+ $ helm install soa-nginx-ingress  charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX --set sslType<span style="color:#f92672">=</span>E2ESSL
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: soa-nginx-ingress
+ LAST DEPLOYED: Fri Jul <span style="color:#ae81ff">24</span> 09:34:03 <span style="color:#ae81ff">2020</span>
+ NAMESPACE: soans
+ STATUS: deployed
+ REVISION: <span style="color:#ae81ff">1</span>
+ TEST SUITE: None
+</code></pre></div></li>
+<li>
+<p>For <strong>NONSSL access</strong> to the Oracle SOA Suite application, get the details of the services by the ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe ingress soainfra-nginx -n soans
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output of the services supported by the above deployed ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>Name:             soainfra-nginx
+Namespace:        soans
+Address:          100.111.150.225
+Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+Rules:
+Host                                                   Path  Backends
+----                                                   ----  --------
+domain1.org
+                                                     /console                   soainfra-adminserver:7001 (10.244.0.45:7001)
+                                                     /em                        soainfra-adminserver:7001 (10.244.0.45:7001)
+                                                     /weblogic/ready            soainfra-adminserver:7001 (10.244.0.45:7001)
+                                                     /                          soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                     /soa-infra                 soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                     /soa/composer              soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                     /integration/worklistapp   soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+Annotations:                                             &lt;none&gt;
+Events:
+Type    Reason  Age    From                      Message
+----    ------  ----   ----                      -------
+Normal  CREATE  2m32s  nginx-ingress-controller  Ingress soans/soainfra-nginx
+Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
+</code></pre>
+
+    </div>
+</div>
+</li>
+<li>
+<p>For SSL access to the Oracle SOA Suite application, get the details of the services by the above deployed ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl describe ingress soainfra-nginx -n soans
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output of the services supported by the above deployed ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code> Name:             soainfra-nginx
+ Namespace:        soans
+ Address:          100.111.150.225
+ Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+ TLS:
+   soainfra-tls-cert terminates domain1.org
+ Rules:
+    Host                                                   Path  Backends
+    ----                                                   ----  --------
+     domain1.org
+                                                      /console                   soainfra-adminserver:7001 (10.244.0.45:7001)
+                                                      /em                        soainfra-adminserver:7001 (10.244.0.45:7001)
+                                                      /weblogic/ready            soainfra-adminserver:7001 (10.244.0.45:7001)
+                                                      /                          soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                      /soa-infra                 soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                      /soa/composer              soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                      /integration/worklistapp   soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+ Annotations:                                             kubernetes.io/ingress.class: nginx
+                                                          nginx.ingress.kubernetes.io/configuration-snippet:
+                                                          more_set_input_headers &quot;X-Forwarded-Proto: https&quot;;
+                                                          more_set_input_headers &quot;WL-Proxy-SSL: true&quot;;
+                                                          nginx.ingress.kubernetes.io/ingress.allow-http: false
+ Events:
+   Type    Reason  Age    From                      Message
+   ----    ------  ----   ----                      -------
+   Normal  CREATE  3m47s  nginx-ingress-controller  Ingress soans/soainfra-nginx
+   Normal  UPDATE  3m25s  nginx-ingress-controller  Ingress soans/soainfra-nginx
+</code></pre>
+
+    </div>
+</div>
+</li>
+<li>
+<p>For E2ESSL access to the Oracle SOA Suite application, get the details of the services by the above deployed ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $  kubectl describe ingress  soainfra-nginx-e2essl -n soans
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output of the services supported by the above deployed ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code> Name:             soainfra-nginx-e2essl-admin
+ Namespace:        soans
+ Address:
+ Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+ TLS:
+  soainfra-tls-cert terminates admin.org
+ Rules:
+   Host        Path  Backends
+   ----        ----  --------
+   admin.org
+                       soainfra-adminserver-nginx-ssl:7002 (10.244.0.247:7002)
+  Annotations:  kubernetes.io/ingress.class: nginx
+                meta.helm.sh/release-name: soa-nginx-ingress
+                meta.helm.sh/release-namespace: soans
+                nginx.ingress.kubernetes.io/ssl-passthrough: true
+ Events:
+ Type    Reason  Age   From                      Message
+ ----    ------  ----  ----                      -------
+ Normal  Sync    4s    nginx-ingress-controller  Scheduled for sync
+
+ Name:             soainfra-nginx-e2essl-soa
+ Namespace:        soans
+ Address:
+ Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
+ TLS:
+  soainfra-tls-cert terminates soa.org
+ Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  soa.org
+                 /   soainfra-cluster-soa-cluster:8002 (10.244.0.249:8002)
+ Annotations:  kubernetes.io/ingress.class: nginx
+               meta.helm.sh/release-name: soa-nginx-ingress
+               meta.helm.sh/release-namespace: soans
+               nginx.ingress.kubernetes.io/ssl-passthrough: true
+Events:
+   Type    Reason  Age   From                      Message
+  ----    ------  ----  ----                      -------
+ Normal  Sync    4s    nginx-ingress-controller  Scheduled for sync
+</code></pre>
+
+    </div>
+</div>
+</li>
+</ol>
+<h4 id="verify-domain-application-url-access">Verify domain application URL access</h4>
+<h5 id="nonssl-configuration">NONSSL configuration</h5>
+<ul>
+<li>
+<p>Get the <code>LOADBALANCER_NON_SSLPORT</code> NodePort of NGINX using the command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ LOADBALANCER_NON_SSLPORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans  get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+$ echo <span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+<li>
+<p>Verify that the Oracle SOA Suite domain application URLs are accessible through the <code>LOADBALANCER_NON_SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/console
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/em
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div></li>
+</ul>
+<h5 id="ssl-configuration">SSL configuration</h5>
+<ul>
+<li>
+<p>Get the <code>LOADBALANCER_SSLPORT</code> NodePort of NGINX using the command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ LOADBALANCER_SSLPORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans  get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+$ echo <span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+<li>
+<p>Verify that the Oracle SOA Suite domain application URLs are accessible through the <code>LOADBALANCER_SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/console
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/em
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div></li>
+</ul>
+<h5 id="e2essl-configuration">E2ESSL configuration</h5>
+<ul>
+<li>
+<p>To access the SOA Suite domain application URLs from a remote browser, update the browser host config file <code>/etc/hosts</code> (In Windows, <code>C:\Windows\System32\Drivers\etc\hosts</code>) with the IP address of the host on which the ingress is deployed with below entries:</p>
+<pre><code>X.X.X.X  admin.org
+X.X.X.X  soa.org
+X.X.X.X  osb.org
+</code></pre><blockquote>
+<p>Note:</p>
+<ul>
+<li>The value of X.X.X.X is the host IP address on which this ingress is deployed.</li>
+<li>If you are behind any corporate proxy, make sure to update the browser proxy settings appropriately to access the host names updated <code>/etc/hosts</code> file.</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>Get the <code>LOADBALANCER_SSLPORT</code> NodePort of NGINX using the command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ LOADBALANCER_SSLPORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans  get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+$ echo <span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+<li>
+<p>Verify that the Oracle SOA Suite domain application URLs are accessible through <code>LOADBALANCER_SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/console
+https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/em
+https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+
+</code></pre></div></li>
+</ul>
+<blockquote>
+<p>Note: This is the default host name. If you have updated the host name in <code>values.yaml</code>, then use the updated values.</p>
+</blockquote>
+<h4 id="uninstall-nginx-ingress">Uninstall NGINX ingress</h4>
+<p>Uninstall and delete the <code>ingress-nginx</code> deployment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete soa-nginx-ingress  -n soans
+</code></pre></div><h4 id="uninstall-nginx">Uninstall NGINX</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm delete nginx-ingress -n soans
+</code></pre></div>
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.2.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.2.2/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/highlight.pack.js?1654168836"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.2.2/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/22.2.2/js/hugo-learn.js?1654168836"></script>
+
+    <link href="/fmw-kubernetes/22.2.2/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.2.2/mermaid/mermaid.js?1654168836"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
