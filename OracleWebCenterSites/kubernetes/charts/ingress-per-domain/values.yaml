@@ -1,0 +1,41 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+# Load balancer type.  Supported values are: TRAEFIK, NGINX
+type: TRAEFIK
+
+# Type of Configuration Supported Values are : NONSSL, SSL and E2ESSL
+sslType: NONSSL
+
+# domainType Supported values are soa,osb and soaosb.
+domainType: wcs
+
+#WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: wcsitesinfra
+  adminServerName: AdminServer
+  adminServerPort: 7001
+  adminServerSSLPort: 
+  wcsitesClusterName: wcsites_cluster
+  wcsitesManagedServerPort: 8001
+  wcsitesManagedServerSSLPort: 
+
+# Host  specific values
+hostName:
+  admin: admin.org
+  wcsites: wcsites.org
+
+# Ngnix specific values
+nginx:
+  connectTimeout: 1800
+  readTimeout: 1800
+  sendTimeout: 1800
+  cookieExpires: 172800
+  cookieMaxAge: 172800
+
+

@@ -20,7 +20,7 @@ description = "Create an Oracle WebCenter Sites domain home on an existing PV or
 * [Configure WebCenter Sites](#configure-webcenter-sites)
 * [Settings in WebCenter Sites Property Management](#settings-in-webcenter-sites-property-management)
 * [For Publishing Setting in WebCenter Sites](#for-publishing-setting-in-webcenter-sites)
-
+* [Customization](#customization)
 
 #### Introduction
 
@@ -66,7 +66,7 @@ The following parameters can be provided in the inputs file:
 | `domainUID` | Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name. | `wcsitesinfra` |
 | `exposeAdminNodePort` | Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster. | `false` |
 | `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `false` |
-| `image` | WebCenter Sites Docker image. The Operator requires WebCenter Sites release 12.2.1.4.0. Refer to [WebCenter Sites Docker image](https://oracle.github.io/fmw-kubernetes/wcsites-domains/installguide/prepare-your-environment/#build-oracle-webcenter-sites-image) for details on how to obtain or create the image. | `oracle/wcsites:12.2.1.4-21.1.1` |
+| `image` | WebCenter Sites Docker image. The Operator requires WebCenter Sites release 12.2.1.4.0. Refer to [WebCenter Sites Docker image](https://oracle.github.io/fmw-kubernetes/wcsites-domains/installguide/prepare-your-environment/#build-oracle-webcenter-sites-image) for details on how to obtain or create the image. | `oracle/wcsites:12.2.1.4` |
 | `imagePullPolicy` | WebLogic Docker image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
 | `imagePullSecretName` | Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret will be validated when this parameter is specified. |  |
 | `includeServerOutInPodLog` | Boolean indicating whether to include the server.out to the pod's stdout. | `true` |
@@ -83,7 +83,7 @@ The following parameters can be provided in the inputs file:
 | `t3PublicAddress` | Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <p/>For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes. | If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster. |
 | `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | `wcsites-domain-credentials` |
 | `weblogicImagePullSecretName` | Name of the Kubernetes secret for the Docker Store, used to pull the WebLogic Server image. |   |
-| `serverPodCpuRequest`, `serverPodMemoryRequest`, `serverPodCpuCLimit`, `serverPodMemoryLimit` |  The maximum amount of compute resources allowed and minimum amount of compute resources required for each server pod. Please refer to the Kubernetes documentation on `Managing Compute Resources for Containers` for details. | Resource requests and resource limits are not specified. Refer to [WebCenter Sites Cluster Sizing Recommendations](../pre-requisites/#webcenter-sites-cluster-sizing-recommendations) for more details. |
+| `serverPodCpuRequest`, `serverPodMemoryRequest`, `serverPodCpuCLimit`, `serverPodMemoryLimit` |  The maximum amount of compute resources allowed and minimum amount of compute resources required for each server pod. Please refer to the Kubernetes documentation on `Managing Compute Resources for Containers` for details. | Resource requests and resource limits are not specified. Refer to [WebCenter Sites Cluster Sizing Recommendations](../prerequisites/#webcenter-sites-cluster-sizing-recommendations) for more details. |
 | `rcuSchemaPrefix` | The schema prefix to use in the database, for example `WCS1`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `WCS1` |
 | `rcuDatabaseURL` | The database URL. | `oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s` |
 | `rcuCredentialsSecret` | The loadbalancer hostname to be provided. | `wcsites-rcu-credentials` |
@@ -153,7 +153,7 @@ to create the domain home for other use cases. You can modify the generated doma
 	export initialManagedServerReplicas="1"
 	export managedServerNameBase="wcsites_server"
 	export managedServerPort="8001"
-	export image="oracle/wcsites:12.2.1.4-21.1.1"
+	export image="oracle/wcsites:12.2.1.4"
 	export imagePullPolicy="IfNotPresent"
 	export productionModeEnabled="true"
 	export weblogicCredentialsSecretName="wcsitesinfra-domain-credentials"
@@ -495,7 +495,6 @@ NAME                                                    READY   STATUS      REST
 wcsitesinfra-adminserver                                1/1     Running     0          56m
 wcsitesinfra-create-fmw-infra-sample-domain-job-rq4xv   0/1     Completed   0          65m
 wcsitesinfra-wcsites-server1                            1/1     Running     0          41m
-wcsitesinfra-wcsites-server2                            1/1     Running     0          41m
 ```
 
 ##### Verify the Services
