@@ -77,7 +77,7 @@ Create an &amp;ldquo;Auth token&amp;rdquo; Create an &amp;ldquo;Auth token&amp;r
       
       <guid>/fmw-kubernetes/soa-domains/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle SOA Suite on Kubernetes.
-Recent changes    Date Version Change     February 25, 2022 22.1.2 Supports Oracle SOA Suite 12.2.1.4 domains deployment using January 2022 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch 33749496).   November 30, 2021 21.4.2 Supports Oracle SOA Suite 12.</description>
+Recent changes    Date Version Change     May 31, 2022 22.2.2 Supports Oracle SOA Suite 12.2.1.4 domains deployment using April 2022 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch 34077593).   February 25, 2022 22.1.2 Supports Oracle SOA Suite 12.</description>
     </item>
     
     <item>
@@ -87,7 +87,7 @@ Recent changes    Date Version Change     February 25, 2022 22.1.2 Supports Orac
       
       <guid>/fmw-kubernetes/wcsites-domains/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle WebCenter Sites on Kubernetes.
-Recent changes    Date Version Introduces backward incompatibilities Change     Dec 10, 2021 21.4.3 no Certified Oracle WebLogic Kubernetes Operator version 3.3.0. Kubernetes 1.16.0+, 1.17.0+, and 1.18.0+ support. Flannel is the only supported CNI in this release. Only Webcenter Sites 12.2.1.4 is supported.   Jan 15, 2021 21.1.1 no Certified Oracle WebLogic Kubernetes Operator version 3.</description>
+Recent changes    Date Version Introduces backward incompatibilities Change     May 30, 2022 22.2.2 no Supports Oracle WebCenter Sites 12.2.1.4 domains deployment using April 2022 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 3.3.0. Oracle WebCenter Sites 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 34223930).</description>
     </item>
     
     <item>
@@ -276,7 +276,7 @@ Recent changes    Date Version Change     March 11, 2022 22.1.3 Supports Oracle 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/wcportal-domains/release-notes/</guid>
-      <description>Recent changes    Date Version Change     June 30, 2021 21.2.3 Only Oracle Portal 12.2.1.4 is supported and certified with the WebLogic Kubernetes operator version 3.1.1.    </description>
+      <description>Recent changes    Date Version Change     May 28, 2022 22.2.2 Only Oracle WebCenter Portal 12.2.1.4 is supported and certified with the WebLogic Kubernetes operator version 3.3.0.   June 30, 2021 21.2.3 Only Oracle WebCenter Portal 12.2.1.4 is supported and certified with the WebLogic Kubernetes operator version 3.1.1.    </description>
     </item>
     
     <item>
@@ -428,7 +428,7 @@ Add the Helm repos (if not added) Add following Helm repos</description>
       
       <guid>/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-operator-release/</guid>
       <description>To upgrade the WebLogic Kubernetes operator, use the helm upgrade command with new Helm chart and operator image. See the steps here to pull the operator image and set up the Oracle SOA Suite repository that contains the operator chart. To upgrade the operator run the following command:
-$ cd ${WORKDIR} $ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operator:3.3.0 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-kubernetes-operator \ charts/weblogic-operator  Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.</description>
+$ cd ${WORKDIR} $ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operator:3.4.0 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-kubernetes-operator \ charts/weblogic-operator  Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.</description>
     </item>
     
     <item>
@@ -614,17 +614,6 @@ It is expected that there will be a down time during the upgrade of the Kubernet
     </item>
     
     <item>
-      <title>Voyager</title>
-      <link>/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/</link>
-      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
-      
-      <guid>/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/</guid>
-      <description>Voyager/HAProxy is a popular ingress-based load balancer for production environments. You can install and configure Voyager/HAProxy to load balance Oracle WebCenter Portal domain clusters and configure it for non-SSL, SSL termination, and end-to-end SSL access of the application URL. Follow these steps to set up Voyager as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:
-  Non-SSL and SSL termination
- Install the Voyager load balancer Configure Voyager to manage ingresses Verify non-SSL and SSL access    End-to-end SSL configuration</description>
-    </item>
-    
-    <item>
       <title>Runnning OIG utilities</title>
       <link>/fmw-kubernetes/oig/manage-oig-domains/running-oig-utilities/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -784,7 +773,7 @@ $ kubectl patch domain wcsitesinfra -n wcsites-ns --type=&amp;#39;json&amp;#39; 
       
       <guid>/fmw-kubernetes/wcportal-domains/cleanup-domain-setup/</guid>
       <description>To clean up the Oracle WebCenter Portal domain setup, follow the steps below.
-Delete the Generated Domain Home To remove a domain home that you generated by running the create-domain.sh script in your production or testing environment, use the delete-domain-job.yaml file located at, &amp;lt;$WORKDIR&amp;gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/domain-home-on-pv/output/weblogic-domains/wcp-domain&amp;gt; directory.
+Delete the Generated Domain Home To remove a domain home that you generated by running the create-domain.sh script in your production or testing environment, use the delete-domain-job.yaml file located at, &amp;lt;$WORKDIR&amp;gt;/create-wcp-domain/domain-home-on-pv/output/weblogic-domains/wcp-domain&amp;gt; directory.
 $ kubectl create -f delete-domain-job.yaml Clean Up the create-domain-job script After Execution Failure To clean up the create-domain-job script:
   Get the create domain job and configmaps:</description>
     </item>

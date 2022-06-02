@@ -12,18 +12,18 @@
     <title> Fluentd :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429555" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168836" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168836"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429555"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168836"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168836"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168836"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5131,7 +5136,7 @@ A complete example of a domain definition with fluentd configuration is at the <
 <ul>
 <li><code>wcpns</code>: WebCenter Portal domain namespace</li>
 <li><code>wcp-domain</code>: <code>domainUID</code></li>
-<li><code>wcpinfra-domain-credentials</code>: Kubernetes secret</li>
+<li><code>wcp-domain-domain-credentials</code>: Kubernetes secret</li>
 </ul>
 </div>
 
@@ -5165,7 +5170,7 @@ A complete example of a domain definition with fluentd configuration is at the <
       <span style="color:#66d9ef">name</span>: weblogic-domain-storage-volume
 </code></pre></div><h4 id="add-elasticsearch-secrets-to-weblogic-domain-credentials">Add Elasticsearch secrets to WebLogic domain credentials</h4>
 <p>Configure the <code>fluentd</code> container to look for Elasticsearch parameters in the domain credentials.  Edit the domain credentials and add the parameters shown in the example below.</p>
-<p>For example, run: <code>kubectl edit secret wcpinfra-domain-credentials -n wcpns</code> and add the base64 encoded values of each Elasticsearch parameter:</p>
+<p>For example, run: <code>kubectl edit secret wcp-domain-domain-credentials -n wcpns</code> and add the base64 encoded values of each Elasticsearch parameter:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">elasticsearchhost: ZWxhc3RpY3NlYXJjaC5ib2JzLWJvb2tzLnNhbXBsZS5jb20=
 elasticsearchport: NDQz
 elasticsearchuser: Ym9i
@@ -5247,7 +5252,7 @@ elasticsearchpassword: d2VsY29tZTE=
 <p>The container definition:</p>
 <ul>
 <li>Defines a <code>LOG_PATH</code> environment variable that points to the log location of <code>bobbys-front-end</code>.</li>
-<li>Defines <code>ELASTICSEARCH_HOST</code>, <code>ELASTICSEARCH_PORT</code>, <code>ELASTICSEARCH_USER</code>, and <code>ELASTICSEARCH_PASSWORD</code> environment variables that are all retrieving their values from the secret <code>wcpinfra-domain-credentials</code>.</li>
+<li>Defines <code>ELASTICSEARCH_HOST</code>, <code>ELASTICSEARCH_PORT</code>, <code>ELASTICSEARCH_USER</code>, and <code>ELASTICSEARCH_PASSWORD</code> environment variables that are all retrieving their values from the secret <code>wcp-domain-domain-credentials</code>.</li>
 <li>Includes volume mounts for the <code>fluentd-config</code> <code>ConfigMap</code> and the volume containing the domain logs.</li>
 </ul>
 <p><strong>NOTE</strong>: For brevity, only the paths to the relevant configuration are shown.</p>
@@ -5277,23 +5282,23 @@ elasticsearchpassword: d2VsY29tZTE=
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchhost
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
       - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PORT
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchport
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
       - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_USER
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchuser
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
             <span style="color:#66d9ef">optional</span>: <span style="color:#66d9ef">true</span>
       - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PASSWORD
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchpassword
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
             <span style="color:#66d9ef">optional</span>: <span style="color:#66d9ef">true</span>
       <span style="color:#66d9ef">image</span>: fluent/fluentd-kubernetes-daemonset:v1<span style="color:#ae81ff">.3.3</span>-debian-elasticsearch<span style="color:#ae81ff">-1.3</span>
       <span style="color:#66d9ef">imagePullPolicy</span>: IfNotPresent
@@ -5328,7 +5333,7 @@ elasticsearchpassword: d2VsY29tZTE=
   <span style="color:#66d9ef">image</span>: <span style="color:#e6db74">&#34;oracle/wcportal:12.2.1.4&#34;</span>
   <span style="color:#66d9ef">imagePullPolicy</span>: <span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
   <span style="color:#66d9ef">webLogicCredentialsSecret</span>:
-    <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+    <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
   <span style="color:#66d9ef">includeServerOutInPodLog</span>: <span style="color:#66d9ef">true</span>
   <span style="color:#66d9ef">logHomeEnabled</span>: <span style="color:#66d9ef">true</span> 
   <span style="color:#66d9ef">httpAccessLogInLogHome</span>: <span style="color:#66d9ef">true</span>
@@ -5378,22 +5383,22 @@ elasticsearchpassword: d2VsY29tZTE=
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchport
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
       - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PORT
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchhost
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
       - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_USER
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchuser
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
       - <span style="color:#66d9ef">name</span>: ELASTICSEARCH_PASSWORD
         <span style="color:#66d9ef">valueFrom</span>:
           <span style="color:#66d9ef">secretKeyRef</span>:
             <span style="color:#66d9ef">key</span>: elasticsearchpassword
-            <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+            <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
       <span style="color:#66d9ef">image</span>: fluent/fluentd-kubernetes-daemonset:v1<span style="color:#ae81ff">.11.5</span>-debian-elasticsearch6<span style="color:#ae81ff">-1.0</span>
       <span style="color:#66d9ef">imagePullPolicy</span>: IfNotPresent
       <span style="color:#66d9ef">name</span>: fluentd
@@ -5424,7 +5429,7 @@ elasticsearchpassword: d2VsY29tZTE=
       <span style="color:#66d9ef">name</span>: fluentd-config-volume
   <span style="color:#66d9ef">serverStartPolicy</span>: IF_NEEDED
   <span style="color:#66d9ef">webLogicCredentialsSecret</span>:
-    <span style="color:#66d9ef">name</span>: wcpinfra-domain-credentials
+    <span style="color:#66d9ef">name</span>: wcp-domain-domain-credentials
 </code></pre></div><h5 id="get-the-kibana-dashboard-port-information-as-shown-below">Get the Kibana dashboard port information as shown below:</h5>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-bash-4.2$ kubectl get pods -w
 NAME                            READY   STATUS    RESTARTS   AGE
@@ -7968,22 +7973,6 @@ kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP         
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8062,6 +8051,22 @@ kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP         
                     
                         
                         
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
                     
                 
                 
@@ -8884,19 +8889,19 @@ kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP         
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168836"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168836"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429555" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429555"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168836"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

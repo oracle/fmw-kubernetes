@@ -12,18 +12,18 @@
     <title>Create WebCenter Portal domain :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429555" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168836" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168836"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429555"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168836"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168836"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168836"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5121,13 +5126,14 @@
 </ul>
 <h4 id="prepare-the-webcenter-portal-domain-creation-input-file">Prepare the WebCenter Portal Domain Creation Input File</h4>
 <p>If required, you can customize the parameters used for creating a domain in the <code>create-domain-inputs.yaml</code> file.</p>
-<p>Please note that the sample scripts for the WebCenter Portal domain deployment are available from the previously downloaded repository at  <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/domain-home-on-pv/</code>.</p>
+<p>Please note that the sample scripts for the WebCenter Portal domain deployment are available from the previously downloaded repository at  <code>${WORKDIR}/create-wcp-domain/domain-home-on-pv/</code>.</p>
 <p>Make a copy of the <code>create-domain-inputs.yaml</code> file before updating the default values.</p>
 <p>The default domain created by the script has the following characteristics:</p>
 <ul>
 <li>An Administration Server named <code>AdminServer</code> listening on port <code>7001</code>.</li>
 <li>A configured cluster named <code>wcp-cluster</code> of size <code>5</code>.</li>
 <li>Managed Server, named <code>wcpserver</code>, listening on port <code>8888</code>.</li>
+<li>If <code>configurePortletServer</code> is set to <code>true</code> . It configures a cluster named <code>wcportlet-cluster</code> of size <code>5</code> and Managed Server, named <code>wcportletserver</code>, listening on port <code>8889</code>.</li>
 <li>Log files that are located in <code>/shared/logs/&lt;domainUID&gt;</code>.</li>
 </ul>
 <h5 id="configuration-parameters">Configuration parameters</h5>
@@ -5152,6 +5158,11 @@
 <td><code>false</code></td>
 </tr>
 <tr>
+<td><code>configurePortletServer</code></td>
+<td>Configure portlet server cluster</td>
+<td><code>false</code></td>
+</tr>
+<tr>
 <td><code>adminServerSSLPort</code></td>
 <td>SSL Port number for the Administration Server inside the Kubernetes cluster.</td>
 <td><code>7002</code></td>
@@ -5165,6 +5176,11 @@
 <td><code>clusterName</code></td>
 <td>Name of the WebLogic cluster instance to generate for the domain. By default the cluster name is <code>wcp-cluster</code> for the WebCenter Portal domain.</td>
 <td><code>wcp-cluster</code></td>
+</tr>
+<tr>
+<td><code>portletClusterName</code></td>
+<td>Name of the Portlet cluster instance to generate for the domain. By default the cluster name is <code>wcportlet-cluster</code> for the Portlet.</td>
+<td><code>wcportlet-cluster</code></td>
 </tr>
 <tr>
 <td><code>configuredManagedServerCount</code></td>
@@ -5213,7 +5229,7 @@
 </tr>
 <tr>
 <td><code>image</code></td>
-<td>WebCenter Portal Docker image. The WebLogic Kubernetes Operator requires WebCenter Portal release 12.2.1.4. Refer to <a href="https://github.com/oracle/docker-images/tree/master/OracleWebCenterPortal">WebCenter Portal Docker Image</a> for details on how to obtain or create the image.</td>
+<td>WebCenter Portal Docker image. The WebLogic Kubernetes Operator requires WebCenter Portal release 12.2.1.4. Refer to <a href="https://github.com/oracle/docker-images/tree/main/OracleWebCenterPortal">WebCenter Portal Docker Image</a> for details on how to obtain or create the image.</td>
 <td><code>oracle/wcportal:12.2.1.4</code></td>
 </tr>
 <tr>
@@ -5252,14 +5268,29 @@
 <td><code>wcpserver</code></td>
 </tr>
 <tr>
+<td><code>portletServerNameBase</code></td>
+<td>Base string used to generate Portlet Server names.</td>
+<td><code>wcportletserver</code></td>
+</tr>
+<tr>
 <td><code>managedServerPort</code></td>
-<td>Port number for each Managed Server.</td>
+<td>Port number for each Managed Server. By default the managedServerPort is <code>8888</code> for the <code>wcpserver</code> and managedServerPort is <code>8889</code> for the <code>wcportletserver</code>.</td>
 <td><code>8888</code></td>
 </tr>
 <tr>
 <td><code>managedServerSSLPort</code></td>
-<td>SSL port number for each Managed Server.</td>
-<td><code>8889</code></td>
+<td>SSL port number for each Managed Server. By default the managedServerPort is <code>8788</code> for the wcpserver and managedServerPort is <code>8789</code> for the <code>wcportletserver</code>.</td>
+<td><code>8788</code></td>
+</tr>
+<tr>
+<td><code>portletServerPort</code></td>
+<td>Port number for each Portlet Server. By default the portletServerPort is <code>8889</code> for the <code>wcportletserver</code>.</td>
+<td><code>8888</code></td>
+</tr>
+<tr>
+<td><code>portletServerSSLPort</code></td>
+<td>SSL port number for each Portlet Server. By default the portletServerSSLPort is <code>8789</code> for the <code>wcportletserver</code>.</td>
+<td><code>8789</code></td>
 </tr>
 <tr>
 <td><code>namespace</code></td>
@@ -5294,7 +5325,7 @@
 <tr>
 <td><code>weblogicCredentialsSecretName</code></td>
 <td>Name of the Kubernetes secret for the Administration Server&rsquo;s user name and password. If not specified, then the value is derived from the <code>domainUID</code> as <code>&lt;domainUID&gt;-weblogic-credentials</code>.</td>
-<td>wcpinfra-domain-credentials</td>
+<td>wcp-domain-domain-credentials</td>
 </tr>
 <tr>
 <td><code>weblogicImagePullSecretName</code></td>
@@ -5319,7 +5350,7 @@
 <tr>
 <td><code>rcuCredentialsSecret</code></td>
 <td>The Kubernetes secret containing the database credentials.</td>
-<td><code>wcpinfra-rcu-credentials</code></td>
+<td><code>wcp-domain-rcu-credentials</code></td>
 </tr>
 <tr>
 <td><code>loadBalancerHostName</code></td>
@@ -5374,7 +5405,7 @@ or <code>kubectl apply -f</code> command:</li>
 <ol>
 <li>
 <p>Run the <code>create-domain.sh</code> sample script, pointing it at the <code>create-domain-inputs.yaml</code> inputs file and an output directory like below:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;$WORKDIR&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/create-wcp-domain/
 $ sh create-domain.sh  -i create-domain-inputs.yaml  -o output
   Input parameters being used
   export version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;create-weblogic-sample-domain-inputs-v1&#34;</span>
@@ -5390,11 +5421,13 @@ $ sh create-domain.sh  -i create-domain-inputs.yaml  -o output
   export initialManagedServerReplicas<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2&#34;</span>
   export managedServerNameBase<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcpserver&#34;</span>
   export managedServerPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8888&#34;</span>
-  export managedServerSSLPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8889&#34;</span>
+  export managedServerSSLPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8788&#34;</span>
+  export portletServerPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8889&#34;</span>
+  export portletServerSSLPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8789&#34;</span>
   export image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle/wcportal:12.2.1.4&#34;</span>
   export imagePullPolicy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
   export productionModeEnabled<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
-  export weblogicCredentialsSecretName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcpinfra-domain-credentials&#34;</span>
+  export weblogicCredentialsSecretName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcp-domain-domain-credentials&#34;</span>
   export includeServerOutInPodLog<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
   export logHome<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/u01/oracle/user_projects/domains/logs/</span>$domainUID<span style="color:#e6db74">&#34;</span>
   export httpAccessLogInLogHome<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
@@ -5411,7 +5444,7 @@ $ sh create-domain.sh  -i create-domain-inputs.yaml  -o output
   export createDomainFilesDir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wlst&#34;</span>
   export rcuSchemaPrefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;WCP1&#34;</span>
   export rcuDatabaseURL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle-db.wcpns.svc.cluster.local:1521/devpdb.k8s&#34;</span>
-  export rcuCredentialsSecret<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcpinfra-rcu-credentials&#34;</span>
+  export rcuCredentialsSecret<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcp-domain-rcu-credentials&#34;</span>
   export loadBalancerHostName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;abc.def.com&#34;</span>
   export loadBalancerPortNumber<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;30305&#34;</span>
   export loadBalancerProtocol<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http&#34;</span>
@@ -5421,7 +5454,7 @@ $ sh create-domain.sh  -i create-domain-inputs.yaml  -o output
   Generating output/weblogic-domains/wcp-domain/create-domain-job.yaml
   Generating output/weblogic-domains/wcp-domain/delete-domain-job.yaml
   Generating output/weblogic-domains/wcp-domain/domain.yaml
-  Checking to see <span style="color:#66d9ef">if</span> the secret wcpinfra-domain-credentials exists in namespace wcpns
+  Checking to see <span style="color:#66d9ef">if</span> the secret wcp-domain-domain-credentials exists in namespace wcpns
   configmap/wcp-domain-create-wcp-infra-sample-domain-job-cm created
   Checking the configmap wcp-domain-create-wcp-infra-sample-domain-job-cm was created
   configmap/wcp-domain-create-wcp-infra-sample-domain-job-cm labeled
@@ -5466,15 +5499,15 @@ wcp-domain-create-fmw-infra-sample-domain-job-8jr6k   1/1     Running   <span st
 <pre><code>The domain will be created using the script /u01/weblogic/create-domain-script.sh
   
 Initializing WebLogic Scripting Tool (WLST) ...
-  
-  
+    
+    
 Welcome to WebLogic Server Administration Scripting Shell
-  
+    
 Type help() for help on available commands
-  
+    
 =================================================================
-   WebCenter Portal Weblogic Operator Domain Creation Script
-                        12.2.1.4.0
+  WebCenter Portal Weblogic Operator Domain Creation Script
+                       12.2.1.4.0
 =================================================================
 Creating Base Domain...
 Creating Admin Server...
@@ -5485,6 +5518,11 @@ managed server name is wcpserver3
 managed server name is wcpserver4
 managed server name is wcpserver5
 ['wcpserver1', 'wcpserver2', 'wcpserver3', 'wcpserver4', 'wcpserver5']
+Creating porlet cluster...
+managed server name is wcportletserver1
+managed server name is wcportletserver2
+managed server name is wcportletserver3
+['wcportletserver1', 'wcportletserver2', 'wcportletserver3', 'wcportletserver4', 'wcportletserver5']
 Managed servers created...
 Creating Node Manager...
 Will create Base domain at /u01/oracle/user_projects/domains/wcp-domain
@@ -5507,16 +5545,20 @@ Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserv
 Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserver3
 Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserver4
 Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserver5
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcportletserver1
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcportletserver2
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcportletserver3
 Targeting Cluster ...
 Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcp-cluster
 Set WLS clusters as target of defaultCoherenceCluster:wcp-cluster
+Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcportlet-cluster
+Set WLS clusters as target of defaultCoherenceCluster:wcportlet-cluster
 Preparing to update domain...
 Jan 12, 2021 10:30:09 AM oracle.security.jps.az.internal.runtime.policy.AbstractPolicyImpl initializeReadStore
 INFO: Property for read store in parallel: oracle.security.jps.az.runtime.readstore.threads = null
 Domain updated successfully
 Domain Creation is done...
-Successfully Completed         
- 
+Successfully Completed          
 </code></pre></li>
 </ol>
 <h4 id="initialize-the-webcenter-portal-domain">Initialize the WebCenter Portal Domain</h4>
@@ -5542,12 +5584,17 @@ pod/wcp-domain-adminserver                                1/1     Running     <s
 pod/wcp-domain-create-fmw-infra-sample-domain-job-8jr6k   0/1     Completed   <span style="color:#ae81ff">0</span>          3h12m
 pod/wcp-domain-wcp-server1                                1/1     Running     <span style="color:#ae81ff">0</span>          11m
 pod/wcp-domain-wcp-server2                                1/1     Running     <span style="color:#ae81ff">0</span>          11m
+pod/wcp-domain-wcportletserver1                           1/1     Running     <span style="color:#ae81ff">1</span>          21h
 
-NAME                                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>    AGE
-service/wcp-domain-adminserver           ClusterIP   None            &lt;none&gt;        7001/TCP   13m
-service/wcp-domain-cluster-wcp-cluster   ClusterIP   10.98.145.173   &lt;none&gt;        8888/TCP   11m
-service/wcp-domain-wcp-server1           ClusterIP   None            &lt;none&gt;        8888/TCP   11m
-service/wcp-domain-wcp-server2           ClusterIP   None            &lt;none&gt;        8888/TCP   11m
+
+NAME                                             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>    AGE
+service/wcp-domain-adminserver                   ClusterIP   None            &lt;none&gt;        7001/TCP   13m
+service/wcp-domain-cluster-wcp-cluster           ClusterIP   10.98.145.173   &lt;none&gt;        8888/TCP   11m
+service/wcp-domain-wcp-server1                   ClusterIP   None            &lt;none&gt;        8888/TCP   11m
+service/wcp-domain-wcp-server2                   ClusterIP   None            &lt;none&gt;        8888/TCP   11m
+service/wcp-domain-cluster-wcportlet-cluster     ClusterIP   10.98.145.173   &lt;none&gt;        8889/TCP   11m
+service/wcp-domain-wcportletserver1              ClusterIP   None            &lt;none&gt;        8889/TCP   11m
+
 
 NAME                                                      COMPLETIONS   DURATION   AGE
 job.batch/wcp-domain-create-fmw-infra-sample-domain-job   1/1           16m        3h12m
@@ -5565,16 +5612,21 @@ wcp-domain-adminserver                                1/1     Running     0     
 wcp-domain-create-fmw-infra-sample-domain-job-8jr6k   0/1     Completed   0          3h14m
 wcp-domain-wcp-server1                                1/1     Running     0          14m
 wcp-domain-wcp-server2                                1/1     Running     0          14m
+wcp-domain-wcportletserver1                           1/1     Running     1          14m
+
 </code></pre><h4 id="verify-the-services">Verify the Services</h4>
 <p>Use the following command to see the services for the domain:</p>
 <pre><code>$ kubectl get services -n NAMESPACE
 </code></pre><p>Here is an example of the output of this command:</p>
 <pre><code>-bash-4.2$ kubectl get services -n wcpns
-NAME                             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-wcp-domain-adminserver           ClusterIP   None            &lt;none&gt;        7001/TCP   17m
-wcp-domain-cluster-wcp-cluster   ClusterIP   10.98.145.173   &lt;none&gt;        8888/TCP   14m
-wcp-domain-wcp-server1           ClusterIP   None            &lt;none&gt;        8888/TCP   14m
-wcp-domain-wcp-server2           ClusterIP   None            &lt;none&gt;        8888/TCP   14m
+NAME                                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+wcp-domain-adminserver                  ClusterIP   None            &lt;none&gt;        7001/TCP   17m
+wcp-domain-cluster-wcp-cluster          ClusterIP   10.98.145.173   &lt;none&gt;        8888/TCP   14m
+wcp-domain-wcp-server1                  ClusterIP   None            &lt;none&gt;        8888/TCP   14m
+wcp-domain-wcp-server2                  ClusterIP   None            &lt;none&gt;        8888/TCP   14m
+wcp-domain-cluster-wcportlet-cluster    ClusterIP   10.98.145.173   &lt;none&gt;        8889/TCP   14m
+wcp-domain-wcportletserver1             ClusterIP   None            &lt;none&gt;        8889/TCP   14m
+
 </code></pre><h4 id="managing-webcenter-portal">Managing WebCenter Portal</h4>
 <p>To stop Managed Servers:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch domain wcp-domain -n wcpns --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/clusters/0/replicas&#34;, &#34;value&#34;: 0 }]&#39;</span>
@@ -8122,22 +8174,6 @@ wcp-domain-wcp-server2           ClusterIP   None            &lt;none&gt;       
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8186,6 +8222,22 @@ wcp-domain-wcp-server2           ClusterIP   None            &lt;none&gt;       
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -9029,19 +9081,19 @@ wcp-domain-wcp-server2           ClusterIP   None            &lt;none&gt;       
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168836"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168836"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429555" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429555"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168836"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

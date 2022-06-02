@@ -12,18 +12,18 @@
     <title>Quick start deployment on-premise :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429553" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168834" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168834"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429553"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168834"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168834"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168834"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5202,7 +5207,7 @@ $ systemctl stop firewalld
 </ol>
 <h4 id="12-install-and-configure-docker">1.2 Install and configure Docker</h4>
 <blockquote>
-<p>Note: If you have already installed Docker with version 18.03+ and configured the Docker daemon root to sufficient disk space along with proxy settings, continue to <a href="#13-install-and-configure-kubernetes">Install and configure Kubernetes</a>.</p>
+<p>Note: If you have already installed Docker with version 19.03.1+ and configured the Docker daemon root to sufficient disk space along with proxy settings, continue to <a href="#13-install-and-configure-kubernetes">Install and configure Kubernetes</a>.</p>
 </blockquote>
 <ol>
 <li>
@@ -5353,11 +5358,11 @@ $ export https_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR
 $ export HTTPS_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export HTTP_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-<span style="color:#75715e">### install kubernetes 1.18.4-1</span>
-$ VERSION<span style="color:#f92672">=</span>1.18.4-1
+<span style="color:#75715e">### Install Kubernetes</span>
+$ VERSION<span style="color:#f92672">=</span>1.23.6-0
 $ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes<span style="color:#f92672">=</span>kubernetes
 
-<span style="color:#75715e">### enable kubelet service so that it auto-restart on reboot</span>
+<span style="color:#75715e">### Enable kubelet service so that it automatically restarts on reboot</span>
 $ systemctl enable --now kubelet
 </code></pre></div></li>
 <li>
@@ -5371,6 +5376,14 @@ $ sysctl --system
 <li>
 <p>Disable swap check:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sed -i <span style="color:#e6db74">&#39;s/KUBELET_EXTRA_ARGS=/KUBELET_EXTRA_ARGS=&#34;--fail-swap-on=false&#34;/&#39;</span> /etc/sysconfig/kubelet
+$ cat /etc/sysconfig/kubelet
+<span style="color:#75715e">### Reload and restart kubelet</span>
+$ systemctl daemon-reload
+$ systemctl restart kubelet
+</code></pre></div></li>
+<li>
+<p>From Kubernetes version v1.22 onward, <code>kubeadm</code> will default <code>cgroup-driver</code> to <code>systemd</code>. If your Docker is using cgroup driver as <code>cgroupfs</code>, set <code>--cgroup-driver=cgroupfs</code> for kubelet.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sed -i <span style="color:#e6db74">&#39;s/^KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=&#34;--fail-swap-on=false --cgroup-driver=cgroupfs&#34;/&#39;</span> /etc/sysconfig/kubelet
 $ cat /etc/sysconfig/kubelet
 <span style="color:#75715e">### Reload and restart kubelet</span>
 $ systemctl daemon-reload
@@ -5424,8 +5437,8 @@ export service_cidr<span style="color:#f92672">=</span><span style="color:#e6db7
 export PATH<span style="color:#f92672">=</span>$PATH:/sbin:/usr/sbin
 
 <span style="color:#75715e">### Set the proxies</span>
-export NO_PROXY<span style="color:#f92672">=</span>localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
-export no_proxy<span style="color:#f92672">=</span>localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
+export NO_PROXY<span style="color:#f92672">=</span>localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
+export no_proxy<span style="color:#f92672">=</span>localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
 export http_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 export https_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 export HTTPS_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
@@ -5471,14 +5484,16 @@ $ sudo chown <span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9e
 <blockquote>
 <p>Note: If you are using a different CIDR block than <code>10.244.0.0/16</code>, then download and update <code>kube-flannel.yml</code> with the correct CIDR address before deploying into the cluster:</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.12.0/Documentation/kube-flannel.yml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.17.0/Documentation/kube-flannel.yml
+$ <span style="color:#75715e">### Update the CIDR address if you are using a CIDR block other than the default 10.244.0.0/16</span>
+$ kubectl apply -f kube-flannel.yml
 </code></pre></div></li>
 <li>
 <p>Verify that the master node is in Ready status:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get nodes
 </code></pre></div><p>Sample output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">NAME        STATUS   ROLES    AGE     VERSION
-mymasternode Ready    master   8m26s   v1.18.4
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">NAME                 STATUS   ROLES                  AGE   VERSION
+mymasternode      Ready    control-plane,master   12h   v1.23.6
 </code></pre></div><p>or:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get pods -n kube-system
 </code></pre></div><p>Sample output:</p>
@@ -5488,7 +5503,7 @@ pod/coredns-86c58d9df4-mzrr5                1/1         Running         <span st
 pod/etcd-mymasternode                       1/1         Running         <span style="color:#ae81ff">0</span>       3m4s
 pod/kube-apiserver-node                     1/1         Running         <span style="color:#ae81ff">0</span>       3m21s
 pod/kube-controller-manager-mymasternode    1/1         Running         <span style="color:#ae81ff">0</span>       3m25s
-pod/kube-flannel-ds-amd64-6npx4             1/1         Running         <span style="color:#ae81ff">0</span>       49s
+pod/kube-flannel-ds-6npx4                   1/1         Running         <span style="color:#ae81ff">0</span>       49s
 pod/kube-proxy-4vsgm                        1/1         Running         <span style="color:#ae81ff">0</span>       3m59s
 pod/kube-scheduler-mymasternode             1/1         Running         <span style="color:#ae81ff">0</span>       2m58s
 </code></pre></div></li>
@@ -5498,7 +5513,7 @@ pod/kube-scheduler-mymasternode             1/1         Running         <span st
 </code></pre></div></li>
 </ol>
 <p>Congratulations! Your Kubernetes cluster environment is ready to deploy your Oracle SOA Suite domain.</p>
-<p>For additional references on Kubernetes cluster setup, check the <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/kubernetes/k8s-setup/">cheat sheet</a>.</p>
+<p>Refer to the official <a href="https://kubernetes.io/docs/setup/#production-environment">documentation</a> to set up a Kubernetes cluster.</p>
 <h3 id="3-get-scripts-and-images">3. Get scripts and images</h3>
 <h4 id="31-set-up-the-code-repository-to-deploy-oracle-soa-suite-domains">3.1 Set up the code repository to deploy Oracle SOA Suite domains</h4>
 <p>Follow <a href="/fmw-kubernetes/soa-domains/installguide/prepare-your-environment/#set-up-the-code-repository-to-deploy-oracle-soa-suite-domains">these steps</a> to set up the source code repository required to deploy Oracle SOA Suite domains.</p>
@@ -5506,8 +5521,8 @@ pod/kube-scheduler-mymasternode             1/1         Running         <span st
 <ol>
 <li>
 <p>Pull the WebLogic Kubernetes Operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0
+$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0 oracle/weblogic-kubernetes-operator:3.4.0
 </code></pre></div></li>
 <li>
 <p>Obtain the Oracle Database image and Oracle SOA Suite Docker image from the <a href="https://container-registry.oracle.com">Oracle Container Registry</a>:</p>
@@ -5542,7 +5557,7 @@ $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-k
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">   $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
    $ helm install weblogic-kubernetes-operator charts/weblogic-operator <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>   --namespace opns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>   --set image<span style="color:#f92672">=</span>oracle/weblogic-kubernetes-operator:3.3.0 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>   --set image<span style="color:#f92672">=</span>oracle/weblogic-kubernetes-operator:3.4.0 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>   --set serviceAccount<span style="color:#f92672">=</span>op-sa <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>   --set <span style="color:#e6db74">&#34;domainNamespaces={}&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>   --wait
@@ -5557,7 +5572,7 @@ $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-k
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></div></li>
 </ol>
-<p>The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
+<p>The WebLogic Kubernetes Operator v3.4.0 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
 <h3 id="5-install-the-traefik-ingress-based-load-balancer">5. Install the Traefik (ingress-based) load balancer</h3>
 <p>The WebLogic Kubernetes Operator supports these load balancers: Traefik, NGINX, and Apache. Samples are provided in the documentation.</p>
 <p>This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle SOA Suite domain.</p>
@@ -5568,7 +5583,7 @@ $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-k
 </code></pre></div></li>
 <li>
 <p>Set up Helm for 3rd party services:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ helm repo add traefik https://containous.github.io/traefik-helm-chart
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ helm repo add traefik https://helm.traefik.io/traefik --force-update
 </code></pre></div></li>
 <li>
 <p>Install the Traefik operator in the <code>traefik</code> namespace with the provided sample values:</p>
@@ -5694,7 +5709,7 @@ $ ./create-rcu-schema.sh <span style="color:#ae81ff">\
 <h4 id="62-create-an-oracle-soa-suite-domain">6.2 Create an Oracle SOA Suite domain</h4>
 <ol>
 <li>
-<p>The sample scripts for Oracle SOA Suite domain deployment are available at <code>OracleSOASuite/create-soa-domain</code>. You must edit <code>create-domain-inputs.yaml</code> (or a copy of it) to provide the details for your domain.</p>
+<p>The sample scripts for Oracle SOA Suite domain deployment are available at <code>${WORKDIR}/create-soa-domain/domain-home-on-pv</code>. You must edit <code>create-domain-inputs.yaml</code> (or a copy of it) to provide the details for your domain.</p>
 <p>Update <code>create-domain-inputs.yaml</code> with the following values for domain creation:</p>
 <ul>
 <li><code>domainType</code>: <code>soaosb</code></li>
@@ -5748,10 +5763,11 @@ Watch the <code>soans</code> namespace for the status of domain creation:</p>
 <li>
 <p>Create an ingress for the domain in the domain namespace by using the sample Helm chart:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
+$ export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
 $ helm install soa-traefik-ingress charts/ingress-per-domain <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--namespace soans <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set domainType<span style="color:#f92672">=</span>soaosb
 </code></pre></div></li>
 <li>
@@ -5763,7 +5779,7 @@ $ helm install soa-traefik-ingress charts/ingress-per-domain <span style="color:
 <ol>
 <li>
 <p>Get the <code>LOADBALANCER_HOSTNAME</code> for your environment:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
 </code></pre></div></li>
 <li>
 <p>Verify the following URLs are available for Oracle SOA Suite domains of domain type <code>soaosb</code>:</p>
@@ -8311,22 +8327,6 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="co
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8375,6 +8375,22 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="co
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -9218,19 +9234,19 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="co
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168835"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168835"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429553" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429553"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168835" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168835"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
