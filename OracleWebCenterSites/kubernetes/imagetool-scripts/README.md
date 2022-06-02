@@ -1,7 +1,7 @@
 Building WC-SITES image with WebLogic Image Tool
 =============================================
 
-## Contents	
+## Contents
 
 1. [Introduction](#1-introduction)
 2. [Download the required packages/installers&Patches](#2-download-the-required-packagesinstallerspatches)
