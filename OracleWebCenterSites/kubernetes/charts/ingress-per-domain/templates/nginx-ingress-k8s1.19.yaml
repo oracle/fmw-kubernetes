@@ -1,0 +1,160 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if eq .Values.type "NGINX" }}
+{{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '{{ .Values.nginx.connectTimeout }}'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '{{ .Values.nginx.readTimeout }}'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '{{ .Values.nginx.sendTimeout }}'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'stickyid'
+    nginx.ingress.kubernetes.io/session-cookie-expires: '{{ .Values.nginx.cookieExpires }}'
+    nginx.ingress.kubernetes.io/session-cookie-max-age: '{{ .Values.nginx.cookieMaxAge }}'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+{{- if eq .Values.sslType "SSL" }}  
+{{- end }}
+spec:
+  rules:
+  - host: '{{ .Values.nginx.hostname }}'
+    http:
+      paths:
+      - path: /console
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /wls-exporter
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /weblogic
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /sbconsole
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /sites
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+      - path: /cas
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+      - path: /wls-exporter
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+{{- if eq .Values.sslType "SSL" }}
+  tls:
+  - hosts:
+    - '{{ .Values.nginx.hostname }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+{{- end }}
+{{- else }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower }}-nginx-ssl
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.adminServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-admin
+  namespace: {{ .Release.Namespace }}
+  annotations:
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.admin }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.admin }}'
+    http:
+      paths:
+      - path: 
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerSSLPort }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-wcsites
+  namespace: {{ .Release.Namespace }}
+  annotations:
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.wcsites }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.wcsites }}'
+    http:
+      paths:
+      - path: 
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.wcsitesManagedServerSSLPort }}
+         
+{{- end }}
+{{- end }}
+{{- end }}
+

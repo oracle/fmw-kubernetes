@@ -24,10 +24,10 @@ In this release, WebCenter Sites domains are supported using the `domain on a pe
 
 #### System Requirements 
 * Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes) are supported.
-* Kubernetes 1.14.8+, 1.15.7+, 1.16.0+, 1.17.0+, and 1.18.0+ (check with `kubectl version`).
+* Kubernetes 1.16.15+, 1.17.13+, 1.18.10+, 1.19.7+, and 1.20.6+ (check with `kubectl version`).
 * Docker 18.09.1ce+, 19.03.1+ (check with `docker version`) or CRI-O 1.14.7 (check with `crictl version | grep RuntimeVersion`).
 * Flannel networking v0.9.1-amd64 or later (check with `Docker images | grep flannel`).
-* Helm 3.1.3+ (check with `helm version --client --short`).
+* Helm 3.2.4+ (check with `helm version --client --short`).
 * Oracle WebLogic Kubernetes Operator 3.3.0 (see [operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
 * Oracle WebCenterSites 12.2.1.4 Docker image (built either using imagetool or the buildDockerImage script).
 * You must have the `cluster-admin` role to install the operator. The operator does not need the `cluster-admin` role at runtime.

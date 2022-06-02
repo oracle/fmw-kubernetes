@@ -74,7 +74,7 @@ Note: Here traefik is the Traefik namespace, `wcsites-ns` is the namespace of th
 > Helm upgrade for traefik
 
 ```bash
-$ helm upgrade traefik traefik/traefik --namespace traefik     --reuse-values \
+$ helm upgrade traefik traefik/traefik --namespace traefik --reuse-values \
     --set "kubernetes.namespaces={traefik,wcsites-ns}"
  
  
@@ -88,127 +88,30 @@ TEST SUITE: None
 
 #### Create an Ingress for the Domain
 
-1. Create an Ingress for the domain (`ingress-per-domain-wcsites`), in the domain namespace by using the sample Helm chart.
-Here we are using the path-based routing for ingress. For detailed instructions about ingress, see [this page](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/ingress/)).
+1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress.
+Sample values for default configuration are shown in the file `${WORKDIR}/kubernetes/charts/ingress-per-domain/values.yaml`.
+By default, `type` is `TRAEFIK`, `sslType` is `NONSSL`, and `domainType` is `wcs`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml`.  
+If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at `${WORKDIR}/kubernetes/charts/ingress-per-domain/templates/traefik-ingress.yaml`.
 
-    For now, you can update the `kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml` with appropriate values. Sample values are shown below:
+	For detailed instructions about ingress, see [this page](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/ingress/).
+
+    For now, you can update the `kubernetes/charts/ingress-per-domain/values.yaml` with appropriate values.
     
-    ```bash
-	$ cat kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml
-	
-	# Copyright 2020, Oracle Corporation and/or its affiliates.
-	# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-	# Default values for ingress-per-domain.
-	# This is a YAML-formatted file.
-	# Declare variables to be passed into your templates.
-
-	apiVersion: networking.k8s.io/v1beta1
-
-	# Load balancer type.  Supported values are: TRAEFIK, NGINX
-	type: TRAEFIK
-	#type: NGINX
-
-	# WLS domain as backend to the load balancer
-	wlsDomain:
-	  domainUID: wcsitesinfra
-	  adminServerName: adminserver
-	  adminServerPort: 7001
-	  wcsitesClusterName: wcsites_cluster
-	  wcsitesManagedServerPort: 8001
-
-
-	# Ngnix specific values
-	ngnix:
-	  #connect timeout
-	  connectTimeout: 1800s
-	  #read timeout
-	  readTimeout: 1800s
-	  #send timeout
-	  sendTimeout: 1800s  
-    ```
-
-1. Update the `kubernetes/create-wcsites-domain/ingress-per-domain/templates/traefik-ingress.yaml` with the url routes to be load balanced.
+1. Update the `kubernetes/charts/ingress-per-domain/templates/traefik-ingress.yaml` with the url routes to be load balanced.
     
-    Below are the defined ingress rules:
-    
-    NOTE: This is not an exhaustive list of rules. You can enhance it based on the application urls that need to be accessed externally. These rules hold good for domain type `WCSITES`.
+    NOTE: This is not an exhaustive list of rules. You can enhance it based on the application urls that need to be accessed externally. These rules hold good for domain type `wcs`.
 
-    ```bash
-	$ vi kubernetes/create-wcsites-domain/ingress-per-domain/templates/traefik-ingress.yaml
-	
-    # Copyright 2020, Oracle Corporation and/or its affiliates.
-	# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-
-	{{- if eq .Values.type "TRAEFIK" }}
-	---
-	apiVersion: {{ .Values.apiVersion }}
-	kind: Ingress
-	metadata:
-	  name: {{ .Values.wlsDomain.domainUID }}-traefik
-	  namespace: {{ .	Release.Namespace }}
-	  labels:
-		weblogic.resourceVersion: domain-v2
-	  annotations:
-		kubernetes.io/ingress.class: traefik
-	  rules:
-	spec:
-	  - host: '{{ .Values.traefik.hostname }}'
-		http:
-		  paths:
-		  - path: /console
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.adminServerPort }}
-		  - path: /em
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.adminServerPort }}
-		  - path: /wls-exporter
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.adminServerPort }}
-		  - path: /weblogic
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.adminServerPort }}
-		  - path: /sbconsole
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.adminServerPort }}
-		  - path: /sites
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
-		  - path: /cas
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
-		  - path: /wls-exporter
-			backend:
-			  serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
-			  servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
-	 #     - path: /wls-cat
-	 #       backend:
-	 #         serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
-	 #         servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
-	 #     - path:
-	 #       backend:
-	 #         serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
-	 #         servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
-	{{- end }}
-
-    ```
 
 1. Install "ingress-per-domain" using helm.
 
     > Helm Install ingress-per-domain
 
     ```bash
-    $ helm install wcsitesinfra-ingress kubernetes/create-wcsites-domain/ingress-per-domain \
-    --namespace wcsites-ns \
-    --values kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml \
-    --set "traefik.hostname=$(hostname -f)"
+    $ helm install wcsitesinfra-ingress kubernetes/charts/ingress-per-domain \
+		--namespace wcsites-ns \
+		--values kubernetes/charts/ingress-per-domain/values.yaml \
+		--set "traefik.hostname=$(hostname -f)"
 
     NAME: wcsitesinfra-ingress
 	LAST DEPLOYED: Fri Jun 19 00:18:50 2020
@@ -217,7 +120,6 @@ Here we are using the path-based routing for ingress. For detailed instructions 
 	REVISION: 1
 	TEST SUITE: None
     ```
-
 
 
 1. To confirm that the load balancer noticed the new Ingress and is successfully routing to the domain's server pods, you can send a request to the URL for the "WebLogic ReadyApp framework" which should return a HTTP 200 status code, as shown in the example below:

@@ -16,9 +16,9 @@ This document describes the steps to set up the environment that includes settin
 * [Set Up the Code Repository to Deploy Oracle WebCenter Sites Domain](#set-up-the-code-repository-to-deploy-oracle-webcenter-sites-domain)
 * [Grant Roles and Clear Stale Resources](#grant-roles-and-clear-stale-resources)
 * [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
-* [Configure NFS Server](#configure-nfs-server)
+* [Configure NFS Server](#configure-nfs-network-file-system-server)
 * [Prepare the Environment for the WebCenter Sites Domain](#prepare-the-environment-for-the-webcenter-sites-domain)
-* [Configure access to your database](#Configure-access-to-your-database)
+* [Configure access to your database](#configure-access-to-your-database)
 
 #### Introduction
 
@@ -37,23 +37,32 @@ Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 
 
 Alternatively, the Oracle WebCenter Sites Image with latest bundle patch can be obtained from My Oracle Support (MOS).
 
-1. Download patch [33579457](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33579457) from My Oracle Support (MOS).
+1. Download patch [34223930](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34223930) from My Oracle Support (MOS).
 
 1. Unzip the downloaded zip file.
 
 	For example:
     ```bash
-    $ unzip  p33579457_122140_Linux-x86-64.zip
+    $ unzip  p34223930_122140_Linux-x86-64.zip
     ```
 
 1. Load the image archive using the `docker load` command.
 
 	For example:
     ```bash
-    $ docker load < wcsites-20211019.tar.gz
+    $ docker load < wcsites-12214-220419.tar.gz
     ```
 
-> Note: The default Oracle WebCenter Sites image name used for Oracle WebCenter Sites domains deployment is `oracle/wcsites:12.2.1.4-21.1.1`. The image obtained must be tagged as `oracle/wcsites:12.2.1.4-21.1.1` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wcsites:12.2.1.4-21.1.1` image name is used.
+1. View the image using the `docker images` command.
+
+	For example:
+    ```bash
+    $ docker images | grep wcsites
+	
+	oracle/wcsites     12.2.1.4-220419     ba99807045e0     3 weeks ago     3.88GB
+    ```
+	
+> Note: The default Oracle WebCenter Sites image name used for Oracle WebCenter Sites domains deployment is `oracle/wcsites:12.2.1.4`. The image obtained must be tagged as `oracle/wcsites:12.2.1.4` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wcsites:12.2.1.4` image name is used.
 	
 #### Pull Other Dependent Images
 
@@ -292,7 +301,7 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     
     ```bash
     $ sh kubernetes/create-rcu-credentials/create-rcu-credentials.sh \
-        -u WCS1 -p Welcome#123 -a sys -q Welcome#123 -n wcsites-ns \
+        -u WCS1 -p Oradoc_db1 -a sys -q Oradoc_db1 -n wcsites-ns \
         -d wcsitesinfra -s wcsitesinfra-rcu-credentials
      
     secret/wcsitesinfra-rcu-credentials created
@@ -302,8 +311,8 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     Where:
     
        * WCS1                             is the schema user
-       * Welcome#123                      is the schema password
-       * Welcome#123                      is the database SYS users password
+       * Oradoc_db1                       is the schema password
+       * Oradoc_db1                       is the database SYS users password
        * wcsitesinfra                     is the domain name
        * wcsites-ns                       is the domain namespace
        * wcsitesinfra-rcu-credentials     is the secret name
