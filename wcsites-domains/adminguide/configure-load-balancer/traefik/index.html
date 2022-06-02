@@ -12,18 +12,18 @@
     <title>Traefik :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429554" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168835" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168835"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429554"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429554"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168835"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168835"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429554"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168835"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5162,7 +5167,7 @@ Note: Here traefik is the Traefik namespace, <code>wcsites-ns</code> is the name
 <blockquote>
 <p>Helm upgrade for traefik</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade traefik traefik/traefik --namespace traefik     --reuse-values <span style="color:#ae81ff">\
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade traefik traefik/traefik --namespace traefik --reuse-values <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik,wcsites-ns}&#34;</span>
  
  
@@ -5175,119 +5180,26 @@ TEST SUITE: None
 </code></pre></div><h4 id="create-an-ingress-for-the-domain">Create an Ingress for the Domain</h4>
 <ol>
 <li>
-<p>Create an Ingress for the domain (<code>ingress-per-domain-wcsites</code>), in the domain namespace by using the sample Helm chart.
-Here we are using the path-based routing for ingress. For detailed instructions about ingress, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/ingress/">this page</a>).</p>
-<p>For now, you can update the <code>kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml</code> with appropriate values. Sample values are shown below:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml
-   
-<span style="color:#75715e"># Copyright 2020, Oracle Corporation and/or its affiliates.</span>
-<span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
-
-<span style="color:#75715e"># Default values for ingress-per-domain.</span>
-<span style="color:#75715e"># This is a YAML-formatted file.</span>
-<span style="color:#75715e"># Declare variables to be passed into your templates.</span>
-
-apiVersion: networking.k8s.io/v1beta1
-
-<span style="color:#75715e"># Load balancer type.  Supported values are: TRAEFIK, NGINX</span>
-type: TRAEFIK
-<span style="color:#75715e">#type: NGINX</span>
-
-<span style="color:#75715e"># WLS domain as backend to the load balancer</span>
-wlsDomain:
-  domainUID: wcsitesinfra
-  adminServerName: adminserver
-  adminServerPort: <span style="color:#ae81ff">7001</span>
-  wcsitesClusterName: wcsites_cluster
-  wcsitesManagedServerPort: <span style="color:#ae81ff">8001</span>
-
-
-<span style="color:#75715e"># Ngnix specific values</span>
-ngnix:
-  <span style="color:#75715e">#connect timeout</span>
-  connectTimeout: 1800s
-  <span style="color:#75715e">#read timeout</span>
-  readTimeout: 1800s
-  <span style="color:#75715e">#send timeout</span>
-  sendTimeout: 1800s  
-</code></pre></div></li>
+<p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress.
+Sample values for default configuration are shown in the file <code>${WORKDIR}/kubernetes/charts/ingress-per-domain/values.yaml</code>.
+By default, <code>type</code> is <code>TRAEFIK</code>, <code>sslType</code> is <code>NONSSL</code>, and <code>domainType</code> is <code>wcs</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>.<br>
+If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at <code>${WORKDIR}/kubernetes/charts/ingress-per-domain/templates/traefik-ingress.yaml</code>.</p>
+<p>For detailed instructions about ingress, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/ingress/">this page</a>.</p>
+<p>For now, you can update the <code>kubernetes/charts/ingress-per-domain/values.yaml</code> with appropriate values.</p>
+</li>
 <li>
-<p>Update the <code>kubernetes/create-wcsites-domain/ingress-per-domain/templates/traefik-ingress.yaml</code> with the url routes to be load balanced.</p>
-<p>Below are the defined ingress rules:</p>
-<p>NOTE: This is not an exhaustive list of rules. You can enhance it based on the application urls that need to be accessed externally. These rules hold good for domain type <code>WCSITES</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vi kubernetes/create-wcsites-domain/ingress-per-domain/templates/traefik-ingress.yaml
-   
-<span style="color:#75715e"># Copyright 2020, Oracle Corporation and/or its affiliates.</span>
-<span style="color:#75715e"># Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.</span>
-
-<span style="color:#f92672">{{</span>- <span style="color:#66d9ef">if</span> eq .Values.type <span style="color:#e6db74">&#34;TRAEFIK&#34;</span> <span style="color:#f92672">}}</span>
----
-apiVersion: <span style="color:#f92672">{{</span> .Values.apiVersion <span style="color:#f92672">}}</span>
-kind: Ingress
-metadata:
-  name: <span style="color:#f92672">{{</span> .Values.wlsDomain.domainUID <span style="color:#f92672">}}</span>-traefik
-  namespace: <span style="color:#f92672">{{</span> .	Release.Namespace <span style="color:#f92672">}}</span>
-  labels:
-    weblogic.resourceVersion: domain-v2
-  annotations:
-    kubernetes.io/ingress.class: traefik
-  rules:
-spec:
-  - host: <span style="color:#e6db74">&#39;{{ .Values.traefik.hostname }}&#39;</span>
-    http:
-      paths:
-      - path: /console
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
-      - path: /em
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
-      - path: /wls-exporter
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
-      - path: /weblogic
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
-      - path: /sbconsole
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.adminServerPort <span style="color:#f92672">}}</span>
-      - path: /sites
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.wcsitesManagedServerPort <span style="color:#f92672">}}</span>
-      - path: /cas
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.wcsitesManagedServerPort <span style="color:#f92672">}}</span>
-      - path: /wls-exporter
-        backend:
-          serviceName: <span style="color:#e6db74">&#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
-          servicePort: <span style="color:#f92672">{{</span> .Values.wlsDomain.wcsitesManagedServerPort <span style="color:#f92672">}}</span>
- <span style="color:#75715e">#     - path: /wls-cat</span>
- <span style="color:#75715e">#       backend:</span>
- <span style="color:#75715e">#         serviceName: &#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
- <span style="color:#75715e">#         servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}</span>
- <span style="color:#75715e">#     - path:</span>
- <span style="color:#75715e">#       backend:</span>
- <span style="color:#75715e">#         serviceName: &#39;{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace &#34;_&#34; &#34;-&#34; }}&#39;</span>
- <span style="color:#75715e">#         servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}</span>
-<span style="color:#f92672">{{</span>- end <span style="color:#f92672">}}</span>
-
-</code></pre></div></li>
+<p>Update the <code>kubernetes/charts/ingress-per-domain/templates/traefik-ingress.yaml</code> with the url routes to be load balanced.</p>
+<p>NOTE: This is not an exhaustive list of rules. You can enhance it based on the application urls that need to be accessed externally. These rules hold good for domain type <code>wcs</code>.</p>
+</li>
 <li>
 <p>Install &ldquo;ingress-per-domain&rdquo; using helm.</p>
 <blockquote>
 <p>Helm Install ingress-per-domain</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install wcsitesinfra-ingress kubernetes/create-wcsites-domain/ingress-per-domain <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--namespace wcsites-ns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--values kubernetes/create-wcsites-domain/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install wcsitesinfra-ingress kubernetes/charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --namespace wcsites-ns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --values kubernetes/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;traefik.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
 
 NAME: wcsitesinfra-ingress
 LAST DEPLOYED: Fri Jun <span style="color:#ae81ff">19</span> 00:18:50 <span style="color:#ae81ff">2020</span>
@@ -7841,22 +7753,6 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="co
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -7905,6 +7801,22 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="co
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -8758,19 +8670,19 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="co
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168835"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168835"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168835"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429554" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429554"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168835" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168835"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

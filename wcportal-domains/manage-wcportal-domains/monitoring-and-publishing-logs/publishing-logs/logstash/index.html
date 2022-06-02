@@ -4,26 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="Configure the ingress-based Voyager load balancer for an Oracle WebCenter Portal domain.">
+    <meta name="description" content="Describes how to configure a WebCenter Portal domain to use logstash and publish the WebLogic Server logs to Elasticsearch.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Voyager :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Logstash :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429554" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168836" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168836"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
+  <body class="" data-url="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
     <nav id="sidebar" class="">
 
 
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429554"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429554"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168836"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168836"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429554"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168836"></script>
 
     
   </div>
@@ -3614,7 +3614,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
-        parent
+        
         
         
         ">
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item active">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3724,7 +3705,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/" title="Monitor a domain and publish logs" class="dd-item 
-        
+        parent
         
         
         ">
@@ -3775,7 +3756,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/" title="Publish WebLogic Server logs into Elasticsearch" class="dd-item 
-        
+        parent
         
         
         ">
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5058,7 +5063,13 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcportal-domains/'>Oracle WebCenter Portal</a> > <a href='/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/'>Administration Guide</a> > <a href='/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/'>Set up a load balancer</a> > Voyager
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wcportal-domains/'>Oracle WebCenter Portal</a> > <a href='/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/'>Administration Guide</a> > <a href='/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/'>Monitor a domain and publish logs</a> > <a href='/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/'>Publish WebLogic Server logs into Elasticsearch</a> > Logstash
+          
+         
           
          
           
@@ -5099,7 +5110,7 @@
           
             <h1>
               
-              Voyager
+              Logstash
             </h1>
           
 
@@ -5107,581 +5118,102 @@
 
 
 
-<p><em>Voyager/HAProxy</em> is a popular ingress-based load balancer for production environments.
-You can install and configure <em>Voyager/HAProxy</em> to load balance Oracle WebCenter Portal domain clusters and configure it for non-SSL, SSL termination, and end-to-end SSL access of the application URL.
-Follow these steps to set up Voyager as a load balancer for an Oracle WebCenter Portal domain in a Kubernetes cluster:</p>
-<ul>
-<li>
-<p><a href="#non-ssl-and-ssl-termination"> Non-SSL and SSL termination</a></p>
-<ol>
-<li><a href="#install-the-voyager-load-balancer">Install the Voyager load balancer</a></li>
-<li><a href="#configure-voyager-to-manage-ingresses">Configure Voyager to manage ingresses</a></li>
-<li><a href="#verify-non-ssl-and-ssl-access">Verify non-SSL and SSL access</a></li>
-</ol>
-</li>
-<li>
-<p><a href="#end-to-end-ssl-configuration">  End-to-end SSL configuration</a></p>
-<ol>
-<li><a href="#install-voyager-load-balancer-for-end-to-end-ssl">Install Voyager load balancer for end-to-end SSL</a></li>
-<li><a href="#deploy-tls-to-access-services">Deploy tls to access the services</a></li>
-<li><a href="#verify-end-to-end-ssl-access">Verify end-to-end SSL access</a></li>
-</ol>
-</li>
-</ul>
-<h4 id="non-ssl-and-ssl-termination">Non-SSL and SSL termination</h4>
-<h5 id="install-the-voyager-load-balancer">Install the Voyager load balancer</h5>
+
+	<h4 id="install-elasticsearch-and-kibana">Install Elasticsearch and Kibana</h4>
+<p>To install Elasticsearch and Kibana, run the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/elasticsearch-and-kibana
+$ kubectl create -f elasticsearch_and_kibana.yaml
+</code></pre></div><h4 id="publish-to-elasticsearch">Publish to Elasticsearch</h4>
+<p>The diagnostics or other logs can be pushed to Elasticsearch server using logstash pod. The logstash pod should have access to the shared domain home or the log location. In case of the Oracle WebCenter Portal domain, the persistent volume of the domain home can be used in the logstash pod. The steps to create the logstash pod are,</p>
 <ol>
 <li>
-<p>Add the AppsCode chart repository:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm repo add appscode https://charts.appscode.com/stable/
-$ helm repo update
+<p>Get domain home persistence volume claim details of the Oracle WebCenter Portal domain. The following command will list the persistent volume claim details in the namespace - <code>wcpns</code>. In the example below the persistent volume claim is <code>wcp-domain-domain-pvc</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pv -n wcpns
+  NAME                   CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                         STORAGECLASS                      REASON   AGE
+  wcp-domain-domain-pv   10Gi       RWX            Retain           Bound    wcpns/wcp-domain-domain-pvc   wcp-domain-domain-storage-class            175d
 </code></pre></div></li>
 <li>
-<p>Verify that the chart repository has been added:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm search repo appscode/voyager
-</code></pre></div><blockquote>
-<p><strong>NOTE</strong>: After updating the Helm repository, the Voyager version listed may be newer that the one shown here. Check with the Voyager site for the latest supported versions.</p>
-</blockquote>
-</li>
-<li>
-<p>Install the Voyager operator:</p>
-<blockquote>
-<p><strong>NOTE</strong>: The Voyager version you install must match the version found with the helm search.</p>
-</blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace voyager
-$ helm install voyager-operator appscode/voyager --version 10.0.0 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --namespace voyager <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --set cloudProvider<span style="color:#f92672">=</span>baremetal <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --set apiserver.enableValidatingWebhook<span style="color:#f92672">=</span>false
-</code></pre></div><p>Wait until the Voyager operator is running.</p>
-</li>
-<li>
-<p>Check the status of the Voyager operator:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all -n voyager
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the sample output.
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <pre><code>  NAME                                   READY   STATUS    RESTARTS   AGE
-  pod/voyager-operator-b84f95f8f-4szhl   1/1     Running   0          43h
-
-  NAME                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
-  service/voyager-operator   ClusterIP   10.107.201.155   &lt;none&gt;        443/TCP,56791/TCP   43h
-
-  NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
-  deployment.apps/voyager-operator   1/1     1            1           43h
-
-  NAME                                         DESIRED   CURRENT   READY   AGE
-  replicaset.apps/voyager-operator-b84f95f8f   1         1         1       43h  
-</code></pre>
-
-    </div>
-</div>
-<p>See the official <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/master/kubernetes/samples/charts/voyager/README.md#a-step-by-step-guide-to-install-the-voyager-operator">installation document</a> for more details.</p>
-</li>
-<li>
-<p>Update the Voyager operator.
-Once the Voyager operator is installed, and it is running, upgrade it using the <code>helm upgrade</code> command. In this command, <code>voyager</code> is the Voyager namespace  and <code>wcpns</code> is the namespace of the domain.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ helm upgrade voyager-operator appscode/voyager --namespace voyager
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the sample output.
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <pre><code>Release &quot;voyager-operator&quot; has been upgraded. Happy Helming!
-NAME: voyager-operator
-LAST DEPLOYED: Mon Sep 28 11:53:43 2020
-NAMESPACE: voyager
-STATUS: deployed
-REVISION: 2
-TEST SUITE: None
-NOTES:
-Set cloudProvider for installing Voyager
-
-To verify that Voyager has started, run:
-
-kubectl get deployment --namespace voyager -l &quot;app.kubernetes.io/name=voyager,app.kubernetes.io/instance=voyager-operator&quot;
-</code></pre>
-
-    </div>
-</div>
-</li>
-</ol>
-<h5 id="configure-voyager-to-manage-ingresses">Configure Voyager to manage ingresses</h5>
-<ol>
-<li>
-<p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code> , <code>tls</code> is <code>Non-SSL</code>. You can override these values by passing your values through the command line or edit the existing values in the sample <code>values.yaml</code> file.</p>
-<p>If needed, you can update the ingress yaml file to define more path rules (in the <code>spec.rules.host.http.paths</code> section) based on the domain application URLs that need to be accessed. You need to update the template yaml file for the Voyager (ingress-based) load balancer located at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/voyager-ingress.yaml</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
- $ helm install wcp-voyager-ingress kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --namespace wcpns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>VOYAGER
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to check the output of the ingress per domain 
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: wcp-voyager-ingress
- LAST DEPLOYED: Mon Jul <span style="color:#ae81ff">20</span> 08:20:27 <span style="color:#ae81ff">2020</span>
- NAMESPACE: wcpns
- STATUS: deployed
- REVISION: <span style="color:#ae81ff">1</span>
- TEST SUITE: None
-</code></pre></div>
-    </div>
-</div>
-</li>
-<li>
-<p>For secured access (SSL) to the Oracle WebCenter Portal application, create a certificate and generate secrets:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=*&#34;</span>
- $ kubectl -n wcpns create secret tls wcpinfra-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
-</code></pre></div><blockquote>
-<p>Note: The value of <code>CN</code> is the host on which this ingress is to be deployed.</p>
-</blockquote>
-</li>
-<li>
-<p>Deploy  <code>ingress-per-domain</code> using Helm for SSL configuration.</p>
-<p>If needed, you can update the ingress yaml file to define more path rules (in the <code>spec.rules.host.http.paths section</code>) based on the domain application URLs that need to be accessed. You need to update the template yaml file for the Voyager (ingress-based) load balancer located at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/voyager-ingress.yaml</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
- $ helm install wcp-voyager-ingress kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --namespace wcpns  <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>VOYAGER <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --set tls<span style="color:#f92672">=</span>SSL
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the sample output of the above Commnad.
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: wcp-voyager-ingress
- LAST DEPLOYED: Mon Jul <span style="color:#ae81ff">20</span> 08:20:27 <span style="color:#ae81ff">2020</span>
- NAMESPACE: wcpns
- STATUS: deployed
- REVISION: <span style="color:#ae81ff">1</span>
- TEST SUITE: None
-</code></pre></div>
-    </div>
-</div>
-</li>
-<li>
-<p>For non-SSL access to the Oracle WebCenter Portal application, get the details of the services deployed by the above ingress:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe ingress.voyager.appscode.com/wcp-domain-voyager -n wcpns
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the sample output of the services supported by the above deployed ingress.
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <p>Sample output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Name:         wcp-domain-voyager
-Namespace:    wcpns
-Labels:       app.kubernetes.io/managed-by<span style="color:#f92672">=</span>Helm
-Annotations:  ingress.appscode.com/affinity: cookie
-              ingress.appscode.com/stats: true
-              ingress.appscode.com/type: NodePort
-              meta.helm.sh/release-name: wcp-voyager-ingress
-              meta.helm.sh/release-namespace: wcpns
-API Version:  voyager.appscode.com/v1beta1
-Kind:         Ingress
-Metadata:
-  Creation Timestamp:  2021-01-13T08:19:16Z
-  Generation:          <span style="color:#ae81ff">1</span>
-  Managed Fields:
-    API Version:  voyager.appscode.com/v1beta1
-    Fields Type:  FieldsV1
-    fieldsV1:
-      f:metadata:
-        f:annotations:
-          .:
-          f:ingress.appscode.com/affinity:
-          f:ingress.appscode.com/stats:
-          f:ingress.appscode.com/type:
-          f:meta.helm.sh/release-name:
-          f:meta.helm.sh/release-namespace:
-        f:labels:
-          .:
-          f:app.kubernetes.io/managed-by:
-      f:spec:
-        .:
-        f:rules:
-    Manager:         Go-http-client
-    Operation:       Update
-    Time:            2021-01-13T08:19:16Z
-  Resource Version:  <span style="color:#ae81ff">340890</span>
-  Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/wcpns/ingresses/wcp-domain-voyager
-  UID:               a06315c2-23ad-4916-a972-cd3555494eb8
-Spec:
-  Rules:
-    Host:  *
-    Http:
-      Node Port:  <span style="color:#ae81ff">30305</span>
-      Paths:
-        Backend:
-          Service Name:  wcp-domain-cluster-wcp-cluster
-          Service Port:  <span style="color:#ae81ff">8888</span>
-        Path:            /webcenter
-        Backend:
-          Service Name:  wcp-domain-adminserver
-          Service Port:  <span style="color:#ae81ff">7001</span>
-        Path:            /console
-        Backend:
-          Service Name:  wcp-domain-cluster-wcp-cluster
-          Service Port:  <span style="color:#ae81ff">8888</span>
-        Path:            /rsscrawl
-        Backend:
-          Service Name:  wcp-domain-adminserver
-          Service Port:  <span style="color:#ae81ff">7001</span>
-        Path:            /em
-Events:
-  Type    Reason                           Age   From              Message
-  ----    ------                           ----  ----              -------
-  Normal  ServiceReconcileSuccessful       62s   voyager-operator  Successfully created NodePort Service voyager-wcp-domain-voyager
-  Normal  ConfigMapReconcileSuccessful     62s   voyager-operator  Successfully created ConfigMap voyager-wcp-domain-voyager
-  Normal  RBACSuccessful                   62s   voyager-operator  Successfully created ServiceAccount voyager-wcp-domain-voyager
-  Normal  RBACSuccessful                   62s   voyager-operator  Successfully created Role voyager-wcp-domain-voyager
-  Normal  RBACSuccessful                   62s   voyager-operator  Successfully created RoleBinding voyager-wcp-domain-voyager
-  Normal  DeploymentReconcileSuccessful    62s   voyager-operator  Successfully created HAProxy Deployment voyager-wcp-domain-voyager
-  Normal  StatsServiceReconcileSuccessful  62s   voyager-operator  Successfully created stats Service voyager-wcp-domain-voyager-stats
-
-</code></pre></div>
-    </div>
-</div>
-</li>
-<li>
-<p>For SSL access to the Oracle WebCenter Portal application, get the details of the services by the above deployed ingress:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl describe ingress.voyager.appscode.com/wcp-domain-voyager -n wcpns
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see all  the services configured by the above deployed ingress.
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   Name:         wcp-domain-voyager
-   Namespace:    wcpns
-   Labels:       app.kubernetes.io/managed-by<span style="color:#f92672">=</span>Helm
-   Annotations:  ingress.appscode.com/affinity: cookie
-                 ingress.appscode.com/stats: true
-                 ingress.appscode.com/type: NodePort
-                 meta.helm.sh/release-name: wcp-domain-ingress
-                 meta.helm.sh/release-namespace: wcpns
-   API Version:  voyager.appscode.com/v1beta1
-   Kind:         Ingress
-   Metadata:
-     Creation Timestamp:  2021-01-15T05:40:20Z
-     Generation:          <span style="color:#ae81ff">1</span>
-     Managed Fields:
-       API Version:  voyager.appscode.com/v1beta1
-       Fields Type:  FieldsV1
-       fieldsV1:
-         f:metadata:
-           f:annotations:
-             .:
-             f:ingress.appscode.com/affinity:
-             f:ingress.appscode.com/stats:
-             f:ingress.appscode.com/type:
-             f:meta.helm.sh/release-name:
-             f:meta.helm.sh/release-namespace:
-           f:labels:
-             .:
-             f:app.kubernetes.io/managed-by:
-         f:spec:
-           .:
-           f:frontendRules:
-           f:rules:
-           f:tls:
-       Manager:         Go-http-client
-       Operation:       Update
-       Time:            2021-01-15T05:40:20Z
-     Resource Version:  <span style="color:#ae81ff">704682</span>
-     Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/wcpns/ingresses/wcp-domain-voyager
-     UID:               1e83c6a6-336f-4e29-b38a-023e00ca5cd5
-   Spec:
-     Frontend Rules:
-       Port:  <span style="color:#ae81ff">443</span>
-       Rules:
-         http-request set-header WL-Proxy-SSL true
-     Rules:
-       Host:  *
-       Http:
-         Node Port:  <span style="color:#ae81ff">30305</span>
-         Paths:
-           Backend:
-             Service Name:  wcp-domain-cluster-wcp-cluster
-             Service Port:  <span style="color:#ae81ff">8888</span>
-           Path:            /webcenter
-           Backend:
-             Service Name:  wcp-domain-adminserver
-             Service Port:  <span style="color:#ae81ff">7001</span>
-           Path:            /console
-           Backend:
-             Service Name:  wcp-domain-cluster-wcp-cluster
-             Service Port:  <span style="color:#ae81ff">8888</span>
-           Path:            /rsscrawl
-           Backend:
-              Service Name:  wcp-domain-cluster-wcp-cluster
-              Service Port:  <span style="color:#ae81ff">8888</span>
-           Path:            /rest
-           Backend:
-              Service Name:  wcp-domain-cluster-wcp-cluster
-              Service Port:  <span style="color:#ae81ff">8888</span>
-           Path:            /webcenterhelp
-           Backend:
-             Service Name:  wcp-domain-adminserver
-             Service Port:  <span style="color:#ae81ff">7001</span>
-           Path:            /em
-     Tls:
-       Hosts:
-         *
-       Secret Name:  domain1-tls-cert
-   Events:
-     Type    Reason                           Age   From              Message
-     ----    ------                           ----  ----              -------
-     Normal  ServiceReconcileSuccessful       54s   voyager-operator  Successfully created NodePort Service voyager-wcp-domain-voyager
-     Normal  ConfigMapReconcileSuccessful     54s   voyager-operator  Successfully created ConfigMap voyager-wcp-domain-voyager
-     Normal  RBACSuccessful                   54s   voyager-operator  Successfully created ServiceAccount voyager-wcp-domain-voyager
-     Normal  RBACSuccessful                   54s   voyager-operator  Successfully created Role voyager-wcp-domain-voyager
-     Normal  RBACSuccessful                   54s   voyager-operator  Successfully created RoleBinding voyager-wcp-domain-voyager
-     Normal  DeploymentReconcileSuccessful    54s   voyager-operator  Successfully created HAProxy Deployment voyager-wcp-domain-voyager
-     Normal  StatsServiceReconcileSuccessful  54s   voyager-operator  Successfully created stats Service voyager-wcp-domain-voyager-stats
-
-</code></pre></div>
-    </div>
-</div>
-</li>
-</ol>
-<h5 id="verify-non-ssl-and-ssl-access">Verify Non-SSL and SSL access</h5>
-<p>After setting up the Voyager (ingress-based) load balancer, verify that the Oracle WebCenter Portal domain applications are accessible through the load balancer port 30305 (both SSL and non-SSL). The application URLs for Oracle WebCenter Portal domain are:</p>
-<blockquote>
-<p>Note: Port 30305 is the LOADBALANCER-Non-SSLPORT and LOADBALANCER-SSLPORT.</p>
-</blockquote>
-<h5 id="non-ssl-configuration">Non-SSL configuration</h5>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/webcenter
- http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/console
- http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/em
- http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/rsscrawl
- http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/rest
- http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/webcenterhelp
-
-</code></pre></div><h5 id="ssl-configuration">SSL configuration</h5>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/webcenter
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/em
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/rsscrawl
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/rest
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/webcenterhelp
-
-</code></pre></div><h5 id="uninstall-the-chart">Uninstall the chart</h5>
-<p>To uninstall and delete the my-ingress deployment, enter the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm delete wcp-voyager-ingress -n wcpns
- $  helm delete voyager-operator -n voyager
-
-</code></pre></div><h4 id="end-to-end-ssl-configuration">End-to-end SSL configuration</h4>
-<h5 id="install-voyager-load-balancer-for-end-to-end-ssl">Install Voyager load balancer for end-to-end SSL</h5>
-<p>Install the Voyager load balancer as described <a href="#install-the-voyager-load-balancer">here</a>.</p>
-<ol>
-<li>
-<p>Check the status of the Voyager operator.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl get all -n voyager
-</code></pre></div><p>Sample output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  NAME                                   READY   STATUS    RESTARTS   AGE
-  pod/voyager-operator-b84f95f8f-4szhl   1/1     Running   <span style="color:#ae81ff">0</span>          43h
-
-  NAME                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>             AGE
-  service/voyager-operator   ClusterIP   10.107.201.155   &lt;none&gt;        443/TCP,56791/TCP   43h
-
-  NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
-  deployment.apps/voyager-operator   1/1     <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           43h
-
-  NAME                                         DESIRED   CURRENT   READY   AGE
-  replicaset.apps/voyager-operator-b84f95f8f   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       43h
+<p>Create logstash configuration file <code>logstash.conf</code>. Below is a sample Logstash configuration file is located at <code>${WORKDIR}/logging-services/logstash</code>. Below configuration pushes diagnostic and all domains logs.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">input <span style="color:#f92672">{</span>                                                                                                                
+  file <span style="color:#f92672">{</span>
+    path <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;/u01/oracle/user_projects/domains/wcp-domain/servers/**/logs/*-diagnostic.log&#34;</span>
+    start_position <span style="color:#f92672">=</span>&gt; beginning
+  <span style="color:#f92672">}</span>
+  file <span style="color:#f92672">{</span>
+    path <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;/u01/oracle/user_projects/domains/logs/wcp-domain/*.log&#34;</span>
+    start_position <span style="color:#f92672">=</span>&gt; beginning
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+   
+filter <span style="color:#f92672">{</span>                                                                                                               
+  grok <span style="color:#f92672">{</span>                                                                                                               
+    match <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;message&#34;</span>, <span style="color:#e6db74">&#34;&lt;%{DATA:log_timestamp}&gt; &lt;%{WORD:log_level}&gt; &lt;%{WORD:thread}&gt; &lt;%{HOSTNAME:hostname}&gt; &lt;%{HOSTNAME:servername}&gt; &lt;%{DATA:timer}&gt; &lt;&lt;%{DATA:kernel}&gt;&gt; &lt;&gt; &lt;%{DATA:uuid}&gt; &lt;%{NUMBER:timestamp}&gt; &lt;%{DATA:misc}&gt; &lt;%{DATA:log_number}&gt; &lt;%{DATA:log_message}&gt;&#34;</span> <span style="color:#f92672">]</span>                                                                                        
+  <span style="color:#f92672">}</span>                                                                                                                    
+<span style="color:#f92672">}</span>                                                                                                                         
+output <span style="color:#f92672">{</span>                                                                                                               
+  elasticsearch <span style="color:#f92672">{</span>                                                                                                      
+    hosts <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;elasticsearch.default.svc.cluster.local:9200&#34;</span><span style="color:#f92672">]</span>
+  <span style="color:#f92672">}</span>                                                                                                                    
+<span style="color:#f92672">}</span>
+   
 </code></pre></div></li>
 <li>
-<p>For secured access (SSL) to the Oracle WebCenter Portal application, create a certificate and generate Kuberentes secrets:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=*&#34;</span>
- $ kubectl -n wcpns create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+<p>Copy the <code>logstash.conf</code> into say <code>/u01/oracle/user_projects/domains</code> so that it can be used for logstash deployment, using Administration Server pod ( For example <code>wcp-domain-adminserver</code> pod in namespace <code>wcpns</code>):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl cp <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/logging-services/logstash/logstash.conf wcpns/wcp-domain-adminserver:/u01/oracle/user_projects/domains -n wcpns 
 </code></pre></div></li>
-</ol>
-<h5 id="deploy-tls-to-access-services">Deploy tls to access services</h5>
-<ol>
 <li>
-<p>Deploy tls to securely access the services. Only one application can be configured with ssl-passthrough. A sample tls file for Voyager is shown below for the service <code>wcp-domain-cluster-wcp-cluster</code> and port <code>8889</code>. All the applications running on port <code>8889</code> can be securely accessed through this ingress. For each backend service, create different ingresses as Voyager does not support multiple path/rules with annotation <code>ssl-passthrough</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the content of the file voyager-tls.yaml
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: voyager.appscode.com/v1beta1
-kind: Ingress
+<p>Create deployment YAML <code>logstash.yaml</code> for logstash pod using the domain home persistence volume claim. Make sure to point the logstash configuration file to correct location ( For example: we copied logstash.conf to /u01/oracle/user_projects/domains/logstash.conf) and also correct domain home persistence volume claim. Sample Logstash deployment is located at <code>kubernetes/samples/scripts/create-wcp-domain/utils/logstash/logstash.yaml</code>:</p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: voyager-ssl
+  name: logstash
   namespace: wcpns
-  annotations:
-    ingress.appscode.com/type: <span style="color:#e6db74">&#39;NodePort&#39;</span>
-    ingress.appscode.com/stats: <span style="color:#e6db74">&#39;true&#39;</span>
-    ingress.appscode.com/affinity: <span style="color:#e6db74">&#39;cookie&#39;</span>
-    ingress.appscode.com/ssl-passthrough: <span style="color:#e6db74">&#34;true&#34;</span>
 spec:
-  tls:
-    - secretName: domain1-tls-cert
-      hosts:
-        - <span style="color:#e6db74">&#39;*&#39;</span>
-  rules:
-    - host: <span style="color:#e6db74">&#39;*&#39;</span>
-      http:
-        nodePort: <span style="color:#e6db74">&#39;31443&#39;</span>
-        paths:
-          - path: /
-            backend:
-              serviceName: wcp-domain-cluster-wcp-cluster
-              servicePort: <span style="color:#e6db74">&#39;8889&#39;</span>
-
-</code></pre></div>
-    </div>
-</div>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl create -f voyager-tls.yaml
-</code></pre></div>
-<div class="expand">
-    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
-        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
-        <span>
-        
-    	
-    	Click here to see the services supported by the ingress
-    	
-    	</span>
-    </div>
-    <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> kubectl describe ingress.voyager.appscode.com/voyager-ssl -n wcpns
- Name:         voyager-ssl
- Namespace:    wcpns
- Labels:       &lt;none&gt;
- Annotations:  ingress.appscode.com/affinity: cookie
-           ingress.appscode.com/ssl-passthrough: true
-           ingress.appscode.com/stats: true
-           ingress.appscode.com/type: NodePort
- API Version:  voyager.appscode.com/v1beta1
- Kind:         Ingress
- Metadata:
- Creation Timestamp:  2020-07-20T04:34:05Z
- Generation:          <span style="color:#ae81ff">1</span>
- Managed Fields:
- API Version:  voyager.appscode.com/v1beta1
- Fields Type:  FieldsV1
- fieldsV1:
-   f:metadata:
-     f:annotations:
-       .:
-       f:ingress.appscode.com/affinity:
-       f:ingress.appscode.com/ssl-passthrough:
-       f:ingress.appscode.com/stats:
-       f:ingress.appscode.com/type:
-   f:spec:
-     .:
-     f:rules:
-     f:tls:
-  Manager:         kubectl
-  Operation:       Update
-  Time:            2020-07-20T04:34:05Z
- Resource Version:  <span style="color:#ae81ff">340071</span>
- Self Link:         /apis/voyager.appscode.com/v1beta1/namespaces/wcpns/ingresses/voyager-ssl
- UID:               4a9b2e02-1593-45b3-8ac4-ae1ac0f2832c
-Spec:
- Rules:
-   Host:  *
-   Http:
-     Node Port:  <span style="color:#ae81ff">31443</span>
-     Paths:
-      Backend:
-       Service Name:  wcp-domain-cluster-wcp-cluster
-       Service Port:  <span style="color:#ae81ff">8889</span>
-     Path:            /
-Tls:
- Hosts:
-   *
- Secret Name:  domain1-tls-cert
-Events:
-Type    Reason                           Age    From              Message
-----    ------                           ----   ----              -------
-Normal  ServiceReconcileSuccessful       7m37s  voyager-operator  Successfully created NodePort Service voyager-voyager-ssl
-N ormal  ConfigMapReconcileSuccessful     7m37s  voyager-operator  Successfully created ConfigMap voyager-voyager-ssl
-Normal  RBACSuccessful                   7m37s  voyager-operator  Successfully created ServiceAccount voyager-voyager-ssl
-Normal  RBACSuccessful                   7m37s  voyager-operator  Successfully created Role voyager-voyager-ssl
-Normal  RBACSuccessful                   7m37s  voyager-operator  Successfully created RoleBinding voyager-voyager-ssl
-Normal  DeploymentReconcileSuccessful    7m37s  voyager-operator  Successfully created HAProxy Deployment voyager-voyager-ssl
-Normal  StatsServiceReconcileSuccessful  7m37s  voyager-operator  Successfully created stats Service voyager-voyager-ssl-stats
-Normal  DeploymentReconcileSuccessful    3m5s   voyager-operator  Successfully patched HAProxy Deployment voyager-voyager-ssl
-</code></pre></div>
-    </div>
-</div>
-</li>
+  selector:
+    matchLabels:
+      app: logstash
+  template: 
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      volumes:
+      - name: domain-storage-volume
+        persistentVolumeClaim:
+          claimName: wcp-domain-domain-pvc
+      - name: shared-logs
+        emptyDir: {}
+      containers:
+      - name: logstash
+        image: logstash:6.6.0
+        command: [&quot;/bin/sh&quot;]
+        args: [&quot;/usr/share/logstash/bin/logstash&quot;, &quot;-f&quot;, &quot;/u01/oracle/user_projects/domains/logstash.conf&quot;]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects/domains
+          name: domain-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        ports:
+        - containerPort: 5044
+          name: logstash
+</code></pre></li>
+<li>
+<p>Deploy logstash to start publish logs to Elasticsearch</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   $ kubectl create -f  <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/logging-services/logstash/logstash.yaml
+</code></pre></div></li>
 </ol>
-<h5 id="verify-end-to-end-ssl-access">Verify end-to-end SSL access</h5>
-<p>Verify that the Oracle WebCenter Portal domain application URLs are accessible through the SSLPORT <code>31443</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/webcenter
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/rsscrawl
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/webcenterhelp
-https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/rest
+<h4 id="create-an-index-pattern-in-kibana">Create an Index Pattern in Kibana</h4>
+<p>Create an index pattern <code>logstash*</code> in <strong>Kibana &gt; Management</strong>. After the servers are started, you will see the log data in the Kibana dashboard:</p>
+<p><img src="wcp-kibana-dashboard.jpg" alt="WLS-Kibana-Dashboard"></p>
 
-</code></pre></div><h5 id="uninstall-the-voyager-tls">Uninstall the Voyager tls</h5>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
- $ kubectl  delete -f voyager-tls.yaml
- $ helm delete voyager-operator -n voyager
-</code></pre></div>
+
+
+
 
 <footer class=" footline" >
 	
 </footer>
-
 
         
         </div> 
@@ -8144,11 +7676,115 @@ https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="c
             
                 
                     
+                        
+                        
                     
                 
                 
 
                     
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
                     
                     
 
@@ -8205,106 +7841,6 @@ https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="c
             
         
                     
-                        
-            
-            
-                
-                    
-                        
-                        
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                        
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8318,6 +7854,9 @@ https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="c
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -9102,10 +8641,10 @@ https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="c
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/" title="NGINX"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/" title="WebLogic logging exporter"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wcportal-domains/create-or-update-image/" title="Create or update an image" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -9115,19 +8654,19 @@ https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="c
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168836"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429554"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168836"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429554" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429554"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168836"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
@@ -9135,4 +8674,3 @@ https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="c
 
   </body>
 </html>
-

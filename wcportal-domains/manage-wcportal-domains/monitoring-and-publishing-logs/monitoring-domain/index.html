@@ -12,18 +12,18 @@
     <title> Monitor a WebCenter Portal domain :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429555" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168836" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168836"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429555"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168836"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168836"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168836"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5080,11 +5085,10 @@
     <li>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-      </ul>
-    </li>
-    <li><a href="#set-up-the-weblogic-monitoring-exporter">Set Up the WebLogic Monitoring Exporter</a>
-      <ul>
-        <li></li>
+        <li><a href="#prepare-to-use-the-setup-monitoring-script">Prepare to use the setup monitoring script</a></li>
+        <li><a href="#run-the-setup-monitoring-script">Run the setup monitoring script</a></li>
+        <li><a href="#verify-the-results">Verify the results</a></li>
+        <li><a href="#delete-the-monitoring-setup">Delete the monitoring setup</a></li>
       </ul>
     </li>
   </ul>
@@ -5116,227 +5120,175 @@
 	<p>You can monitor a WebCenter Portal domain using Prometheus and Grafana by exporting the metrics from the domain instance using the WebLogic Monitoring Exporter. This sample shows you how to set up the WebLogic Monitoring Exporter to push the data to Prometheus.</p>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>This document assumes that the Prometheus Operator is deployed on the Kubernetes cluster. If it is not already deployed, follow the steps below for deploying the Prometheus Operator.</p>
-<h4 id="clone-the-kube-prometheus-project">Clone the kube-prometheus project</h4>
-<p>Refer to the compatibility matrix of <a href="https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix">Kube Prometheus</a> and clone the <a href="https://github.com/coreos/kube-prometheus/releases">release</a> version of the <code>kube-prometheus</code> repository according to the Kubernetes version of your cluster.
-$ git clone <a href="https://github.com/coreos/kube-prometheus.git">https://github.com/coreos/kube-prometheus.git</a></p>
-<pre><code>
-#### Label the nodes
-Kube-Prometheus requires all the exporter nodes to be labelled with `kubernetes.io/os=linux`. If a node is not labelled, then you must label it using the following command:
-
-</code></pre><p>$ kubectl label nodes &ndash;all kubernetes.io/os=linux</p>
-<pre><code>
-#### Create Prometheus and Grafana resources
-
-Change to the `kube-prometheus` directory and execute the following commands to create the namespace and CRDs:
-
-**NOTE**: Wait for a minute for each command to process.
-
-```bash
-$ cd kube-prometheus
-
-$ kubectl create -f manifests/setup
-$ until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo &quot;&quot;; done
-$ kubectl create -f manifests/
-</code></pre><h4 id="provide-external-access">Provide external access</h4>
-<p>To provide external access for Grafana, Prometheus, and Alertmanager, execute the commands below:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch svc grafana -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32100 }]&#39;</span>
-$ kubectl patch svc prometheus-k8s -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32101 }]&#39;</span>
-$ kubectl patch svc alertmanager-main -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32102 }]&#39;</span>
-</code></pre></div><p><strong>NOTE</strong>:</p>
+<h3 id="prepare-to-use-the-setup-monitoring-script">Prepare to use the setup monitoring script</h3>
+<p>The sample scripts for setup monitoring for OracleWebCenterPortal domain are available at <code>${WORKDIR}/monitoring-service</code>.</p>
+<p>You must edit <code>monitoring-inputs.yaml</code>(or a copy of it) to provide the details of your domain. Refer to the configuration parameters below to understand the information that you must provide in this file.</p>
+<h4 id="configuration-parameters">Configuration parameters</h4>
+<p>The following parameters can be provided in the inputs file.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>domainUID</code></td>
+<td>domainUID of the OracleWebCenterPortal domain.</td>
+<td><code>wcp-domain</code></td>
+</tr>
+<tr>
+<td><code>domainNamespace</code></td>
+<td>Kubernetes namespace of the OracleWebCenterPortal domain.</td>
+<td><code>wcpns</code></td>
+</tr>
+<tr>
+<td><code>setupKubePrometheusStack</code></td>
+<td>Boolean value indicating whether kube-prometheus-stack (Prometheus, Grafana and Alertmanager) to be installed</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>additionalParamForKubePrometheusStack</code></td>
+<td>The script install&rsquo;s kube-prometheus-stack with <code>service.type</code> as NodePort and values for <code>service.nodePort</code> as per the parameters defined in <code>monitoring-inputs.yaml</code>. Use <code>additionalParamForKubePrometheusStack</code> parameter to further configure with additional parameters as per <a href="https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml">values.yaml</a>. Sample value to disable NodeExporter, Prometheus-Operator TLS support and Admission webhook support for PrometheusRules resources is <code>--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>monitoringNamespace</code></td>
+<td>Kubernetes namespace for monitoring setup.</td>
+<td><code>monitoring</code></td>
+</tr>
+<tr>
+<td><code>adminServerName</code></td>
+<td>Name of the Administration Server.</td>
+<td><code>AdminServer</code></td>
+</tr>
+<tr>
+<td><code>adminServerPort</code></td>
+<td>Port number for the Administration Server inside the Kubernetes cluster.</td>
+<td><code>7001</code></td>
+</tr>
+<tr>
+<td><code>wcpClusterName</code></td>
+<td>Name of the wcpCluster.</td>
+<td><code>wcp_cluster</code></td>
+</tr>
+<tr>
+<td><code>wcpManagedServerPort</code></td>
+<td>Port number of the managed servers in the wcpCluster.</td>
+<td><code>8888</code></td>
+</tr>
+<tr>
+<td><code>wlsMonitoringExporterTowcpCluster</code></td>
+<td>Boolean value indicating whether to deploy WebLogic Monitoring Exporter to wcpCluster.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>wcpPortletClusterName</code></td>
+<td>Name of the wcpPortletCluster.</td>
+<td><code>wcportlet-cluster</code></td>
+</tr>
+<tr>
+<td><code>wcpManagedServerPort</code></td>
+<td>Port number of the Portlet managed servers in the wcpPortletCluster.</td>
+<td><code>8889</code></td>
+</tr>
+<tr>
+<td><code>wlsMonitoringExporterTowcpPortletCluster</code></td>
+<td>Boolean value indicating whether to deploy WebLogic Monitoring Exporter to wcpPortletCluster.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>exposeMonitoringNodePort</code></td>
+<td>Boolean value indicating if the Monitoring Services (Prometheus, Grafana and Alertmanager) is exposed outside of the Kubernetes cluster.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>prometheusNodePort</code></td>
+<td>Port number of the Prometheus outside the Kubernetes cluster.</td>
+<td><code>32101</code></td>
+</tr>
+<tr>
+<td><code>grafanaNodePort</code></td>
+<td>Port number of the Grafana outside the Kubernetes cluster.</td>
+<td><code>32100</code></td>
+</tr>
+<tr>
+<td><code>alertmanagerNodePort</code></td>
+<td>Port number of the Alertmanager outside the Kubernetes cluster.</td>
+<td><code>32102</code></td>
+</tr>
+<tr>
+<td><code>weblogicCredentialsSecretName</code></td>
+<td>Name of the Kubernetes secret which has Administration Server’s user name and password.</td>
+<td><code>wcp-domain-domain-credentials</code></td>
+</tr>
+</tbody>
+</table>
+<p>Note that the values specified in the <code>monitoring-inputs.yaml</code> file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and deploying WebLogic Monitoring Exporter into the OracleWebCenterPortal domain. Hence make the domain specific values to be same as that used during domain creation.</p>
+<h3 id="run-the-setup-monitoring-script">Run the setup monitoring script</h3>
+<p>Update the values in <code>monitoring-inputs.yaml</code> as per your requirement and run the <code>setup-monitoring.sh</code> script, specifying your inputs file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/monitoring-service
+$ ./setup-monitoring.sh <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -i monitoring-inputs.yaml
+</code></pre></div><p>The script will perform the following steps:</p>
 <ul>
-<li><code>32100</code> is the external port for Grafana</li>
+<li>Helm install <code>prometheus-community/kube-prometheus-stack</code> of version &ldquo;16.5.0&rdquo; if <code>setupKubePrometheusStack</code> is set to <code>true</code>.</li>
+<li>Deploys WebLogic Monitoring Exporter to Administration Server.</li>
+<li>Deploys WebLogic Monitoring Exporter to <code>wcpCluster</code> if <code>wlsMonitoringExporterTowcpCluster</code> is set to <code>true</code>.</li>
+<li>Deploys WebLogic Monitoring Exporter to <code>wcpPortletCluster</code> if <code>wlsMonitoringExporterTowcpPortletCluster</code> is set to <code>true</code>.</li>
+<li>Exposes the Monitoring Services (Prometheus at <code>32101</code>, Grafana at <code>32100</code> and Alertmanager at <code>32102</code>) outside of the Kubernetes cluster if <code>exposeMonitoringNodePort</code> is set to <code>true</code>.</li>
+<li>Imports the WebLogic Server Grafana Dashboard if <code>setupKubePrometheusStack</code> is set to <code>true</code>.</li>
+</ul>
+<h3 id="verify-the-results">Verify the results</h3>
+<p>The setup monitoring script will report failure if there was any error. However, verify that required resources were created by the script.</p>
+<h4 id="verify-the-kube-prometheus-stack">Verify the kube-prometheus-stack</h4>
+<p>To confirm that <code>prometheus-community/kube-prometheus-stack</code> was installed when <code>setupKubePrometheusStack</code> is set to <code>true</code>, run the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm ls -n monitoring
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm ls -n monitoring
+NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION
+monitoring      monitoring      <span style="color:#ae81ff">1</span>               2021-06-18 12:58:35.177221969 +0000 UTC deployed        kube-prometheus-stack-16.5.0    0.48.0
+$
+</code></pre></div><h4 id="verify-the-prometheus-grafana-and-alertmanager-setup">Verify the Prometheus, Grafana and Alertmanager setup</h4>
+<p>When <code>exposeMonitoringNodePort</code> was set to <code>true</code>, verify that monitoring services are accessible outside of the Kubernetes cluster:</p>
+<ul>
+<li><code>32100</code> is the external port for Grafana and with credentials <code>admin:admin</code></li>
 <li><code>32101</code> is the external port for Prometheus</li>
 <li><code>32102</code> is the external port for Alertmanager</li>
 </ul>
-<hr>
-<h2 id="set-up-the-weblogic-monitoring-exporter">Set Up the WebLogic Monitoring Exporter</h2>
-<p>Set up the WebLogic Monitoring Exporter to collect WebLogic Server metrics and monitor your WebCenter Portal domain.</p>
-<h4 id="generate-the-weblogic-monitoring-exporter-deployment-package">Generate the WebLogic Monitoring Exporter Deployment Package</h4>
-<p>Two packages are required as the listening ports are different for the Administration Server and Managed Servers.
-One binary required for the Admin Server (<code>wls-exporter-as.war</code>) and one for Managed Cluster (<code>wls-exporter-ms.war</code>).
-Set the required proxies and then run the script <code>getX.X.X.sh</code> to generate two binaries:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;$WORKDIR&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-monitoring-exporter
-
-$ sh get1.1.0.sh
-</code></pre></div><p>Output:</p>
-<pre><code>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   607    0   607    0     0    357      0 --:--:--  0:00:01 --:--:--   357
-100 2016k  100 2016k    0     0   398k      0  0:00:05  0:00:05 --:--:--  797k
--------------------wls-exporter-ms start-------------------
-created /tmp/ci-GNysQzP1kv
-Copying completed
-/tmp/ci-GNysQzP1kv &lt;$WORKDIR&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-monitoring-exporter
-in temp dir
-  adding: WEB-INF/weblogic.xml (deflated 66%)
-  adding: config.yml (deflated 63%)
-wls-exporter-ms.war is ready
--------------------wls-exporter-ms end-------------------
--------------------wls-exporter-as start-------------------
-Copying completed
-in temp dir
-  adding: WEB-INF/weblogic.xml (deflated 66%)
-  adding: config.yml (deflated 52%)
-wls-exporter-as.war is ready
--------------------wls-exporter-as end-------------------
-zip completed
-&lt;$WORKDIR&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-monitoring-exporter
-</code></pre><h4 id="copy-the-war-files-to-the-weblogic-domain-home">Copy the WAR Files to the WebLogic Domain Home</h4>
-<p>Copy the <code>wls-exporter-as.war</code> and <code>wls-exporter-ms.war</code> files to the domain home directory in the Administration Server pod.</p>
-<pre><code>$ kubectl cp wls-exporter-as.war wcpns/wcp-domain-adminserver:/u01/oracle/user_projects/domains/wcp-domain/
-
-$ kubectl cp wls-exporter-ms.war wcpns/wcp-domain-adminserver:/u01/oracle/user_projects/domains/wcp-domain/
-</code></pre><h4 id="deploy-the-weblogic-monitoring-exporter">Deploy the WebLogic Monitoring Exporter</h4>
-<p>Follow these steps to deploy the package in the WebLogic Server instances:</p>
+<h4 id="verify-the-service-discovery-of-weblogic-monitoring-exporter">Verify the service discovery of WebLogic Monitoring Exporter</h4>
+<p>Verify whether prometheus is able to discover wls-exporter and collect the metrics:</p>
 <ol>
 <li>
-<p>On the Administration Server and Managed Servers, deploy the WebLogic Monitoring Exporter (<code>wls-exporter-ms.war</code>) separately using the Oracle Enterprise Manager.</p>
-<p><img src="images/wme-deploy.png" alt="Wme-Deploy"></p>
+<p>Access the Prometheus dashboard at <a href="http://mycompany.com">http://mycompany.com</a>:32101/</p>
 </li>
 <li>
-<p>Select the servers to which the Exporter WAR should be deployed:</p>
-<p><img src="images/wme-deploy-target-server.png" alt="Wme-Deploy-Target-Server"></p>
+<p>Navigate to Status to see the Service Discovery details.</p>
 </li>
 <li>
-<p>Set the application name. The application name must be different if it is deployed separately in the Administration Server and Managed Servers. Make sure the context-root for both the deployments is <code>wls-exporter</code>:</p>
-<p><img src="images/wme-deploy-contextroot.png" alt="Wme-Deploy-Contextroot"></p>
-</li>
-<li>
-<p>Click <strong>Install and start application</strong>.</p>
-</li>
-<li>
-<p>Then deploy the WebLogic Monitoring Exporter application (<code>wls-exporter-ms.war</code>).</p>
-</li>
-<li>
-<p>Activate the changes to start the application. If the application is started and the port is exposed,
-then you can access the WebLogic Monitoring Exporter console using this URL: <code>http://&lt;server:port&gt;/wls-exporter</code>.</p>
-<p><img src="images/wme-test-url.png" alt="Wme-Test-Url"></p>
-</li>
-<li>
-<p>Repeat same steps for <code>wls-exporter-as.war</code>.</p>
+<p>Verify that wls-exporter is listed in the discovered services.</p>
 </li>
 </ol>
-<h4 id="configure-prometheus-operator">Configure Prometheus Operator</h4>
-<p>Prometheus enables you to collect metrics from the WebLogic Monitoring Exporter. The Prometheus Operator identifies the targets using service discovery. In order to Prometheus be able to discovery and scrape services inside the additional namespaces like <code>wcpns</code>, you must create a service monitor resource pointing to the services in <code>wcpns</code> namespace.</p>
-<p>See the following sample service monitor deployment YAML configuration file located at</p>
-<p><code>&lt;$WORKDIR&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-monitoring-exporter/wls-exporter.yaml</code>.</p>
-<p><code>ServiceMonitor</code> for wls-exporter:</p>
-<pre><code>apiVersion: v1
-kind: Secret
-metadata:
-  name: basic-auth
-  namespace: monitoring
-data:
-  password: d2VsY29tZTEK # welcome1 i.e.'WebLogic password'
-  user: d2VibG9naWM= # weblogic  i.e. 'WebLogic username'
-type: Opaque
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: wls-exporter-wcp-domain
-  namespace: monitoring
-  labels:
-    k8s-app: wls-exporter
-spec:
-  namespaceSelector:
-    matchNames:
-    - wcpns
-  selector:
-    matchLabels:
-      weblogic.domainName: wcp-domain
-  endpoints:
-  - basicAuth:
-      password:
-        name: basic-auth
-        key: password
-      username:
-        name: basic-auth
-        key: user
-    port: default
-    relabelings:
-      - action: labelmap
-        regex: __meta_kubernetes_service_label_(.+)
-    interval: 10s
-    honorLabels: true
-    path: /wls-exporter/metrics
-</code></pre><p>To export metrics using <code>wls-exporter,</code> you need to set basicAuth in Prometheus. So create a Kubernetes <code>Secret</code> with the user name and password that are <code>base64</code> encoded. This Secret will be used in the ServiceMonitor deployment.</p>
-<p>When generating the base64 encoded strings for the user name and password, observe if a new line character is appended in the encoded string. This line character causes an authentication failure. To avoid a new line string, use the following example:</p>
-<pre><code>$ echo -n &quot;Welcome1&quot; | base64
-V2VsY29tZTE=
-</code></pre><p>In the deployment YAML configuration for <code>wls-exporter</code> shown above, <code>weblogic.domainName: wcp-domain</code> is used as a label under <code>spec.selector.matchLabels</code>, so all the services are selected for the service monitor. If you don&rsquo;t use this label, you should create separate service monitors for each server&ndash;if the server name is used as matching labels in <code>spec.selector.matchLabels</code>.  Doing so will require you to relabel the configuration because Prometheus, by default, ignores the labels provided in the <em>wls-exporter</em>.</p>
-<p>By default, Prometheus does not store all the labels provided by the target. In the service monitor deployment YAML configuration, you must mention the relabeling configuration (<code>spec.endpoints.relabelings</code>) so that certain labels provided by <code>weblogic-monitoring-exporter</code> (required for the Grafana dashboard) are stored in Prometheus. Do not delete the following section from the configuration YAML file:</p>
-<pre><code>relabelings:
-  - action: labelmap
-    regex: __meta_kubernetes_service_label_(.+)
-</code></pre><h4 id="add-rolebinding-and-role-for-the-weblogic-domain-namespace">Add <code>RoleBinding</code> and <code>Role</code> for the WebLogic Domain Namespace</h4>
-<p>The RoleBinding is required for Prometheus to access the endpoints provided by the WebLogic Monitoring Exporter. You need to add RoleBinding for the namespace under which the WebLogic Servers pods are running in the Kubernetes cluster. Edit the <code>kube-prometheus/manifests/prometheus-roleBindingSpecificNamespaces.yaml</code> file in the Prometheus Operator deployment manifests and add the <code>RoleBinding</code> for the namespace (<code>wcpns</code>) similar to the following example:</p>
-<pre><code>- apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
-  metadata:
-    name: prometheus-k8s
-    namespace: wcpns
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: prometheus-k8s
-  subjects:
-  - kind: ServiceAccount
-    name: prometheus-k8s
-    namespace: monitoring
-</code></pre><p>In the Prometheus Operator deployment manifests located at <code>kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml,</code> add the <code>Role</code> for the namespace <code>wcpns</code> under which the WebLogic Servers pods are running in the Kubernetes cluster. See the following example:</p>
-<pre><code>- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    name: prometheus-k8s
-    namespace: wcpns
-  rules:
-  - apiGroups:
-    - &quot;&quot;
-    resources:
-    - services
-    - endpoints
-    - pods
-    verbs:
-    - get
-    - list
-    - watch
-</code></pre><p>Then apply <code>prometheus-roleBindingSpecificNamespaces.yaml</code> and <code>prometheus-roleSpecificNamespaces.yaml</code> for the <code>RoleBinding</code> and <code>Role</code> to take effect in the cluster.</p>
-<pre><code>$ kubectl apply -f kube-prometheus/manifests/prometheus-roleBindingSpecificNamespaces.yaml
-
-$ kubectl apply -f kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml
-</code></pre><h4 id="deploy-the-service-monitor">Deploy the Service Monitor</h4>
-<p>To deploy the service monitor, use the above <code>wls-exporter.yaml</code> deployment YAML and run the following command:</p>
-<pre><code>$ kubectl create -f &lt;$WORKDIR&gt;/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-monitoring-exporter/wls-exporter.yaml
-</code></pre><h4 id="enable-prometheus-to-discover-the-service">Enable Prometheus to Discover the Service</h4>
-<p>After deploying the service monitor, Prometheus should be able to discover <em>wls-exporter</em> and export metrics.</p>
-<p>You can access the Prometheus dashboard at <code>http://mycompany.com:32101/</code>.</p>
-<p><img src="images/wme-service-discovery.png" alt="Wme-Service-Discovery"></p>
-<h4 id="deploy-grafana-dashboard">Deploy Grafana Dashboard</h4>
-<p>To view the domain metrics, deploy the Grafana dashboard provided in the <a href="https://github.com/oracle/weblogic-monitoring-exporter/tree/master/samples/kubernetes/end2end#monitoring-weblogic-server-with-the-grafana-dashboard">WebLogic Monitoring Exporter</a>.</p>
-<p>You can access the Grafana dashboard at <code>http://mycompany.com:32100/</code>.</p>
+<h4 id="verify-the-weblogic-server-dashoard">Verify the WebLogic Server dashoard</h4>
+<p>You can access the Grafana dashboard at <a href="http://mycompany.com">http://mycompany.com</a>:32100/.</p>
 <ol>
 <li>
-<p>Log in to Grafana dashboard with <code>admin/admin</code>.</p>
+<p>Log in to Grafana dashboard with username: <code>admin</code> and password: <code>admin</code>.</p>
 </li>
 <li>
-<p>Go to <strong>Settings</strong>, then select <strong>DataSources</strong>, and then <strong>Add Data Source</strong>.</p>
-<p>HTTP URL: Prometheus URL <code>http://mycompany.com:32101/</code></p>
-<p>Auth: Enable Basic Auth</p>
-<p>Basic Auth Details: Weblogic credentials provided in the step <a href="#configure-prometheus-operator">Configure Prometheus Operator</a></p>
-<p><img src="images/wme-gp-add-datasource.png" alt="Wme-GP-Add-Datasource"></p>
-</li>
-<li>
-<p>Download the <code>weblogic_dashboard.json</code> file from <a href="weblogic_dashboard.json">here</a>.</p>
-</li>
-<li>
-<p>Click <strong>Add</strong> and then <strong>Import</strong>. Paste the modified JSON in the <strong>Paste JSON</strong> block, and then load it.</p>
-<p><img src="images/wme-gp-import-json.png" alt="Wme-GP-Import-Json"></p>
+<p>Navigate to &ldquo;WebLogic Server Dashboard&rdquo; under General and verify.</p>
 <p>This displays the WebLogic Server Dashboard.</p>
 <p><img src="images/wcp-graphana-dashboard.png" alt="Wme-GP-WLS-Dashboard"></p>
 </li>
 </ol>
-
+<h3 id="delete-the-monitoring-setup">Delete the monitoring setup</h3>
+<p>To delete the monitoring setup created by <a href="#run-the-setup-monitoring-script">Run the setup monitoring script</a>, run the below command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/monitoring-service
+$ ./delete-monitoring.sh <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -i monitoring-inputs.yaml
+</code></pre></div>
 
 
 
@@ -7865,22 +7817,6 @@ $ kubectl apply -f kube-prometheus/manifests/prometheus-roleSpecificNamespaces.y
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -7934,6 +7870,22 @@ $ kubectl apply -f kube-prometheus/manifests/prometheus-roleSpecificNamespaces.y
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -8777,19 +8729,19 @@ $ kubectl apply -f kube-prometheus/manifests/prometheus-roleSpecificNamespaces.y
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168836"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168836"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429555" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429555"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168836"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

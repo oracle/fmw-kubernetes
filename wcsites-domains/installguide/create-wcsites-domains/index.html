@@ -12,18 +12,18 @@
     <title>Create Oracle WebCenter Sites domains :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429555" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429555" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168836" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168836" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168836"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429555"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168836"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168836"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429555"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168836"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5115,6 +5120,7 @@
 <li><a href="#configure-webcenter-sites">Configure WebCenter Sites</a></li>
 <li><a href="#settings-in-webcenter-sites-property-management">Settings in WebCenter Sites Property Management</a></li>
 <li><a href="#for-publishing-setting-in-webcenter-sites">For Publishing Setting in WebCenter Sites</a></li>
+<li><a href="#customization">Customization</a></li>
 </ul>
 <h4 id="introduction">Introduction</h4>
 <p>This document details on how to use sample scripts to demonstrate the creation of a WebCenter Sites domain home on an
@@ -5211,7 +5217,7 @@ artifacts of the corresponding domain.</p>
 <tr>
 <td><code>image</code></td>
 <td>WebCenter Sites Docker image. The Operator requires WebCenter Sites release 12.2.1.4.0. Refer to <a href="https://oracle.github.io/fmw-kubernetes/wcsites-domains/installguide/prepare-your-environment/#build-oracle-webcenter-sites-image">WebCenter Sites Docker image</a> for details on how to obtain or create the image.</td>
-<td><code>oracle/wcsites:12.2.1.4-21.1.1</code></td>
+<td><code>oracle/wcsites:12.2.1.4</code></td>
 </tr>
 <tr>
 <td><code>imagePullPolicy</code></td>
@@ -5296,7 +5302,7 @@ artifacts of the corresponding domain.</p>
 <tr>
 <td><code>serverPodCpuRequest</code>, <code>serverPodMemoryRequest</code>, <code>serverPodCpuCLimit</code>, <code>serverPodMemoryLimit</code></td>
 <td>The maximum amount of compute resources allowed and minimum amount of compute resources required for each server pod. Please refer to the Kubernetes documentation on <code>Managing Compute Resources for Containers</code> for details.</td>
-<td>Resource requests and resource limits are not specified. Refer to <a href="../pre-requisites/#webcenter-sites-cluster-sizing-recommendations">WebCenter Sites Cluster Sizing Recommendations</a> for more details.</td>
+<td>Resource requests and resource limits are not specified. Refer to <a href="../prerequisites/#webcenter-sites-cluster-sizing-recommendations">WebCenter Sites Cluster Sizing Recommendations</a> for more details.</td>
 </tr>
 <tr>
 <td><code>rcuSchemaPrefix</code></td>
@@ -5405,7 +5411,7 @@ export configuredManagedServerCount<span style="color:#f92672">=</span><span sty
 export initialManagedServerReplicas<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>
 export managedServerNameBase<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsites_server&#34;</span>
 export managedServerPort<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8001&#34;</span>
-export image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle/wcsites:12.2.1.4-21.1.1&#34;</span>
+export image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle/wcsites:12.2.1.4&#34;</span>
 export imagePullPolicy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
 export productionModeEnabled<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span>
 export weblogicCredentialsSecretName<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;wcsitesinfra-domain-credentials&#34;</span>
@@ -5713,7 +5719,6 @@ NAME                                                    READY   STATUS      REST
 wcsitesinfra-adminserver                                1/1     Running     0          56m
 wcsitesinfra-create-fmw-infra-sample-domain-job-rq4xv   0/1     Completed   0          65m
 wcsitesinfra-wcsites-server1                            1/1     Running     0          41m
-wcsitesinfra-wcsites-server2                            1/1     Running     0          41m
 </code></pre><h5 id="verify-the-services">Verify the Services</h5>
 <p>Use the following command to see the services for the domain:</p>
 <pre><code>$ kubectl get services -n NAMESPACE
@@ -8312,22 +8317,6 @@ wcsitesinfra-wcsites-server1-np   NodePort   10.105.167.205   &lt;none&gt;      
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8376,6 +8365,22 @@ wcsitesinfra-wcsites-server1-np   NodePort   10.105.167.205   &lt;none&gt;      
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -9231,19 +9236,19 @@ wcsitesinfra-wcsites-server1-np   NodePort   10.105.167.205   &lt;none&gt;      
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168836"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168836"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429555" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429555"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168836"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429554" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429554" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168835" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168835" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429554"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168835"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429554"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429554"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168835"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168835"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429554"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168835"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5188,7 +5193,7 @@ $ git clone https://github.com/oracle/docker-images.git
 <p>Copy the additional WebLogic Image Tool build files from the operator source repository to the <code>imagetool-setup</code> location:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p imagetool-setup/docker-images/OracleWebCenterPortal/imagetool/12.2.1.4.0
 $ cd imagetool-setup/docker-images/OracleWebCenterPortal/imagetool/12.2.1.4.0
-$ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts/* .
+$ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/imagetool-scripts/* .
 </code></pre></div></li>
 </ol>
 <blockquote>
@@ -5306,6 +5311,7 @@ $ imagetool cache addEntry --key 31852495_12.2.1.4.0 --value &lt;download locati
 --version=12.2.1.4.0
 --tag=oracle/wcportal:12.2.1.4
 --pull
+--fromImage ghcr.io/oracle/oraclelinux:7-slim
 --additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterPortal/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/container-scripts
 --opatchBugNumber 28186730_13.9.4.2.5
@@ -5318,7 +5324,7 @@ $ imagetool cache addEntry --key 31852495_12.2.1.4.0 --value &lt;download locati
 <li><code>--pull</code> always pulls the latest base Linux image <code>oraclelinux:7-slim</code> from the Docker registry. This flag can be removed if you want to use the Linux image <code>oraclelinux:7-slim</code>, which is already available on the host where the WCP image is created.</li>
 </ul>
 </blockquote>
-<p>Refer to <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
+<p>Refer to <a href="https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
 </li>
 <li>
 <p>Create the Oracle WebCenter Portal image:</p>
@@ -5509,7 +5515,7 @@ $ imagetool cache addEntry --key 31852495_12.2.1.4.0 --value &lt;download locati
 <li><code>–-patches</code> - Multiple patches can be specified as a comma-separated list.</li>
 <li><code>--tag</code> - Specify the new tag to be applied for the image being built.</li>
 </ul>
-<p>Refer <a href="https://github.com/oracle/weblogic-image-tool/blob/master/site/update-image.md">here</a> for the complete list of options available with the WebLogic Image Tool <code>update</code> command.</p>
+<p>Refer <a href="https://oracle.github.io/weblogic-image-tool/userguide/tools/update-image/">here</a> for the complete list of options available with the WebLogic Image Tool <code>update</code> command.</p>
 <blockquote>
 <p>Note: The WebLogic Image Tool cache should have the latest OPatch zip. The WebLogic Image Tool updates the OPatch if it is not already updated in the image.</p>
 </blockquote>
@@ -5528,13 +5534,13 @@ $ imagetool cache addEntry --key 31852495_12.2.1.4.0 --value &lt;download locati
     <div class="expand-content" style="display: none;">
         <pre><code>    $ imagetool update --fromImage oracle/wcportal:12.2.1.4 --tag=wcportal:12.2.1.4-32224021 --patches=32224021_12.2.1.4.0
     [INFO   ] Image Tool build ID: 50f9b9aa-596c-4bae-bdff-c47c16b4c928
-    [INFO   ] Temporary directory used for docker build context: /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp5130105621506307568
-    [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/asirasag/imagetool-setup/jars/p28186730_139425_Generic.zip
+    [INFO   ] Temporary directory used for docker build context: /scratch/imagetoolcache/builddir/wlsimgbuilder_temp5130105621506307568
+    [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/imagetool-setup/jars/p28186730_139425_Generic.zip
     [INFO   ] Updating OPatch in final image from version 13.9.4.2.1 to version 13.9.4.2.5
     [WARNING] Skipping patch conflict check, no support credentials provided
     [WARNING] No credentials provided, skipping validation of patches
-    [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/asirasag/imagetool-setup/jars/p32224021_122140_Generic.zip
-    [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://www-proxy.us.oracle.com:80 --build-arg https_proxy=http://www-proxy.us.oracle.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,.us.oracle.com,.oraclecorp.com,/var/run/docker.sock,100.111.157.155 /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp5130105621506307568
+    [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/imagetool-setup/jars/p32224021_122140_Generic.zip
+    [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg https_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg no_proxy=&lt;IP addresses and Domain address for no_proxy&gt;,/var/run/docker.sock &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp5130105621506307568
     Sending build context to Docker daemon  192.4MB
     
     Step 1/9 : FROM oracle/wcportal:12.2.1.4 as final_build
@@ -6192,13 +6198,13 @@ $ imagetool cache addEntry --key 31852495_12.2.1.4.0 --value &lt;download locati
     <div class="expand-content" style="display: none;">
         <pre><code> $ imagetool update --fromImage oracle/wcportal:12.2.1.4 --tag=wcportal:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --dryRun
  [INFO   ] Image Tool build ID: a473ba32-84b6-4374-9425-9e92ac90ee87
- [INFO   ] Temporary directory used for docker build context: /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp874401188519547557
- [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/asirasag/imagetool-setup/jars/p28186730_139425_Generic.zip
+ [INFO   ] Temporary directory used for docker build context: /scratch/imagetoolcache/builddir/wlsimgbuilder_temp874401188519547557
+ [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/imagetool-setup/jars/p28186730_139425_Generic.zip
  [INFO   ] Updating OPatch in final image from version 13.9.4.2.1 to version 13.9.4.2.5
  [WARNING] Skipping patch conflict check, no support credentials provided
  [WARNING] No credentials provided, skipping validation of patches
- [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/asirasag/imagetool-setup/jars/p32224021_122140_Generic.zip
- [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://www-proxy.us.oracle.com:80 --build-arg https_proxy=http://www-proxy.us.oracle.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,.us.oracle.com,.oraclecorp.com,/var/run/docker.sock,100.111.157.155 /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp874401188519547557
+ [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/imagetool-setup/jars/p32224021_122140_Generic.zip
+ [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg https_proxy=http://&lt;YOUR-COMPANY-PROXY&gt; --build-arg no_proxy=&lt;IP addresses and Domain address for no_proxy&gt;,/var/run/docker.sock &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp874401188519547557
  ########## BEGIN DOCKERFILE ##########
  #
  # Copyright (c) 2019, 2021, Oracle and/or its affiliates.
@@ -8795,22 +8801,6 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8859,6 +8849,22 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -9693,7 +9699,7 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/" title="WebLogic logging exporter"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash"> <i class="fa fa-chevron-left"></i></a>
 		
 		
 			<a class="nav nav-next" href="/fmw-kubernetes/wcportal-domains/cleanup-domain-setup/" title="Uninstall an Oracle WebCenter Portal domain" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
@@ -9706,19 +9712,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168836"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429555"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429555"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168836"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168836"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429555" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429555"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168836" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168836"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

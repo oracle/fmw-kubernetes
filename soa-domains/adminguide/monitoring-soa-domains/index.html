@@ -12,18 +12,18 @@
     <title>Monitor a domain and publish logs :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429553" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168834" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168834"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429553"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168834"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168834"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168834"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5112,43 +5117,7 @@
 <h3 id="monitor-the-oracle-soa-suite-instance-using-prometheus-and-grafana">Monitor the Oracle SOA Suite instance using Prometheus and Grafana</h3>
 <p>Using the <code>WebLogic Monitoring Exporter</code> you can scrape runtime information from a running Oracle SOA Suite instance and monitor them using Prometheus and Grafana.</p>
 <h4 id="set-up-monitoring">Set up monitoring</h4>
-<p>Follow these <a href="https://github.com/oracle/fmw-kubernetes/blob/v22.1.2/OracleSOASuite/kubernetes/monitoring-service/README.md">steps</a> to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see <a href="https://github.com/oracle/weblogic-monitoring-exporter">here</a>.</p>
-<h4 id="deploy-prometheus-and-grafana">Deploy Prometheus and Grafana</h4>
-<blockquote>
-<p>NOTE: Follow the steps in this section, if you intend to manually set up the monitoring for an Oracle SOA Suite instance. Otherwise, you can skip it.</p>
-</blockquote>
-<p>Refer to the compatibility matrix of <a href="https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix">Kube Prometheus</a> and clone the <a href="https://github.com/coreos/kube-prometheus/releases">release</a> version of the <code>kube-prometheus</code> repository according to the Kubernetes version of your cluster.</p>
-<ol>
-<li>
-<p>Clone the <code>kube-prometheus</code> repository:</p>
-<pre><code>$ git clone https://github.com/coreos/kube-prometheus.git
-</code></pre></li>
-<li>
-<p>Change to folder <code>kube-prometheus</code> and enter the following commands to create the namespace and CRDs, and then wait for their availability before creating the remaining resources:</p>
-<pre><code>$ cd kube-prometheus
-$ kubectl create -f manifests/setup
-$ until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo &quot;&quot;; done
-$ kubectl create -f manifests/
-</code></pre></li>
-<li>
-<p><code>kube-prometheus</code> requires all nodes in the Kubernetes cluster to be labeled with <code>kubernetes.io/os=linux</code>. If any node is not labeled with this, then you need to label it using the following command:</p>
-<pre><code>$ kubectl label nodes --all kubernetes.io/os=linux
-</code></pre></li>
-<li>
-<p>Enter the following commands to provide external access for Grafana, Prometheus, and Alertmanager:</p>
-<pre><code>$ kubectl patch svc grafana -n monitoring --type=json -p '[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/type&quot;, &quot;value&quot;: &quot;NodePort&quot; },{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/ports/0/nodePort&quot;, &quot;value&quot;: 32100 }]'
-
-$ kubectl patch svc prometheus-k8s -n monitoring --type=json -p '[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/type&quot;, &quot;value&quot;: &quot;NodePort&quot; },{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/ports/0/nodePort&quot;, &quot;value&quot;: 32101 }]'
-
-$ kubectl patch svc alertmanager-main -n monitoring --type=json -p '[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/type&quot;, &quot;value&quot;: &quot;NodePort&quot; },{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/ports/0/nodePort&quot;, &quot;value&quot;: 32102 }]'
-</code></pre><p>Note:</p>
-<ul>
-<li><code>32100</code> is the external port for Grafana</li>
-<li><code>32101</code> is the external port for Prometheus</li>
-<li><code>32102</code> is the external port for Alertmanager</li>
-</ul>
-</li>
-</ol>
+<p>Follow these <a href="https://github.com/oracle/fmw-kubernetes/blob/v22.2.2/OracleSOASuite/kubernetes/monitoring-service/README.md">steps</a> to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see <a href="https://github.com/oracle/weblogic-monitoring-exporter">here</a>.</p>
 <h3 id="publish-weblogic-server-logs-into-elasticsearch">Publish WebLogic Server logs into Elasticsearch</h3>
 <p>You can publish the WebLogic Server logs to Elasticsearch using the <code>WebLogic Logging exporter</code> and interact with them in Kibana.
 See <a href="https://github.com/oracle/weblogic-logging-exporter">Publish logs to Elasticsearch</a>.</p>
@@ -7766,22 +7735,6 @@ spec:
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -7830,6 +7783,22 @@ spec:
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -8673,19 +8642,19 @@ spec:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168834"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168834"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429553" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429553"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168834" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168834"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

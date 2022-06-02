@@ -12,18 +12,18 @@
     <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429553" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168834" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168834"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429553"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168834"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168834"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168834"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5126,13 +5131,6 @@
 <ol>
 <li>
 <p>Deploy the <code>ingress-nginx</code> controller by using Helm on the domain namespace:</p>
-<p>For Kubernetes versions up to v1.18.x:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n soans <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --version<span style="color:#f92672">=</span>3.34.0 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    ingress-nginx/ingress-nginx
-</code></pre></div><p>For Kubernetes versions v1.19.x+ onwards (NGINX version 4.0.6+):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n soans <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
@@ -5150,7 +5148,7 @@
     </div>
     <div class="expand-content" style="display: none;">
         <pre><code>  NAME: nginx-ingress
-  LAST DEPLOYED: Tue Sep 15 08:40:47 2020
+  LAST DEPLOYED: Thu May  5 13:27:30 2022
   NAMESPACE: soans
   STATUS: deployed
   REVISION: 1
@@ -5167,21 +5165,23 @@
 
   An example ingress that makes use of the controller:
 
-    apiVersion: networking.k8s.io/v1beta1
+    apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
-      annotations:
-        kubernetes.io/ingress.class: nginx
       name: example
       namespace: foo
     spec:
+      ingressClassName: nginx
       rules:
       - host: www.example.com
         http:
         paths:
-          - backend:
-            serviceName: exampleService
-            servicePort: 80
+          - pathType: Prefix
+            backend:
+              service:
+                name: exampleService
+                port:
+                  number: 80
           path: /
    # This section is only required if TLS is to be enabled for the ingress
    tls:
@@ -5211,9 +5211,9 @@
 <li>
 <p>For <strong>secured access (SSL and E2ESSL)</strong> to the Oracle SOA Suite application, create a certificate and generate secrets:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=domain1.org&#34;</span>
- $ kubectl -n soans create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+ $ kubectl -n soans create secret tls soainfra-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
 </code></pre></div><blockquote>
-<p>Note: The value of <code>CN</code> is the host on which this ingress is to be deployed.</p>
+<p>Note: The value of <code>CN</code> is the host on which this ingress is to be deployed and secret name should be &lt;domainUID&gt;-tls-cert.</p>
 </blockquote>
 </li>
 </ol>
@@ -5221,17 +5221,8 @@
 <ol>
 <li>
 <p>Deploy the ingress-nginx controller by using Helm on the domain namespace:</p>
-<p>For Kubernetes versions up to v1.18.x:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n soans <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>       --version<span style="color:#f92672">=</span>3.34.0 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>       --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>soans/domain1-tls-cert <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>       --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>       --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>       --set controller.extraArgs.enable-ssl-passthrough<span style="color:#f92672">=</span>true  <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        ingress-nginx/ingress-nginx
-</code></pre></div><p>For Kubernetes versions v1.19.x+ onwards (NGINX version 4.0.6+):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n soans <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>       --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>soans/domain1-tls-cert <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>       --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>soans/soainfra-tls-cert <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>       --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>       --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>       --set controller.extraArgs.enable-ssl-passthrough<span style="color:#f92672">=</span>true  <span style="color:#ae81ff">\
@@ -5249,7 +5240,7 @@
     </div>
     <div class="expand-content" style="display: none;">
         <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    NAME: nginx-ingress
-    LAST DEPLOYED: Tue Sep <span style="color:#ae81ff">15</span> 08:40:47 <span style="color:#ae81ff">2020</span>
+    LAST DEPLOYED: Thu May  <span style="color:#ae81ff">5</span> 12:21:50 <span style="color:#ae81ff">2022</span>
     NAMESPACE: soans
     STATUS: deployed
     REVISION: <span style="color:#ae81ff">1</span>
@@ -5266,21 +5257,23 @@
 
     An example Ingress that makes use of the controller:
 
-      apiVersion: networking.k8s.io/v1beta1
+      apiVersion: networking.k8s.io/v1
       kind: Ingress
       metadata:
-        annotations:
-          kubernetes.io/ingress.class: nginx
         name: example
         namespace: foo
       spec:
+        ingressClassName: nginx
         rules:
         - host: www.example.com
           http:
           paths:
-            - backend:
-              serviceName: exampleService
-              servicePort: <span style="color:#ae81ff">80</span>
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: <span style="color:#ae81ff">80</span>
             path: /
      <span style="color:#75715e"># This section is only required if TLS is to be enabled for the Ingress</span>
      tls:
@@ -5312,16 +5305,22 @@
 <h4 id="configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</h4>
 <ol>
 <li>
+<p>Choose an appropriate <code>LOADBALANCER_HOSTNAME</code> for accessing the Oracle SOA Suite domain application URLs.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span>&lt;LOADBALANCER_HOSTNAME&gt;
+</code></pre></div><p>For example, if you are executing the commands from a master node terminal, where the master hostname is <code>LOADBALANCER_HOSTNAME</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export LOADBALANCER_HOSTNAME<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span>
+</code></pre></div></li>
+<li>
 <p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code> , <code>sslType</code> is <code>NONSSL</code>, and <code>domainType</code> is <code>soa</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>.<br>
 If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at <code>${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml</code>.</p>
 <blockquote>
-<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v22.1.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
+<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v22.2.2/OracleSOASuite/kubernetes/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
 </blockquote>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
  $ helm install soa-nginx-ingress  charts/ingress-per-domain <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX
 </code></pre></div><p>Sample output:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: soa-nginx-ingress
@@ -5337,7 +5336,7 @@ TEST SUITE: None
  $ helm install soa-nginx-ingress  charts/ingress-per-domain <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --namespace soans <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX --set sslType<span style="color:#f92672">=</span>SSL
 </code></pre></div><p>Sample output:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: soa-nginx-ingress
@@ -5423,7 +5422,7 @@ Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
  Address:          100.111.150.225
  Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
  TLS:
-   domain1-tls-cert terminates domain1.org
+   soainfra-tls-cert terminates domain1.org
  Rules:
     Host                                                   Path  Backends
     ----                                                   ----  --------
@@ -5470,7 +5469,7 @@ Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
  Address:
  Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
  TLS:
-  domain1-tls-cert terminates admin.org
+  soainfra-tls-cert terminates admin.org
  Rules:
    Host        Path  Backends
    ----        ----  --------
@@ -5490,7 +5489,7 @@ Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
  Address:
  Default backend:  default-http-backend:80 (&lt;error: endpoints &quot;default-http-backend&quot; not found&gt;)
  TLS:
-  domain1-tls-cert terminates soa.org
+  soainfra-tls-cert terminates soa.org
  Rules:
   Host        Path  Backends
   ----        ----  --------
@@ -5512,47 +5511,72 @@ Events:
 </ol>
 <h4 id="verify-domain-application-url-access">Verify domain application URL access</h4>
 <h5 id="nonssl-configuration">NONSSL configuration</h5>
-<p>Verify that the Oracle SOA Suite domain application URLs are accessible through the <code>LOADBALANCER-Non-SSLPORT</code> <code>32125</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
-  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/console
-  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/em
-  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/soa-infra
-  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/soa/composer
-  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
-</code></pre></div><h5 id="ssl-configuration">SSL configuration</h5>
-<p>Verify that the Oracle SOA Suite domain application URLs are accessible through the <code>LOADBALANCER-SSLPORT</code> <code>30233</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
-  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
-  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/em
-  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa-infra
-  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa/composer
-  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
-</code></pre></div><h5 id="e2essl-configuration">E2ESSL configuration</h5>
-<p>Before accessing the SOA Suite domain application URLs, update the system host config file with the IP address of the host on which the ingress is deployed.</p>
 <ul>
 <li>
-<p>To access the application URLs from the browser, update <code>/etc/hosts</code> on the browser host (in Windows, <code>C:\Windows\System32\Drivers\etc\hosts</code>) with the entries below</p>
+<p>Get the <code>LOADBALANCER_NON_SSLPORT</code> NodePort of NGINX using the command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ LOADBALANCER_NON_SSLPORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans  get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+$ echo <span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+<li>
+<p>Verify that the Oracle SOA Suite domain application URLs are accessible through the <code>LOADBALANCER_NON_SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/console
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/em
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_NON_SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div></li>
+</ul>
+<h5 id="ssl-configuration">SSL configuration</h5>
+<ul>
+<li>
+<p>Get the <code>LOADBALANCER_SSLPORT</code> NodePort of NGINX using the command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ LOADBALANCER_SSLPORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans  get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+$ echo <span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+<li>
+<p>Verify that the Oracle SOA Suite domain application URLs are accessible through the <code>LOADBALANCER_SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/console
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/em
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+</code></pre></div></li>
+</ul>
+<h5 id="e2essl-configuration">E2ESSL configuration</h5>
+<ul>
+<li>
+<p>To access the SOA Suite domain application URLs from a remote browser, update the browser host config file <code>/etc/hosts</code> (In Windows, <code>C:\Windows\System32\Drivers\etc\hosts</code>) with the IP address of the host on which the ingress is deployed with below entries:</p>
 <pre><code>X.X.X.X  admin.org
 X.X.X.X  soa.org
 X.X.X.X  osb.org
 </code></pre><blockquote>
-<p>Note: The value of X.X.X.X is the host IP address on which this ingress is deployed.</p>
-</blockquote>
-<blockquote>
-<p>Note: If you are behind any corporate proxy, make sure to update the browser proxy settings appropriately to access the host names updated <code>/etc/hosts</code> file.</p>
+<p>Note:</p>
+<ul>
+<li>The value of X.X.X.X is the host IP address on which this ingress is deployed.</li>
+<li>If you are behind any corporate proxy, make sure to update the browser proxy settings appropriately to access the host names updated <code>/etc/hosts</code> file.</li>
+</ul>
 </blockquote>
 </li>
-</ul>
-<p>Verify that the Oracle SOA Suite domain application URLs are accessible through <code>LOADBALANCER-E2ESSLPORT</code> <code>30233</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
-https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
-https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/em
-https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa-infra
-https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/soa/composer
-https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
+<li>
+<p>Get the <code>LOADBALANCER_SSLPORT</code> NodePort of NGINX using the command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ LOADBALANCER_SSLPORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace soans  get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+$ echo <span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+<li>
+<p>Verify that the Oracle SOA Suite domain application URLs are accessible through <code>LOADBALANCER_SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/console
+https://admin.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/em
+https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa-infra
+https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/soa/composer
+https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span style="color:#e6db74">}</span>/integration/worklistapp
 
-</code></pre></div><blockquote>
-<p>Note: This is the default host name. If you have updated the host name in <code>value.yaml</code>, then use the updated values.</p>
+</code></pre></div></li>
+</ul>
+<blockquote>
+<p>Note: This is the default host name. If you have updated the host name in <code>values.yaml</code>, then use the updated values.</p>
 </blockquote>
 <h4 id="uninstall-nginx-ingress">Uninstall NGINX ingress</h4>
 <p>Uninstall and delete the <code>ingress-nginx</code> deployment:</p>
@@ -8091,22 +8115,6 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span s
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8155,6 +8163,22 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span s
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -8998,19 +9022,19 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168834"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168834"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429553" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429553"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168834" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168834"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

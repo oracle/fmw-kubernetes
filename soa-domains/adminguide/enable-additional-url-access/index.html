@@ -12,18 +12,18 @@
     <title>Enable additional URL access :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1650429553" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1650429553" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1654168834" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1654168834" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654168834"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1650429553"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654168834"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654168834"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1650429553"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654168834"></script>
 
     
   </div>
@@ -3676,25 +3676,6 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/" title="Voyager" class="dd-item ">
-        <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/voyager/">
-        <b>c. </b>Voyager
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
       <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
         <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
         <b>d. </b>Apache webtier
@@ -3832,6 +3813,30 @@
         ">
       <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
           <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
           
       </a>
       
@@ -5099,15 +5104,13 @@
 <ol>
 <li>
 <p>Update the template YAML file at <code>${WORKDIR}/charts/ingress-per-domain/templates/</code> to define additional path rules.</p>
-<p>For example, to extend an existing NGINX-based ingress with additional paths <code>/path1</code> and <code>/path2</code> of an Oracle SOA Suite cluster, update <code>nginx-ingress.yaml</code> (for the supported Kubernetes versions up to 1.18.x) with additional paths:</p>
-<blockquote>
-<p>Note: For Kubernetes versions, 1.19+, you need to update the <code>nginx-ingress-k8s1.19.yaml</code> file.</p>
-</blockquote>
-<pre><code># Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+<p>For example, to extend an existing NGINX-based ingress with additional paths <code>/path1</code> and <code>/path2</code> of an Oracle SOA Suite cluster, update <code>nginx-ingress-nonssl.yaml</code>, <code>nginx-ingress-ssl.yaml</code>, or <code>nginx-ingress-e2essl.yaml</code> accordingly with additional paths:</p>
+<pre><code># Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 {{- if eq .Values.type &quot;NGINX&quot; }}
+{{- if (eq .Values.sslType &quot;NONSSL&quot;) }}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 .
 .
@@ -5116,20 +5119,22 @@ spec:
   - host: '{{ .Values.nginx.hostname }}'
     http:
       paths:
-      # Add new paths -- start  
+      # Add new paths -- start
       - path: /path1
         backend:
-          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace &quot;_&quot; &quot;-&quot; }}'
-          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace &quot;_&quot; &quot;-&quot; }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort  }}
       - path: /path2
         backend:
-          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace &quot;_&quot; &quot;-&quot; }}'
-          servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace &quot;_&quot; &quot;-&quot; }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort  }}
       # Add new paths -- end
       - path: /console
         backend:
-          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace &quot;_&quot; &quot;-&quot; }}'
-          servicePort: {{ .Values.wlsDomain.adminServerPort }}
 .
 .
 {{- end }}
@@ -7709,22 +7714,6 @@ soainfra-nginx   &lt;none&gt;   domain1.org  10.109.211.160   80, 443    xxd
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -7773,6 +7762,22 @@ soainfra-nginx   &lt;none&gt;   domain1.org  10.109.211.160   80, 443    xxd
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -8616,19 +8621,19 @@ soainfra-nginx   &lt;none&gt;   domain1.org  10.109.211.160   80, 443    xxd
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1654168834"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1650429553"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1650429553"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1654168834"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1654168834"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1650429553" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1650429553"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654168834" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654168834"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

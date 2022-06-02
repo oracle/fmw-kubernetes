@@ -1,0 +1,4467 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="This document provides steps to configure an ingress controller to direct traffic to OUD.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.2.1/images/favicon.png" type="image/png">
+
+    <title>Configure an Ingress for OUD :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.2.1/css/nucleus.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/fontawesome-all.min.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/hybrid.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/featherlight.min.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/perfect-scrollbar.min.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/auto-complete.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/atom-one-dark-reasonable.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/theme.css?1650429556" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.1/css/hugo-theme.css?1650429556" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.2.1/js/jquery-3.6.0.min.js?1650429556"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.2.1/oud/configure-ingress/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.2.1">
+  <img src="/fmw-kubernetes/22.2.1/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.2.1/js/lunr.min.js?1650429556"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.1/js/auto-complete.js?1650429556"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.2.1";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.1/js/search.js?1650429556"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/" title="Oracle Access Management" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/">
+          Oracle Access Management
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/prepare-your-environment/">
+          <b>3. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/create-oam-domains/" title="Create OAM domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/create-oam-domains/">
+          <b>4. </b>Create OAM domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/configure-ingress/" title="Configure an Ingress for an OAM domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/configure-ingress/">
+          <b>5. </b>Configure an Ingress for an OAM domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/validate-domain-urls/" title="Validate Domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/validate-domain-urls/">
+          <b>6. </b>Validate Domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/post-install-config/" title="Post Install Configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/post-install-config/">
+          <b>7. </b>Post Install Configuration
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/validate-sso-using-webgate/" title="Validate a Basic SSO Flow using WebGate Registration " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/validate-sso-using-webgate/">
+          <b>8. </b>Validate a Basic SSO Flow using WebGate Registration 
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/" title="Manage OAM Domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/">
+          <b>9. </b>Manage OAM Domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/domain-lifecycle/" title="a. Domain Life Cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/domain-lifecycle/">
+        a. Domain Life Cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/wlst-admin-operations/" title="b. WLST Administration Operations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/wlst-admin-operations/">
+        b. WLST Administration Operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/logging-and-visualization/" title="c. Logging and Visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/logging-and-visualization/">
+        c. Logging and Visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/monitoring-oam-domains/" title="d. Monitoring an OAM domain" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/monitoring-oam-domains/">
+        d. Monitoring an OAM domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/delete-domain-home/" title="e. Delete the OAM domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/manage-oam-domains/delete-domain-home/">
+        e. Delete the OAM domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/create-or-update-image/">
+          <b>10. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/patch-and-upgrade/">
+          <b>11. </b>Patch and Upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/patch-and-upgrade/patch_an_image/" title="a. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/patch-and-upgrade/patch_an_image/">
+        a. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oam/patch-and-upgrade/upgrade_an_operator_release/" title="b. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oam/patch-and-upgrade/upgrade_an_operator_release/">
+        b. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oam/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oam/troubleshooting/">
+          <b>12. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/" title="Oracle Identity Governance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/">
+          Oracle Identity Governance
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/prepare-your-environment/">
+          <b>3. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/create-oig-domains/" title="Create OIG domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/create-oig-domains/">
+          <b>4. </b>Create OIG domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/configure-ingress/" title="Configure an ingress for an OIG domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/configure-ingress/">
+          <b>5. </b>Configure an ingress for an OIG domain
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/" title="a. Using an Ingress with NGINX (non-SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/">
+        a. Using an Ingress with NGINX (non-SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/" title="b. Using an Ingress with NGINX (SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/">
+        b. Using an Ingress with NGINX (SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/validate-domain-urls/" title="Validate domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/validate-domain-urls/">
+          <b>6. </b>Validate domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/post-install-config/" title="Post install configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/post-install-config/">
+          <b>7. </b>Post install configuration
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/post-install-config/set_oimfronendurl_using_mbeans/" title="a. Post Install Tasks" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/post-install-config/set_oimfronendurl_using_mbeans/">
+        a. Post Install Tasks
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/post-install-config/install_and_configure_connectors/" title="b. Install and configure connectors" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/post-install-config/install_and_configure_connectors/">
+        b. Install and configure connectors
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/configure-design-console/" title="Configure Design Console" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/configure-design-console/">
+          <b>8. </b>Configure Design Console
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/configure-design-console/using-the-design-console-with-nginx-non-ssl/" title="a. Using Design Console with NGINX(non-SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/configure-design-console/using-the-design-console-with-nginx-non-ssl/">
+        a. Using Design Console with NGINX(non-SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/configure-design-console/using-the-design-console-with-nginx-ssl/" title="b. Using Design Console with NGINX(SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/configure-design-console/using-the-design-console-with-nginx-ssl/">
+        b. Using Design Console with NGINX(SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/" title="Manage OIG domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/">
+          <b>9. </b>Manage OIG domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/domain-lifecycle/" title="Domain life cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/domain-lifecycle/">
+        <b>1. </b>Domain life cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/wlst-admin-operations/" title="WLST administration operations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/wlst-admin-operations/">
+        <b>2. </b>WLST administration operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/running-oig-utilities/" title="Runnning OIG utilities" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/running-oig-utilities/">
+        <b>3. </b>Runnning OIG utilities
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/logging-and-visualization/" title="Logging and visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/logging-and-visualization/">
+        <b>4. </b>Logging and visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/monitoring-oim-domains/" title="Monitoring an OIG domain" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/monitoring-oim-domains/">
+        <b>5. </b>Monitoring an OIG domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/delete-domain-home/" title="Delete the OIG domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/manage-oig-domains/delete-domain-home/">
+        <b>6. </b>Delete the OIG domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/create-or-update-image/">
+          <b>10. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/patch-and-upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/patch-and-upgrade/">
+          <b>11. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/patch-and-upgrade/patch_an_image/" title="a. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/patch-and-upgrade/patch_an_image/">
+        a. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oig/patch-and-upgrade/upgrade_an_operator_release/" title="b. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oig/patch-and-upgrade/upgrade_an_operator_release/">
+        b. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oig/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oig/troubleshooting/">
+          <b>12. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/" title="Oracle Unified Directory" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/">
+          Oracle Unified Directory
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oud/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oud/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/prepare-your-environment/">
+          <b>3. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/create-oud-instances/" title="Create Oracle Unified Directory Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/create-oud-instances/">
+          <b>4. </b>Create Oracle Unified Directory Instances
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/configure-ingress/" title="Configure an Ingress for OUD" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/configure-ingress/">
+          <b>5. </b>Configure an Ingress for OUD
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/" title="Manage Oracle Unified Directory Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/">
+          <b>6. </b>Manage Oracle Unified Directory Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/scaling-up-down/" title="a) Scaling Up/Down OUD Pods " class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/scaling-up-down/">
+        a) Scaling Up/Down OUD Pods 
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/logging-and-visualization/" title="b) Logging and Visualization for Helm Chart oud-ds-rs Deployment" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/logging-and-visualization/">
+        b) Logging and Visualization for Helm Chart oud-ds-rs Deployment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/monitoring-oud-instance/" title="c) Monitoring an Oracle Unified Directory Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/monitoring-oud-instance/">
+        c) Monitoring an Oracle Unified Directory Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/create-or-update-image/">
+          <b>7. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oud/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oud/patch-and-upgrade/">
+        <b>8. </b>Patch and Upgrade
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oud/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oud/troubleshooting/">
+          <b>9. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/" title="Oracle Unified Directory Services Manager" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/">
+          Oracle Unified Directory Services Manager
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oudsm/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/prepare-your-environment/">
+          <b>3. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/create-oudsm-instances/">
+          <b>4. </b>Create Oracle Unified Directory Services Manager Instances
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/configure-ingress/" title="Configure an Ingress for OUDSM" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/configure-ingress/">
+          <b>5. </b>Configure an Ingress for OUDSM
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/" title="Manage Oracle Unified Directory Services Manager Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/">
+          <b>6. </b>Manage Oracle Unified Directory Services Manager Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/scaling-up-down/" title="a) Scaling Up/Down OUDSM Pods " class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/scaling-up-down/">
+        a) Scaling Up/Down OUDSM Pods 
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/logging-and-visualization/" title="b) Logging and Visualization for Helm Chart oudsm Deployment" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/logging-and-visualization/">
+        b) Logging and Visualization for Helm Chart oudsm Deployment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/" title="c) Monitoring an Oracle Unified Directory Services Manager Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/">
+        c) Monitoring an Oracle Unified Directory Services Manager Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/create-or-update-image/">
+          <b>7. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oudsm/patch-and-upgrade/">
+        <b>8. </b>Patch and Upgrade
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oudsm/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oudsm/troubleshooting/">
+          <b>9. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/" title="Oracle Internet Directory" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/">
+          Oracle Internet Directory
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oid/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oid/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/prerequisites/">
+          <b>2. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/prepare-your-environment/">
+          <b>3. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/create-oid-instances/" title="Create Oracle Internet Directory Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/create-oid-instances/">
+          <b>4. </b>Create Oracle Internet Directory Instances
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/configure-ingress/" title="Configure an Ingress for OID" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/configure-ingress/">
+          <b>5. </b>Configure an Ingress for OID
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/manage-oid-containers/" title="Manage Oracle Internet Directory Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/manage-oid-containers/">
+          <b>6. </b>Manage Oracle Internet Directory Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oid/manage-oid-containers/scaling-up-down/" title="a) Scaling Up/Down OID Pods " class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oid/manage-oid-containers/scaling-up-down/">
+        a) Scaling Up/Down OID Pods 
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oid/manage-oid-containers/monitoring-oid-instance/" title="c) Monitoring an Oracle Internet Directory Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oid/manage-oid-containers/monitoring-oid-instance/">
+        c) Monitoring an Oracle Internet Directory Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/create-or-update-image/">
+          <b>7. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.1/oid/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.1/oid/patch-and-upgrade/">
+        <b>8. </b>Patch and Upgrade
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.1/oid/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.1/oid/troubleshooting/">
+          <b>9. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.2.1/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.2.1/oud/'>Oracle Unified Directory</a> > Configure an Ingress for OUD
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#install-nginx">Install NGINX</a></li>
+        <li><a href="#access-to-interfaces-through-ingress">Access to interfaces through ingress</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Configure an Ingress for OUD
+            </h1>
+          
+
+        
+
+
+
+
+	<ol>
+<li>
+<p><a href="#introduction">Introduction</a></p>
+</li>
+<li>
+<p><a href="#install-nginx">Install NGINX</a></p>
+<p>a. <a href="#configure-the-repository">Configure the repository</a></p>
+<p>b. <a href="#create-a-namespace">Create a namespace</a></p>
+<p>c. <a href="#install-nginx-using-helm">Install NGINX using helm</a></p>
+</li>
+<li>
+<p><a href="#access-to-interfaces-through-ingress">Access to interfaces through ingress</a></p>
+<p>a. <a href="#changes-in-etchosts-to-validate-hostname-based-ingress-rules">Changes in /etc/hosts to validate hostname based ingress rules</a></p>
+<p>b. <a href="#using-ldap-utilities">Using LDAP utilities</a></p>
+<p>c. <a href="#validate-access-using-ldap">Validate access using LDAP</a></p>
+<p>d. <a href="#validate-access-using-https">Validate access using HTTPS</a></p>
+</li>
+</ol>
+<h3 id="introduction">Introduction</h3>
+<p>The instructions below explain how to set up NGINX as an ingress for OUD.</p>
+<p>By default the ingress configuration only supports HTTP and HTTPS ports. To allow LDAP and LDAPS communication over TCP, configuration is required at the ingress controller/implementation level.</p>
+<h3 id="install-nginx">Install NGINX</h3>
+<p>Use Helm to install NGINX.</p>
+<h4 id="configure-the-repository">Configure the repository</h4>
+<ol>
+<li>
+<p>Add the Helm chart repository for installing NGINX using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm repo add stable https://kubernetes.github.io/ingress-nginx
+</code></pre></div><p>The output will look similar to the following:</p>
+<pre><code>&quot;stable&quot; has been added to your repositories
+</code></pre></li>
+<li>
+<p>Update the repository using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm repo update
+</code></pre></div><p>The output will look similar to the following:</p>
+<pre><code>Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;stable&quot; chart repository
+Update Complete. Happy Helming!
+</code></pre></li>
+</ol>
+<h4 id="create-a-namespace">Create a namespace</h4>
+<ol>
+<li>
+<p>Create a Kubernetes namespace for NGINX:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace &lt;namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace mynginx
+</code></pre></div><p>The output will look similar to the following:</p>
+<pre><code>namespace/mynginx created
+</code></pre></li>
+</ol>
+<h4 id="install-nginx-using-helm">Install NGINX using helm</h4>
+<ol>
+<li>
+<p>Create a <code>$WORKDIR/kubernetes/helm/nginx-ingress-values-override.yaml</code> that contains the following:</p>
+<p><strong>Note</strong>: The configuration below:</p>
+<ul>
+<li>Assumes that you have <code>oud-ds-rs</code> installed with value <code>oud-ds-rs</code> as a deployment/release name in the namespace <code>oudns</code>. If using a different deployment name and/or namespace change appropriately.</li>
+<li>Deploys an ingress using LoadBalancer. If you prefer to use NodePort, change the configuration accordingly. For more details about NGINX configuration see: <a href="https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/">NGINX Ingress Controller</a>.</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># Configuration for additional TCP ports to be exposed through Ingress</span>
+<span style="color:#75715e"># Format for each port would be like:</span>
+<span style="color:#75715e"># &lt;PortNumber&gt;: &lt;Namespace&gt;/&lt;Service&gt;</span>
+<span style="color:#66d9ef">tcp</span>:
+  <span style="color:#75715e"># Map 1389 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port</span>
+  <span style="color:#66d9ef">1389</span>: oudns/oud-ds-rs-lbr-ldap:ldap
+  <span style="color:#75715e"># Map 1636 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port</span>
+  <span style="color:#66d9ef">1636</span>: oudns/oud-ds-rs-lbr-ldap:ldaps
+<span style="color:#66d9ef">controller</span>:
+  <span style="color:#66d9ef">admissionWebhooks</span>:
+    <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">false</span>
+  <span style="color:#66d9ef">extraArgs</span>:
+    <span style="color:#75715e"># The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.</span>
+    <span style="color:#75715e"># If this flag is not provided NGINX will use a self-signed certificate.</span>
+    <span style="color:#75715e"># If the TLS Secret is in different namespace, name can be mentioned as &lt;namespace&gt;/&lt;tlsSecretName&gt;</span>
+    <span style="color:#66d9ef">default-ssl-certificate</span>: oudns/oud-ds-rs-tls-cert
+  <span style="color:#66d9ef">service</span>:
+    <span style="color:#75715e"># controller service external IP addresses</span>
+    <span style="color:#75715e"># externalIPs:</span>
+    <span style="color:#75715e">#   - &lt; External IP Address &gt;</span>
+    <span style="color:#75715e"># To configure Ingress Controller Service as LoadBalancer type of Service</span>
+    <span style="color:#75715e"># Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service</span>
+    <span style="color:#66d9ef">type</span>: LoadBalancer
+    <span style="color:#75715e"># Configuration for NodePort to be used for Ports exposed through Ingress</span>
+    <span style="color:#75715e"># If NodePorts are not defied/configured, Node Port would be assigend automatically by Kubernetes</span>
+    <span style="color:#75715e"># These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.</span>
+    <span style="color:#66d9ef">nodePorts</span>:
+      <span style="color:#75715e"># For HTTP Interface exposed through LoadBalancer/Ingress</span>
+      <span style="color:#66d9ef">http</span>: <span style="color:#ae81ff">30080</span>
+      <span style="color:#75715e"># For HTTPS Interface exposed through LoadBalancer/Ingress</span>
+      <span style="color:#66d9ef">https</span>: <span style="color:#ae81ff">30443</span>
+      <span style="color:#66d9ef">tcp</span>:
+        <span style="color:#75715e"># For LDAP Interface</span>
+        <span style="color:#66d9ef">1389</span>: <span style="color:#ae81ff">31389</span>
+        <span style="color:#75715e"># For LDAPS Interface</span>
+        <span style="color:#66d9ef">1636</span>: <span style="color:#ae81ff">31636</span>
+</code></pre></div></li>
+<li>
+<p>To install and configure NGINX Ingress issue the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--values nginx-ingress-values-override.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>lbr-nginx stable/ingress-nginx
+</code></pre></div><p>Where:</p>
+<ul>
+<li><code>lbr-nginx</code> is your deployment name</li>
+<li><code>stable/ingress-nginx</code> is the chart reference</li>
+</ul>
+<p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace mynginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--values nginx-ingress-values-override.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>lbr-nginx stable/ingress-nginx
+</code></pre></div><p>The output will look similar to the following:</p>
+<pre><code>NAME: lbr-nginx
+LAST DEPLOYED: Wed Mar 16 16:49:35 2022
+NAMESPACE: mynginx
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+It may take a few minutes for the LoadBalancer IP to be available.
+You can watch the status by running 'kubectl --namespace mynginx get services -o wide -w lbr-nginx-ingress-nginx-controller'
+
+An example Ingress that makes use of the controller:
+
+  apiVersion: networking.k8s.io/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    name: example
+    namespace: foo
+  spec:
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - backend:
+                serviceName: exampleService
+                servicePort: 80
+              path: /
+    # This section is only required if TLS is to be enabled for the Ingress
+    tls:
+        - hosts:
+            - www.example.com
+          secretName: example-tls
+
+If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: &lt;base64 encoded cert&gt;
+    tls.key: &lt;base64 encoded key&gt;
+  type: kubernetes.io/tls
+</code></pre></li>
+</ol>
+<h5 id="optional-command-helm-upgrade-to-update-nginx-ingress">Optional: Command <code>helm upgrade</code> to update nginx-ingress</h5>
+<p>If required, an nginx-ingress deployment can be updated/upgraded with following command. In this example, nginx-ingress configuration is updated with an additional TCP port and Node Port for accessing the LDAP/LDAPS port of a specific POD:</p>
+<ol>
+<li>
+<p>Create a <code>nginx-ingress-values-override.yaml</code> that contains the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># Configuration for additional TCP ports to be exposed through Ingress</span>
+<span style="color:#75715e"># Format for each port would be like:</span>
+<span style="color:#75715e"># &lt;PortNumber&gt;: &lt;Namespace&gt;/&lt;Service&gt;</span>
+<span style="color:#66d9ef">tcp</span>: 
+  <span style="color:#75715e"># Map 1389 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port</span>
+  <span style="color:#66d9ef">1389</span>: oudns/oud-ds-rs-lbr-ldap:ldap
+  <span style="color:#75715e"># Map 1636 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port</span>
+  <span style="color:#66d9ef">1636</span>: oudns/oud-ds-rs-lbr-ldap:ldaps
+  <span style="color:#75715e"># Map specific ports for LDAP and LDAPS communication from individual Services/Pods</span>
+  <span style="color:#75715e"># To redirect requests on 3890 port to oudns/oud-ds-rs-ldap-0:ldap</span>
+  <span style="color:#66d9ef">3890</span>: oudns/oud-ds-rs-ldap<span style="color:#ae81ff">-0</span>:ldap
+  <span style="color:#75715e"># To redirect requests on 6360 port to oudns/oud-ds-rs-ldaps-0:ldap</span>
+  <span style="color:#66d9ef">6360</span>: oudns/oud-ds-rs-ldap<span style="color:#ae81ff">-0</span>:ldaps
+  <span style="color:#75715e"># To redirect requests on 3891 port to oudns/oud-ds-rs-ldap-1:ldap</span>
+  <span style="color:#66d9ef">3891</span>: oudns/oud-ds-rs-ldap<span style="color:#ae81ff">-1</span>:ldap
+  <span style="color:#75715e"># To redirect requests on 6361 port to oudns/oud-ds-rs-ldaps-1:ldap</span>
+  <span style="color:#66d9ef">6361</span>: oudns/oud-ds-rs-ldap<span style="color:#ae81ff">-1</span>:ldaps
+  <span style="color:#75715e"># To redirect requests on 3892 port to oudns/oud-ds-rs-ldap-2:ldap</span>
+  <span style="color:#66d9ef">3892</span>: oudns/oud-ds-rs-ldap<span style="color:#ae81ff">-2</span>:ldap
+  <span style="color:#75715e"># To redirect requests on 6362 port to oudns/oud-ds-rs-ldaps-2:ldap</span>
+  <span style="color:#66d9ef">6362</span>: oudns/oud-ds-rs-ldap<span style="color:#ae81ff">-2</span>:ldaps
+  <span style="color:#75715e"># Map 1444 TCP port to LBR Admin service to get requests handled through any available POD/Endpoint serving Admin LDAPS Port</span>
+  <span style="color:#66d9ef">1444</span>: oudns/oud-ds-rs-lbr-admin:adminldaps
+  <span style="color:#75715e"># To redirect requests on 4440 port to oudns/oud-ds-rs-0:adminldaps</span>
+  <span style="color:#66d9ef">4440</span>: oudns/oud-ds-rs<span style="color:#ae81ff">-0</span>:adminldaps
+  <span style="color:#75715e"># To redirect requests on 4441 port to oudns/oud-ds-rs-1:adminldaps</span>
+  <span style="color:#66d9ef">4441</span>: oudns/oud-ds-rs<span style="color:#ae81ff">-1</span>:adminldaps
+  <span style="color:#75715e"># To redirect requests on 4442 port to oudns/oud-ds-rs-2:adminldaps</span>
+  <span style="color:#66d9ef">4442</span>: oudns/oud-ds-rs<span style="color:#ae81ff">-2</span>:adminldaps
+<span style="color:#66d9ef">controller</span>:
+  <span style="color:#66d9ef">admissionWebhooks</span>:
+    <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">false</span>
+  <span style="color:#66d9ef">extraArgs</span>:
+    <span style="color:#75715e"># The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.</span>
+    <span style="color:#75715e"># If this flag is not provided NGINX will use a self-signed certificate.</span>
+    <span style="color:#75715e"># If the TLS Secret is in different namespace, name can be mentioned as &lt;namespace&gt;/&lt;tlsSecretName&gt;</span>
+    <span style="color:#66d9ef">default-ssl-certificate</span>: oudns/oud-ds-rs-tls-cert
+  <span style="color:#66d9ef">service</span>:
+    <span style="color:#75715e"># controller service external IP addresses</span>
+    <span style="color:#75715e"># externalIPs:</span>
+    <span style="color:#75715e">#   - &lt; External IP Address &gt;</span>
+    <span style="color:#75715e"># To configure Ingress Controller Service as LoadBalancer type of Service</span>
+    <span style="color:#75715e"># Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service</span>
+    <span style="color:#66d9ef">type</span>: LoadBalancer
+    <span style="color:#75715e"># Configuration for NodePort to be used for Ports exposed through Ingress</span>
+    <span style="color:#75715e"># If NodePorts are not defied/configured, Node Port would be assigend automatically by Kubernetes</span>
+    <span style="color:#75715e"># These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.</span>
+    <span style="color:#66d9ef">nodePorts</span>:
+      <span style="color:#75715e"># For HTTP Interface exposed through LoadBalancer/Ingress</span>
+      <span style="color:#66d9ef">http</span>: <span style="color:#ae81ff">30080</span>
+      <span style="color:#75715e"># For HTTPS Interface exposed through LoadBalancer/Ingress</span>
+      <span style="color:#66d9ef">https</span>: <span style="color:#ae81ff">30443</span>
+      <span style="color:#66d9ef">tcp</span>:
+        <span style="color:#75715e"># For LDAP Interface referring to LBR LDAP services serving LDAP port</span>
+        <span style="color:#66d9ef">1389</span>: <span style="color:#ae81ff">31389</span>
+        <span style="color:#75715e"># For LDAPS Interface referring to LBR LDAP services serving LDAPS port</span>
+        <span style="color:#66d9ef">1636</span>: <span style="color:#ae81ff">31636</span>
+        <span style="color:#75715e"># For LDAP Interface from specific service oud-ds-rs-ldap-0</span>
+        <span style="color:#66d9ef">3890</span>: <span style="color:#ae81ff">30890</span>
+        <span style="color:#75715e"># For LDAPS Interface from specific service oud-ds-rs-ldap-0</span>
+        <span style="color:#66d9ef">6360</span>: <span style="color:#ae81ff">30360</span>
+        <span style="color:#75715e"># For LDAP Interface from specific service oud-ds-rs-ldap-1</span>
+        <span style="color:#66d9ef">3891</span>: <span style="color:#ae81ff">30891</span>
+        <span style="color:#75715e"># For LDAPS Interface from specific service oud-ds-rs-ldap-1</span>
+        <span style="color:#66d9ef">6361</span>: <span style="color:#ae81ff">30361</span>
+        <span style="color:#75715e"># For LDAP Interface from specific service oud-ds-rs-ldap-2</span>
+        <span style="color:#66d9ef">3892</span>: <span style="color:#ae81ff">30892</span>
+        <span style="color:#75715e"># For LDAPS Interface from specific service oud-ds-rs-ldap-2</span>
+        <span style="color:#66d9ef">6362</span>: <span style="color:#ae81ff">30362</span>
+        <span style="color:#75715e"># For LDAPS Interface referring to LBR Admin services serving adminldaps port</span>
+        <span style="color:#66d9ef">1444</span>: <span style="color:#ae81ff">31444</span>
+        <span style="color:#75715e"># For Admin LDAPS Interface from specific service oud-ds-rs-0</span>
+        <span style="color:#66d9ef">4440</span>: <span style="color:#ae81ff">30440</span>
+        <span style="color:#75715e"># For Admin LDAPS Interface from specific service oud-ds-rs-1</span>
+        <span style="color:#66d9ef">4441</span>: <span style="color:#ae81ff">30441</span>
+        <span style="color:#75715e"># For Admin LDAPS Interface from specific service oud-ds-rs-2</span>
+        <span style="color:#66d9ef">4442</span>: <span style="color:#ae81ff">30442</span>
+</code></pre></div></li>
+<li>
+<p>Run the following command to upgrade the ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--values nginx-ingress-values-override.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>lbr-nginx stable/ingress-nginx 
+</code></pre></div><p>Where:</p>
+<ul>
+<li><code>lbr-nginx</code> is your deployment name</li>
+<li><code>stable/ingress-nginx</code> is the chart reference</li>
+</ul>
+<p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace mynginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--values nginx-ingress-values-override.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>lbr-nginx stable/ingress-nginx 
+</code></pre></div></li>
+</ol>
+<h3 id="access-to-interfaces-through-ingress">Access to interfaces through ingress</h3>
+<p>Using the Helm chart, ingress objects are created according to configuration. The following table details the rules configured in ingress object(s) for access to Oracle Unified Directory Interfaces through ingress.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Port</strong></th>
+<th><strong>NodePort</strong></th>
+<th><strong>Host</strong></th>
+<th><strong>Example Hostname</strong></th>
+<th><strong>Path</strong></th>
+<th><strong>Backend Service:Port</strong></th>
+<th><strong>Example Service Name:Port</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-admin-0</td>
+<td>oud-ds-rs-admin-0</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-0:adminhttps</td>
+<td>oud-ds-rs-0:adminhttps</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-admin-N</td>
+<td>oud-ds-rs-admin-N</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-N:adminhttps</td>
+<td>oud-ds-rs-1:adminhttps</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-admin</td>
+<td>oud-ds-rs-admin</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-lbr-admin:adminhttps</td>
+<td>oud-ds-rs-lbr-admin:adminhttps</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>*</td>
+<td>*</td>
+<td>/rest/v1/admin</td>
+<td>&lt;deployment/release name&gt;-lbr-admin:adminhttps</td>
+<td>oud-ds-rs-lbr-admin:adminhttps</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-http-0</td>
+<td>oud-ds-rs-http-0</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-http-0:http</td>
+<td>oud-ds-rs-http-0:http</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-http-N</td>
+<td>oud-ds-rs-http-N</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-http-N:http</td>
+<td>oud-ds-rs-http-N:http</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>&lt;deployment/release name&gt;-http</td>
+<td>oud-ds-rs-http</td>
+<td>*</td>
+<td>&lt;deployment/release name&gt;-lbr-http:http</td>
+<td>oud-ds-rs-lbr-http:http</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>*</td>
+<td>*</td>
+<td>/rest/v1/directory</td>
+<td>&lt;deployment/release name&gt;-lbr-http:http</td>
+<td>oud-ds-rs-lbr-http:http</td>
+</tr>
+<tr>
+<td>http/https</td>
+<td>30080/30443</td>
+<td>*</td>
+<td>*</td>
+<td>/iam/directory</td>
+<td>&lt;deployment/release name&gt;-lbr-http:http</td>
+<td>oud-ds-rs-lbr-http:http</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>In the table above, example values are based on the value &lsquo;oud-ds-rs&rsquo; as the deployment/release name for Helm chart installation.<!-- raw HTML omitted -->
+The NodePorts mentioned in the table are according to ingress configuration described in previous section.<!-- raw HTML omitted -->
+When External LoadBalancer is not available/configured, interfaces can be accessed through NodePort on a Kubernetes node.</p>
+</blockquote>
+<p>For LDAP/LDAPS access (based on the updated/upgraded configuration mentioned in previous section)</p>
+<table>
+<thead>
+<tr>
+<th><strong>Port</strong></th>
+<th><strong>NodePort</strong></th>
+<th><strong>Backend Service:Port</strong></th>
+<th><strong>Example Service Name:Port</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1389</td>
+<td>31389</td>
+<td>&lt;deployment/release name&gt;-lbr-ldap:ldap</td>
+<td>oud-ds-rs-lbr-ldap:ldap</td>
+</tr>
+<tr>
+<td>1636</td>
+<td>31636</td>
+<td>&lt;deployment/release name&gt;-lbr-ldap:ldap</td>
+<td>oud-ds-rs-lbr-ldap:ldaps</td>
+</tr>
+<tr>
+<td>1444</td>
+<td>31444</td>
+<td>&lt;deployment/release name&gt;-lbr-admin:adminldaps</td>
+<td>oud-ds-rs-lbr-admin:adminldaps</td>
+</tr>
+<tr>
+<td>3890</td>
+<td>30890</td>
+<td>&lt;deployment/release name&gt;-ldap-0:ldap</td>
+<td>oud-ds-rs-ldap-0:ldap</td>
+</tr>
+<tr>
+<td>6360</td>
+<td>30360</td>
+<td>&lt;deployment/release name&gt;-ldap-0:ldaps</td>
+<td>oud-ds-rs-ldap-0:ldaps</td>
+</tr>
+<tr>
+<td>3891</td>
+<td>30891</td>
+<td>&lt;deployment/release name&gt;-ldap-1:ldap</td>
+<td>oud-ds-rs-ldap-1:ldap</td>
+</tr>
+<tr>
+<td>6361</td>
+<td>30361</td>
+<td>&lt;deployment/release name&gt;-ldap-1:ldaps</td>
+<td>oud-ds-rs-ldap-1:ldaps</td>
+</tr>
+<tr>
+<td>3892</td>
+<td>30892</td>
+<td>&lt;deployment/release name&gt;-ldap-2:ldap</td>
+<td>oud-ds-rs-ldap-2:ldap</td>
+</tr>
+<tr>
+<td>6362</td>
+<td>30362</td>
+<td>&lt;deployment/release name&gt;-ldap-2:ldaps</td>
+<td>oud-ds-rs-ldap-2:ldaps</td>
+</tr>
+<tr>
+<td>4440</td>
+<td>30440</td>
+<td>&lt;deployment/release name&gt;-0:adminldaps</td>
+<td>oud-ds-rs-ldap-0:adminldaps</td>
+</tr>
+<tr>
+<td>4441</td>
+<td>30441</td>
+<td>&lt;deployment/release name&gt;-1:adminldaps</td>
+<td>oud-ds-rs-ldap-1:adminldaps</td>
+</tr>
+<tr>
+<td>4442</td>
+<td>30442</td>
+<td>&lt;deployment/release name&gt;-2:adminldaps</td>
+<td>oud-ds-rs-ldap-2:adminldaps</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>In the table above, example values are based on value &lsquo;oud-ds-rs&rsquo; as the deployment/release name for helm chart installation.</li>
+<li>The NodePorts mentioned in the table are according to Ingress configuration described in previous section.</li>
+<li>When external LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on a Kubernetes Node.</li>
+</ul>
+<h4 id="changes-in-etchosts-to-validate-hostname-based-ingress-rules">Changes in /etc/hosts to validate hostname based ingress rules</h4>
+<p>If it is not possible to have a LoadBalancer configuration updated to have host names added for Oracle Unified Directory Interfaces then the following entries can be added in <code>/etc/hosts</code> files on the host from where Oracle Unified Directory interfaces will be accessed.</p>
+<pre><code>&lt;IP Address of External LBR or Kubernetes Node&gt;	oud-ds-rs-http oud-ds-rs-http-0 oud-ds-rs-http-1 oud-ds-rs-http-2 oud-ds-rs-http-N
+&lt;IP Address of External LBR or Kubernetes Node&gt;	oud-ds-rs-admin oud-ds-rs-admin-0 oud-ds-rs-admin-1 oud-ds-rs-admin-2 oud-ds-rs-admin-N
+</code></pre><ul>
+<li>In the table above, host names are based on the value &lsquo;oud-ds-rs&rsquo; as the deployment/release name for Helm chart installation.</li>
+<li>When External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on Kubernetes Node.</li>
+</ul>
+<h4 id="using-ldap-utilities">Using LDAP utilities</h4>
+<p>To use Oracle LDAP utilities such as <code>ldapbind</code>, <code>ldapsearch</code>, <code>ldapmodify</code> etc. you can either:</p>
+<ul>
+<li>
+<p>Run the LDAP commands from an OUD installation outside the Kubernetes cluster. This requires access to an On-Premises OUD installation oustide the Kubernetes cluster.</p>
+</li>
+<li>
+<p>Run the LDAP commands from inside the OUD Kubernetes pod.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -ti &lt;pod&gt; -n &lt;namespace&gt; -- bash
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl exec -ti oud-ds-rs-0 -n oudns -- bash
+</code></pre></div><p>This will take you into a bash session in the pod:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@oud-ds-rs-0 oracle<span style="color:#f92672">]</span>$    
+</code></pre></div><p>Inside the container navigate to <code>/u01/oracle/oud/bin</code> to view the LDAP utilties:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@oud-ds-rs-0 oracle<span style="color:#f92672">]</span>$ cd /u01/oracle/oud/bin
+<span style="color:#f92672">[</span>oracle@oud-ds-rs-0 bin<span style="color:#f92672">]</span>$ ls ldap*
+ldapcompare  ldapdelete  ldapmodify  ldappasswordmodify  ldapsearch
+</code></pre></div><p><strong>Note</strong>: For commands that require an ldif file, copy the file into the <code>&lt;persistent_volume&gt;/oud_user_projects</code> directory:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cp file.ldif &lt;peristent_volume&gt;/oud_user_projects
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cp file.ldif /scratch/shared/oud_user_projects
+</code></pre></div><p>The file can then be viewed inside the pod:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@oud-ds-rs-0 bin<span style="color:#f92672">]</span>$ cd /u01/oracle/oud_user_projects
+<span style="color:#f92672">[</span>oracle@oud-ds-rs-0 user_projects<span style="color:#f92672">]</span>$ ls *.ldif
+file.ldif
+</code></pre></div></li>
+</ul>
+<h4 id="validate-access-using-ldap">Validate access using LDAP</h4>
+<p><strong>Note</strong>: The examples assume sample data was installed when creating the OUD instance.</p>
+<h5 id="ldap-against-external-load-balancer">LDAP against External Load Balancer</h5>
+<p><strong>Note</strong> If your ingress is configured with <code>type: LoadBalancer</code> then you cannot connect to the external LoadBalancer hostname and ports from inside the pod and must connect from an OUD installation outside the cluster.</p>
+<ul>
+<li>
+<p>Command to perform <code>ldapsearch</code> against External LBR and LDAP port</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$OUD_HOME/bin/ldapsearch --hostname &lt;External LBR&gt; --port <span style="color:#ae81ff">1389</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-D <span style="color:#e6db74">&#34;&lt;Root User DN&gt;&#34;</span> -w &lt;Password <span style="color:#66d9ef">for</span> Root User DN&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-b <span style="color:#e6db74">&#34;&#34;</span> -s base <span style="color:#e6db74">&#34;(objectClass=*)&#34;</span> <span style="color:#e6db74">&#34;*&#34;</span>
+</code></pre></div><p>The output will look similar to the following:</p>
+<pre><code class="language-ldif" data-lang="ldif">dn: 
+objectClass: top
+objectClass: ds-root-dse
+lastChangeNumber: 0
+firstChangeNumber: 0
+changelog: cn=changelog
+entryDN: 
+pwdPolicySubentry: cn=Default Password Policy,cn=Password Policies,cn=config
+subschemaSubentry: cn=schema
+supportedAuthPasswordSchemes: SHA256
+supportedAuthPasswordSchemes: SHA1
+supportedAuthPasswordSchemes: SHA384
+supportedAuthPasswordSchemes: SHA512
+supportedAuthPasswordSchemes: MD5
+numSubordinates: 1
+supportedFeatures: 1.3.6.1.1.14
+supportedFeatures: 1.3.6.1.4.1.4203.1.5.1
+supportedFeatures: 1.3.6.1.4.1.4203.1.5.2
+supportedFeatures: 1.3.6.1.4.1.4203.1.5.3
+lastExternalChangelogCookie: 
+vendorName: Oracle Corporation
+vendorVersion: Oracle Unified Directory 12.2.1.4.0
+componentVersion: 4
+releaseVersion: 1
+platformVersion: 0
+supportedLDAPVersion: 2
+supportedLDAPVersion: 3
+supportedControl: 1.2.826.0.1.3344810.2.3
+supportedControl: 1.2.840.113556.1.4.1413
+supportedControl: 1.2.840.113556.1.4.319
+supportedControl: 1.2.840.113556.1.4.473
+supportedControl: 1.2.840.113556.1.4.805
+supportedControl: 1.3.6.1.1.12
+supportedControl: 1.3.6.1.1.13.1
+supportedControl: 1.3.6.1.1.13.2
+supportedControl: 1.3.6.1.4.1.26027.1.5.2
+supportedControl: 1.3.6.1.4.1.26027.1.5.4
+supportedControl: 1.3.6.1.4.1.26027.1.5.5
+supportedControl: 1.3.6.1.4.1.26027.1.5.6
+supportedControl: 1.3.6.1.4.1.26027.2.3.1
+supportedControl: 1.3.6.1.4.1.26027.2.3.2
+supportedControl: 1.3.6.1.4.1.26027.2.3.4
+supportedControl: 1.3.6.1.4.1.42.2.27.8.5.1
+supportedControl: 1.3.6.1.4.1.42.2.27.9.5.2
+supportedControl: 1.3.6.1.4.1.42.2.27.9.5.8
+supportedControl: 1.3.6.1.4.1.4203.1.10.1
+supportedControl: 1.3.6.1.4.1.4203.1.10.2
+supportedControl: 2.16.840.1.113730.3.4.12
+supportedControl: 2.16.840.1.113730.3.4.16
+supportedControl: 2.16.840.1.113730.3.4.17
+supportedControl: 2.16.840.1.113730.3.4.18
+supportedControl: 2.16.840.1.113730.3.4.19
+supportedControl: 2.16.840.1.113730.3.4.2
+supportedControl: 2.16.840.1.113730.3.4.3
+supportedControl: 2.16.840.1.113730.3.4.4
+supportedControl: 2.16.840.1.113730.3.4.5
+supportedControl: 2.16.840.1.113730.3.4.9
+supportedControl: 2.16.840.1.113894.1.8.21
+supportedControl: 2.16.840.1.113894.1.8.31
+supportedControl: 2.16.840.1.113894.1.8.36
+maintenanceVersion: 2
+supportedSASLMechanisms: PLAIN
+supportedSASLMechanisms: EXTERNAL
+supportedSASLMechanisms: CRAM-MD5
+supportedSASLMechanisms: DIGEST-MD5
+majorVersion: 12
+orclGUID: D41D8CD98F003204A9800998ECF8427E
+entryUUID: d41d8cd9-8f00-3204-a980-0998ecf8427e
+ds-private-naming-contexts: cn=schema
+hasSubordinates: true
+nsUniqueId: d41d8cd9-8f003204-a9800998-ecf8427e
+structuralObjectClass: ds-root-dse
+supportedExtension: 1.3.6.1.4.1.4203.1.11.1
+supportedExtension: 1.3.6.1.4.1.4203.1.11.3
+supportedExtension: 1.3.6.1.1.8
+supportedExtension: 1.3.6.1.4.1.26027.1.6.3
+supportedExtension: 1.3.6.1.4.1.26027.1.6.2
+supportedExtension: 1.3.6.1.4.1.26027.1.6.1
+supportedExtension: 1.3.6.1.4.1.1466.20037
+namingContexts: cn=changelog
+namingContexts: dc=example,dc=com
+</code></pre></li>
+<li>
+<p>Command to perform <code>ldapsearch</code> against External LBR and LDAP port for specific Oracle Unified Directory Interface</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$OUD_HOME/bin/ldapsearch --hostname &lt;External LBR&gt; --port <span style="color:#ae81ff">3890</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-D <span style="color:#e6db74">&#34;&lt;Root User DN&gt;&#34;</span> -w &lt;Password <span style="color:#66d9ef">for</span> Root User DN&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-b <span style="color:#e6db74">&#34;&#34;</span> -s base <span style="color:#e6db74">&#34;(objectClass=*)&#34;</span> <span style="color:#e6db74">&#34;*&#34;</span>
+</code></pre></div></li>
+</ul>
+<h5 id="ldaps-against-kubernetes-nodeport-for-ingress-controller-service">LDAPS against Kubernetes NodePort for Ingress Controller Service</h5>
+<p>In the example below LDAP utilities are executed from inside the <code>oud-ds-rs-0</code> pod.  If your ingress is configured with <code>type: LoadBalancer</code> you can connect to the Kubernetes hostname where the ingress is deployed using the NodePorts.</p>
+<ul>
+<li>
+<p>Command to perform <code>ldapsearch</code> against Kubernetes NodePort and LDAP port</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@oud-ds-rs-0 bin<span style="color:#f92672">]</span>$ ldapsearch --hostname &lt;Kubernetes Node&gt; --port <span style="color:#ae81ff">31636</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--useSSL --trustAll <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-D <span style="color:#e6db74">&#34;&lt;Root User DN&gt;&#34;</span> -w &lt;Password <span style="color:#66d9ef">for</span> Root User DN&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-b <span style="color:#e6db74">&#34;&#34;</span> -s base <span style="color:#e6db74">&#34;(objectClass=*)&#34;</span> <span style="color:#e6db74">&#34;*&#34;</span>
+</code></pre></div></li>
+</ul>
+<h4 id="validate-access-using-https">Validate access using HTTPS</h4>
+<h5 id="httpsrest-api-against-external-lbr-hostport">HTTPS/REST API against External LBR Host:Port</h5>
+<p><strong>Note</strong>: In all the examples below:</p>
+<p>a) You need to have an external IP assigned at ingress level.</p>
+<p>b) <code>| json_pp</code> is used to format output in readable json format on the client side. It can be ignored if you do not have the <code>json_pp</code> library.</p>
+<p>c) Base64 of <code>userDN:userPassword</code> can be generated using <code>echo -n &quot;userDN:userPassword&quot; | base64</code>.</p>
+<ul>
+<li>
+<p>Command to invoke Data REST API:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k  --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://&lt;External LBR Host&gt;/rest/v1/directory/uid=user.1,ou=People,dc=example,dc=com?scope=sub&amp;attributes=*&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+   <span style="color:#f92672">&#34;msgType&#34;</span> : <span style="color:#e6db74">&#34;urn:ietf:params:rest:schemas:oracle:oud:1.0:SearchResponse&#34;</span>,
+   <span style="color:#f92672">&#34;totalResults&#34;</span> : <span style="color:#ae81ff">1</span>,
+   <span style="color:#f92672">&#34;searchResultEntries&#34;</span> : [
+      {
+         <span style="color:#f92672">&#34;dn&#34;</span> : <span style="color:#e6db74">&#34;uid=user.1,ou=People,dc=example,dc=com&#34;</span>,
+         <span style="color:#f92672">&#34;attributes&#34;</span> : {
+            <span style="color:#f92672">&#34;st&#34;</span> : <span style="color:#e6db74">&#34;OH&#34;</span>,
+            <span style="color:#f92672">&#34;employeeNumber&#34;</span> : <span style="color:#e6db74">&#34;1&#34;</span>,
+            <span style="color:#f92672">&#34;postalCode&#34;</span> : <span style="color:#e6db74">&#34;93694&#34;</span>,
+            <span style="color:#f92672">&#34;description&#34;</span> : <span style="color:#e6db74">&#34;This is the description for Aaren Atp.&#34;</span>,
+            <span style="color:#f92672">&#34;telephoneNumber&#34;</span> : <span style="color:#e6db74">&#34;+1 390 103 6917&#34;</span>,
+            <span style="color:#f92672">&#34;homePhone&#34;</span> : <span style="color:#e6db74">&#34;+1 280 375 4325&#34;</span>,
+            <span style="color:#f92672">&#34;initials&#34;</span> : <span style="color:#e6db74">&#34;ALA&#34;</span>,
+            <span style="color:#f92672">&#34;objectClass&#34;</span> : [
+               <span style="color:#e6db74">&#34;top&#34;</span>,
+               <span style="color:#e6db74">&#34;inetorgperson&#34;</span>,
+               <span style="color:#e6db74">&#34;organizationalperson&#34;</span>,
+               <span style="color:#e6db74">&#34;person&#34;</span>
+            ],
+            <span style="color:#f92672">&#34;uid&#34;</span> : <span style="color:#e6db74">&#34;user.1&#34;</span>,
+            <span style="color:#f92672">&#34;sn&#34;</span> : <span style="color:#e6db74">&#34;Atp&#34;</span>,
+            <span style="color:#f92672">&#34;street&#34;</span> : <span style="color:#e6db74">&#34;70110 Fourth Street&#34;</span>,
+            <span style="color:#f92672">&#34;mobile&#34;</span> : <span style="color:#e6db74">&#34;+1 680 734 6300&#34;</span>,
+            <span style="color:#f92672">&#34;givenName&#34;</span> : <span style="color:#e6db74">&#34;Aaren&#34;</span>,
+            <span style="color:#f92672">&#34;mail&#34;</span> : <span style="color:#e6db74">&#34;user.1@maildomain.net&#34;</span>,
+            <span style="color:#f92672">&#34;l&#34;</span> : <span style="color:#e6db74">&#34;New Haven&#34;</span>,
+            <span style="color:#f92672">&#34;postalAddress&#34;</span> : <span style="color:#e6db74">&#34;Aaren Atp$70110 Fourth Street$New Haven, OH  93694&#34;</span>,
+            <span style="color:#f92672">&#34;pager&#34;</span> : <span style="color:#e6db74">&#34;+1 850 883 8888&#34;</span>,
+            <span style="color:#f92672">&#34;cn&#34;</span> : <span style="color:#e6db74">&#34;Aaren Atp&#34;</span>
+         }
+      }
+    ]
+}
+</code></pre></div></li>
+<li>
+<p>Command to invoke Data REST API against specific Oracle Unified Directory Interface:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k  --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://oud-ds-rs-http-0/rest/v1/directory/uid=user.1,ou=People,dc=example,dc=com?scope=sub&amp;attributes=*&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div><ul>
+<li>For this example, it is assumed that the value &lsquo;oud-ds-rs&rsquo; is used as the deployment/release name for helm chart installation.</li>
+<li>It is assumed that &lsquo;oud-ds-rs-http-0&rsquo; points to an External LoadBalancer</li>
+</ul>
+</li>
+</ul>
+<h5 id="httpsrest-api-against-kubernetes-nodeport-for-ingress-controller-service">HTTPS/REST API against Kubernetes NodePort for Ingress Controller Service</h5>
+<p><strong>Note</strong>: In all the examples below:</p>
+<p>a) <code>| json_pp</code> is used to format output in readable json format on the client side. It can be ignored if you do not have the <code>json_pp</code> library.</p>
+<p>b) Base64 of <code>userDN:userPassword</code> can be generated using <code>echo -n &quot;userDN:userPassword&quot; | base64</code>.</p>
+<p>c) It is assumed that the value &lsquo;oud-ds-rs&rsquo; is used as the deployment/release name for helm chart installation.</p>
+<ul>
+<li>
+<p>Command to invoke Data SCIM API:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://&lt;Kubernetes Node&gt;:30443/iam/directory/oud/scim/v1/Users&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+   <span style="color:#f92672">&#34;Resources&#34;</span> : [
+      {
+         <span style="color:#f92672">&#34;id&#34;</span> : <span style="color:#e6db74">&#34;ad55a34a-763f-358f-93f9-da86f9ecd9e4&#34;</span>,
+         <span style="color:#f92672">&#34;userName&#34;</span> : [
+            {
+               <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;user.0&#34;</span>
+            }
+         ],
+         <span style="color:#f92672">&#34;schemas&#34;</span> : [
+            <span style="color:#e6db74">&#34;urn:ietf:params:scim:schemas:core:2.0:User&#34;</span>,
+            <span style="color:#e6db74">&#34;urn:ietf:params:scim:schemas:extension:oracle:2.0:OUD:User&#34;</span>,
+            <span style="color:#e6db74">&#34;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&#34;</span>
+         ],
+         <span style="color:#f92672">&#34;meta&#34;</span> : {
+            <span style="color:#f92672">&#34;location&#34;</span> : <span style="color:#e6db74">&#34;http://&lt;Kubernetes Node&gt;:30443/iam/directory/oud/scim/v1/Users/ad55a34a-763f-358f-93f9-da86f9ecd9e4&#34;</span>,
+            <span style="color:#f92672">&#34;resourceType&#34;</span> : <span style="color:#e6db74">&#34;User&#34;</span>
+         },
+         <span style="color:#f92672">&#34;addresses&#34;</span> : [
+            {
+               <span style="color:#f92672">&#34;postalCode&#34;</span> : <span style="color:#e6db74">&#34;50369&#34;</span>,
+               <span style="color:#f92672">&#34;formatted&#34;</span> : <span style="color:#e6db74">&#34;Aaccf Amar$01251 Chestnut Street$Panama City, DE  50369&#34;</span>,
+               <span style="color:#f92672">&#34;streetAddress&#34;</span> : <span style="color:#e6db74">&#34;01251 Chestnut Street&#34;</span>,
+               <span style="color:#f92672">&#34;locality&#34;</span> : <span style="color:#e6db74">&#34;Panama City&#34;</span>,
+               <span style="color:#f92672">&#34;region&#34;</span> : <span style="color:#e6db74">&#34;DE&#34;</span>
+            }
+         ],
+         <span style="color:#f92672">&#34;urn:ietf:params:scim:schemas:extension:oracle:2.0:OUD:User&#34;</span> : {
+            <span style="color:#f92672">&#34;description&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;This is the description for Aaccf Amar.&#34;</span>
+               }
+            ],
+            <span style="color:#f92672">&#34;mobile&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;+1 010 154 3228&#34;</span>
+               }
+            ],
+            <span style="color:#f92672">&#34;pager&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;+1 779 041 6341&#34;</span>
+               }
+            ],
+            <span style="color:#f92672">&#34;objectClass&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;top&#34;</span>
+               },
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;organizationalperson&#34;</span>
+               },
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;person&#34;</span>
+               },
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;inetorgperson&#34;</span>
+               }
+            ],
+            <span style="color:#f92672">&#34;initials&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;ASA&#34;</span>
+               }
+            ],
+            <span style="color:#f92672">&#34;homePhone&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;+1 225 216 5900&#34;</span>
+               }
+            ]
+         },
+         <span style="color:#f92672">&#34;name&#34;</span> : [
+            {
+               <span style="color:#f92672">&#34;givenName&#34;</span> : <span style="color:#e6db74">&#34;Aaccf&#34;</span>,
+               <span style="color:#f92672">&#34;familyName&#34;</span> : <span style="color:#e6db74">&#34;Amar&#34;</span>,
+               <span style="color:#f92672">&#34;formatted&#34;</span> : <span style="color:#e6db74">&#34;Aaccf Amar&#34;</span>
+            }
+         ],
+         <span style="color:#f92672">&#34;emails&#34;</span> : [
+            {
+               <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;user.0@maildomain.net&#34;</span>
+            }
+         ],
+         <span style="color:#f92672">&#34;phoneNumbers&#34;</span> : [
+            {
+               <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;+1 685 622 6202&#34;</span>
+            }
+         ],
+         <span style="color:#f92672">&#34;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&#34;</span> : {
+            <span style="color:#f92672">&#34;employeeNumber&#34;</span> : [
+               {
+                  <span style="color:#f92672">&#34;value&#34;</span> : <span style="color:#e6db74">&#34;0&#34;</span>
+               }
+            ]
+         }
+      }
+      ,
+ <span style="color:#960050;background-color:#1e0010">.</span>
+ <span style="color:#960050;background-color:#1e0010">.</span>
+ <span style="color:#960050;background-color:#1e0010">.</span>
+ <span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div></li>
+<li>
+<p>Command to invoke Data SCIM API against specific Oracle Unified Directory Interface:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://oud-ds-rs-http-0:30443/iam/directory/oud/scim/v1/Users&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div></li>
+</ul>
+<h5 id="httpsrest-admin-api">HTTPS/REST Admin API</h5>
+<p><strong>Note</strong>: In all the examples below:</p>
+<p>a) <code>| json_pp</code> is used to format output in readable json format on the client side. It can be ignored if you do not have the <code>json_pp</code> library.</p>
+<p>b) Base64 of <code>userDN:userPassword</code> can be generated using <code>echo -n &quot;userDN:userPassword&quot; | base64</code>.</p>
+<ul>
+<li>
+<p>Command to invoke Admin REST API against External LBR:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k --insecure --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://&lt;External LBR Host&gt;/rest/v1/admin/?scope=base&amp;attributes=vendorName&amp;attributes=vendorVersion&amp;attributes=ds-private-naming-contexts&amp;attributes=subschemaSubentry&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+   <span style="color:#f92672">&#34;totalResults&#34;</span> : <span style="color:#ae81ff">1</span>,
+   <span style="color:#f92672">&#34;searchResultEntries&#34;</span> : [
+      {
+         <span style="color:#f92672">&#34;dn&#34;</span> : <span style="color:#e6db74">&#34;&#34;</span>,
+         <span style="color:#f92672">&#34;attributes&#34;</span> : {
+            <span style="color:#f92672">&#34;vendorVersion&#34;</span> : <span style="color:#e6db74">&#34;Oracle Unified Directory 12.2.1.4.0&#34;</span>,
+            <span style="color:#f92672">&#34;ds-private-naming-contexts&#34;</span> : [
+               <span style="color:#e6db74">&#34;cn=admin data&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=ads-truststore&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=backups&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=config&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=monitor&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=schema&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=tasks&#34;</span>,
+               <span style="color:#e6db74">&#34;cn=virtual acis&#34;</span>,
+               <span style="color:#e6db74">&#34;dc=replicationchanges&#34;</span>
+            ],
+            <span style="color:#f92672">&#34;subschemaSubentry&#34;</span> : <span style="color:#e6db74">&#34;cn=schema&#34;</span>,
+            <span style="color:#f92672">&#34;vendorName&#34;</span> : <span style="color:#e6db74">&#34;Oracle Corporation&#34;</span>
+         }
+      }
+   ],
+   <span style="color:#f92672">&#34;msgType&#34;</span> : <span style="color:#e6db74">&#34;urn:ietf:params:rest:schemas:oracle:oud:1.0:SearchResponse&#34;</span>
+}
+</code></pre></div></li>
+<li>
+<p>Command to invoke Admin REST API against specific Oracle Unified Directory Admin Interface:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k --insecure --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://oud-ds-rs-admin-0/rest/v1/admin/?scope=base&amp;attributes=vendorName&amp;attributes=vendorVersion&amp;attributes=ds-private-naming-contexts&amp;attributes=subschemaSubentry&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div></li>
+<li>
+<p>Command to invoke Admin REST API against Kubernetes NodePort for Ingress Controller Service</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl --noproxy <span style="color:#e6db74">&#34;*&#34;</span> -k --insecure --location <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--request GET <span style="color:#e6db74">&#39;https://oud-ds-rs-admin-0:30443/rest/v1/admin/?scope=base&amp;attributes=vendorName&amp;attributes=vendorVersion&amp;attributes=ds-private-naming-contexts&amp;attributes=subschemaSubentry&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Authorization: Basic &lt;Base64 of userDN:userPassword&gt;&#39;</span> | json_pp
+</code></pre></div></li>
+</ul>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.2.1/oud/create-oud-instances/" title="Create Oracle Unified Directory Instances"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.2.1/oud/manage-oud-containers/" title="Manage Oracle Unified Directory Containers" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.2.1/js/clipboard.min.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/perfect-scrollbar.min.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/perfect-scrollbar.jquery.min.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/jquery.sticky.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/featherlight.min.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/highlight.pack.js?1650429556"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.2.1/js/modernizr.custom-3.6.0.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/learn.js?1650429556"></script>
+    <script src="/fmw-kubernetes/22.2.1/js/hugo-learn.js?1650429556"></script>
+
+    <link href="/fmw-kubernetes/22.2.1/mermaid/mermaid.css?1650429556" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.2.1/mermaid/mermaid.js?1650429556"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
