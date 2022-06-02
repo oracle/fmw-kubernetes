@@ -43,7 +43,7 @@ Before applying the patch, stop all servers in the domain:
 
 #### Update user permissions of the domain PV storage
 
-The Oracle SOA Suite image for release 22.1.2 has an oracle user with UID 1000, with the default group set to `root`. Before applying the patched image, update the user permissions of the domain persistent volume (PV) to set the group to `root`:
+The Oracle SOA Suite image for release 22.2.2 has an oracle user with UID 1000, with the default group set to `root`. Before applying the patched image, update the user permissions of the domain persistent volume (PV) to set the group to `root`:
 
 ```
 $ sudo chown -R 1000:0 /scratch/k8s_dir/SOA

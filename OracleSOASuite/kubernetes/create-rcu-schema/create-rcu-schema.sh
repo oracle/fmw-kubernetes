@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Configure RCU schema based on schemaPreifix and rcuDatabaseURL
@@ -12,7 +12,7 @@ function usage {
   echo "usage: ${script} -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir> -c <customVariables> [-l] <timeoutLimit>  [-h] "
   echo "  -s RCU Schema Prefix (required)"
   echo "  -t RCU Schema Type (optional)"
-  echo "      (supported values: osb,soa,soaosb,soab2b,soaosbb2b)"
+  echo "      (supported values: osb,soa,soaosb)"
   echo "  -d RCU Oracle Database URL (optional) "
   echo "      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s) "
   echo "  -p OracleSOASuite ImagePullSecret (optional) "
@@ -122,7 +122,7 @@ if [ -z ${dburl} ]; then
 fi
 
 if [ -z ${rcuType} ]; then
-  rcuType="fmw"
+  rcuType="soa"
 fi
 
 if [ -z ${pullsecret} ]; then

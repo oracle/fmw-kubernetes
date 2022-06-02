@@ -1,9 +1,8 @@
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- if eq .Values.type "TRAEFIK" }}
-{{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
+{{- if (eq .Values.sslType "NONSSL") }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -14,11 +13,6 @@ metadata:
     weblogic.resourceVersion: domain-v2
   annotations:
     kubernetes.io/ingress.class: 'traefik'
-{{- if eq .Values.sslType "SSL" }}
-    traefik.ingress.kubernetes.io/router.entrypoints: 'websecure'
-    traefik.ingress.kubernetes.io/router.tls: 'true'
-    traefik.ingress.kubernetes.io/router.middlewares: 'soans-wls-proxy-ssl@kubernetescrd'
-{{- end }}
 spec:
   rules:
   - host: '{{ .Values.traefik.hostname }}'
@@ -63,7 +57,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.osbManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /soa-infra
         pathType: ImplementationSpecific
         backend:
@@ -72,7 +66,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /soa/composer
         pathType: ImplementationSpecific
         backend:
@@ -81,7 +75,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /integration/worklistapp
         pathType: ImplementationSpecific
         backend:
@@ -90,7 +84,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
       - path: /servicebus
         pathType: ImplementationSpecific
         backend:
@@ -99,7 +93,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
       - path: /lwpfconsole
         pathType: ImplementationSpecific
         backend:
@@ -108,7 +102,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
       - path: /xbusrouting
         pathType: ImplementationSpecific
         backend:
@@ -117,7 +111,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
       - path: /xbustransform
         pathType: ImplementationSpecific
         backend:
@@ -126,7 +120,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /ess
         pathType: ImplementationSpecific
         backend:
@@ -135,7 +129,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /EssHealthCheck
         pathType: ImplementationSpecific
         backend:
@@ -144,7 +138,7 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /b2bconsole
         pathType: ImplementationSpecific
         backend:
@@ -153,66 +147,6 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-{{- if eq .Values.sslType "SSL" }}
-  tls:
-  - hosts:
-    - '{{ .Values.traefik.hostname }}'
-    secretName: soainfra-tls-cert
-{{- end }}
----
-#Create Traefik Middleware custom resource for SSL Termination
-{{- if eq .Values.sslType "SSL" }}
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: wls-proxy-ssl
-  namespace:  {{ .Release.Namespace }}
-spec:
-  headers:
-    customRequestHeaders:
-      X-Custom-Request-Header: ""
-      X-Forwarded-For: ""
-      WL-Proxy-Client-IP: ""
-      WL-Proxy-SSL: ""
-      WL-Proxy-SSL: "true"
-    sslRedirect: true
-{{- end }}
-{{- else }}
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRouteTCP
-metadata:
-  name: {{ .Values.wlsDomain.domainUID }}-traefik
-  namespace: {{ .Release.Namespace }}
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: HostSNI(`{{ .Values.hostName.admin }}`)
-    services:
-    - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-      port: {{ .Values.wlsDomain.adminServerSSLPort }}
-      weight: 3
-      TerminationDelay: 400
-  {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") (eq .Values.domainType "soab2b") (eq .Values.domainType "soaosbb2b") }}
-  - match: HostSNI(`{{ .Values.hostName.soa }}`)
-    services:
-    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-      port: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
-      weight: 3
-      TerminationDelay: 400
-  {{- end }}
-  {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") (eq .Values.domainType "soaosbb2b") }}
-  - match: HostSNI(`{{ .Values.hostName.osb }}`)
-    services:
-    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
-      port: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
-      weight: 3
-      TerminationDelay: 400
-  {{- end }}
-  tls:
-    passthrough: true
-{{- end }}
 
 {{- end }}
 {{- end }}

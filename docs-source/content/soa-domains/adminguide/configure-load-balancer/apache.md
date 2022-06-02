@@ -133,7 +133,7 @@ Refer to the [sample](https://github.com/oracle/docker-images/tree/main/OracleWe
 
    {{% /expand %}}
 
-1. Create a PV and PVC (pv-claim-name) that can be used to store the custom_mod_wl_apache.conf. Refer to the [Sample](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/README.md) for creating a PV or PVC.
+1. Create a PV and PVC (pv-claim-name) that can be used to store the custom_mod_wl_apache.conf. Refer to the [Sample](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.0/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/README.md) for creating a PV or PVC.
 
 #### Prepare the certificate and private key
 

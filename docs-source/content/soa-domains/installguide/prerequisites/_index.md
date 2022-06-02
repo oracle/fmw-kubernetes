@@ -10,18 +10,18 @@ This section provides information about the system requirements and limitations 
 
 ### System requirements for Oracle SOA Suite domains
 
-For the current production release 22.1.2:
+For the current production release 22.2.2:
 
 * Operating systems supported:
   * Oracle Linux 7 (UL6+)
   * Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes)
   * Oracle Linux Cloud Native Environment (OLCNE) version 1.3.
-* Kubernetes 1.16.15+, 1.17.13+, 1.18.10+, 1.19.7+, and 1.20.6+ (check with `kubectl version`).
-* Docker 18.9.1 or 19.03.1+ (check with `docker version`) or CRI-O 1.20.2+ (check with `crictl version | grep RuntimeVersion`).
-* Flannel networking v0.9.1-amd64 or later (check with `docker images | grep flannel`), Calico networking v3.16.1 or later.
+* Kubernetes 1.19.15+, 1.20.11+, 1.21.5+, 1.22.5+, and 1.23.4+ (check with `kubectl version`).
+* Docker 19.03.1+ (check with `docker version`) or CRI-O 1.20.2+ (check with `crictl version | grep RuntimeVersion`).
+* Flannel networking v0.13.0-amd64 or later (check with `docker images | grep flannel`), Calico networking v3.16.1 or later.
 * Helm 3.3.4+ (check with `helm version --client --short`).
-* WebLogic Kubernetes Operator 3.3.0 (see the [operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0) page).
-* Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [33749496](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33749496)). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.
+* WebLogic Kubernetes Operator 3.4.0 (see the [operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.4.0) page).
+* Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [34077593](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34077593)). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.
 * You must have the `cluster-admin` role to install the operator. The operator does not need the `cluster-admin` role at runtime.
   For more information, see the role-based access control (RBAC) [documentation](https://oracle.github.io/weblogic-kubernetes-operator/security/rbac/).
 * We do not currently support running SOA in non-Linux containers.

@@ -15,15 +15,15 @@ To extend an existing ingress with additional application URL access:
 
 1. Update the template YAML file at `${WORKDIR}/charts/ingress-per-domain/templates/` to define additional path rules.
 
-   For example, to extend an existing NGINX-based ingress with additional paths `/path1` and `/path2` of an Oracle SOA Suite cluster, update `nginx-ingress.yaml` (for the supported Kubernetes versions up to 1.18.x) with additional paths:
-   > Note: For Kubernetes versions, 1.19+, you need to update the `nginx-ingress-k8s1.19.yaml` file.
+   For example, to extend an existing NGINX-based ingress with additional paths `/path1` and `/path2` of an Oracle SOA Suite cluster, update `nginx-ingress-nonssl.yaml`, `nginx-ingress-ssl.yaml`, or `nginx-ingress-e2essl.yaml` accordingly with additional paths:
 
    ```
-   # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+   # Copyright (c) 2020, 2022, Oracle and/or its affiliates.
    # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
    {{- if eq .Values.type "NGINX" }}
+   {{- if (eq .Values.sslType "NONSSL") }}
    ---
-   apiVersion: extensions/v1beta1
+   apiVersion: networking.k8s.io/v1
    kind: Ingress
    .
    .
@@ -32,20 +32,22 @@ To extend an existing ingress with additional application URL access:
      - host: '{{ .Values.nginx.hostname }}'
        http:
          paths:
-         # Add new paths -- start  
+         # Add new paths -- start
          - path: /path1
            backend:
-             serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-             servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+             service:
+               name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+               port:
+                 number: {{ .Values.wlsDomain.soaManagedServerPort  }}
          - path: /path2
            backend:
-             serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-             servicePort: {{ .Values.wlsDomain.soaManagedServerPort  }}
+             service:
+               name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+               port:
+                 number: {{ .Values.wlsDomain.soaManagedServerPort  }}
          # Add new paths -- end
          - path: /console
            backend:
-             serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
-             servicePort: {{ .Values.wlsDomain.adminServerPort }}
    .
    .
    {{- end }}

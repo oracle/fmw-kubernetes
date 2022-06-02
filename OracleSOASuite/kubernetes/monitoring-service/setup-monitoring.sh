@@ -78,21 +78,22 @@ function installKubePrometheusStack {
   if [ ${exposeMonitoringNodePort} == "true" ]; then
    
      helm install ${monitoringNamespace} prometheus-community/kube-prometheus-stack \
-       --namespace ${monitoringNamespace} \
+       --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
        --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
        --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
-       --version "16.5.0" ${additionalParamForKubePrometheusStack} \
+       --version "16.5.0" \
        --atomic --wait
   else
      helm install ${monitoringNamespace}  prometheus-community/kube-prometheus-stack \
-       --namespace ${monitoringNamespace} \
+       --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set grafana.adminPassword=admin \
-       --version "16.5.0" ${additionalParamForKubePrometheusStack} \
+       --version "16.5.0" \
        --atomic --wait
   fi
   exitIfError $? "ERROR: prometheus-community/kube-prometheus-stack install failed."
 }
+
 #Parse the inputs
 while getopts "hi:" opt; do
   case $opt in
@@ -130,10 +131,10 @@ rm ${exportValuesFile}
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then 
    if test "$(kubectl get namespace ${monitoringNamespace} --ignore-not-found | wc -l)" = 0; then
-     echo "The namespace ${monitoringNamespace} for install prometheus-community/kube-prometheus-stack does not exist. Creating the namespace ${monitoringNamespace}"
+     echo "The namespace ${monitoringNamespace} for install prometheus-community/kube-promethues-stack does not exist. Creating the namespace ${monitoringNamespace}"
      kubectl create namespace ${monitoringNamespace} 
    fi
-   echo -e "Monitoring setup in  ${monitoringNamespace} in progress\n"
+   echo -e "Monitoring setup in  ${monitoringNamespace} in progress.......\n"
 
    # Create the namespace and CRDs, and then wait for them to be availble before creating the remaining resources
    kubectl label nodes --all kubernetes.io/os=linux --overwrite=true
@@ -145,8 +146,8 @@ if [ "${setupKubePrometheusStack}" = "true" ]; then
    echo "Setup prometheus-community/kube-prometheus-stack completed"
 fi
 
-username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
-password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+export username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+export password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
 # Setting up the WebLogic Monitoring Exporter
 echo "Deploy WebLogic Monitoring Exporter started"
@@ -167,6 +168,7 @@ sed -i -e "s/weblogic.domainName:.*/weblogic.domainName: ${domainUID}/g" ${servi
 sed -i -e "$!N;s/matchNames:\n    -.*/matchNames:\n    - ${domainNamespace}/g;P;D" ${serviceMonitor}
 
 kubectl apply -f ${serviceMonitor}
+
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then
    # Deploying  WebLogic Server Grafana Dashboard

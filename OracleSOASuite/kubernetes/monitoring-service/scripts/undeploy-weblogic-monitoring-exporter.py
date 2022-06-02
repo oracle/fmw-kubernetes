@@ -36,14 +36,13 @@ adminServerName = "AdminServer"
 # adminURL will be passed by command line parameter  -adminURL
 adminURL = "soainfra-adminserver:7001"
 
-# soaClusterName will be passed by command line parameter  -soaClusterName
-soaClusterName = "soaClusterName"
+# soaClusterName will be passed by command line parameter -soaClusterName
+soaClusterName = "soa_cluster"
 
 # wlsMonitoringExporterTosoaCluster will be passed by command line parameter -wlsMonitoringExporterTosoaCluster
 wlsMonitoringExporterTosoaCluster = "false"
-
 # osbClusterName will be passed by command line parameter -osbClusterName
-osbClusterName = "osbClusterName"
+osbClusterName = "osb_cluster"
 
 # wlsMonitoringExporterToosbCluster will be passed by command line parameter -wlsMonitoringExporterToosbCluster
 wlsMonitoringExporterToosbCluster = "false"
@@ -101,3 +100,4 @@ if 'true' == wlsMonitoringExporterToosbCluster:
 
 disconnect()
 exit() 
+

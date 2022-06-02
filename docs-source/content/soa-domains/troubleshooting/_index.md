@@ -114,7 +114,7 @@ $ helm get values  weblogic-kubernetes-operator -n opns
 USER-SUPPLIED VALUES:
 domainNamespaces:
 - soans
-image: ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
+image: ghcr.io/oracle/weblogic-kubernetes-operator:3.4.0
 javaLoggingLevel: FINE
 serviceAccount: op-sa
 $
@@ -132,7 +132,7 @@ To diagnose this issue:
    ```
    $ helm list -n traefik
    NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART               APP VERSION
-   traefik-operator        traefik         2               2021-10-27 11:24:29.317003398 +0000 UTC deployed        traefik-9.1.1       2.2.8
+   traefik                  traefik         2               2022-05-06 09:40:53.205565811 +0000 UTC deployed        traefik-10.19.5       2.6.6
    $
    ```
 1. Verify that the Ingress controller is setup to monitor the domain namespace.  
