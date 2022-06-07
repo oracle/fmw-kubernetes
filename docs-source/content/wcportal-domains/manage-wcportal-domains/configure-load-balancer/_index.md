@@ -7,7 +7,7 @@ pre = "<b> </b>"
 description = "Configure different load balancers for the Oracle WebCenter Portal domain."
 +++
 
-The WebLogic Kubernetes Operator supports ingress-based load balancers such as Traefik, NGINX (kubernetes/ingress-nginx) and Voyager. It also supports the Apache webtier load balancer.
+The WebLogic Kubernetes Operator supports ingress-based load balancers such as Traefik and NGINX (kubernetes/ingress-nginx) . It also supports the Apache webtier load balancer.
 
 
 {{% children style="h4" description="true" %}}

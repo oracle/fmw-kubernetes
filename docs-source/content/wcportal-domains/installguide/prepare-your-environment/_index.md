@@ -44,7 +44,7 @@ After creating Kubernetes clusters, you can optionally:
 ### Obtain the Oracle WebCenter Portal Docker Image
 The Oracle WebCenter Portal image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Portal image from My Oracle Support.
 
-1. Download patch [32688937](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=32688937) from My Oracle Support (MOS).
+1. Download patch [33807917](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33807917) from My Oracle Support (MOS).
 
 1. Unzip the downloaded patch zip file.
 
@@ -52,8 +52,8 @@ The Oracle WebCenter Portal image with latest bundle patch and required interim 
 
     For example:
     ```bash
-    $ docker load < wcportal-12.2.1.4.0-210326.0857.320.tar
-    Loaded image: oracle/wcportal:12.2.1.4.0-210326.0857.320
+    $ docker load < wcportal-12.2.1.4-jdk8-ol7-220203.0823.tar
+    Loaded image: oracle/wcportal:12.2.1.4-jdk8-ol7-220203.0823
     ```
 If you want to build and use an Oracle WebCenter Portal Docker image with any additional bundle patch or interim patches that are not part of the image obtained from My Oracle Support, then follow these [steps]({{< relref "/wcportal-domains/create-or-update-image/">}}) to create the image.
 
@@ -81,7 +81,7 @@ $ docker login https://container-registry.oracle.com (enter your Oracle email Id
 
 WebLogic Kubernetes Operator image:
 ```bash
-$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.1.1
+$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
 
 ```
 
@@ -104,35 +104,19 @@ Oracle WebCenter Portal domain deployment on Kubernetes leverages the WebLogic K
 
 1. Create a working directory to set up the source code.
    ```bash
-   $ export WORKDIR=$HOME/wcp_3.1.1
-   $ mkdir <WORKDIR>
-   $ cd <WORKDIR>
+   $ mkdir $HOME/wcp_22.2.3
+   $ cd $HOME/wcp_22.2.3
    ```
 
-1. Download the supported version of WebLogic Kubernetes Operator source code archive file (`.zip`/`.tar.gz`) from the operator [relases page](https://github.com/oracle/weblogic-kubernetes-operator/releases). You can also download the supported operator version from [3.1.1](https://github.com/oracle/weblogic-kubernetes-operator/archive/v3.1.1.zip).
-    ```bash
-    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch release/3.1.1
-    ```
 
-1. Download the WebCenter Portal Kubernetes deployment scripts from this [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them in to WebLogic operator samples location.
+1. Download the Oracle WebCenter Portal Kubernetes deployment scripts from the Github [repository](https://github.com/oracle/fmw-kubernetes). Required artifacts are available at `OracleWeCenterPortal/kubernetes`.
 
    ```bash
-   $ git clone https://github.com/oracle/fmw-kubernetes.git --branch release/21.2.3
-   
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/create-wcp-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/create-wcp-es-cluster  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/ 
-   $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterPortal/kubernetes/charts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   $ export WORKDIR=$HOME/wcp_22.2.3/fmw-kubernetes/OracleWebCenterPortal/kubernetes/
    ```
 
-You can now use the deployment scripts from `<$WORKDIR>/weblogic-kubernetes-operator` to set up the WebCenter Portal domain as described later in this document.
-
-Your home directory for running all the required scripts:
-
-```bash
-$ cd <$WORKDIR>/weblogic-kubernetes-operator
-```
+You can now use the deployment scripts from `<$WORKDIR>` to set up the WebCenter Portal domain as described later in this document.
 
 ### Grant Roles and Clear Stale Resources
 
@@ -179,7 +163,8 @@ $ cd <$WORKDIR>/weblogic-kubernetes-operator
 	> Helm install weblogic-operator
 
 	```bash
-	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
+    $ cd ${WORKDIR}
+	$ helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace operator-ns --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
  	
     NAME: weblogic-kubernetes-operator
     LAST DEPLOYED: Wed Jan  6 01:47:33 2021
@@ -246,7 +231,7 @@ $ kubectl create namespace wcpns
 >Helm upgrade weblogic-operator
 ```bash
     $ helm upgrade --reuse-values --set "domainNamespaces={wcpns}" \
-    --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns
+    --wait weblogic-kubernetes-operator charts/weblogic-operator --namespace operator-ns
 
     NAME: weblogic-kubernetes-operator
     LAST DEPLOYED: Wed Jan  6 01:52:58 2021
@@ -261,13 +246,12 @@ $ kubectl create namespace wcpns
    Using the create-weblogic-credentials script, create a Kubernetes secret that contains the user name and password for the domain in the same Kubernetes namespace as the domain:
     
 ```bash
-$ sh kubernetes/samples/scripts/create-weblogic-domain-credentials/create-weblogic-credentials.sh \
-    -u weblogic -p welcome1 -n wcpns \
-    -d wcp-domain -s wcpinfra-domain-credentials
+ $ cd ${WORKDIR}/create-weblogic-domain-credentials
+ $ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wcpns -d wcp-domain -s wcp-domain-domain-credentials
  
- secret/wcpinfra-domain-credentials created
- secret/wcpinfra-domain-credentials labeled
- The secret wcpinfra-domain-credentials has been successfully created in the wcpns namespace.
+ secret/wcp-domain-domain-credentials created
+ secret/wcp-domain-domain-credentials labeled
+ The secret wcp-domain-domain-credentials has been successfully created in the wcpns namespace.
  ```
     Where:
     
@@ -275,23 +259,24 @@ $ sh kubernetes/samples/scripts/create-weblogic-domain-credentials/create-weblog
        * welcome1                         is the weblogic password
        * wcp-domain                       is the domain name
        * wcpns                            is the domain namespace
-       * wcpinfra-domain-credentials  is the secret name
+       * wcp-domain-domain-credentials  is the secret name
     
     Note: You can inspect the credentials as follows:
  ```bash
-   $ kubectl get secret wcpinfra-domain-credentials -o yaml -n wcpns
+   $ kubectl get secret wcp-domain-domain-credentials -o yaml -n wcpns
 ```
  #### Create a Kubernetes secret with the RCU credentials
  Create a Kubernetes secret for the Repository Configuration Utility (user name and password) using the `create-rcu-credentials.sh` script in the same Kubernetes namespace as the domain:
 
  ```bash
-   $ sh kubernetes/samples/scripts/create-rcu-credentials/create-rcu-credentials.sh \
+   $ cd ${WORKDIR}/create-rcu-credentials
+   $ sh create-rcu-credentials.sh \
        -u WCP1 -p welcome1 -a sys -q Oradoc_db1 -n wcpns \
-       -d wcp-domain -s wcpinfra-rcu-credentials
+       -d wcp-domain -s wcp-domain-rcu-credentials
      
-   secret/wcpinfra-rcu-credentials created
-   secret/wcpinfra-rcu-credentials labeled
-   The secret wcpinfra-rcu-credentials has been successfully created in the wcpns namespace.
+   secret/wcp-domain-rcu-credentials created
+   secret/wcp-domain-rcu-credentials labeled
+   The secret wcp-domain-rcu-credentials has been successfully created in the wcpns namespace.
  ```
     Where:
     
@@ -300,12 +285,12 @@ $ sh kubernetes/samples/scripts/create-weblogic-domain-credentials/create-weblog
        * Oradoc_db1                       is the database SYS users password
        * wcp-domain                       is the domain name
        * wcpns                            is the domain namespace
-       * wcpinfra-rcu-credentials         is the secret name
+       * wcp-domain-rcu-credentials         is the secret name
     
     Note: You can inspect the credentials as follows:
 
   ```bash
-    $ kubectl get secret wcpinfra-rcu-credentials -o yaml -n wcpns
+    $ kubectl get secret wcp-domain-rcu-credentials -o yaml -n wcpns
  ```
 
 #### Create a persistent storage for an Oracle WebCenter Portal domain
@@ -313,7 +298,7 @@ $ sh kubernetes/samples/scripts/create-weblogic-domain-credentials/create-weblog
 
    In the Kubernetes namespace you created, create the PV and PVC for the domain by running the [create-pv-pvc.sh](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/storage/) script. Follow the instructions for using the script to create a dedicated PV and PVC for the Oracle WebCenter Portal domain.
 
-  * Review the configuration parameters for PV creation [here](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/storage/#configuration-parameters). Based on your requirements, update the values in the `create-pv-pvc-inputs.yaml` file located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/`. Sample configuration parameter values for an Oracle WebCenter Portal domain are:
+  * Review the configuration parameters for PV creation [here](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/storage/#configuration-parameters). Based on your requirements, update the values in the `create-pv-pvc-inputs.yaml` file located at `${WORKDIR}/create-weblogic-domain-pv-pvc/`. Sample configuration parameter values for an Oracle WebCenter Portal domain are:
     * `baseName`: domain
     * `domainUID`: wcp-domain
     * `namespace`: wcpns
@@ -323,7 +308,7 @@ $ sh kubernetes/samples/scripts/create-weblogic-domain-credentials/create-weblog
   * Ensure that the path for the `weblogicDomainStoragePath` property exists (create one if it doesn't exist), that it has full access permissions, and that the folder is empty.
   * Run the `create-pv-pvc.sh` script:
      ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+    $ cd ${WORKDIR}/create-weblogic-domain-pv-pvc
     $ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output
       Input parameters being used
       export version="create-weblogic-sample-domain-pv-pvc-inputs-v1"
@@ -355,19 +340,42 @@ For production deployments, you must set up and use a standalone (non-container)
 
 Before creating a domain, you need to set up the necessary schemas in your database.
 #### Run the Repository Creation Utility to set up your database schemas
-   Run a container to create Repository Creation Utility.
+   To create the database schemas for Oracle WebCenter Portal domain, run the create-rcu-schema.sh script.
     
  ```bash
-    $ kubectl run rcu --generator=run-pod/v1 --image oracle/wcportal:12.2.1.4 -n wcpns  -- sleep infinity
-    #check the status of rcu pod
-    $ kubectl get pods -n wcpns
-    #make sure rcu pod status is running before executing this
-    $ kubectl exec -n wcpns -ti rcu /bin/bash
-    export CONNECTION_STRING=databasehostname:<port>/<servicename>
-    export RCUPREFIX=WCP1
-    echo -e <Sys_User_Password>"\n"<Schema_User_Password> > /tmp/pwd.txt
-    /u01/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component IAU_VIEWER -component WEBCENTER -component MDS -component IAU_APPEND -component STB -component IAU -component WLS -component ACTIVITIES -f < /tmp/pwd.txt
-    /u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component IAU_VIEWER -component WEBCENTER -component MDS -component IAU_APPEND -component STB -component IAU -component WLS -component ACTIVITIES -tablespace USERS -tempTablespace TEMP -f < /tmp/pwd.txt
-    #exit from the container
-    exit
+    $ cd ${WORKDIR}/create-rcu-schema
+    $ sh create-rcu-schema.sh -h
+      usage: create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  [-h]
+      -s RCU Schema Prefix (required)
+      -t RCU Schema Type (optional)
+          (supported values: wcp(default), wcpp)
+      -d RCU Oracle Database URL (optional)
+          (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
+      -p FMW Infrastructure ImagePullSecret (optional)
+          (default: none)
+      -i Oracle WebCenter Portal Image (optional)
+          (default: oracle/wcportal:12.2.1.4)
+      -u FMW Infrastructure ImagePullPolicy (optional)
+          (default: IfNotPresent)
+      -n Namespace for RCU pod (optional)
+          (default: default)
+      -q password for database SYSDBA user. (optional)
+          (default: Oradoc_db1)
+      -r password for all schema owner (regular user). (optional)
+          (default: Oradoc_db1)
+      -o Output directory for the generated YAML file. (optional)
+          (default: rcuoutput)
+      -c Comma-separated variables in the format variablename=value. (optional).
+          (default: none)      
+      -h Help
+
+    $ ./create-rcu-schema.sh \
+        -s WCP1 \
+        -t wcp \
+        -d oracle-db.default.svc.cluster.local:1521/devpdb.k8s \
+        -i oracle/wcportal:12.2.1.4\
+        -n wcpns \
+        -q Oradoc_db1 \
+        -r welcome1 
    ```
+> Where RCU Schema type `wcp` generates webcenter portal related schema and `wcpp` generates webcenter portal plus portlet schemas.

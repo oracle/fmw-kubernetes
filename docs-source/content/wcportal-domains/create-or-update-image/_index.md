@@ -106,7 +106,7 @@ To create an Oracle WebCenter Portal Docker image using the WebLogic Image Tool,
     ```bash
     $ mkdir -p imagetool-setup/docker-images/OracleWebCenterPortal/imagetool/12.2.1.4.0
     $ cd imagetool-setup/docker-images/OracleWebCenterPortal/imagetool/12.2.1.4.0
-    $ cp -rf ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/imagetool-scripts/* .
+    $ cp -rf ${WORKDIR}/imagetool-scripts/* .
     ```
 >Note: To create the image, continue with the following steps. To update the image, see  [update an image](#update-an-image).
 
@@ -226,6 +226,7 @@ The following files in the code repository location `<imagetool-setup-location>/
     --version=12.2.1.4.0
     --tag=oracle/wcportal:12.2.1.4
     --pull
+    --fromImage ghcr.io/oracle/oraclelinux:7-slim
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleWebCenterPortal/imagetool/12.2.1.4.0/additionalBuildCmds.txt
     --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/container-scripts
     --opatchBugNumber 28186730_13.9.4.2.5
@@ -236,7 +237,7 @@ The following files in the code repository location `<imagetool-setup-location>/
     > * `--version` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type wcp`.  
     > * `--pull` always pulls the latest base Linux image `oraclelinux:7-slim` from the Docker registry. This flag can be removed if you want to use the Linux image `oraclelinux:7-slim`, which is already available on the host where the WCP image is created.
 
-    Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
+    Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Create the Oracle WebCenter Portal image:
 
@@ -422,7 +423,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcportal-domains/create-
     * `–-patches` - Multiple patches can be specified as a comma-separated list.
     * `--tag` - Specify the new tag to be applied for the image being built.
 
-    Refer [here](https://github.com/oracle/weblogic-image-tool/blob/master/site/update-image.md) for the complete list of options available with the WebLogic Image Tool `update` command.
+    Refer [here](https://oracle.github.io/weblogic-image-tool/userguide/tools/update-image/) for the complete list of options available with the WebLogic Image Tool `update` command.
 
     > Note: The WebLogic Image Tool cache should have the latest OPatch zip. The WebLogic Image Tool updates the OPatch if it is not already updated in the image.
 
@@ -433,13 +434,13 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcportal-domains/create-
 
         $ imagetool update --fromImage oracle/wcportal:12.2.1.4 --tag=wcportal:12.2.1.4-32224021 --patches=32224021_12.2.1.4.0
         [INFO   ] Image Tool build ID: 50f9b9aa-596c-4bae-bdff-c47c16b4c928
-        [INFO   ] Temporary directory used for docker build context: /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp5130105621506307568
-        [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/asirasag/imagetool-setup/jars/p28186730_139425_Generic.zip
+        [INFO   ] Temporary directory used for docker build context: /scratch/imagetoolcache/builddir/wlsimgbuilder_temp5130105621506307568
+        [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/imagetool-setup/jars/p28186730_139425_Generic.zip
         [INFO   ] Updating OPatch in final image from version 13.9.4.2.1 to version 13.9.4.2.5
         [WARNING] Skipping patch conflict check, no support credentials provided
         [WARNING] No credentials provided, skipping validation of patches
-        [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/asirasag/imagetool-setup/jars/p32224021_122140_Generic.zip
-        [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://www-proxy.us.oracle.com:80 --build-arg https_proxy=http://www-proxy.us.oracle.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,.us.oracle.com,.oraclecorp.com,/var/run/docker.sock,100.111.157.155 /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp5130105621506307568
+        [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/imagetool-setup/jars/p32224021_122140_Generic.zip
+        [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://<YOUR-COMPANY-PROXY> --build-arg https_proxy=http://<YOUR-COMPANY-PROXY> --build-arg no_proxy=<IP addresses and Domain address for no_proxy>,/var/run/docker.sock <work-directory>/wlstmp/wlsimgbuilder_temp5130105621506307568
         Sending build context to Docker daemon  192.4MB
         
         Step 1/9 : FROM oracle/wcportal:12.2.1.4 as final_build
@@ -1087,13 +1088,13 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcportal-domains/create-
 
      $ imagetool update --fromImage oracle/wcportal:12.2.1.4 --tag=wcportal:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --dryRun
      [INFO   ] Image Tool build ID: a473ba32-84b6-4374-9425-9e92ac90ee87
-     [INFO   ] Temporary directory used for docker build context: /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp874401188519547557
-     [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/asirasag/imagetool-setup/jars/p28186730_139425_Generic.zip
+     [INFO   ] Temporary directory used for docker build context: /scratch/imagetoolcache/builddir/wlsimgbuilder_temp874401188519547557
+     [INFO   ] Using patch 28186730_13.9.4.2.5 from cache: /home/imagetool-setup/jars/p28186730_139425_Generic.zip
      [INFO   ] Updating OPatch in final image from version 13.9.4.2.1 to version 13.9.4.2.5
      [WARNING] Skipping patch conflict check, no support credentials provided
      [WARNING] No credentials provided, skipping validation of patches
-     [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/asirasag/imagetool-setup/jars/p32224021_122140_Generic.zip
-     [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://www-proxy.us.oracle.com:80 --build-arg https_proxy=http://www-proxy.us.oracle.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,.us.oracle.com,.oraclecorp.com,/var/run/docker.sock,100.111.157.155 /scratch/asirasag/imagetoolcache/builddir/wlsimgbuilder_temp874401188519547557
+     [INFO   ] Using patch 32224021_12.2.1.4 from cache: /home/imagetool-setup/jars/p32224021_122140_Generic.zip
+     [INFO   ] docker cmd = docker build --no-cache --force-rm --tag wcportal:12.2.1.4-32224021 --build-arg http_proxy=http://<YOUR-COMPANY-PROXY> --build-arg https_proxy=http://<YOUR-COMPANY-PROXY> --build-arg no_proxy=<IP addresses and Domain address for no_proxy>,/var/run/docker.sock <work-directory>/wlstmp/wlsimgbuilder_temp874401188519547557
      ########## BEGIN DOCKERFILE ##########
      #
      # Copyright (c) 2019, 2021, Oracle and/or its affiliates.

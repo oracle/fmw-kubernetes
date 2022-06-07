@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # The version of this inputs file.  Do not modify.
@@ -6,6 +6,9 @@ version: create-weblogic-sample-domain-inputs-v1
 
 # SSL is disabled by default. Select true to enable SSL.
 sslEnabled: false
+
+# Include portlet server cluster
+configurePortletServer: false
 
 # Port number for admin server
 adminPort: 7001
@@ -44,8 +47,19 @@ managedServerNameBase: wcpserver
 managedServerPort: 8888
 
 # SSL Port number for each managed server
-managedServerSSLPort: 8889
+managedServerSSLPort: 8788
 
+# Portlet cluster name
+portletClusterName: wcportlet-cluster
+
+# Base String to generate portlet server name
+portletServerNameBase: wcportletserver
+
+# Port number for each managed server
+portletServerPort: 8889
+
+# SSL Port number for each managed server
+portletServerSSLPort: 8789
 # WebCenter Portal Docker image.
 # To build WebCenter Portal images refer  https://oracle.github.io/fmw-kubernetes/wcportal-domains/installguide/prepare-your-environment/#build-oracle-webcenter-portal-image
 # Update the image according to WebCenter Portal Release version
@@ -68,7 +82,7 @@ productionModeEnabled: true
 # Name of the Kubernetes secret for the Admin Server's username and password
 # The name must be lowercase.
 # If not specified, the value is derived from the domainUID as <domainUID>-weblogic-credentials
-weblogicCredentialsSecretName: wcpinfra-domain-credentials
+weblogicCredentialsSecretName: wcp-domain-domain-credentials
 
 # Whether to include server .out to the pod's stdout.
 # The default is true.
@@ -178,7 +192,7 @@ rcuSchemaPrefix: WCP1
 rcuDatabaseURL: dbhostname:dbport/servicename
 
 # The kubernetes secret containing the database credentials
-rcuCredentialsSecret: wcpinfra-rcu-credentials
+rcuCredentialsSecret: wcp-domain-rcu-credentials
 
 # Provide LoadBalancer Hostname
 loadBalancerHostName: mycompany.mydomain.com

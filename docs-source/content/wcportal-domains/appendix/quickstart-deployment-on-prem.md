@@ -125,7 +125,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 1. Install the latest `docker-engine` and start the Docker service:
     ```
     $ yum-config-manager --enable ol7_addons
-    $ docker_version="19.03.1.ol"
+    $ docker_version="19.03.11-ol"
     $ yum install docker-engine-$docker_version
     
     $ systemctl enable docker
@@ -144,33 +144,33 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     Example output:
     ```
     Client: Docker Engine - Community
-     Version:           19.03.1-ol
+     Version:           19.03.11-ol
      API version:       1.40
-     Go version:        go1.12.5
-     Git commit:        ead9442
-     Built:             Wed Sep 11 06:40:28 2019
+     Go version:        go1.15.5
+     Git commit:        748876d
+     Built:             Thu Dec  3 19:36:03 2020
      OS/Arch:           linux/amd64
      Experimental:      false
-
+    
     Server: Docker Engine - Community
      Engine:
-     Version:          19.03.1-ol
-     API version:      1.40 (minimum version 1.12)
-     Go version:       go1.12.5
-     Git commit:       ead9442
-     Built:            Wed Sep 11 06:38:43 2019
-     OS/Arch:          linux/amd64
-     Experimental:     false
-     Default Registry: docker.io
-    containerd:
-     Version:          v1.2.0-rc.0-108-gc444666
-     GitCommit:        c4446665cb9c30056f4998ed953e6d4ff22c7c39
-    runc:
-     Version:          1.0.0-rc5+dev
-     GitCommit:        4bb1fe4ace1a32d3676bb98f5d3b6a4e32bf6c58
-    docker-init:
-     Version:          0.18.0
-     GitCommit:        fec3683
+      Version:          19.03.11-ol
+      API version:      1.40 (minimum version 1.12)
+      Go version:       go1.15.8
+      Git commit:       f0aae77
+      Built:            Wed Feb 10 16:13:32 2021
+      OS/Arch:          linux/amd64
+      Experimental:     false
+      Default Registry: docker.io
+     containerd:
+      Version:          v1.3.9
+      GitCommit:
+     runc:
+      Version:          1.0.0-rc5+dev
+      GitCommit:        4bb1fe4ace1a32d3676bb98f5d3b6a4e32bf6c58
+     docker-init:
+      Version:          0.18.0
+      GitCommit:        fec3683
     ```
 
 1. Update the Docker engine configuration:
@@ -275,8 +275,8 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ export HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
     $ export HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-    ### install kubernetes 1.18.4-1
-    $ VERSION=1.18.4-1
+    ### install kubernetes 1.20.10
+    $ VERSION=1.20.10
     $ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes=kubernetes
 
     ### enable kubelet service so that it auto-restart on reboot
@@ -303,17 +303,17 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
 #### 1.4 Set up Helm
 
-1. Install Helm v3.x.
+1. Install Helm v3.4+
 
    a. Download Helm from https://github.com/helm/helm/releases.
 
-      For example, to download Helm v3.1.3:
+      For example, to download Helm v3.4.1:
       ```
-      $ wget https://get.helm.sh/helm-v3.1.3-linux-amd64.tar.gz
+      $ wget https://get.helm.sh/helm-v3.4.1-linux-amd64.tar.gz
       ```
    b. Unpack `tar.gz`:
       ```
-      $ tar -zxvf helm-v3.1.3-linux-amd64.tar.gz
+      $ tar -zxvf helm-v3.4.1-linux-amd64.tar.gz
       ```
    c. Find the Helm binary in the unpacked directory, and move it to its desired destination:
       ```
@@ -323,7 +323,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 1. Run `helm version` to verify its installation:
    ```
    $ helm version
-     version.BuildInfo{Version:"v3.1.3", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
+     version.BuildInfo{Version:"v3.4.1", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
    ```
 
 ### 2. Set up a single instance Kubernetes cluster
@@ -443,7 +443,7 @@ Follow [these steps]({{< relref "/wcportal-domains/installguide/prepare-your-env
 1. Pull the operator image:
 
     ```
-    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.1.1
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
     ```
 
 1. Obtain the Oracle Database image from the [Oracle Container Registry](https://container-registry.oracle.com):
@@ -484,10 +484,10 @@ Follow [these steps]({{< relref "/wcportal-domains/installguide/prepare-your-env
 Use Helm to install and start the operator from the directory you just cloned:
 
 ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
+   $ cd ${WORKDIR}
+   $ helm install weblogic-kubernetes-operator charts/weblogic-operator \
    --namespace operator-ns \
-   --set image=oracle/weblogic-kubernetes-operator:3.1.1 \
+   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
    --set serviceAccount=operator-sa \
    --set "domainNamespaces={}" \
    --wait
@@ -504,11 +504,11 @@ Use Helm to install and start the operator from the directory you just cloned:
    $ kubectl logs -n operator-ns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes operator v3.1.1 has been installed. Continue with the load balancer and Oracle WebCenter Portal domain setup.
+The WebLogic Kubernetes operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Portal domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 
-The WebLogic Kubernetes Operator supports three load balancers: Traefik, Voyager, and Apache. Samples are provided in the documentation.
+The WebLogic Kubernetes Operator supports three load balancers: Traefik, NGINX and Apache. Samples are provided in the documentation.
 
 This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle WebCenter Portal domain.
 
@@ -524,10 +524,10 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Install the Traefik operator in the `traefik` namespace with the provided sample values:
    ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
+   $ cd ${WORKDIR}
    $ helm install traefik traefik/traefik \
     --namespace traefik \
-    --values kubernetes/samples/scripts/charts/traefik/values.yaml \
+    --values charts/traefik/values.yaml \
     --set "kubernetes.namespaces={traefik}" \
     --set "service.type=NodePort" \
     --wait
@@ -543,8 +543,8 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Use Helm to configure the operator to manage Oracle WebCenter Portal domain in this namespace:
    ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm upgrade weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
+   $ cd ${WORKDIR}
+   $ helm upgrade weblogic-kubernetes-operator charts/weblogic-operator \
       --reuse-values \
       --namespace operator-ns \
       --set "domainNamespaces={wcpns}" \
@@ -556,8 +556,8 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
    a. Create a Kubernetes secret for the domain in the same Kubernetes namespace as the domain. In this example, the username is `weblogic`, the password is `welcome1`, and the namespace is `wcpns`:
 
       ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
-      $ sh create-weblogic-credentials.sh -u weblogic -p welcome1 -n wcpns -d wcp-domain -s wcpinfra-domain-credentials
+      $ cd ${WORKDIR}/create-weblogic-domain-credentials
+      $ sh create-weblogic-credentials.sh -u weblogic -p welcome1 -n wcpns -d wcp-domain -s wcp-domain-domain-credentials
       ```
 
    b. Create a Kubernetes secret for the RCU in the same Kubernetes namespace as the domain:
@@ -567,11 +567,11 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
      * DB sys user password : `Oradoc_db1`
      * Domain name          : `wcp-domain`
      * Domain Namespace     : `wcpns`
-     * Secret name          : `wcpinfra-rcu-credentials`
+     * Secret name          : `wcp-domain-rcu-credentials`
 
      ```
-     $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
-     $ sh create-rcu-credentials.sh -u WCP1 -p Oradoc_db1 -a sys -q Oradoc_db1 -n wcpns -d wcp-domain -s wcpinfra-rcu-credentials
+     $ cd ${WORKDIR}/create-rcu-credentials
+     $ sh create-rcu-credentials.sh -u WCP1 -p Oradoc_db1 -a sys -q Oradoc_db1 -n wcpns -d wcp-domain -s wcp-domain-rcu-credentials
       ```
 
 1. Create the Kubernetes persistence volume and persistence volume claim.
@@ -601,7 +601,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
       * weblogicDomainStoragePath: `/scratch/k8s_dir`
 
       ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+      $ cd ${WORKDIR}/create-weblogic-domain-pv-pvc
       $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
       $ sed -i -e "s:baseName\: weblogic-sample:baseName\: domain:g" create-pv-pvc-inputs.yaml
       $ sed -i -e "s:domainUID\::domainUID\: wcp-domain:g" create-pv-pvc-inputs.yaml
@@ -631,7 +631,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
    a. Create a database in a container:
 
       ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oracle-db-service
+      $ cd ${WORKDIR}/create-oracle-db-service
       $ ./start-db-service.sh -i  container-registry.oracle.com/database/enterprise:12.2.0.1-slim -p none
       ```
 
@@ -641,20 +641,14 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
       To create the Oracle WebCenter Portal schemas, run the following commands:
       ```
-        $ kubectl run rcu --generator=run-pod/v1 --image oracle/wcportal:12.2.1.4 -n wcpns  -- sleep infinity
-        #check the status of rcu pod
-        $ kubectl get pods -n wcpns
-        #make sure rcu pod status is running before executing this
-        $ kubectl exec -n wcpns -ti rcu /bin/bash
-        #After Getting Shell in RCU Container run the below command.   
-        export CONNECTION_STRING=oracle-db.default.svc.cluster.local:1521/devpdb.k8s
-        export RCUPREFIX=WCP1
-        echo -e Oradoc_db1"\n"Oradoc_db1 > /tmp/pwd.txt
-        /u01/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component IAU_VIEWER -component WEBCENTER -component MDS -component IAU_APPEND -component STB -component IAU -component WLS -f < /tmp/pwd.txt
-        /u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component IAU_VIEWER -component WEBCENTER -component MDS -component IAU_APPEND -component STB -component IAU -component WLS -tablespace USERS -tempTablespace TEMP -f < /tmp/pwd.txt
-        #exit from the container
-        exit
-
+        $ ./create-rcu-schema.sh \
+          -s WCP1 \
+          -t wcp \
+          -d oracle-db.default.svc.cluster.local:1521/devpdb.k8s \
+          -i oracle/wcportal:12.2.1.4\
+          -n wcpns \
+          -q Oradoc_db1 \
+          -r welcome1 
       ```
 
 Now the environment is ready to start the Oracle WebCenter Portal domain creation.
@@ -662,7 +656,7 @@ Now the environment is ready to start the Oracle WebCenter Portal domain creatio
 
 #### 6.2 Create an Oracle WebCenter Portal domain
 
-1. The sample scripts for Oracle WebCenter Portal domain deployment are available at `<weblogic-kubernetes-operator-project>/kubernetes/samples/scripts/create-wcp-domain`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
+1. The sample scripts for Oracle WebCenter Portal domain deployment are available at `create-wcp-domain`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
 
     Update `create-domain-inputs.yaml` with the following values for domain creation:
 
@@ -671,7 +665,7 @@ Now the environment is ready to start the Oracle WebCenter Portal domain creatio
 
 1. Run the `create-domain.sh` script to create a domain:
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/domain-home-on-pv/
+    $ cd ${WORKDIR}/create-wcp-domain/domain-home-on-pv/
     $ ./create-domain.sh -i create-domain-inputs.yaml -o output
     ```
 
@@ -680,7 +674,7 @@ Now the environment is ready to start the Oracle WebCenter Portal domain creatio
     Once the `create-domain.sh` is successful, it generates `output/weblogic-domains/wcp-domain/domain.yaml`, which you can use to create the Kubernetes resource domain to start the domain and servers:
 
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/domain-home-on-pv
+    $ cd ${WORKDIR}/create-wcp-domain/domain-home-on-pv
     $ kubectl create -f output/weblogic-domains/wcp-domain/domain.yaml
     ```
 
@@ -715,11 +709,11 @@ Watch the `wcpns` namespace for the status of domain creation:
 
 1. Create an ingress for the domain in the domain namespace by using the sample Helm chart:
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
+    $ cd ${WORKDIR}
     helm install wcp-traefik-ingress  \
-    kubernetes/samples/charts/ingress-per-domain \
+    charts/ingress-per-domain \
     --namespace wcpns \
-     --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
+     --values charts/ingress-per-domain/values.yaml \
      --set "traefik.hostname=$(hostname -f)"
     ```
 1. Verify the created ingress per domain details:

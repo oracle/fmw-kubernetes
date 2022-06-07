@@ -105,20 +105,34 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Po
 
 #### Configure NGINX to manage ingresses
 
-1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml`. By default, `type` is `TRAEFIK`, `tls` is `Non-SSL`. You can override these values by passing values through the command line or edit them in the sample `values.yaml` file. If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml`
+1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file `${WORKDIR}/charts/ingress-per-domain/values.yaml`. By default, `type` is `TRAEFIK`, `tls` is `Non-SSL`. You can override these values by passing values through the command line or edit them in the sample `values.yaml` file. 
+
+>NOTE: This is not an exhaustive list of rules. You can enhance it based on the application URLs that need to be accessed externally.
+ 
+If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at `${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml`
+You can add new path rules like shown below .
+```yaml
+ - path: /NewPathRule
+   backend:
+     serviceName: 'Backend Service Name'
+     servicePort: 'Backend Service Port'
+
+```
+
+
 
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
-    $ helm install wcp-nginx-ingress  kubernetes/samples/charts/ingress-per-domain \
+    $ cd ${WORKDIR}
+    $ helm install wcp-domain-nginx charts/ingress-per-domain \
         --namespace wcpns \
-        --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
+        --values charts/ingress-per-domain/values.yaml \
         --set "nginx.hostname=$(hostname -f)" \
         --set type=NGINX
     ```
 
     Sample output:
     ```bash
-    NAME: wcp-nginx-ingress
+    NAME: wcp-domain-nginx
     LAST DEPLOYED: Fri Jul 24 09:34:03 2020
     NAMESPACE: wcpns
     STATUS: deployed
@@ -129,24 +143,24 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Po
 
    ```bash
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj "/CN=*"
-    $ kubectl -n wcpns create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+    $ kubectl -n wcpns create secret tls wcp-domain-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
    ```
 1. Install `ingress-per-domain` using Helm for SSL configuration:
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
-    $ helm install wcp-nginx-ingress  kubernetes/samples/charts/ingress-per-domain \
+    $ cd ${WORKDIR}
+    $ helm install wcp-domain-nginx  charts/ingress-per-domain \
         --namespace wcpns \
-        --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
+        --values charts/ingress-per-domain/values.yaml \
         --set "nginx.hostname=$(hostname -f)" \
-        --set type=NGINX --set tls=SSL
+        --set type=NGINX --set sslType=SSL
     ```
 1. For non-SSL access to the Oracle WebCenter Portal application, get the details of the services by the ingress:
 
    ```bash
-    $ kubectl describe ingress wcp-domain-ingress -n wcpns
+    $ kubectl describe ingress wcp-domain-nginx -n wcpns
     ```
     {{%expand "Click here to see the sample output of the services supported by the above deployed ingress." %}}
-     Name:             wcp-domain-ingress
+     Name:             wcp-domain-nginx
      Namespace:        wcpns
      Address:          10.101.123.106
      Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
@@ -159,8 +173,10 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Po
                    /rsscrawl    wcp-domain-cluster-wcp-cluster:8888 (10.244.0.53:8888)
                    /rest    wcp-domain-cluster-wcp-cluster:8888 (10.244.0.53:8888)
                    /webcenterhelp    wcp-domain-cluster-wcp-cluster:8888 (10.244.0.53:8888)
+                   /wsrp-tools     wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.53:8889)
+                   /portalTools    wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.53:8889)
                    /em          wcp-domain-adminserver:7001 (10.244.0.51:7001)
-     Annotations:  meta.helm.sh/release-name: wcp-nginx-ingress
+     Annotations:  meta.helm.sh/release-name: wcp-domain-nginx
                    meta.helm.sh/release-namespace: wcpns
                    nginx.com/sticky-cookie-services: serviceName=wcp-domain-cluster-wcp-cluster srv_id expires=1h path=/;
                    nginx.ingress.kubernetes.io/proxy-connect-timeout: 1800
@@ -175,15 +191,15 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Po
  1. For SSL access to the Oracle WebCenter Portal application, get the details of the services by the above deployed ingress:
   
     ```bash
-     $ kubectl describe ingress wcp-domain-ingress -n wcpns
+     $ kubectl describe ingress wcp-domain-nginx -n wcpns
      ```
     {{%expand "Click here to see the sample output of the services supported by the above deployed ingress." %}}
-    Name:             wcp-domain-ingress
+    Name:             wcp-domain-nginx
     Namespace:        wcpns
     Address:          10.106.220.140
     Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
     TLS:
-      domain1-tls-cert terminates mydomain.com
+      wcp-domain-tls-cert terminates mydomain.com
     Rules:
       Host        Path  Backends
       ----        ----  --------
@@ -194,8 +210,10 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Po
                   /webcenterhelp   wcp-domain-cluster-wcp-cluster:8888 (10.244.0.43:8888,10.244.0.44:8888)
                   /rest     wcp-domain-cluster-wcp-cluster:8888 (10.244.0.43:8888,10.244.0.44:8888)
                   /em          wcp-domain-adminserver:7001 (10.244.0.42:7001)
+                  /wsrp-tools     wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.43:8889,10.244.0.44:8889)
+                  /portalTools    wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.43:8889,10.244.0.44:8889)
     Annotations:  kubernetes.io/ingress.class: nginx
-                  meta.helm.sh/release-name: wcp-nginx-ingress
+                  meta.helm.sh/release-name: wcp-domain-nginx
                   meta.helm.sh/release-namespace: wcpns
                   nginx.ingress.kubernetes.io/affinity: cookie
                   nginx.ingress.kubernetes.io/affinity-mode: persistent
@@ -213,7 +231,7 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Po
     Events:       <none>
    {{% /expand %}}
 #### Verify non-SSL and SSL termination access
-Verify that the Oracle WebCenter Portal domain application URLs are accessible through the  ngnix NodePort `LOADBALANCER-NODEPORT` `30305`:
+Verify that the Oracle WebCenter Portal domain application URLs are accessible through the  nginx NodePort `LOADBALANCER-NODEPORT` `30305`:
 
 ```bash
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-NODEPORT}/console
@@ -222,6 +240,8 @@ Verify that the Oracle WebCenter Portal domain application URLs are accessible t
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-NODEPORT}/rsscrawl
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-NODEPORT}/rest
   http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-NODEPORT}/webcenterhelp
+  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-NODEPORT}/wsrp-tools     
+  http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-NODEPORT}/portalTools    
 
 ```
 
@@ -232,7 +252,7 @@ Verify that the Oracle WebCenter Portal domain application URLs are accessible t
 Uninstall and delete the `ingress-nginx` deployment:
 
 ```bash
-  $ helm delete   wcp-nginx-ingress -n wcpns
+  $ helm delete   wcp-domain-nginx -n wcpns
   $  helm delete nginx-ingress -n wcpns
 ```
 
@@ -245,14 +265,14 @@ Uninstall and delete the `ingress-nginx` deployment:
 
    ```bash
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj "/CN=domain1.org"
-    $ kubectl -n wcpns create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+    $ kubectl -n wcpns create secret tls wcp-domain-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
    ```
    >  Note: The value of `CN` is the host on which this ingress is to be deployed.
 
 1. Deploy the ingress-nginx controller by using Helm on the domain namespace:
     ```bash
      $ helm install nginx-ingress -n wcpns \
-           --set controller.extraArgs.default-ssl-certificate=wcpns/domain1-tls-cert \
+           --set controller.extraArgs.default-ssl-certificate=wcpns/wcp-domain-tls-cert \
            --set controller.service.type=NodePort \
            --set controller.admissionWebhooks.enabled=false \
            --set controller.extraArgs.enable-ssl-passthrough=true  \
@@ -343,7 +363,7 @@ Uninstall and delete the `ingress-nginx` deployment:
 1. Deploy the secured ingress:
 
    ```bash
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+   $ cd ${WORKDIR}/charts/ingress-per-domain/tls
    $ kubectl create -f nginx-tls.yaml
    ```
    > Note: The default `nginx-tls.yaml` contains the backend for WebCenter Portal service with domainUID `wcp-domain`. You need to create similar tls configuration YAML files separately for each backend service.
@@ -362,7 +382,7 @@ Uninstall and delete the `ingress-nginx` deployment:
           tls:
             - hosts:
                 - domain1.org
-              secretName: domain1-tls-cert
+              secretName: wcp-domain-tls-cert
           rules:
             - host: domain1.org
               http:
@@ -391,13 +411,15 @@ Verify that the Oracle WebCenter Portal domain application URLs are accessible t
      https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/rsscrawl
      https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/webcenterhelp
      https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/rest
+     https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/wsrp-tools     
+     https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/portalTools
 
    ```
 
 #### Uninstall ingress-nginx tls
 
   ```bash
-    $ cd weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+    $ cd ${WORKDIR}/charts/ingress-per-domain/tls
     $ kubectl  delete -f nginx-tls.yaml
     $ helm delete nginx-ingress -n wcpns
   ```

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -23,6 +23,8 @@ script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../../common/utility.sh
 source ${scriptDir}/../../common/validate.sh
+# source WCP specific utility scripts
+source ${scriptDir}/../utils/utility.sh
 
 function usage {
   echo usage: ${script} -o dir -i file [-e] [-v] [-t timeout] [-h]
@@ -126,7 +128,7 @@ function initialize {
     validationError "The template file ${deleteJobInput} for deleting a WebLogic domain was not found"
   fi
 
-  dcrInput="${scriptDir}/../../common/jrf-domain-template.yaml"
+  dcrInput="${scriptDir}/../utils/wcp-domain-template.yaml"
   if [ ! -f ${dcrInput} ]; then
     validationError "The template file ${dcrInput} for creating the domain resource was not found"
   fi
@@ -196,7 +198,13 @@ function createDomainHome {
   CONTAINER_NAME="create-wcp-infra-sample-domain-job"
   JOB_NAME="${domainUID}-${CONTAINER_NAME}"
   deleteK8sObj job $JOB_NAME ${createJobOutput}
-  #Traefik Session Setting
+  # Traefik Session Setting
+
+  if ( $configurePortletServer == "true" ) ; then
+    sed -n '/- clusterName:/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
+    sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: ${portletClusterName}/" ${dcrOutput}
+  fi
+
   if [ -z "$loadBalancerType" ]
   then
   	echo "\$loadBalancerType is empty"
@@ -289,4 +297,4 @@ function printSummary {
 }
 
 # Perform the sequence of steps to create a domain
-createDomain false
+createDomain_WCP false

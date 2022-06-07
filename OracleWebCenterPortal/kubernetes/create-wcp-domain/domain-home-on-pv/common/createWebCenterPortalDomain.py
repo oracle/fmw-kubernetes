@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -17,7 +17,7 @@ class WCPortal12214Provisioner:
     }
 
     MANAGED_SERVERS = []
-
+    ADDL_MANAGED_SERVERS = []
     JRF_12214_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
         'extensionTemplates' : [
@@ -37,7 +37,13 @@ class WCPortal12214Provisioner:
         ],
         'serverGroupsToTarget' : [ 'SPACES-MGD-SVRS', 'AS-MGD-SVRS' ]
     }
-
+    WCPortlet_12214_TEMPLATES = {
+                'extensionTemplates' : [
+                    '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.portlet_producer_apps_template.jar',
+           	    '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.ootb_producers_template.jar'
+                ],
+                'serverGroupsToTarget' : [ 'PRODUCER_APPS-MGD-SVRS' ]
+    }
     def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
@@ -45,7 +51,7 @@ class WCPortal12214Provisioner:
         return
 
     def createWCPortalDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName,
-                          managedNameBase, managedServerPort, prodMode, managedCount, clusterName, sslEnabled, adminServerSSLPort, managedServerSSLPort,
+                          managedNameBase, managedServerPort, prodMode, managedCount, clusterName, sslEnabled, adminServerSSLPort, managedServerSSLPort, configurePortletServer, portletClusterName, portletServerNameBase,  portletServerPort, portletServerSSLPort,
                           exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
 
 	print '================================================================='
@@ -55,16 +61,16 @@ class WCPortal12214Provisioner:
 
         print 'Creating Base Domain...'
         domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase,
-                                           managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled)
+                                           managedServerPort, managedServerSSLPort, configurePortletServer, portletClusterName, portletServerNameBase, portletServerPort, portletServerSSLPort, prodMode, managedCount, clusterName, sslEnabled)
 
         print 'Extending Domain...'
-        self.extendDomain(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress,
+        self.extendDomain(domainHome, db, dbPrefix, dbPassword, configurePortletServer, exposeAdminT3Channel, t3ChannelPublicAddress,
                           t3ChannelPort)
         print 'Domain Creation is done...'
 
 
     def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName,
-                            managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName ,sslEnabled):
+                            managedNameBase, managedServerPort, managedServerSSLPort, configurePortletServer, portletClusterName, portletServerNameBase, portletServerPort, portletServerSSLPort, prodMode, managedCount, clusterName ,sslEnabled):
         baseTemplate = self.replaceTokens(self.JRF_12214_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
@@ -81,6 +87,8 @@ class WCPortal12214Provisioner:
         ms_count = int(managedCount)
         ms_sslport = int(managedServerSSLPort)
         admin_sslport = int(adminServerSSLPort)
+        portlet_port = int(portletServerPort)
+        portlet_ssl_port = int(portletServerSSLPort)
         # Create Admin Server
         # =======================
         print 'Creating Admin Server...'
@@ -110,13 +118,19 @@ class WCPortal12214Provisioner:
         # ======================
         print 'Creating cluster...'
         cd('/')
-        cl=create(clusterName, 'Cluster')
+        cl = create(clusterName, 'Cluster')
 
-        # Create managed serversi
+        # Create managed servers
         self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, ms_sslport, clusterName, self.MANAGED_SERVERS, sslEnabled)
         print 'Managed servers created...'
-
-        # Create Node Manager
+        if (configurePortletServer == 'true'):
+          print 'Creating Portlet cluster...'
+          cd('/')
+          cl = create(portletClusterName, 'Cluster')
+          # Create portlet managed server
+          self.ADDL_MANAGED_SERVERS = self.createManagedServers(ms_count, portletServerNameBase, portlet_port, portlet_ssl_port, portletClusterName, self.ADDL_MANAGED_SERVERS, sslEnabled)
+          print 'Managed servers created...'
+          # Create Node Manager
         # =======================
         print 'Creating Node Manager...'
         for machine in self.MACHINES:
@@ -138,7 +152,7 @@ class WCPortal12214Provisioner:
         print 'Base domain created at ' + domainHome
         return domainHome
 
-    def extendDomain(self, domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress,
+    def extendDomain(self, domainHome, db, dbPrefix, dbPassword, configurePortletServer, exposeAdminT3Channel, t3ChannelPublicAddress,
                      t3ChannelPort):
         print 'Extending domain at ' + domainHome
         print 'Database  ' + db
@@ -156,20 +170,14 @@ class WCPortal12214Provisioner:
         print 'Applying WCPortal templates...'
         for extensionTemplate in self.WCPortal_12214_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
-
-        print 'Extension Templates added...'
-
         cd('/')
         delete('WC_Portal', 'Server')
         print 'WC_Portal Managed server deleted...'
-
-        self.configureJDBCTemplates(db, dbPrefix, dbPassword)
 
         print 'Targeting Server Groups...'
         serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
         serverGroupsToTarget.extend(self.WCPortal_12214_TEMPLATES['serverGroupsToTarget'])
         self.targetWCPServers(serverGroupsToTarget)
-
         print 'Targeting Cluster ...'
 
         cd('/')
@@ -181,6 +189,30 @@ class WCPortal12214Provisioner:
         cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
         set('Target', clusterName)
 
+        if (configurePortletServer == 'true'):
+          print 'Applying WCPortlet templates...'
+
+          for extensionTemplate in self.WCPortlet_12214_TEMPLATES['extensionTemplates']:
+              addTemplate(self.replaceTokens(extensionTemplate))
+          print 'WCPortlet Templates added...'
+          cd('/')
+          delete('WC_Portlet', 'Server')
+          print 'WC_Portlet Managed server deleted...'
+          print 'Targeting Server Groups...'
+          serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
+          serverGroupsToTarget.extend(self.WCPortlet_12214_TEMPLATES['serverGroupsToTarget'])
+          self.targetWCPortletServers(serverGroupsToTarget)
+          print 'Targeting Cluster ...'
+          cd('/')
+          print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + portletClusterName
+          cd('/Cluster/' + portletClusterName)
+          set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+          print "Set WLS clusters as target of defaultCoherenceCluster:" + portletClusterName
+          cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
+          set('Target', portletClusterName)
+
+        print 'Configuring JDBC templates'
+        self.configureJDBCTemplates(db, dbPrefix, dbPassword)
         print 'Preparing to update domain...'
         updateDomain()
         print 'Domain updated successfully'
@@ -219,6 +251,14 @@ class WCPortal12214Provisioner:
 
     def targetWCPServers(self, serverGroupsToTarget):
         for managedName in self.MANAGED_SERVERS:
+            setServerGroups(managedName, serverGroupsToTarget)
+            print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
+            cd('/Servers/' + managedName)
+            set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+        return
+
+    def targetWCPortletServers(self, serverGroupsToTarget):
+        for managedName in self.ADDL_MANAGED_SERVERS:
             setServerGroups(managedName, serverGroupsToTarget)
             print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
             cd('/Servers/' + managedName)
@@ -379,6 +419,12 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-managedServerSSLPort':
         managedServerSSLPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-portletServerPort':
+        portletServerPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-portletServerSSLPort':
+        portletServerSSLPort = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
         i += 2
@@ -400,6 +446,15 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-sslEnabled':
         sslEnabled = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-portletServerNameBase':
+        portletServerNameBase = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-portletClusterName':
+        portletClusterName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-configurePortletServer':
+        configurePortletServer = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
@@ -408,4 +463,4 @@ while i < len(sys.argv):
 provisioner = WCPortal12214Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName)
 provisioner.createWCPortalDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword,
                               adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount,
-                              clusterName, sslEnabled, adminServerSSLPort, managedServerSSLPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+                              clusterName, sslEnabled, adminServerSSLPort, managedServerSSLPort, configurePortletServer, portletClusterName, portletServerNameBase ,portletServerPort, portletServerSSLPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
