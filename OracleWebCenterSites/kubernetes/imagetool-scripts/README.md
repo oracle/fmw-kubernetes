@@ -3,7 +3,7 @@ Building WC-SITES image with WebLogic Image Tool
 
 ## Contents
 
-1. [Introduction](#1-introduction-1)
+1. [Introduction](#1-introduction)
 2. [Download the required packages/installers&Patches](#2-download-the-required-packagesinstallerspatches)
 3. [Required build files](#3-required-build-files)
 4. [Steps to create image](#4-steps-to-create-image)
@@ -11,7 +11,7 @@ Building WC-SITES image with WebLogic Image Tool
 
 # 1. Introduction
 
-This README describes the steps involved in building WC-SITES image with the WebLogic Image Tool. To setup the WebLogic Image Tool,  please refer [here](../../../OracleWebCenterSites/imagetool/README.md).
+This README describes the steps involved in building WC-SITES image with the WebLogic Image Tool.
 
 
 # 2. Download the required packages/installers&Patches
@@ -19,21 +19,21 @@ This README describes the steps involved in building WC-SITES image with the Web
 Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. Below the list of packages/installers & patches required for WC-SITES image.
 ```
 JDK
-    jdk-8u241-linux-x64.tar.gz
+    jdk-8u291-linux-x64.tar.gz
 
 FMW INFRA
     fmw_12.2.1.4.0_infrastructure.jar
 
 FMW INFRA PATCHES
-    p28186730_139424_Generic.zip(Opatch)
-    p31537019_122140_Generic.zip(WLS)
-    p30729380_122140_Generic.zip(COH)
+    p28186730_139428_Generic.zip(Opatch)
+    p34012040_122140_Generic.zip(WLS)
+    p33902201_122140_Generic.zip(COH)
 
 WCS
     fmw_12.2.1.4.0_wcsites.jar
 
 WCS PATCH 
-    p31548912_122140_Generic.zip
+    p33975762_122140_Generic.zip
 
 ```
 
@@ -41,16 +41,19 @@ WCS PATCH
 
 The following files from this [repository](./) will be used for building the image,
 
-        addtionalBuildCmds.txt
+        additionalBuildCmds.txt
         buildArgs
 
 Update the repository location in `buildArgs` file in place of the place holder %DOCKER_REPO%
 
 ```
---additionalBuildCommands %DOCKER_REPO%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt
+--additionalBuildCommands %DOCKER_REPO%/OracleWebCenterSites/kubernetes/imagetool-scripts/additionalBuildCmds.txt
 
 ```
 Similarily, update the placeholders %JDK_VERSION% & %BUILDTAG%
+
+Also download the docker-images [repositoty](https://github.com/oracle/docker-images.git) and 
+update %path-to-downloaded-docker-repo% with the docker-images repository path.
 
 
 # 4. Steps to create image
@@ -58,7 +61,7 @@ Similarily, update the placeholders %JDK_VERSION% & %BUILDTAG%
 ### i) Add JDK package to Imagetool cache
 
 ```bash
-    $ imagetool cache addInstaller --type jdk --version 8u241 --path <download location>/jdk-8u251-linux-x64.tar.gz
+    $ imagetool cache addInstaller --type jdk --version 8u291 --path <download location>/jdk-8u291-linux-x64.tar.gz
 ```
 
 ### ii) Add installers to Imagetool cache
@@ -70,10 +73,10 @@ Similarily, update the placeholders %JDK_VERSION% & %BUILDTAG%
 ### iii) Add Patches to Imagetool cache
 
 ```bash
-    $ imagetool cache addEntry --key 28186730_13.9.4.2.4 --value <download location>/p28186730_139424_Generic.zip
-    $ imagetool cache addEntry --key 31537019_12.2.1.4.0 --value <download location>/p31537019_122140_Generic.zip
-    $ imagetool cache addEntry --key 30729380_12.2.1.4.0 --value <download location>/p30729380_122140_Generic.zip
-    $ imagetool cache addEntry --key 29710661_12.2.1.4.0 --value <download location>/p29710661_122140_Generic.zip
+    $ imagetool cache addEntry --key 28186730_13.9.4.2.8 --value <download location>/p28186730_139428_Generic.zip
+    $ imagetool cache addEntry --key 34012040_12.2.1.4.0 --value <download location>/p34012040_122140_Generic.zip
+    $ imagetool cache addEntry --key 33902201_12.2.1.4.0 --value <download location>/p33902201_122140_Generic.zip
+    $ imagetool cache addEntry --key 33975762_12.2.1.4.0 --value <download location>/p33975762_122140_Generic.zip
 ```
 
 ### iv) Updated patch/Opatch to the buildAgrs
@@ -81,21 +84,21 @@ Similarily, update the placeholders %JDK_VERSION% & %BUILDTAG%
 Append patch and opatch list to be used for image creation to the `buildArgs` file. Below the sample options for the above patches,
 
 ```
---patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,29710661_12.2.1.4.0
---opatchBugNumber=28186730_13.9.4.2.4
+--patches 34012040_12.2.1.4.0,33902201_12.2.1.4.0,33975762_12.2.1.4.0
+--opatchBugNumber=28186730_13.9.4.2.8
 ```
 Below a sample `buildArgs` file after appending patch/Opacth detals,
 ```
 
 create
---jdkVersion=8u241
+--jdkVersion=8u291
 --type WCS
 --version=12.2.1.4
---tag=oracle/wcsites:12.2.1.4-21.1.1
+--tag=oracle/wcsites:12.2.1.4
 --installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/install.file
---additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/kubernetes/imagetool-scripts/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
---patches 31537019_12.2.1.4.0,30729380_12.2.1.4.0,29710661_12.2.1.4.0
---opatchBugNumber=28186730_13.9.4.2.4
+--additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/kubernetes/imagetool-scripts/additionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
+--patches 34012040_12.2.1.4.0,33902201_12.2.1.4.0,33975762_12.2.1.4.0
+--opatchBugNumber=28186730_13.9.4.2.8
 ```
 
 ### v) Preparing response files 
@@ -143,7 +146,7 @@ RUN yum -y --downloaddir= install gzip tar unzip libaio \
 RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
  && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
  && mkdir /u01 \
- && chown oracle:oracle /u01
+ && chown oracle:root /u01
 
 # Install Java
 FROM OS_UPDATE as JDK_BUILD
@@ -151,12 +154,12 @@ LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e08
 
 ENV JAVA_HOME=/u01/jdk
 
-COPY --chown=oracle:oracle jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
+COPY --chown=oracle:root jdk-8u291-linux-x64.tar.gz /tmp/imagetool/
 
 USER oracle
 
 
-RUN tar xzf /tmp/imagetool/jdk-8u251-linux-x64.tar.gz -C /u01 \
+RUN tar xzf /tmp/imagetool/jdk-8u291-linux-x64.tar.gz -C /u01 \
  && mv /u01/jdk* /u01/jdk \
  && rm -rf /tmp/imagetool
 
@@ -171,18 +174,18 @@ ENV JAVA_HOME=/u01/jdk \
 
 RUN mkdir -p /u01/oracle \
  && mkdir -p /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle
+ && chown oracle:root /u01/oracle/oraInventory \
+ && chown oracle:root /u01/oracle
 
-COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
+COPY --from=JDK_BUILD --chown=oracle:root /u01/jdk /u01/jdk/
 
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_wcsites.jar wcs.file /tmp/imagetool/
-COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
+COPY --chown=oracle:root fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
+COPY --chown=oracle:root fmw_12.2.1.4.0_wcsites.jar wcs.file /tmp/imagetool/
+COPY --chown=oracle:root oraInst.loc /u01/oracle/
 
-    COPY --chown=oracle:oracle p28186730_139422_Generic.zip /tmp/imagetool/opatch/
+    COPY --chown=oracle:root p28186730_139428_Generic.zip /tmp/imagetool/opatch/
 
-    COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
+    COPY --chown=oracle:root patches/* /tmp/imagetool/patches/
 
 USER oracle
 
@@ -195,7 +198,7 @@ RUN  \
     -responseFile /tmp/imagetool/wcs.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
 
 RUN cd /tmp/imagetool/opatch \
- && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139422_Generic.zip \
+ && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139428_Generic.zip \
  && /u01/jdk/bin/java -jar /tmp/imagetool/opatch/6880880/opatch_generic.jar -silent -ignoreSysPrereqs -force -novalidation oracle_home=/u01/oracle
 
 RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
@@ -217,9 +220,9 @@ ENV ORACLE_HOME=/u01/oracle \
 
 LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
 
-    COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
+    COPY --from=JDK_BUILD --chown=oracle:root /u01/jdk /u01/jdk/
 
-COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
+COPY --from=WLS_BUILD --chown=oracle:root /u01/oracle /u01/oracle/
 
 
 
@@ -231,7 +234,7 @@ WORKDIR /u01/oracle
     
     USER root
     
-    COPY --chown=oracle:oracle files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
+    COPY --chown=oracle:root files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
     
     USER oracle
     	
@@ -258,11 +261,11 @@ WORKDIR /u01/oracle
     
     RUN mkdir -p ${SITES_CONTAINER_SCRIPTS} && \
     	mkdir -p /u01/wcs-wls-docker-install 
-    COPY --chown=oracle:oracle  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
-    COPY --chown=oracle:oracle  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
+    COPY --chown=oracle:root  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
+    COPY --chown=oracle:root  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
     
-    RUN chown oracle:oracle -R /u01/oracle/sites-container-scripts && \
-    	chown oracle:oracle -R /u01/wcs-wls-docker-install && \
+    RUN chown oracle:root -R /u01/oracle/sites-container-scripts && \
+    	chown oracle:root -R /u01/wcs-wls-docker-install && \
     	chmod a+xr /u01/oracle/sites-container-scripts/* && \
     	chmod a+xr /u01/wcs-wls-docker-install/*.sh
     

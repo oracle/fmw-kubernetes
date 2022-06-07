@@ -22,7 +22,6 @@ function toDNS1123Legal {
 username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
 password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
-
 adminServerPodName="${domainUID}-$(toDNS1123Legal ${adminServerName})"
 
 InputParameterList=" -domainName ${domainUID} -adminServerName ${adminServerName} -adminURL ${adminServerPodName}:${adminServerPort} -username ${username} -password ${password}"
@@ -35,5 +34,4 @@ kubectl cp $scriptDir/wls-exporter-deploy ${domainNamespace}/${adminServerPodNam
 kubectl cp $scriptDir/deploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/wls-exporter-deploy
 EXEC_DEPLOY="kubectl exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py ${InputParameterList}"
 eval ${EXEC_DEPLOY}
-
 

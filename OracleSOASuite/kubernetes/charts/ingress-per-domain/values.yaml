@@ -6,13 +6,14 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 #
-# Load balancer type.  Supported values are: TRAEFIK, VOYAGER, NGINX
+
+# Load balancer type. Supported values are: TRAEFIK,NGINX
 type: TRAEFIK
 
-# Type of Configuration Supported Values are : NONSSL, SSL and E2ESSL
+# SSL configuration Type. Supported Values are : NONSSL,SSL,E2ESSL
 sslType: NONSSL
 
-# domainType Supported values are soa,osb and soaosb.
+# domainType. Supported values are: osb,soa,soaosb
 domainType: soa
 
 #WLS domain as backend to the load balancer
@@ -33,16 +34,13 @@ hostName:
   admin: admin.org
   soa: soa.org
   osb: osb.org
+ 
+# Ngnix specific values
+nginx:
+  connectTimeout: 1800
+  readTimeout: 1800
+  sendTimeout: 1800
+  cookieExpires: 172800
+  cookieMaxAge: 172800
 
-# Voyager specific values
-voyager:
-   # web port
-    webPort: 30305
-    webSSLPort: 30443
-# For Voyager E2E Access 
-    adminSSLPort: 30445
-    soaSSLPort: 30447
-    osbSSLPort: 30449
-   # stats port
-    statsPort: 30319
 

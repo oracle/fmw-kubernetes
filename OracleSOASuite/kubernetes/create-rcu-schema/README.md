@@ -26,7 +26,7 @@ $ ./create-rcu-schema.sh -h
 usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables> [-l] <timeoutLimit> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-      (supported values: osb,soa,soaosb,soab2b,soaosbb2b)
+      (supported values: osb,soa,soaosb)
   -d RCU Oracle Database URL (optional)
       (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
   -p OracleSOASuite ImagePullSecret (optional)
@@ -46,11 +46,11 @@ usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <i
   -c Comma-separated variables in the format variablename=value. (optional).
       (default: none)
   -l Timeout limit in seconds. (optional).
-      (default: 300)      
+      (default: 300)
   -h Help
 
 $ ./create-rcu-schema.sh -s domain1
-ImagePullSecret[none] Image[soasuite:12.2.1.4] dburl[oracle-db.default.svc.cluster.local:1521/devpdb.k8s] rcuType[fmw] customVariables[none]
+ImagePullSecret[none] Image[soasuite:12.2.1.4] dburl[oracle-db.default.svc.cluster.local:1521/devpdb.k8s] rcuType[soa] customVariables[none]
 pod/rcu created
 [rcu] already initialized ..
 Checking Pod READY column for State [1/1]
@@ -65,7 +65,7 @@ PATH=/u01/oracle/wlserver/server/bin:/u01/oracle/wlserver/../oracle_common/modul
 
 Your environment has been set.
 Check if the DB Service is ready to accept request
-DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s], schemaPrefix [soainfra] rcuType [fmw]
+DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s], schemaPrefix [soainfra] rcuType [soa]
 
 **** Success!!! ****
 
@@ -135,7 +135,7 @@ $ ./drop-rcu-schema.sh -h
 usage: ./drop-rcu-schema.sh -s <schemaPrefix> -d <dburl> -n <namespace> -q <sysPassword> -r <schemaPassword> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
-      (supported values: osb,soa,soaosb,soab2b,soaosbb2b)
+      (supported values: osb,soa,soaosb)
   -d Oracle Database URL (optional)
       (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s)
   -n Namespace where RCU pod is deployed (optional)
@@ -155,7 +155,7 @@ PATH=/u01/oracle/wlserver/server/bin:/u01/oracle/wlserver/../oracle_common/modul
 
 Your environment has been set.
 Check if the DB Service is ready to accept request
-DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s] schemaPrefix [domain1] rcuType[fmw]
+DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s] schemaPrefix [domain1] rcuType[soa]
 
 **** Success!!! ****
 

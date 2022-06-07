@@ -1,0 +1,109 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if eq .Values.type "TRAEFIK" }}
+{{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    weblogic.resourceVersion: domain-v2
+  annotations:
+    kubernetes.io/ingress.class: 'traefik'
+{{- if eq .Values.sslType "SSL" }}
+{{- end }}
+spec:
+  rules:
+  - host: '{{ .Values.traefik.hostname }}'
+    http:
+      paths:
+      - path: /console
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /wls-exporter
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /weblogic
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /sbconsole
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /sites
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+      - path: /cas
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+      - path: /wls-exporter
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcsitesManagedServerPort }}
+{{- if eq .Values.sslType "SSL" }}
+  tls:
+  - hosts:
+    - '{{ .Values.traefik.hostname }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+{{- end }}
+---
+#Create Traefik Middleware custom resource for SSL Termination
+{{- if eq .Values.sslType "SSL" }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: wls-proxy-ssl
+  namespace:  {{ .Release.Namespace }}
+spec:
+  headers:
+    customRequestHeaders:
+      X-Custom-Request-Header: ""
+      X-Forwarded-For: ""
+      WL-Proxy-Client-IP: ""
+      WL-Proxy-SSL: ""
+      WL-Proxy-SSL: "true"
+    sslRedirect: true
+{{- end }}
+{{- else }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: HostSNI(`{{ .Values.hostName.admin }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.adminServerSSLPort }}
+      weight: 3
+      TerminationDelay: 400
+  - match: HostSNI(`{{ .Values.hostName.wcsites }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.wcsitesManagedServerSSLPort }}
+      weight: 3
+      TerminationDelay: 400
+  tls:
+    passthrough: true
+{{- end }}
+
+{{- end }}
+{{- end }}
+
