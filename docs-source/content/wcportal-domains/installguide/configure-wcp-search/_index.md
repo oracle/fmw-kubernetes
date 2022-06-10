@@ -18,7 +18,7 @@ description = "Set up search functionality in Oracle WebCenter Portal using Elas
 Elasticsearch is a highly scalable search engine. It allows you to store, search, and analyze big volumes of data quickly and provides a distributed, multitenant-capable full-text search engine with an HTTP web interface and schema-free JSON document.
 
 #### Set Up Persistent Volume and Persistent Volume Claim
-Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim) to store Elasticsearch data. To create PV and PVC, use the deployment YAML configuration file located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-es-cluster/es-pvpvc.yaml`.
+Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim) to store Elasticsearch data. To create PV and PVC, use the deployment YAML configuration file located at `${WORKDIR}/create-wcp-es-cluster/es-pvpvc.yaml`.
 
 ```yaml 
 apiVersion: v1
@@ -54,7 +54,7 @@ To create PV & PVC run the below command:
 $ kubectl apply -f es-pvpvc.yaml
 ```
 #### Create a Secret
-To grant access to Oracle WebCenter Portal, create a Kubernetes secret using the deployment YAML configuration file located at `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-es-cluster/es-secret.yaml`
+To grant access to Oracle WebCenter Portal, create a Kubernetes secret using the deployment YAML configuration file located at `${WORKDIR}/create-wcp-es-cluster/es-secret.yaml`
 
 ```yaml 
 apiVersion: v1
@@ -79,7 +79,7 @@ To create Kubernetes Secret run the below command:
 $ kubectl apply -f es-secret.yaml
 ```
 #### Headless Service
- Each node in Elasticsearch cluster can communicate using a headless service. Create a headless service using the deployment YAML configuration file located at `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-es-cluster/es-service.yaml` to establish cluster communication.
+ Each node in Elasticsearch cluster can communicate using a headless service. Create a headless service using the deployment YAML configuration file located at `${WORKDIR}/create-wcp-es-cluster/es-service.yaml` to establish cluster communication.
  ```yaml 
 apiVersion: v1
 kind: Service
@@ -104,7 +104,7 @@ To create Headless Service run below command:
 $ kubectl apply -f es-service.yaml
 ```
 ### LoadBalancer 
-To access the Elasticsearch service outside of the Kubernetes cluster, create an external loadbalancer. Then access the Elasticsearch service by using the external IP of loadbalancer, create a loadbalancer using the deployment YAML configuration file located at `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-es-cluster/es-loadbalancer.yaml`.
+To access the Elasticsearch service outside of the Kubernetes cluster, create an external loadbalancer. Then access the Elasticsearch service by using the external IP of loadbalancer, create a loadbalancer using the deployment YAML configuration file located at `${WORKDIR}/create-wcp-es-cluster/es-loadbalancer.yaml`.
 ```yaml
 apiVersion: v1
 kind: Service
@@ -134,7 +134,7 @@ $ kubectl get svc -n wcpns -l type=external
 ```
 Make a note of the external IP from the above command and use this below sample URL to access Elasticsearch cluster health : http://externalIP:9200/_cluster/health 
  #### Elasticsearch Cluster   
- Using the Kubernetes StatefulSet controller create an Elasticsearch Cluster comprising of three node using the deployment YAML configuration file located at `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-es-cluster/es-statefulset.yaml`
+ Using the Kubernetes StatefulSet controller create an Elasticsearch Cluster comprising of three node using the deployment YAML configuration file located at `${WORKDIR}/create-wcp-es-cluster/es-statefulset.yaml`
  
 ```yaml
 apiVersion: apps/v1

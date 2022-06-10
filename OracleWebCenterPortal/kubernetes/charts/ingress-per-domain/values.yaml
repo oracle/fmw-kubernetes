@@ -1,0 +1,43 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+# Load balancer type.  Supported values are: TRAEFIK, NGINX
+type: TRAEFIK
+
+# Type of Configuration Supported Values are : NONSSL, SSL
+sslType: NONSSL
+
+# domainType Supported values are soa,osb and soaosb.
+domainType: wcp
+
+#WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: wcp-domain
+  adminServerName: adminserver
+  adminServerPort: 7001
+  adminServerSSLPort: 
+  wcpClusterName: wcp-cluster
+  wcpManagedServerPort: 8888
+  wcpManagedServerSSLPort: 
+  wcpPortletClusterName: wcportlet-cluster
+  wcpPortletManagedServerPort: 8889
+  wcpPortletManagedServerSSLPort: 
+
+# Host  specific values
+traefik:
+  hostname: domain1.org
+
+# Ngnix specific values
+nginx:
+  connectTimeout: 1800
+  readTimeout: 1800
+  sendTimeout: 1800
+  cookieExpires: 172800
+  cookieMaxAge: 172800
+
+

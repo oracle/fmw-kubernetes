@@ -28,7 +28,7 @@ To build the Apache webtier Docker image, refer to the [sample](https://github.c
 
 {{%expand "Click here to see the sample content of the configuration file custom_mod_wl_apache.conf for wcp-domain domain" %}}
 ```bash
-$ cat <$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/charts/apache-samples/custom-sample/custom_mod_wl_apache.conf
+$ cat ${WORKDIR}/charts/apache-samples/custom-sample/custom_mod_wl_apache.conf
 
 #Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
@@ -76,16 +76,28 @@ WLSRequest On
 WebLogicCluster wcp-domain-cluster-wcp-cluster:8888
 PathTrim /weblogic1
 </Location> 
+
+<Location /wsrp-tools>
+WLSRequest On
+WebLogicCluster wcp-domain-cluster-wcportlet-cluster:8889
+PathTrim /weblogic1
+</Location> 
+
+<Location /portalTools>
+WLSRequest On
+WebLogicCluster wcp-domain-cluster-wcportlet-cluster:8889
+PathTrim /weblogic1
+</Location> 
 ```
 {{% /expand %}}
 
-1. Update `persistentVolumeClaimName` in `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/charts/apache-samples/custom-sample/input.yaml`with Persistence Volume which contains your own custom_mod_wl_apache.conf file. Use the PV/PVC created at the time of preparing environment, Copy the custom_mod_wl_apache.conf file to existing PersistantVolume.
+1. Update `persistentVolumeClaimName` in `${WORKDIR}/charts/apache-samples/custom-sample/input.yaml`with Persistence Volume which contains your own custom_mod_wl_apache.conf file. Use the PV/PVC created at the time of preparing environment, Copy the custom_mod_wl_apache.conf file to existing PersistantVolume.
 #### Prepare the certificate and private key
 
 1. (For the SSL termination configuration only) Run the following commands to generate your own certificate and private key using `openssl`.
 
       ```bash  
-       $ cd <$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/charts/apache-samples/custom-sample
+       $ cd ${WORKDIR}/charts/apache-samples/custom-sample
        $ export VIRTUAL_HOST_NAME=WEBLOGIC_HOST
        $ export SSL_CERT_FILE=WEBLOGIC_HOST.crt
        $ export SSL_CERT_KEY_FILE=WEBLOGIC_HOST.key
@@ -121,7 +133,7 @@ PathTrim /weblogic1
     $ touch input.yaml
     ```
 
-    Update `virtualHostName` with the value of the `WEBLOGIC_HOST` in file `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/charts/apache-samples/custom-sample/input.yaml`
+    Update `virtualHostName` with the value of the `WEBLOGIC_HOST` in file `${WORKDIR}/charts/apache-samples/custom-sample/input.yaml`
 
    {{%expand "Click here to see the snapshot of the sample input.yaml file " %}}
    ```bash
@@ -139,7 +151,7 @@ PathTrim /weblogic1
 1. Install the Apache webtier Helm chart to the domain `wcpns` namespace with the specified input parameters:
 
    ```bash
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts
+   $ cd ${WORKDIR}/charts
    $ kubectl create namespace apache-webtier
    $ helm install  apache-webtier --values apache-samples/custom-sample/input.yaml --namespace wcpns apache-webtier --set image=oracle/apache:12.2.1.3
    ```

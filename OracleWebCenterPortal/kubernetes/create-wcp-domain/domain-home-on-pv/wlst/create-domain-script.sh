@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 export DOMAIN_HOME=${DOMAIN_HOME_DIR}
@@ -32,4 +32,9 @@ wlst.sh -skipWLSModuleScanning \
         -sslEnabled ${SSL_ENABLED} \
         -adminServerSSLPort ${ADMIN_SERVER_SSL_PORT} \
         -managedServerSSLPort ${MANAGED_SERVER_SSL_PORT} \
+        -configurePortletServer ${CONFIGURE_PORTLET_SERVER}\
+        -portletServerPort ${PORTLET_SERVER_PORT}\
+        -portletServerSSLPort ${PORTLET_SERVER_SSL_PORT}\
+        -portletServerNameBase ${PORTLET_SERVER_NAME_BASE}\
+        -portletClusterName ${PORTLET_CLUSTER_NAME}\
         -t3ChannelPort ${T3_CHANNEL_PORT}

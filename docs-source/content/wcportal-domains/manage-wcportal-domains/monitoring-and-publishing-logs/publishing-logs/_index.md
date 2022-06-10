@@ -7,5 +7,5 @@ pre = "<b> </b>"
 description = "Publish WebLogic Server logs into Elasticsearch."
 +++
 
-To publish WebLogic Server logs into Elasticsearch, you can configure your WebCenter Portal domain to use Fluentd or WebLogic Logging Exporter. 
+To publish WebLogic Server logs into Elasticsearch, you can configure your WebCenter Portal domain to use Fluentd, WebLogic Logging Exporter or Logstash. 
 {{% children style="h4" description="true" %}}

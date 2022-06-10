@@ -29,7 +29,7 @@ You can use the sample scripts to create a WebCenter Portal domain home on an ex
 
 If required, you can customize the parameters used for creating a domain in the `create-domain-inputs.yaml` file.
 
-Please note that the sample scripts for the WebCenter Portal domain deployment are available from the previously downloaded repository at  `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/domain-home-on-pv/`.
+Please note that the sample scripts for the WebCenter Portal domain deployment are available from the previously downloaded repository at  `${WORKDIR}/create-wcp-domain/domain-home-on-pv/`.
   
 Make a copy of the `create-domain-inputs.yaml` file before updating the default values.
 
@@ -38,6 +38,7 @@ The default domain created by the script has the following characteristics:
 * An Administration Server named `AdminServer` listening on port `7001`.
 * A configured cluster named `wcp-cluster` of size `5`.
 * Managed Server, named `wcpserver`, listening on port `8888`.
+* If `configurePortletServer` is set to `true` . It configures a cluster named `wcportlet-cluster` of size `5` and Managed Server, named `wcportletserver`, listening on port `8889`.
 * Log files that are located in `/shared/logs/<domainUID>`.
 
 ##### Configuration parameters
@@ -47,9 +48,11 @@ The following parameters can be provided in the inputs file:
 | --- | --- | --- |
 | `adminPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7001` |
 | `sslEnabled` | SSL mode enabling flag  | `false` |
+| `configurePortletServer` |Configure portlet server cluster   | `false` |
 | `adminServerSSLPort` | SSL Port number for the Administration Server inside the Kubernetes cluster. | `7002` |
 | `adminServerName` | Name of the Administration Server. | `AdminServer` |
 | `clusterName` | Name of the WebLogic cluster instance to generate for the domain. By default the cluster name is `wcp-cluster` for the WebCenter Portal domain. | `wcp-cluster` |
+| `portletClusterName` | Name of the Portlet cluster instance to generate for the domain. By default the cluster name is `wcportlet-cluster` for the Portlet. | `wcportlet-cluster` |
 | `configuredManagedServerCount` | Number of Managed Server instances for the domain. | `5` |
 | `createDomainFilesDir` | Directory on the host machine to locate all the files that you need to create a WebLogic domain, including the script that is specified in the `createDomainScriptName` property. By default, this directory is set to the relative path `wlst`, and the *create script* uses the built-in WLST offline scripts in the `wlst` directory to create the WebLogic domain. An absolute path is also supported to point to an arbitrary directory in the file system. The built-in scripts can be replaced by the user-provided scripts or model files as long as those files are in the specified directory. Files in this directory are put into a Kubernetes config map, which in turn is mounted to `createDomainScriptsMountPath,` so that the Kubernetes pod can use the scripts and supporting files to create a domain home. | `wlst` |
 | `createDomainScriptsMountPath` | Mount path where the *create domain* scripts are located inside a pod. The `create-domain.sh` script creates a Kubernetes job to run the script (specified in the `createDomainScriptName` property) in a Kubernetes pod that creates a domain home. Files in the `createDomainFilesDir` directory are mounted to this location in the pod, so that the Kubernetes pod can use the scripts and supporting files to create a domain home. | `/u01/weblogic` |
@@ -59,7 +62,7 @@ The following parameters can be provided in the inputs file:
 | `domainUID` | Unique ID that identifies this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name. | `wcp-domain` |
 | `exposeAdminNodePort` | Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster. | `false` |
 | `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `false` |
-| `image` | WebCenter Portal Docker image. The WebLogic Kubernetes Operator requires WebCenter Portal release 12.2.1.4. Refer to [WebCenter Portal Docker Image](https://github.com/oracle/docker-images/tree/master/OracleWebCenterPortal) for details on how to obtain or create the image. | `oracle/wcportal:12.2.1.4` |
+| `image` | WebCenter Portal Docker image. The WebLogic Kubernetes Operator requires WebCenter Portal release 12.2.1.4. Refer to [WebCenter Portal Docker Image](https://github.com/oracle/docker-images/tree/main/OracleWebCenterPortal) for details on how to obtain or create the image. | `oracle/wcportal:12.2.1.4` |
 | `imagePullPolicy` | WebLogic Docker image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
 | `imagePullSecretName` | Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret is validated when this parameter is specified. |  |
 | `includeServerOutInPodLog` | Boolean indicating whether to include *server.out* to the pod's stdout. | `true` |
@@ -67,20 +70,23 @@ The following parameters can be provided in the inputs file:
 | `javaOptions` | Java options for starting the Administration Server and Managed Servers. A Java option can include references to one or more of the following pre-defined variables to obtain WebLogic domain information: `$(DOMAIN_NAME)`, `$(DOMAIN_HOME)`, `$(ADMIN_NAME)`, `$(ADMIN_PORT)`, and `$(SERVER_NAME)`. | `-Dweblogic.StdoutDebugEnabled=false` |
 | `logHome` | The in-pod location for the domain log, server logs, server out, and Node Manager log files. `This field cannot be modified.` | `/u01/oracle/user_projects/logs/wcp-domain` |
 | `managedServerNameBase` | Base string used to generate Managed Server names. | `wcpserver` |
-| `managedServerPort` | Port number for each Managed Server. | `8888` |
-| `managedServerSSLPort` | SSL port number for each Managed Server. | `8889` |
+| `portletServerNameBase` | Base string used to generate Portlet Server names. | `wcportletserver` |
+| `managedServerPort` | Port number for each Managed Server. By default the managedServerPort is `8888` for the `wcpserver` and managedServerPort is `8889` for the `wcportletserver`. | `8888` |
+| `managedServerSSLPort` | SSL port number for each Managed Server. By default the managedServerPort is `8788` for the wcpserver and managedServerPort is `8789` for the `wcportletserver`. | `8788` |
+| `portletServerPort` |Port number for each Portlet Server. By default the portletServerPort is `8889` for the `wcportletserver`. | `8888` |
+| `portletServerSSLPort` |SSL port number for each Portlet Server. By default the portletServerSSLPort is `8789` for the `wcportletserver`. | `8789` |
 | `namespace` | Kubernetes namespace in which to create the domain. | `wcpns` |
 | `persistentVolumeClaimName` | Name of the persistent volume claim created to host the domain home. If not specified, the value is derived from the `domainUID` as `<domainUID>-weblogic-sample-pvc`. | `wcp-domain-domain-pvc` |
 | `productionModeEnabled` | Boolean indicating if production mode is enabled for the domain. | `true` |
 | `serverStartPolicy` | Determines which WebLogic Server instances are to be started. Legal values are `NEVER`, `IF_NEEDED`, `ADMIN_ONLY`. | `IF_NEEDED` |
 | `t3ChannelPort` | Port for the T3 channel of the *NetworkAccessPoint*. | `30012` |
 | `t3PublicAddress` | Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <p/>For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes. | If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster. |
-| `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | wcpinfra-domain-credentials
+| `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | wcp-domain-domain-credentials
 | `weblogicImagePullSecretName` | Name of the Kubernetes secret for the Docker Store, used to pull the WebLogic Server image. |   |
 | `serverPodCpuRequest`, `serverPodMemoryRequest`, `serverPodCpuCLimit`, `serverPodMemoryLimit` |  The maximum amount of compute resources allowed and minimum amount of compute resources required for each server pod. Please refer to the Kubernetes documentation on `Managing Compute Resources for Containers` for details. | Resource requests and resource limits are not specified. Refer to [WebCenter Portal Cluster Sizing Recommendations](../pre-requisites/#webcenter-portal-cluster-sizing-recommendations) for more details. |
 | `rcuSchemaPrefix` | The schema prefix to use in the database, for example `WCP1`.  You may wish to make this the same as the domainUID in order to simplify matching domain to their RCU schemas. | `WCP1` |
 | `rcuDatabaseURL` | The database URL. | `dbhostname:dbport/servicename` |
-| `rcuCredentialsSecret` | The Kubernetes secret containing the database credentials. | `wcpinfra-rcu-credentials` |
+| `rcuCredentialsSecret` | The Kubernetes secret containing the database credentials. | `wcp-domain-rcu-credentials` |
 | `loadBalancerHostName` | Host name for the final url accessible outside K8S environment. | `abc.def.com` |
 | `loadBalancerPortNumber` | Port for the final url accessible outside K8S environment. | `30305` |
 | `loadBalancerProtocol` | Protocol for the final url accessible outside K8S environment. | `http` |
@@ -120,7 +126,7 @@ or `kubectl apply -f` command:
 1. Run the `create-domain.sh` sample script, pointing it at the `create-domain-inputs.yaml` inputs file and an output directory like below:
 
     ```bash
-    $ cd <$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/
+    $ cd ${WORKDIR}/create-wcp-domain/
     $ sh create-domain.sh  -i create-domain-inputs.yaml  -o output
       Input parameters being used
       export version="create-weblogic-sample-domain-inputs-v1"
@@ -136,11 +142,13 @@ or `kubectl apply -f` command:
       export initialManagedServerReplicas="2"
       export managedServerNameBase="wcpserver"
       export managedServerPort="8888"
-      export managedServerSSLPort="8889"
+      export managedServerSSLPort="8788"
+      export portletServerPort="8889"
+      export portletServerSSLPort="8789"
       export image="oracle/wcportal:12.2.1.4"
       export imagePullPolicy="IfNotPresent"
       export productionModeEnabled="true"
-      export weblogicCredentialsSecretName="wcpinfra-domain-credentials"
+      export weblogicCredentialsSecretName="wcp-domain-domain-credentials"
       export includeServerOutInPodLog="true"
       export logHome="/u01/oracle/user_projects/domains/logs/$domainUID"
       export httpAccessLogInLogHome="true"
@@ -157,7 +165,7 @@ or `kubectl apply -f` command:
       export createDomainFilesDir="wlst"
       export rcuSchemaPrefix="WCP1"
       export rcuDatabaseURL="oracle-db.wcpns.svc.cluster.local:1521/devpdb.k8s"
-      export rcuCredentialsSecret="wcpinfra-rcu-credentials"
+      export rcuCredentialsSecret="wcp-domain-rcu-credentials"
       export loadBalancerHostName="abc.def.com"
       export loadBalancerPortNumber="30305"
       export loadBalancerProtocol="http"
@@ -167,7 +175,7 @@ or `kubectl apply -f` command:
       Generating output/weblogic-domains/wcp-domain/create-domain-job.yaml
       Generating output/weblogic-domains/wcp-domain/delete-domain-job.yaml
       Generating output/weblogic-domains/wcp-domain/domain.yaml
-      Checking to see if the secret wcpinfra-domain-credentials exists in namespace wcpns
+      Checking to see if the secret wcp-domain-domain-credentials exists in namespace wcpns
       configmap/wcp-domain-create-wcp-infra-sample-domain-job-cm created
       Checking the configmap wcp-domain-create-wcp-infra-sample-domain-job-cm was created
       configmap/wcp-domain-create-wcp-infra-sample-domain-job-cm labeled
@@ -220,15 +228,15 @@ or `kubectl apply -f` command:
    The domain will be created using the script /u01/weblogic/create-domain-script.sh
    
    Initializing WebLogic Scripting Tool (WLST) ...
-   
-   
+     
+     
    Welcome to WebLogic Server Administration Scripting Shell
-   
+     
    Type help() for help on available commands
-   
+     
    =================================================================
-       WebCenter Portal Weblogic Operator Domain Creation Script
-                            12.2.1.4.0
+      WebCenter Portal Weblogic Operator Domain Creation Script
+                           12.2.1.4.0
    =================================================================
    Creating Base Domain...
    Creating Admin Server...
@@ -239,6 +247,11 @@ or `kubectl apply -f` command:
    managed server name is wcpserver4
    managed server name is wcpserver5
    ['wcpserver1', 'wcpserver2', 'wcpserver3', 'wcpserver4', 'wcpserver5']
+   Creating porlet cluster...
+   managed server name is wcportletserver1
+   managed server name is wcportletserver2
+   managed server name is wcportletserver3
+   ['wcportletserver1', 'wcportletserver2', 'wcportletserver3', 'wcportletserver4', 'wcportletserver5']
    Managed servers created...
    Creating Node Manager...
    Will create Base domain at /u01/oracle/user_projects/domains/wcp-domain
@@ -261,16 +274,20 @@ or `kubectl apply -f` command:
    Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserver3
    Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserver4
    Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcpserver5
+   Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcportletserver1
+   Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcportletserver2
+   Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcportletserver3
    Targeting Cluster ...
    Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcp-cluster
    Set WLS clusters as target of defaultCoherenceCluster:wcp-cluster
+   Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcportlet-cluster
+   Set WLS clusters as target of defaultCoherenceCluster:wcportlet-cluster
    Preparing to update domain...
    Jan 12, 2021 10:30:09 AM oracle.security.jps.az.internal.runtime.policy.AbstractPolicyImpl initializeReadStore
    INFO: Property for read store in parallel: oracle.security.jps.az.runtime.readstore.threads = null
    Domain updated successfully
    Domain Creation is done...
-   Successfully Completed         
-  
+   Successfully Completed          
     ```
 
 #### Initialize the WebCenter Portal Domain
@@ -306,12 +323,17 @@ pod/wcp-domain-adminserver                                1/1     Running     0 
 pod/wcp-domain-create-fmw-infra-sample-domain-job-8jr6k   0/1     Completed   0          3h12m
 pod/wcp-domain-wcp-server1                                1/1     Running     0          11m
 pod/wcp-domain-wcp-server2                                1/1     Running     0          11m
+pod/wcp-domain-wcportletserver1                           1/1     Running     1          21h
 
-NAME                                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-service/wcp-domain-adminserver           ClusterIP   None            <none>        7001/TCP   13m
-service/wcp-domain-cluster-wcp-cluster   ClusterIP   10.98.145.173   <none>        8888/TCP   11m
-service/wcp-domain-wcp-server1           ClusterIP   None            <none>        8888/TCP   11m
-service/wcp-domain-wcp-server2           ClusterIP   None            <none>        8888/TCP   11m
+
+NAME                                             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/wcp-domain-adminserver                   ClusterIP   None            <none>        7001/TCP   13m
+service/wcp-domain-cluster-wcp-cluster           ClusterIP   10.98.145.173   <none>        8888/TCP   11m
+service/wcp-domain-wcp-server1                   ClusterIP   None            <none>        8888/TCP   11m
+service/wcp-domain-wcp-server2                   ClusterIP   None            <none>        8888/TCP   11m
+service/wcp-domain-cluster-wcportlet-cluster     ClusterIP   10.98.145.173   <none>        8889/TCP   11m
+service/wcp-domain-wcportletserver1              ClusterIP   None            <none>        8889/TCP   11m
+
 
 NAME                                                      COMPLETIONS   DURATION   AGE
 job.batch/wcp-domain-create-fmw-infra-sample-domain-job   1/1           16m        3h12m
@@ -345,6 +367,8 @@ wcp-domain-adminserver                                1/1     Running     0     
 wcp-domain-create-fmw-infra-sample-domain-job-8jr6k   0/1     Completed   0          3h14m
 wcp-domain-wcp-server1                                1/1     Running     0          14m
 wcp-domain-wcp-server2                                1/1     Running     0          14m
+wcp-domain-wcportletserver1                           1/1     Running     1          14m
+
 ```
 
 #### Verify the Services
@@ -358,11 +382,14 @@ $ kubectl get services -n NAMESPACE
 Here is an example of the output of this command:
 ```
 -bash-4.2$ kubectl get services -n wcpns
-NAME                             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-wcp-domain-adminserver           ClusterIP   None            <none>        7001/TCP   17m
-wcp-domain-cluster-wcp-cluster   ClusterIP   10.98.145.173   <none>        8888/TCP   14m
-wcp-domain-wcp-server1           ClusterIP   None            <none>        8888/TCP   14m
-wcp-domain-wcp-server2           ClusterIP   None            <none>        8888/TCP   14m
+NAME                                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+wcp-domain-adminserver                  ClusterIP   None            <none>        7001/TCP   17m
+wcp-domain-cluster-wcp-cluster          ClusterIP   10.98.145.173   <none>        8888/TCP   14m
+wcp-domain-wcp-server1                  ClusterIP   None            <none>        8888/TCP   14m
+wcp-domain-wcp-server2                  ClusterIP   None            <none>        8888/TCP   14m
+wcp-domain-cluster-wcportlet-cluster    ClusterIP   10.98.145.173   <none>        8889/TCP   14m
+wcp-domain-wcportletserver1             ClusterIP   None            <none>        8889/TCP   14m
+
 ```
 #### Managing WebCenter Portal 
 

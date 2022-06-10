@@ -24,7 +24,7 @@ A complete example of a domain definition with fluentd configuration is at the [
 {{% notice note %}} These identifiers  are used in the sample commands.
 * `wcpns`: WebCenter Portal domain namespace
 * `wcp-domain`: `domainUID`
-* `wcpinfra-domain-credentials`: Kubernetes secret 
+* `wcp-domain-domain-credentials`: Kubernetes secret 
 {{%/notice %}}
 
 The sample Elasticsearch configuration is:
@@ -70,7 +70,7 @@ spec:
 #### Add Elasticsearch secrets to WebLogic domain credentials
 Configure the `fluentd` container to look for Elasticsearch parameters in the domain credentials.  Edit the domain credentials and add the parameters shown in the example below.
 
-For example, run: `kubectl edit secret wcpinfra-domain-credentials -n wcpns` and add the base64 encoded values of each Elasticsearch parameter:
+For example, run: `kubectl edit secret wcp-domain-domain-credentials -n wcpns` and add the base64 encoded values of each Elasticsearch parameter:
 ```text
 elasticsearchhost: ZWxhc3RpY3NlYXJjaC5ib2JzLWJvb2tzLnNhbXBsZS5jb20=
 elasticsearchport: NDQz
@@ -165,7 +165,7 @@ Add a container to the domain to run `fluentd` in the Administration Server and 
 The container definition:
 
 * Defines a `LOG_PATH` environment variable that points to the log location of `bobbys-front-end`.
-* Defines `ELASTICSEARCH_HOST`, `ELASTICSEARCH_PORT`, `ELASTICSEARCH_USER`, and `ELASTICSEARCH_PASSWORD` environment variables that are all retrieving their values from the secret `wcpinfra-domain-credentials`.
+* Defines `ELASTICSEARCH_HOST`, `ELASTICSEARCH_PORT`, `ELASTICSEARCH_USER`, and `ELASTICSEARCH_PASSWORD` environment variables that are all retrieving their values from the secret `wcp-domain-domain-credentials`.
 * Includes volume mounts for the `fluentd-config` `ConfigMap` and the volume containing the domain logs.
 
 **NOTE**: For brevity, only the paths to the relevant configuration are shown.
@@ -197,23 +197,23 @@ spec:
         valueFrom:
           secretKeyRef:
             key: elasticsearchhost
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
       - name: ELASTICSEARCH_PORT
         valueFrom:
           secretKeyRef:
             key: elasticsearchport
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
       - name: ELASTICSEARCH_USER
         valueFrom:
           secretKeyRef:
             key: elasticsearchuser
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
             optional: true
       - name: ELASTICSEARCH_PASSWORD
         valueFrom:
           secretKeyRef:
             key: elasticsearchpassword
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
             optional: true
       image: fluent/fluentd-kubernetes-daemonset:v1.3.3-debian-elasticsearch-1.3
       imagePullPolicy: IfNotPresent
@@ -259,7 +259,7 @@ spec:
   image: "oracle/wcportal:12.2.1.4"
   imagePullPolicy: "IfNotPresent"
   webLogicCredentialsSecret:
-    name: wcpinfra-domain-credentials
+    name: wcp-domain-domain-credentials
   includeServerOutInPodLog: true
   logHomeEnabled: true 
   httpAccessLogInLogHome: true
@@ -309,22 +309,22 @@ spec:
         valueFrom:
           secretKeyRef:
             key: elasticsearchport
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
       - name: ELASTICSEARCH_PORT
         valueFrom:
           secretKeyRef:
             key: elasticsearchhost
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
       - name: ELASTICSEARCH_USER
         valueFrom:
           secretKeyRef:
             key: elasticsearchuser
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
       - name: ELASTICSEARCH_PASSWORD
         valueFrom:
           secretKeyRef:
             key: elasticsearchpassword
-            name: wcpinfra-domain-credentials
+            name: wcp-domain-domain-credentials
       image: fluent/fluentd-kubernetes-daemonset:v1.11.5-debian-elasticsearch6-1.0
       imagePullPolicy: IfNotPresent
       name: fluentd
@@ -355,7 +355,7 @@ spec:
       name: fluentd-config-volume
   serverStartPolicy: IF_NEEDED
   webLogicCredentialsSecret:
-    name: wcpinfra-domain-credentials
+    name: wcp-domain-domain-credentials
 ```
 
 ##### Get the Kibana dashboard port information as shown below:

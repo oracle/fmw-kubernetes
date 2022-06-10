@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 apiVersion: batch/v1
 kind: Job
@@ -81,6 +81,16 @@ spec:
               value: "%ADMIN_SERVER_SSL_PORT%"
             - name: MANAGED_SERVER_SSL_PORT
               value: "%MANAGED_SERVER_SSL_PORT%"
+            - name: CONFIGURE_PORTLET_SERVER
+              value: "%CONFIGURE_PORTLET_SERVER%"
+            - name: PORTLET_SERVER_PORT
+              value: "%PORTLET_SERVER_PORT%"
+            - name: PORTLET_SERVER_SSL_PORT
+              value: "%PORTLET_SERVER_SSL_PORT%"
+            - name: PORTLET_CLUSTER_NAME
+              value: "%PORTLET_CLUSTER_NAME%"
+            - name: PORTLET_SERVER_NAME_BASE
+              value: "%PORTLET_SERVER_NAME_BASE%"
       volumes:
         - name: create-wcp-infra-sample-domain-job-cm-volume
           configMap:

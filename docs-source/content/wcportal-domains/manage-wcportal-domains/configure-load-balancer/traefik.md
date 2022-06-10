@@ -31,7 +31,7 @@ To load balance Oracle WebCenter Portal domain clusters, you can install the ing
 You can use the following `values.yaml` sample file  and set kubernetes.namespaces as required.
 
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
+    $ cd ${WORKDIR}
     $ kubectl create namespace traefik
     $ helm repo add traefik https://containous.github.io/traefik-helm-chart
    ```
@@ -44,7 +44,7 @@ You can use the following `values.yaml` sample file  and set kubernetes.namespac
    ```bash
     $ helm install traefik  traefik/traefik \
          --namespace traefik \
-         --values kubernetes/samples/scripts/charts/traefik/values.yaml \
+         --values charts/traefik/values.yaml \
          --set  "kubernetes.namespaces={traefik}" \
          --set "service.type=NodePort" --wait
    ```    
@@ -147,18 +147,28 @@ TEST SUITE: None
 #### Create an ingress for the domain
 
 Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress.
-Sample values for default configuration are shown in the file `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml`.
+Sample values for default configuration are shown in the file `${WORKDIR}/charts/ingress-per-domain/values.yaml`.
 By default, `type` is `TRAEFIK` , `tls` is `Non-SSL`. You can override these values by passing values through the command line or edit them in the sample `values.yaml` file based on the type of configuration (non-SSL or SSL).
-If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/traefik-ingress.yaml`
+>NOTE: This is not an exhaustive list of rules. You can enhance it based on the application URLs that need to be accessed externally.
+ 
+If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at `${WORKDIR}/charts/ingress-per-domain/templates/traefik-ingress.yaml`
+You can add new path rules like shown below .
+```yaml
+ - path: /NewPathRule
+   backend:
+     serviceName: 'Backend Service Name'
+     servicePort: 'Backend Service Port'
 
+```
+ 
 1. Install `ingress-per-domain` using Helm for non-SSL configuration:
 
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
+    $ cd ${WORKDIR}
     $ helm install wcp-traefik-ingress  \
-        kubernetes/samples/charts/ingress-per-domain \
+        charts/ingress-per-domain \
         --namespace wcpns \
-        --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
+        --values charts/ingress-per-domain/values.yaml \
         --set "traefik.hostname=$(hostname -f)"
    ```
    Sample output:
@@ -175,26 +185,9 @@ If needed, you can update the ingress YAML file to define more path rules (in se
 
    ```bash
     $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj "/CN=*"
-    $ kubectl -n wcpns create secret tls wcpinfra-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+    $ kubectl -n wcpns create secret tls wcp-domain-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
    ```
    >  Note: The value of `CN` is the host on which this ingress is to be deployed.
-
-1. Create a Traefik Middleware custom resource
-
-   In case of SSL termination, Traefik must pass a custom header `WL-Proxy-SSL:true` to the WebLogic Server endpoints. Create the Middleware using the following command:
-   ```bash
-   $ cat <<EOF | kubectl apply -f -
-   apiVersion: traefik.containo.us/v1alpha1
-   kind: Middleware
-   metadata:
-     name: wls-proxy-ssl
-     namespace: wcpns
-   spec:
-     headers:
-       customRequestHeaders:
-          WL-Proxy-SSL: "true"
-   EOF
-   ```
 
 1. Create the Traefik TLSStore custom resource.
 
@@ -209,7 +202,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      namespace: wcpns
    spec:
      defaultCertificate:
-       secretName:  wcpinfra-tls-cert   
+       secretName:  wcp-domain-tls-cert   
    EOF
    ```
 1. Install `ingress-per-domain` using Helm for SSL configuration.
@@ -227,13 +220,13 @@ If needed, you can update the ingress YAML file to define more path rules (in se
    The entry point for SSL access and the Middleware name should be updated in the annotation. The Middleware name should be in the form `<namespace>-<middleware name>@kubernetescrd`.
 
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
+    $ cd ${WORKDIR}
     $ helm install wcp-traefik-ingress  \
-        kubernetes/samples/charts/ingress-per-domain \
+        charts/ingress-per-domain \
         --namespace wcpns \
-        --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
+        --values charts/ingress-per-domain/values.yaml \
         --set "traefik.hostname=$(hostname -f)" \
-        --set tls=SSL
+        --set sslType=SSL
    ```
    Sample output:
    ```bash
@@ -267,6 +260,8 @@ If needed, you can update the ingress YAML file to define more path rules (in se
                                                  /rest        wcp-domain-cluster-wcp-cluster:8888 (10.244.0.52:8888,10.244.0.53:8888)
                                                  /webcenterhelp    wcp-domain-cluster-wcp-cluster:8888 (10.244.0.52:8888,10.244.0.53:8888)        
                                                  /em          wcp-domain-adminserver:7001 (10.244.0.51:7001)
+                                                 /wsrp-tools     wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.52:8889,10.244.0.53:8889)
+                                                 /portalTools    wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.52:8889,10.244.0.53:8889)
  Annotations:                                    kubernetes.io/ingress.class: traefik
                                                  meta.helm.sh/release-name: wcp-traefik-ingress
                                                  meta.helm.sh/release-namespace: wcpns
@@ -286,7 +281,7 @@ Namespace:        wcpns
 Address:
 Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
 TLS:
-  wcpinfra-tls-cert terminates www.example.com
+  wcp-domain-tls-cert terminates www.example.com
 Rules:
   Host                                          Path  Backends
   ----                                          ----  --------
@@ -297,6 +292,8 @@ Rules:
                                                 /rest        wcp-domain-cluster-wcp-cluster:8888 (10.244.0.52:8888,10.244.0.53:8888)
                                                 /webcenterhelp    wcp-domain-cluster-wcp-cluster:8888 (10.244.0.52:8888,10.244.0.53:8888)
                                                 /em          wcp-domain-adminserver:7001 (10.244.0.51:7001)
+                                                /wsrp-tools     wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.52:8889,10.244.0.53:8889)
+                                                /portalTools    wcp-domain-cluster-wcportlet-cluster:8889 (10.244.0.52:8889,10.244.0.53:8889)
 Annotations:                                    kubernetes.io/ingress.class: traefik
                                                 meta.helm.sh/release-name: wcp-traefik-ingress
                                                 meta.helm.sh/release-namespace: wcpns
@@ -338,6 +335,8 @@ After setting up the Traefik (ingress-based) load balancer, verify that the doma
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/rsscrawl
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/rest
     http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/webcenterhelp
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/wsrp-tools
+    http://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-Non-SSLPORT}/portalTools
 
 ```
 
@@ -352,6 +351,9 @@ After setting up the Traefik (ingress-based) load balancer, verify that the doma
     https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/rsscrawl
     https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/rest
     https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/webcenterhelp
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/wsrp-tools
+    https://${LOADBALANCER_HOSTNAME}:${LOADBALANCER-SSLPORT}/portalTools
+
 
 ```
 
@@ -371,7 +373,7 @@ $ helm delete wcp-traefik-ingress  -n wcpns
 1. Use Helm to install the Traefik (ingress-based) load balancer. You can use the `values.yaml` sample file and set kubernetes.namespaces as required.
 
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
+    $ cd ${WORKDIR}
     $ kubectl create namespace traefik
     $ helm repo add traefik https://containous.github.io/traefik-helm-chart
    ```
@@ -384,7 +386,7 @@ $ helm delete wcp-traefik-ingress  -n wcpns
    ```bash
    $ helm install traefik  traefik/traefik \
     --namespace traefik \
-    --values kubernetes/samples/scripts/charts/traefik/values.yaml \
+    --values charts/traefik/values.yaml \
     --set  "kubernetes.namespaces={traefik}" \
     --set "service.type=NodePort" --wait
    ```    
@@ -447,7 +449,7 @@ $ helm upgrade traefik traefik/traefik --namespace traefik --reuse-values \
 
 #### Create IngressRouteTCP
 1. For each backend service, create different ingresses, as Traefik does not support multiple paths or rules with annotation `ssl-passthrough`. For example, for `wcp-domain-adminserver` and `wcp-domain-cluster-wcp-cluster,` different ingresses must be created.
-1. To enable SSL passthrough in Traefik, you can configure a TCP router. A sample YAML for `IngressRouteTCP` is available at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls/traefik-tls.yaml`. The following should be updated in `traefik-tls.yaml`:
+1. To enable SSL passthrough in Traefik, you can configure a TCP router. A sample YAML for `IngressRouteTCP` is available at `${WORKDIR}/charts/ingress-per-domain/tls/traefik-tls.yaml`. The following should be updated in `traefik-tls.yaml`:
    * The service name and the SSL port should be updated in the `services`.
    * The load balancer host name should be updated in the `HostSNI` rule.
 
@@ -491,6 +493,6 @@ Verify the access to application URLs exposed through the configured service. Th
 
    ```bash
    $ helm delete traefik -n traefik
-   $ cd weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+   $ cd ${WORKDIR}/charts/ingress-per-domain/tls
    $ kubectl delete -f traefik-tls.yaml
    ```

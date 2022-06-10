@@ -1,0 +1,64 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# The version of this inputs file.  Do not modify.
+version: create-wcp-domain-monitoring-inputs-v1
+
+# Unique ID identifying your domain. 
+# This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
+domainUID: wcp-domain
+
+# Name of the domain namespace
+domainNamespace: wcpns
+
+# Boolean value indicating whether to install kube-prometheus-stack
+setupKubePrometheusStack: true
+
+# Additional parameters for helm install kube-prometheus-stack
+# Refer https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml for additional parameters
+# Sample :
+# additionalParamForKubePrometheusStack: --set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false
+additionalParamForKubePrometheusStack:
+
+# Name of the monitoring namespace
+monitoringNamespace: monitoring
+
+# Name of the Admin Server
+adminServerName: AdminServer
+#
+# Port number for admin server
+adminServerPort: 7001
+
+# Cluster name
+wcpClusterName: wcp-cluster
+
+# Port number for managed server
+wcpManagedServerPort: 8888
+
+# WebLogic Monitoring Exporter to Cluster
+wlsMonitoringExporterTowcpCluster: false
+
+# Portlet Cluster name
+wcpPortletClusterName: wcportlet-cluster
+
+# Port number for Portlet managed server
+wcpPortletManagedServerPort: 8889
+
+# WebLogic Monitoring Exporter to PortletCluster
+wlsMonitoringExporterTowcpPortletCluster: false
+
+# Boolean to indicate if the adminNodePort will be exposed
+exposeMonitoringNodePort: false
+
+# NodePort to expose Prometheus
+prometheusNodePort: 32101
+
+# NodePort to expose Grafana
+grafanaNodePort: 32100
+
+# NodePort to expose Alertmanager
+alertmanagerNodePort: 32102
+
+# Name of the Kubernetes secret for the Admin Server's username and password
+weblogicCredentialsSecretName: wcp-domain-domain-credentials
+

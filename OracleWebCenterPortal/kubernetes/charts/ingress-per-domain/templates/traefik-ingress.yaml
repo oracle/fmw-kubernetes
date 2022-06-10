@@ -1,0 +1,87 @@
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if eq .Values.type "TRAEFIK" }}
+{{- if or (eq .Values.sslType "NONSSL") (eq .Values.sslType "SSL") }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    weblogic.resourceVersion: domain-v2
+  annotations:
+    kubernetes.io/ingress.class: 'traefik'
+{{- if eq .Values.sslType "SSL" }}
+    traefik.ingress.kubernetes.io/router.entrypoints: 'websecure'
+    traefik.ingress.kubernetes.io/router.tls: 'true'
+    traefik.ingress.kubernetes.io/router.middlewares: '{{ .Release.Namespace}}-wls-proxy-ssl@kubernetescrd'
+{{- end }}
+spec:
+  rules:
+  - host: '{{ .Values.traefik.hostname }}'
+    http:
+      paths:
+      - path: /webcenter
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpManagedServerPort }}
+      - path: /console
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /rsscrawl
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpManagedServerPort }}
+      - path: /webcenterhelp
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpManagedServerPort }}
+      - path: /rest
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpManagedServerPort }}
+      - path: /em
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpManagedServerPort }}
+      - path: /wsrp-tools
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpPortletClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpPortletManagedServerPort }}
+      - path: /portalTools
+        backend:
+          serviceName: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcpPortletClusterName | lower | replace "_" "-" }}'
+          servicePort: {{ .Values.wlsDomain.wcpPortletManagedServerPort }}
+{{- if eq .Values.sslType "SSL" }}
+  tls:
+  - hosts:
+    - '{{ .Values.traefik.hostname }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+{{- end }}
+---
+#Create Traefik Middleware custom resource for SSL Termination
+{{- if eq .Values.sslType "SSL" }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: wls-proxy-ssl
+  namespace:  {{ .Release.Namespace }}
+spec:
+  headers:
+    customRequestHeaders:
+      X-Custom-Request-Header: ""
+      X-Forwarded-For: ""
+      WL-Proxy-Client-IP: ""
+      WL-Proxy-SSL: ""
+      WL-Proxy-SSL: "true"
+    sslRedirect: true
+{{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}
+

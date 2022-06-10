@@ -92,7 +92,7 @@ $ kubectl cp setDomainEnv.sh wcpns/wcp-domain-adminserver:/u01/oracle/user_proje
 
 #### Create a Configuration File for the WebLogic Logging Exporter  
 
-1. Specify the Elasticsearch server host and port number in the file: `<$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-logging-exporter/WebLogicLoggingExporter.yaml`
+1. Specify the Elasticsearch server host and port number in the file: `<$WORKDIR>/logging-services/weblogic-logging-exporter/WebLogicLoggingExporter.yaml`
 
 	Example:
 	```
@@ -107,13 +107,8 @@ $ kubectl cp setDomainEnv.sh wcpns/wcp-domain-adminserver:/u01/oracle/user_proje
 
 2. Copy the `WebLogicLoggingExporter.yaml` file to the domain home directory in the WebLogic Administration Server pod:
 ```bash
-$ kubectl cp <$WORKDIR>/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcp-domain/utils/weblogic-logging-exporter/WebLogicLoggingExporter.yaml wcpns/wcp-domain-adminserver:/u01/oracle/user_projects/domains/wcp-domain/config/
+$ kubectl cp <$WORKDIR>/logging-services/weblogic-logging-exporter/WebLogicLoggingExporter.yaml wcpns/wcp-domain-adminserver:/u01/oracle/user_projects/domains/wcp-domain/config/
 ```  
-
-#### Edit the WebCenter Portal ingress (Only for Voyager Loadbalancer)
-
-By default, paths for wls-exporter are commented in the ingress template. In order to expose the wls-exporter end-point externally, you must edit the WebCenter Portal ingress reapply them if necessary. (See `Using Voyager Loadbalacer`)   
-
 
 #### Restart the Servers in the Domain
 
