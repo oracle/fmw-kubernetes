@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Use the WebLogic Monitoring Exporter to monitor an Oracle WebCenter Content instance using Prometheus and Grafana.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.2.3/images/favicon.png" type="image/png">
+
+    <title>Monitor an Oracle WebCenter Content domain :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.2.3/css/nucleus.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/fontawesome-all.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/hybrid.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/featherlight.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/perfect-scrollbar.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/auto-complete.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/atom-one-dark-reasonable.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/theme.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/hugo-theme.css?1656409532" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.2.3/js/jquery-3.6.0.min.js?1656409532"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.2.3">
+  <img src="/fmw-kubernetes/22.2.3/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.2.3/js/lunr.min.js?1656409532"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.3/js/auto-complete.js?1656409532"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.2.3";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.3/js/search.js?1656409532"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/" title="Oracle WebCenter Content" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/">
+          Oracle WebCenter Content
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/create-wccontent-domains/">
+          <b>  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/" title="Launch Oracle Webcenter Content Native Applications in Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/">
+          <b>  </b>Launch Oracle Webcenter Content Native Applications in Containers
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/" title="Monitor an Oracle WebCenter Content domain" class="dd-item active">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/">
+        <b> </b>Monitor an Oracle WebCenter Content domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/elasticsearch-integration/">
+        Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-logging-exporter-setup/">
+        Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/logging-fluentd-setup/" title="Publish logs to Elasticsearch Using Fluentd" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/logging-fluentd-setup/">
+        Publish logs to Elasticsearch Using Fluentd
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an WebLogic Kubernetes Operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an WebLogic Kubernetes Operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/">
+          <b>7. </b>Oracle Cloud Infrastructure
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-oke-environment/" title="Preparing an OKE environment" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-oke-environment/">
+        <b>1 a.  </b>Preparing an OKE environment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/filesystem/" title="Preparing a file system" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/filesystem/">
+        <b>1 b. </b>Preparing a file system
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/ocir/" title="Preparing OCIR" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/ocir/">
+        <b>1 c. </b>Preparing OCIR
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-environment-wcc-domain/" title="Prepare environment for WCC domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-environment-wcc-domain/">
+          <b>2.  </b>Prepare environment for WCC domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/">
+          <b>3. </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/create-wccontent-domains/">
+          <b>4.  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-wcc-for-idcs/" title="Configuring Oracle WebCenter Content for  Oracle Identity Cloud Service (IDCS)" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-wcc-for-idcs/">
+          <b>5.  </b>Configuring Oracle WebCenter Content for  Oracle Identity Cloud Service (IDCS)
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/wcc-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/wcc-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/quickstart-deployment-guide/" title="Quick start deployment guide" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/quickstart-deployment-guide/">
+        <b> </b>Quick start deployment guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/" title="Oracle WebCenter Portal" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/">
+          Oracle WebCenter Portal
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prerequisites/">
+          <b> </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/create-wcp-domain/" title="Create WebCenter Portal domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/create-wcp-domain/">
+          <b>  </b>Create WebCenter Portal domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/configure-wcp-search/" title="Configure WebCenter Portal For Search" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/configure-wcp-search/">
+          <b> </b>Configure WebCenter Portal For Search
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/">
+          <b>3. </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
+        <b>c. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/" title="Monitor a domain and publish logs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/">
+          <b> </b>Monitor a domain and publish logs
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/monitoring-domain/" title=" Monitor a WebCenter Portal domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/monitoring-domain/">
+          <b></b> Monitor a WebCenter Portal domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/" title="Publish WebLogic Server logs into Elasticsearch" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/">
+          <b> </b>Publish WebLogic Server logs into Elasticsearch
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/" title=" Fluentd" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/">
+          <b>a. </b> Fluentd
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/" title="WebLogic logging exporter" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
+          <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/create-or-update-image/">
+          <b>4. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/cleanup-domain-setup/" title="Uninstall an Oracle WebCenter Portal domain" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/cleanup-domain-setup/">
+        <b>5. </b>Uninstall an Oracle WebCenter Portal domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/">
+          <b>6. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/wcp-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/wcp-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/additional-configuration/">
+        <b> </b>Additional Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.2.3/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.2.3/wccontent-domains/'>Oracle WebCenter Content</a> > <a href='/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/'>Administration Guide</a> > Monitor an Oracle WebCenter Content domain
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+      </ul>
+    </li>
+    <li><a href="#set-up-the-weblogic-monitoring-exporter">Set Up the WebLogic Monitoring Exporter</a>
+      <ul>
+        <li></li>
+        <li><a href="#download-weblogic-monitoring-exporter">Download WebLogic Monitoring Exporter</a></li>
+        <li><a href="#create-configuration-file-for-weblogic-monitoring-exporter">Create configuration file for WebLogic Monitoring Exporter</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Monitor an Oracle WebCenter Content domain
+            </h1>
+          
+
+        
+
+
+
+<p>You can monitor a WebCenter Content domain using Prometheus and Grafana by exporting the metrics from the domain instance using the
+WebLogic Monitoring Exporter. This sample shows you how to set up the WebLogic Monitoring Exporter to push the data to Prometheus.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>This document assumes that the Prometheus Operator is deployed on the Kubernetes cluster. If it is not already deployed, follow the steps below for deploying the Prometheus Operator.</p>
+<h4 id="deploy-prometheus-and-grafana">Deploy Prometheus and Grafana</h4>
+<p>Refer to the compatibility matrix of <a href="https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix">Kube Prometheus</a> and clone the <a href="https://github.com/coreos/kube-prometheus/releases">release</a> version of the <code>kube-prometheus</code> repository according to the Kubernetes version of your cluster.</p>
+<h4 id="clone-the-kube-prometheus-project">Clone the kube-prometheus project</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/coreos/kube-prometheus.git
+</code></pre></div><h4 id="label-the-nodes">Label the nodes</h4>
+<p>Kube-Prometheus requires all the exporter nodes to be labelled with <code>kubernetes.io/os=linux</code>. If a node is not labelled, then you must label it using the following command:</p>
+<pre><code>$ kubectl label nodes --all kubernetes.io/os=linux
+</code></pre><h4 id="create-prometheus-and-grafana-resources">Create Prometheus and Grafana resources</h4>
+<p>Change to the <code>kube-prometheus</code> directory and execute the following commands to create the namespace and CRDs:</p>
+<p><strong>NOTE</strong>: Wait for a minute for each command to process.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd kube-prometheus
+
+$ kubectl create -f manifests/setup
+
+$ <span style="color:#66d9ef">until</span> kubectl get servicemonitors --all-namespaces ; <span style="color:#66d9ef">do</span> date; sleep 1; echo <span style="color:#e6db74">&#34;&#34;</span>; <span style="color:#66d9ef">done</span>
+
+$ kubectl create -f manifests/
+</code></pre></div><h4 id="provide-external-access">Provide external access</h4>
+<p>To provide external access for Grafana, Prometheus, and Alertmanager, execute the commands below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl patch svc grafana -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32100 }]&#39;</span>
+  
+$ kubectl patch svc prometheus-k8s -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32101 }]&#39;</span>
+  
+$ kubectl patch svc alertmanager-main -n monitoring --type<span style="color:#f92672">=</span>json -p <span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/type&#34;, &#34;value&#34;: &#34;NodePort&#34; },{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/ports/0/nodePort&#34;, &#34;value&#34;: 32102 }]&#39;</span>
+  
+</code></pre></div><p><strong>NOTE</strong>:</p>
+<ul>
+<li><code>32100</code> is the external port for Grafana</li>
+<li><code>32101</code> is the external port for Prometheus</li>
+<li><code>32102</code> is the external port for Alertmanager</li>
+</ul>
+<hr>
+<h2 id="set-up-the-weblogic-monitoring-exporter">Set Up the WebLogic Monitoring Exporter</h2>
+<p>Set up the WebLogic Monitoring Exporter that will collect WebLogic Server metrics and monitor your Oracle WebCenter Content domain.</p>
+<h4 id="generate-the-weblogic-monitoring-exporter-deployment-package">Generate the WebLogic Monitoring Exporter Deployment Package</h4>
+<p>Two packages are required as the listening ports are different for the Administration Server and Managed Servers.
+One binary required for the Admin Server (<code>wls-exporter-as.war</code>) and one for Managed Cluster (<code>wls-exporter-ms.war</code>).
+Set the required proxies and then run the script <code>getX.X.X.sh</code> to generate two binaries:</p>
+<h3 id="download-weblogic-monitoring-exporter">Download WebLogic Monitoring Exporter</h3>
+<p>Download WebLogic Monitoring Exporter package from <a href="https://github.com/oracle/weblogic-monitoring-exporter/releases">https://github.com/oracle/weblogic-monitoring-exporter/releases</a>
+Download <code>wls-exporter.war</code> and <code>getX.X.X.sh</code></p>
+<h3 id="create-configuration-file-for-weblogic-monitoring-exporter">Create configuration file for WebLogic Monitoring Exporter</h3>
+<p>In this step we will create the configuration file for WebLogic Monitoring Exporter.The configuration will have the server port for serving the webapp, metrics to be scraped from the WebLogic server etc.</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see sample content for config-admin `config-admin.yaml`.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>metricsNameSnakeCase: true
+restPort: 7001
+queries:
+- key: name
+  keyName: location
+  prefix: wls_server_
+  applicationRuntimes:
+    key: name
+    keyName: app
+    componentRuntimes:
+      prefix: wls_webapp_config_
+      type: WebAppComponentRuntime
+      key: name
+      values: [deploymentState, contextRoot, sourceInfo, openSessionsHighCount, openSessionsCurrentCount, sessionsOpenedTotalCount, sessionCookieMaxAgeSecs, sessionInvalidationIntervalSecs, sessionTimeoutSecs, singleThreadedServletPoolSize, sessionIDLength, servletReloadCheckSecs, jSPPageCheckSecs]
+      servlets:
+        prefix: wls_servlet_
+        key: servletName
+- JVMRuntime:
+    prefix: wls_jvm_
+    key: name
+- executeQueueRuntimes:
+    prefix: wls_socketmuxer_
+    key: name
+    values: [pendingRequestCurrentCount]
+- workManagerRuntimes:
+    prefix: wls_workmanager_
+    key: name
+    values: [stuckThreadCount, pendingRequests, completedRequests]
+- threadPoolRuntime:
+    prefix: wls_threadpool_
+    key: name
+    values: [executeThreadTotalCount, queueLength, stuckThreadCount, hoggingThreadCount]
+- JMSRuntime:
+    key: name
+    keyName: jmsruntime
+    prefix: wls_jmsruntime_
+    JMSServers:
+      prefix: wls_jms_
+      key: name
+      keyName: jmsserver
+      destinations:
+        prefix: wls_jms_dest_
+        key: name
+        keyName: destination
+
+- persistentStoreRuntimes:
+    prefix: wls_persistentstore_
+    key: name
+- JDBCServiceRuntime:
+    JDBCDataSourceRuntimeMBeans:
+      prefix: wls_datasource_
+      key: name
+- JTARuntime:
+    prefix: wls_jta_
+    key: name
+
+</code></pre>
+    </div>
+</div>
+<p>In this step we will generate the deployemt package. We have to generate three separate packages with restPort as 7001 16200 and 16250 in config.yaml. The three packages are required as the listening ports for AdminServer, Oracle WebCenter Content server &amp; Oracle WebCenter Inbound Refinery server.</p>
+<p>Use getX.X.X.sh script to update the configuration file into wls-exporter package. Below a sample usage</p>
+<p>Set the required proxies and then run the script <code>getX.X.X.sh</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd kubernetes/samples/scripts/create-wcc-domain/utils/weblogic-monitoring-exporter
+
+$ sh get1.2.0.sh config-admin.yaml
+</code></pre></div><p>Output:</p>
+<pre><code>./get1.2.0.sh config-admin.yaml
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   642  100   642    0     0   1186      0 --:--:-- --:--:-- --:--:--  1184
+100 2033k  100 2033k    0     0   846k      0  0:00:02  0:00:02 --:--:-- 1527k
+created /tmp/ci-6gGPjopn3l
+/tmp/ci-6gGPjopn3l /&lt;your_path&gt;/prometheus/weblogic_monitor_exporter
+in temp dir
+  adding: config.yml (deflated 63%)
+
+
+</code></pre><p>Generate the packages for Managed Servers/clusters with the different configuration file.</p>
+<h4 id="deploy-the-weblogic-monitoring-exporter">Deploy the WebLogic Monitoring Exporter</h4>
+<p>Follow these steps to deploy the package in the WebLogic Server instances:</p>
+<ol>
+<li>
+<p>In the Administration Server and Managed Servers, deploy the WebLogic Monitoring Exporter (<code>wls-exporter.war</code>) separately using the Oracle Enterprise Manager.</p>
+<p><img src="images/wme-deploy1.png" alt="Wme-Deploy"></p>
+</li>
+<li>
+<p>Select the servers to which the Exporter WAR should be deployed:</p>
+<p><img src="images/wme-deploy2.png" alt="Wme-Deploy-Target-Server"></p>
+</li>
+<li>
+<p>Set the application name. The application name must be different if it is deployed separately in the Administration Server and Managed Servers. Make sure the context-root for both the deployments is <code>wls-exporter</code>:</p>
+<p><img src="images/wme-deploy3.png" alt="Wme-Deploy-Contextroot"></p>
+</li>
+<li>
+<p>Click <strong>Install and start application</strong>.</p>
+</li>
+<li>
+<p>Then deploy the WebLogic Monitoring Exporter application.</p>
+</li>
+<li>
+<p>Activate the changes to start the application. If the application is started and the port is exposed,
+then you can access the WebLogic Monitoring Exporter console using this URL: <code>http://&lt;server:port&gt;/wls-exporter</code>.</p>
+<p><img src="images/wme-test-url.png" alt="Wme-Test-Url"></p>
+</li>
+<li>
+<p>Repeat same steps for ucm, ibr, ipm, capture and wccadf servers.</p>
+</li>
+</ol>
+<h4 id="configure-prometheus-operator">Configure Prometheus Operator</h4>
+<p>Prometheus enables you to collect metrics from the WebLogic Monitoring Exporter. The Prometheus Operator identifies the targets using service discovery. To get the WebLogic Monitoring Exporter end point discovered as a target, you must create a service monitor pointing to the service.</p>
+<p>See the following sample service monitor deployment YAML configuration file located at</p>
+<p><code>kubernetes/samples/scripts/create-wccontent-domains/utils/weblogic-monitoring-exporter/wls-exporter.yaml</code>.</p>
+<p><code>ServiceMonitor</code> for wls-exporter:</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see sample content for wls-exporter.yaml
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+  namespace: monitoring
+data:
+  password: d2VsY29tZTE=      # welcome1 i.e.'WebLogic password'
+  user: d2VibG9naWM=          # weblogic  i.e. 'WebLogic username'
+type: Opaque
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: wls-exporter-wccinfra
+  namespace: monitoring
+  labels:
+    k8s-app: wls-exporter
+spec:
+  namespaceSelector:
+    matchNames:
+    - wccns
+  selector:
+    matchLabels:
+      weblogic.domainName: wccinfra
+  endpoints:
+  - basicAuth:
+      password:
+        name: basic-auth
+        key: password
+      username:
+        name: basic-auth
+        key: user
+    port: default
+    relabelings:
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+    interval: 10s
+    honorLabels: true
+    path: /wls-exporter/metrics
+</code></pre>
+    </div>
+</div>
+<p>The exporting of metrics from <code>wls-exporter</code> requires <code>basicAuth</code> so a Kubernetes <code>Secret</code> is created with the user name and password that are base64 encoded. This <code>Secret</code> will be used in the <code>ServiceMonitor</code> deployment.</p>
+<p>When generating the base64 encoded strings for the user name and password, observe if a new line character is appended in the encoded string. This line character causes an authentication failure. To avoid a new line string, use the following example:</p>
+<pre><code>$ echo -n &quot;welcome1&quot; | base64
+d2VsY29tZTE=
+
+</code></pre><p>In the deployment YAML configuration for <code>wls-exporter</code> shown above, <code>weblogic.domainName: wccinfra</code> is used as a label under <code>spec.selector.matchLabels</code>, so all the services will be selected for the service monitor. If you don&rsquo;t use this label, you should create separate service monitors for each server - if the server name is used as matching labels in <code>spec.selector.matchLabels</code>.  Doing so will require you to relabel the configuration because Prometheus, by default, ignores the labels provided in the wls-exporter.</p>
+<p>By default, Prometheus does not store all the labels provided by the target. In the service monitor deployment YAML configuration, you must mention the relabeling configuration (<code>spec.endpoints.relabelings</code>) so that certain labels provided by <code>weblogic-monitoring-exporter</code> (required for the Grafana dashboard) are stored in Prometheus. Do not delete the following section from the configuration YAML file:</p>
+<pre><code>relabelings:
+  - action: labelmap
+    regex: __meta_kubernetes_service_label_(.+)
+</code></pre><h4 id="add-rolebinding-and-role-for-the-weblogic-domain-namespace">Add <code>RoleBinding</code> and <code>Role</code> for the WebLogic Domain Namespace</h4>
+<p>The RoleBinding is required for Prometheus to access the endpoints provided by the WebLogic Monitoring Exporter. You need to add RoleBinding for the namespace under which the WebLogic Servers pods are running in the Kubernetes cluster. Edit the <code>kube-prometheus/manifests/prometheus-roleBindingSpecificNamespaces.yaml</code> file in the Prometheus Operator deployment manifests and add the <code>RoleBinding</code> for the namespace (<code>wccns</code>) similar to the following example:</p>
+<pre><code>- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: prometheus-k8s
+    namespace: wccns
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: prometheus-k8s
+  subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: monitoring
+</code></pre><p>Similarly, add the <code>Role</code> for the namespace under which the WebLogic Servers pods are running in the Kubernetes cluster. Edit <code>kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml</code> in the Prometheus Operator deployment manifests and add the <code>Role</code> for the namespace (<code>wccns</code>) similar to the following example:</p>
+<pre><code>- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: prometheus-k8s
+    namespace: wccns
+  rules:
+  - apiGroups:
+    - &quot;&quot;
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+</code></pre><p>Then apply <code>prometheus-roleBindingSpecificNamespaces.yaml</code> and <code>prometheus-roleSpecificNamespaces.yaml</code> for the <code>RoleBinding</code> and <code>Role</code> to take effect in the cluster.</p>
+<pre><code>$ kubectl apply -f kube-prometheus/manifests/prometheus-roleBindingSpecificNamespaces.yaml
+
+$ kubectl apply -f kube-prometheus/manifests/prometheus-roleSpecificNamespaces.yaml
+</code></pre><h4 id="deploy-the-service-monitor">Deploy the Service Monitor</h4>
+<p>To deploy the service monitor, use the above wls-exporter.yaml deployment YAML and run the following command:</p>
+<pre><code>$ cd kubernetes/samples/scripts/create-wccontent-domains/utils/weblogic-monitoring-exporter/
+
+$ kubectl create -f wls-exporter.yaml
+</code></pre><h4 id="enable-prometheus-to-discover-the-service">Enable Prometheus to Discover the Service</h4>
+<p>After the deployment of the service monitor, Prometheus should be able to discover wls-exporter and export metrics.</p>
+<p>You can access the Prometheus dashboard at <code>http://mycompany.com:32101/</code>.</p>
+<p><img src="images/wme-service-discovery.png" alt="Wme-Service-Discovery"></p>
+<h4 id="deploy-grafana-dashboard">Deploy Grafana Dashboard</h4>
+<p>To view the domain metrics, deploy the Grafana dashboard provided in the <a href="https://github.com/oracle/weblogic-monitoring-exporter/tree/master/samples/kubernetes/end2end#monitoring-weblogic-server-with-the-grafana-dashboard">WebLogic Monitoring Exporter</a>.</p>
+<p>You can access the Grafana dashboard at <code>http://mycompany.com:32100/</code>.</p>
+<ol>
+<li>
+<p>Log in to Grafana dashboard with <code>admin/admin</code>.</p>
+</li>
+<li>
+<p>Go to <strong>Settings</strong>, then select <strong>DataSources</strong>, and then <strong>Add Data Source</strong>.</p>
+<p>HTTP URL: Prometheus URL <code>http://mycompany.com:32101/</code></p>
+<p>Auth: Enable Basic Auth</p>
+<p>Basic Auth Details: WebLogic credentials provided in step <a href="#configure-prometheus-operator">Configure Prometheus Operator</a></p>
+<p><img src="images/wme-gp-add-datasource.png" alt="Wme-GP-Add-Datasource"></p>
+</li>
+<li>
+<p>Download the <code>weblogic_dashboard.json</code> file from <a href="weblogic_dashboard.json">here</a>.</p>
+</li>
+<li>
+<p>Click <strong>Add</strong> and then <strong>Import</strong>. Paste the modified JSON in the Paste JSON block, and then load it.</p>
+<p><img src="images/wme-gp-import-json.png" alt="Wme-GP-Import-Json"></p>
+<p>This displays the WebLogic Server Dashboard.</p>
+<p><img src="images/wcc-gp-dashboard.png" alt="wcc-gp-dashboard"></p>
+</li>
+</ol>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.2.3/js/clipboard.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/perfect-scrollbar.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/perfect-scrollbar.jquery.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/jquery.sticky.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/featherlight.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/highlight.pack.js?1656409532"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.2.3/js/modernizr.custom-3.6.0.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/learn.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/hugo-learn.js?1656409532"></script>
+
+    <link href="/fmw-kubernetes/22.2.3/mermaid/mermaid.css?1656409532" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.2.3/mermaid/mermaid.js?1656409532"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
