@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1654867651" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1654867651" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1656409532" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1654867651"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1656409532"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1654867651"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1654867651"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1656409532"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1656409532"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1654867651"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1656409532"></script>
 
     
   </div>
@@ -5199,21 +5199,21 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <p>The Oracle WebCenter Content image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Content image from My Oracle Support.</p>
 <ol>
 <li>
-<p>Download patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33771196">33771196</a> from My Oracle Support (MOS).</p>
+<p>Download patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34192566">34192566</a> from My Oracle Support (MOS).</p>
 </li>
 <li>
 <p>Unzip the downloaded patch zip file.</p>
 <p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ unzip p32822360_122140_Linux-x86-64.zip
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ unzip p34192566_122140_Linux-x86-64.zip
 <span style="color:#75715e"># sample output</span>
-Archive:  p32822360_122140_Linux-x86-64.zip
-inflating: wccontent-12.2.1.4.0-8-ol7-210507.0906.tar
+Archive:  p34192566_122140_Linux-x86-64.zip
+inflating: wccontent-12.2.1.4-jdk8-ol7-220519.2037.tar
 inflating: README.html
 </code></pre></div></li>
 <li>
 <p>Load the image archive using the <code>docker load</code> command.</p>
 <p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker load &lt; wccontent-12.2.1.4.0-8-ol7-210507.0906.tar
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker load &lt; wccontent-12.2.1.4-jdk8-ol7-220519.2037.tar
 </code></pre></div>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
@@ -5234,16 +5234,16 @@ ffc8b247ad07: Loading layer [==================================================&
 cd87862f5c14: Loading layer [==================================================&gt;]  4.608kB/4.608kB
 12661fb5186c: Loading layer [==================================================&gt;]  137.2kB/137.2kB
 f84db83c8dfa: Loading layer [==================================================&gt;]  69.12kB/69.12kB
-Loaded image: oracle/wccontent:12.2.1.4.0-8-ol7-210507.0906
+Loaded image: oracle/wccontent:12.2.1.4-jdk8-ol7-220519.2037
 </code></pre>
     </div>
 </div>
 </li>
 <li>
-<p>Run the <code>docker inspect</code> command to verify that the downloaded image is the latest released image. The value of label <code>com.oracle.weblogic.imagetool.buildid</code> must match to <code>29ff0886-a299-4860-9b13-fd6bb80ec354</code>.</p>
+<p>Run the <code>docker inspect</code> command to verify that the downloaded image is the latest released image. The value of label <code>com.oracle.weblogic.imagetool.buildid</code> must match to <code>f83a7f6c-b564-4367-93e3-f809371dfa79</code>.</p>
 <p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker inspect --format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{{ index .Config.Labels &#34;com.oracle.weblogic.imagetool.buildid&#34; }}&#39;</span>  oracle/wccontent:12.2.1.4.0-8-ol7-210507.0906
-29ff0886-a299-4860-9b13-fd6bb80ec354
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker inspect --format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{{ index .Config.Labels &#34;com.oracle.weblogic.imagetool.buildid&#34; }}&#39;</span>  oracle/wccontent:12.2.1.4-jdk8-ol7-220519.2037
+f83a7f6c-b564-4367-93e3-f809371dfa79
 </code></pre></div></li>
 </ol>
 <p>Alternatively, if you want to build and use Oracle WebCenter Content Container image, using WebLogic Image Tool, with any additional bundle patch or interim patches, then follow these <a href="/fmw-kubernetes/wccontent-domains/create-or-update-image/#create-or-update-an-oracle-webcenter-content-docker-image-using-the-weblogic-image-tool">steps</a> to create the image.</p>
@@ -8910,19 +8910,19 @@ type: Opaque
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1654867651"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1656409532"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1654867651"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1654867651"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1656409532"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1656409532"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1654867651" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1654867651"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1656409532" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1656409532"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
