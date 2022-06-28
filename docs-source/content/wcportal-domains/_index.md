@@ -23,7 +23,7 @@ The operator has several key features to assist you with deploying and managing 
 * Monitor the Oracle WebCenter Portal instance using Prometheus and Grafana.
 #### Current release
 
-The current release for the Oracle WebCenter Portal domain deployment on Kubernetes is [22.2.3](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases).
+The current release for the Oracle WebCenter Portal domain deployment on Kubernetes is [22.2.3](https://github.com/oracle/fmw-kubernetes/releases/tag/v22.2.3). This release uses the WebLogic Kubernetes Operator version [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0).
 
 >Note that this release is only for evaluation purposes and hence applicable to Development and Test deployments only.
 

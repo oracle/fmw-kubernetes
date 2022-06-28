@@ -1,0 +1,3226 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Configure the ingress-based NGINX load balancer for Oracle WebCenter Content domain.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.2.3/images/favicon.png" type="image/png">
+
+    <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.2.3/css/nucleus.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/fontawesome-all.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/hybrid.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/featherlight.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/perfect-scrollbar.min.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/auto-complete.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/atom-one-dark-reasonable.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/theme.css?1656409532" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.2.3/css/hugo-theme.css?1656409532" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.2.3/js/jquery-3.6.0.min.js?1656409532"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/nginx/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.2.3">
+  <img src="/fmw-kubernetes/22.2.3/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.2.3/js/lunr.min.js?1656409532"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.3/js/auto-complete.js?1656409532"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.2.3";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.2.3/js/search.js?1656409532"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/" title="Oracle WebCenter Content" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/">
+          Oracle WebCenter Content
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/create-wccontent-domains/">
+          <b>  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/" title="Launch Oracle Webcenter Content Native Applications in Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/">
+          <b>  </b>Launch Oracle Webcenter Content Native Applications in Containers
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item active">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/" title="Monitor an Oracle WebCenter Content domain" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/">
+        <b> </b>Monitor an Oracle WebCenter Content domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/elasticsearch-integration/" title="Elasticsearch integration for logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/elasticsearch-integration/">
+        Elasticsearch integration for logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-logging-exporter-setup/" title="Publish logs to Elasticsearch" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/weblogic-logging-exporter-setup/">
+        Publish logs to Elasticsearch
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/logging-fluentd-setup/" title="Publish logs to Elasticsearch Using Fluentd" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/logging-fluentd-setup/">
+        Publish logs to Elasticsearch Using Fluentd
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-mount-share/">
+        Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an WebLogic Kubernetes Operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an WebLogic Kubernetes Operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/">
+          <b>7. </b>Oracle Cloud Infrastructure
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-oke-environment/" title="Preparing an OKE environment" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-oke-environment/">
+        <b>1 a.  </b>Preparing an OKE environment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/filesystem/" title="Preparing a file system" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/filesystem/">
+        <b>1 b. </b>Preparing a file system
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/ocir/" title="Preparing OCIR" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/ocir/">
+        <b>1 c. </b>Preparing OCIR
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-environment-wcc-domain/" title="Prepare environment for WCC domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/prepare-environment-wcc-domain/">
+          <b>2.  </b>Prepare environment for WCC domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/">
+          <b>3. </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/create-wccontent-domains/" title="Create Oracle WebCenter Content domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/create-wccontent-domains/">
+          <b>4.  </b>Create Oracle WebCenter Content domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-wcc-for-idcs/" title="Configuring Oracle WebCenter Content for  Oracle Identity Cloud Service (IDCS)" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/oracle-cloud/configure-wcc-for-idcs/">
+          <b>5.  </b>Configuring Oracle WebCenter Content for  Oracle Identity Cloud Service (IDCS)
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/">
+          <b>8. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/wcc-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/wcc-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/quickstart-deployment-guide/" title="Quick start deployment guide" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/quickstart-deployment-guide/">
+        <b> </b>Quick start deployment guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wccontent-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/" title="Oracle WebCenter Portal" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/">
+          Oracle WebCenter Portal
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prerequisites/">
+          <b> </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/create-wcp-domain/" title="Create WebCenter Portal domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/create-wcp-domain/">
+          <b>  </b>Create WebCenter Portal domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/configure-wcp-search/" title="Configure WebCenter Portal For Search" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/installguide/configure-wcp-search/">
+          <b> </b>Configure WebCenter Portal For Search
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/">
+          <b>3. </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/" title="Apache webtier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/configure-load-balancer/apachewebtier/">
+        <b>c. </b>Apache webtier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/" title="Monitor a domain and publish logs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/">
+          <b> </b>Monitor a domain and publish logs
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/monitoring-domain/" title=" Monitor a WebCenter Portal domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/monitoring-domain/">
+          <b></b> Monitor a WebCenter Portal domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/" title="Publish WebLogic Server logs into Elasticsearch" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/">
+          <b> </b>Publish WebLogic Server logs into Elasticsearch
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/" title=" Fluentd" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/fluentd/">
+          <b>a. </b> Fluentd
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/" title="WebLogic logging exporter" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/weblogiclogging/">
+          <b>b. </b>WebLogic logging exporter
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/" title="Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/manage-wcportal-domains/monitoring-and-publishing-logs/publishing-logs/logstash/">
+          <b>c. </b>Logstash
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/create-or-update-image/">
+          <b>4. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/cleanup-domain-setup/" title="Uninstall an Oracle WebCenter Portal domain" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/cleanup-domain-setup/">
+        <b>5. </b>Uninstall an Oracle WebCenter Portal domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/">
+          <b>6. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/wcp-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/wcp-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/additional-configuration/" title="Additional Configuration" class="dd-item ">
+        <a href="/fmw-kubernetes/22.2.3/wcportal-domains/appendix/additional-configuration/">
+        <b> </b>Additional Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.2.3/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.2.3/wccontent-domains/'>Oracle WebCenter Content</a> > <a href='/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/'>Set up a load balancer</a> > NGINX
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#non-ssl-and-ssl-termination">Non-SSL and SSL termination</a></li>
+        <li><a href="#end-to-end-ssl-configuration">End-to-end SSL configuration</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              NGINX
+            </h1>
+          
+
+        
+
+
+
+<p>This section provides information about how to install and configure the ingress-based <em>NGINX</em> load balancer to load balance Oracle WebCenter Content domain clusters. You can configure NGINX for non-SSL, SSL termination, and end-to-end SSL access of the application URL.</p>
+<p>Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Content domain in a Kubernetes cluster:</p>
+<p>See the official <a href="https://github.com/kubernetes/ingress-nginx/tree/master/charts/ingress-nginx#prerequisites">installation document</a> for prerequisites.</p>
+<ul>
+<li>
+<p><a href="#non-ssl-and-ssl-termination"> Non-SSL and SSL termination</a></p>
+<ol>
+<li><a href="#install-the-nginx-load-balancer">Install the NGINX load balancer</a></li>
+<li><a href="#configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</a></li>
+<li><a href="#verify-non-ssl-and-ssl-termination-access">Verify non-SSL and SSL termination access</a></li>
+</ol>
+</li>
+<li>
+<p><a href="#end-to-end-ssl-configuration"> End-to-end SSL configuration</a></p>
+<ol>
+<li><a href="#install-the-nginx-load-balancer-for-end-to-end-ssl">Install the NGINX load balancer for End-to-end SSL</a></li>
+<li><a href="#deploy-tls-to-access-individual-managed-servers">Deploy tls to access individual Managed Servers</a></li>
+<li><a href="#deploy-tls-to-access-administration-server">Deploy tls to access Administration Server</a></li>
+</ol>
+</li>
+</ul>
+<p>To get repository information, enter the following Helm commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+  $ helm repo update
+</code></pre></div><h3 id="non-ssl-and-ssl-termination">Non-SSL and SSL termination</h3>
+<h4 id="install-the-nginx-load-balancer">Install the NGINX load balancer</h4>
+<ol>
+<li>
+<p>Deploy the <code>ingress-nginx</code> controller by using Helm on the domain namespace:</p>
+<p>For Kubernetes versions up to v1.18.x:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n wccns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --version<span style="color:#f92672">=</span>3.34.0 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          ingress-nginx/ingress-nginx
+</code></pre></div></li>
+</ol>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: nginx-ingress
+LAST DEPLOYED: Sun Feb  <span style="color:#ae81ff">7</span> 23:19:30 <span style="color:#ae81ff">2021</span>
+NAMESPACE: wccns
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">2</span>
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+Get the application URL by running these commands:
+  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
+
+  echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
+  echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
+
+An example Ingress that makes use of the controller:
+
+  apiVersion: networking.k8s.io/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    name: example
+    namespace: foo
+  spec:
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - backend:
+                serviceName: exampleService
+                servicePort: <span style="color:#ae81ff">80</span>
+              path: /
+    <span style="color:#75715e"># This section is only required if TLS is to be enabled for the Ingress</span>
+    tls:
+        - hosts:
+            - www.example.com
+          secretName: example-tls
+
+If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: &lt;base64 encoded cert&gt;
+    tls.key: &lt;base64 encoded key&gt;
+  type: kubernetes.io/tls
+</code></pre></div>
+    </div>
+</div>
+<ol>
+<li>
+<p>Check the status of the deployed ingress controller:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace wccns get services | grep ingress-nginx-controller
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> nginx-ingress-ingress-nginx-controller    NodePort    10.97.189.122    &lt;none&gt;            80:30993/TCP,443:30232/TCP    7d2h
+</code></pre></div></li>
+</ol>
+<h4 id="configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</h4>
+<ol>
+<li>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code>, <code>tls</code> is <code>Non-SSL</code>, and <code>domainType</code> is <code>wccinfra</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>. If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml</code></li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+    $ helm install wccinfra-nginx-ingress  kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --namespace wccns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set type<span style="color:#f92672">=</span>NGINX <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        --set tls<span style="color:#f92672">=</span>NONSSL
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  NAME: wccinfra-nginx-ingress
+  LAST DEPLOYED: Sun Feb  <span style="color:#ae81ff">7</span> 23:52:38 <span style="color:#ae81ff">2021</span>
+  NAMESPACE: wccns
+  STATUS: deployed
+  REVISION: <span style="color:#ae81ff">1</span>
+  TEST SUITE: None
+</code></pre></div><ol>
+<li>
+<p>For <strong>secured access (SSL)</strong> to the Oracle WebCenter Content application, create a certificate and generate a Kubernetes secret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=*&#34;</span>
+ $ kubectl -n wccns create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+</code></pre></div></li>
+<li>
+<p>Install <code>ingress-per-domain</code> using Helm for SSL configuration:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
+ $ helm install wccinfra-nginx-ingress  kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --namespace wccns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX --set tls<span style="color:#f92672">=</span>SSL
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: wccinfra-nginx-ingress
+ LAST DEPLOYED: Mon Feb  <span style="color:#ae81ff">8</span> 00:01:13 <span style="color:#ae81ff">2021</span>
+ NAMESPACE: wccns
+ STATUS: deployed
+ REVISION: <span style="color:#ae81ff">1</span>
+ TEST SUITE: None
+</code></pre></div></li>
+<li>
+<p>For <strong>non-SSL access or SSL</strong> to the Oracle WebCenter Content application, get the details of the services by the ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ kubectl describe ingress wccinfra-nginx  -n wccns
+</code></pre></div></li>
+</ol>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output of the services supported by the above deployed ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Name:             wccinfra-nginx
+Namespace:        wccns
+Address:          10.97.189.122
+Default backend:  default-http-backend:80 <span style="color:#f92672">(</span>&lt;error: endpoints <span style="color:#e6db74">&#34;default-http-backend&#34;</span> not found&gt;<span style="color:#f92672">)</span>
+TLS:
+  domain1-tls-cert terminates domain1.org
+Rules:
+  Host                                        Path  Backends
+  ----                                        ----  --------
+  domain1.org
+                                              /console                 wccinfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.58:7001<span style="color:#f92672">)</span>
+                                              /em                      wccinfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.58:7001<span style="color:#f92672">)</span>
+                                              /servicebus              wccinfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.58:7001<span style="color:#f92672">)</span>
+                                              /cs                      wccinfra-cluster-ucm-cluster:16200 <span style="color:#f92672">(</span>10.244.0.60:16200,10.244.0.61:16200<span style="color:#f92672">)</span>
+                                              /adfAuthentication       wccinfra-cluster-ucm-cluster:16200 <span style="color:#f92672">(</span>10.244.0.60:16200,10.244.0.61:16200<span style="color:#f92672">)</span>
+                                              /ibr                     wccinfra-cluster-ibr-cluster:16250 <span style="color:#f92672">(</span>10.244.0.59:16250<span style="color:#f92672">)</span>
+                                              /ibr/adfAuthentication   wccinfra-cluster-ibr-cluster:16250 <span style="color:#f92672">(</span>10.244.0.59:16250<span style="color:#f92672">)</span>
+                                              /weblogic/ready          wccinfra-cluster-ucm-cluster:16200 <span style="color:#f92672">(</span>10.244.0.60:16200,10.244.0.61:16200<span style="color:#f92672">)</span>
+                                              /imaging                 wccinfra-cluster-ipm-cluster:16000 <span style="color:#f92672">(</span>10.244.0.206:16000,10.244.0.209:16000,10.244.0.213:16000<span style="color:#f92672">)</span>
+                                              /dc-console              wccinfra-cluster-capture-cluster:16400 <span style="color:#f92672">(</span>10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400<span style="color:#f92672">)</span>
+                                              /dc-client               wccinfra-cluster-capture-cluster:16400 <span style="color:#f92672">(</span>10.244.0.204:16400,10.244.0.208:16400,10.244.0.212:16400<span style="color:#f92672">)</span>
+                                              /wcc                     wccinfra-cluster-wccadf-cluster:16225 <span style="color:#f92672">(</span>10.244.0.205:16225,10.244.0.210:16225,10.244.0.214:16225<span style="color:#f92672">)</span>
+Annotations:                                  kubernetes.io/ingress.class: nginx
+                                              meta.helm.sh/release-name: wccinfra-nginx-ingress
+                                              meta.helm.sh/release-namespace: wccns
+                                              nginx.ingress.kubernetes.io/configuration-snippet:
+                                                more_set_input_headers <span style="color:#e6db74">&#34;X-Forwarded-Proto: https&#34;</span>;
+                                                more_set_input_headers <span style="color:#e6db74">&#34;WL-Proxy-SSL: true&#34;</span>;
+                                              nginx.ingress.kubernetes.io/ingress.allow-http: false
+Events:                                       &lt;none&gt;
+
+</code></pre></div>
+    </div>
+</div>
+<h4 id="verify-non-ssl-and-ssl-termination-access">Verify non-SSL and SSL termination access</h4>
+<h5 id="non-ssl-configuration">Non-SSL configuration</h5>
+<p>Verify that the Oracle WebCenter Content domain application URLs are accessible through the <code>LOADBALANCER-Non-SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/console
+  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/em
+  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/cs
+  http://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/ibr
+  http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/imaging
+  http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/dc-console
+  http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-Non-SSLPORT<span style="color:#e6db74">}</span>/wcc  
+</code></pre></div><h5 id="ssl-configuration">SSL configuration</h5>
+<p>Verify that the Oracle WebCenter Content domain application URLs are accessible through the <code>LOADBALANCER-SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/weblogic/ready
+  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
+  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/em
+  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/cs
+  https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/ibr
+  https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/imaging
+  https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/dc-console
+  https://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/wcc
+</code></pre></div><h4 id="uninstall-the-ingress">Uninstall the ingress</h4>
+<p>Uninstall and delete the <code>ingress-nginx</code> deployment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ helm delete wccinfra-nginx -n wccns
+</code></pre></div><h3 id="end-to-end-ssl-configuration">End-to-end SSL configuration</h3>
+<h4 id="install-the-nginx-load-balancer-for-end-to-end-ssl">Install the NGINX load balancer for End-to-end SSL</h4>
+<ol>
+<li>
+<p>For <strong>secured access (SSL)</strong> to the Oracle WebCenter Content application, create a certificate and generate secrets:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=*&#34;</span>
+ $ kubectl -n wccns create secret tls domain1-tls-cert --key /tmp/tls1.key --cert /tmp/tls1.crt
+</code></pre></div></li>
+<li>
+<p>Deploy the ingress-nginx controller by using Helm on the domain namespace:</p>
+<p>For Kubernetes versions up to v1.18.x:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n wccns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --version<span style="color:#f92672">=</span>3.34.0 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>wccns/domain1-tls-cert <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> --set controller.extraArgs.enable-ssl-passthrough<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span> ingress-nginx/ingress-nginx		
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the sample output.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Release <span style="color:#e6db74">&#34;nginx-ingress&#34;</span> has been upgraded. Happy Helming!
+NAME: nginx-ingress
+LAST DEPLOYED: Mon Feb  <span style="color:#ae81ff">8</span> 02:07:26 <span style="color:#ae81ff">2021</span>
+NAMESPACE: wccns
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+NOTES:
+The ingress-nginx controller has been installed.
+Get the application URL by running these commands:
+  export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+  export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
+  export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
+
+  echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
+  echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
+
+An example Ingress that makes use of the controller:
+
+  apiVersion: networking.k8s.io/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    name: example
+    namespace: foo
+  spec:
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - backend:
+                serviceName: exampleService
+                servicePort: <span style="color:#ae81ff">80</span>
+              path: /
+    <span style="color:#75715e"># This section is only required if TLS is to be enabled for the Ingress</span>
+    tls:
+        - hosts:
+            - www.example.com
+          secretName: example-tls
+
+If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: &lt;base64 encoded cert&gt;
+    tls.key: &lt;base64 encoded key&gt;
+  type: kubernetes.io/tls
+</code></pre></div>
+    </div>
+</div>
+</li>
+<li>
+<p>Check the status of the deployed ingress controller:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl --namespace wccns get services | grep ingress-nginx-controller
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  nginx-ingress-ingress-nginx-controller   NodePort    10.97.189.122    &lt;none&gt;            80:30993/TCP,443:30232/TCP    168m
+</code></pre></div></li>
+</ol>
+<h4 id="deploy-tls-to-access-individual-managed-servers">Deploy tls to access individual Managed Servers</h4>
+<ol>
+<li>
+<p>Deploy tls to securely access the services. Only one application can be configured with <code>ssl-passthrough</code>. A sample tls file for NGINX is shown below for the service <code>wccinfra-cluster-ucm-cluster</code> and port <code>16201</code>. All the applications running on port <code>16201</code> can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation <code>ssl-passthrough</code>. That is, for <code>wccinfra-cluster-ucm-cluster</code>, <code>wccinfra-cluster-ibr-cluster</code>, <code>wccinfra-cluster-ipm-cluster</code>, <code>wccinfra-cluster-capture-cluster</code>, <code>wccinfra-cluster-wccadf-cluster</code> and <code>wccinfra-adminserver</code>, different ingresses must be created.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+</code></pre></div><p>Sample nginx-ucm-tls.yaml:</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the content of the file nginx-ucm-tls.yaml
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wcc-ucm-ingress
+  namespace: wccns
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-passthrough: <span style="color:#e6db74">&#34;true&#34;</span>
+spec:
+  tls:
+  - hosts:
+    - <span style="color:#e6db74">&#39;domain1.org&#39;</span>
+    secretName: domain1-tls-cert
+  rules:
+  - host: <span style="color:#e6db74">&#39;domain1.org&#39;</span>
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: wccinfra-cluster-ucm-cluster
+          servicePort: <span style="color:#ae81ff">16201</span>
+
+</code></pre></div>
+    </div>
+</div>
+<blockquote>
+<p>Note: host is the server on which this ingress is deployed.</p>
+</blockquote>
+</li>
+<li>
+<p>Deploy the secured ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+$ kubectl create -f nginx-ucm-tls.yaml
+</code></pre></div></li>
+<li>
+<p>Check the services supported by the ingress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe ingress wcc-ucm-ingress -n wccns
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here check the services supported by the ingress.
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Name:             wcc-ucm-ingress
+Namespace:        wccns
+Address:          10.102.97.237
+Default backend:  default-http-backend:80 <span style="color:#f92672">(</span>&lt;error: endpoints <span style="color:#e6db74">&#34;default-http-backend&#34;</span> not found&gt;<span style="color:#f92672">)</span>
+TLS:
+  domain1-tls-cert terminates domain1.org
+Rules:
+  Host                                         Path  Backends
+  ----                                         ----  --------
+  domain1.org
+                                                  wccinfra-cluster-ucm-cluster:16201 <span style="color:#f92672">(</span>10.244.238.136:16201,10.244.253.132:16201<span style="color:#f92672">)</span>
+Annotations:                                   kubernetes.io/ingress.class: nginx
+                                               nginx.ingress.kubernetes.io/ssl-passthrough: true
+Events:
+  Type    Reason  Age                 From                      Message
+  ----    ------  ----                ----                      -------
+  Normal  Sync    62s <span style="color:#f92672">(</span>x2 over 106s<span style="color:#f92672">)</span>  nginx-ingress-controller  Scheduled <span style="color:#66d9ef">for</span> sync
+</code></pre></div>
+    </div>
+</div>
+</li>
+</ol>
+<h4 id="verify-end-to-end-ssl-access">Verify end-to-end SSL access</h4>
+<p>Verify that the Oracle WebCenter Content domain application URLs are accessible through the <code>LOADBALANCER-SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/cs
+</code></pre></div><h4 id="deploy-tls-to-access-administration-server">Deploy tls to access Administration Server</h4>
+<ol>
+<li>
+<p>As <code>ssl-passthrough</code> in NGINX works on the clusterIP of the backing service instead of individual endpoints, you must expose <code>adminserver service</code> created by the WebLogic Kubernetes Operator with clusterIP.</p>
+<p>For example:</p>
+<p>a. Get the name of Administration Server service:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ kubectl get svc -n wccns | grep wccinfra-adminserver
+</code></pre></div><p>Sample output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  wccinfra-adminserver  ClusterIP   None  &lt;none&gt;   7001/TCP,7002/TCP  <span style="color:#ae81ff">7</span>
+</code></pre></div><p>b. Expose the Administration Server service <code>wccinfra-adminserver</code> and use the new service name <code>wccinfra-adminserver-nginx-ssl</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ kubectl expose svc wccinfra-adminserver -n wccns --name<span style="color:#f92672">=</span>wccinfra-adminserver-nginx-ssl --port<span style="color:#f92672">=</span><span style="color:#ae81ff">7002</span>
+</code></pre></div><p>c. Deploy the secured ingress:</p>
+<p>Sample nginx-admin-tls.yaml:</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see the content of the file nginx-admin-tls.yaml
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wcc-admin-ingress
+  namespace: wccns
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-passthrough: <span style="color:#e6db74">&#34;true&#34;</span>
+spec:
+  tls:
+  - hosts:
+    - <span style="color:#e6db74">&#39;domain1.org&#39;</span>
+    secretName: domain1-tls-cert
+  rules:
+  - host: <span style="color:#e6db74">&#39;domain1.org&#39;</span>
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: wccinfra-adminserver-nginx-ssl
+          servicePort: <span style="color:#ae81ff">7002</span>
+
+</code></pre></div>
+    </div>
+</div>
+<blockquote>
+<p>Note: host is the server on which this ingress is deployed.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+ $ kubectl create -f nginx-admin-tls.yaml
+</code></pre></div></li>
+</ol>
+<h4 id="verify-end-to-end-ssl-access-1">Verify end-to-end SSL access</h4>
+<p>Verify that the Oracle WebCenter Content Administration Server URL is accessible through the <code>LOADBALANCER-SSLPORT</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
+</code></pre></div><h4 id="uninstall-ingress-nginx-tls">Uninstall ingress-nginx tls</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ cd weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+  $ kubectl  delete -f nginx-ucm-tls.yaml
+</code></pre></div>
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.2.3/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.2.3/js/clipboard.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/perfect-scrollbar.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/perfect-scrollbar.jquery.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/jquery.sticky.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/featherlight.min.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/highlight.pack.js?1656409532"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.2.3/js/modernizr.custom-3.6.0.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/learn.js?1656409532"></script>
+    <script src="/fmw-kubernetes/22.2.3/js/hugo-learn.js?1656409532"></script>
+
+    <link href="/fmw-kubernetes/22.2.3/mermaid/mermaid.css?1656409532" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.2.3/mermaid/mermaid.js?1656409532"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
