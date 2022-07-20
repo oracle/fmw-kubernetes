@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Manage OIG domains on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/</link>
+    <description>Recent content in Manage OIG domains on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/fmw-kubernetes/22.3.1/oig/manage-oig-domains/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Domain life cycle</title>
+      <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/domain-lifecycle/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/domain-lifecycle/</guid>
+      <description>View existing OIG servers Starting/Scaling up OIG Managed servers Stopping/Scaling down OIG Managed servers Stopping and starting the Administration Server and Managed Servers Domain lifecycle sample scripts  As OIG domains use the WebLogic Kubernetes Operator, domain lifecyle operations are managed using the WebLogic Kubernetes Operator itself.
+This document shows the basic operations for starting, stopping and scaling servers in the OIG domain.
+For more detailed information refer to Domain Life Cycle in the WebLogic Kubernetes Operator documentation.</description>
+    </item>
+    
+    <item>
+      <title>WLST administration operations</title>
+      <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/wlst-admin-operations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/wlst-admin-operations/</guid>
+      <description>Invoke WLST and access Administration Server To use WLST to administer the OIG domain, use a helper pod in the same Kubernetes cluster as the OIG Domain.
+  Check to see if the helper pod exists by running:
+$ kubectl get pods -n &amp;lt;domain_namespace&amp;gt; | grep helper For example:
+$ kubectl get pods -n oigns | grep helper The output should look similar to the following:
+helper 1/1 Running 0 26h If the helper pod doesn&amp;rsquo;t exist then see Step 1 in Prepare your environment  to create it.</description>
+    </item>
+    
+    <item>
+      <title>Runnning OIG utilities</title>
+      <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/running-oig-utilities/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/running-oig-utilities/</guid>
+      <description>Run OIG utlities inside the OIG Kubernetes cluster.
+Run utilities in an interactive bash shell   Access a bash shell inside the &amp;lt;domain_uid&amp;gt;-oim-server1 pod:
+$ kubectl -n oigns exec -it &amp;lt;domain_uid&amp;gt;-oim-server1 -- bash For example:
+$ kubectl -n oigns exec -it governancedomain-oim-server1 -- bash This will take you into a bash shell in the running &amp;lt;domain_uid&amp;gt;-oim-server1 pod:
+[oracle@governancedomain-oim-server1 oracle]$   Navigate to the /u01/oracle/idm/server/bin directory and execute the utility as required.</description>
+    </item>
+    
+    <item>
+      <title>Logging and visualization</title>
+      <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/logging-and-visualization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/logging-and-visualization/</guid>
+      <description>After the OIG domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
+Install Elasticsearch and Kibana   If your domain namespace is anything other than oigns, edit the $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml and change all instances of oigns to your domain namespace.
+  Create a Kubernetes secret to access the elasticsearch and kibana container images:
+Note: You must first have a user account on hub.</description>
+    </item>
+    
+    <item>
+      <title>Monitoring an OIG domain</title>
+      <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/monitoring-oim-domains/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/monitoring-oim-domains/</guid>
+      <description>After the OIG domain is set up you can monitor the OIG instance using Prometheus and Grafana. See Monitoring a domain.
+The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape runtime information and then exports Prometheus-compatible metrics. It is deployed as a web application in a WebLogic Server (WLS) instance, version 12.2.1 or later, typically, in the instance from which you want to get metrics.
+There are two ways to setup monitoring and you should choose one method or the other:</description>
+    </item>
+    
+    <item>
+      <title>Delete the OIG domain home</title>
+      <link>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/delete-domain-home/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.3.1/oig/manage-oig-domains/delete-domain-home/</guid>
+      <description>Sometimes in production, but most likely in testing environments, you might want to remove the domain home that is generated using the create-domain.sh script.
+  Run the following command to delete the domain:
+$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d &amp;lt;domain_uid&amp;gt; For example:
+$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d governancedomain   Drop the RCU schemas as follows:
+$ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash [oracle@helper ~]$ [oracle@helper ~]$ export CONNECTION_STRING=&amp;lt;db_host.</description>
+    </item>
+    
+  </channel>
+</rss>
