@@ -34,6 +34,7 @@ Based on the configuration, this chart deploys the following objects in the spec
 * Services for interfaces exposed through Oracle Unified Directory Instances
 * Ingress configuration
 
+**Note**: From July 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) onwards OUD deployment is performed using [StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
 
 ### Create a Kubernetes namespace
 
@@ -92,7 +93,7 @@ Create a Kubernetes secret to stores the credentials for the container registry 
 
 ### Create a Kubernetes secret for cronjob images
 
-Once OUD is deployed, if the Kubernetes node where the OUD pod(s) is/are running goes down after the pod eviction time-out, the pod(s) don't get evicted but move to a `Terminating` state. The pod(s) will then remain in that state forever. To avoid this problem a cron-job is created during OUD deployment that checks for any pods in `Terminating` state, deletes them, and then starts the pod again. This cron job requires access to images on [hub.docker.com](https://hub.docker.com). A Kubernetes secret must therefore be created to enable access to these images.
+Once OUD is deployed, if the Kubernetes node where the OUD pod(s) is/are running goes down after the pod eviction time-out, the pod(s) don't get evicted but move to a `Terminating` state. The pod(s) will then remain in that state forever. To avoid this problem a cron-job is created during OUD deployment that checks for any pods in `Terminating` state. If there are any pods in `Terminating` state, the cron job will delete them. The pods will then start again automatically. This cron job requires access to images on [hub.docker.com](https://hub.docker.com). A Kubernetes secret must therefore be created to enable access to these images.
 
 1. Create a Kubernetes secret to access the required images on [hub.docker.com](https://hub.docker.com): 
 
@@ -167,79 +168,66 @@ You can create OUD instances using one of the following methods:
      - name: orclcred
    oudConfig:
      rootUserPassword: <password>
-	 sampleData: "200"
+     sampleData: "200"
    persistence:
      type: filesystem
      filesystem:
-       hostPath: 
+       hostPath:
          path: <persistent_volume>/oud_user_projects
    cronJob:
      kubectlImage:
        repository: bitnami/kubectl
        tag: <version>
        pullPolicy: IfNotPresent
-     helmImage:
-       repository: alpine/helm
-       tag: <version>
-       pullPolicy: IfNotPresent
-
-     cronPersistence:
-       enabled: true
-       type: filesystem
-       filesystem:
-         hostPath:
-           path: <$WORKDIR>/kubernetes/helm
-
-       imagePullSecrets:
-       - name: dockercred  
+ 
+     imagePullSecrets:
+       - name: dockercred
    ```
    
    For example:
-
+   
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol7-220119.2051
+     tag: 12.2.1.4-jdk8-ol7-<jul22>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
    oudConfig:
      rootUserPassword: <password>
-	 sampleData: "200"
+     sampleData: "200"
    persistence:
      type: filesystem
      filesystem:
-       hostPath: 
+       hostPath:
          path: /scratch/shared/oud_user_projects
    cronJob:
      kubectlImage:
        repository: bitnami/kubectl
-       tag: 1.21.0
+       tag: 1.21.6
        pullPolicy: IfNotPresent
-     helmImage:
-       repository: alpine/helm
-       tag: 3.2.0
-       pullPolicy: IfNotPresent
-
-     cronPersistence:
-       enabled: true
-       type: filesystem
-       filesystem:
-         hostPath:
-           path: /scratch/shared/OUDContainer/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/helm
-
-       imagePullSecrets:
+ 
+     imagePullSecrets:
        - name: dockercred
-   ```
+   ```   
+   
+  
 
   
    The following caveats exist:
    
    * Replace `<password>` with the relevant password.
-   * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry.
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.21.6` set to `1.21.0`.
-   * The `<version>` in *helmimage* `tag:` should be set to the same version as your Helm version (`helm version`). For example if your helm version is `3.2.4` set to `3.2.0`.
-   * The *cronPersistence* `path` must point to the helm charts directory on the persistent volume.
+   * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry. If `sampleData` is set to `1,000,000` users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication:
+      
+      ```yaml
+      deploymentConfig:
+        startupTime: 720
+        period: 120
+        timeout: 60
+      ```
+  
+   
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.21.6` set to `1.21.6`.
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:
    
       ```
@@ -247,7 +235,7 @@ You can create OUD instances using one of the following methods:
         - name: orclcred
       ```
   
-   * If using NFS for your persistent volume then change the `persistence` and `cronPersistence section as follows:
+   * If using NFS for your persistent volume then change the `persistence` section as follows:
   
       ```yaml
       persistence:
@@ -256,14 +244,6 @@ You can create OUD instances using one of the following methods:
           nfs: 
             path: <persistent_volume>/oud_user_projects
             server: <NFS IP address>
-		 
-      cronPersistence:
-	    enabled: true
-        type: networkstorage
-        networkstorage:
-          nfs:
-            path: <$WORKDIR>/kubernetes/helm
-		    server: <NFS_IP_Address> 
       ```
 
 
@@ -297,13 +277,11 @@ You can create OUD instances using one of the following methods:
 
    ```bash
    $ helm install --namespace <namespace> \
-   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=<persistent_volume>/oud_user_projects,image.repository=<image_location>,image.tag=<image_tag> \ 
-   --set imagePullSecrets[0].name="orclcred" \
-   --set sampleData="200" \
+   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=<persistent_volume>/oud_user_projects,image.repository=<image_location>,image.tag=<image_tag> \
+   --set oudConfig.sampleData="200" \
    --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=<version> \
-   --set cronJob.helmImage.repository=alpine/helm,cronJob.helmImage.tag=<version> \
-   --set cronJob.cronPersistence.filesystem.hostPath.path=<$WORKDIR>/kubernetes/helm \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
+   --set imagePullSecrets[0].name="orclcred" \
    <release_name> oud-ds-rs
    ```
 
@@ -311,11 +289,9 @@ You can create OUD instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudns \
-   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects,image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol7-220119.2051 \
-   --set sampleData="200" \
-   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.21.0 \
-   --set cronJob.helmImage.repository=alpine/helm,cronJob.helmImage.tag=3.2.0 \
-   --set cronJob.cronPersistence.filesystem.hostPath.path=/scratch/shared/OUDContainer/fmw-kubernetes/OracleUnifiedDirectory/kubernetes/helm/ \
+   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects,image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol7-<jul22> \
+   --set oudConfig.sampleData="200" \
+   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.21.6 \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
    --set imagePullSecrets[0].name="orclcred" \
    oud-ds-rs oud-ds-rs
@@ -324,10 +300,8 @@ You can create OUD instances using one of the following methods:
    The following caveats exist:
 
    * Replace `<password>` with a the relevant password.
-   * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry.
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.21.6` set to `1.21.0`.
-   * The `<version>` in *helmimage* `tag:` should be set to the same version as your Helm version (`helm version`). For example if your helm version is `3.2.4` set to `3.2.0`.
-   * The *cronPersistence* `path` must point to the helm charts directory on the persistent volume.
+   * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry. If `sampleData` is set to `1,000,000` users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: `--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.21.6` set to `1.21.6`.
    * If using using NFS for your persistent volume then use `persistence.networkstorage.nfs.path=<persistent_volume>/oud_user_projects,persistence.networkstorage.nfs.server:<NFS IP address>`.
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following: `--set imagePullSecrets[0].name="orclcred"`.
 
@@ -339,7 +313,7 @@ In all the examples above, the following output is shown following a successful 
 
    ```bash
    NAME: oud-ds-rs
-   LAST DEPLOYED:  Wed Mar 16 12:02:40 2022
+   LAST DEPLOYED:  Mon Jul 11 12:02:40 2022
    NAMESPACE: oudns
    STATUS: deployed
    REVISION: 4
@@ -403,49 +377,61 @@ $ kubectl --namespace oudns get pod,service,secret,pv,pvc,ingress -o wide
 The output will look similar to the following: 
 
 ```
-NAME              READY   STATUS    RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running   0          17m   10.244.0.195   <Worker Node>   <none>           <none>
-pod/oud-ds-rs-1   1/1     Running   0          17m   10.244.0.194   <Worker Node>   <none>           <none>
-pod/oud-ds-rs-2   1/1     Running   0          17m   10.244.0.193   <Worker Node>   <none>           <none>
-    
-NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE     SELECTOR
-service/oud-ds-rs-0           ClusterIP   10.99.232.83     <none>        1444/TCP,1888/TCP,1898/TCP   8m44s   kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-1           ClusterIP   10.100.186.42    <none>        1444/TCP,1888/TCP,1898/TCP   8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-2           ClusterIP   10.104.55.53     <none>        1444/TCP,1888/TCP,1898/TCP   8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-http-0      ClusterIP   10.102.116.145   <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-http-1      ClusterIP   10.111.103.84    <none>        1080/TCP,1081/TCP            8m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-http-2      ClusterIP   10.105.53.24     <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-lbr-admin   ClusterIP   10.98.39.206     <none>        1888/TCP,1444/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-http    ClusterIP   10.110.77.132    <none>        1080/TCP,1081/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-ldap    ClusterIP   10.111.55.122    <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-ldap-0      ClusterIP   10.108.155.81    <none>        1389/TCP,1636/TCP            8m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-ldap-1      ClusterIP   10.104.88.44     <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-ldap-2      ClusterIP   10.105.253.120   <none>        1389/TCP,1636/TCP            8m45s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-    
-NAME                                        TYPE                                  DATA   AGE
-secret/default-token-tbjr5                  kubernetes.io/service-account-token   3      25d
-secret/orclcred                             kubernetes.io/dockerconfigjson        1      3d
-secret/oud-ds-rs-creds                      opaque                                8      8m48s
-secret/oud-ds-rs-token-cct26                kubernetes.io/service-account-token   3      8m50s
-secret/sh.helm.release.v1.oud-ds-rs.v1      helm.sh/release.v1                    1      8m51s
-    
-NAME                               CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                    STORAGECLASS   REASON   AGE
-persistentvolume/oud-ds-rs-pv      20Gi       RWX            Retain           Bound    oudns/oud-ds-rs-pvc      manual                  8m47s
- 
-NAME                                  STATUS   VOLUME         CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/oud-ds-rs-pvc   Bound    oud-ds-rs-pv   20Gi       RWX            manual         8m48s
-   
-NAME                                               HOSTS                                                               ADDRESS         PORTS   AGE
-ingress.extensions/oud-ds-rs-admin-ingress-nginx   oud-ds-rs-admin-0,oud-ds-rs-admin-1,oud-ds-rs-admin-2 + 2 more...   10.229.141.78   80      8m45s
-ingress.extensions/oud-ds-rs-http-ingress-nginx    oud-ds-rs-http-0,oud-ds-rs-http-1,oud-ds-rs-http-2 + 3 more...      10.229.141.78   80      8m45s
+NAME                                  READY   STATUS      RESTARTS   AGE     IP             NODE            NOMINATED NODE   READINESS GATES
+pod/oud-ds-rs-0                       1/1     Running     0          14m     10.244.1.180   <Worker Node>   <none>           <none>
+pod/oud-ds-rs-1                       1/1     Running     0          8m26s   10.244.1.181   <Worker Node>   <none>           <none>
+pod/oud-ds-rs-2                       0/1     Running     0          2m24s   10.244.1.182   <Worker Node>   <none>           <none>
+pod/oud-pod-cron-job-27586680-p5d8q   0/1     Completed   0          50s     10.244.1.183   <Worker Node>   <none>           <none>
+
+NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                          AGE   SELECTOR
+service/oud-ds-rs             ClusterIP   None             <none>        1444/TCP,1888/TCP,1389/TCP,1636/TCP,1080/TCP,1081/TCP,1898/TCP   14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-0           ClusterIP   10.107.202.164   <none>        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-1           ClusterIP   10.102.101.53    <none>        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-2           ClusterIP   10.110.137.63    <none>        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-http-0      ClusterIP   10.102.148.153   <none>        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-http-1      ClusterIP   10.98.170.188    <none>        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-http-2      ClusterIP   10.101.169.181   <none>        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-lbr-admin   ClusterIP   10.97.137.179    <none>        1888/TCP,1444/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-http    ClusterIP   10.109.82.7      <none>        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-ldap    ClusterIP   10.104.73.92     <none>        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-ldap-0      ClusterIP   10.107.99.240    <none>        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-ldap-1      ClusterIP   10.108.219.79    <none>        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-ldap-2      ClusterIP   10.104.231.98    <none>        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+
+NAME                                     TYPE                                  DATA   AGE
+secret/default-token-msmmd               kubernetes.io/service-account-token   3      3d20h
+secret/dockercred                        kubernetes.io/dockerconfigjson        1      3d20h
+secret/orclcred                          kubernetes.io/dockerconfigjson        1      3d20h
+secret/oud-ds-rs-creds                   opaque                                8      14m
+secret/oud-ds-rs-job-token-2xlmj         kubernetes.io/service-account-token   3      14m
+secret/oud-ds-rs-tls-cert                kubernetes.io/tls                     2      14m
+secret/oud-ds-rs-token-2tprv             kubernetes.io/service-account-token   3      14m
+secret/sh.helm.release.v1.oud-ds-rs.v1   helm.sh/release.v1                    1      14m
+
+NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                       STORAGECLASS        REASON   AGE    VOLUMEMODE
+persistentvolume/oud-ds-rs-pv        20Gi       RWX            Delete           Bound    oudns/oud-ds-rs-pvc         manual                       14m    Filesystem
+
+NAME                                  STATUS   VOLUME         CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/oud-ds-rs-pvc   Bound    oud-ds-rs-pv   20Gi       RWX            manual         14m   Filesystem
+
+NAME                                                      CLASS    HOSTS                                                               ADDRESS   PORTS     AGE
+ingress.networking.k8s.io/oud-ds-rs-admin-ingress-nginx   <none>   oud-ds-rs-admin-0,oud-ds-rs-admin-0,oud-ds-rs-admin-1 + 3 more...             80, 443   14m
+ingress.networking.k8s.io/oud-ds-rs-http-ingress-nginx    <none>   oud-ds-rs-http-0,oud-ds-rs-http-1,oud-ds-rs-http-2 + 3 more...                80, 443   14m
+
 ```
 
-**Note**: It will take several minutes before all the services listed above show. While the oud-ds-rs pods have a `STATUS` of `0/1` the pod is started but the OUD server associated with it is currently starting. While the pod is starting you can check the startup status in the pod logs, by running the following command:
+**Note**: Initially `pod/oud-ds-rs-0` will appear with a `STATUS` of `0/1` and it will take approximately 5 minutes before OUD is started (`1/1`). Once `pod/oud-ds-rs-0` has a `STATUS` of `1/1`, `pod/oud-ds-rs-1` will appear with a `STATUS` of `0/1`. Once `pod/oud-ds-rs-1` is started (`1/1`),  `pod/oud-ds-rs-2` will appear. It will take around 15 minutes for all the pods to fully started.
+
+While the oud-ds-rs pods have a `STATUS` of `0/1` the pod is running but OUD server associated with it is currently starting. While the pod is starting you can check the startup status in the pod logs, by running the following command:
 
 ```bash
+$ kubectl logs <pod> -n oudns
+```
+
+For example:
+
+```
 $ kubectl logs oud-ds-rs-0 -n oudns
-$ kubectl logs oud-ds-rs-1 -n oudns
-$ kubectl logs oud-ds-rs-2 -n oudns
 ```
 
 **Note** : If the OUD deployment fails additionally refer to [Troubleshooting](../troubleshooting) for instructions on how describe the failing pod(s).
@@ -624,7 +610,7 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    
    ```bash
    NAME               SCHEDULE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE
-   oud-pod-cron-job   */30 * * * *   False     0        <none>          15s
+   oud-pod-cron-job   */30 * * * *   False     0        5m18s           19m
    ```
    
 1. Run the following command to make sure the job(s) is created:
@@ -642,13 +628,9 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    The output will look similar to the following:
    
    ```bash
-   NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS               IMAGES                                     SELECTOR
-   oud-pod-cron-job-27467340   1/1           17s        6m48s   cron-kubectl,cron-helm   bitnami/kubectl:1.21.0,alpine/helm:3.2.0    controller-uid=e8e7dfe2-d197-4b84-a5a4-d203d54caaac
+   NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
+   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.21.6   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
    ```
-   
-     
-   **Note**: The jobs(s) will only be displayed after the time schedule originally set has elapsed. The default is `30` minutes).
-   
    
 
 #### Disabling the cronjob
@@ -673,12 +655,9 @@ If you need to disable the job, for example if maintenance needs to be performed
    
    ```
    ...
-             - name: oud-ds-rs-job-pv
-               persistentVolumeClaim:
-                 claimName: oud-ds-rs-job-pvc
-     schedule: '*/30 * * * *'
-     successfulJobsHistoryLimit: 3
-     suspend: true
+   schedule: '*/30 * * * *'
+   successfulJobsHistoryLimit: 3
+   suspend: true
    ...
    ```
 
@@ -699,8 +678,8 @@ If you need to disable the job, for example if maintenance needs to be performed
    The output will look similar to the following:
    
    ```bash
-   NAME               SCHEDULE       SUSPEND  ACTIVE   LAST SCHEDULE   AGE
-   oud-pod-cron-job   */30 * * * *   True     0        11m             33m
+   NAME               SCHEDULE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+   oud-pod-cron-job   */30 * * * *   True      0        7m47s           21m
    ```
 
 1. To enable the cronjob again, repeat the above steps and set `suspend` to `false`.
@@ -709,6 +688,7 @@ If you need to disable the job, for example if maintenance needs to be performed
 ### Ingress Configuration
 
 With an OUD instance now deployed you are now ready to configure an ingress controller to direct traffic to OUD as per [Configure an ingress for an OUD](../configure-ingress).
+
 
 ### Undeploy an OUD deployment
 
@@ -730,8 +710,8 @@ With an OUD instance now deployed you are now ready to configure an ingress cont
    The output will look similar to the following:
    
    ```
-   NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-   oud-ds-rs               oudns           1               2021-03-16 12:02:40.616927678 -0700     PDT deployed    oud-ds-rs-12.2.1.4.0    12.2.1.4.0
+   NAME            NAMESPACE       REVISION        UPDATED                                    STATUS          CHART           APP VERSION
+   oud-ds-rs       oudns           1               2022-07-11 09:46:17.613632382 +0000 UTC    deployed        oud-ds-rs-0.2   12.2.1.4.0
    ```
         
 1. Delete the deployment using the following command:
@@ -746,6 +726,35 @@ With an OUD instance now deployed you are now ready to configure an ingress cont
    $ helm uninstall --namespace oudns oud-ds-rs
    release "oud-ds-rs" uninstalled
    ```
+   
+1. Run  the following command to view the status:
+
+   ```bash
+   $ kubectl --namespace oudns get pod,service,secret,pv,pvc,ingress -o wide
+   ```
+   
+   Initially the pods and persistent volume (PV) and persistent volume claim (PVC) will move to a `Terminating` status:
+   
+   ```
+   NAME              READY   STATUS        RESTARTS   AGE   IP             NODE            NOMINATED NODE   READINESS GATES
+
+   pod/oud-ds-rs-0   1/1     Terminating   0          24m   10.244.1.180   <Worker Node>   <none>           <none>
+   pod/oud-ds-rs-1   1/1     Terminating   0          18m   10.244.1.181   <Worker Node>   <none>           <none>
+   pod/oud-ds-rs-2   1/1     Terminating   0          12m   10.244.1.182   <Worker Node>   <none>           <none>
+
+   NAME                         TYPE                                  DATA   AGE
+   secret/default-token-msmmd   kubernetes.io/service-account-token   3      3d20h
+   secret/dockercred            kubernetes.io/dockerconfigjson        1      3d20h
+   secret/orclcred              kubernetes.io/dockerconfigjson        1      3d20h
+
+   NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS        CLAIM                       STORAGECLASS        REASON   AGE    VOLUMEMODE
+   persistentvolume/oud-ds-rs-pv        20Gi       RWX            Delete           Terminating   oudns/oud-ds-rs-pvc         manual                       24m    Filesystem
+
+   NAME                                  STATUS        VOLUME         CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
+   persistentvolumeclaim/oud-ds-rs-pvc   Terminating   oud-ds-rs-pv   20Gi       RWX            manual         24m   Filesystem
+   ```
+   
+   Run the command again until the pods, PV and PVC disappear.
    
 #### Delete the persistent volume contents
 
@@ -843,6 +852,15 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | baseOUD.envVars | Environment variables in Yaml Map format. This is helpful when its requried to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. | - |
 | replOUD.envVarsConfigMap | Reference to ConfigMap which can contain additional environment variables to be passed on to PODs for Replicated Oracle Unified Directory Instances. Following are the environment variables which would not be honored from the ConfigMap. <br> instanceType, sleepBeforeConfig, OUD_INSTANCE_NAME, hostname, baseDN, rootUserDN, rootUserPassword, adminConnectorPort, httpAdminConnectorPort, ldapPort, ldapsPort, httpPort, httpsPort, replicationPort, sampleData, sourceHost, sourceServerPorts, sourceAdminConnectorPort, sourceReplicationPort, dsreplication_1, dsreplication_2, dsreplication_3, dsreplication_4, post_dsreplication_dsconfig_1, post_dsreplication_dsconfig_2 | - |
 | replOUD.envVars | Environment variables in Yaml Map format. This is helpful when its required to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. | - |
+| podManagementPolicy | Defines the policy for pod management within the statefulset. Typical values are  OrderedReady/Parallel | OrderedReady |
+| updateStrategy |  Allows you to configure and disable automated rolling updates for containers, labels, resource request/limits, and annotations for the Pods in a StatefulSet. Typical values are OnDelete/RollingUpdate | RollingUpdate |
+| busybox.image | busy box image name. Used for initcontainers | busybox |
+| oudConfig.cleanupbeforeStart |  Used to remove the individual pod directories during restart. Typical values are true/false | true |
+| oudConfig.disablereplicationbeforeStop | This parameter is used to disable replication when a pod is restarted. | true |
+| oudConfig.resources.requests.memory | This parameter is used to set the memory request for the OUD pod | 4Gi |
+| oudConfig.resources.requests.cpu | This parameter is used to set the cpu request for the OUD  pod | 0.5 |
+| oudConfig.resources.limits.memory | This parameter is used to set the memory limit for the OUD pod | 4Gi |
+| oudConfig.resources.limits.cpu | This parameter is used to set the cpu limit for the OUD pod | 1 |
 | replOUD.groupId | Group ID to be used/configured with each Oracle Unified Directory instance in replicated topology. | 1 |
 | elk.elasticsearch.enabled | If enabled it will create the elastic search statefulset deployment | false |
 | elk.elasticsearch.image.repository | Elastic Search Image name/Registry/Repository . Based on this elastic search instances will be created | docker.elastic.co/elasticsearch/elasticsearch |

@@ -89,14 +89,14 @@ If you have not yet created a Kubernetes secret refer back to [Create OUD instan
 
    ```yaml
    elkVolume:
-   # If enabled, it will use the persistent volume.
-   # if value is false, PV and PVC would not be used and there would not be any mount point available for config
-   enabled: true
-   type: networkstorage
-   networkstorage:
-     nfs:
-       server: myserver
-       path: <persistent_volume>/oud_elk_data
+     # If enabled, it will use the persistent volume.
+     # if value is false, PV and PVC would not be used and there would not be any mount point available for config
+     enabled: true
+     type: networkstorage
+     networkstorage:
+       nfs:
+         server: myserver
+         path: <persistent_volume>/oud_elk_data
    ```
 
 #### Upgrade OUD deployment with ELK configuration

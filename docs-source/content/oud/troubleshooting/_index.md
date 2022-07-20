@@ -7,6 +7,7 @@ description = "How to Troubleshoot issues."
 1. [Check the status of a namespace](#check-the-status-of-a-namespace)
 1. [View pod logs](#view-pod-logs)
 1. [View pod description](#view-pod-description)
+1. [Known issues](#known-issues)
 
 ### Check the status of a namespace
 
@@ -115,7 +116,7 @@ Name:         oud-ds-rs-0
 Namespace:    oudns
 Priority:     0
 Node:         <Worker Node>/100.102.48.84
-Start Time:   Wed, 16 Mar 2022 14:39:09 +0000
+Start Time:   Wed, 11 Jul 2022 14:39:09 +0000
 Labels:       app.kubernetes.io/instance=oud-ds-rs
               app.kubernetes.io/managed-by=Helm
               app.kubernetes.io/name=oud-ds-rs
@@ -131,17 +132,17 @@ IPs:
 Containers:
   oud-ds-rs:
     Container ID:   cri-o://2795176b6af2c17a9426df54214c7e53318db9676bbcf3676d67843174845d68
-    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-220119.2051
+    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-<july'22>
     Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:6ba20e54d17bb41312618011481e9b35a40f36f419834d751277f2ce2f172dca
     Ports:          1444/TCP, 1888/TCP, 1389/TCP, 1636/TCP, 1080/TCP, 1081/TCP, 1898/TCP
     Host Ports:     0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP
     State:          Running
-      Started:      Wed, 16 Mar 2022 15:38:10 +0000
+      Started:      Wed, 11 Jul 2022 15:38:10 +0000
     Last State:     Terminated
       Reason:       Error
       Exit Code:    137
-      Started:      Wed, 16 Mar 2022 14:39:10 +0000
-      Finished:     Wed, 16 Mar 2022 15:37:16 +0000
+      Started:      Wed, 11 Jul 2022 14:39:10 +0000
+      Finished:     Wed, 11 Jul 2022 15:37:16 +0000
     Ready:          True
     Restart Count:  1
     Liveness:       tcp-socket :ldap delay=900s timeout=15s period=30s #success=1 #failure=1
@@ -189,6 +190,141 @@ Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists fo
 Events:                      <none>
 ```
 
+### Known issues
 
+#### dsreplication output after scale up/down shows pod in unknown state
 
+Sometimes when scaling up or down, it is possible to get incorrect data in the `dsreplication` output. In the example below the `replicaCount` was changed from `4` to `3`. The `oud-ds-rs-3` server appears as `<Unknown>` when it should have disappeared:
 
+```
+dc=example,dc=com - Replication Enabled
+=======================================
+ 
+Server                         : Entries : M.C. [1] : A.O.M.C. [2] : Port [3] : Encryption [4] : Trust [5] : U.C. [6] : Status [7] : ChangeLog [8] : Group ID [9] : Connected To [10]
+-------------------------------:---------:----------:--------------:----------:----------------:-----------:----------:------------:---------------:--------------:-------------------------------
+oud-ds-rs-3:<Unknown>          : --      : N/A      : --           : 1898     : Disabled       : --        : --       : Unknown    : --            : N/A          : --
+[11]                           :         :          :              :          :                :           :          :            :               :              :
+oud-ds-rs-0:1444               : 39135   : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
+                               :         :          :              :          :                :           :          :            :               :              : (GID=1)
+oud-ds-rs-1:1444               : 39135   : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-1:1898
+                               :         :          :              :          :                :           :          :            :               :              : (GID=1)
+oud-ds-rs-2:1444               : 39135   : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
+                               :         :          :              :          :                :           :          :            :               :              : (GID=1)
+ 
+Replication Server [12]       : RS #1 : RS #2 : RS #3 : RS #4
+------------------------------:-------:-------:-------:------
+oud-ds-rs-0:1898 (#1)  : --    : Yes   : Yes   : N/A
+oud-ds-rs-1:1898 (#2)  : Yes   : --    : Yes   : N/A
+oud-ds-rs-2:1898 (#3)  : Yes   : Yes   : --    : N/A
+oud-ds-rs-3:1898 (#4)  : No    : No    : No    : --
+
+```
+
+In this situation perform the following steps to remove the <Unknown> server:
+
+1. Run the following command to enter the OUD Kubernetes pod:
+
+   ```
+   $ kubectl --namespace <namespace> exec -it -c <containername> <podname> -- bash
+   ```
+   
+   For example:
+   
+   ```
+   kubectl --namespace oudns exec -it -c oud-ds-rs oud-ds-rs-0 -- bash
+   ```
+   
+   This will take you into the pod:
+
+   ```
+   [oracle@oud-ds-rs-0 oracle]$
+   ```
+   
+ 
+1. Once inside the pod run the following command to create a password file:
+
+   ```
+   echo <ADMIN_PASSWORD> > /tmp/adminpassword.txt
+   ```
+
+1. Run the following command to remove the `replicationPort`:
+
+   ```
+   /u01/oracle/oud/bin/dsreplication disable --hostname localhost --port $adminConnectorPort --adminUID admin --trustAll --adminPasswordFile /tmp/adminpassword.txt --no-prompt --unreachableServer oud-ds-rs-3:$replicationPort
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   Establishing connections and reading configuration ........ Done.
+ 
+   The following errors were encountered reading the configuration of the
+   existing servers:
+   Could not connect to the server oud-ds-rs-3:1444.  Check that the
+   server is running and that is accessible from the local machine.  Details:
+   oud-ds-rs-3:1444
+   The tool will try to update the configuration in a best effort mode.
+ 
+   Removing references to replication server oud-ds-rs-3:1898 ..... Done.
+   ```
+
+1. Run the following command to remove the `adminConnectorPort`:
+
+   ```
+   /u01/oracle/oud/bin/dsreplication disable --hostname localhost --port $adminConnectorPort --adminUID admin --trustAll --adminPasswordFile /tmp/adminpassword.txt --no-prompt --unreachableServer oud-ds-rs-3:$adminConnectorPort
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   Establishing connections and reading configuration ...... Done.
+ 
+   Removing server oud-ds-rs-3:1444 from the registration information ..... Done.
+   ```
+   
+1. Delete the password file:
+
+   ```
+   rm /tmp/adminpassword.txt
+   ```
+
+#### Helm upgrade fails enabling ELK
+
+When deploying Elasticsearch and Kibana (ELK) in OUD, you may hit the following error during the `helm upgrade` command: 
+
+```
+Error: UPGRADE FAILED: error validating "": error validating data: [ValidationError(PersistentVolume.spec.accessModes): unknown object type "nil" in PersistentVolume.spec.accessModes[0], unknown object type "nil" in PersistentVolume.spec.capacity.storage]
+  
+Error: UPGRADE FAILED: error validating "": error validating data: ValidationError(StatefulSet.spec.template.spec.containers[0].volumeMounts[0]): missing required field "mountPath" in io.k8s.api.core.v1.VolumeMount
+```
+
+If this error occurs add the following lines to the `$WORKDIR/kubernetes/helm/logging-override-values.yaml` and rerun the `helm upgrade` command:
+
+```
+elkVolume:
+  mountPath: /usr/share/elasticsearch/data
+  size: 20Gi
+  storageClass: elk-oud
+  reclaimPolicy: "Delete"
+```
+
+For example:
+
+```
+elk:
+  enabled: true
+  imagePullSecrets:
+    - name: dockercred
+
+elkVolume:
+  mountPath: /usr/share/elasticsearch/data
+  size: 20Gi
+  storageClass: elk-oud
+  reclaimPolicy: "Delete"
+  enabled: true
+  type: networkstorage
+  networkstorage:
+    nfs:
+      server: myserver
+      path: <persistent_volume>/oud_elk_data
+```  

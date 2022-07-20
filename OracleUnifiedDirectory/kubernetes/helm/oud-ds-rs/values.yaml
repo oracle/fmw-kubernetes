@@ -9,8 +9,9 @@
 # Declare variables to be passed into your templates.
 
 # Number of DS+RS instances/pods/services to be created with replication enabled against a base OUD instance/pod
-replicaCount: 2
-
+replicaCount: 3
+podManagementPolicy: OrderedReady
+updateStrategy: RollingUpdate
 restartPolicyName: OnFailure
 
 image:
@@ -20,6 +21,11 @@ image:
 
 imagePullSecrets:
   - name: regcred
+
+busybox:
+  image: busybox
+  imagePullSecrets:
+    - name: dockercred
 
 nameOverride: ""
 
@@ -57,7 +63,7 @@ service:
 
 ingress:
   enabled: true
-  # Supported values: nginx 
+  # Supported values: nginx
   type: nginx
   # Configuration for Ingress rules about Data HTTP/HTTPS interfaces
   http:
@@ -122,7 +128,6 @@ ingress:
   certCN:
   # Validity of Self-Signed Cert in days
   certValidityDays: 365
-
 
 nodeSelector: {}
 
@@ -219,10 +224,13 @@ deploymentConfig:
   # Based on the value for this parameter, initialization/configuration of each OUD replica would be delayed and
   # readiness probes would be configured.
   # initialDelaySeconds would be configured as sleepBeforeConfig + startupTime
-  startupTime: 180
-
+  startupTime: 300
+  period: 60
+  timeout: 30
   # Paramter to decide livenessProbe initialDelaySeconds
   livenessProbeInitialDelay: 900
+  terminationPeriodSeconds: 300
+  replicationTimeout: 600000
 
 # Generic configuration parameters for OUD Instances
 oudConfig:
@@ -273,6 +281,19 @@ oudConfig:
   # readiness probes would be configured.
   # This it to  make sure that replicas are initialized in sequence. 
   sleepBeforeConfig: 300
+  # This parameter is used to remove the individual pod directories during restart
+  cleanupbeforeStart: true
+  # This parameter is used to disable replication when a pod is restarted. 
+  disablereplicationbeforeStop: true
+  
+  # memory, cpu parameters for both requests and limits for oud instances
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: ".5"
+    limits:
+      memory: "4Gi"
+      cpu: "1"
 
 # Configuration for Base OUD instance (oud-ds-rs-0)
 baseOUD:
@@ -402,6 +423,7 @@ elkVolume:
 
 cronJob:
   schedule: '"*/30 * * * *"'
+  enabled: true
 
 # Kubectl image details for job
 
@@ -410,42 +432,8 @@ cronJob:
     tag: 1.19.16
     pullPolicy: IfNotPresent
 
-# helm image details for job
-
-  helmImage:
-    repository: alpine/helm
-    tag: 3.2.4
-    pullPolicy: IfNotPresent
-
-# PV and PVC configured for cron-job
-# PV folder should have oud-ds-rs helm charts
-
-  cronPersistence:
-    enabled: true
-    pvname:
-  # provide the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
-    pvcname:
-  # provide the pvcname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
-    accessMode: ReadWriteMany
-    size: 2Gi
-    storageClass: manual
-    reclaimPolicy: "Delete"
-  #default supported values: either filesystem or networkstorage or custom
-    type: filesystem
-    networkstorage:
-      nfs:
-     # Chart path location
-        path: /scratch/shared/data
-        server: 0.0.0.0
-    filesystem:
-      hostPath:
-      # The chart path location mentioned should be created and made accessible with necessary privileges for access from pods/containers for the cron job.
-        path: /scratch/shared/data
-    custom:
-    annotations: {}
 
 # Image pull secrets for the above 2 kubectlImage and helmImage
 
   imagePullSecrets:
-    - name: regcred
-
+    - name: dockercred

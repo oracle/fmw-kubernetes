@@ -54,7 +54,7 @@ The OUD Kubernetes deployment requires access to an OUD container image. The ima
 #### Prebuilt OUD container image
 
 
-The latest prebuilt OUD container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0 and the latest PSU. 
+The prebuilt OUD July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oud_cpu` and accept the license agreement.
 
@@ -130,8 +130,6 @@ Make sure the persistent volume path has **full** access permissions, and that t
 ### Setup the code repository to deploy OUD
 
 Oracle Unified Directory deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory containers using the Helm charts provided.  To deploy Oracle Unified Directory on Kubernetes you should set up the deployment scripts on the persistent volume as below:
-
-**Note**: The work directory *must* be created on the persistent volume as access to the helm charts is required by a cron job created during OUD deployment.
 
 1. Create a working directory on the persistent volume to setup the source code.
 

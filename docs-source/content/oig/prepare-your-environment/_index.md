@@ -64,7 +64,7 @@ The OIG Kubernetes deployment requires access to an OIG container image. The ima
 #### Prebuilt OIG container image
 
 
-The latest prebuilt OIG container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0 and the latest PSU. 
+The latest prebuilt OIG July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
 
@@ -227,7 +227,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    
    ```
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Wed Mar 9 11:51:37 2022
+   LAST DEPLOYED: Wed Jul 13 11:51:37 2022
    NAMESPACE: opns
    STATUS: deployed
    REVISION: 1
@@ -277,9 +277,9 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    The output will look similar to the following:
 	
    ```
-   {"timestamp":"2022-03-09T11:52:53.167756673Z","thread":23,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650293167,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-03-09T11:53:03.170083172Z","thread":30,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650303170,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-03-09T11:52:13.172302644Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650313172,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-13T11:52:53.167756673Z","thread":23,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650293167,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-13T11:53:03.170083172Z","thread":30,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650303170,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-13T11:52:13.172302644Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650313172,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
    ```
 
 ### Create a namespace for Oracle Identity Governance
@@ -348,7 +348,9 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
 
 ### Create a Kubernetes secret for the container registry
 
-In this section you create a secret that stores the credentials for the container registry where the OIG image is stored. This step must be followed if using Oracle Container Registry or your own private registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.
+In this section you create a secret that stores the credentials for the container registry where the OIG image is stored. 
+
+If you are not using a container registry and have loaded the images on each of the master and worker nodes, you still need to create the registry secret. However, the user name and password need not contain meaningful data.
 
 1. Run the following command to create the secret:
 
@@ -396,7 +398,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359 --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -408,7 +410,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-220120.1359 -n oigns -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-<july'22> -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:
@@ -512,7 +514,7 @@ Before following the steps in this section, make sure that the database and list
    The output will look similar to the following:
 	
    ```
-   RCU Logfile: /tmp/RCU2022-03-09_17-09_964981565/logs/rcu.log
+   RCU Logfile: /tmp/RCU2022-07-13_17-09_964981565/logs/rcu.log
 
    Processing command line ....
    Repository Creation Utility - Checking Prerequisites
@@ -594,22 +596,22 @@ Before following the steps in this section, make sure that the database and list
    Service Name                                 : ORCL.EXAMPLE.COM
    Connected As                                 : sys
    Prefix for (prefixable) Schema Owners        : OIGK8S
-   RCU Logfile                                  : /tmp/RCU2022-03-09_17-09_964981565/logs/rcu.log
+   RCU Logfile                                  : /tmp/RCU2022-07-13_17-09_964981565/logs/rcu.log
 
    Component schemas created:
    -----------------------------
    Component                                    Status         Logfile
 
-   Common Infrastructure Services               Success        /tmp/RCU2022-03-09_17-09_964981565/logs/stb.log
-   Oracle Platform Security Services            Success        /tmp/RCU2022-03-09_17-09_964981565/logs/opss.log
-   SOA Infrastructure                           Success        /tmp/RCU2022-03-09_17-09_964981565/logs/soainfra.log
-   Oracle Identity Manager                      Success        /tmp/RCU2022-03-09_17-09_964981565/logs/oim.log
-   User Messaging Service                       Success        /tmp/RCU2022-03-09_17-09_964981565/logs/ucsums.log
-   Audit Services                               Success        /tmp/RCU2022-03-09_17-09_964981565/logs/iau.log
-   Audit Services Append                        Success        /tmp/RCU2022-03-09_17-09_964981565/logs/iau_append.log
-   Audit Services Viewer                        Success        /tmp/RCU2022-03-09_17-09_964981565/logs/iau_viewer.log
-   Metadata Services                            Success        /tmp/RCU2022-03-09_17-09_964981565/logs/mds.log
-   WebLogic Services                            Success        /tmp/RCU2022-03-09_17-09_964981565/logs/wls.log
+   Common Infrastructure Services               Success        /tmp/RCU2022-07-13_17-09_964981565/logs/stb.log
+   Oracle Platform Security Services            Success        /tmp/RCU2022-07-13_17-09_964981565/logs/opss.log
+   SOA Infrastructure                           Success        /tmp/RCU2022-07-13_17-09_964981565/logs/soainfra.log
+   Oracle Identity Manager                      Success        /tmp/RCU2022-07-13_17-09_964981565/logs/oim.log
+   User Messaging Service                       Success        /tmp/RCU2022-07-13_17-09_964981565/logs/ucsums.log
+   Audit Services                               Success        /tmp/RCU2022-07-13_17-09_964981565/logs/iau.log
+   Audit Services Append                        Success        /tmp/RCU2022-07-13_17-09_964981565/logs/iau_append.log
+   Audit Services Viewer                        Success        /tmp/RCU2022-07-13_17-09_964981565/logs/iau_viewer.log
+   Metadata Services                            Success        /tmp/RCU2022-07-13_17-09_964981565/logs/mds.log
+   WebLogic Services                            Success        /tmp/RCU2022-07-13_17-09_964981565/logs/wls.log
 
    Repository Creation Utility - Create : Operation Completed
    [oracle@helper oracle]$
@@ -731,7 +733,7 @@ In this section you prepare the environment for the OIG domain creation. This in
      username: d2VibG9naWM=
    kind: Secret
    metadata:
-     creationTimestamp: "2022-03-09T17:47:29Z"
+     creationTimestamp: "2022-07-13T17:47:29Z"
      labels:
        weblogic.domainName: governancedomain
        weblogic.domainUID: governancedomain
@@ -803,7 +805,7 @@ In this section you prepare the environment for the OIG domain creation. This in
      username: T0lHSzhT
    kind: Secret
    metadata:
-     creationTimestamp: "2022-03-09T17:50:50Z"
+     creationTimestamp: "2022-07-13T17:50:50Z"
      labels:
        weblogic.domainName: governancedomain
        weblogic.domainUID: governancedomain

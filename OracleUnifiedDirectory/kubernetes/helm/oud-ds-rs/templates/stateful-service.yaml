@@ -1,0 +1,49 @@
+#
+## Copyright (c) 2022, Oracle and/or its affiliates.
+##
+## Licensed under the Universal Permissive License v 1.0 as shown at 
+## https://oss.oracle.com/licenses/upl
+##
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "oud-ds-rs.name" . }}
+    helm.sh/chart: {{ include "oud-ds-rs.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: {{ include "oud-ds-rs.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - port: {{ .Values.oudPorts.adminldaps }}
+      name: adminldaps
+      targetPort: adminldaps
+      protocol: TCP
+    - port: {{ .Values.oudPorts.adminhttps }}
+      name: adminhttps
+      targetPort: adminhttps
+      protocol: TCP
+    - port: {{ .Values.oudPorts.ldap }}
+      name: ldap
+      targetPort: ldap
+      protocol: TCP
+    - port: {{ .Values.oudPorts.ldaps }}
+      name: ldaps
+      targetPort: ldaps
+      protocol: TCP
+    - port: {{ .Values.oudPorts.http }}
+      name: http
+      targetPort: http
+      protocol: TCP
+    - port: {{ .Values.oudPorts.https }}
+      name: https
+      targetPort: https
+      protocol: TCP
+    - port: {{ .Values.oudPorts.replication }}
+      name: replication
+      protocol: TCP

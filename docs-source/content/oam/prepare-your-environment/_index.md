@@ -67,7 +67,7 @@ The OAM Kubernetes deployment requires access to an OAM container image. The ima
 #### Prebuilt OAM container image
 
 
-The latest prebuilt OAM container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0 and the latest PSU. 
+The prebuilt OAM July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
 
@@ -232,7 +232,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    
    ```
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Mon Mar 06 10:25:39
+   LAST DEPLOYED: Tue Jul 12 10:25:39
    NAMESPACE: opns
    STATUS: deployed
    REVISION: 1
@@ -283,10 +283,10 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
 	
    ```
    ...
-   {"timestamp":"2022-03-06T10:26:10.917829423Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762370917,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-03-06T10:26:20.920145876Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762380920,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-03-06T10:26:30.922360564Z","thread":19,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762390922,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-03-06T10:26:40.924847211Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762400924,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-12T10:26:10.917829423Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762370917,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-12T10:26:20.920145876Z","thread":13,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762380920,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-12T10:26:30.922360564Z","thread":19,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762390922,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"2022-07-12T10:26:40.924847211Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1635762400924,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
    ```
 
 ### Create a namespace for Oracle Access Management
@@ -355,7 +355,9 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
 
 ### Create a Kubernetes secret for the container registry
 
-In this section you create a secret that stores the credentials for the container registry where the OAM image is stored. This step must be followed if using Oracle Container Registry or your own private registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.
+In this section you create a secret that stores the credentials for the container registry where the OAM image is stored. 
+
+If you are not using a container registry and have loaded the images on each of the master and worker nodes, you still need to create the registry secret. However, the user name and password need not contain meaningful data.
 
 1. Run the following command to create the secret:
 
@@ -404,7 +406,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-220119.2059 --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<july'22> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
    ```
    
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -416,7 +418,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol7-220119.2059 -n oamns -- sleep infinity
+   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol7-<july'22> -n oamns -- sleep infinity
    ```
    
    The output will look similar to the following:
@@ -510,7 +512,7 @@ Before following the steps in this section, make sure that the database and list
 	The output will look similar to the following:
 	
    ```
-   RCU Logfile: /tmp/RCU2022-03-06_10-29_561898106/logs/rcu.log
+   RCU Logfile: /tmp/RCU2022-07-12_10-29_561898106/logs/rcu.log
    Processing command line ....
    Repository Creation Utility - Checking Prerequisites
    Checking Global Prerequisites
@@ -579,18 +581,18 @@ Before following the steps in this section, make sure that the database and list
    Service Name : ORCL.EXAMPLE.COM
    Connected As : sys
    Prefix for (prefixable) Schema Owners : OAMK8S
-   RCU Logfile :  /tmp/RCU2022-03-06_10-29_561898106/logs/rcu.log
+   RCU Logfile :  /tmp/RCU2022-07-12_10-29_561898106/logs/rcu.log
    Component schemas created:
    -----------------------------
    Component Status Logfile
-   Common Infrastructure Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/stb.log
-   Oracle Platform Security Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/opss.log
-   Oracle Access Manager Success /tmp/RCU2022-03-06_10-29_561898106/logs/oam.log
-   Audit Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/iau.log
-   Audit Services Append Success /tmp/RCU2022-03-06_10-29_561898106/logs/iau_append.log
-   Audit Services Viewer Success /tmp/RCU2022-03-06_10-29_561898106/logs/iau_viewer.log
-   Metadata Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/mds.log
-   WebLogic Services Success /tmp/RCU2022-03-06_10-29_561898106/logs/wls.log
+   Common Infrastructure Services Success /tmp/RCU2022-07-12_10-29_561898106/logs/stb.log
+   Oracle Platform Security Services Success /tmp/RCU2022-07-12_10-29_561898106/logs/opss.log
+   Oracle Access Manager Success /tmp/RCU2022-07-12_10-29_561898106/logs/oam.log
+   Audit Services Success /tmp/RCU2022-07-12_10-29_561898106/logs/iau.log
+   Audit Services Append Success /tmp/RCU2022-07-12_10-29_561898106/logs/iau_append.log
+   Audit Services Viewer Success /tmp/RCU2022-07-12_10-29_561898106/logs/iau_viewer.log
+   Metadata Services Success /tmp/RCU2022-07-12_10-29_561898106/logs/mds.log
+   WebLogic Services Success /tmp/RCU2022-07-12_10-29_561898106/logs/wls.log
    Repository Creation Utility - Create : Operation Completed
    [oracle@helper ~]$
    ```
@@ -666,7 +668,7 @@ In this section you prepare the environment for the OAM domain creation. This in
      username: d2VibG9naWM=
    kind: Secret
    metadata:
-     creationTimestamp: "2022-03-06T10:41:11Z"
+     creationTimestamp: "2022-07-12T10:41:11Z"
      labels:
        weblogic.domainName: accessdomain
        weblogic.domainUID: accessdomain
@@ -736,7 +738,7 @@ In this section you prepare the environment for the OAM domain creation. This in
      username: T0FNSzhT
    kind: Secret
    metadata:
-     creationTimestamp: "2022-03-06T10:50:34Z"
+     creationTimestamp: "2022-07-12T10:50:34Z"
      labels:
        weblogic.domainName: accessdomain
        weblogic.domainUID: accessdomain

@@ -145,7 +145,7 @@ You can update the deployment with a new OUDSM container image using one of the 
    Namespace:    oudsmns
    Priority:     0
    Node:         prats-crio-worker2/100.102.48.28
-   Start Time:   Wed, 23 Mar 2022 10:38:20 +0000
+   Start Time:   Mon, 11 Jul 2022 10:38:20 +0000
    Labels:       app.kubernetes.io/instance=oudsm
                  app.kubernetes.io/managed-by=Helm
                  app.kubernetes.io/name=oudsm
