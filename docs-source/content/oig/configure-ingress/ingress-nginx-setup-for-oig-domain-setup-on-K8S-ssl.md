@@ -102,7 +102,7 @@ The instructions below explain how to set up NGINX as an ingress for the OIG dom
      tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV1d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktVd2dnU2hBZ0VBQW9JQkFRRFp3aUpRZW1yaFNEUnEKRjNPTExhbS9xbTBoSGVTVDBNYS9KTXh3cmFKODhLQ1pBMEcyN05Td1Rzakd5akhOWWMxNzBObFlTdEluazN1cApkdVo0N1ozVmEvbTZGZXljQktmTFJ4SW84NnIwSmhQYzhsa0pVd3Y0aDU1QW0vRmxYcGxoN3hab1Q5SThkdXl6Cmh4eittbVorek9xcjVIL3VxcmJhaWZHd2FFNmdKZTQxUC9SQzlpNnpheWVtU2ZKMGtPN1hOY1dYZ05zQWQxeisKTnhUNEk1aDAzTDg2dmVSc2RZQmswUEgyVmw0TVAzaC9tOHFWdW5mK1NvQzlZQjBoRmlSNzRtTXd2SGhQUHA5TApoVFBXanNBam1jYzRKVXVkVEpJRjJGNmRqY1hnWVJJdlNmUDVWY1JuaFZYaWVweHdXUDJ1dTBLaUk0OERwZi9pCkNyUVVpZjgvQWdNQkFBRUNnZjl6cnE2TUVueTFNYWFtdGM2c0laWU1QSDI5R2lSVVlwVXk5bG1sZ3BqUHh3V0sKUkRDay9Td0FmZG9yd1Q2ejNVRk1oYWJ4UU01a04vVjZFYkJlamQxT15bjdvWTVEQWJRRTR3RG9SZWlrVApONndWU0FrVC92Z1RXc1RqRlY1bXFKMCt6U2ppOWtySkZQNVNRN1F2cUswQ3BHRlNhVjY2dW8ycktiNmJWSkJYCkxPZmZPMytlS0tVazBaTnE1Q1NVQk9mbnFoNVFJSGdpaDNiMTRlNjB6bndrNWhaMHBHZE9BQm9aTkoKZ21lanUyTEdzVWxXTjBLOVdsUy9lcUllQzVzQm9jaWlocmxMVUpGWnpPRUV6LzErT2cyemhmT29yTE9rMTIrTgpjQnV0cTJWQ2I4ZFJDaFg1ZzJ0WnBrdzgzcXN5RSt3M09zYlQxa0VDZ1lFQTdxUnRLWGFONUx1SENvWlM1VWhNCm1WcnYxTEg0eGNhaDJIZnMksrMHJqQkJONGpkZkFDMmF3R3ZzU1EyR0lYRzVGYmYyK0pwL1kxbktKOEgKZU80MzNLWVgwTDE4NlNNLzFVay9HSEdTek1CWS9KdGR6WkRrbTA4UnBwaTl4bExTeDBWUWtFNVJVcnJJcTRJVwplZzBOM2RVTHZhTVl1UTBrR2dncUFETUNnWUVBNlpqWCtjU2VMZ1BVajJENWRpUGJ1TmVFd2RMeFNPZDFZMUFjCkUzQ01YTWozK2JxQ3BGUVIrTldYWWVuVmM1QiszajlSdHVnQ0YyTkNSdVdkZWowalBpL243UExIRHdCZVY0bVIKM3VQVHJmamRJbFovSFgzQ2NjVE94TmlaajU4VitFdkRHNHNHOGxtRTRieStYRExIYTJyMWxmUk9sUVRMSyswVgpyTU93eU1VQ2dZRUF1dm14WGM4NWxZRW9hU0tkU0cvQk9kMWlYSUtmc2VDZHRNT2M1elJ0UXRsSDQwS0RscE54CmxYcXBjbVc3MWpyYzk1RzVKNmE1ZG5xTE9OSFZoWW8wUEpmSXhPU052RXI2MTE5NjRBMm5sZXRHYlk0M0twUkEKaHBPRHlmdkZoSllmK29kaUJpZFUyL3ZBMCtUczNSUHJzRzBSOUVDOEZqVDNaZVhaNTF1R0xPa0NnWUFpTmU0NwplQjRxWXdrNFRsMTZmZG5xQWpaQkpLR05xY2c1V1R3alpMSkp6R3owdCtuMkl4SFd2WUZFSjdqSkNmcHFsaDlqCmlDcjJQZVV3K09QTlNUTG1JcUgydzc5L1pQQnNKWXVsZHZ4RFdGVWFlRXg1aHpkNDdmZlNRRjZNK0NHQmthYnIKVzdzU3R5V000ZFdITHpDaGZMS20yWGJBd0VqNUQrbkN1WTRrZVFLQmdFSkRHb0puM1NCRXcra2xXTE85N09aOApnc3lYQm9mUW1lRktIS2NHNzFZUFhJbTRlV1kyUi9KOCt5anc5b1FJQ3o5NlRidkdSZEN5QlJhbWhoTmFGUzVyCk9MZUc0ejVENE4zdThUc0dNem9QcU13KzBGSXJiQ3FzTnpGWTg3ekZweEdVaXZvRWZLNE82YkdERTZjNHFqNGEKNmlmK0RSRSt1TWRMWTQyYTA3ekoKLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo=
    kind: Secret
    metadata:
-     creationTimestamp: "2022-03-10T14:02:50Z"
+     creationTimestamp: "2022-07-13T14:02:50Z"
      name: governancedomain-tls-cert
      namespace: oigns
      resourceVersion: "3319899"
@@ -176,7 +176,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    ```
    $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    NAME: nginx-ingress
-   LAST DEPLOYED: Thu Mar 10 14:04:40 2022
+   LAST DEPLOYED: Tue Jul 13 14:04:40 2022
    NAMESPACE: nginxssl
    STATUS: deployed
    REVISION: 1
@@ -241,7 +241,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Thu Mar 10 14:06:42 2022
+   LAST DEPLOYED: Tue Jul 13 14:06:42 2022
    NAMESPACE: nginxssl
    STATUS: deployed
    REVISION: 1
@@ -349,7 +349,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 
    ```
    NAME: governancedomain-nginx
-   LAST DEPLOYED:  Thu Mar 10 14:07:51 2022
+   LAST DEPLOYED:  Tue Jul 13 14:07:51 2022
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -474,8 +474,8 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    * SSL connection using TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
    * Server certificate:
    *       subject: CN=masternode.example.com
-   *       start date: Nov 10 13:05:21 2021 GMT
-   *       expire date: Nov 10 13:05:21 2022 GMT
+   *       start date: Jul 13 13:05:21 2021 GMT
+   *       expire date: Jul 13 13:05:21 2022 GMT
    *       common name: masternode.example.com
    *       issuer: CN=masternode.example.com
    > GET /weblogic/ready HTTP/1.1
@@ -485,7 +485,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    >
    < HTTP/1.1 200 OK
    < Server: nginx/1.19.1
-   < Date: Thu, 10 Mar 2022 14:09:57 GMT
+   < Date: Thu, 13 Jul 2022 14:09:57 GMT
    < Content-Length: 0
    < Connection: keep-alive
    < Strict-Transport-Security: max-age=15724800; includeSubDomains

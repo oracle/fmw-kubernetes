@@ -55,7 +55,7 @@ The Oracle Unified Directory Services Manager (OUDSM) Kubernetes deployment requ
 #### Prebuilt OUDSM container image
 
 
-The latest prebuilt OUDSM container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0 and the latest PSU. 
+The prebuilt OUDSM July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oudsm_cpu` and accept the license agreement.
 

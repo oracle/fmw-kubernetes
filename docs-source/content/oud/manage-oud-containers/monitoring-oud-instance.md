@@ -89,7 +89,7 @@ After the Oracle Unified Directory instance (OUD) is set up you can monitor it u
 
    ```bash
    NAME: monitoring
-   LAST DEPLOYED: Fri Mar 18 09:57:54 2022
+   LAST DEPLOYED: Mon Jul 11 09:57:54 2022
    NAMESPACE: monitoring
    STATUS: deployed
    REVISION: 1

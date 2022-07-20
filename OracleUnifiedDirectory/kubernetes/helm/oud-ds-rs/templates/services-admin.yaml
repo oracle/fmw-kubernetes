@@ -5,16 +5,14 @@
 # https://oss.oracle.com/licenses/upl
 #
 {{- $root := . -}}
-{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
-{{- $replicaIndx := (add $replicaIndex 1) -}}
-#
+{{- range $replicaN := until (.Values.replicaCount| int) }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+  name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaN }}
   labels:
     {{- include "oud-ds-rs.labels" $root | nindent 4 }}
-    oud/instance: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
 spec:
   type: {{ $root.Values.service.type }}
   ports:
@@ -32,6 +30,5 @@ spec:
       protocol: TCP
   selector:
     {{- include "oud-ds-rs.selectorLabels" $root | nindent 4 }}
-    oud/instance: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
----
+    statefulset.kubernetes.io/pod-name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaN }}
 {{- end }}

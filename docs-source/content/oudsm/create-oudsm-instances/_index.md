@@ -198,7 +198,7 @@ You can create OUDSM instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oudsm_cpu
-     tag: 12.2.1.4-jdk8-ol7-220223.2053
+     tag: 12.2.1.4-jdk8-ol7-<july'22>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -272,7 +272,7 @@ You can create OUDSM instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudsmns \
-   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol7-220223.2053 \
+   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol7-<july'22> \
    --set imagePullSecrets[0].name="orclcred" \
    oudsm oudsm
    ```
@@ -291,7 +291,7 @@ In all the examples above, the following output is shown following a successful 
 
    ```bash
    NAME: oudsm
-   LAST DEPLOYED: Mon Mar 21 12:21:06 2022
+   LAST DEPLOYED: Mon Jul 11 12:21:06 2022
    NAMESPACE: oudsmns
    STATUS: deployed
    REVISION: 1
@@ -389,7 +389,7 @@ With an OUDSM instance now deployed you are now ready to configure an ingress co
    
    ```
    NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
-   oudsm   oudsmns         2               2022-03-21 16:46:34.05531056 +0000 UTC  deployed        oudsm-0.1       12.2.1.4.0
+   oudsm   oudsmns         2               2022-07-11 16:46:34.05531056 +0000 UTC  deployed        oudsm-0.1       12.2.1.4.0
    ```
         
 1. Delete the deployment using the following command:

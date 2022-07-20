@@ -124,7 +124,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ``` 
    NAME: nginx-ingress
-   LAST DEPLOYED: Mon Mar 7 13:57:21 2022
+   LAST DEPLOYED: Mon Jul 12 13:57:21 2022
 
    NAMESPACE: oamns
    STATUS: deployed
@@ -193,7 +193,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    $ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    
    NAME: nginx-ingress
-   LAST DEPLOYED: Mon Mar 7 13:57:21 2022
+   LAST DEPLOYED: Mon Jul 12 13:57:21 2022
    NAMESPACE: nginxssl
    STATUS: deployed
    REVISION: 1
@@ -296,7 +296,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ```
    NAME: oam-nginx
-   LAST DEPLOYED: Mon Mar 7 14:01:01 2022
+   LAST DEPLOYED: Mon Jul 12 14:01:01 2022
    NAMESPACE: oamns
    STATUS: deployed
    REVISION: 1
@@ -422,8 +422,8 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    * SSL connection using TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
    * Server certificate:
    *       subject: CN=masternode.example.com
-   *       start date: Nov 01 14:31:07 2021 GMT
-   *       expire date: Nov 01 14:31:07 2022 GMT
+   *       start date: Jul 12 14:31:07 2021 GMT
+   *       expire date: Jul 12 14:31:07 2022 GMT
    *       common name: masternode.example.com
    *       issuer: CN=masternode.example.com
    > GET /weblogic/ready HTTP/1.1
@@ -432,7 +432,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    > Accept: */*
    >
    < HTTP/1.1 200 OK
-   < Date: Mon, 01 Nov 2021 15:06:12 GMT
+   < Date: Mon, 12 Jul 2021 15:06:12 GMT
    < Content-Length: 0
    < Connection: keep-alive
    < Strict-Transport-Security: max-age=15724800; includeSubDomains

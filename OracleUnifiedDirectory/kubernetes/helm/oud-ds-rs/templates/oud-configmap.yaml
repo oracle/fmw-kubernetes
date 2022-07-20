@@ -1,0 +1,28 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "oud-ds-rs.name" . }}
+    helm.sh/chart: {{ include "oud-ds-rs.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  baseOUD.props: |
+    {{- range .Values.baseOUD.envVars }}
+     {{ .name }}={{ .value | quote }}
+    {{- end }}
+   
+  replOUD.props: |
+    {{- range .Values.replOUD.envVars }}
+     {{ .name }}={{ .value | quote }}
+    {{- end }}  
+

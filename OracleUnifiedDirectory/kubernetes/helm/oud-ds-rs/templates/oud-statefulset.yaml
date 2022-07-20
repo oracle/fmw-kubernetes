@@ -1,0 +1,448 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+#
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "oud-ds-rs.name" . }}
+    helm.sh/chart: {{ include "oud-ds-rs.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "oud-ds-rs.fullname" . }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  updateStrategy:  
+    type: {{ .Values.updateStrategy }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "oud-ds-rs.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "oud-ds-rs.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+{{- toYaml .Values.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ include "oud-ds-rs.serviceAccountName" . }}
+      terminationGracePeriodSeconds: {{ (.Values.deploymentConfig.terminationPeriodSeconds| int) }}
+    {{- with .Values.busybox.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+    {{- end }}
+
+      initContainers:
+      - name: mount-pv
+        image: {{ .Values.busybox.image }}
+        env:
+        - name: OUD_INSTANCE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: CONFIGVOLUME_ENABLED
+          value: "{{ .Values.configVolume.enabled }}"
+        - name: CONFIGVOLUME_MOUNTPATH
+          value: {{ .Values.configVolume.mountPath }}    
+        - name: CLEANUP_BEFORE_START
+          value: "{{ .Values.oudConfig.cleanupbeforeStart }}"  
+        
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+        {{- if .Values.persistence.enabled }}
+          {{- if .Values.persistence.pvname }}
+          name: {{ .Values.persistence.pvname }}
+          {{ else }}
+          name: {{ include "oud-ds-rs.fullname" . }}-pv
+          {{- end }}
+        {{- else }}
+          name: oud-storage
+          subPath: user_projects
+        {{- end }}        
+        {{- if .Values.configVolume.enabled }}          
+        - mountPath: {{ .Values.configVolume.mountPath }}
+          {{- if .Values.configVolume.pvname }}
+          name: {{ .Values.configVolume.pvname }}
+          {{ else }}
+          name: {{ include "oud-ds-rs.fullname" . }}-pv-config
+          {{- end }}
+        - mountPath: /mnt
+          name: config-map
+        {{- end }}
+        command: [ "/bin/sh", "-c" ]
+        args:
+          - 
+            ordinal=${OUD_INSTANCE_NAME##*-};
+            if [[ ${CLEANUP_BEFORE_START} == "true" ]];
+            then             
+              if [[ "$ordinal" != "0" ]];
+              then
+                cd /u01/oracle; rm -fr /u01/oracle/user_projects/$(OUD_INSTANCE_NAME)/OUD;
+              fi;
+            fi
+            
+            if [[ ${CONFIGVOLUME_ENABLED} == "true" ]];
+            then  
+              if [[ "$ordinal" == "0" ]]; 
+              then
+                cp "/mnt/baseOUD.props" "${CONFIGVOLUME_MOUNTPATH}/config-baseOUD.props";
+               else
+                cp "/mnt/replOUD.props" "${CONFIGVOLUME_MOUNTPATH}/config-replOUD.props";
+              fi; 
+            fi;
+         {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.affinity }}
+      affinity:
+{{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.tolerations }}
+      tolerations:
+{{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            memory: {{ .Values.oudConfig.resources.requests.memory }}
+            cpu: {{ .Values.oudConfig.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.oudConfig.resources.limits.memory }}
+            cpu: {{ .Values.oudConfig.resources.limits.cpu }}
+       {{- if .Values.oudConfig.disablereplicationbeforeStop }}
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  ordinal=${OUD_INSTANCE_NAME##*-}
+                  if [[ "$ordinal" != "0" ]]
+                  then
+                  echo $adminPassword > /tmp/adminpassword.txt && /u01/oracle/oud/bin/dsreplication disable --hostname localhost --port $adminConnectorPort --adminUID admin --trustAll --adminPasswordFile /tmp/adminpassword.txt --no-prompt --disableAll 
+                  fi
+       {{- end }}
+        ports:
+          - name: adminldaps
+            containerPort: {{ .Values.oudPorts.adminldaps }}
+            protocol: TCP
+          - name: adminhttps
+            containerPort: {{ .Values.oudPorts.adminhttps }}
+            protocol: TCP
+          - name: ldap
+            containerPort: {{ .Values.oudPorts.ldap }}
+            protocol: TCP
+          - name: ldaps
+            containerPort: {{ .Values.oudPorts.ldaps }}
+            protocol: TCP
+          - name: http
+            containerPort: {{ .Values.oudPorts.http }}
+            protocol: TCP
+          - name: https
+            containerPort: {{ .Values.oudPorts.https }}
+            protocol: TCP
+          - name: replication
+            containerPort: {{ .Values.oudPorts.replication }}
+            protocol: TCP
+
+        env:
+          - name: instanceType
+            value: DS2RS_STS
+          - name: OUD_INSTANCE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: sleepBeforeConfig
+            value: "3"
+          - name: sourceHost
+            value: {{ include "oud-ds-rs.fullname" . }}-0
+          - name: baseDN
+            value: {{ .Values.oudConfig.baseDN }}
+          {{- if .Values.secret.enabled }}
+          - name: rootUserDN
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: rootUserDN
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: rootUserDN
+                {{- end }}
+          {{- else }}
+          - name: rootUserDN
+            value: {{ .Values.oudConfig.rootUserDN }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: rootUserPassword
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: rootUserPassword
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: rootUserPassword
+                {{- end }}
+          {{- else }}
+          - name: rootUserPassword
+            value: {{ .Values.oudConfig.rootUserPassword }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: adminUID
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: adminUID
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: adminUID
+                {{- end }}
+          {{- else }}
+          - name: adminUID
+            value: {{ .Values.oudConfig.adminUID }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: adminPassword
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: adminPassword
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: adminPassword
+                {{- end }}
+          {{- else }}
+          - name: adminPassword
+            value: {{ .Values.oudConfig.adminPassword }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: bindDN1
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: bindDN1
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: bindDN1
+               {{- end }}
+          {{- else }}
+          - name: bindDN1
+            value: {{ .Values.oudConfig.rootUserDN }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: bindPassword1
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: bindPassword1
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: bindPassword1
+                {{- end }}
+          {{- else }}
+          - name: bindPassword1
+            value: {{ .Values.oudConfig.rootUserPassword }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: bindDN2
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: bindDN2
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: bindDN2
+                {{- end }}
+          {{- else }}
+          - name: bindDN2
+            value: {{ .Values.oudConfig.rootUserDN }}
+          {{- end }}
+          {{- if .Values.secret.enabled }}
+          - name: bindPassword2
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.secret.name }}
+                name: {{ .Values.secret.name }}
+                key: bindPassword2
+                {{- else }}
+                name:  {{ include "oud-ds-rs.fullname" . }}-creds
+                key: bindPassword2
+                {{- end }}
+          {{- else }}
+          - name: bindPassword2
+            value: {{ .Values.oudConfig.rootUserPassword }}
+          {{- end }}
+          {{- if .Values.sourceServerPorts }}
+          - name: sourceServerPorts
+            value: {{ .Values.sourceServerPorts }}
+          {{ else }}
+          - name: sourceServerPorts
+            value: {{ include "oud-ds-rs.fullname" . }}-0:{{ .Values.oudPorts.adminldaps }}
+          {{- end }}
+          {{- if .Values.sourceAdminConnectorPort }}
+          - name: sourceAdminConnectorPort
+            value: {{ .Values.sourceAdminConnectorPort | quote }}
+          {{ else }}
+          - name: sourceAdminConnectorPort
+            value: {{ .Values.oudPorts.adminldaps | quote }}
+          {{- end }}
+          {{- if .Values.sourceReplicationPort }}
+          - name: sourceReplicationPort
+            value: {{ .Values.sourceReplicationPort | quote }}
+          {{ else }}
+          - name: sourceReplicationPort
+            value: {{ .Values.oudPorts.replication | quote }}
+          {{- end }}
+          - name: sampleData
+            value: {{ .Values.oudConfig.sampleData | quote }}
+          - name: adminConnectorPort
+            value: {{ .Values.oudPorts.adminldaps | quote }}
+          - name: httpAdminConnectorPort
+            value: {{ .Values.oudPorts.adminhttps | quote }}
+          - name: ldapPort
+            value: {{ .Values.oudPorts.ldap | quote }}
+          - name: ldapsPort
+            value: {{ .Values.oudPorts.ldaps | quote }}
+          - name: httpPort
+            value: {{ .Values.oudPorts.http | quote }}
+          - name: httpsPort
+            value: {{ .Values.oudPorts.https | quote }}
+          - name: replicationPort
+            value: {{ .Values.oudPorts.replication | quote }}
+          - name: dsreplication_1
+            value: verify --hostname ${sourceHost} --port ${sourceAdminConnectorPort} --baseDN ${baseDN} --serverToRemove $(OUD_INSTANCE_NAME):${adminConnectorPort} --connectTimeout {{ .Values.deploymentConfig.replicationTimeout | int }} --readTimeout {{ .Values.deploymentConfig.replicationTimeout | int }}
+          - name: dsreplication_2
+            value: enable --host1 ${sourceHost} --port1 ${sourceAdminConnectorPort} --replicationPort1 ${sourceReplicationPort} --host2 $(OUD_INSTANCE_NAME) --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --baseDN ${baseDN} --connectTimeout {{ .Values.deploymentConfig.replicationTimeout | int }} --readTimeout {{ .Values.deploymentConfig.replicationTimeout | int }}
+          - name: dsreplication_3
+            value: initialize --hostSource ${initializeFromHost} --portSource ${sourceAdminConnectorPort} --hostDestination $(OUD_INSTANCE_NAME) --portDestination ${adminConnectorPort} --baseDN ${baseDN} --connectTimeout {{ .Values.deploymentConfig.replicationTimeout | int }} --readTimeout {{ .Values.deploymentConfig.replicationTimeout | int }}
+          - name: dsreplication_4
+            value: verify --hostname $(OUD_INSTANCE_NAME) --port ${adminConnectorPort} --baseDN ${baseDN} --connectTimeout {{ .Values.deploymentConfig.replicationTimeout | int }} --readTimeout {{ .Values.deploymentConfig.replicationTimeout | int }}
+          - name: post_dsreplication_dsconfig_1
+            value: set-replication-domain-prop --domain-name ${baseDN} --set group-id:{{ (.Values.replOUD.groupId|int) }}
+          - name: post_dsreplication_dsconfig_2
+            value: set-replication-server-prop --set group-id:{{ (.Values.replOUD.groupId|int) }}
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+        {{- if .Values.persistence.enabled }}
+          {{- if .Values.persistence.pvname }}
+          name: {{ .Values.persistence.pvname }}
+          {{ else }}
+          name: {{ include "oud-ds-rs.fullname" . }}-pv
+          {{- end }}
+        {{- else }}
+          name: oud-storage
+          subPath: user_projects
+        {{- end }}
+        {{- if .Values.configVolume.enabled }}
+        - mountPath: {{ .Values.configVolume.mountPath }}
+          {{- if .Values.configVolume.pvname }}
+          name: {{ .Values.configVolume.pvname }}
+          {{ else }}
+          name: {{ include "oud-ds-rs.fullname" . }}-pv-config
+          {{- end }}
+        - mountPath: /mnt
+          name: config-map             
+        {{- end }}
+        
+        livenessProbe:
+          tcpSocket:
+            port: ldap
+          initialDelaySeconds: {{ (.Values.deploymentConfig.startupTime|int) }}
+          timeoutSeconds: {{ (.Values.deploymentConfig.timeout| int) }}
+          periodSeconds: {{ (.Values.deploymentConfig.period| int) }}
+          failureThreshold: 5
+        readinessProbe:
+          tcpSocket:
+            port: ldap
+          initialDelaySeconds: {{ (.Values.deploymentConfig.startupTime|int) }}
+          periodSeconds: {{ (.Values.deploymentConfig.period| int) }}
+          timeoutSeconds: {{ (.Values.deploymentConfig.timeout| int) }}
+          failureThreshold: 5
+        readinessProbe:
+          tcpSocket:
+            port: adminldaps
+          initialDelaySeconds: {{ (.Values.deploymentConfig.startupTime|int) }}
+          periodSeconds: {{ (.Values.deploymentConfig.period| int) }}
+          timeoutSeconds: {{ (.Values.deploymentConfig.timeout| int) }}
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command: [
+              "/bin/sh","-c","/u01/oracle/oud/bin/ldapsearch -T -h localhost -Z -X -p $ldapsPort -b '' -s base '(objectClass=*)' '*'"
+            ]
+          initialDelaySeconds: {{ (.Values.deploymentConfig.startupTime| int) }}
+          periodSeconds: {{ (.Values.deploymentConfig.period| int) }}
+          timeoutSeconds: {{ (.Values.deploymentConfig.timeout| int) }}
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+              - "/u01/oracle/container-scripts/checkOUDInstance.sh"
+          initialDelaySeconds: {{ (.Values.deploymentConfig.startupTime|int) }}
+          timeoutSeconds: {{ (.Values.deploymentConfig.timeout| int) }}
+          periodSeconds: {{ (.Values.deploymentConfig.period| int) }}
+          failureThreshold: 10
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        {{- if .Values.persistence.pvname }}
+        - name: {{ .Values.persistence.pvname }}
+        {{ else }}
+        - name: {{ include "oud-ds-rs.fullname" . }}-pv
+        {{- end }}
+        {{- end }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.pvcname }}
+            claimName: {{ .Values.persistence.pvcname }}
+            {{ else }}
+            claimName: {{ include "oud-ds-rs.fullname" . }}-pvc
+            {{- end }}
+       {{- if .Values.configVolume.enabled }}
+        - name: config-map  
+          configMap:
+            name: {{ include "oud-ds-rs.fullname" . }}-configmap           
+        {{- if .Values.configVolume.pvname }}
+        - name: {{ .Values.configVolume.pvname }}
+        {{ else }}
+        - name: {{ include "oud-ds-rs.fullname" . }}-pv-config
+        {{- end }}
+          persistentVolumeClaim:
+            {{- if .Values.configVolume.pvcname }}
+            claimName: {{ .Values.configVolume.pvcname }}
+            {{ else }}
+            claimName: {{ include "oud-ds-rs.fullname" . }}-pvc-config
+        {{- end }}
+      {{- end }}
+

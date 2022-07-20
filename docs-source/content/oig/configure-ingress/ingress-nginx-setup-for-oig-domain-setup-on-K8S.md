@@ -86,7 +86,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Thu, 10 Mar 2022 14:13:33 GMT
+   LAST DEPLOYED: Thu 13 Jul 2022 14:13:33 GMT
    NAMESPACE: nginx
    STATUS: deployed
    REVISION: 1
@@ -151,7 +151,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Thu Mar 10 14:15:33 2022
+   LAST DEPLOYED: Thu Jul 13 14:15:33 2022
    NAMESPACE: nginx
    STATUS: deployed
    REVISION: 1
@@ -259,7 +259,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    ```
    $ helm install governancedomain-nginx kubernetes/charts/ingress-per-domain --namespace oigns --values kubernetes/charts/ingress-per-domain/values.yaml
    NAME: governancedomain-nginx
-   LAST DEPLOYED:  Thu Mar 10 14:18:23 2022
+   LAST DEPLOYED:  Thu Jul 13 14:18:23 2022
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -390,7 +390,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    >
    < HTTP/1.1 200 OK
    < Server: nginx/1.19.2
-   < Date: Thu Mar 10 14:21:14 2022
+   < Date: Thu Jul 13 14:21:14 2022
    < Content-Length: 0
    < Connection: keep-alive
    <

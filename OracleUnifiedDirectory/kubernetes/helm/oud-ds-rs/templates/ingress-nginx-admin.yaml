@@ -44,8 +44,8 @@ spec:
     - {{ include "oud-ds-rs.fullname" . }}-admin
     - {{ include "oud-ds-rs.fullname" . }}-admin-0
 {{- end }}
-{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
-{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount| int) }}
+{{- $replicaIndx := (add $replicaIndex 0) }}
 {{- if ($root.Values.ingress.admin.host) }}
   {{- if ($root.Values.ingress.admin.domain) }}
     - {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}
@@ -72,8 +72,8 @@ spec:
         backend:
           serviceName: {{ include "oud-ds-rs.fullname" . }}-0
           servicePort: adminhttps
-{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
-{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount| int) }}
+{{- $replicaIndx := (add $replicaIndex 0) }}
 {{- if ($root.Values.ingress.admin.host) }}
   {{- if ($root.Values.ingress.admin.domain) }}
   - host: {{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}

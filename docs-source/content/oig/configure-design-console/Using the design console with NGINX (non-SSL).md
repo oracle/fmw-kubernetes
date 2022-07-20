@@ -69,7 +69,7 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 
    ```
    NAME: governancedomain-nginx-designconsole
-   LAST DEPLOYED: Thu Mar 10 14:32:16 2022
+   LAST DEPLOYED: Thu Jul 13 14:32:16 2022
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -206,7 +206,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359 bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -304,7 +304,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-220120.1359 bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22> bash
    ```
 
    This will take you into a bash shell inside the container:

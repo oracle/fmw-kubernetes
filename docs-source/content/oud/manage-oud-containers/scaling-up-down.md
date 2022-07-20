@@ -12,7 +12,7 @@ This section describes how to increase or decrease the number of OUD pods in the
 
 By default the `oud-ds-rs` helm chart deployment starts three pods:  `oud-ds-rs-0` and two replica pods `oud-ds-rs-1` and `oud-ds-rs-2`.
 
-The number of pods started is determined by the `replicaCount`, which is set to `2` by default. A value of `2` starts the three pods above.
+The number of pods started is determined by the `replicaCount`, which is set to `3` by default. A value of `3` starts the three pods above.
 
 To scale up or down the number of OUD pods, set `replicaCount` accordingly.
 
@@ -41,7 +41,7 @@ pod/oud-ds-rs-2   1/1     Running   0          34m   10.244.0.193   <Worker Node
 
 ### Scaling up OUD pods
 
-In this example, `replicaCount` is increased to `3` which creates a new OUD pod `oud-ds-rs-3` with associated services created.
+In this example, `replicaCount` is increased to `4` which creates a new OUD pod `oud-ds-rs-3` with associated services created.
 
 You can scale up the number of OUD pods using one of the following methods:
 
@@ -150,7 +150,7 @@ You can scale up the number of OUD pods using one of the following methods:
 
 Scaling down OUD pods is performed in exactly the same as in [Scaling up OUD pods](#scaling-up-oud-pods) except the `replicaCount` is reduced to the required number of pods.
 
-Once the kubectl command is executed the pod(s) will move to a `Terminating` state. In the example below `replicaCount` was reduced from `3` to `2` and hence `oud-ds-rs-3` has moved to `Terminating`:
+Once the kubectl command is executed the pod(s) will move to a `Terminating` state. In the example below `replicaCount` was reduced from `4` to `3` and hence `oud-ds-rs-3` has moved to `Terminating`:
 
 ```bash
 $ kubectl get pods -n oudns

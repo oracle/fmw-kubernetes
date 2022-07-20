@@ -6,8 +6,13 @@
 #
 #
 {{- if .Values.elk.enabled }}
-kind: StorageClass
+---
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: storage.k8s.io/v1
+{{- else -}}
 apiVersion: storage.k8s.io/v1beta1
+{{- end }}
+kind: StorageClass
 metadata:
     name: {{ .Values.elkVolume.storageClass }}
     annotations:

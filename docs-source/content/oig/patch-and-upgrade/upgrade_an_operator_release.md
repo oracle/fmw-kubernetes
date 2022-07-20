@@ -43,7 +43,7 @@ These instructions apply to upgrading operators within the 3.x release family as
    ```
    Release "weblogic-kubernetes-operator" has been upgraded. Happy Helming!
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Tue Mar 15 09:24:40 2022
+   LAST DEPLOYED: Tue Jul 13 09:24:40 2022
    NAMESPACE: operator
    STATUS: deployed
    REVISION: 3

@@ -12,6 +12,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
     nginx.ingress.kubernetes.io/enable-access-log: 'false'
     kubernetes.io/ingress.class: 'nginx'
 {{- if (.Values.nginxTimeOut) }}

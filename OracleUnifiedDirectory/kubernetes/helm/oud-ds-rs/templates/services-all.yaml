@@ -1,21 +1,19 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
-{{- $root := . -}}
 {{- if (.Values.service.allSvcEnabled) -}}
-{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
-{{- $replicaIndx := (add $replicaIndex 1) -}}
-#
+{{- $root := . -}}
+{{- range $replicaN := until (.Values.replicaCount| int) }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "oud-ds-rs.fullname" $root }}-all-{{ $replicaIndx }}
+  name: {{ include "oud-ds-rs.fullname" $root }}-all-{{ $replicaN }}
   labels:
     {{- include "oud-ds-rs.labels" $root | nindent 4 }}
-    oud/instance: {{ include "oud-ds-rs.fullname" $root }}-all-{{ $replicaIndx }}
   annotations:
 spec:
   type: {{ $root.Values.service.allSvcType }}
@@ -50,7 +48,7 @@ spec:
       protocol: TCP
   selector:
     {{- include "oud-ds-rs.selectorLabels" $root | nindent 4 }}
-    oud/instance: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+    statefulset.kubernetes.io/pod-name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaN }}
 ---
 {{- end }}
 {{- end }}

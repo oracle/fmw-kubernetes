@@ -6,7 +6,12 @@
 #
 
 --- 
+{{- if .Values.cronJob.enabled }}
+{{- if semverCompare ">=1.21-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: batch/v1
+{{- else -}}
 apiVersion: batch/v1beta1
+{{- end }}
 kind: CronJob
 metadata: 
   name: oud-pod-cron-job
@@ -29,33 +34,6 @@ spec:
                 - "for i in `kubectl get pods -n {{ .Release.Namespace }} | grep oud | grep Terminating | awk '{print $1}'` ;do arr+=($i) ;done ;size=${#arr[@]} ;if [ ${size} -ge 1 ]; then for j in ${arr[@]} ; do `kubectl delete pod ${j##*.} --grace-period=0 --force -n={{ .Release.Namespace }}`; done;fi"
               image: "{{ .Values.cronJob.kubectlImage.repository }}:{{ .Values.cronJob.kubectlImage.tag }}"
               imagePullPolicy: {{ .Values.cronJob.kubectlImage.pullPolicy }}
-            - name: cron-helm
-              image: "{{ .Values.cronJob.helmImage.repository }}:{{ .Values.cronJob.helmImage.tag }}"
-              imagePullPolicy: {{ .Values.cronJob.helmImage.pullPolicy }}
-              args:
-                - "upgrade"
-                - "{{ .Release.Name }}"
-                - "/apps/oud-ds-rs"
-                - "--reuse-values"
-              volumeMounts:
-                - mountPath: "/apps/"
-                  name: {{ include "oud-ds-rs.fullname" . }}-job-pv
-          volumes:
-            {{- if .Values.cronJob.cronPersistence.enabled }}
-              {{- if .Values.cronJob.cronPersistence.pvname }}
-                - name: {{ .Values.cronJob.cronPersistence.pvname }}
-              {{ else }}
-                - name: {{ include "oud-ds-rs.fullname" . }}-job-pv
-              {{- end }}
-                  persistentVolumeClaim:
-                  {{- if .Values.cronJob.cronPersistence.pvcname }}
-                    claimName: {{ .Values.cronJob.cronPersistence.pvcname }}
-                  {{ else }}
-                    claimName: {{ include "oud-ds-rs.fullname" . }}-job-pvc
-                  {{- end }}
-           {{- else }}
-               - name: oud-job-storage
-                 emptyDir: {}
-           {{- end }}
           restartPolicy: OnFailure
   schedule: {{ .Values.cronJob.schedule }}
+{{- end }}

@@ -88,7 +88,7 @@ After the Oracle Unified Directory Services Manager instance is set up you can m
 
    ```bash
    NAME: monitoring
-   LAST DEPLOYED: Thu Mar 24 16:29:23 2022
+   LAST DEPLOYED: Mon Jul 11 16:29:23 2022
    NAMESPACE: monitoring
    STATUS: deployed
    REVISION: 1

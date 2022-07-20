@@ -157,7 +157,7 @@ Use Helm to install NGINX.
 
    ```
    NAME: lbr-nginx
-   LAST DEPLOYED: Wed Mar 16 16:49:35 2022
+   LAST DEPLOYED: Mon Jul 11 16:49:35 2022
    NAMESPACE: mynginx
    STATUS: deployed
    REVISION: 1
