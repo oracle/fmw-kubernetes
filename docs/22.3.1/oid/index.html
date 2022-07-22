@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="This document provides steps to configure an ingress controller to direct traffic to OUDSM.">
+    <meta name="description" content="Oracle Internet Directory provides a comprehensive Directory Solution for robust Identity Management">
 
 
     <link rel="icon" href="/fmw-kubernetes/22.3.1/images/favicon.png" type="image/png">
 
-    <title>Configure an Ingress for OUDSM :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Oracle Internet Directory :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/22.3.1/css/nucleus.css?1658484929" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/22.3.1/oudsm/configure-ingress/">
+  <body class="" data-url="/fmw-kubernetes/22.3.1/oid/">
     <nav id="sidebar" class="">
 
 
@@ -1491,7 +1491,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/22.3.1/oudsm/" title="Oracle Unified Directory Services Manager" class="dd-item 
-        parent
+        
         
         
         ">
@@ -1609,8 +1609,8 @@
   
     
     <li data-nav-id="/fmw-kubernetes/22.3.1/oudsm/configure-ingress/" title="Configure an Ingress for OUDSM" class="dd-item 
-        parent
-        active
+        
+        
         
         ">
       <a href="/fmw-kubernetes/22.3.1/oudsm/configure-ingress/">
@@ -1798,8 +1798,8 @@
   
     
     <li data-nav-id="/fmw-kubernetes/22.3.1/oid/" title="Oracle Internet Directory" class="dd-item 
-        
-        
+        parent
+        active
         
         ">
       <a href="/fmw-kubernetes/22.3.1/oid/">
@@ -1890,13 +1890,7 @@
             
           
           
-            
-            
-          
-          
-            <a href='/fmw-kubernetes/22.3.1/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.3.1/oudsm/'>Oracle Unified Directory Services Manager</a> > Configure an Ingress for OUDSM
-          
-         
+            <a href='/fmw-kubernetes/22.3.1/'>Oracle Fusion Middleware on Kubernetes</a> > Oracle Internet Directory
           
          
           
@@ -1911,10 +1905,7 @@
   <ul>
     <li>
       <ul>
-        <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#install-nginx">Install NGINX</a></li>
-        <li><a href="#access-to-interfaces-through-ingress">Access to interfaces through ingress</a></li>
-        <li><a href="#validate-oudsm-urls">Validate OUDSM URL&rsquo;s</a></li>
+        <li><a href="#documentation-for-earlier-releases">Documentation for earlier releases</a></li>
       </ul>
     </li>
   </ul>
@@ -1934,7 +1925,7 @@
           
             <h1>
               
-              Configure an Ingress for OUDSM
+              Oracle Internet Directory
             </h1>
           
 
@@ -1943,206 +1934,12 @@
 
 
 
-	<ol>
-<li>
-<p><a href="#introduction">Introduction</a></p>
-</li>
-<li>
-<p><a href="#install-nginx">Install NGINX</a></p>
-<p>a. <a href="#configure-the-repository">Configure the repository</a></p>
-<p>b. <a href="#create-a-namespace">Create a namespace</a></p>
-<p>c. <a href="#install-nginx-using-helm">Install NGINX using helm</a></p>
-</li>
-<li>
-<p><a href="#access-to-interfaces-through-ingress">Access to interfaces through ingress</a></p>
-</li>
-</ol>
-<h3 id="introduction">Introduction</h3>
-<p>The instructions below explain how to set up NGINX as an ingress for OUDSM.</p>
-<h3 id="install-nginx">Install NGINX</h3>
-<p>Use Helm to install NGINX.</p>
-<h4 id="configure-the-repository">Configure the repository</h4>
-<ol>
-<li>
-<p>Add the Helm chart repository for installing NGINX using the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm repo add stable https://kubernetes.github.io/ingress-nginx
-</code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>&quot;stable&quot; has been added to your repositories
-</code></pre></li>
-<li>
-<p>Update the repository using the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm repo update
-</code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>Hang tight while we grab the latest from your chart repositories...
-...Successfully got an update from the &quot;stable&quot; chart repository
-Update Complete. Happy Helming!
-</code></pre></li>
-</ol>
-<h4 id="create-a-namespace">Create a namespace</h4>
-<ol>
-<li>
-<p>Create a Kubernetes namespace for NGINX:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace &lt;namespace&gt;
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace mynginx
-</code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>namespace/mynginx created
-</code></pre></li>
-</ol>
-<h4 id="install-nginx-using-helm">Install NGINX using helm</h4>
-<ol>
-<li>
-<p>Create a <code>$WORKDIR/kubernetes/helm/nginx-ingress-values-override.yaml</code> that contains the following:</p>
-<p><strong>Note</strong>: The configuration below deploys an ingress using LoadBalancer. If you prefer to use NodePort, change the configuration accordingly. For more details about NGINX configuration see: <a href="https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/">NGINX Ingress Controller</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">controller</span>:
-  <span style="color:#66d9ef">admissionWebhooks</span>:
-    <span style="color:#66d9ef">enabled</span>: <span style="color:#66d9ef">false</span>
-  <span style="color:#66d9ef">extraArgs</span>:
-    <span style="color:#75715e"># The secret referred to by this flag contains the default certificate to be used when accessing the catch-all server.</span>
-    <span style="color:#75715e"># If this flag is not provided NGINX will use a self-signed certificate.</span>
-    <span style="color:#75715e"># If the TLS Secret is in different namespace, name can be mentioned as &lt;namespace&gt;/&lt;tlsSecretName&gt;</span>
-    <span style="color:#66d9ef">default-ssl-certificate</span>: oudsmns/oudsm-tls-cert
-  <span style="color:#66d9ef">service</span>:
-    <span style="color:#75715e"># controller service external IP addresses</span>
-    <span style="color:#75715e"># externalIPs:</span>
-    <span style="color:#75715e">#  - &lt; External IP Address &gt;</span>
-    <span style="color:#75715e"># To configure Ingress Controller Service as LoadBalancer type of Service</span>
-    <span style="color:#75715e"># Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service</span>
-    <span style="color:#66d9ef">type</span>: LoadBalancer
-    <span style="color:#75715e"># Configuration for NodePort to be used for Ports exposed through Ingress</span>
-    <span style="color:#75715e"># If NodePorts are not defined/configured, Node Port would be assigned automatically by Kubernetes</span>
-    <span style="color:#75715e"># These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.</span>
-    <span style="color:#66d9ef">nodePorts</span>:
-      <span style="color:#75715e"># For HTTP Interface exposed through LoadBalancer/Ingress</span>
-      <span style="color:#66d9ef">http</span>: <span style="color:#ae81ff">30080</span>
-      <span style="color:#75715e"># For HTTPS Interface exposed through LoadBalancer/Ingress</span>
-      <span style="color:#66d9ef">https</span>: <span style="color:#ae81ff">30443</span>
-</code></pre></div></li>
-<li>
-<p>To install and configure NGINX ingress issue the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--values nginx-ingress-values-override.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>lbr-nginx stable/ingress-nginx
-</code></pre></div><p>Where:</p>
+	<p>As of July 2022, container support has been removed for Oracle Internet Directory. Refer to document ID 2723908.1 on <a href="https://support.oracle.com">My Oracle Support</a> for more details.</p>
+<h3 id="documentation-for-earlier-releases">Documentation for earlier releases</h3>
+<p>To view documentation for previous releases, see:</p>
 <ul>
-<li><code>lbr-nginx</code> is your deployment name</li>
-<li><code>stable/ingress-nginx</code> is the chart reference</li>
-</ul>
-<p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace mynginx <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--values nginx-ingress-values-override.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>lbr-nginx stable/ingress-nginx
-</code></pre></div><p>The output will be similar to the following:</p>
-<pre><code>NAME: lbr-nginx
-LAST DEPLOYED: Mon Jul 11 17:07:32 2022
-NAMESPACE: mynginx
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-The ingress-nginx controller has been installed.
-It may take a few minutes for the LoadBalancer IP to be available.
-You can watch the status by running 'kubectl --namespace mynginx get services -o wide -w lbr-nginx-ingress-nginx-controller'
-  
-An example Ingress that makes use of the controller:
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example
-    namespace: foo
-  spec:
-    ingressClassName: nginx
-    rules:
-      - host: www.example.com
-        http:
-          paths:
-            - pathType: Prefix
-              backend:
-                service:
-                  name: exampleService
-                  port:
-                    number: 80
-              path: /
-    # This section is only required if TLS is to be enabled for the Ingress
-    tls:
-      - hosts:
-        - www.example.com
-        secretName: example-tls
-
-If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
-
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: example-tls
-    namespace: foo
-  data:
-    tls.crt: &lt;base64 encoded cert&gt;
-    tls.key: &lt;base64 encoded key&gt;
-  type: kubernetes.io/tls
-</code></pre></li>
-</ol>
-<h3 id="access-to-interfaces-through-ingress">Access to interfaces through ingress</h3>
-<p>Using the Helm chart, ingress objects are created according to configuration. The following table details the rules configured in ingress object(s) for access to Oracle Unified Directory Services Manager Interfaces through ingress.</p>
-<table>
-<thead>
-<tr>
-<th><strong>Port</strong></th>
-<th><strong>NodePort</strong></th>
-<th><strong>Host</strong></th>
-<th><strong>Example Hostname</strong></th>
-<th><strong>Path</strong></th>
-<th><strong>Backend Service:Port</strong></th>
-<th><strong>Example Service Name:Port</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>http/https</td>
-<td>30080/30443</td>
-<td>&lt;deployment/release name&gt;-N</td>
-<td>oudsm-N</td>
-<td>*</td>
-<td>&lt;deployment/release name&gt;-N:http</td>
-<td>oudsm-1:http</td>
-</tr>
-<tr>
-<td>http/https</td>
-<td>30080/30443</td>
-<td>*</td>
-<td>*</td>
-<td>/oudsm<!-- raw HTML omitted --> /console</td>
-<td>&lt;deployment/release name&gt;-lbr:http</td>
-<td>oudsm-lbr:http</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>In the table above, the Example Name for each Object is based on the value &lsquo;oudsm&rsquo; as the deployment/release name for the Helm chart installation.</li>
-<li>The NodePorts mentioned in the table are according to ingress configuration described in previous section.</li>
-<li>When an External LoadBalancer is not available/configured, interfaces can be accessed through NodePort on the Kubernetes node.</li>
-</ul>
-<h4 id="changes-in-etchosts-to-validate-hostname-based-ingress-rules">Changes in /etc/hosts to validate hostname based ingress rules</h4>
-<p>If it is not possible to have LoadBalancer configuration updated to have host names added for Oracle Unified Directory Services Manager Interfaces, then the following entries can be added in /etc/hosts files on the host from where Oracle Unified Directory Services Manager interfaces would be accessed.</p>
-<pre><code>&lt;IP Address of External LBR or Kubernetes Node&gt;	oudsm oudsm-1 oudsm-2 oudsm-N
-</code></pre><ul>
-<li>In the table above, host names are based on the value &lsquo;oudsm&rsquo; as the deployment/release name for the Helm chart installation.</li>
-<li>When an External LoadBalancer is not available/configured, Interfaces can be accessed through NodePort on the Kubernetes Node.</li>
-</ul>
-<h3 id="validate-oudsm-urls">Validate OUDSM URL&rsquo;s</h3>
-<ol>
-<li>Launch a browser and access the OUDSM console.</li>
-</ol>
-<ul>
-<li>If using an External LoadBalancer: <code>https://&lt;External LBR Host&gt;/oudsm</code>.</li>
-<li>If not using an External LoadBalancer use <code>https://&lt;Kubernetes Node&gt;:30443/oudsm</code>.</li>
-</ul>
-<ol>
-<li>Access the WebLogic Administration console by accessing the following URL and login with <code>weblogic/&lt;password&gt;</code> where <code>weblogic/&lt;password&gt;</code> is the <code>adminUser</code> and <code>adminPass</code> set when creating the OUDSM instance.</li>
-</ol>
-<ul>
-<li>If using an External LoadBalancer: <code>https://&lt;External LBR Host&gt;/console</code>.</li>
-<li>If not using an External LoadBalancer use <code>https://&lt;Kubernetes Node&gt;:30443/console</code>.</li>
+<li><a href="https://oracle.github.io/fmw-kubernetes/22.2.1/oid/">Version 22.2.1</a></li>
+<li><a href="https://oracle.github.io/fmw-kubernetes/21.4.2/oid/">Version 21.4.2</a></li>
 </ul>
 
 
@@ -3153,7 +2950,6 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
             
                 
                     
-                    
                 
                 
 
@@ -3168,9 +2964,6 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -3236,7 +3029,6 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
             
                 
                     
-                    
                 
                 
 
@@ -3252,9 +3044,6 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -3371,6 +3160,7 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
             
                 
                     
+                    
                 
                 
 
@@ -3383,6 +3173,9 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -3407,10 +3200,10 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/22.3.1/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.3.1/oudsm/troubleshooting/" title="Troubleshooting"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/22.3.1/oudsm/manage-oudsm-containers/" title="Manage Oracle Unified Directory Services Manager Containers" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/22.3.1/oid/release-notes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
