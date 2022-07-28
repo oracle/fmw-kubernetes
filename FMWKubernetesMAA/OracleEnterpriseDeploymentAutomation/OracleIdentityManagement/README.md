@@ -2,7 +2,13 @@
 
 A number of sample scripts have been developed which allow you to deploy Oracle Identity and Access Management on Kubernetes. These scripts are provided as samples for you to use to develop your own applications.
 
-You must ensure that you are using the April 2021 or later release of Identity and Access Management for this utility to work.
+You must ensure that you are using the July 2022 or later release of Identity and Access Management for this utility to work.
+
+The scripts can be run from any host which has access to your Kubernetes cluster. 
+
+If you wish the scripts to automatically copy files to your Oracle HTTP Servers then you must have passwordless ssh set up from the deployment host to each of your webhosts.
+
+If you are deploying Oracle Advanced Authentication then you must have passwordless ssh set up from the deployment host to one of your database nodes.  In addition for the duration of the deployment your OAA database service must only be running on this database host.
 
 ## Obtaining the Scripts
 
@@ -26,6 +32,8 @@ Move these template scripts to your working directory. For example:
 cp -R kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleIdentityManagement/* /workdir/scripts
 ```
 
+If you are provisioning Oracle Identity Governance you must also Download the Oracle connector Bundle for OUD and extract it to a location which is accessible by the provisioning scripts.  For example, /workdir/connectors/OID-12.2.1.3.0.    The connector directory name must start with OID-12.2.1.
+
 ## Scope
 This section lists the actions that the scripts perform as part of the deployment process. It also lists the tasks the scripts do not perform.
 
@@ -36,6 +44,7 @@ The scripts will deploy Oracle Unified Directory (OUD), Oracle Access Manager (O
 The scripts perform the following actions:
 
 * Create an Ingress controller as described in [Creating the Ingress Controller](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-ingress-controller.html).
+* Create an Elastic Search deployment as described in [Installing the Monitoring and Visualization Software](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualisation-software.html#GUID-25AB6AAF-50CD-4E5B-9C39-91C2B0487348).
 * Create any number of OUD instances as described in [Configuring Oracle Unified Directory](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html). 
 * Extend OUD with OAM object classes as described in [Creating the Schema Extensions File](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html#GUID-C064336F-E112-4F8A-AF32-3CC9E9D363DC).
 * Seed the directory with users and groups required by Oracle Identity and Access Management as described in [Creating the Seeding File](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html#GUID-71732A8A-6353-41EF-AA58-CDE65D95B17A).
@@ -66,6 +75,7 @@ The scripts perform the following actions:
 * Enable OAM Notifications as described in [Enabling OAM Notifications](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-010C785C-0F08-44DE-9D96-4A88F28E202C).
 * Update the Match Attribute as described in [Updating the Value of MatchLDAPAttribute in oam-config.xml](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-76DA4F90-F680-435A-A7D4-C257A7D366B3).
 * Update the TAP Endpoint as described in [Updating the TapEndpoint URL](https://docs-uat.us.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-68065DA4-E2D3-479C-8A2B-AD19EDE290B7).
+* Copy the WebGate artifacts to Oracle HTTP Server, if desired.
 * Run Reconciliation Jobs as described in [Running the Reconciliation Jobs](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-B44989D1-1E86-4EF3-BCBD-A490113E4BB8).
 * Configure Oracle Unified Messaging with Email/SMS server details as described in [Managing the Notification Service](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-89B15DCA-B712-4415-BAC2-E42728CA22BA).
 * Enable Design Console access as described in [Enabling Design Console Access](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-4F460034-1129-41FD-B8BC-5F78742C3D24).
@@ -83,6 +93,7 @@ The scripts perform the following actions:
 * Create OAA Test User as described in [Creating a Test User](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-10B461F2-C309-4273-936A-35387EF7332C).
 * Integrate OAA with Unified Messaging Service as described in [Configuring Email/SMS Servers](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-2020B622-4AAB-485E-8965-1BF071B32B48).
 * Integrate OAA with OAM as described in [Integrating Oracle Advanced Authentication with Oracle Access Manager](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-D4FE27D2-6441-4C27-B720-79396A898C8F).
+* Optionally Send OUD, OUDSM, OAM and OIG logfiles to Elastic Search
 
 ### What the Scripts Will Not Do
 
@@ -90,17 +101,18 @@ While the scripts perform the majority of the deployment, they do not perform th
 
 * Deploy Container Runtime Environment, Kubernetes, or Helm.
 * Install a database or Oracle HTTP Server.
+* Deploy Oracle Webgate.
 * Configure load balancer.
 * Download the container images for these products.
-* Copy the WebGate artifacts to Oracle HTTP Server.
 * Tune the WebLogic Server.
 * Configure OAM One Time Pin (OTP) forgotten password functionality
 * Configure OIM workflow notifications to be sent by email.
 * Set up OIM challenge questions.
 * Provision Business Intelligence Publisher (BIP).
-* Set up the links to the Oracle BI Publisher environment. However, the scripts will not deploy reports into the environment.
+* Set up the links to the Oracle BI Publisher environment. However, the scripts will deploy reports into the environment.
 * Enable BI certification reports in OIG as described in [Enable Certification Reports](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-7DBE7D6E-3F62-45F9-8063-398128D6B462).
-
+* Send Oracle HTTP Server log files to Elastic Search.
+* Send Oracle Database Audit log files to Elastic Search.
 
 ## Key Concepts of the Scripts
 
@@ -119,15 +131,15 @@ Before you get started, you should edit the `common/functions.sh` file and set t
 
 ## Creating a Response File
 
-A sample response file is created for you in the `responsefile` directory. You can edit this file either directly or by running the shell script `start_here.sh` in the script's home directory.
+Sample response and password files are created for you in the `responsefile` directory. You can edit these files either directly or by running the shell script `start_here.sh` in the script's home directory.
 
 For example
 
 ```
-./start\_here.sh
+./start_here.sh
 ```
 
-You can run the above script as many times as you like on the same file. Pressing the Enter key on any response retains the existing value in the file and creates `idm.rsp` in the  `responsefile` directory.
+You can run the above script as many times as you like on the same file. Pressing the Enter key on any response retains the existing value in the file and creates `idm.rsp` and `.idmpwds`in the  `responsefile` directory.
 
 > Note: 
 > * The file consists of key/value pairs. There should be no spaces between the name of the key and its value. For example:
@@ -140,7 +152,7 @@ Run the `prereqchecks.sh` script, which exists in the script's home directory, t
 
 The script performs several checks such as (but not limited to) the following:
 
-* Ensures that the Docker images are available on each node.
+* Ensures that the Container images are available on each node.
 * Checks that the NFS file shares have been created.
 * Ensures that the Load balancers are reachable.
 
@@ -151,7 +163,8 @@ There are a number of provisioning scripts located in the script directory:
 | **File** | **Purpose** | 
 | --- | --- | 
 |provision.sh | Umbrella script that invokes each of the scripts (which can be invoked manually) mentioned in the following rows.|
-|provision_ingress.sh| Deploys an Ingress controller.
+|provision_ingress.sh| Deploys an Ingress controller. |
+|provision_elk.sh| Deploys Elastic Search and Kibana. |
 |provision_oud.sh | Deploys Oracle Unified Directory. |
 |provision_oudsm.sh | Deploys Oracle Unified Directory Services Manager. |
 |provision_operator.sh| Deploys WebLogic Operator.|
@@ -179,7 +192,7 @@ You should also keep any override files that are generated.
 ## After Installation/Configuration
 As part of running the scripts, a number of working files are created in the `WORKDIR` directory prior to copying to the persistent volume in `/u01/user_projects/workdir`. Many of these files contain passwords required for the setup. You should archive these files after completing the deployment. 
 
-The response file also has passwords which should be protected.
+The responsfile uses a hidden file in the responsefile directory to store passwords.
 
 ## Oracle HTTP Server Configuration Files
 
@@ -201,7 +214,8 @@ These parameters determine which products the deployment scripts attempt to depl
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
-| **INSTALL\_INGRESS** | `true` | Set to `true` to configure an Ingress controller. 
+| **INSTALL\_INGRESS** | `true` | Set to `true` to configure an Ingress controller. |
+| **INSTALL\_ELK** | `false` | Set to `true` to deploy and configure an Elastic Search and Kibana. |
 | **INSTALL\_OUDSM** | `true` | Set to `true` to configure OUDSM. |
 | **INSTALL\_OUD** | `true` | Set to `true` to configure OUD. |
 | **INSTALL\_WLSOPER** | `true` | Set to `true` to deploy Oracle WebLogic Operator. |
@@ -279,7 +293,7 @@ These generic parameters apply to all deployments.
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
 |**PVSERVER** | `nfsserver.example.com` | The name or IP address of the NFS server used for persistent volumes. **Note**: If you use a name, then the name must be resolvable inside the Kubernetes cluster. If it is not resolvable, you can add it by updating CoreDNS. See [Adding Individual Host Entries to CoreDNS](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-premises-enterprise-deployment.html#GUID-CC0AE601-6D0A-4000-A8CE-F83D2E1F836E).
-|**IAM\_PVS** | `/export/IAMPVS` | The IAMPV mount path in the NFS.|
+|**IAM\_PVS** | `/export/IAMPVS` | The export path on the NFS where persistent volumes are located.|
 |**PV\_MOUNT** | `/u01/oracle/user_projects` | The path to mount the PV inside the Kubernetes container. Oracle recommends you to not change this value.|
 
 ### Ingress Parameters
@@ -295,6 +309,32 @@ These parameters determine how the Ingress controller is deployed.
 |**INGRESS\_DOMAIN** |`example.com`| Used when creating self-signed certificates for the Ingress controller.|
 |**INGRESS\_REPLICAS** |`2`| The number of Ingress controller replicas to start with. This value should be a minimum of two for high availability.|
 
+### Elastic Search Parameters
+These parameters determine how to send log files to Elastic Search.
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**USE\_ELK** |`false`| Set to `true` if you wish to send logfiles to Elastic Search|
+|**ELKNS** |`elkns`| The Kubernetes namespace used to hold the Elastic Search objects.|
+|**ELK\_VER** |`8.3.1`| The version of Elastic Search/Logstash to use.|
+|**ELK\_HOST** |`https://elasticsearch-es-http.<ELKNS>.svc:9200`| The address of the elastic search server to send log files to.   If you are using ELK inside a Kubernetes cluster then specify the address as in the example.  If you are using an Elastic Search outside of the Kubernetes cluster then specify the external address.  The host name specified must be resolvable inside the Kubernetes cluster.|
+|**ELK\_SHARE** | `/export/IAMPVS/elkpv` | Mount point on NFS where ELK persistent volume is exported.|
+|**ELK\_STORAGE** | `nfs-client` | The storage class to use for Elastic Search Stateful Sets.|
+
+### Oracle HTTP Server Parameters
+These parameters are specific to OHS.  These parameters are used to construct the Oracle HTTP Server configuration files.  
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**OHS\_HOST1** |`webhost1.example.com`| The fully qualified name of the host running the first Oracle HTTP Server|
+|**OHS\_HOST2** |`webhost2.example.com`| The fully qualified name of the host running the second Oracle HTTP Server, leave blank if you do not have a second Oracle HTTP Server.|
+|**OHS\_PORT** |`7777`| The port your Oracle HTTP Servers listen on.|
+|**OHS\_ORACLE\_HOME** |`/u02/private/oracle/products/ohs`| The location of your OHS binaries|
+|**OHS\_DOMAIN** |`/u02/private/oracle/config/domains/ohsDomain`| The location of your OHS domain|
+|**OHS1\_NAME** |`ohs1`| The component name of your first OHS instance|
+|**OHS2\_NAME** |`ohs1`| The component name of your second OHS instance|
+|**UPDATE\_OHS** |`true`| Set this to true if you wish the scripts to automatically copy the generated OHS configuration files.  Once copied the Oracle HTTP server will be restarted.|
+|**COPY_WG_FILES** |`true`| Set this to true if you wish the scripts to automatically copy the generated Webgate Artifacts to your OHS Server.  Note: You must first have deployed your Webgate.|
 
 ### OUD Parameters
 These parameters are specific to OUD. When deploying OUD, you also require the generic LDAP parameters.
@@ -302,8 +342,8 @@ These parameters are specific to OUD. When deploying OUD, you also require the g
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
 |**OUDNS** | `oudns` | The Kubernetes namespace used to hold the OUD objects.|
-|**OUD\_SHARE** | `/export/IAMPVS/OUDPV` | Mount point on NFS where OUD persistent volume will be mounted.|
-|**OUD\_CONFIG\_SHARE** | `/export/IAMPVS/OUDCONFIGPV`| The mount point on NFS where OUD Configuration persistent volume will be mounted.|
+|**OUD\_SHARE** | `$IAM_PVS/oudpv` | Mount point on NFS where OUD persistent volume is exported.|
+|**OUD\_CONFIG\_SHARE** | `$IAM_PVS/oudconfigpv`| The mount point on NFS where OUD Configuration persistent volume is exported.|
 |**OUD\_LOCAL\_SHARE** | `/nfs_volumes/oudconfigpv` | The local directory where **OUD\_CONFIG\_SHARE** is mounted. Used to hold seed files.|
 |**OUD\_LOCAL\_PVSHARE** | `/nfs_volumes/oudpv`| The local directory where **OUD_SHARE** is mounted. Used for deletion.|
 |**OUD\_POD\_PREFIX** | `edg`| The prefix used for the OUD pods.|
@@ -320,7 +360,7 @@ List of parameters used to determine how Oracle Directory Services Manager will 
 | --- | --- | --- |
 |**OUDSM\_USER** | `weblogic` | The name of the administration user you want to use for the WebLogic domain that is created when you install OUDSM.|
 |**OUDSM\_PWD** | *`<password>`* | The password you want to use for **OUDSM_USER**.|
-|**OUDSM\_SHARE** | `/export/IAMPVS/OUDSMPV` | The mount path inside of the NFS for use as the OUDSM persistent volume.|
+|**OUDSM\_SHARE** | `$IAM_PVS/OUDSMPV` |  The mount point on NFS where OUDSM persistent volume is exported.|
 |**OUDSM\_LOCAL\_SHARE** | `/nfs_volumes/oudsmpv` | The local directory where **OUDSM\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OUDSM\_INGRESS\_HOST** | `oudsm.example.com` | Used when you are using an Ingress controller. This name must resolve in DNS and point to one of the Kubernetes worker nodes or to the network load balancer entry for the Kubernetes workers.|
 
@@ -373,7 +413,7 @@ These parameters determine how OAM is deployed and configured.
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
 |**OAMNS** | `oamns` | The Kubernetes namespace used to hold the OAM objects.|
-|**OAM\_SHARE** | `/export/IAMPVS/OAMPV` | The mount path inside of the NFS for use as the OAM persistent volume.|
+|**OAM\_SHARE** | `$IAM_PVS/oampv` | The mount point on NFS where OAM persistent volume is exported.|
 |**OAMNS** | `oamns` | The Kubernetes namespace used to hold the OAM objects.|
 |**OAM\_LOCAL\_SHARE** | `/nfs_volumes/oampv` | The local directory where **OAM_SHARE** is mounted. It is used by the deletion procedure.|
 |**OAM\_SERVER\_COUNT** | `5` | The number of OAM servers to configure. This value should be more than you expect to use.|
@@ -405,7 +445,7 @@ These parameters determine how OIG is provisioned and configured.
 | --- | --- | --- |
 |**OIGNS** | `oigns` | The Kubernetes namespace used to hold the OIG objects.|
 |**CONNECTOR\_DIR** | `/workdir/OIG/connectors/` | The location on the file system where you have downloaded and extracted the OUD connector bundle.|
-|**OIG\_SHARE** | `/export/IAMPVS/OIGPV` |The mount path inside of the NFS for use as the OIG persistent volume.|
+|**OIG\_SHARE** | `$IAM_PVS/oigpv` | The mount point on NFS where OIG persistent volume is exported.|
 |**OIG\_LOCAL\_SHARE** | `/local_volumes/oigpv` |The local directory where **OIG\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OIG\_SERVER\_COUNT** | `5` | The number of OIM/SOA servers to configure. This value should be more than you expect to use.|
 |**OIG\_SERVER\_INITIAL** | `2` | The number of OIM/SOA Managed Servers you want to start for normal running. You will need at least two servers for high availability.|
@@ -454,13 +494,13 @@ These parameters determine how OIRI is provisioned and configured.
 |**OIRI\_REPLICAS** | `noreplies@example.com` | The number of OIRI servers to start the deployment.|
 |**OIRI\_UI\_REPLICAS** | `2` | The number of OIRI UI Servers to start the deployment.|
 |**OIRI\_SPARK\_REPLICAS** | `2` | The number of OIRI UI servers to start the deployment.|
-|**OIRI\_SHARE** |`/export/IAMPVS/oiripv`| The mount path inside of your NFS for use as your OIRI persistent volume.|
+|**OIRI\_SHARE** |`$IAM_PVS/oiripv`| The mount point on NFS where OIRI persistent volume is exported.|
 |**OIRI\_LOCAL\_SHARE** |`/nfs_volumes/oiripv`| The local directory where **OIRI\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OIRI\_SHARE\_SIZE** |`10Gi`| The size of the OIRI persistent volume.|
-|**OIRI\_DING\_SHARE** |`/export/IAMPVS/dingpv`| The mount path inside of the NFS for use as the OIRI DING persistent volume.|
+|**OIRI\_DING\_SHARE** |`$IAM_PVS/dingpv`|  The mount point on NFS where OIRI DING persistent volume is exported.|
 |**OIRI\_DING\_LOCAL\_SHARE** |`/nfs_volumes/dingpv`| The local directory where **OIRI\_DING\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OIRI\_DING\_SHARE\_SIZE** |`10Gi`| The size of the OIRI DING persistent volume.|
-|**OIRI\_WORK\_SHARE** |`/export/IAMPVS/workpv`| The mount path inside of the NFS for use as the OIRI work persistent volume.|
+|**OIRI\_WORK\_SHARE** |`$IAM_PVS/workpv`|  The mount point on NFS where OIRI work persistent volume is exported.|
 |**OIRI\_DB\_SCAN** |`dbscan.example.com`| The database SCAN address of the grid infrastructure.|
 |**OIRI\_DB\_LISTENER** |`1521`| The database listener port.|
 |**OIRI\_DB\_SERVICE** |`edgoiri.example.com`| The database service which connects to the database you want to use for storing the OIRI schemas.|
@@ -479,18 +519,6 @@ These parameters determine how OIRI is provisioned and configured.
 |**OIRI\_LOAD\_DATA** |`true`| Set to `true` if you want to load data from the OIG database.|
 
 
-### OCI Vault Parameters
-
-| **Parameter** | **Sample Value** | **Comments** |
-| --- | --- | --- |
-|**OAA\_OCI\_OPER** | - | To obtain this value, encode the value of the API key that you downloaded at the time of creating the vault. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html).|
-|**OAA\_OCI\_TENANT** |-| To obtain this value, log in to the OCI console, navigate to **Profile** and click **Tenancy**. Use the **OCID** value.|
-|**OAA\_OCI\_USER** |-| To obtain this value, log in to the OCI console, navigate to **Profile** and click **Username**. Use the **OCID** value. |
-|**OAA\_OCI\_FP** |-| To obtain this value, log in to the OCI console, navigate to **Profiles**, select **User Settings**, and then click **API Keys**. Use the value of the fingerprint for the API Key you created earlier. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html).|
-|**OAA\_OCI\_COMPARTMENT** |-| To obtain this value, log in to the OCI console, navigate to **Identity and Security** and click **Compartments**. Select the compartment in which you created the vault and use the **OCID** value.|
-|**OAA\_OCI\_VAULT_ID** |-| To obtain this value, log in to the OCI console, navigate to **Identity and Security** and select **Vault**. Select the vault you created earlier. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html). Use the **OCID** value.|
-|**OAA\_OCI\_KEY** |-| To obtain this value, log in to the OCI console, navigate to **Identity and Security**, select **Vault**, and then click the vault you created earlier. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html). Click the key you created earlier. For example, `vaultkey`. Use the **OCID** value.|
-
 
 ### OAA Parameters
 These parameters determine how OAA is provisioned and configured.
@@ -503,14 +531,13 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_DOMAIN** |`OAADomain`| The name of the OAM OAuth domain you want to create.|
 |**OAA\_VAULT\_TYPE** |`file|oci`| The type of vault to use: file system or OCI.|
 |**OAA\_CREATE\_OHS** |`true`| Set to `false` if you are installing OAA standalone front ended by Ingress. |
-|**OAA\_CONFIG\_SHARE** |`/export/IAMPVS/oaaconfigpv`| The NFS volume mount point where config data resides.|
-|**OAA\_CRED\_SHARE** |`/export/IAMPVS/oaacredpv`| The NFS volume mount point where credentials are stored.|
-|**OAA\_LOG\_SHARE** |`/export/IAMPVS/oaalogpv`| The NFS volume mount point where log files are stored.|
+|**OAA\_CONFIG\_SHARE** |`$IAM_PVS/oaaconfigpv`| The mount point on NFS where OAA config persistent volume is exported..|
+|**OAA\_CRED\_SHARE** |`$IAM_PVS/oaacredpv`| The mount point on NFS where OAA credentials persistent volume is exported..|
+|**OAA\_LOG\_SHARE** |`$IAM_PVS/oaalogpv`| The mount point on NFS where OAA logfiles persistent volume is exported..|
 |**OAA\_LOCAL\_CONFIG\_SHARE** |`/nfs_volumes/oaaconfigpv`| The local directory where **OAA\_CONFIG\_SHARE** is mounted. It is used by the deletion procedure. |
 |**OAA\_LOCAL\_CRED\_SHARE** |`/nfs_volumes/oaacredpv`| The local directory where **OAA\_CRED\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OAA\_LOCAL\_LOG_SHARE** |`/nfs_volumes/oaalogpv`| The local directory where **OAA\_LOG\_SHARE** is mounted. It is used by the deletion procedure. |
-|**OAA\_VAULT\_SHARE** |`/export/IAMPVS/oaavaultpv`| If using a file system vault, this is the NFS volume mount where the vault files will be stored.|
-|**OAA\_LOCAL\_VAULT\_SHARE** |`/nfs_volumes/oaavaultpv`| The local directory where **OAA\_VAULT\_SHARE** is mounted. It is used by the deletion procedure. |
+
 |**OAA\_DB\_SCAN** |`dbscan.example.com`| The database SCAN address of the grid infrastructure.|
 |**OAA\_DB\_LISTENER** |`1521`| The database listener port.|
 |**OAA\_DB\_SERVICE** |`edgoaa.example.com`| The database service which connects to the database you want to use for storing the OAA schemas.|
@@ -522,7 +549,7 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_DB\_HOME** |`/u01/app/oracle/product/19.0.0.0/dbhome_1 `| The database home directory on the database server.|
 |**OAA\_DB\_SID** |`iamdb11`| The SID of the database on the database server.|
 
-#### OAA Users/Groups
+#### OAA Users/Groups/Passwords
 
 | **Users/Groups** | **Example** | **Description** |
 | --- | --- | --- |
@@ -535,8 +562,28 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_API\_PWD** |`oaapassword`| The password to be used for OAA API interactions.|
 |**OAA\_POLICY\_PWD** |`oaapassword`| The password to be used for OAA policy interactions.|
 |**OAA\_FACT\_PWD** |`oaapassword`| The password to be used for OAA keystores for factor interactions.|
+
+
+#### OAA Filesystem Vault Parameters
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**OAA\_VAULT\_SHARE** |`$IAM_PVS/oaavaultpv`| The mount point on NFS where OAA file vault persistent volume is exported.|
+|**OAA\_LOCAL\_VAULT\_SHARE** |`/nfs_volumes/oaavaultpv`| The local directory where **OAA\_VAULT\_SHARE** is mounted. It is used by the deletion procedure. |
 |**OAA\_VAULT\_PWD** |`oaapassword`| The password to use for file-based vault.|
 
+
+#### OAA OCI Vault Parameters
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**OAA\_OCI\_OPER** | - | To obtain this value, encode the value of the API key that you downloaded at the time of creating the vault. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html).|
+|**OAA\_OCI\_TENANT** |-| To obtain this value, log in to the OCI console, navigate to **Profile** and click **Tenancy**. Use the **OCID** value.|
+|**OAA\_OCI\_USER** |-| To obtain this value, log in to the OCI console, navigate to **Profile** and click **Username**. Use the **OCID** value. |
+|**OAA\_OCI\_FP** |-| To obtain this value, log in to the OCI console, navigate to **Profiles**, select **User Settings**, and then click **API Keys**. Use the value of the fingerprint for the API Key you created earlier. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html).|
+|**OAA\_OCI\_COMPARTMENT** |-| To obtain this value, log in to the OCI console, navigate to **Identity and Security** and click **Compartments**. Select the compartment in which you created the vault and use the **OCID** value.|
+|**OAA\_OCI\_VAULT_ID** |-| To obtain this value, log in to the OCI console, navigate to **Identity and Security** and select **Vault**. Select the vault you created earlier. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html). Use the **OCID** value.|
+|**OAA\_OCI\_KEY** |-| To obtain this value, log in to the OCI console, navigate to **Identity and Security**, select **Vault**, and then click the vault you created earlier. See [Creating a Vault](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-oracle-cloud-infrastructure-enterprise-deployment.html). Click the key you created earlier. For example, `vaultkey`. Use the **OCID** value.|
 
 #### Ingress Parameters
 
@@ -608,6 +655,8 @@ In some cases, you can specify your own ports. The scripts allow you to override
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
+|**ELK\_KIBANA\_K8** |`31800`| The port to use for Kibana requests. <p>**Note**: This value must be within the Kubernetes service port range.|
+|**ELK\_K8** |`31920`| The port to use for Elastic Search requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**OUD\_LDAP\_K8** |`31389`| The port to use for OUD LDAP requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**OUD\_LDAPS\_K8** |`31636`| The port to use for OUD LDAPS requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**OUDSM\_SERVICE\_PORT** |`30901`| The port to use for OUDSM requests. <p>**Note**: This value must be within the Kubernetes service port range.|
@@ -631,10 +680,12 @@ For reference purposes this section includes the name and function of all the ob
 
 | **Name** | **Location** | **Function** |
 | --- | --- | --- |
-| **idm.rsp** | responsefile | Contains details of the target environment. Needs to be updated for each deployment. |
+| **idm.rsp** | responsefile | Contains details of passwords used in the target environment. Needs to be updated for each deployment. |
+| **.idmpwds** | responsefile | Contains details of the target environment. Needs to be updated for each deployment. |
 | **start\_here.sh** | | Populates the responsefile. |
 | **prereqchecks.sh** | | Checks the environment prior to provisioning. |
 | **provision\_ingress.sh** | | Installs/configures the Ingress controller.|
+| **provision\_elk.sh** | | Installs/configures Elastic Search and Kibana.|
 | **provision.sh** | | Provisions everything |
 | **provision\_oud.sh** | | Installs/configures OUD. |
 | **provision\_oudsm.sh** | | Installs/configures OUDSM. |

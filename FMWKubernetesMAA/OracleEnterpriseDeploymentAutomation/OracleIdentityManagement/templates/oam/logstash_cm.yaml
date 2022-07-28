@@ -1,0 +1,72 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of creating a config map for logstash.
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oam-logstash-configmap
+  namespace: <OAMNS>
+data:
+  logstash-config.conf: |
+    input {
+      file {
+        path => "/u01/oracle/user_projects/domains/logs/accessdomain/AdminServer*.log"
+        tags => "Adminserver_log"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/logs/accessdomain/oam_policy_mgr*.log"
+        tags => "Policymanager_log"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/logs/accessdomain/oam_server*.log"
+        tags => "Oamserver_log"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
+        tags => "Adminserver_diagnostic"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/oam_policy_mgr*-diagnostic.log"
+        tags => "Policy_diagnostic"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/oam_server*-diagnostic.log"
+        tags => "Oamserver_diagnostic"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/access*.log"
+        tags => "Access_logs"
+        start_position => beginning
+      }
+      file {
+        path => "/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/auditlogs/OAM/audit.log"
+        tags => "Audit_logs"
+        start_position => beginning
+      }
+    }
+    filter {
+      grok {
+        match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}> <%{DATA:log_number}> <%{DATA:log_message}>" ]
+      }
+    if "_grokparsefailure" in [tags] {
+        mutate {
+            remove_tag => [ "_grokparsefailure" ]
+        }
+    }
+    }
+    output {
+      elasticsearch {
+        hosts => ["<ELK_HOST>"]
+        cacert => '/usr/share/logstash/config/certs/elk.crt'
+        user => "logstash_internal"
+        password => "<ELK_USER_PWD>"
+      }
+    }

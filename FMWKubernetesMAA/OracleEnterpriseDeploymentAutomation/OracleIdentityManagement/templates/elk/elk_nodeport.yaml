@@ -1,0 +1,20 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Example of creating an NodePort service for elastic search
+#
+kind: Service
+apiVersion: v1
+metadata:
+  name: elk-nodeport
+  namespace: <ELKNS>
+spec:
+  type: NodePort
+  selector:
+    common.k8s.elastic.co/type: elasticsearch
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+  ports:
+    - targetPort: 9200
+      port: 9200
+      nodePort: <ELK_K8>
+      protocol: TCP

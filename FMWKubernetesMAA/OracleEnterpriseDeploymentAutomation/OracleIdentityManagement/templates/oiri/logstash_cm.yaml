@@ -1,0 +1,61 @@
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: oiri-logstash-configmap
+ namespace: <OIRINS>
+data:
+ logstash-config.conf: |
+   input {
+      file {
+        path => "/app/oiri/data/logs/*.log"
+        type => "oiri-logs"
+        start_position => beginning
+        sincedb_path => "/dev/null"
+      }
+      file {
+        path => "/app/data/logs/*.log"
+        type => "ding-logs"
+        start_position => beginning
+        sincedb_path => "/dev/null"
+      }
+      file {
+        path => "/app/data/logs/*driver.log"
+        type => "driver-logs"
+        start_position => beginning
+        sincedb_path => "/dev/null"
+      }
+    }
+    filter {
+      if [type] == "oiri-logs" {
+       grok {
+        match => [ "<%{DATA:log_timestamp}> <%{WORD:class}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:hostserver}> %{GREEDYDATA:message}" ]
+        }
+       }
+      if [type] == "driver-logs" {
+       grok {
+        match => [ "<%{DATESTAMP:log_timestamp}> <%{WORD:level}> %{GREEDYDATA:message}" ]
+        }
+       }
+      if [type] == "ding-logs" {
+       grok {
+        match => [ "<%{DATA:log_timestamp}> <%{WORD:class}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:hostserver}> %{GREEDYDATA:message}" ]
+        }
+       }
+      if "_grokparsefailure" in [tags] {
+        mutate {
+          remove_tag => [ "_grokparsefailure" ]
+          }
+        }
+      }
+   output {
+    elasticsearch {
+     hosts => ["<ELK_HOST>"]
+    }
+   }

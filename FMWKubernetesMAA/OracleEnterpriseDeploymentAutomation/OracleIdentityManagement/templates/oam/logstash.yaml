@@ -1,0 +1,59 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a file to deploy logstash
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oam-logstash
+  namespace: <NAMESPACE>
+spec:
+  selector:
+    matchLabels:
+      k8s-app: logstash
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        k8s-app: logstash
+    spec:
+      imagePullSecrets:
+      - name: dockercred
+      containers:
+      - command:
+        - logstash
+        image: logstash:<ELK_VER>
+        imagePullPolicy: IfNotPresent
+        name: oam-logstash
+        ports:
+        - containerPort: 5044
+          name: logstash
+        volumeMounts:
+        - mountPath: <MOUNT_PATH>
+          name: weblogic-domain-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        - mountPath: /usr/share/logstash/pipeline/
+          name: oam-logstash-pipeline
+        - mountPath: /usr/share/logstash/config/certs
+          name: elk-cert
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: logstash-config.conf
+            path: logstash-config.conf
+          name: oam-logstash-configmap
+        name: oam-logstash-pipeline
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: elk.crt
+          name: elk-cert
+        name: elk-cert
+      - name: weblogic-domain-storage-volume
+        persistentVolumeClaim:
+          claimName: <DOMAIN_NAME>-domain-pvc
+      - name: shared-logs
+        emptyDir: {}

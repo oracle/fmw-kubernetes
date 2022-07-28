@@ -1,0 +1,57 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oudsm-logstash
+  namespace: <NAMESPACE>
+spec:
+  selector:
+    matchLabels:
+      k8s-app: logstash
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        k8s-app: logstash
+    spec:
+      imagePullSecrets:
+      - name: dockercred
+      containers:
+      - command:
+        - logstash
+        image: logstash:<ELK_VER>
+        imagePullPolicy: IfNotPresent
+        name: oudsm-logstash
+        ports:
+        - containerPort: 5044
+          name: logstash
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+          name: oudsm-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        - mountPath: /usr/share/logstash/pipeline/
+          name: oudsm-logstash-pipeline
+        - mountPath: /usr/share/logstash/config/certs
+          name: elk-cert
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: logstash-config.conf
+            path: logstash-config.conf
+          name: oudsm-logstash-configmap
+        name: oudsm-logstash-pipeline
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: elk.crt
+          name: elk-cert
+        name: elk-cert
+      - name: oudsm-storage-volume
+        persistentVolumeClaim:
+          claimName: oudsm-pvc
+      - name: shared-logs
+        emptyDir: {}

@@ -1,0 +1,54 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oiri-logstash
+  namespace: <NAMESPACE>
+spec:
+  selector:
+    matchLabels:
+      k8s-app: logstash
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        k8s-app: logstash
+    spec:
+      imagePullSecrets:
+      - name: dockercred
+      containers:
+      - command:
+        - logstash
+        image: logstash:<ELK_VER>
+        imagePullPolicy: IfNotPresent
+        name: oiri-logstash
+        ports:
+        - containerPort: 5044
+          name: logstash
+        volumeMounts:
+        - name: shared-logs
+          mountPath: /shared-logs
+        - mountPath: /usr/share/logstash/pipeline/
+          name: oiri-logstash-pipeline
+        - name: oiripv
+          mountPath: /app/oiri
+        - name: dingpv
+          mountPath: /app
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: logstash-config.conf
+            path: logstash-config.conf
+          name: oiri-logstash-configmap
+        name: oiri-logstash-pipeline
+      - name: oiripv
+        persistentVolumeClaim:
+          claimName: oiri-pvc
+      - name: dingpv
+        nfs:
+          server: <PVSERVER>
+          path: <OIRI_DING_SHARE>
+      - name: shared-logs
+        emptyDir: {}

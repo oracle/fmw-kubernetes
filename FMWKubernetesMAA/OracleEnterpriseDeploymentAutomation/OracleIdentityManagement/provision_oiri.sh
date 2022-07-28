@@ -88,6 +88,19 @@ then
    update_progress
 fi
 
+new_step
+if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OIRINS dockercred
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $DINGNS dockercred
+   update_progress
+fi
 # Create a local container for oiri-cli
 #
 new_step
@@ -212,11 +225,28 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    deploy_oiri
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
    check_running $OIRINS oiri-ui
    check_running $DINGNS spark-history-server
    update_progress
 fi
 
+# Create NodePort Services
+#
+if [ "$USE_INGRESS" = "false" ] 
+then
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+       create_oiri_nodeport
+       update_progress
+    fi
+fi
 # Create NodePort Services
 #
 if [ "$USE_INGRESS" = "false" ] 
@@ -305,6 +335,7 @@ then
        update_progress
     fi
 fi
+
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OIRI" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log

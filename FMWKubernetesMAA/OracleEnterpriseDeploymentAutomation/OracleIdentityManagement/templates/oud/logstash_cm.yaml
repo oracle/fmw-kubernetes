@@ -1,0 +1,53 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+# This is and example file to create a config map for logstash
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: oud-logstash-configmap
+ namespace: <OUDNS>
+data:
+ logstash-config.conf: |
+   input {
+      file {
+       path => "/u01/oracle/user_projects/oud-ds-rs-*/logs/*.log"
+       type => "setup-logs"
+       start_position => beginning
+       sincedb_path => "/dev/null"
+      }
+      file {
+       path => "/u01/oracle/user_projects/oud-ds-rs-*/OUD/logs/*.log"
+       type => "access-logs"
+       start_position => beginning
+       sincedb_path => "/dev/null"
+      }
+     }
+     filter {
+      if [type] == "setup-logs" {
+       grok {
+        match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}> <%{DATA:log_number}> <%{DATA:log_message}>" ]
+        }
+       }
+      if [type] == "access-logs" {
+       grok {
+        match => [ "message", "\[%{TIMESTAMP_ISO8601:timestamp}\] \[%{DATA:component}\] \[%{LOGLEVEL:loglevel}\] \[%{DATA:misc}\] \[%{DATA:logtype}\] \[%{DATA:host}\] \[%{DATA:nwaddr}\] %{GREEDYDATA:message}" ]
+        }
+       }
+      if "_grokparsefailure" in [tags] {
+       mutate {
+        remove_tag => [ "_grokparsefailure" ]
+        }
+       }
+      }
+   output {
+    elasticsearch {
+     hosts => ["<ELK_HOST>"]
+     cacert => '/usr/share/logstash/config/certs/elk.crt'
+     user => "logstash_internal"
+     password => "<ELK_USER_PWD>"
+    }
+   }

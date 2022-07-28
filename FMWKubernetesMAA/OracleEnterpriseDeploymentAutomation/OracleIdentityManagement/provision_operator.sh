@@ -13,8 +13,8 @@
 . $RSPFILE
 
 
-WORKDIR=$LOCAL_WORKDIR
-LOGDIR=$WORKDIR/OPER/logs
+WORKDIR=$LOCAL_WORKDIR/OPER
+LOGDIR=$WORKDIR/logs
 OPER_DIR=OracleAccessManagement
 
 if [ "$INSTALL_OAM" != "true" ] && [ "$INSTALL_OAM" != "TRUE" ] &&  [ "$INSTALL_OIG" != "true" ] && [ "$INSTALL_OIG" != "TRUE" ]
@@ -46,11 +46,11 @@ echo "----------------------------------------------------" >> $LOGDIR/timings.l
 STEPNO=1
 PROGRESS=$(get_progress)
 
-
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   download_samples $LOCAL_WORKDIR
+   download_samples 
+   update_progress
 
 fi
 
@@ -77,6 +77,7 @@ fi
 
 # Create a Container Registry Secret if requested
 #
+new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    if [ "$CREATE_REGSECRET" = "true" ]
@@ -104,8 +105,7 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    print_msg "Check Operator is Running\n"
-    check_running $OPERNS weblogic-operator 
+    check_running $OPERNS weblogic-operator 10
     update_progress
 fi
 

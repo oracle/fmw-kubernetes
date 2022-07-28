@@ -497,6 +497,7 @@ run_idmConfigTool()
    if [ $? = 0 ]
    then
       echo "Failed - Check logifle $WORKDIR/logs/configoam.log"
+      echo "SEVERE Error Message Detected." >>  $WORKDIR/logs/configoam.log
       exit 1
    else
       echo "Success"
@@ -687,11 +688,11 @@ create_oam_ohs_config()
    
    print_msg "Creating OHS Config Files" 
    OHS_PATH=$LOCAL_WORKDIR/OHS
-   if  [ ! -d $OHS_PATH/OHS/$OHS_HOST1 ]
+   if  [ ! -d $OHS_PATH/$OHS_HOST1 ]
    then
         mkdir -p $OHS_PATH/$OHS_HOST1
    fi
-   if  [ ! -d $OHS_PATH/OHS/$OHS_HOST2 ]
+   if  [ ! -d $OHS_PATH/$OHS_HOST2 ]
    then
         mkdir -p $OHS_PATH/$OHS_HOST2
    fi
@@ -728,35 +729,12 @@ create_oam_ohs_config()
       fi
    fi
 
-   if [ ! "$OHS_HOST2" = "" ]
+   if [ ! "$OHS_HOST2" = "" ] 
    then
-       cp $TEMPLATE_DIR/iadadmin_vh.conf $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       cp $TEMPLATE_DIR/login_vh.conf $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       update_variable "<OAM_ADMIN_LBR_HOST>" $OAM_ADMIN_LBR_HOST $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       update_variable "<OAM_ADMIN_LBR_PORT>" $OAM_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-       update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<OAM_LOGIN_LBR_PROTOCOL>" $OAM_LOGIN_LBR_PROTOCOL $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<OAM_LOGIN_LBR_HOST>" $OAM_LOGIN_LBR_HOST $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<OAM_LOGIN_LBR_PORT>" $OAM_LOGIN_LBR_PORT $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/login_vh.conf
-       update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/login_vh.conf
-       if [ "$USE_INGRESS" = "true" ]
-       then
-         update_variable "<OAM_ADMIN_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-         update_variable "<OAM_POLICY_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-         update_variable "<OAM_OAM_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-         update_variable "<OAM_OAM_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/login_vh.conf
-       else
-         update_variable "<OAM_ADMIN_K8>" $OAM_ADMIN_K8 $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-         update_variable "<OAM_POLICY_K8>" $OAM_POLICY_K8 $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-         update_variable "<OAM_OAM_K8>" $OAM_OAM_K8 $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
-         update_variable "<OAM_OAM_K8>" $OAM_OAM_K8 $OHS_PATH/$OHS_HOST2/login_vh.conf
-       fi
+       cp $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
+       cp $OHS_PATH/$OHS_HOST1/login_vh.conf $OHS_PATH/$OHS_HOST2/login_vh.conf
+       sed -i "s/$OHS_HOST1/$OHS_HOST2/" $OHS_PATH/$OHS_HOST2/login_vh.conf
+       sed -i "s/$OHS_HOST1/$OHS_HOST2/" $OHS_PATH/$OHS_HOST2/iadadmin_vh.conf
   fi
 
    print_status $?
@@ -779,4 +757,33 @@ copy_wg_files()
    print_status $RETCODE $LOGDIR/copy_wg_files
    ET=`date +%s`
    print_time STEP "Copy Webgate Artifacts to $LOCAL_WORKDIR/OHS/webgate" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create logstash configmap
+#
+create_logstash_cm()
+{
+   ST=`date +%s`
+   print_msg "Creating logstash Config Map"
+   cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
+
+   update_variable "<OAMNS>" $OAMNS $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
+
+   kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1
+   if [ $? = 0 ]
+   then
+        echo "Success"
+   else
+       grep -q "AlreadyExists" $LOGDIR/logstash_cm.log
+       if [ $? = 0 ]
+       then
+          echo "Already Exists"
+       else
+          print_status 1 $LOGDIR/logstash_cm.log
+       fi
+   fi
+   ET=`date +%s`
+   print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
 }

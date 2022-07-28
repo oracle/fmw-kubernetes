@@ -1,5 +1,5 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.  
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a responsefile for IDM Provisioning on Kubernetes
 #
@@ -19,12 +19,14 @@ INSTALL_OAM=true
 INSTALL_OIG=true
 INSTALL_OIRI=true
 INSTALL_OAA=true
+INSTALL_ELK=false
 
 
 # Control Parameters
 #
 USE_REGISTRY=true
 USE_INGRESS=true
+USE_ELK=false
 
 IMAGE_TYPE=crio
 
@@ -61,20 +63,18 @@ SSL_STATE=California
 #
 REGISTRY=iad.ocir.io/mytenancy/idm
 REG_USER=mytenancy/oracleidentitycloudservice/myname@example.com
-REG_PWD=registrypwd
 CREATE_REGSECRET=true
 
 # GitHub
 #
 GIT_USER=gituser
-GIT_TOKEN=gittoken
+#GIT_TOKEN=gittoken
 CREATE_GITSECRET=true
 
 
 # DockerHub
 #
 DH_USER=myuser
-DH_PWD=dockerpwd
 
 ############################################################################################
 #                               IMAGE Parameters                                           #
@@ -95,7 +95,7 @@ OAA_MGT_IMAGE=$REGISTRY/oaa-mgmt
 
 # Image Versions
 # 
-OUD_VER=latest
+OUD_VER=statefulset2
 OUDSM_VER=12.2.1.4-jdk8-ol7-220119.2054
 OAM_VER=latest
 OIG_VER=latest
@@ -106,9 +106,21 @@ OIRIDING_VER=12.2.1.4.220429
 OAAMGT_VER=12.2.1.4.1_20220419
 OAA_VER=12.2.1.4.1_20220419
 
-OPER_VER=3.3.0
+OPER_VER=3.4.1
 
 
+############################################################################################
+#                          Elastic Search (ELK) / Kabana Parameters                        #
+############################################################################################
+# Leave blank if you are not using a centralised ELK deployment
+
+ELKNS=elkns
+ELK_HOST=https://elasticsearch-es-http.$ELKNS.svc:9200
+ELK_VER=8.3.1
+ELK_SHARE=/exports/IAMPVS/elk_data
+ELK_STORAGE=nfs-client
+ELK_KIBANA_K8=31800
+ELK_K8=31920
 
 ############################################################################################
 #                               INGRESS Parameters                                         #
@@ -140,10 +152,11 @@ PV_MOUNT=/u01/oracle/user_projects
 #                               GENERIC LDAP Parameters                                    #
 ############################################################################################
 #
+LDAP_ADMIN_USER=cn=oudadmin
 LDAP_SEARCHBASE=dc=example,dc=com
-LDAP_GROUP_SEARCHBASE=cn=Groups,dc=example,dc=com
-LDAP_USER_SEARCHBASE=cn=Users,dc=example,dc=com
-LDAP_RESERVE_SEARCHBASE=cn=Reserve,dc=example,dc=com
+LDAP_GROUP_SEARCHBASE=cn=Groups,$LDAP_SEARCHBASE
+LDAP_USER_SEARCHBASE=cn=Users,$LDAP_SEARCHBASE
+LDAP_RESERVE_SEARCHBASE=cn=Reserve,$LDAP_SEARCHBASE
 LDAP_SYSTEMIDS=systemids
 LDAP_OAMADMIN_USER=oamadmin
 LDAP_OIGADMIN_GRP=OIMAdministrators
@@ -153,25 +166,22 @@ LDAP_OAMLDAP_USER=oamLDAP
 LDAP_OIGLDAP_USER=oimLDAP
 LDAP_WLSADMIN_USER=weblogic_iam
 LDAP_XELSYSADM_USER=xelsysadm
-LDAP_USER_PWD=Mypassword1
 
 ############################################################################################
 #                               OUD Parameters                                             #
 ############################################################################################
 #
 OUDNS=oudns
-OUD_SHARE=/exports/IAMPVS/oudpv
-OUD_CONFIG_SHARE=/exports/IAMPVS/oudconfigpv
-OUD_LOCAL_SHARE=/nfs_volumes/oudconfigpv
-OUD_LOCAL_PVSHARE=/nfs_volumes/oudpv
-LDAP_ADMIN_USER=cn=oudadmin
-LDAP_ADMIN_PWD=mypassword1
+OUD_SHARE=$IAM_PVS/oudpv
+OUD_CONFIG_SHARE=$IAM_PVS/oudconfigpv
+OUD_LOCAL_CONFIG_SHARE=/nfs_volumes/oudconfigpv
+OUD_LOCAL_SHARE=/nfs_volumes/oudpv
 OUD_POD_PREFIX=edg
 OUD_CREATE_NODEPORT=true
 OUD_PWD_EXPIRY=2024-01-02
 OUD_REGION=example
 
-OUD_REPLICAS=1
+OUD_REPLICAS=2
 
 OUD_HTTP_K8=30080
 OUD_HTTPS_K8=30443
@@ -184,8 +194,7 @@ OUD_LDAPS_K8=31636
 ############################################################################################
 #
 OUDSM_USER=weblogic
-OUDSM_PWD=Mypassword1
-OUDSM_SHARE=/exports/IAMPVS/oudsmpv
+OUDSM_SHARE=$IAM_PVS/oudsmpv
 OUDSM_LOCAL_SHARE=/nfs_volumes/oudsmpv
 OUDSM_INGRESS_HOST=oudsm.example.com
 
@@ -204,7 +213,7 @@ OPER_ACT=operadmin
 ############################################################################################
 #
 OAMNS=oamns
-OAM_SHARE=/exports/IAMPVS/oampv
+OAM_SHARE=$IAM_PVS/oampv
 OAM_LOCAL_SHARE=/nfs_volumes/oampv
 OAM_SERVER_COUNT=5
 OAM_SERVER_INITIAL=2
@@ -212,10 +221,7 @@ OAM_DB_SCAN=db-scan.example.com
 OAM_DB_LISTENER=1521
 OAM_DB_SERVICE=edgiad.example.com
 OAM_RCU_PREFIX=IAD
-OAM_DB_SYS_PWD=My_Sys_pwd_000
-OAM_SCHEMA_PWD=My_Schema_pwd_000
 OAM_WEBLOGIC_USER=weblogic
-OAM_WEBLOGIC_PWD=Mypassword1
 OAM_DOMAIN_NAME=accessdomain
 OAM_LOGIN_LBR_HOST=login.example.com
 OAM_LOGIN_LBR_PORT=443
@@ -228,7 +234,6 @@ OAM_OAP_HOST=worker1
 OAM_OIG_INTEG=true
 
 OAM_OAMADMIN_USER=$LDAP_OAMADMIN_USER
-OAM_OAMADMIN_PWD=$LDAP_USER_PWD
 
 OAMSERVER_JAVA_PARAMS="-Xms2048m -Xmx8192m "
 
@@ -247,7 +252,7 @@ OAM_OAP_SERVICE_PORT=30540
 #
 OIGNS=oigns
 CONNECTOR_DIR=/home/opc/scripts/connectors
-OIG_SHARE=/exports/IAMPVS/oigpv
+OIG_SHARE=$IAM_PVS/oigpv
 OIG_LOCAL_SHARE=/nfs_volumes/oigpv
 OIG_SERVER_COUNT=5
 OIG_SERVER_INITIAL=2
@@ -256,10 +261,7 @@ OIG_DB_SCAN=db-scan.example.com
 OIG_DB_LISTENER=1521
 OIG_DB_SERVICE=edgigd.example.com
 OIG_RCU_PREFIX=IGD
-OIG_DB_SYS_PWD=My_Sys_pwd_000
-OIG_SCHEMA_PWD=My_Schema_pwd_000
 OIG_WEBLOGIC_USER=weblogic
-OIG_WEBLOGIC_PWD=Mypassword1
 OIG_ADMIN_LBR_HOST=igdadmin.example.com
 OIG_ADMIN_LBR_PORT=80
 OIG_LBR_HOST=prov.example.com
@@ -274,13 +276,11 @@ OIG_BI_HOST=bi.example.com
 OIG_BI_PORT=443
 OIG_BI_PROTOCOL=https
 OIG_BI_USER=idm_report
-OIG_BI_USER_PWD=Mypassword1
 OIG_EMAIL_CREATE=true
 OIG_EMAIL_SERVER=smtp.example.com
 OIG_EMAIL_PORT=25
 OIG_EMAIL_SECURITY=None
 OIG_EMAIL_ADDRESS=myname@example.com
-OIG_EMAIL_PWD=password
 OIG_EMAIL_FROM_ADDRESS=fromaddress@example.com
 OIG_EMAIL_REPLY_ADDRESS=noreplies@example.com
 
@@ -319,13 +319,13 @@ DINGNS=dingns
 
 # NFS Parameters
 #
-OIRI_SHARE=/exports/IAMPVS/oiripv
+OIRI_SHARE=$IAM_PVS/oiripv
 OIRI_LOCAL_SHARE=/nfs_volumes/oiripv
 OIRI_SHARE_SIZE=10Gi
-OIRI_DING_SHARE=/exports/IAMPVS/dingpv
+OIRI_DING_SHARE=$IAM_PVS/dingpv
 OIRI_DING_LOCAL_SHARE=/nfs_volumes/dingpv
 OIRI_DING_SHARE_SIZE=10Gi
-OIRI_WORK_SHARE=/exports/IAMPVS/workpv
+OIRI_WORK_SHARE=$IAM_PVS/workpv
 
 # DB Parameters
 #
@@ -333,8 +333,6 @@ OIRI_DB_SCAN=db-scan.example.com
 OIRI_DB_LISTENER=1521
 OIRI_DB_SERVICE=edgoiri.example.com
 OIRI_RCU_PREFIX=ORI
-OIRI_DB_SYS_PWD=My_Sys_pwd_000
-OIRI_SCHEMA_PWD=My_Schema_pwd_000
 
 # Ingress Parameters
 # 
@@ -343,12 +341,9 @@ OIRI_INGRESS_HOST=$OIG_ADMIN_LBR_HOST
 
 # User Parameters
 #
-OIRI_KEYSTORE_PWD=Keyst0re_pwd00
 OIRI_ENG_GROUP=OrclOIRIRoleEngineer
 OIRI_ENG_USER=oiri
-OIRI_ENG_PWD=Mypassword1
 OIRI_SERVICE_USER=oirisvc
-OIRI_SERVICE_PWD=Mypassword1
 
 # OIG Parameters
 #
@@ -377,10 +372,10 @@ OAA_DOMAIN=OAADomain
 
 # NFS Parameters
 #
-OAA_CONFIG_SHARE=/exports/IAMPVS/oaaconfigpv
-OAA_CRED_SHARE=/exports/IAMPVS/oaacredpv
-OAA_LOG_SHARE=/exports/IAMPVS/oaalogpv
-OAA_VAULT_SHARE=/exports/IAMPVS/oaavaultpv
+OAA_CONFIG_SHARE=$IAM_PVS/oaaconfigpv
+OAA_CRED_SHARE=$IAM_PVS/oaacredpv
+OAA_LOG_SHARE=$IAM_PVS/oaalogpv
+OAA_VAULT_SHARE=$IAM_PVS/oaavaultpv
 OAA_LOCAL_CONFIG_SHARE=/nfs_volumes/oaaconfigpv
 OAA_LOCAL_CRED_SHARE=/nfs_volumes/oaacredpv
 OAA_LOCAL_LOG_SHARE=/nfs_volumes/oaalogpv
@@ -396,8 +391,6 @@ OAA_DB_SCAN=db-scan.example.com
 OAA_DB_LISTENER=1521
 OAA_DB_SERVICE=edgoaa.example.com
 OAA_RCU_PREFIX=OAA
-OAA_DB_SYS_PWD=My_Sys_pwd_000
-OAA_SCHEMA_PWD=My_Schema_pwd_000
 OAA_DB_HOST=dbhost1.example.com
 OAA_DB_USER=oracle
 OAA_DB_HOME=/u01/app/oracle/product/19.0.0.0/dbhome_1
@@ -408,20 +401,10 @@ OAA_DB_SID=iamdb1
 OAA_ADMIN_GROUP=OAA-Admin-Role
 OAA_USER_GROUP=OAA-App-User
 OAA_ADMIN_USER=oaaadmin
-OAA_USER_PWD=$LDAP_USER_PWD
 
-# Passwords
-#
-OAA_ADMIN_PWD=$LDAP_USER_PWD
-OAA_KEYSTORE_PWD=$OAA_ADMIN_PWD
-OAA_OAUTH_PWD=$OAA_ADMIN_PWD
-OAA_API_PWD=$OAA_ADMIN_PWD
-OAA_POLICY_PWD=$OAA_ADMIN_PWD
-OAA_FACT_PWD=$OAA_ADMIN_PWD
 
 # File Vault
 #
-OAA_VAULT_PWD=$OAA_ADMIN_PWD
 
 # OCI Vault
 #
@@ -450,13 +433,11 @@ OAA_USER_POSTCODE=oaauser
 #
 OAA_EMAIL_SERVER=http://$OIG_DOMAIN_NAME-cluster-soa-cluster.$OIGNS.svc.cluster.local:8001/ucs/messaging/webservice
 OAA_EMAIL_USER=$OIG_WEBLOGIC_USER
-OAA_EMAIL_PWD=$OIG_WEBLOGIC_PWD
 
 # SMS Server
 #
 OAA_SMS_SERVER=$OAA_EMAIL_SERVER
 OAA_SMS_USER=$OIG_WEBLOGIC_USER
-OAA_SMS_PWD=$OIG_WEBLOGIC_PWD
 
 # Number of Container Instances
 #

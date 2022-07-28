@@ -55,3 +55,8 @@ if [ "$INSTALL_INGRESS" = "true" ] || [ "$INSTALL_INGRESS" = "TRUE" ]
 then
      $MYDIR/delete_ingress.sh
 fi
+
+if [ "$INSTALL_ELK" = "true" ] || [ "$INSTALL_ELK" = "TRUE" ]
+then
+     $MYDIR/delete_elk.sh
+fi

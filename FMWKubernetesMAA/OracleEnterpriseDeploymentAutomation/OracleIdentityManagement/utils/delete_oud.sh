@@ -43,6 +43,15 @@ then
     helm uninstall -n $OUDINGNS  $OUD_POD_PREFIX-nginx >> $LOG 2>&1
 fi
 
+if [ "$USE_ELK" = "true" ]
+then
+   echo "Deleting Logstash"
+   kubectl delete deployment -n $OUDNS oud-logstash >> $LOG 2>&1
+   echo "Deleting Logstash configmap"
+   kubectl delete cm -n $OUDNS oud-logstash-configmap >> $LOG 2>&1
+   kubectl delete cm -n $OUDNS  elk-cert  >> $LOG 2>&1
+fi
+
 echo "Delete OUD Application"
 helm uninstall -n $OUDNS $OUD_POD_PREFIX   >> $LOG 2>&1
 
@@ -56,7 +65,8 @@ kubectl delete namespace $OUDNS
 
 echo "Delete Volumes"
 rm -rf $LOCAL_WORKDIR/OUD $LOCAL_WORKDIR/oud_installed
-rm -rf $OUD_LOCAL_PVSHARE/*
+rm -rf $OUD_LOCAL_SHARE/*
+
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Delete OUD " $START_TIME $FINISH_TIME

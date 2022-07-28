@@ -256,6 +256,14 @@ copy_connector()
     ST=`date +%s`
     print_msg "Installing Connector into Container" 
 
+    printf "\n\t\t\tCheck Connector Exists - "
+    if [ -d $CONNECTOR_DIR/OID-12.2.1* ]
+    then
+          echo "Success"
+    else
+          echo " Connector Bundle not found.  Please download and stage before continuing"
+          exit 1
+    fi
    
     kubectl exec -ti $OIG_DOMAIN_NAME-oim-server1 -n $OIGNS -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     if ! [ "$?" = "0" ]
@@ -264,6 +272,7 @@ copy_connector()
        exit 1
     fi
  
+    printf "\n\t\t\tCopy Connector to container - "
     kubectl cp $CONNECTOR_DIR/OID-12.2*  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     print_status $?
 
@@ -542,8 +551,8 @@ generate_parameter_files()
           run_command_k8 $OIGNS $OIG_DOMAIN_NAME "chmod 750 /u01/oracle/idm/server/ssointg/bin/OIGOAMIntegration.sh"
           run_command_k8 $OIGNS $OIG_DOMAIN_NAME "chmod 750 /u01/oracle/idm/server/ssointg/bin/_OIGOAMIntegration.sh"
           run_command_k8 $OIGNS $OIG_DOMAIN_NAME "chmod 750 $PV_MOUNT/workdir/get_passphrase.sh"
-          run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/get_passphrase.sh"
-          print_status $?
+          run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/get_passphrase.sh" >> $LOGDIR/get_passphrase.log 2>&1
+          print_status $? $LOGDIR/get_passphrase.log
 
           printf "\t\t\tEdit Integration File - "
      fi
@@ -856,7 +865,7 @@ create_oig_ohs_config()
    then
         mkdir -p $OHS_PATH/$OHS_HOST1
    fi
-   if ! [ -d $OHS_PATH/OHS/$OHS_HOST2 ]
+   if ! [ -d $OHS_PATH/$OHS_HOST2 ]
    then
         mkdir -p $OHS_PATH/$OHS_HOST2
    fi
@@ -909,54 +918,47 @@ create_oig_ohs_config()
 
    fi
 
-   if [ ! "$OHS_HOST2" = "" ]
+   if [ ! "$OHS_HOST2" = "" ] 
    then
-      cp $TEMPLATE_DIR/igdadmin_vh.conf $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      cp $TEMPLATE_DIR/prov_vh.conf $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      cp $TEMPLATE_DIR/igdinternal_vh.conf $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<OIG_ADMIN_LBR_HOST>" $OIG_ADMIN_LBR_HOST $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<OIG_ADMIN_LBR_PORT>" $OIG_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-
-      update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<OIG_LBR_PROTOCOL>" $OIG_LBR_PROTOCOL $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<OIG_LBR_HOST>" $OIG_LBR_HOST $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<OIG_LBR_PORT>" $OIG_LBR_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-
-      update_variable "<OHS_HOST>" $OHS_HOST2 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OIG_LBR_INT_PROTOCOL>" $OIG_LBR_INT_PROTOCOL $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OIG_LBR_INT_HOST>" $OIG_LBR_INT_HOST $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<OIG_LBR_INT_PORT>" $OIG_LBR_INT_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-
-      if [ "$USE_INGRESS" = "true" ]
-      then
-         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/prov_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-         update_variable "<OIG_ADMIN_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      else
-         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST2/prov_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
-         update_variable "<OIG_ADMIN_K8>" $OIG_ADMIN_K8 $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
-      fi
+      cp  $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
+      cp $OHS_PATH/$OHS_HOST1/prov_vh.conf $OHS_PATH/$OHS_HOST2/prov_vh.conf
+      cp $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
+      sed -i "s/$OHS_HOST1/$OHS_HOST2/" $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
+      sed -i "s/$OHS_HOST1/$OHS_HOST2/" $OHS_PATH/$OHS_HOST2/prov_vh.conf
+      sed -i "s/$OHS_HOST1/$OHS_HOST2/" $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf
    fi
    
    print_status $?
 
    ET=`date +%s`
    print_time STEP "Creating OHS config" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create logstash configmap
+#
+create_logstash_cm()
+{
+   ST=`date +%s`
+   print_msg "Creating logstash Config Map"
+   cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
+
+   update_variable "<OIGNS>" $OIGNS $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
+
+   kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1
+   if [ $? = 0 ]
+   then
+        echo "Success"
+   else
+       grep -q "AlreadyExists" $LOGDIR/logstash_cm.log
+       if [ $? = 0 ]
+       then
+          echo "Already Exists"
+       else
+          print_status 1 $LOGDIR/logstash_cm.log
+       fi
+   fi
+   ET=`date +%s`
+   print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
 }

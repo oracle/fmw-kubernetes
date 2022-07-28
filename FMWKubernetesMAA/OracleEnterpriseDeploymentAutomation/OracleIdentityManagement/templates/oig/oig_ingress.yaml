@@ -1,5 +1,8 @@
 # Copyright (c) 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to create ingress rules for OIG
+#
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -38,7 +41,7 @@ spec:
           service:
             name: <OIG_DOMAIN_NAME>-adminserver
             port:
-              number: 14000
+              number: <OIG_ADMIN_PORT>
         path: /em
         pathType: Prefix
       - backend:
@@ -82,13 +85,6 @@ spec:
             port:
               number: 14000
         path: /identity
-        pathType: Prefix
-      - backend:
-          service:
-            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
-            port:
-              number: 14000
-        path: /xlWebApp
         pathType: Prefix
       - backend:
           service:
@@ -144,13 +140,6 @@ spec:
             port:
               number: 14000
         path: /identity
-        pathType: Prefix
-      - backend:
-          service:
-            name:  <OIG_DOMAIN_NAME>-cluster-oim-cluster
-            port:
-              number: 14000
-        path: /xlWebApp
         pathType: Prefix
       - backend:
           service:
