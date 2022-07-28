@@ -491,9 +491,9 @@ create_ldap_entries()
          update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $shfile
          update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $shfile
 
-         kubectl cp $filename $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input
-         kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input
-         kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -- /u01/oracle/config-input/oud_add_users.sh > $LOGDIR/create_ldap.log 2>&1
+         kubectl cp $filename $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input > $LOGDIR/create_ldap.log 2>&1
+         kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input >> $LOGDIR/create_ldap.log 2>&1
+         kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -c oud-ds-rs -- /u01/oracle/config-input/oud_add_users.sh >> $LOGDIR/create_ldap.log 2>&1
      fi
 
      if [ $? -gt 0 ]
@@ -576,8 +576,8 @@ add_existing_users()
          update_variable "<OAA_ADMIN_USER>" $OAA_ADMIN_USER $shfile
          update_variable "<OAA_USER_GROUP>" $OAA_USER_GROUP $shfile
 
-         kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input
-         kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -- /u01/oracle/config-input/oud_add_existing_users.sh > $LOGDIR/add_existing_users.log 2>&1
+         kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input  > $LOGDIR/add_existing_users.log 2>&1
+         kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -c oud-ds-rs -- /u01/oracle/config-input/oud_add_existing_users.sh >> $LOGDIR/add_existing_users.log 2>&1
      fi
 
      if [ $? -gt 0 ]
@@ -767,6 +767,32 @@ create_ohs_wallet()
      ET=`date +%s`
      print_time STEP "Create OHS Wallet" $ST $ET >> $LOGDIR/timings.log
 }
+
+# Deploy Coherence
+#
+deploy_coherence()
+{
+   print_msg "Deploy Coherence"
+   ST=`date +%s`
+
+   printf "\n\t\t\tAdd Coherence Repository - "
+   helm repo add coherence https://oracle.github.io/coherence-operator/charts  > $LOGDIR/deploy_coherence.log 2>&1
+   print_status $? $LOGDIR/deploy_coherence.log
+
+   printf "\t\t\tUpdate Helm Repository - " 
+   helm repo update >> $LOGDIR/deploy_coherence.log 2>&1
+   print_status $? $LOGDIR/deploy_coherence.log
+
+
+   printf "\t\t\tInstall Coherence - "
+   helm install -n $OAACONS  coherence-operator coherence/coherence-operator >> $LOGDIR/deploy_coherence.log 2>&1
+   print_status $? $LOGDIR/deploy_coherence.log
+   
+   
+   ET=`date +%s`
+   print_time STEP "Deploy Coherence" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Deploy OAA
 #
 deploy_oaa()
@@ -1259,9 +1285,9 @@ create_test_user()
          update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $shfile
          update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $shfile
 
-         kubectl cp $filename $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input
-         kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input
-         kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -- /u01/oracle/config-input/oud_test_user.sh > $LOGDIR/create_test_user.log 2>&1
+         kubectl cp $filename $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input  > $LOGDIR/create_test_user.log 2>&1
+         kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input  >> $LOGDIR/create_test_user.log 2>&1
+         kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0  -c oud-ds-rs -- /u01/oracle/config-input/oud_test_user.sh >> $LOGDIR/create_test_user.log 2>&1
      fi
 
      if [ $? -gt 0 ]

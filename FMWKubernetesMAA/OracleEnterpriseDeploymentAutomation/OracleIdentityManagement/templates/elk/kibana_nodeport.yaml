@@ -1,0 +1,20 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Example of creating a node port service for Kibana
+#
+kind: Service
+apiVersion: v1
+metadata:
+  name: kibana-nodeport
+  namespace: <ELKNS>
+spec:
+  type: NodePort
+  selector:
+    common.k8s.elastic.co/type: kibana
+    kibana.k8s.elastic.co/name: kibana
+  ports:
+    - targetPort: 5601
+      port: 5601
+      nodePort: <ELK_KIBANA_K8>
+      protocol: TCP

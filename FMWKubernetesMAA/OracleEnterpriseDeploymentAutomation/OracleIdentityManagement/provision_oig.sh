@@ -101,6 +101,20 @@ then
 fi
 
 new_step
+if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OIGNS dockercred
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    check_ldap_user $LDAP_OIGLDAP_USER
+    update_progress
+fi
+
+new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     create_helper_pod $OIGNS $OIG_IMAGE:$OIG_VER
@@ -418,6 +432,16 @@ then
       run_recon_jobs
       update_progress
    fi
+
+   # Assign WSM Roles
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+      assign_wsmroles
+      update_progress
+   fi
+
 fi
 
 # Update SOA URLS
@@ -429,14 +453,6 @@ then
    update_progress
 fi
 
-# Assign WSM Roles
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   assign_wsmroles
-   update_progress
-fi
 
 if [ "$OIG_ENABLE_T3" = "true" ] || [ "$OIG_ENABLE_T3" = "TRUE" ]
 then
@@ -536,6 +552,30 @@ then
    update_progress
 fi
 
+if [ "$USE_ELK" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_cert_cm $OIGNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_logstash_cm
+       update_progress
+    fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_logstash $OIGNS
+       update_progress
+    fi
+
+fi
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OIG" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 cat $LOGDIR/timings.log

@@ -37,11 +37,23 @@ else
    kubectl delete ingress -n $OUDNS oudsm-ingress >> $LOG 2>&1
 fi
 
+if [ "$USE_ELK" = "true" ]
+then
+   echo "Deleting Logstash"
+   kubectl delete deployment -n $OUDNS oudsm-logstash  >> $LOG 2>&1
+   echo "Deleting Logstash configmap"
+   kubectl delete cm -n $OUDNS oudsm-logstash-configmap  >> $LOG 2>&1
+fi
+
 echo "Delete OUDSM Application"
 helm uninstall -n $OUDNS oudsm  >> $LOG 2>&1
 
-echo "Check Server Stopped"
-check_stopped $OUDNS oudsm-1 >> $LOG 2>&1
+check_stopped $OUDNS oudsm-1 
+
+if [ "$USE_ELK" = "true" ]
+then
+    check_stopped $OUDNS oudsm-es-cluster-0 
+fi
 
 echo "Delete Volumes"
 rm -rf $OUDSM_LOCAL_SHARE/* $LOCAL_WORKDIR/OUDSM/* $LOCAL_WORKDIR/oudsm_installed>> $LOG 2>&1

@@ -11,15 +11,14 @@
 # Usage: start_here.sh
 #
 RSPFILE=responsefile/idm.rsp
+PWDFILE=responsefile/.idmpwds
 . $RSPFILE
+. $PWDFILE
+
 . common/functions.sh
 
 echo "Checking Pre-requisites"
 echo "-----------------------"
-
-echo " "
-echo " NOTE: PASSWORDS CONTAINING RESERVED CHARACTERS MUST BE ESCAPED"
-echo " "
 
 echo -n "Have you downloaded and staged the container images (y/n) :"
 read ANS
@@ -110,7 +109,7 @@ then
               exit
            else
                echo
-               replace_value REG_PWD $ANS $RSPFILE
+               replace_password REG_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -501,7 +500,7 @@ then
               exit
            else
                echo
-               replace_value DH_PWD $ANS $RSPFILE
+               replace_password DH_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -522,12 +521,12 @@ then
            replace_value OUD_SHARE $ANS $RSPFILE
       fi
 
-      echo -n "Enter OUD PV local Mount Point [$OUD_LOCAL_PVSHARE]:"
+      echo -n "Enter OUD PV local Mount Point [$OUD_LOCAL_SHARE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_LOCAL_PVSHARE $ANS $RSPFILE
+           replace_value OUD_LOCAL_SHARE $ANS $RSPFILE
       fi
 
       echo -n "Enter OUD Config PV Local Mount Point [$OUD_CONFIG_SHARE]:"
@@ -538,12 +537,12 @@ then
            replace_value OUD_CONFIG_SHARE $ANS $RSPFILE
       fi
 
-      echo -n "Enter OUD Config Share Local Mount Point [$OUD_LOCAL_SHARE]:"
+      echo -n "Enter OUD Config Share Local Mount Point [$OUD_LOCAL_CONFIG_SHARE]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
       then
-           replace_value OUD_LOCAL_SHARE $ANS $RSPFILE
+           replace_value OUD_LOCAL_CONFIG_SHARE $ANS $RSPFILE
       fi
 
       if [ "$GET_NS" = "true" ]
@@ -582,7 +581,7 @@ then
               exit
            else
                echo
-               replace_value LDAP_ADMIN_PWD $ANS $RSPFILE
+               replace_password LDAP_ADMIN_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -703,7 +702,12 @@ then
          exit
       else
          echo
-         replace_value LDAP_USER_PWD $ANS $RSPFILE
+         if  check_password "UN" $ANS
+         then
+             replace_password LDAP_USER_PWD $ANS $PWDFILE
+         else
+             echo "Password not set"
+         fi
       fi
     else
       echo "Leaving value as previously defined"
@@ -810,7 +814,12 @@ then
               exit
            else
                echo
-               replace_value OUDSM_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OUDSM_PWD $ANS $PWDFILE
+               else
+                   echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -990,7 +999,7 @@ then
               exit
            else
                echo
-               replace_value OAM_DB_SYS_PWD $ANS $RSPFILE
+               replace_password OAM_DB_SYS_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -1018,7 +1027,12 @@ then
               exit
            else
                echo
-               replace_value OAM_SCHEMA_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OAM_SCHEMA_PWD $ANS $PWDFILE
+               else
+                   echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1096,7 +1110,12 @@ then
               exit
            else
                echo
-               replace_value OAM_WEBLOGIC_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OAM_WEBLOGIC_PWD $ANS $PWDFILE
+               else
+                   echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1215,7 +1234,12 @@ then
               exit
            else
                echo
-               replace_value OIG_DB_SYS_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OIG_DB_SYS_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1243,7 +1267,12 @@ then
               exit
            else
                echo
-               replace_value OIG_SCHEMA_PWD $ANS $RSPFILE
+               if  check_password "UNS" $ANS
+               then
+                 replace_password OIG_SCHEMA_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1378,7 +1407,12 @@ then
               exit
            else
                echo
-               replace_value OIG_WEBLOGIC_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OIG_WEBLOGIC_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1442,7 +1476,7 @@ then
                  exit
               else
                   echo
-                  replace_value OIG_BI_USER_PWD $ANS $RSPFILE
+                  replace_password OIG_BI_USER_PWD $ANS $PWDFILE
               fi
          else
              echo "Leaving value as previously defined"
@@ -1647,7 +1681,12 @@ then
               exit
            else
                echo
-               replace_value OIRI_DB_SYS_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OIRI_DB_SYS_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1675,7 +1714,12 @@ then
               exit
            else
                echo
-               replace_value OIRI_SCHEMA_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OIRI_SCHEMA_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -1695,7 +1739,7 @@ then
               exit
            else
                echo
-               replace_value OIRI_KEYSTORE_PWD $ANS $RSPFILE
+               replace_password OIRI_KEYSTORE_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -1726,7 +1770,7 @@ then
               exit
            else
                echo
-               replace_value OIRI_SERVICE_PWD $ANS $RSPFILE
+               replace_password OIRI_SERVICE_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -1757,7 +1801,7 @@ then
               exit
            else
                echo
-               replace_value OIRI_ENG_PWD $ANS $RSPFILE
+               replace_password OIRI_ENG_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -1981,7 +2025,7 @@ then
                    exit
                 else
                     echo
-                    replace_value OAA_VAULT_PWD $ANS $RSPFILE
+                    replace_password OAA_VAULT_PWD $ANS $PWDFILE
                 fi
             else
                echo "Leaving value as previously defined"
@@ -2086,7 +2130,12 @@ then
               exit
            else
                echo
-               replace_value OAA_DB_SYS_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OAA_DB_SYS_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -2114,7 +2163,12 @@ then
               exit
            else
                echo
-               replace_value OAA_SCHEMA_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OAA_SCHEMA_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -2134,7 +2188,7 @@ then
               exit
            else
                echo
-               replace_value OAA_KEYSTORE_PWD $ANS $RSPFILE
+               replace_password OAA_KEYSTORE_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"
@@ -2165,7 +2219,37 @@ then
               exit
            else
                echo
-               replace_value OAA_ADMIN_PWD $ANS $RSPFILE
+               if  check_password "UN" $ANS
+               then
+                 replace_password OAA_ADMIN_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
+           fi
+      else
+         echo "Leaving value as previously defined"
+      fi
+
+      echo -n "Enter Password for OAM_OAUTH account: "
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               if  check_password "NS" $ANS
+               then
+                 replace_password OAA_OAUTH_PWD $ANS $PWDFILE
+               else
+                 echo "Password not set"
+               fi
            fi
       else
          echo "Leaving value as previously defined"
@@ -2209,7 +2293,12 @@ then
                  exit
               else
                   echo
-                  replace_value OAA_USER $ANS $RSPFILE
+                  if  check_password "UN" $ANS
+                  then
+                     replace_password OAA_USER $ANS $PWDFILE
+                  else
+                     echo "Password not set"
+                  fi
               fi
          else
             echo "Leaving value as previously defined"
@@ -2264,8 +2353,8 @@ then
               exit
            else
                echo
-               replace_value OAA_EMAIL_PWD $ANS $RSPFILE
-               replace_value OAA_SMS_PWD $ANS $RSPFILE
+               replace_password OAA_EMAIL_PWD $ANS $PWDFILE
+               replace_password OAA_SMS_PWD $ANS $PWDFILE
            fi
       else
          echo "Leaving value as previously defined"

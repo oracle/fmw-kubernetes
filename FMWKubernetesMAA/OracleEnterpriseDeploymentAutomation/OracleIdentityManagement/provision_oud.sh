@@ -16,7 +16,7 @@
 . common/functions.sh
 . common/oud_functions.sh
 
-TEMPLATES_DIR=$SCRIPTDIR/templates/oud
+TEMPLATE_DIR=$SCRIPTDIR/templates/oud
 
 START_TIME=`date +%s`
 WORKDIR=$LOCAL_WORKDIR/OUD
@@ -155,6 +155,31 @@ then
     fi
 fi
 
+
+if [ "$USE_ELK" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_cert_cm $OUDNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_oud_logstash_cm
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_logstash $OUDNS
+       update_progress
+    fi
+
+fi
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUD" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 

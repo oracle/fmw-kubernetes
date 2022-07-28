@@ -47,6 +47,16 @@ else
      kubectl delete service -n $OAMNS $OAM_DOMAIN_NAME-oap >> $LOG 2>&1
 fi
 
+ELK_DEP=`kubectl get deployment -n $OAMNS | grep logstash | awk '{ print $1 }'`
+if [ ! "$ELK_DEP" = "" ]
+then
+   echo "Deleting Logstash"
+   kubectl delete deployment -n $OAMNS oam-logstash >> $LOG 2>&1
+   echo "Deleting Logstash configmap"
+   kubectl delete cm -n $OAMNS oam-logstash-configmap >> $LOG 2>&1
+   kubectl delete cm -n $OAMNS  elk-cert  >> $LOG 2>&1
+fi
+
 echo "Deleting OAM Domain"
 kubectl delete domain $OAM_DOMAIN_NAME -n $OAMNS >> $LOG 2>&1
 echo "Deleting Config Map"
@@ -92,8 +102,14 @@ print_time STEP "Drop Schemas" $ST $ET
 
 ST=`date +%s`
 echo "Deleting Volumes"
+echo " Deleting  $OAM_LOCAL_SHARE/*">> $LOG 2>&1
 rm -rf $OAM_LOCAL_SHARE/>> $LOG 2>&1
-rm  -rf $WORKDIR/* $LOCAL_WORKDIR/OHS/*/login_vh.conf $LOCAL_WORKDIR/OHS/*/iadadmin_vh.conf $LOCAL_WORKDIR/oam_installed>> $LOG 2>&1
+echo " Deleting  $WORKDIR/*">> $LOG 2>&1
+rm  -rf $WORKDIR/* 
+echo " Deleting  $LOCAL_WORKDIR/OHS ">> $LOG 2>&1
+rm  -rf $LOCAL_WORKDIR/OHS/*/login_vh.conf $LOCAL_WORKDIR/OHS/*/iadadmin_vh.conf $LOCAL_WORKDIR/oam_installed>> $LOG 2>&1
+echo " Deleting  Complete">> $LOG 2>&1
+
 ET=`date +%s`
 print_time STEP "Delete Volume" $ST $ET 
 

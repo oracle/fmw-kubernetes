@@ -103,6 +103,20 @@ then
 fi
 
 new_step
+if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OAMNS dockercred
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    check_ldap_user $LDAP_OAMLDAP_USER
+    update_progress
+fi
+
+new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     create_helper_pod $OAMNS $OAM_IMAGE:$OAM_VER
@@ -374,6 +388,31 @@ then
        copy_ohs_config
        update_progress
     fi
+fi
+
+if [ "$USE_ELK" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_cert_cm $OAMNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_logstash_cm
+       update_progress
+    fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_logstash $OAMNS
+       update_progress
+    fi
+
 fi
 
 

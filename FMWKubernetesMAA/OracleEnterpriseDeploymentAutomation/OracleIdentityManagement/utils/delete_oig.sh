@@ -56,6 +56,16 @@ then
    kubectl delete service -n $OIGNS $OIG_DOMAIN_NAME-oim-t3-nodeport >> $LOG 2>&1
 fi
 
+ELK_DEP=`kubectl get deployment -n $OIGNS | grep logstash | awk '{ print $1 }'`
+if [ ! "$ELK_DEP" = "" ]
+then
+   echo "Deleting Logstash"
+   kubectl delete deployment -n $OIGNS oig-logstash >> $LOG 2>&1
+   echo "Deleting Logstash configmap"
+   kubectl delete cm -n $OIGNS oig-logstash-configmap >> $LOG 2>&1
+   kubectl delete cm -n $OIGNS  elk-cert  >> $LOG 2>&1
+fi
+
 echo "Delete OIG Domain"
 kubectl delete domain $OIG_DOMAIN_NAME -n $OIGNS >> $LOG 2>&1
 
@@ -106,9 +116,13 @@ ST=`date +%s`
 echo "Deleting Volumes"
 
 # Delete the files in the persistent volumes
+echo "Deleting $OIG_LOCAL_SHARE/*"  >> $LOG 2>&1
 rm -rf  $OIG_LOCAL_SHARE/*  >> $LOG 2>&1
+echo "Deleting $WORKDIR/*"  >> $LOG 2>&1
 rm  -rf $WORKDIR/*  >> $LOG 2>&1
-rm  -rf $WORKDIR/* $LOCAL_WORKDIR/OHS/*/prov_vh.conf $LOCAL_WORKDIR/OHS/*/igd*_vh.conf $LOCAL_WORKDIR/oig_installed>> $LOG 2>&1
+echo "Deleting $LOCAL_WORKDIR/OHS/"  >> $LOG 2>&1
+rm  -rf $LOCAL_WORKDIR/OHS/*/prov_vh.conf $LOCAL_WORKDIR/OHS/*/igd*_vh.conf $LOCAL_WORKDIR/oig_installed>> $LOG 2>&1
+echo "Delete Complete" >> $LOG 2>&1
 
 ET=`date +%s`
 print_time STEP "Delete Volume" $ST $ET 

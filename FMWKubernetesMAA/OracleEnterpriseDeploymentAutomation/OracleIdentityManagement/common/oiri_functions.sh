@@ -652,3 +652,31 @@ create_ohs_entries()
    ET=`date +%s`
    print_time STEP "Create OHS Entries" $ST $ET >> $LOGDIR/timings.log
 }
+
+# Create logstash configmap
+#
+create_logstash_cm()
+{
+   ST=`date +%s`
+   print_msg "Creating logstash Config Map"
+   cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
+
+   update_variable "<OIRINS>" $OIRINS $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+
+   kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1
+   if [ $? = 0 ]
+   then
+        echo "Success"
+   else
+       grep -q "AlreadyExists" $LOGDIR/logstash_cm.log
+       if [ $? = 0 ]
+       then
+          echo "Already Exists"
+       else
+          print_status 1 $LOGDIR/logstash_cm.log
+       fi
+   fi
+   ET=`date +%s`
+   print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
+}

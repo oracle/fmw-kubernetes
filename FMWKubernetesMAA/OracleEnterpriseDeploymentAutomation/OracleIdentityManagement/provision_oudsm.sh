@@ -95,13 +95,16 @@ fi
 # Create NodePort for OUDSM
 #
 new_step
-if [ $STEPNO -gt $PROGRESS ] && [ "$USE_INGRESS" = "false" ]
+if [ $STEPNO -gt $PROGRESS ] 
 then
-    create_oudsm_nodeport
-    update_progress
-else 
-    update_progress
-    create_oudsm_ingress 
+   if [ "$USE_INGRESS" = "false" ]
+   then
+       create_oudsm_nodeport
+       update_progress
+   else 
+       create_oudsm_ingress 
+       update_progress
+   fi
 fi
 
 # Create OUDSM OHS Entries
@@ -113,6 +116,23 @@ then
     update_progress
 fi
 
+if [ "$USE_ELK" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_oudsm_logstash_cm
+       update_progress
+    fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_logstash $OUDNS
+       update_progress
+    fi
+
+fi
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUDSM" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 touch $LOCAL_WORKDIR/oudsm_installed

@@ -16,7 +16,34 @@
 #
 
 . ./responsefile/idm.rsp
-./prereqchecks.sh
+
+if [ ! "$1" = "-ignorePrereqs" ]
+then
+   ./prereqchecks.sh
+fi
+
+
+if [ $? -gt 0 ]
+then
+    echo "Pre-req checks Failed - Resolve issues before continuing or restart with -ignorePrereqs"
+    exit 1
+fi
+
+echo ""
+if [ "$INSTALL_ELK" = "true" ] 
+then
+     if [  -f $LOCAL_WORKDIR/elk_installed ]
+     then
+        echo "Elastic Search Already Installed."
+     else 
+        ./provision_elk.sh
+        if [ $? -gt 0 ] || [ ! -f $LOCAL_WORKDIR/elk_installed ]
+        then 
+          echo "Provisioning Elastic Search Failed"
+          exit 1
+        fi
+     fi
+fi
 
 echo ""
 if [ "$INSTALL_INGRESS" = "true" ] 

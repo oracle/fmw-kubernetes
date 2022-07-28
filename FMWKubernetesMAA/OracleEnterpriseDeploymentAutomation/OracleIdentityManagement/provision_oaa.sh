@@ -121,6 +121,13 @@ then
    update_progress
 fi
 
+new_step
+if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OAANS dockercred
+   update_progress
+fi
+
 # Create a Management Container
 #
 new_step
@@ -251,6 +258,15 @@ then
        copy_ohs_config
        update_progress
     fi
+fi
+
+# Deploy Coherence
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   deploy_coherence
+   update_progress
 fi
 
 # Deploy OAA

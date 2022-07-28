@@ -1,5 +1,5 @@
 # Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of the checks that can be performed before Provisioning Identity Management
 # to reduce the likelihood of provisioning failing.
@@ -14,7 +14,7 @@ edit_seedfile()
 {
    ST=`date +%s`
    print_msg "Creating Seedfile"
-   cp $TEMPLATES_DIR/base.ldif $WORKDIR
+   cp $TEMPLATE_DIR/base.ldif $WORKDIR
 
    SEEDFILE=$WORKDIR/base.ldif
 
@@ -49,7 +49,7 @@ create_override()
 {
    ST=`date +%s`
    print_msg "Creating Helm Override file"
-   cp $TEMPLATES_DIR/override_oud.yaml $WORKDIR
+   cp $TEMPLATE_DIR/override_oud.yaml $WORKDIR
    OVERRIDE_FILE=$WORKDIR/override_oud.yaml
    update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE  $OVERRIDE_FILE
    update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $OVERRIDE_FILE
@@ -62,6 +62,7 @@ create_override()
    update_variable "<REPOSITORY>" $OUD_IMAGE $OVERRIDE_FILE
    update_variable "<IMAGE_VER>" $OUD_VER $OVERRIDE_FILE
    update_variable "<USE_INGRESS>" $USE_INGRESS $OVERRIDE_FILE
+
    update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $OVERRIDE_FILE
 
    KUBERNETES_VER=`kubectl version --short=true | grep Server | cut -f2 -d: | cut -f1 -d + | sed 's/ v//' | cut -f 1-3 -d.`
@@ -74,13 +75,44 @@ create_override()
    print_time STEP "Create Helm Override File" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Create a logstash Configmap
+#
+update_logstash()
+{
+   ST=`date +%s`
+   print_msg "Updating Logstash to point to $ELK_HOST"
+   printf "\n\t\t\tCreating config map yaml - "
+   cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
+   FILENAME=$WORKDIR/logstash_cm.yaml
+   update_variable "<OUDNS>" $OUDNS $FILENAME
+   update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $FILENAME
+   update_variable "<ELK_HOST>" $ELK_HOST $FILENAME
+   update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $FILENAME
+   echo "Success"
+
+   printf "\t\t\tDeleting existing config map  - "
+   kubectl delete cm -n $OUDNS ${OUD_POD_PREFIX}-oud-ds-rs-logstash-configmap > $LOGDIR/logstash.log 2>&1
+   print_status $? $LOGDIR/logstash.log
+   printf "\t\t\tCreating new config map  - "
+   kubectl create -f $FILENAME >> $LOGDIR/logstash.log 2>&1
+   print_status $? $LOGDIR/logstash.log
+
+   LOGPOD=`kubectl get pod -n $OUDNS -o wide | grep oud-ds-rs-kibana | awk '{ print $1 }'`
+   printf "\t\t\tRestarting Pod $LOGPOD - "
+   kubectl delete pod -n $OUDNS $LOGPOD > $LOGDIR/restart_kibana.log 2>&1
+   print_status $? $LOGDIR/restart_kibana.log
+
+   ET=`date +%s`
+   print_time STEP "Updating Logstash to use central ELK" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Create a Nginx override file
 #
 create_nginx_override()
 {
    ST=`date +%s`
    print_msg "Creating NGINX Override file"
-   cp $TEMPLATES_DIR/oud_nginx.yaml $WORKDIR
+   cp $TEMPLATE_DIR/oud_nginx.yaml $WORKDIR
    OVERRIDE_FILE=$WORKDIR/oud_nginx.yaml
    update_variable "<OUDNS>" $OUDNS  $OVERRIDE_FILE
    update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $OVERRIDE_FILE
@@ -99,13 +131,13 @@ copy_files_to_share()
 {
    ST=`date +%s`
    print_msg "Copy files to local share"
-   cp $SEEDFILE $OUD_LOCAL_SHARE
-   cp $TEMPLATES_DIR/99-user.ldif $OUD_LOCAL_SHARE
-   chmod 777 $OUD_LOCAL_SHARE/*.ldif
+   cp $SEEDFILE $OUD_LOCAL_CONFIG_SHARE
+   cp $TEMPLATE_DIR/99-user.ldif $OUD_LOCAL_CONFIG_SHARE
+   chmod 777 $OUD_LOCAL_CONFIG_SHARE/*.ldif
    print_status $?
 
    printf "\t\t\tCopy Helm Files to Local Share - "
-   cp -r $WORKDIR/samples/kubernetes/helm/* $OUD_LOCAL_SHARE
+   cp -r $WORKDIR/samples/kubernetes/helm/* $OUD_LOCAL_CONFIG_SHARE
    print_status $?
 
    ET=`date +%s`
@@ -120,7 +152,7 @@ create_oud()
    ST=`date +%s`
    print_msg "Use Helm to create OUD"
 
-   rm -f $OUD_LOCAL_SHARE/rejects.ldif $OUD_LOCAL_SHARE/skip.ldif 2> /dev/null > /dev/null
+   rm -f $OUD_LOCAL_CONFIG_SHARE/rejects.ldif $OUD_LOCAL_CONFIG_SHARE/skip.ldif 2> /dev/null > /dev/null
    cd $WORKDIR/samples/kubernetes/helm/
    helm install --namespace $OUDNS --values $WORKDIR/override_oud.yaml $OUD_POD_PREFIX oud-ds-rs > $LOGDIR/create_oud.log 2>&1
    print_status $? $LOGDIR/create_oud.log
@@ -156,7 +188,7 @@ create_oud_nodeport()
 {
    ST=`date +%s`
    print_msg "Create OUD Nodeport Services"
-   cp $TEMPLATES_DIR/oud_nodeport.yaml $WORKDIR
+   cp $TEMPLATE_DIR/oud_nodeport.yaml $WORKDIR
    update_variable "<OUDNS>" $OUDNS $WORKDIR/oud_nodeport.yaml
    update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/oud_nodeport.yaml
    update_variable "<OUD_LDAP_K8>" $OUD_LDAP_K8 $WORKDIR/oud_nodeport.yaml
@@ -180,32 +212,44 @@ validate_oud()
     echo "" >> $LOGDIR/validate_oud.log
     FAIL=0
 
-    printf "\n\t\t\tChecking for Import Errors - "
-    grep -q ERROR $OUD_LOCAL_PVSHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log
+    printf "\n\t\t\tChecking for Creation Errors - "
+    grep -q SEVERE_ERROR $LOGDIR/${OUD_POD_PREFIX}-oud-ds-rs-0.log
     if [ $? = 0 ]
     then
-         echo "Import Errors Found check logfile $OUD_LOCAL_PVSHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log"
-         echo "Import Errors Found check logfile $OUD_LOCAL_PVSHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log" >> $LOGDIR/validate_oud.log
+         echo "SEVERE Errors Found check logfile $LOGDIR/${OUD_POD_PREFIX}-oud-ds-rs-0.log"
+         echo "SEVERE Errors Found check logfile $LOGDIR/${OUD_POD_PREFIX}-oud-ds-rs-0.log" >> $LOGDIR/validate_oud.log
+         FAIL=1
+    else
+         echo "No Errors"
+         echo "No Creation Errors discovered" >> $LOGDIR/validate_oud.log
+    fi
+
+    printf "\t\t\tChecking for Import Errors - "
+    grep -q ERROR $OUD_LOCAL_SHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log
+    if [ $? = 0 ]
+    then
+         echo "Import Errors Found check logfile $OUD_LOCAL_SHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log"
+         echo "Import Errors Found check logfile $OUD_LOCAL_SHARE/${OUD_POD_PREFIX}-oud-ds-rs-0/logs/importLdifCmd.log" >> $LOGDIR/validate_oud.log
          FAIL=1
     else
          echo "No Errors"
          echo "No Import Errors discovered" >> $LOGDIR/validate_oud.log
     fi
     printf "\t\t\tChecking for Rejects - "
-    if [ -s $OUD_LOCAL_SHARE/rejects.ldif ]
+    if [ -s $OUD_LOCAL_CONFIG_SHARE/rejects.ldif ]
     then 
-         echo "Rejects found check File: $OUD_LOCAL_SHARE/rejects.ldif"
-         echo "Rejects found check File: $OUD_LOCAL_SHARE/rejects.ldif" >> $LOGDIR/validate_oud.log
+         echo "Rejects found check File: $OUD_LOCAL_CONFIG_SHARE/rejects.ldif"
+         echo "Rejects found check File: $OUD_LOCAL_CONFIG_SHARE/rejects.ldif" >> $LOGDIR/validate_oud.log
          FAIL=1
     else
          echo "No Rejects found"
          echo "No Reject Errors discovered" >> $LOGDIR/validate_oud.log
     fi
     printf "\t\t\tChecking for Skipped Records - "
-    if [ -s $OUD_LOCAL_SHARE/skip.ldif ]
+    if [ -s $OUD_LOCAL_CONFIG_SHARE/skip.ldif ]
     then 
-         echo "Skipped Records found check File: $OUD_LOCAL_SHARE/skip.ldif"
-         echo "Skipped Records found check File: $OUD_LOCAL_SHARE/skip.ldif" >> $LOGDIR/validate_oud.log
+         echo "Skipped Records found check File: $OUD_LOCAL_CONFIG_SHARE/skip.ldif"
+         echo "Skipped Records found check File: $OUD_LOCAL_CONFIG_SHARE/skip.ldif" >> $LOGDIR/validate_oud.log
          FAIL=1
     else
          echo "No Skipped Records found"
@@ -215,12 +259,11 @@ validate_oud()
 
     if [ "$FAIL" = "1" ]
     then
-        printf "\n\t\t\tOUD Vaildation Failed\n"
+        printf "\t\t\tOUD Validation Failed\n"
         exit 1
     else
-        printf "\n\t\t\tOUD Vaildation Succeeded\n"
+        printf "\t\t\tOUD Validation Succeeded\n"
     fi
-
 
 
    ET=`date +%s`
@@ -244,6 +287,7 @@ create_oudsm_override()
    update_variable "<REPOSITORY>" $OUDSM_IMAGE $WORKDIR/override_oudsm.yaml
    update_variable "<IMAGE_VER>" $OUDSM_VER $WORKDIR/override_oudsm.yaml
    update_variable "<USE_INGRESS>" $USE_INGRESS $WORKDIR/override_oudsm.yaml
+   update_variable "<PVSERVER>" $PVSERVER $WORKDIR/override_oudsm.yaml
    update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $WORKDIR/override_oudsm.yaml
 
    echo "Success"
@@ -340,17 +384,77 @@ create_oudsm_ohs_entries()
    OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
    OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2
 
+   echo "$CONFFILE Created"
+
    if [ -d $OHSHOST1FILES ]
    then
-       printf "Copying to $OHSHOST1FILES"
+       printf "\t\t\tCopying to $OHSHOST1FILES - "
        cp $CONFFILE $OHSHOST1FILES
+       print_status $?
    fi
    if [ -d $OHSHOST2FILES ]
    then
-       printf "Copying to $OHSHOST2FILES"
+       printf "\t\t\tCopying to $OHSHOST2FILES - "
        cp $CONFFILE $OHSHOST2FILES
+       print_status $?
    fi
-   echo "$CONFFILE Created"
    ET=`date +%s`
    print_time STEP "Create OHS Entries" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create logstash configmap
+#
+create_oud_logstash_cm()
+{
+   ST=`date +%s`
+   print_msg "Creating logstash Config Map"
+
+   cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
+
+   update_variable "<OUDNS>" $OUDNS $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
+
+   kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1
+   if [ $? = 0 ]
+   then
+        echo "Success"
+   else
+       grep -q "AlreadyExists" $LOGDIR/logstash_cm.log
+       if [ $? = 0 ]
+       then
+          echo "Already Exists"
+       else
+          print_status 1 $LOGDIR/logstash_cm.log
+       fi
+   fi
+   ET=`date +%s`
+   print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_oudsm_logstash_cm()
+{
+   ST=`date +%s`
+   print_msg "Creating logstash Config Map"
+   cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
+
+   update_variable "<OUDNS>" $OUDNS $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
+
+   kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1
+   if [ $? = 0 ]
+   then
+        echo "Success"
+   else
+       grep -q "AlreadyExists" $LOGDIR/logstash_cm.log
+       if [ $? = 0 ]
+       then
+          echo "Already Exists"
+       else
+          print_status 1 $LOGDIR/logstash_cm.log
+       fi
+   fi
+   ET=`date +%s`
+   print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
 }

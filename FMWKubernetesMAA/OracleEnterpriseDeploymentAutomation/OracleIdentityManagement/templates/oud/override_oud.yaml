@@ -50,24 +50,18 @@ ingress:
   type: nginx
   tlsEnabled: false
 
+elk:
+  enabled: false
+  imagePullSecrets:
+    - name: dockercred
+
+
+
 cronJob:
   kubectlImage:
     repository: bitnami/kubectl
     tag: <KUBERNETES_VER>
     pullPolicy: IfNotPresent
-  helmImage:
-    repository: alpine/helm
-    tag: <HELM_VER>
-    pullPolicy: IfNotPresent
-
-  cronPersistence:
-    enabled: true
-    type: networkstorage
-    networkstorage:
-      nfs:
-        server: <PVSERVER>
-        path: <OUD_CONFIG_SHARE>
-
 
     imagePullSecrets:
     - name: dockercred

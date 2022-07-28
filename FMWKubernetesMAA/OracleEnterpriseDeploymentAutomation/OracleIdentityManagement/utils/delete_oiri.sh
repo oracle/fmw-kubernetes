@@ -33,6 +33,14 @@ echo
 echo Log of Delete Session can be found at: $LOG
 echo
 
+if [ "$USE_ELK" = "true" ]
+then
+   echo "Deleting Logstash"
+   kubectl delete deployment -n $OIRINS oiri-logstash >> $LOG 2>&1
+   echo "Deleting Logstash configmap"
+   kubectl delete cm -n $OIRINS oiri-logstash-configmap >> $LOG 2>&1
+fi
+
 echo "Deleting OIRI Application"
 oiri_cli "helm delete oiri" > $LOG 2>&1
 

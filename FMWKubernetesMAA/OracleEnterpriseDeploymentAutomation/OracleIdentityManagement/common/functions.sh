@@ -15,8 +15,10 @@
 
 SCRIPTDIR=/home/opc/scripts
 RSPFILE=$SCRIPTDIR/responsefile/idm.rsp
+PWDFILE=$SCRIPTDIR/responsefile/.idmpwds
+. $PWDFILE
 . $RSPFILE
-export SAMPLES_DIR=`echo $SAMPLES_REP | awk -F  "/" '{print $NF}' | sed 's/.git//'`
+export SAMPLES_DIR=`echo $SAMPLES_REP | awk -F  "/" '{print $NF}' | sed 's/.git.*//'`
 
 SSH="ssh -q"
 
@@ -140,13 +142,36 @@ install_operator()
     ST=`date +%s`
     
     print_msg  "Installing Operator"
+
+    ELK_PROTO=`echo $ELK_HOST | cut -f1 -d:` 
+    ELK_HN=`echo $ELK_HOST | cut -f2 -d: | sed 's/\/\///'` 
+    ELK_PORT=`echo $ELK_HOST | cut -f3 -d:` 
+
     cd $WORKDIR/samples
+    echo helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT \
+            --set "enableClusterRoleBinding=true" \
+            --set "javaLoggingLevel=FINE" \
+            --set "domainNamespaceSelectionStrategy=LabelSelector" \
+            --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
+            --set "elkIntegrationEnabled=$USE_ELK" \
+            --set "elasticSearchHost=$ELK_PROTO://$ELK_HN" \
+            --set "elasticSearchPort=$ELK_PORT" \
+            --set "logStashImage=docker.elastic.co/logstash/logstash:$ELK_VER" \
+            --set "createLogStashConfigMap=true" \
+            --wait > $LOGDIR/install_oper.log 
+
     helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT \
             --set "enableClusterRoleBinding=true" \
             --set "javaLoggingLevel=FINE" \
             --set "domainNamespaceSelectionStrategy=LabelSelector" \
             --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
-            --wait > $LOGDIR/install_oper.log 2>&1
+            --set "elkIntegrationEnabled=$USE_ELK" \
+            --set "elasticSearchHost=$ELK_PROTO://$ELK_HN" \
+            --set "elasticSearchPort=$ELK_PORT" \
+            --set "logStashImage=docker.elastic.co/logstash/logstash:$ELK_VER" \
+            --set "createLogStashConfigMap=true" \
+            --wait >> $LOGDIR/install_oper.log 2>&1
+
     print_status $? $LOGDIR/install_oper.log
     ET=`date +%s`
     print_time STEP "Install Operator" $ST $ET >> $LOGDIR/timings.log
@@ -261,7 +286,7 @@ create_service_account()
    kubectl create serviceaccount -n $nsp $actname >$LOGDIR/create_svc.log 2>&1
    if [ $? -gt 0 ]
    then
-      grep AlreadyExists -q $LOGDIR/create_svc.log
+      grep "already exists" -q $LOGDIR/create_svc.log
       if [ $? = 0 ]
       then 
         echo "Already Exists"
@@ -672,6 +697,7 @@ function decode_pwd()
 
     echo $decoded_pwd
 }
+
 #Replace a value in a file
 #
 replace_value()
@@ -680,7 +706,6 @@ replace_value()
      val=$2
      filename=$3
 
-     #echo $val | sed 's/\//\\\//g'
      newval=$(echo $val | sed 's/\//\\\//g')
      sed -i 's/'$name'=.*/'$name'='"$newval"'/' $filename
      if [ "$?" = "1" ]
@@ -709,6 +734,21 @@ replace_value2()
 
 }
 
+#Replace a value in password file
+#
+replace_password()
+{
+     name=$1
+     val=$2
+     filename=$3
+
+     newval=$(echo $val | sed 's/\//\\\//g')
+     sed -i 's/'$name'=.*/'$name'='"\"$newval\""'/' $filename
+     if [ "$?" = "1" ]
+     then 
+        echo "Error Modifying File: $filename"
+     fi
+}
 global_replace_value()
 {
      val1=$1
@@ -742,7 +782,59 @@ update_variable()
      fi
 }
 
-#Get the path and name of a docker image file
+# Check Password format
+# TYP=UC - Must contain a Uppercase and a Number
+# TYP=UCS - Must contain a Uppercase and a Number and Symbol
+# TYP=NS - Must not contain a symbol
+#
+function check_password ()
+{
+TYP=$1
+password=$2
+
+LEN=$(echo ${#password})
+
+RETCODE=0
+
+   if [ $LEN -lt 8 ]; then
+
+     echo "$password is smaller than 8 characters"
+     RETCODE=1
+   fi
+
+   if [[ ! $password =~ [0-9] ]]
+   then
+      if [ "$TYP" = "UN" ]
+      then
+          echo "Password must contain a number"
+          RETCODE=1
+      fi
+   fi
+
+   if [[ ! $password =~ [A-Z] ]] && [ "$TYP" = "NS" ]
+   then
+      if [ "$TYP" = "UN" ]
+      then
+         echo "Password must contain an Uppercase Letter"
+         RETCODE=1
+      fi
+   fi
+
+   if  [[  $password =~ ^[[:alnum:]]+$ ]] && [ "$TYP" = "UNS" ]
+   then
+     echo "Password Must contain a Special Character"
+     RETCODE=1
+   fi
+
+   if [[ ! $password =~ ^[[:alnum:]]+$ ]] && [ "$TYP" = "NS" ]
+   then
+     echo "Password Must Not contain a Special Character"
+     RETCODE=1
+   fi
+   return $RETCODE
+}
+
+#Get the path and name of a image file
 #
 function get_image_file()
 {
@@ -903,10 +995,10 @@ check_running()
     while [ "$X" = "0" ]
     do
 
-        POD=`kubectl --namespace $NAMESPACE get pod -o wide | grep $SERVER_NAME | head -1 `
+        POD=`kubectl -n $NAMESPACE get pods -o wide | grep $SERVER_NAME | head -1 `
         if [ "$POD" = "" ]
         then
-             JOB_STATUS=`kubectl --namespace $NAMESPACE get pod -o wide | grep infra-domain-job | awk '{ print $3 }'`
+             JOB_STATUS=`kubectl -n $NAMESPACE get pod -o wide | grep infra-domain-job | awk '{ print $3 }'`
              if [ "$JOB_STATUS" = "Error" ]
              then
                   echo "Domain Creation has an Error"
@@ -916,7 +1008,7 @@ check_running()
              exit 1
         fi
         PODSTATUS=`echo $POD | awk '{ print $3 }'`
-        RUNNING=`echo $POD | awk '{ print $2 }'`
+        RUNNING=`echo $POD | awk '{ print $2 }' | cut -f1 -d/`
         NODE=`echo $POD | awk '{ print $7 }'`
 
         if [ "$PODSTATUS" = "Error" ]
@@ -941,7 +1033,7 @@ check_running()
                  X=3
               fi
         fi
-        if [ "$RUNNING" = "1/1" ] 
+        if [ ! "$RUNNING" = "0" ] 
         then
            echo " Running"
            X=1
@@ -981,6 +1073,33 @@ check_stopped()
            X=1
         fi
     done
+}
+
+# Check an LDAP User exists
+#
+check_ldap_user()
+{
+  userid=$1
+
+  ST=`date +%s`
+  print_msg "Checking User $userid exists in LDAP"
+
+  LDAP_CMD="/u01/oracle/user_projects/${OUD_POD_PREFIX}-oud-ds-rs-0/OUD/bin/ldapsearch -h ${OUD_POD_PREFIX}-oud-ds-rs-lbr-ldap.${OUDNS}.svc.cluster.local -p 1389 -D"
+  LDAP_CMD="$LDAP_CMD ${LDAP_ADMIN_USER} -w ${LDAP_ADMIN_PWD} -b cn=${LDAP_SYSTEMIDS},${LDAP_SEARCHBASE} uid=${userid} "
+
+  USER=`kubectl exec -n $OUDNS -ti ${OUD_POD_PREFIX}-oud-ds-rs-0 -c oud-ds-rs -- $LDAP_CMD | grep uid`
+
+  if [ "$USER" = "" ]
+  then
+     echo "User Does not exist - Fix LDAP before continuing"
+     exit 1
+  else
+     echo " Exists "
+  fi
+
+   ET=`date +%s`
+
+  print_time STEP "Start $DOMAIN_NAME Domain" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Start a WebLogic Domain
@@ -1201,4 +1320,278 @@ function check_lbr()
     fi
 }
 
+# Change Kibana ELK Host
+#
+update_kibana_host()
+{
+   namespace=$1
+   confmap=$2
 
+   ST=`date +%s`
+   print_msg "Updating Logstash Host"
+   kubectl get cm $confmap -n $namespace -o yaml | sed '/kind:/,$d' > $WORKDIR/kibana_cm.yaml
+   sed -i "s/hosts.*/hosts => [\"$ELK_HOST\"]/"  $WORKDIR/kibana_cm.yaml
+
+   echo kubectl patch cm $confmap -n $namespace --patch-file $WORKDIR/kibana_cm.yaml > $LOGDIR/update_kibana_host.log
+   kubectl patch cm $confmap -n $namespace --patch-file $WORKDIR/kibana_cm.yaml >> $LOGDIR/update_kibana_host.log
+   print_status $? $LOGDIR/update_kibana_host.log
+
+   ET=`date +%s`
+   print_time STEP "Update logstash host" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create cert Configmap
+#
+create_cert_cm()
+{
+   namespace=$1
+
+   ST=`date +%s`
+   print_msg "Creating Logstash Certificate configmap"
+   certfile=$LOCAL_WORKDIR/ELK/ca.crt
+
+   if [ ! -f $certfile ]
+   then 
+      echo "Certificate File does not exist."
+      exit 1
+   fi
+
+   kubectl create configmap elk-cert --from-file=$certfile -n $namespace > $LOGDIR/logstash_cert.log 2>&1
+   print_status $? $LOGDIR/logstash_cert.log
+
+   ET=`date +%s`
+   print_time STEP "Creating Logstash Certificate Configmap" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Logstash Pod
+#
+create_logstash()
+{
+   namespace=$1
+
+   ST=`date +%s`
+   print_msg "Deploy Logstash into $namespace"
+
+   cp $TEMPLATE_DIR/logstash.yaml $WORKDIR 
+
+   if [ "$namespace" = "$OAMNS" ]
+   then 
+      PVC=${OAM_DOMAIN_NAME}-domain-pv
+      MP=`kubectl describe domains $OAM_DOMAIN_NAME -n $OAMNS | grep "Mount Path" | sed 's/Mount Path: //'`
+      update_variable "<DOMAIN_NAME>" $OAM_DOMAIN_NAME $WORKDIR/logstash.yaml
+      update_variable "<MOUNT_PATH>" "$MP" $WORKDIR/logstash.yaml
+   elif  [ "$namespace" = "$OIGNS" ]
+   then
+      PVC=${OIM_DOMAIN_NAME}-domain-pv
+      MP=`kubectl describe domains $OIG_DOMAIN_NAME -n $OIGNS | grep "Mount Path" | sed 's/Mount Path: //'`
+      update_variable "<DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/logstash.yaml
+      update_variable "<MOUNT_PATH>" "$MP" $WORKDIR/logstash.yaml
+   elif  [ "$namespace" = "$OIRINS" ]
+   then
+      update_variable "<OIRI_DING_SHARE>" $OIRI_DING_SHARE $WORKDIR/logstash.yaml
+      update_variable "<PVSERVER>" $PVSERVER $WORKDIR/logstash.yaml
+   elif  [ "$namespace" = "$OUDNS" ]
+   then
+      update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/logstash.yaml
+   fi
+
+   update_variable "<NAMESPACE>" $namespace $WORKDIR/logstash.yaml
+   update_variable "<ELK_VER>" $ELK_VER $WORKDIR/logstash.yaml
+ 
+   kubectl create -f $WORKDIR/logstash.yaml > $LOGDIR/logstash.log 2>&1
+   print_status $? $LOGDIR/logstash.log
+
+   ET=`date +%s`
+   print_time STEP "Update logstash host" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Deploy Elastic Search Operator
+#
+install_elk_operator()
+{
+
+   ST=`date +%s`
+   print_msg "Deploy Elastic Search Operator"
+
+   printf "\n\t\t\tAdd Helm Repository - "
+   helm repo add elastic https://helm.elastic.co > $LOGDIR/operator.log 2>&1
+   print_status $? $LOGDIR/operator.log
+
+   printf "\t\t\tUpdate Helm Repository - "
+   helm repo update >> $LOGDIR/operator.log 2>&1
+   print_status $? $LOGDIR/operator.log
+
+   printf "\t\t\tInstall Operator - "
+
+   helm install elastic-operator elastic/eck-operator -n $ELKNS --create-namespace >> $LOGDIR/operator.log 2>&1
+   print_status $? $LOGDIR/operator.log
+  
+   check_running $ELKNS elastic-operator
+
+   ET=`date +%s`
+   print_time STEP "Deploy Elastic Search Operator" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Deploy Elastic Search and Kibana
+#
+deploy_elk()
+{
+
+   ST=`date +%s`
+   print_msg "Create Elastic Search Cluster "
+
+   cp $TEMPLATE_DIR/elk_cluster.yaml $WORKDIR 
+   filename=$WORKDIR/elk_cluster.yaml
+
+   update_variable "<ELKNS>" $ELKNS $filename
+   update_variable "<ELK_VER>" $ELK_VER $filename
+   update_variable "<ELK_STORAGE>" $ELK_STORAGE $filename
+
+   kubectl create -f $filename > $LOGDIR/elk.log 2>&1
+   print_status $? $LOGDIR/elk.log
+
+   ET=`date +%s`
+   print_time STEP "Create Elastic Search cluster" $ST $ET >> $LOGDIR/timings.log
+}
+
+deploy_kibana()
+{
+
+   ST=`date +%s`
+   print_msg "Create Kibana"
+
+   cp $TEMPLATE_DIR/kibana.yaml $WORKDIR 
+   filename=$WORKDIR/kibana.yaml
+
+   update_variable "<ELKNS>" $ELKNS $filename
+   update_variable "<ELK_VER>" $ELK_VER $filename
+
+   kubectl create -f $filename > $LOGDIR/kibana.log 2>&1
+   print_status $? $LOGDIR/kibana.log
+
+   ET=`date +%s`
+   print_time STEP "Create Kibana" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_elk_nodeport()
+{
+
+   ST=`date +%s`
+   print_msg "Create Node Port Services"
+
+   printf "\n\t\t\tKibana NodePort Service - "
+   cp $TEMPLATE_DIR/kibana_nodeport.yaml $WORKDIR 
+   filename=$WORKDIR/kibana_nodeport.yaml
+
+   update_variable "<ELKNS>" $ELKNS $filename
+   update_variable "<ELK_KIBANA_K8>" $ELK_KIBANA_K8 $filename
+
+   kubectl create -f $filename > $LOGDIR/kibana_nodeport.log 2>&1
+   print_status $? $LOGDIR/kibana_nodeport.log
+
+   printf "\t\t\tELK NodePort Service - "
+   cp $TEMPLATE_DIR/elk_nodeport.yaml $WORKDIR 
+   filename=$WORKDIR/elk_nodeport.yaml
+
+   update_variable "<ELKNS>" $ELKNS $filename
+   update_variable "<ELK_K8>" $ELK_K8 $filename
+
+   kubectl create -f $filename > $LOGDIR/elk_nodeport.log 2>&1
+   print_status $? $LOGDIR/elk_nodeport.log
+
+   ET=`date +%s`
+   print_time STEP "Create NodePort Services" $ST $ET >> $LOGDIR/timings.log
+}
+
+update_elk_password()
+{
+
+   ST=`date +%s`
+   print_msg "Obtain Elastic Search Password"
+
+   ELK_PWD=`kubectl get secret elasticsearch-es-elastic-user -n $ELKNS -o go-template='{{.data.elastic | base64decode}}'`
+   replace_password ELK_PWD $ELK_PWD $PWDFILE
+   if [ "$ELK_PWD" = "" ]
+   then
+      echo "Failed to execute:kubectl get secret elasticsearch-es-elastic-user -n $ELKNS -o go-template='{{.data.elastic | base64decode}}'" > $LOGDIR/elk_pwd.log
+      echo "Failed - See logfile $LOGDIR/elk_pwd.log"
+      exit 1 
+   else
+      echo "Success"
+   fi
+
+
+   ET=`date +%s`
+   print_time STEP "Obtain ELK Password" $ST $ET >> $LOGDIR/timings.log
+}
+
+get_elk_cert()
+{
+
+   ST=`date +%s`
+   print_msg "Obtain Elastic Search Certificate"
+
+   kubectl cp $ELKNS/elasticsearch-es-default-0:/usr/share/elasticsearch/config/http-certs/..data/ca.crt $WORKDIR/ca.crt >  $LOGDIR/elk_cert.log
+   print_status $? $LOGDIR/elk_cert.log
+
+   ET=`date +%s`
+
+   print_time STEP "Obtain ELK certificate" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_elk_role()
+{
+
+   print_msg "Creating Elastic Search Role"
+   ST=`date +%s`
+
+   ROLE_NAME=logstash_writer
+
+   ADMINURL=https://$K8_WORKER_HOST1:$ELK_K8
+
+   REST_API="'$ADMINURL/_security/role/$ROLE_NAME'"
+
+   USER=`encode_pwd elastic:${ELK_PWD}`
+
+   PUT_CURL_COMMAND="curl --location -k --request  PUT "
+   CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
+   PAYLOAD="-d '{\"cluster\": [\"manage_index_templates\", \"monitor\", \"manage_ilm\"],\"indices\": [ {\"names\": [ \"logs*\" ],"
+   PAYLOAD=$PAYLOAD"\"privileges\": [\"write\",\"create\",\"create_index\",\"manage\",\"manage_ilm\"] } "
+   PAYLOAD=$PAYLOAD" ] }'"
+
+   echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/elk_role.log 2>&1
+   eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/elk_role.log 2>&1
+   grep -q "\"created\":true"  $LOGDIR/elk_role.log
+   print_status $? $LOGDIR/elk_role.log 2>&1
+
+   ET=`date +%s`
+   print_time STEP "Create Elastic Search Role" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_elk_user()
+{
+
+   print_msg "Creating Elastic Search User"
+   ST=`date +%s`
+
+   USER_NAME=logstash_internal
+
+   ADMINURL=https://$K8_WORKER_HOST1:$ELK_K8
+
+   REST_API="'$ADMINURL/_security/user/$USER_NAME'"
+
+   USER=`encode_pwd elastic:${ELK_PWD}`
+
+   PUT_CURL_COMMAND="curl --location -k --request  PUT "
+   CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
+   PAYLOAD="-d '{\"password\": \"$ELK_USER_PWD\", \"roles\" : [ \"logstash_writer\"],\"full_name\" : \"Internal Logstash User\""
+   PAYLOAD=$PAYLOAD"  }'"
+
+   echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/elk_user.log 2>&1
+   eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/elk_user.log 2>&1
+   grep -q "\"created\":true"  $LOGDIR/elk_user.log
+   print_status $? $LOGDIR/elk_user.log 2>&1
+
+   ET=`date +%s`
+   print_time STEP "Create Elastic Search User" $ST $ET >> $LOGDIR/timings.log
+}

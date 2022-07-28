@@ -1,5 +1,8 @@
 # Copyright (c) 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This file creates the ingress rules for OAM
+#
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -158,7 +161,7 @@ spec:
             name:  <OAM_DOMAIN_NAME>-cluster-oam-cluster
             port:
               number: 14100
-        path: /oamservices/rest/auth
+        path: /oam/services/rest/auth
         pathType: Prefix
       - backend:
           service:

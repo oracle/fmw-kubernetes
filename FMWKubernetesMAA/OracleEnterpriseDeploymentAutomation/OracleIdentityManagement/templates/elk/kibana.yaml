@@ -1,0 +1,15 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Example of creating a Kibana deployment
+#
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: <ELKNS>
+spec:
+  version: <ELK_VER>
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
