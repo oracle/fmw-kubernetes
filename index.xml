@@ -12,6 +12,15 @@
     
     
     <item>
+      <title>Topology</title>
+      <link>/fmw-kubernetes/soa-domains/edg-guide/topology/</link>
+      <pubDate>Wed, 22 Jun 2022 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/soa-domains/edg-guide/topology/</guid>
+      <description>Assumptions The most relevant assumptions for the Oracle SOA Suite Kubernetes Enterprise Deployment Guide (EDG) topology are related to the database and web tiers. Typical on-premises production systems keep their high end database (such as RAC, RAC+DG, Exadata, Autonomous Database) out of the Kubernetes cluster and manage that tier separately. This implies that the database runs separately from the Kubernetes cluster hosting the application tier. The database provisioning and configuration process is out of the scope of the Oracle SOA Suite Kubernetes setup.</description>
+    </item>
+    
+    <item>
       <title>Preparing an OKE environment</title>
       <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/prepare-oke-environment/</link>
       <pubDate>Sun, 14 Feb 2021 16:43:45 -0500</pubDate>
@@ -77,7 +86,7 @@ Create an &amp;ldquo;Auth token&amp;rdquo; Create an &amp;ldquo;Auth token&amp;r
       
       <guid>/fmw-kubernetes/soa-domains/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle SOA Suite on Kubernetes.
-Recent changes    Date Version Change     May 31, 2022 22.2.2 Supports Oracle SOA Suite 12.2.1.4 domains deployment using April 2022 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch 34077593).   February 25, 2022 22.1.2 Supports Oracle SOA Suite 12.</description>
+Recent changes    Date Version Change     August 31, 2022 22.3.2 Supports Oracle SOA Suite 12.2.1.4 domains deployment using July 2022 PSU and known bug fixes. Oracle SOA Suite 12.2.1.4 Docker image for this release can be downloaded from My Oracle Support (MOS patch 34410491).   May 31, 2022 22.2.2 Supports Oracle SOA Suite 12.</description>
     </item>
     
     <item>
@@ -302,6 +311,16 @@ Contents  Install the Traefik (ingress-based) load balancer Configure Traefik to
     </item>
     
     <item>
+      <title>Setup steps</title>
+      <link>/fmw-kubernetes/soa-domains/edg-guide/setup-edg/</link>
+      <pubDate>Wed, 22 Jun 2022 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/soa-domains/edg-guide/setup-edg/</guid>
+      <description>This section provides recommended steps to set up Oracle SOA Suite enterprise deployment on Kubernetes to eliminate single points of failure and to provide high availability.
+ Set up your Kubernetes cluster Prepare the environment  Configure firewalls and network Load Oracle SOA Suite images on all the worker nodes Enable a shared storage location for the persistent volume   Create a database and the appropriate database services Install and configure Oracle HTTP Server in the DMZ Configure a front-end load balancer Apply operating system changes for Coherence Deploy WebLogic Kubernetes Operator and Oracle SOA Suite Configure redundant persistent volume Configure the required priority for mounts Set front-end addresses Enable FAN for GridLink data sources Configure ASM Configure coredns allocation  Set up your Kubernetes cluster Refer to the official Kubernetes documentation to set up a production-grade Kubernetes cluster.</description>
+    </item>
+    
+    <item>
       <title>Quick start deployment guide</title>
       <link>/fmw-kubernetes/wccontent-domains/appendix/quickstart-deployment-guide/</link>
       <pubDate>Mon, 01 Feb 2021 15:27:38 -0500</pubDate>
@@ -428,7 +447,7 @@ Add the Helm repos (if not added) Add following Helm repos</description>
       
       <guid>/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-operator-release/</guid>
       <description>To upgrade the WebLogic Kubernetes operator, use the helm upgrade command with new Helm chart and operator image. See the steps here to pull the operator image and set up the Oracle SOA Suite repository that contains the operator chart. To upgrade the operator run the following command:
-$ cd ${WORKDIR} $ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operator:3.4.0 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-kubernetes-operator \ charts/weblogic-operator  Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.</description>
+$ cd ${WORKDIR} $ helm upgrade \ --reuse-values \ --set image=oracle/weblogic-kubernetes-operator:3.4.2 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-kubernetes-operator \ charts/weblogic-operator  Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.</description>
     </item>
     
     <item>
@@ -843,16 +862,6 @@ $ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash [orac
     
     <item>
       <title>Frequently Asked Questions</title>
-      <link>/fmw-kubernetes/soa-domains/faq/</link>
-      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
-      
-      <guid>/fmw-kubernetes/soa-domains/faq/</guid>
-      <description>Overriding tuning parameters is not supported using configuration overrides The WebLogic Kubernetes Operator enables you to override some of the domain configuration using configuration overrides (also called situational configuration). See supported overrides. Overriding the tuning parameters such as MaxMessageSize and PAYLOAD, for Oracle SOA Suite domains is not supported using the configuration overrides feature. However, you can override them using the following steps:
-  Specify the new value using the environment variable K8S_REFCONF_OVERRIDES in serverPod.</description>
-    </item>
-    
-    <item>
-      <title>Frequently Asked Questions</title>
       <link>/fmw-kubernetes/wcsites-domains/faq/</link>
       <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
       
@@ -871,6 +880,16 @@ $ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash [orac
 For example, the following configuration updates DbAdapter.rar to create a new connection instance and creates data source CoffeeShop on the Administration Console for the same with jdbc/CoffeeShopDS.
 File location: /u01/oracle/soa/soa/connectors/DbAdapter.rar
 &amp;lt;connection-instance&amp;gt; &amp;lt;jndi-name&amp;gt;eis/DB/CoffeeShop&amp;lt;/jndi-name&amp;gt; &amp;lt;connection-properties&amp;gt; &amp;lt;properties&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;XADataSourceName&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;jdbc/CoffeeShopDS&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;DataSourceName&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;PlatformClassName&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.</description>
+    </item>
+    
+    <item>
+      <title>Frequently Asked Questions</title>
+      <link>/fmw-kubernetes/soa-domains/faq/</link>
+      <pubDate>Fri, 22 Feb 2019 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/soa-domains/faq/</guid>
+      <description>Overriding tuning parameters is not supported using configuration overrides The WebLogic Kubernetes Operator enables you to override some of the domain configuration using configuration overrides (also called situational configuration). See supported overrides. Overriding the tuning parameters such as MaxMessageSize and PAYLOAD, for Oracle SOA Suite domains is not supported using the configuration overrides feature. However, you can override them using the following steps:
+  Specify the new value using the environment variable K8S_REFCONF_OVERRIDES in serverPod.</description>
     </item>
     
     <item>
