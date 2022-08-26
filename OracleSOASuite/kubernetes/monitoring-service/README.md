@@ -196,7 +196,7 @@ The following parameters can be provided in the inputs file.
 | `prometheusNodePort` | Port number of the Prometheus outside the Kubernetes cluster. | `32101` |
 | `grafanaNodePort` | Port number of the Grafana outside the Kubernetes cluster. | `32100` |
 | `alertmanagerNodePort` | Port number of the Alertmanager outside the Kubernetes cluster. | `32102` |
-| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server’s user name and password. | `soainfra-domain-credentials` |
+| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server's user name and password. | `soainfra-domain-credentials` |
 
 Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and deploying WebLogic Monitoring Exporter into the OracleSOASuite domain. Hence make the domain specific values to be same as that used during domain creation.
 

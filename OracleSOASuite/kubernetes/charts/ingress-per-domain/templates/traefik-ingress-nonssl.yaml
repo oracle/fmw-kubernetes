@@ -138,15 +138,6 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
-      - path: /b2bconsole
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-            port:
-              number: {{ .Values.wlsDomain.soaManagedServerPort }}
-      {{- end }}
 
 {{- end }}
 {{- end }}

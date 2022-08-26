@@ -13,11 +13,9 @@ metadata:
     weblogic.resourceVersion: domain-v2
   annotations:
     kubernetes.io/ingress.class: 'traefik'
-{{- if eq .Values.sslType "SSL" }}
     traefik.ingress.kubernetes.io/router.entrypoints: 'websecure'
     traefik.ingress.kubernetes.io/router.tls: 'true'
     traefik.ingress.kubernetes.io/router.middlewares: '{{ .Release.Namespace}}-wls-proxy-ssl@kubernetescrd'
-{{- end }}
 spec:
   rules:
   - host: '{{ .Values.traefik.hostname }}'
@@ -136,15 +134,6 @@ spec:
       {{- end }}
       {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
       - path: /EssHealthCheck
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-            port:
-              number: {{ .Values.wlsDomain.soaManagedServerPort }}
-      {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
-      - path: /b2bconsole
         pathType: ImplementationSpecific
         backend:
           service:
