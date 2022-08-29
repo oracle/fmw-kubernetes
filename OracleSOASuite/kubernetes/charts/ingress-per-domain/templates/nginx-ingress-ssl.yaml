@@ -14,13 +14,11 @@ metadata:
     nginx.ingress.kubernetes.io/affinity: 'cookie'
     nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
     nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
-{{- if eq .Values.sslType "SSL" }} 
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_input_headers "X-Forwarded-Proto: https";
-      more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
-      more_set_input_headers "WL-Proxy-SSL: true";
+       more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
+       more_set_input_headers "X-Forwarded-Proto: https";
+       more_set_input_headers "WL-Proxy-SSL: true";
     nginx.ingress.kubernetes.io/ingress.allow-http: 'false'
-{{- end }}
 spec:
   rules:
   - host: '{{ .Values.nginx.hostname }}'
@@ -146,23 +144,11 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
-      - path: /b2bconsole
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
-            port:
-              number: {{ .Values.wlsDomain.soaManagedServerPort }}
-      {{- end }}
-{{- if eq .Values.sslType "SSL" }}
   tls:
   - hosts:
     - '{{ .Values.nginx.hostname }}'
     secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
-{{- end }}
 
 {{- end }}
 {{- end }}
-
 
