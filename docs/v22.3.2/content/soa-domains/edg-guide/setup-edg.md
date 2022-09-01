@@ -15,7 +15,7 @@ This section provides recommended steps to set up Oracle SOA Suite enterprise de
     - [Load Oracle SOA Suite images on all the worker nodes](#load-oracle-soa-suite-images-on-all-the-worker-nodes)  
     - [Enable a shared storage location for the persistent volume](#enable-a-shared-storage-location-for-the-persistent-volume)    
 1. [Create a database and the appropriate database services](#create-a-database-and-the-appropriate-database-services)
-1. [Install and configure Oracle HTTP Server in the DMZ](#install-and-configure-ohs-in-the-dmz)
+1. [Install and configure Oracle HTTP Server in the DMZ](#install-and-configure-oracle-http-server-in-the-dmz)
 1. [Configure a front-end load balancer](#configure-a-front-end-load-balancer)
 1. [Apply operating system changes for Coherence](#apply-operating-system-changes-for-coherence)
 1. [Deploy WebLogic Kubernetes Operator and Oracle SOA Suite](#deploy-weblogic-kubernetes-operator-and-oracle-soa-suite)
