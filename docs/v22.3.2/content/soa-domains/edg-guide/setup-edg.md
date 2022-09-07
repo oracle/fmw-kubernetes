@@ -25,6 +25,7 @@ This section provides recommended steps to set up Oracle SOA Suite enterprise de
 1. [Enable FAN for GridLink data sources](#enable-fan-for-gridlink-data-sources)
 1. [Configure ASM](#configure-asm)
 1. [Configure coredns allocation](#configure-coredns-allocation)
+1. [Adjust server's pods Liveness Probe](#adjust-servers-pods-liveness-probe)
 
 ### Set up your Kubernetes cluster
 Refer to the official Kubernetes [documentation](https://kubernetes.io/docs/setup/#production-environment) to set up a production-grade Kubernetes cluster. It is recommended to set up the control plane (Master) with three nodes and three worker nodes. See the [Topology](../topology/#topology-diagram) for more details.
@@ -680,3 +681,18 @@ kube-system   coredns-84b49c57fd-5mrkw                         1/1     Running  
 kube-system   coredns-84b49c57fd-5zm88                         1/1     Running     0          165m    10.244.2.17   olk8-m3   <none>           <none>
 kube-system   coredns-84b49c57fd-nqlwb                         1/1     Running     0          166m    10.244.4.75   olk8-w2   <none>           <none>
 ```
+
+### Adjust server's pods Liveness Probe
+
+By default, the liveness probe is configured to check liveness every 45 seconds, which might cause requests to be routed to backend pods that are no longer available during outage scenarios. Recommended to adjust liveness probe values so that on hard node failures pods are marked as down faster. To configure a more aggressive probe, edit the domain and change the `serverPods.livenessProbe` values to the following:
+
+```bash
+livenessProbe:
+   failureThreshold: 1
+   initialDelaySeconds: 30
+   periodSeconds: 5
+   successThreshold: 1
+   timeoutSeconds: 3
+```
+
+Refer WebLogic Kubernetes Operator [documentation](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/domain-lifecycle/liveness-readiness-probe-customization/#liveness-probe-customization) for details on how to customize the liveness probe.
