@@ -12,18 +12,18 @@
     <title>Setup steps :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1662035330" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1662035330" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1662389032" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1662389032" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1662035330"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1662389032"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1662035330"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1662035330"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1662389032"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1662389032"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1662035330"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1662389032"></script>
 
     
   </div>
@@ -4926,6 +4926,7 @@
         <li><a href="#enable-fan-for-gridlink-data-sources">Enable FAN for GridLink data sources</a></li>
         <li><a href="#configure-asm">Configure ASM</a></li>
         <li><a href="#configure-coredns-allocation">Configure coredns allocation</a></li>
+        <li><a href="#adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</a></li>
       </ul>
     </li>
   </ul>
@@ -4974,6 +4975,7 @@
 <li><a href="#enable-fan-for-gridlink-data-sources">Enable FAN for GridLink data sources</a></li>
 <li><a href="#configure-asm">Configure ASM</a></li>
 <li><a href="#configure-coredns-allocation">Configure coredns allocation</a></li>
+<li><a href="#adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</a></li>
 </ol>
 <h3 id="set-up-your-kubernetes-cluster">Set up your Kubernetes cluster</h3>
 <p>Refer to the official Kubernetes <a href="https://kubernetes.io/docs/setup/#production-environment">documentation</a> to set up a production-grade Kubernetes cluster. It is recommended to set up the control plane (Master) with three nodes and three worker nodes. See the <a href="../topology/#topology-diagram">Topology</a> for more details.</p>
@@ -5569,7 +5571,16 @@ kube-system   coredns-84b49c57fd-4fz4g                         1/1     Running  
 kube-system   coredns-84b49c57fd-5mrkw                         1/1     Running     <span style="color:#ae81ff">0</span>          165m    10.244.4.76   olk8-w2   &lt;none&gt;           &lt;none&gt;
 kube-system   coredns-84b49c57fd-5zm88                         1/1     Running     <span style="color:#ae81ff">0</span>          165m    10.244.2.17   olk8-m3   &lt;none&gt;           &lt;none&gt;
 kube-system   coredns-84b49c57fd-nqlwb                         1/1     Running     <span style="color:#ae81ff">0</span>          166m    10.244.4.75   olk8-w2   &lt;none&gt;           &lt;none&gt;
-</code></pre></div>
+</code></pre></div><h3 id="adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</h3>
+<p>By default, the liveness probe is configured to check liveness every 45 seconds, which might cause requests to be routed to backend pods that are no longer available during outage scenarios. Recommended to adjust liveness probe values so that on hard node failures pods are marked as down faster. To configure a more aggressive probe, edit the domain and change the <code>serverPods.livenessProbe</code> values to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">livenessProbe:
+   failureThreshold: <span style="color:#ae81ff">1</span>
+   initialDelaySeconds: <span style="color:#ae81ff">30</span>
+   periodSeconds: <span style="color:#ae81ff">5</span>
+   successThreshold: <span style="color:#ae81ff">1</span>
+   timeoutSeconds: <span style="color:#ae81ff">3</span>
+</code></pre></div><p>Refer WebLogic Kubernetes Operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/domain-lifecycle/liveness-readiness-probe-customization/#liveness-probe-customization">documentation</a> for details on how to customize the liveness probe.</p>
+
 
 <footer class=" footline" >
 	
@@ -8893,19 +8904,19 @@ kube-system   coredns-84b49c57fd-nqlwb                         1/1     Running  
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1662035330"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1662389032"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1662035330"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1662035330"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1662389032"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1662389032"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1662035330" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1662035330"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1662389032" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1662389032"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
