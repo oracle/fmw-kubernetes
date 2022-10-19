@@ -321,103 +321,43 @@ replOUD:
   # List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap
   envVars:
 
+
+# Configuration for Logstash deployment
 elk:
   # Enabled flag to enable the integrated ELK stack for OUD
   enabled: false
-  elasticsearch:
-    image:
-      repository: docker.elastic.co/elasticsearch/elasticsearch
-      tag: 6.8.0
-      pullPolicy: IfNotPresent
-    # esreplicas is the number of replicas of ElasticSearch deployment to be created
-    esreplicas: 1
-    #minimumMasterNodes is the the minimum number of master nodes that needs to configured. This will use the number of replicas (esreplicas / 2) + 1
-    minimumMasterNodes: 1
-    # Java options for Elasticsearch. This is where you should configure the jvm heap size
-    esJAVAOpts: "-Xms512m -Xmx512m"
-    #sysctl vm.max_map_count needed for Elasticsearch
-    sysctlVmMaxMapCount: 262144
-    # cpu resources for elastic search
-    resources:
-      requests:
-        cpu: "100m"
-      limits:
-        cpu: "1000m"
-    esService:
-  # Type of Service to be created for Elastic Search interfaces
-      type: ClusterIP
-  # Service Type for loadbalancer services accessing Elastic Search pods.
-      lbrtype: ClusterIP
-    
-  # Kibana configuration parameters
-  kibana:
-    image:
-      repository: docker.elastic.co/kibana/kibana
-      tag: 6.8.0
-      pullPolicy: IfNotPresent
-    #Number of Kibana instances will be created
-    kibanaReplicas : 1
-    #Type of kibana service to be created
-    service:
-      type: NodePort
-    #Port on which the kibana will be accessed inside the cluster
-      targetPort: 5601
-    #nodePort is the port on which kibana service will be accessed from outside
-      nodePort: 31199
-    
-  # Logstash Configuration parameters
-  logstash:
-    image:
-      repository: logstash
-      tag: 6.6.0
-      pullPolicy: IfNotPresent
-    #Port on which the logstash container will be running
-    containerPort : 5044
-    #Type of service to be created
-    service:
-      type: NodePort
-    #Port on which the logstash will be accessed with in the cluster
-      targetPort: 9600
-    #Port on which the logstash will be accessed outside the cluster
-      nodePort: 32222
-  # If logstashConfigMap is empty, Then default logstashConfigMap will be created and used.
-    logstashConfigMap: 
-  # ELK Ports on which elastic search will be listening across the nodes and outside the nodes
-  elkPorts:
-    rest: 9200
-    internode: 9300
-  #Image used for initiContainers
-  busybox:
-    image: busybox 
-
   imagePullSecrets:
     - name: dockercred
-
-elkVolume:
-  # If enabled, it will use the persistent volume.
-  # if value is false, PV and PVC would not be used and there would not be any mount point available for config
-  enabled: true
-  # Path at which the volume would be mounted
-  mountPath: /usr/share/elasticsearch/data
-  # provide the pvname to use an already created Persistent Volume. If blank, will use the default name from Chart
-  pvname: 
-  accessMode: ReadWriteMany
-  size: 20Gi
-  storageClass: elk-oud 
-# default supported values: either filesystem or networkstorage or custom
-  type: filesystem
-  networkstorage:
-    nfs:
-      path: /scratch/shared/oud_elk/data
-      server: 0.0.0.0
-  filesystem:
-    hostPath:
-      # The path location mentioned should be created and made accessible with necessary privileges for access from pods/containers. 
-      path: /scratch/shared/oud_elk/data
-  custom:
-    # YAML content to be included in PersistenceVolume Object
-  annotations: {}
-
+  IntegrationEnabled: false
+  logStashImage: logstash:8.3.1
+  logstashConfigMap:
+  esindex: oudlogs-00001
+  eshosts: http://elasticsearch.oudns.svc.cluster.local:9200
+  sslenabled: false
+  esuser: logstash_internal
+  espassword: elasticsearch-pw-elastic
+  esapikey:
+  escert: |
+    -----BEGIN CERTIFICATE-----
+    MIIDVjCCAj6gAwIBAgIRAOqQ3Gy75NvPPQUN5kXqNQUwDQYJKoZIhvcNAQELBQAw
+    NTEWMBQGA1UECxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJj
+    aC1odHRwMB4XDTIyMDgyNDA1MTU1OVoXDTIzMDgyNDA1MjU1OVowNTEWMBQGA1UE
+    CxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJjaC1odHRwMIIB
+    IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsQOnxUm9uF32+lyc9SA3WcMZ
+    P1X7TbHMDuO/l3UHBUf5F/bt2m3YkGw+enIos9wzuUNpjIwVt8q4WrRCMl80nAQ0
+    yCXrfLSI9zaHxEC8Ht7V0U+7Sgu5uysD4tyZ9T0Q5zjvkWS6oBPxhfri3OQfPvUW
+    gQ6wJaPGDteYZAwiBMvPEkmh0VUTBTXjToHrtrT7pzmz5BBWnUzdf+jv0+nEfedm
+    mMWw/8jqyqid7bu7bo6gKBZ8zk06n2iMaXzmGW34QlYRLBgubThhxyDE7joZ4NTA
+    UFEJecZR2fccmpN8CNkT9Ex4Hq88nh2OP5XKKPNF4kLh2u6F4auF7Uz42jwvIwID
+    AQABo2EwXzAOBgNVHQ8BAf8EBAMCAoQwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsG
+    AQUFBwMCMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLQb/IjHHkSmHgKSPY7r
+    zBIJZMbdMA0GCSqGSIb3DQEBCwUAA4IBAQA01qY0tGIPsKNkn7blxRjEYkTg59Z5
+    vi6MCpGtdoyZeJgH621IpwyB34Hpu1RQfyg1aNgmOtIK9cvQZRl008DHF4AiHYhU
+    6xe3cjI/QxDXwitoBgWl+a0mkwhSmzJt7TuzImq7RMO4ws3M/nGeNUwFjwsQu86+
+    N/Y3RuuUVbK1xy8Jdz3FZADIgHVPN6GQwYKEpWrZNapKBXjunjCZmpBFxqGMRF44
+    fcSKFlFkwjyTq4kgq44NPv18NMfKCYZcK7ttRTiep77vKB7No/TM69Oz5ZHhQ+2Q
+    pSGg3QF+1fOCFCgWXFEOle6lQ5i8a/GihY0FuphrZxP9ovZ/EKPpE6Gq
+    -----END CERTIFICATE-----
 
 # Cron job will run based on the schedule defined. By default it will run every 30 minutes
 

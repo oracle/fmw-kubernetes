@@ -1,0 +1,346 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "NGINX" }}
+{{- if (eq .Values.sslType "NONSSL") }}
+{{- if .Values.hostName.enabled }}
+
+{{- if .Values.hostName.admin }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oigadmin-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/proxy-buffer-size: '2000k'
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/enable-access-log: 'false'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '{{ .Values.nginx.nginxTimeOut }}'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '{{ .Values.nginx.nginxTimeOut }}'
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: '{{ .Values.hostName.admin }}'
+    http:
+      paths:
+      - path: /console
+        pathType: ImplementationSpecific      
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /consolehelp
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        pathType: ImplementationSpecific              
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /oim
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /sysadmin
+        pathType: ImplementationSpecific              
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /admin
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /dms
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /soa-infra
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /ws_utc
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}        
+      - path: /identity
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /OIGUI
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /FacadeWebApp
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /SchedulerService-web
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+
+{{- end }}
+
+{{- if .Values.hostName.runtime }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oigruntime-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/proxy-buffer-size: '2000k'
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/enable-access-log: 'false'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '{{ .Values.nginx.nginxTimeOut }}'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '{{ .Values.nginx.nginxTimeOut }}'
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: '{{ .Values.hostName.runtime }}'
+    http:
+      paths:
+      - path: /identity
+        pathType: ImplementationSpecific      
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /HTTPClnt
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /reqsvc
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /FacadeWebApp
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /iam
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /OIGUI
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+
+
+{{- end }}
+
+{{- if .Values.hostName.internal }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oiginternal-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/proxy-buffer-size: '2000k'
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/enable-access-log: 'false'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '{{ .Values.nginx.nginxTimeOut }}'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '{{ .Values.nginx.nginxTimeOut }}'
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: oiginternal-ingress
+    http:
+      paths:
+      - path: /wsm-pm
+        pathType: ImplementationSpecific      
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /sodcheck
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /role-sod
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /workflowservice
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /callbackResponseService
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /spml-xsd
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /spmlws
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /reqsvc
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /soa-infra
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /ws_utc
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}        
+      - path: /ucs
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /provisioning-callback
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /CertificationCallbackService
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /IdentityAuditCallbackService
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /soa/composer
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /integration
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /sdpmessaging/userprefs-ui
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      - path: /iam
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.oimManagedServerPort }}
+
+{{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}
+
+

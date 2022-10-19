@@ -6,24 +6,39 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 #
-# Load balancer type.  Supported values are: TRAEFIK, NGINX
+
+# Load balancer type. Supported values are: NGINX
 type: NGINX
-# TimeOut value to be set for nginx parameters proxy-read-timeout and proxy-send-timeout
-nginxTimeOut: 180
-# Type of Configuration Supported Values are : NONSSL, SSL 
+
+# SSL configuration Type. Supported Values are : NONSSL,SSL
 sslType: SSL
 
-# TLS secret name if the mode is SSL
-secretName: domain1-tls-cert
+# domainType. Supported values are: oim
+domainType: oim
 
 #WLS domain as backend to the load balancer
 wlsDomain:
   domainUID: oimcluster
   adminServerName: AdminServer
   adminServerPort: 7001
+  adminServerSSLPort: 
   soaClusterName: soa_cluster
   soaManagedServerPort: 8001
+  soaManagedServerSSLPort: 
   oimClusterName: oim_cluster
   oimManagedServerPort: 14000
+  oimManagedServerSSLPort: 
+
+ 
+# Host  specific values
+hostName:
+  enabled: false
+  admin: 
+  runtime: 
+  internal: 
+
+# Ngnix specific values
+nginx:
+  nginxTimeOut: 180
 
 

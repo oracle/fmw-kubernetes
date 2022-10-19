@@ -5,12 +5,15 @@
 # https://oss.oracle.com/licenses/upl
 #
 #
-{{- if and .Values.elk.enabled (not .Values.elk.logstash.logstashConfigMap) }}
+{{- if and .Values.elk.IntegrationEnabled (not .Values.elk.logstashConfigMap) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "oudsm.fullname" . }}-logstash-configmap
 data:
+  logstash.yml: |
+    #http.host: "0.0.0.0"
+  elk.crt: {{ .Values.elk.escert | toYaml | indent 4 }}
   logstash-config.conf: | 
     input {
       file {
@@ -19,23 +22,34 @@ data:
         start_position => beginning
         sincedb_path => "/dev/null"
       }
-    }
+          }
     filter {
       if [type] == "setup-logs" {
         grok {
           match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:hostserver}> %{GREEDYDATA:message}" ]
           }
-      }
+        }
+
       if "_grokparsefailure" in [tags] {
         mutate {
           remove_tag => [ "_grokparsefailure" ]
           }
         }
       }
-      output {
+     output {
         elasticsearch {
-          hosts => ["{{ include "oudsm.fullname" . }}-elasticsearch:9200"]
+          hosts => ["{{ .Values.elk.eshosts }}"]
+          cacert => '/usr/share/logstash/config/certs/elk.crt'
+          index => "{{ .Values.elk.esindex }}"
+          ssl => {{ .Values.elk.sslenabled }}
+          ssl_certificate_verification => false
+          {{- if .Values.elk.espassword }}
+          user => "{{ .Values.elk.esuser }}"
+          password => "${ELASTICSEARCH_PASSWORD}"
+          {{- end }}
+          {{- if .Values.elk.esapikey }}
+          api_key => "${ELASTICSEARCH_PASSWORD}"
+          {{- end }}
         }
       }
 {{- end -}}
-

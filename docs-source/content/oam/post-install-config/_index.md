@@ -210,13 +210,6 @@ For production environments, the following WebLogic Server tuning parameters mus
    $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/common
    $ chmod 777 oamconfig_modify.sh
    ```
-   
-   For example:
-   
-   ```bash
-   $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/common
-   $ chmod 777 oamconfig_modify.sh
-   ```
 
 1. Edit the `oamconfig.properties` and change the `OAM_NAMESPACE` and `LBR_HOST` to match the values for your OAM Kubernetes environment. For example:
 
@@ -279,7 +272,7 @@ For production environments, the following WebLogic Server tuning parameters mus
    HTTP/1.1 100 Continue
 
    HTTP/1.1 201 Created
-   Date: Mon, 01 Nov 2021 16:59:12 GMT
+   Date: <DATE>
    Content-Type: text/plain
    Content-Length: 76
    Connection: keep-alive

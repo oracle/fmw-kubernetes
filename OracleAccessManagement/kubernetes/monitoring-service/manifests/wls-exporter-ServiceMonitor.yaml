@@ -5,27 +5,26 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: basic-auth
-  namespace: oamns
+  namespace: monitoring
 data:
-  password: d2VsY29tZTE=
-  user: d2VibG9naWM=
+  password: V2VsY29tZTE= # Welcome1 i.e.'WebLogic password'
+  user: d2VibG9naWM= # weblogic  i.e. 'WebLogic username'
 type: Opaque
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: wls-exporter
-  namespace: oamns
+  namespace: monitoring
   labels:
     k8s-app: wls-exporter
-    release: monitoring
 spec:
   namespaceSelector:
     matchNames:
-    - oamns
+    - accessns
   selector:
     matchLabels:
-      weblogic.domainName: accessdomain
+      weblogic.domainName: accessinfra
   endpoints:
   - basicAuth:
       password:

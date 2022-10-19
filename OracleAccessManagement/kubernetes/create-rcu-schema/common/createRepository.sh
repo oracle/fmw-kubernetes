@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 . /u01/oracle/wlserver/server/bin/setWLSEnv.sh
@@ -7,7 +7,7 @@
 echo "Check if the DB Service is ready to accept request "
 connectString=${1:-oracle-db.default.svc.cluster.local:1521/devpdb.k8s}
 schemaPrefix=${2:-accessinfra}
-rcuType=${3:-fmw}
+rcuType=${3:-oam}
 sysPassword=${4:-Oradoc_db1}
 customVariables=${5:-none}
 

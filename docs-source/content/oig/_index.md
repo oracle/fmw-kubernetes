@@ -21,10 +21,9 @@ environment. You can:
 
 ### Current production release
 
-The current production release for the Oracle Identity Governance domain deployment on Kubernetes is [22.3.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 3.3.0.
+The current production release for the Oracle Identity Governance domain deployment on Kubernetes is [22.4.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 3.4.2.
 
-This release of the documentation can also be used for 3.1.X and 3.2.0 WebLogic Kubernetes Operator.
-For 3.0.X WebLogic Kubernetes Operator refer to [Version 21.4.1](https://oracle.github.io/fmw-kubernetes/21.4.1/oig/)
+For 3.3.X WebLogic Kubernetes Operator refer to [Version 22.3.1](https://oracle.github.io/fmw-kubernetes/22.3.1/oig/)
 
 ### Recent changes and known issues
 
@@ -44,6 +43,7 @@ If performing an Enterprise Deployment, refer to the [Enterprise Deployment Guid
 
 To view documentation for an earlier release, see:
 
+* [Version 22.3.1](https://oracle.github.io/fmw-kubernetes/22.3.1/oig/)
 * [Version 22.2.1](https://oracle.github.io/fmw-kubernetes/22.2.1/oig/)
 * [Version 21.4.2](https://oracle.github.io/fmw-kubernetes/21.4.2/oig/)
 * [Version 21.4.1](https://oracle.github.io/fmw-kubernetes/21.4.1/oig/)

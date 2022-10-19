@@ -22,7 +22,7 @@ The  `$WORKDIR/kubernetes/monitoring-service/setup-monitoring.sh` sets up  the m
 
 For usage details execute `./setup-monitoring.sh -h`.
 
-1. Edit the `$WORKDIR/kubernetes/monitoring-service/monitoring-inputs.yaml` and change the `domainUID`, `domainNamespace`, and `weblogicCredentialsSecretName` to correspond to your deployment. For example:
+1. Edit the `$WORKDIR/kubernetes/monitoring-service/monitoring-inputs.yaml` and change the `domainUID`, `domainNamespace`, and `weblogicCredentialsSecretName` to correspond to your deployment.  Also change `wlsMonitoringExporterTosoaCluster`, `wlsMonitoringExporterTooimCluster`, `exposeMonitoringNodePort` to `true`. For example:
 
    ```
    version: create-oimcluster-monitoring-inputs-v1
@@ -108,11 +108,10 @@ For usage details execute `./setup-monitoring.sh -h`.
    ...Successfully got an update from the "stable" chart repository
    ...Successfully got an update from the "prometheus" chart repository
    ...Successfully got an update from the "prometheus-community" chart repository
-   ...Successfully got an update from the "appscode" chart repository
    Update Complete. ⎈Happy Helming!⎈
    Setup prometheus-community/kube-prometheus-stack in progress
    NAME: monitoring
-   LAST DEPLOYED: Tue Jul 13 14:58:56 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: monitoring
    STATUS: deployed
    REVISION: 1
@@ -162,14 +161,14 @@ For usage details execute `./setup-monitoring.sh -h`.
 
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war to targets AdminServer (upload=true) ...
-   <Jul 13, 2022 3:00:08 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-adminserver.
-   <Jul 13, 2022 3:00:20 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -177,14 +176,14 @@ For usage details execute `./setup-monitoring.sh -h`.
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-soa.war to targets soa_cluster (upload=true) ...
-   <Jul 13, 2022 3:00:21 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-soa [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-soa.war], to soa_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-soa [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-soa.war], to soa_cluster .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-soa.
-   <Jul 13, 2022 3:00:28 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-soa [archive: null], to soa_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-soa [archive: null], to soa_cluster .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -192,14 +191,14 @@ For usage details execute `./setup-monitoring.sh -h`.
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-oim.war to targets oim_cluster (upload=true) ...
-   <Jul 13, 2022 3:00:31 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oim [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oim.war], to oim_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oim [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oim.war], to oim_cluster .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-oim.
-   <Jul 13, 2022 3:00:38 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oim [archive: null], to oim_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oim [archive: null], to oim_cluster .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -210,7 +209,7 @@ For usage details execute `./setup-monitoring.sh -h`.
 
    Exiting WebLogic Scripting Tool.
 
-   <Jul 13, 2022 3:00:41 PM GMT> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.>
+   <DATE> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.>
    Deploy WebLogic Monitoring Exporter completed
    secret/basic-auth created
    servicemonitor.monitoring.coreos.com/wls-exporter created
@@ -532,7 +531,7 @@ Generate the WebLogic Monitoring Exporter deployment package. The `wls-exporter.
    ```
 
    
-1. Deploy the WebLogic Monitoring Exporter WAR files into the Oracle Access Management domain:
+1. Deploy the WebLogic Monitoring Exporter WAR files into the Oracle Identity Governance domain:
 
    ```bash
    $ cd $WORKDIR/kubernetes/monitoring-service/scripts
@@ -559,22 +558,22 @@ Generate the WebLogic Monitoring Exporter deployment package. The `wls-exporter.
 
    Type help() for help on available commands
 
-   Connecting to t3://accessdomain-adminserver:7001 with userid weblogic ...
-   Successfully connected to Admin Server "AdminServer" that belongs to domain "accessdomain".
+   Connecting to t3://governancedomain-adminserver:7001 with userid weblogic ...
+   Successfully connected to Admin Server "AdminServer" that belongs to domain "governancedomaindomain".
 
    Warning: An insecure protocol was used to connect to the server.
    To ensure on-the-wire security, the SSL port or Admin port should be used instead.
 
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war to targets AdminServer (upload=true) ...
-   <Jul 13, 2021 10:35:44 AM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-adminserver.
-   <Jul 13, 2021 10:35:56 AM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -582,14 +581,14 @@ Generate the WebLogic Monitoring Exporter deployment package. The `wls-exporter.
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-soa.war to targets soa_cluster (upload=true) ...
-   <Jul 13, 2021 10:35:59 AM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-soa [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-soa.war], to soa_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-soa [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-soa.war], to soa_cluster .>
    ..Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-soa.
-   <Jul 13, 2021 10:36:12 AM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-soa [archive: null], to soa_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-soa [archive: null], to soa_cluster .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -597,14 +596,14 @@ Generate the WebLogic Monitoring Exporter deployment package. The `wls-exporter.
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-oim.war to targets oim_cluster (upload=true) ...
-   <Jul 13, 2021 10:36:15 AM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oim [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oim.war], to oim_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oim [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oim.war], to oim_cluster .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-oim.
-   <Jul 13, 2021 10:36:24 AM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oim [archive: null], to oim_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oim [archive: null], to oim_cluster .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -614,7 +613,7 @@ Generate the WebLogic Monitoring Exporter deployment package. The `wls-exporter.
 
    Exiting WebLogic Scripting Tool.
 
-   <Jul 13, 2021 10:36:27 AM GMT> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.>
+   <DATE> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.>
    ```
 
 ####  Configure Prometheus Operator

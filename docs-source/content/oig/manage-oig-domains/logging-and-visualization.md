@@ -9,124 +9,106 @@ After the OIG domain is set up you can publish operator and WebLogic Server logs
 
 ### Install Elasticsearch and Kibana
 
-1. If your domain namespace is anything other than `oigns`, edit the `$WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml` and change all instances of `oigns` to your domain namespace.
+If you do not already have a centralized Elasticsearch (ELK) stack then you must configure this first. For details on how to configure the ELK stack, follow
+[Installing Elasticsearch (ELK) Stack and Kibana](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html)
 
-1. Create a Kubernetes secret to access the elasticsearch and kibana container images:
+### Create the logstash pod
 
-   **Note:** You must first have a user account on [hub.docker.com](https://hub.docker.com).
+#### Variables used in this chapter
 
-   ```bash
-   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="<docker_username>" --docker-password=<password> --docker-email=<docker_email_credentials> --namespace=<domain_namespace>
-   ```   
-   
+In order to create the logstash pod, you must create several files. These files contain variables which you must substitute with variables applicable to your environment.
+
+Most of the values for the variables will be based on your ELK deployment as per [Installing Elasticsearch (ELK) Stack and Kibana](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html).
+
+The table below outlines the variables and values you must set:
+
+
+
+| Variable | Sample Value | Description |
+| --- | --- | --- |
+| `<ELK_VER>` | `8.3.1` | The version of logstash you want to install.|
+| `<ELK_SSL>` | `true` | If SSL is enabled for ELK set the value to `true`, or if NON-SSL set to `false`. This value must be lowercase.|
+| `<ELK_CERT>` | `MIIDVjCCAj6gAwIBAgIRAOqQ3Gy75..etc...P9ovZ/EKPpE6Gq`  | If `ELK_SSL=true`, this is the BASE64 version of the certificate between `---BEGIN CERTIFICATE---` and `---END CERTIFICATE---`. This is the Certificate Authority (CA) certificate(s), that signed the certificate of the Elasticsearch server. If using a self-signed certificate, this is the self signed certificate of the Elasticserver server. See [Copying the Elasticsearch Certificate](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-C1FC1063-FA76-48AD-AE3D-A39390874C74) for details on how to get the correct certificate.|
+| `<ELK_HOSTS>` | `https://elasticsearch.example.com:9200` | The URL for sending logs to Elasticsearch. HTTP if NON-SSL is used.|
+| `<ELKNS>` | `oigns` | The domain namespace.|
+| `<ELK_USER>` | `logstash_internal` | The name of the user for logstash to access Elasticsearch.|
+| `<ELK_PASSWORD>` |  `password` | The password for ELK_USER.|
+| `<ELK_APIKEY>` | `apikey` | The API key details.|
+
+
+#### Create kubernetes secrets
+
+1. Create a Kubernetes secret for Elasticsearch using the API Key or Password.
+
+   a) If ELK uses an API Key for authentication:
+
+   ```
+   $ kubectl create secret generic elasticsearch-pw-elastic -n <domain_namespace> --from-literal password=<ELK_APIKEY>
+   ```
+
    For example:
    
    ```
-   $ kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" --docker-username="username" --docker-password=<password> --docker-email=user@example.com --namespace=oigns
+   $ kubectl create secret generic elasticsearch-pw-elastic -n oigns --from-literal password=<ELK_APIKEY>
    ```
    
+   The output will look similar to the following:
+   
+   ```
+   secret/elasticsearch-pw-elastic created
+   ```
+
+   b) If ELK uses a password for authentication:
+
+   ```
+   $ kubectl create secret generic elasticsearch-pw-elastic -n <domain_namespace> --from-literal password=<ELK_PASSWORD>
+   ```
+
+   For example:
+   
+   ```
+   $ kubectl create secret generic elasticsearch-pw-elastic -n oigns --from-literal password=<ELK_PASSWORD>
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   secret/elasticsearch-pw-elastic created
+   ```
+
+     
+   **Note**: It is recommended that the ELK Stack is created with authentication enabled. If no authentication is enabled you may create a secret using the values above.
+   
+   
+1. Create a Kubernetes secret to access the required images on [hub.docker.com](https://hub.docker.com):
+
+   **Note**: Before executing the command below, you must first have a user account on [hub.docker.com](https://hub.docker.com).
+
+   ```bash
+   kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" \
+   --docker-username="<DOCKER_USER_NAME>" \
+   --docker-password=<DOCKER_PASSWORD> --docker-email=<DOCKER_EMAIL_ID> \
+   --namespace=<domain_namespace>
+   ```
+   
+   For example,
+   
+   ```bash
+   kubectl create secret docker-registry "dockercred" --docker-server="https://index.docker.io/v1/" \
+   --docker-username="user@example.com" \
+   --docker-password=password --docker-email=user@example.com \
+   --namespace=oigns
+   ```
+
    The output will look similar to the following:
    
    ```bash
    secret/dockercred created
-   ```  
+   ```
    
-1. Create the Kubernetes resource using the following command:
+#### Find the mountPath details
 
-   ```bash
-   $ kubectl apply -f $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
-   ```
- 
-   The output will look similar to the following:
-   
-   ```
-   deployment.apps/elasticsearch created
-   service/elasticsearch created
-   deployment.apps/kibana created
-   service/kibana created
-   ```
-
-1. Run the following command to ensure Elasticsearch is used by the operator:
-
-   ```bash
-   $ helm get values --all weblogic-kubernetes-operator -n opns
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   COMPUTED VALUES:
-   clusterSizePaddingValidationEnabled: true
-   domainNamespaceLabelSelector: weblogic-operator=enabled
-   domainNamespaceSelectionStrategy: LabelSelector
-   domainNamespaces:
-   - default
-   elasticSearchHost: elasticsearch.default.svc.cluster.local
-   elasticSearchPort: 9200
-   elkIntegrationEnabled: true
-   enableClusterRoleBinding: true
-   externalDebugHttpPort: 30999
-   externalRestEnabled: false
-   externalRestHttpsPort: 31001
-   externalServiceNameSuffix: -ext
-   image: ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0
-   imagePullPolicy: IfNotPresent
-   internalDebugHttpPort: 30999
-   introspectorJobNameSuffix: -introspector
-   javaLoggingFileCount: 10
-   javaLoggingFileSizeLimit: 20000000
-   javaLoggingLevel: FINE
-   logStashImage: logstash:6.6.0
-   remoteDebugNodePortEnabled: false
-   serviceAccount: op-sa
-   suspendOnDebugStartup: false
-   ```
-   
-1. To check that Elasticsearch and Kibana are deployed in the Kubernetes cluster, run the following command:
-
-   ```bash
-   $ kubectl get pods -n <namespace> | grep 'elasticsearch\|kibana'
-   ```
-   
-   For example:
-   
-   ```bash
-   $ kubectl get pods -n oigns | grep 'elasticsearch\|kibana'
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   elasticsearch-857bd5ff6b-tvqdn   1/1     Running   0          2m9s
-   kibana-594465687d-zc2rt          1/1     Running   0          2m9s
-   ```
-
-   
-### Create the logstash pod
-
-OIG Server logs can be pushed to the Elasticsearch server using the `logstash` pod. The `logstash` pod needs access to the persistent volume of the OIG domain created previously, for example `governancedomain-domain-pv`.  The steps to create the `logstash` pod are as follows:
-
-1. Obtain the OIG domain persistence volume details:
-
-   ```bash
-   $ kubectl get pv -n <domain_namespace>
-   ```
-   
-   For example:
-   
-   ```bash
-   $ kubectl get pv -n oigns
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   NAME                         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS                         REASON   AGE
-   governancedomain-domain-pv   10Gi       RWX            Retain           Bound    oigns/governancedomain-domain-pvc   governancedomain-oim-storage-class            28h
-   ```
-   
-   Make note of the `CLAIM` value, for example in this case `governancedomain-oim-pvc`
-   
+  
 1. Run the following command to get the `mountPath` of your domain:
    
    ```bash
@@ -145,121 +127,396 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
    Mount Path:  /u01/oracle/user_projects/domains
    ```
    
-1. Navigate to the `$WORKDIR/kubernetes/elasticsearch-and-kibana` directory and create a `logstash.yaml` file as follows.
-   Change the `claimName` and `mountPath` values to match the values returned in the previous commands. Change `namespace` to your domain namespace e.g `oigns`:
+#### Find the persistentVolumeClaim details
+
+1. Run the following command to get the OIG domain persistence volume details:
+
+   ```
+   $ kubectl get pv -n <domain_namespace>
+   ```
+
+   For example:
+
+   ```
+   $ kubectl get pv -n oigns
+   ```
    
-   ```  
+   The output will look similar to the following:
+
+   ```
+   NAME                         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS                         REASON   AGE
+   governancedomain-domain-pv   10Gi       RWX            Retain           Bound    oigns/governancedomain-domain-pvc   governancedomain-oim-storage-class            28h
+   ```
+   
+   Make note of the CLAIM value, for example in this case `governancedomain-oim-pvc`.   
+
+#### Create the Configmap
+
+1. Navigate to the `$WORKDIR/kubernetes/elasticsearch-and-kibana` directory and create a `logstash_cm.yaml` file as follows:
+
+   ```
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     name: oig-logstash-configmap
+     namespace: <ELKNS>
+   data:
+     logstash.yml: |
+       #http.host: "0.0.0.0"
+     elk.crt: |
+       -----BEGIN CERTIFICATE-----
+       <ELK_CERT>
+       -----END CERTIFICATE-----
+     logstash-config.conf: |
+       input {
+         file {
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/AdminServer*.log"
+           tags => "Adminserver_log"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/soa_server*.log"
+           tags => "soaserver_log"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/oim_server*.log"
+           tags => "Oimserver_log"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
+           tags => "Adminserver_diagnostic"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/soa_server*-diagnostic.log"
+           tags => "Soa_diagnostic"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/oim_server*-diagnostic.log"
+           tags => "Oimserver_diagnostic"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/access*.log"
+           tags => "Access_logs"
+           start_position => beginning
+         }
+       }
+       filter {
+         grok {
+           match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}    > <%{DATA:log_number}> <%{DATA:log_message}>" ]
+         }
+       if "_grokparsefailure" in [tags] {
+           mutate {
+               remove_tag => [ "_grokparsefailure" ]
+           }
+       }
+       }
+       output {
+         elasticsearch {
+       hosts => ["<ELK_HOSTS>"]
+       cacert => '/usr/share/logstash/config/certs/elk.crt'
+       index => "oiglogs-000001"
+       ssl => <ELK_SSL>
+       ssl_certificate_verification => false
+       user => "<ELK_USER>"
+       password => "${ELASTICSEARCH_PASSWORD}"
+       api_key => "${ELASTICSEARCH_PASSWORD}"
+         }
+       }
+   ```
+   
+   Change the values in the above file as follows:
+   
+   + Change the `<ELKNS>`, `<ELK_CERT>`, `<ELK_HOSTS>`, `<ELK_SSL>`, and `<ELK_USER>` to match the values for your environment.
+   + If using SSL, make sure the value for <ELK_CERT> is indented correctly. You can use the command: `sed 's/^/   /' elk.crt` to output the certificate with the correct indentation.
+   + If not using SSL, delete the `<ELK_CERT>` line, but leave the -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----.
+   + Change `/u01/oracle/user_projects/domains` to match the `mountPath` returned earlier
+   + If your domainUID is anything other than `governancedomain`, change each instance of `governancedomain` to your domainUID.
+   + If using API KEY for your ELK authentication, delete the `user` and `password` lines.
+   + If using a password for ELK authentication, delete the `api_key` line.
+   + If no authentication is used for ELK, delete the `user`, `password`, and `api_key` lines.
+   
+   For example:
+   
+   ```
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     name: oig-logstash-configmap
+     namespace: oigns
+   data:
+     logstash.yml: |
+       #http.host: "0.0.0.0"
+     elk.crt: |
+       -----BEGIN CERTIFICATE-----
+       MIIDVjCCAj6gAwIBAgIRAOqQ3Gy75NvPPQUN5kXqNQUwDQYJKoZIhvcNAQELBQAw
+       NTEWMBQGA1UECxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJj
+       aC1odHRwMB4XDTIyMDgyNDA1MTU1OVoXDTIzMDgyNDA1MjU1OVowNTEWMBQGA1UE
+       CxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJjaC1odHRwMIIB
+       IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsQOnxUm9uF32+lyc9SA3WcMZ
+       P1X7TbHMDuO/l3UHBUf5F/bt2m3YkGw+enIos9wzuUNpjIwVt8q4WrRCMl80nAQ0
+       yCXrfLSI9zaHxEC8Ht7V0U+7Sgu5uysD4tyZ9T0Q5zjvkWS6oBPxhfri3OQfPvUW
+       gQ6wJaPGDteYZAwiBMvPEkmh0VUTBTXjToHrtrT7pzmz5BBWnUzdf+jv0+nEfedm
+       mMWw/8jqyqid7bu7bo6gKBZ8zk06n2iMaXzmGW34QlYRLBgubThhxyDE7joZ4NTA
+       UFEJecZR2fccmpN8CNkT9Ex4Hq88nh2OP5XKKPNF4kLh2u6F4auF7Uz42jwvIwID
+       AQABo2EwXzAOBgNVHQ8BAf8EBAMCAoQwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsG
+       AQUFBwMCMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLQb/IjHHkSmHgKSPY7r
+       zBIJZMbdMA0GCSqGSIb3DQEBCwUAA4IBBQA01qY0tGIPsKNkn7blxRjEYkTg59Z5
+       vi6MCpGtdoyZeJgH621IpwyB34Hpu1RQfyg1aNgmOtIK9cvQZRl008DHF4AiHYhU
+       6xe3cjI/QxDXwitoBgWl+a0mkwhSmzJt7TuzImq7RMO4ws3M/nGeNUwFjwsQu86+
+       N/Y3RuuUVbK1xy8Jdz3FZADIgHVPN6GQwYKEpWrZNapKBXjunjCZmpBFxqGMRF44
+       fcSKFlFkwjyTq4kgq44NPv18NMfKCYZcK7ttRTiep77vKB7No/TM69Oz5ZHhQ+2Q
+       pSGg3QF+1fOCFCgWXFEOle6lQ5i8a/GihY0FuphrZxP9ovZ/EKPpE6Gq
+       -----END CERTIFICATE-----
+     logstash-config.conf: |
+       input {
+         file {
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/AdminServer*.log"
+           tags => "Adminserver_log"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/soa_server*.log"
+           tags => "soaserver_log"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/oim_server*.log"
+           tags => "Oimserver_log"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
+           tags => "Adminserver_diagnostic"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/soa_server*-diagnostic.log"
+           tags => "Soa_diagnostic"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/oim_server*-diagnostic.log"
+           tags => "Oimserver_diagnostic"
+           start_position => beginning
+         }
+         file {
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/access*.log"
+           tags => "Access_logs"
+           start_position => beginning
+         }
+       }
+       filter {
+         grok {
+           match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}    > <%{DATA:log_number}> <%{DATA:log_message}>" ]
+         }
+       if "_grokparsefailure" in [tags] {
+           mutate {
+               remove_tag => [ "_grokparsefailure" ]
+           }
+       }
+       }
+       output {
+         elasticsearch {
+       hosts => ["https://elasticsearch.example.com:9200"]
+       cacert => '/usr/share/logstash/config/certs/elk.crt'
+       index => "oiglogs-000001"
+       ssl => true
+       ssl_certificate_verification => false
+       user => "logstash_internal"
+       password => "${ELASTICSEARCH_PASSWORD}"
+         }
+       }
+   ```
+   
+   
+   
+1. Run the following command to create the configmap:
+
+   ```
+   $  kubectl apply -f logstash_cm.yaml
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   configmap/oig-logstash-configmap created
+   ```
+   
+#### Deploy the logstash pod
+
+1. Navigate to the `$WORKDIR/kubernetes/elasticsearch-and-kibana` directory and create a `logstash.yaml` file as follows:
+
+   ```
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: logstash-wls
-     namespace: oigns
+     name: oig-logstash
+     namespace: <ELKNS>
    spec:
      selector:
        matchLabels:
-         k8s-app: logstash-wls
+         k8s-app: logstash
      template: # create pods using pod definition in this template
        metadata:
          labels:
-           k8s-app: logstash-wls
+           k8s-app: logstash
        spec:
-         volumes:
-         - name: weblogic-domain-storage-volume
-           persistentVolumeClaim:
-             claimName: governancedomain-domain-pvc
-         - name: shared-logs
-           emptyDir: {}
-           imagePullSecrets:
+         imagePullSecrets:
          - name: dockercred
          containers:
-         - name: logstash
-           image: logstash:6.6.0
-           command: ["/bin/sh"]
-           args: ["/usr/share/logstash/bin/logstash", "-f", "/u01/oracle/user_projects/domains/logstash/logstash.conf"]
+         - command:
+           - logstash
+           image: logstash:<ELK_VER>
            imagePullPolicy: IfNotPresent
+           name: oig-logstash
+           env:
+           - name: ELASTICSEARCH_PASSWORD
+             valueFrom:
+               secretKeyRef:
+                 name: elasticsearch-pw-elastic
+                 key: password
+           resources:
+           ports:
+           - containerPort: 5044
+             name: logstash
            volumeMounts:
            - mountPath: /u01/oracle/user_projects/domains
              name: weblogic-domain-storage-volume
            - name: shared-logs
              mountPath: /shared-logs
+           - mountPath: /usr/share/logstash/pipeline/
+             name: oig-logstash-pipeline
+           - mountPath: /usr/share/logstash/config/logstash.yml
+             subPath: logstash.yml
+             name: config-volume
+           - mountPath: /usr/share/logstash/config/certs
+             name: elk-cert
+         volumes:
+         - configMap:
+             defaultMode: 420
+             items:
+             - key: elk.crt
+               path: elk.crt
+             name: oig-logstash-configmap
+           name: elk-cert
+         - configMap:
+             defaultMode: 420
+             items:
+             - key: logstash-config.conf
+               path: logstash-config.conf
+             name: oig-logstash-configmap
+           name: oig-logstash-pipeline
+         - configMap:
+             defaultMode: 420
+             items:
+             - key: logstash.yml
+               path: logstash.yml
+             name: oig-logstash-configmap
+           name: config-volume
+         - name: weblogic-domain-storage-volume
+           persistentVolumeClaim:
+             claimName: governancedomain-domain-pvc
+         - name: shared-logs
+           emptyDir: {}
+   ```
+   
+   + Change the `<ELKNS>`, and `<ELK_VER>` to match the values for your environment.
+   + Change `/u01/oracle/user_projects/domains` to match the `mountPath` returned earlier
+   + Change the `claimName` value to match the `claimName` returned earlier
+   
+   
+   For example:
+   
+   ```
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: oig-logstash
+     namespace: oigns
+   spec:
+     selector:
+       matchLabels:
+         k8s-app: logstash
+     template: # create pods using pod definition in this template
+       metadata:
+         labels:
+           k8s-app: logstash
+       spec:
+         imagePullSecrets:
+         - name: dockercred
+         containers:
+         - command:
+           - logstash
+           image: logstash:8.3.1
+           imagePullPolicy: IfNotPresent
+           name: oig-logstash
+           env:
+           - name: ELASTICSEARCH_PASSWORD
+             valueFrom:
+               secretKeyRef:
+                 name: elasticsearch-pw-elastic
+                 key: password
+           resources:
            ports:
            - containerPort: 5044
              name: logstash
-   ```   
-   
-1. In the persistent volume directory that corresponds to the mountPath `/u01/oracle/user_projects/domains`, create a `logstash` directory. For example:
-   
-   ```bash
-   $ mkdir -p  /scratch/shared/governancedomainpv/logstash
+           volumeMounts:
+           - mountPath: /u01/oracle/user_projects/domains
+             name: weblogic-domain-storage-volume
+           - name: shared-logs
+             mountPath: /shared-logs
+           - mountPath: /usr/share/logstash/pipeline/
+             name: oig-logstash-pipeline
+           - mountPath: /usr/share/logstash/config/logstash.yml
+             subPath: logstash.yml
+             name: config-volume
+           - mountPath: /usr/share/logstash/config/certs
+             name: elk-cert
+         volumes:
+         - configMap:
+             defaultMode: 420
+             items:
+             - key: elk.crt
+               path: elk.crt
+             name: oig-logstash-configmap
+           name: elk-cert
+         - configMap:
+             defaultMode: 420
+             items:
+             - key: logstash-config.conf
+               path: logstash-config.conf
+             name: oig-logstash-configmap
+           name: oig-logstash-pipeline
+         - configMap:
+             defaultMode: 420
+             items:
+             - key: logstash.yml
+               path: logstash.yml
+             name: oig-logstash-configmap
+           name: config-volume
+         - name: weblogic-domain-storage-volume
+           persistentVolumeClaim:
+             claimName: governancedomain-domain-pvc
+         - name: shared-logs
+           emptyDir: {}
    ```
    
-1. Create a `logstash.conf` in the newly created `logstash` directory that contains the following. Make sure the paths correspond to your `mountPath` and `domain` name. Also, if your namespace is anything other than `oigns` change `"elasticsearch.oigns.svc.cluster.local:9200"` to `"elasticsearch.<namespace>.svc.cluster.local:9200"`::
-   
-   ```
-   input {
-     file {
-       path => "/u01/oracle/user_projects/domains/logs/governancedomain/AdminServer*.log"
-       tags => "Adminserver_log"
-       start_position => beginning
-     }
-     file {
-       path => "/u01/oracle/user_projects/domains/logs/governancedomain/soa_server*.log"
-       tags => "soaserver_log"
-       start_position => beginning
-     }
-     file {
-       path => "/u01/oracle/user_projects/domains/logs/governancedomain/oim_server*.log"
-       tags => "Oimserver_log"
-       start_position => beginning
-     }
-     file {
-       path => "/u01/oracle/user_projects/domains/governancedomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
-       tags => "Adminserver_diagnostic"
-       start_position => beginning
-     }
-     file {
-       path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/soa_server*-diagnostic.log"
-       tags => "Soa_diagnostic"
-       start_position => beginning
-     }
-     file {
-       path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/oim_server*-diagnostic.log"
-       tags => "Oimserver_diagnostic"
-       start_position => beginning
-     }
-     file {
-       path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/access*.log"
-       tags => "Access_logs"
-       start_position => beginning
-     }
-   }
-   filter {
-     grok {
-       match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}> <%{DATA:log_number}> <%{DATA:log_message}>" ]
-     }
-   if "_grokparsefailure" in [tags] {
-       mutate {
-           remove_tag => [ "_grokparsefailure" ]
-       }
-   }
-   }
-   output {
-     elasticsearch {
-       hosts => ["elasticsearch.oigns.svc.cluster.local:9200"]
-     }
-   }
-   ```   
-   
+
 1. Deploy the `logstash` pod by executing the following command:
    
    ```bash
    $ kubectl create -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash.yaml 
    ```
-
+   
    The output will look similar to the following:
    
    ```
-   deployment.apps/logstash-wls created
+   deployment.apps/oig-logstash created
    ```
    
 1. Run the following command to check the `logstash` pod is created correctly:
@@ -277,122 +534,66 @@ OIG Server logs can be pushed to the Elasticsearch server using the `logstash` p
    The output should look similar to the following:
    
    ```
-   NAME                                                        READY   STATUS      RESTARTS   AGE
-   elasticsearch-678ff4fb5-89rpf                               1/1     Running     0          13m
+   NAME                                            READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running     0          90m
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          25h
-   governancedomain-oim-server1                                1/1     Running     0          87m
-   governancedomain-soa-server1                                1/1     Running     0          87m
-   kibana-589466bb89-k8wdr                                     1/1     Running     0          13m
-   logstash-wls-f448b44c8-92l27                                1/1     Running     0          7s
+   governancedomain-create-fmw-infra-sample-domain-job-fqgnr   0/1     Completed   0          2d19h
+   governancedomain-oim-server1                                1/1     Running     0          88m
+   governancedomain-soa-server1                                1/1     Running     0          88m
+   helper                                                      1/1     Running     0          2d20h
+   oig-logstash-77fbbc66f8-lsvcw                               1/1     Running     0          3m25s
    ```
    
+   **Note**: Wait a couple of minutes to make sure the pod has not had any failures or restarts. If the pod fails you can view the pod log using:
+   
+   ```
+   $ kubectl logs -f oig-logstash-<pod> -n oigns
+   ```
+   
+   Most errors occur due to misconfiguration of the `logstash_cm.yaml` or `logstash.yaml`. This is usually because of an incorrect value set, or the certificate was not pasted with the correct indentation.
+   
+   If the pod has errors, delete the pod and configmap as follows:
+   
+   ```
+   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash.yaml
+   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash_cm.yaml
+   ```
+   
+   Once you have resolved the issue in the yaml files, run the commands outlined earlier to recreate the configmap and logstash pod.
    
 
 ### Verify and access the Kibana console
-    
-1. Check if the indices are created correctly in the elasticsearch pod shown above:
-   
-   ```bash
-   $ kubectl exec -it <elasticsearch-pod> -n <namespace> -- /bin/bash
-   ```
-   
-   For example:
-   
-   ```bash
-   $ kubectl exec -it elasticsearch-678ff4fb5-89rpf -n oigns -- /bin/bash
-   ```
-   
-   This will take you into a bash shell in the elasticsearch pod:
-   
-   ```bash
-   [root@elasticsearch-678ff4fb5-89rpf elasticsearch]#
-   ```
-   
-1. In the elasticsearch bash shell run the following to check the indices:
-   
-   ```bash
-   [root@elasticsearch-678ff4fb5-89rpf elasticsearch]# curl -i "127.0.0.1:9200/_cat/indices?v"
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   HTTP/1.1 200 OK
-   content-type: text/plain; charset=UTF-8
-   content-length: 580
 
-   health status index                uuid                   pri rep docs.count docs.deleted store.size pri.store.size
-   yellow open   logstash-2022.03.10  7oXXCureSWKwNY0626Szeg   5   1      46887            0     11.7mb         11.7mb
-   green  open   .kibana_task_manager alZtnv2WRy6Y4iSRIbmCrQ   1   0          2            0     12.6kb         12.6kb
-   green  open   .kibana_1            JeZKrO4fS_GnRL92qRmQDQ   1   0          2            0      7.6kb          7.6kb
-   ```
-   
-   Exit the bash shell by typing `exit`.
-   
-1. Find the Kibana port by running the following command:
-   
-   ```bash
-   $ kubectl get svc -n <namespace> | grep kibana
-   ```
-   
-   For example:
-   
-   ```bash
-   $ kubectl get svc -n oigns | grep kibana
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   kibana          NodePort    10.111.224.230  <none>        5601:31490/TCP      11m
-   ```
-   
-   In the example above the Kibana port is `31490`.
-   
-   
-1. Access the Kibana console with `http://${MASTERNODE-HOSTNAME}:${KIBANA-PORT}/app/kibana`.
+To access the Kibana console you will need the Kibana URL as per [Installing Elasticsearch (ELK) Stack and Kibana](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-C0013AA8-B229-4237-A1D8-8F38FA6E2CEC).
 
-1. Click on **Dashboard** in the left hand Navigation Menu.
 
-1. In the **Create index pattern** page enter `logstash*` and click **Next Step**.
+**For Kibana 7.7.x and below**:
 
-1. From the **Time Filter field name** drop down menu select `@timestamp` and click **Create index pattern**.
+1. Access the Kibana console with `http://<hostname>:<port>/app/kibana` and login with your username and password.
 
-1. Once the index pattern is created click on **Discover** in the navigation menu to view the logs.
+1. From the Navigation menu, navigate to **Management** > **Kibana** > **Index Patterns**.
 
-For more details on how to use the Kibana console see the [Kibana Guide](https://www.elastic.co/guide/en/kibana/current/index.html)
+1. In the **Create Index Pattern** page enter `oiglogs*` for the **Index pattern** and click **Next Step**.
+
+1. In the **Configure settings** page, from the **Time Filter field name** drop down menu select `@timestamp` and click **Create index pattern**.
+
+1. Once the index pattern is created click on **Discover** in the navigation menu to view the OIG logs.
+
+
+**For  Kibana version 7.8.X and above**:
+
+1. Access the Kibana console with `http://<hostname>:<port>/app/kibana` and login with your username and password.
+
+1. From the Navigation menu, navigate to **Management** > **Stack Management**.
+
+1. Click **Data Views** in the **Kibana** section.
+
+1. Click **Create Data View** and enter the following information:
+
+   + Name: `oiglogs*`
+   + Timestamp: `@timestamp`
    
-### Cleanup
+1. Click **Create Data View**.
 
-To clean up the Elasticsearch and Kibana install:
+1. From the Navigation menu, click **Discover** to view the log file entries.
 
-1. Run the following command to delete logstash:
-
-   ```bash
-   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash.yaml
-   ```
-
-   The output will look similar to the following:
-
-   ```
-   deployment.apps "logstash-wls" deleted
-   ```
-
-1. Run the following command to delete Elasticsearch and Kibana:
-
-   ```bash
-   $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
-   ```
-
-   The output will look similar to the following:
-
-   ```
-   deployment.apps "elasticsearch" deleted
-   service "elasticsearch" deleted
-   deployment.apps "kibana" deleted
-   service "kibana" deleted
-   ```
-   
-   
-   
+1. From the drop down menu, select `oiglogs*` to view the log file entries.

@@ -116,7 +116,7 @@ Name:         oud-ds-rs-0
 Namespace:    oudns
 Priority:     0
 Node:         <Worker Node>/100.102.48.84
-Start Time:   Wed, 11 Jul 2022 14:39:09 +0000
+Start Time:   <DATE>
 Labels:       app.kubernetes.io/instance=oud-ds-rs
               app.kubernetes.io/managed-by=Helm
               app.kubernetes.io/name=oud-ds-rs
@@ -132,17 +132,17 @@ IPs:
 Containers:
   oud-ds-rs:
     Container ID:   cri-o://2795176b6af2c17a9426df54214c7e53318db9676bbcf3676d67843174845d68
-    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-<july'22>
+    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-<October'22>
     Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:6ba20e54d17bb41312618011481e9b35a40f36f419834d751277f2ce2f172dca
     Ports:          1444/TCP, 1888/TCP, 1389/TCP, 1636/TCP, 1080/TCP, 1081/TCP, 1898/TCP
     Host Ports:     0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP
     State:          Running
-      Started:      Wed, 11 Jul 2022 15:38:10 +0000
+      Started:      <DATE>
     Last State:     Terminated
       Reason:       Error
       Exit Code:    137
-      Started:      Wed, 11 Jul 2022 14:39:10 +0000
-      Finished:     Wed, 11 Jul 2022 15:37:16 +0000
+      Started:      <DATE>
+      Finished:     <DATE>
     Ready:          True
     Restart Count:  1
     Liveness:       tcp-socket :ldap delay=900s timeout=15s period=30s #success=1 #failure=1
@@ -287,44 +287,3 @@ In this situation perform the following steps to remove the <Unknown> server:
    ```
    rm /tmp/adminpassword.txt
    ```
-
-#### Helm upgrade fails enabling ELK
-
-When deploying Elasticsearch and Kibana (ELK) in OUD, you may hit the following error during the `helm upgrade` command: 
-
-```
-Error: UPGRADE FAILED: error validating "": error validating data: [ValidationError(PersistentVolume.spec.accessModes): unknown object type "nil" in PersistentVolume.spec.accessModes[0], unknown object type "nil" in PersistentVolume.spec.capacity.storage]
-  
-Error: UPGRADE FAILED: error validating "": error validating data: ValidationError(StatefulSet.spec.template.spec.containers[0].volumeMounts[0]): missing required field "mountPath" in io.k8s.api.core.v1.VolumeMount
-```
-
-If this error occurs add the following lines to the `$WORKDIR/kubernetes/helm/logging-override-values.yaml` and rerun the `helm upgrade` command:
-
-```
-elkVolume:
-  mountPath: /usr/share/elasticsearch/data
-  size: 20Gi
-  storageClass: elk-oud
-  reclaimPolicy: "Delete"
-```
-
-For example:
-
-```
-elk:
-  enabled: true
-  imagePullSecrets:
-    - name: dockercred
-
-elkVolume:
-  mountPath: /usr/share/elasticsearch/data
-  size: 20Gi
-  storageClass: elk-oud
-  reclaimPolicy: "Delete"
-  enabled: true
-  type: networkstorage
-  networkstorage:
-    nfs:
-      server: myserver
-      path: <persistent_volume>/oud_elk_data
-```  

@@ -63,3 +63,61 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
    ```
    
    Clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home]({{< relref "/oig/manage-oig-domains/delete-domain-home" >}}). Then follow [RCU schema creation]({{< relref "/oig/prepare-your-environment/#rcu-schema-creation" >}}) onwards to recreate the RCU schema, kubernetes secrets for domain and RCU, the persistent volume and the persistent volume claim. Then execute the [OIG domain creation]({{< relref "/oig/create-oig-domains" >}}) steps again.
+   
+   
+   
+### Patch domain failures
+
+The instructions in this section relate to problems patching a deployment with a new image as per [Patch an image](../patch-and-upgrade/patch-an-image).
+
+1. If the OIG domain patching fails when running `patch_oig_domain.sh`, run the following to diagnose the issue:
+
+   ```
+   $ kubectl describe domain <domain name> -n <domain_namespace>
+   ```
+
+   For example:
+
+   ```
+   $ kubectl describe domain governancedomain -n oigns
+   ```
+
+   Using the output you should be able to diagnose the problem and resolve the issue.
+
+   If the domain is already patched successfully and the script failed at the last step of waiting for pods to come up with the new image, then you do not need to rerun the script again after issue resolution. The pods will come up automatically once you resolve the underlying issue.
+
+1. If the script is stuck at the following message for a long time:
+
+   ```
+   "[INFO] Waiting for weblogic pods to be ready..This may take several minutes, do not close the window. Check log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-<DATE>/monitor_weblogic_pods.log for progress"
+   ```
+   
+   run the following command to diagnose the issue:
+
+   ```
+   $ kubectl get pods -n <domain_namespace>
+   ```
+   
+   For example:
+
+   ```
+   $ kubectl get pods -n oigns
+   ```
+   
+   Run the following to check the logs of the AdminServer, SOA server or OIM server pods, as there may be an issue that is not allowing the domain pods to start properly:
+   
+   ```bash
+   $ kubectl logs <pod> -n oigns
+   ```
+   
+   If the above does not glean any information you can also run:
+   
+   ```
+   $ kubectl describe pod <pod> -n oigns
+   ```
+   
+   Further diagnostic logs can also be found under the `$WORKDIR/kubernetes/domain-lifecycle`.
+   
+   Once any issue is resolved the pods will come up automatically without the need to rerun the script.
+
+    

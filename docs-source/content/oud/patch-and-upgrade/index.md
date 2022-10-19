@@ -5,16 +5,15 @@ pre = "<b>8. </b>"
 description=  "This document provides steps to patch or upgrade an OUD image"
 +++
 
-1. [Introduction](#introduction)
-1. [Upgrading to July 22 (22.3.1) or later from earlier versions](#upgrading-to-july-22-2231-or-later-from-earlier-versions)
-1. [Upgrading from July 22 (22.3.1) to a later release](#upgrading-from-july-22-2231-to-a-later-release)
-
-### Introduction
-
-In this section the Oracle Unified Directory (OUD) deployment is updated with a new OUD container image. 
+In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from. 
 
 
-### Upgrading to July 22 (22.3.1) or later from earlier versions
+1. [Upgrading to October 22 (22.4.1) or later from releases prior to July 22 (22.3.1)](#upgrading-to-october-22-2241-or-later-from-releases-prior-to-july-22-2231)
+1. [Upgrading to October 22 (22.4.1) or later from July 22 (22.3.1)](#upgrading-to-october-22-2241-or-later-from-july-22-2231)
+1. [Upgrading Elasticsearch and Kibana](#upgrading-elasticsearch-and-kibana)
+
+
+### Upgrading to October 22 (22.4.1) or later from releases prior to July 22 (22.3.1)
 
 In releases prior to July 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) OUD used pod based deployment. From July 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) onwards OUD is deployed using [StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
 
@@ -97,7 +96,7 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
    For example:
 
    ```bash
-   $ mkdir /scratch/shared/OUDLatestSource
+   $ mkdir /scratch/shared/OUDK8Slatest
    ```
    
 
@@ -124,11 +123,11 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
    For example:
 
    ```bash
-   $ export WORKDIR=/scratch/shared/OUDLatestSource/fmw-kubernetes/OracleUnifiedDirectory
+   $ export WORKDIR=/scratch/shared/OUDK8Slatest/fmw-kubernetes/OracleUnifiedDirectory
    ```
 
 
-#### 2.	Create a new instance against your existing persistent volume
+#### Create a new instance against your existing persistent volume
 
 
 1. Navigate to the `$WORKDIR/kubernetes/helm` directory
@@ -234,9 +233,13 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
 1. Check the OUD deployment as per [Verify the OUD deployment](../create-oud-instances/#verify-the-oud-deployment) and [Verify the OUD replication](../create-oud-instances#verify-the-oud-replication).
 
 
-### Upgrading from July 22 (22.3.1) to a later release
+1. Upgrade Elasticsearch and Kibana by following [Upgrading Elasticsearch and Kibana](#upgrading-elasticsearch-and-kibana).
 
-The instructions below are for upgrading from Jul 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) to a later release.
+
+
+### Upgrading to October 22 (22.4.1) or later from July 22 (22.3.1)
+
+The instructions below are for upgrading from Jul 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) to October 22 ([22.4.1](https://github.com/oracle/fmw-kubernetes/releases)) or later.
 
 **Note**: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.
 
@@ -374,7 +377,7 @@ You can update the deployment with a new OUD container image using one of the fo
    Namespace:    oudns
    Priority:     0
    Node:         <Worker Node>/100.102.48.28
-   Start Time:   Wed, 16 Mar 2022 12:07:36 +0000
+   Start Time:   <DATE>
    Labels:       app.kubernetes.io/instance=oud-ds-rs
                  app.kubernetes.io/managed-by=Helm
                  app.kubernetes.io/name=oud-ds-rs
@@ -399,3 +402,82 @@ You can update the deployment with a new OUD container image using one of the fo
      Normal   Started    3m22s (x2 over 142m)  kubelet  Started container oud-ds-rs
      Normal   Pulled     3m22s                 kubelet  Successfully pulled image "container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-new" in 33.477063844s
    ```
+   
+1. Upgrade Elasticsearch and Kibana by following [Upgrading Elasticsearch and Kibana](#upgrading-elasticsearch-and-kibana).
+
+
+### Upgrading Elasticsearch and Kibana
+
+This section shows how to upgrade Elasticsearch and Kibana. From October 22 (22.4.1) onwards, OUD logs should be stored on a centralized Elasticsearch and Kibana stack.
+
+#### Download the latest code repository
+
+If you haven't already downloaded the latest code repository, do so as follows:
+
+1. Create a working directory to setup the source code.
+   ```bash
+   $ mkdir <workdir>
+   ```
+   
+   For example:
+   ```bash
+   $ mkdir /scratch/shared/OUDK8Slatest
+   ```
+   
+1. Download the latest OUD deployment scripts from the OUD repository.
+
+   ```bash
+   $ cd <workdir>
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   ```
+   
+   For example:
+   
+   ```bash
+   $ cd /scratch/OUDK8Slatest
+   $ git clone https://github.com/oracle/fmw-kubernetes.git
+   ```
+
+1. Set the `$WORKDIR` environment variable as follows:
+
+   ```bash
+   $ export WORKDIR=<workdir>/fmw-kubernetes/OracleUnifiedDirectory
+   ```
+
+   For example:
+   
+   ```bash
+   $ export WORKDIR=/scratch/shared/OUDK8Slatest/fmw-kubernetes/OracleUnifiedDirectory
+   ```
+
+#### Undeploy Elasticsearch and Kibana
+
+From October 22 (22.4.1) onwards, OUD logs should be stored on a centralized Elasticsearch and Kibana (ELK) stack.
+
+Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana. 
+
+If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.4.1) or later, you must first undeploy Elasticsearch and Kibana using the steps below:
+
+1. Navigate to the `$WORKDIR/kubernetes/helm` directory and create a `logging-override-values-uninstall.yaml` with the following:
+
+   ```
+   elk:
+     enabled: false
+   ```
+
+1. Run the following command to remove the existing ELK deployment:
+
+   ```
+   $ helm upgrade --namespace <domain_namespace> --values <valuesfile.yaml> <releasename> oud-ds-rs --reuse-values
+   ```
+   
+   For example:
+
+   ```
+   $ helm upgrade --namespace oudns --values logging-override-values-uninstall.yaml oud-ds-rs oud-ds-rs --reuse-values
+   ```
+   
+   
+#### Deploy ElasticSearch and Kibana in centralized stack
+
+1. Follow [Install Elasticsearch stack and Kibana](../manage-oud-containers/logging-and-visualization/#install-elasticsearch-stack-and-kibana)) to deploy ElasticSearch and Kibana in a centralized stack.

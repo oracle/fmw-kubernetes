@@ -22,10 +22,9 @@ environment. You can:
 
 ### Current production release
 
-The current production release for the Oracle Access Management domain deployment on Kubernetes is [22.3.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 3.3.0.
+The current production release for the Oracle Access Management domain deployment on Kubernetes is [22.4.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 3.4.2.
 
-This release of the documentation can also be used for 3.1.X and 3.2.0 WebLogic Kubernetes Operator.
-For 3.0.X WebLogic Kubernetes Operator refer to [Version 21.4.1](https://oracle.github.io/fmw-kubernetes/21.4.1/oam/)
+For 3.3.X WebLogic Kubernetes Operator refer to [Version 22.3.1](https://oracle.github.io/fmw-kubernetes/22.3.1/oam/)
 
 ### Recent changes and known issues
 
@@ -46,6 +45,7 @@ If performing an Enterprise Deployment where multiple Oracle Identity Management
 
 To view documentation for an earlier release, see:
 
+* [Version 22.3.1](https://oracle.github.io/fmw-kubernetes/22.3.1/oam/)
 * [Version 22.2.1](https://oracle.github.io/fmw-kubernetes/22.2.1/oam/)
 * [Version 21.4.2](https://oracle.github.io/fmw-kubernetes/21.4.2/oam/)
 * [Version 21.4.1](https://oracle.github.io/fmw-kubernetes/21.4.1/oam/)

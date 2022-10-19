@@ -1,9 +1,7 @@
-+++
-title = "Patch and Upgrade"
-weight = 8 
-pre = "<b>8. </b>"
-description=  "This document provides steps to patch or upgrade an OUDSM image"
-+++
+---
+title: "a. Patch an image"
+description: "Instructions on how to update your OUDSM Kubernetes cluster with a new OUDSM container image."
+---
 
 ### Introduction
 
@@ -144,8 +142,8 @@ You can update the deployment with a new OUDSM container image using one of the 
    Name:         oudsm-1
    Namespace:    oudsmns
    Priority:     0
-   Node:         prats-crio-worker2/100.102.48.28
-   Start Time:   Mon, 11 Jul 2022 10:38:20 +0000
+   Node:         <worker-node>/100.102.48.28
+   Start Time:   <DATE>
    Labels:       app.kubernetes.io/instance=oudsm
                  app.kubernetes.io/managed-by=Helm
                  app.kubernetes.io/name=oudsm

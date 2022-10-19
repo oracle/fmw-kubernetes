@@ -16,7 +16,8 @@ description=  "This document provides details of the oud-ds-rs Helm chart."
 1. [Verify the OUD replication](#verify-the-oud-replication)
 1. [Verify the cronjob](#verify-the-cronjob)
 1. [Undeploy an OUD deployment](#undeploy-an-oud-deployment)
-1. [Appendix: Configuration parameters](#appendix-configuration-parameters)
+1. [Appendix A: Configuration parameters](#appendix-a-configuration-parameters)
+1. [Appendix B: Environment Variables](#appendix-b-environment-variables)
 
 
 ### Introduction
@@ -189,7 +190,7 @@ You can create OUD instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol7-<jul22>
+     tag: 12.2.1.4-jdk8-ol7-<October`22>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -289,7 +290,7 @@ You can create OUD instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudns \
-   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects,image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol7-<jul22> \
+   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects,image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol7-<October`22> \
    --set oudConfig.sampleData="200" \
    --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.21.6 \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
@@ -313,7 +314,7 @@ In all the examples above, the following output is shown following a successful 
 
    ```bash
    NAME: oud-ds-rs
-   LAST DEPLOYED:  Mon Jul 11 12:02:40 2022
+   LAST DEPLOYED:  <DATE>
    NAMESPACE: oudns
    STATUS: deployed
    REVISION: 4
@@ -538,11 +539,11 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
     
    Server               : Entries : M.C. [1] : A.O.M.C. [2] : Port [3] : Encryption [4] : Trust [5] : U.C. [6] : Status [7] : ChangeLog [8] : Group ID [9] : Connected To [10]
    ---------------------:---------:----------:--------------:----------:----------------:-----------:----------:------------:---------------:--------------:-------------------------------
-   oud-ds-rs-0:1444     : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-0:1898
+   oud-ds-rs-0:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-0:1898
                         :         :          :              :          :                :           :          :            :               :              : (GID=1)
-   oud-ds-rs-1:1444     : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-1:1898
+   oud-ds-rs-1:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-1:1898
                         :         :          :              :          :                :           :          :            :               :              : (GID=1)
-   oud-ds-rs-2:1444     : 1       : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
+   oud-ds-rs-2:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
                         :         :          :              :          :                :           :          :            :               :              : (GID=1)
     
    Replication Server [11]        : RS #1 : RS #2 : RS #3
@@ -710,8 +711,8 @@ With an OUD instance now deployed you are now ready to configure an ingress cont
    The output will look similar to the following:
    
    ```
-   NAME            NAMESPACE       REVISION        UPDATED                                    STATUS          CHART           APP VERSION
-   oud-ds-rs       oudns           1               2022-07-11 09:46:17.613632382 +0000 UTC    deployed        oud-ds-rs-0.2   12.2.1.4.0
+   NAME            NAMESPACE       REVISION        UPDATED   STATUS          CHART           APP VERSION
+   oud-ds-rs       oudns           1               <DATE>    deployed        oud-ds-rs-0.2   12.2.1.4.0
    ```
         
 1. Delete the deployment using the following command:
@@ -772,7 +773,7 @@ With an OUD instance now deployed you are now ready to configure an ingress cont
    $ rm -rf *
    ```
 
-### Appendix: Configuration Parameters
+### Appendix A: Configuration Parameters
 
 The following table lists the configurable parameters of the `oud-ds-rs` chart and their default values.
 
@@ -849,9 +850,9 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | oudConfig.adminUID | AdminUID to be configured with each replicated Oracle Unified Directory instance | admin |
 | oudConfig.adminPassword | Password for AdminUID. If the value is not passed, value of rootUserPassword would be used as password for AdminUID. | rootUserPassword |
 | baseOUD.envVarsConfigMap | Reference to ConfigMap which can contain additional environment variables to be passed on to POD for Base Oracle Unified Directory Instance. Following are the environment variables which would not be honored from the ConfigMap. <br> instanceType, sleepBeforeConfig, OUD_INSTANCE_NAME, hostname, baseDN, rootUserDN, rootUserPassword, adminConnectorPort, httpAdminConnectorPort, ldapPort, ldapsPort, httpPort, httpsPort, replicationPort, sampleData. | - |
-| baseOUD.envVars | Environment variables in Yaml Map format. This is helpful when its requried to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. | - |
+| baseOUD.envVars | Environment variables in Yaml Map format. This is helpful when its requried to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. For a full list of environment variables, see [Appendix B: Environment Variables](#appendix-b-environment-variables).| - |
 | replOUD.envVarsConfigMap | Reference to ConfigMap which can contain additional environment variables to be passed on to PODs for Replicated Oracle Unified Directory Instances. Following are the environment variables which would not be honored from the ConfigMap. <br> instanceType, sleepBeforeConfig, OUD_INSTANCE_NAME, hostname, baseDN, rootUserDN, rootUserPassword, adminConnectorPort, httpAdminConnectorPort, ldapPort, ldapsPort, httpPort, httpsPort, replicationPort, sampleData, sourceHost, sourceServerPorts, sourceAdminConnectorPort, sourceReplicationPort, dsreplication_1, dsreplication_2, dsreplication_3, dsreplication_4, post_dsreplication_dsconfig_1, post_dsreplication_dsconfig_2 | - |
-| replOUD.envVars | Environment variables in Yaml Map format. This is helpful when its required to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. | - |
+| replOUD.envVars | Environment variables in Yaml Map format. This is helpful when its required to pass environment variables through --values file. List of env variables which would not be honored from envVars map is same as list of env var names mentioned for envVarsConfigMap. For a full list of environment variables, see [Appendix B: Environment Variables](#appendix-b-environment-variables).| - |
 | podManagementPolicy | Defines the policy for pod management within the statefulset. Typical values are  OrderedReady/Parallel | OrderedReady |
 | updateStrategy |  Allows you to configure and disable automated rolling updates for containers, labels, resource request/limits, and annotations for the Pods in a StatefulSet. Typical values are OnDelete/RollingUpdate | RollingUpdate |
 | busybox.image | busy box image name. Used for initcontainers | busybox |
@@ -907,3 +908,62 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | elk.elkVolume.annotations | specifies any annotations that will be used| { } |
 
 
+### Appendix B: Environment Variables
+
+| **Environment Variable** | **Description** | **Default Value** |
+| ------ | ------ | ------ |
+| ldapPort | Port on which the Oracle Unified Directory instance in the container should listen for LDAP communication. Use 'disabled' if you do not want to enable it. | 1389 |
+| ldapsPort | Port on which the Oracle Unified Directory instance in the container should listen for LDAPS communication. Use 'disabled' if you do not want to enable it. | 1636 |
+| rootUserDN | DN for the Oracle Unified Directory instance root user. | ------ |
+| rootUserPassword | Password for the Oracle Unified Directory instance root user. | ------ |
+| adminConnectorPort | Port on which the Oracle Unified Directory instance in the container should listen for administration communication over LDAPS. Use 'disabled' if you do not want to enable it. Note that at least one of the LDAP or the HTTP administration ports must be enabled. | 1444 |
+| httpAdminConnectorPort | Port on which the Oracle Unified Directory Instance in the container should listen for Administration Communication over HTTPS Protocol. Use 'disabled' if you do not want to enable it. Note that at least one of the LDAP or the HTTP administration ports must be enabled. | 1888 |
+| httpPort | Port on which the Oracle Unified Directory Instance in the container should listen for HTTP Communication. Use 'disabled' if you do not want to enable it. | 1080 |
+| httpsPort | Port on which the Oracle Unified Directory Instance in the container should listen for HTTPS Communication. Use 'disabled' if you do not want to enable it. | 1081 |
+| sampleData | Specifies the number of sample entries to populate the Oracle Unified Directory instance with on creation. If this parameter has a non-numeric value, the parameter addBaseEntry is added to the command instead of sampleData.  Similarly, when the ldifFile_n parameter is specified sampleData will not be considered and ldifFile entries will be populated.| 0 |
+| adminUID | User ID of the Global Administrator to use to bind to the server. This parameter is primarily used with the dsreplication command. | ------ |
+| adminPassword | Password for adminUID | ------ |
+| bindDN1 | BindDN to be used while setting up replication using `dsreplication` to connect to First Directory/Replication Instance. | ------ |
+| bindPassword1 | Password for bindDN1 | ------ |
+| bindDN2 | BindDN to be used while setting up replication using `dsreplication` to connect to Second Directory/Replication Instance. | ------ |
+| bindPassword2 | Password for bindDN2 | ------ |
+| replicationPort | Port value to be used while setting up a replication server. This variable is used to substitute values in `dsreplication` parameters. | 1898 |
+| sourceHost | Value for the hostname to be used while setting up a replication server. This variable is used to substitute values in `dsreplication` parameters. | ------ |
+| initializeFromHost | Value for the hostname to be used while initializing data on a new Oracle Unified Directory instance replicated  from an existing instance. This variable is used to substitute values in `dsreplication` parameters. It is possible to have a different value for sourceHost and initializeFromHost while setting up replication with Replication Server, sourceHost can be used for the Replication Server and initializeFromHost can be used for an existing Directory instance from which data will be initialized.| $sourceHost |
+| serverTuning | Values to be used to tune JVM settings. The default value is jvm-default.  If specific tuning parameters are required, they can be added using this variable.  | jvm-default |
+| offlineToolsTuning | Values to be used to specify the tuning for offline tools. This variable if not specified will consider jvm-default as the default or specify the complete set of values with options if wanted to set to specific tuning | jvm-default|
+| generateSelfSignedCertificate | Set to "true" if the requirement is to generate a self signed certificate when creating an Oracle Unified Directory instance. If no value is provided this value takes the default, "true". If using a certificate generated separately this value should be set to "false". | true |
+| usePkcs11Keystore | Use a certificate in a PKCS#11 token that the replication gateway will use as servercertificate when accepting encrypted connections from the Oracle Directory Server Enterprise Edition server. Set to "true" if the requirement is to use the usePkcs11Keystore parameter when creating an Oracle Unified Directory instance. By default this parameter is not set. To use this option generateSelfSignedCertificate should be set to "false".| ------ |
+| enableStartTLS | Enable StartTLS to allow secure communication with the directory server by using the LDAP port. By default this parameter is not set. To use this option generateSelfSignedCertificate should be set to "false". | ------ |
+| useJCEKS | Specifies the path of a JCEKS that contains a certificate that the replication gateway will use as server certificate when accepting encrypted connections from the Oracle Directory Server Enterprise Edition server.  If required this should specify the keyStorePath, for example, `/u01/oracle/config/keystore`. | ------ |
+| useJavaKeystore | Specify the path to the Java Keystore (JKS) that contains the server certificate. If required this should specify the path to the JKS, for example, `/u01/oracle/config/keystore`. By default this parameter is not set. To use this option generateSelfSignedCertificate should be set to "false". | ------ |
+| usePkcs12keyStore | Specify the path to the PKCS#12 keystore that contains the server certificate. If required this should specify the path, for example, `/u01/oracle/config/keystore.p12`. By default this parameter is not set. | ------ |
+| keyStorePasswordFile | Use the password in the specified file to access the certificate keystore. A password is required when you specify an existing certificate (JKS, JCEKS, PKCS#11, orPKCS#12) as a server certificate. If required this should specify the path of the password file, for example, `/u01/oracle/config/keystorepassword.txt`. By default this parameter is not set. | ------ |
+| eusPasswordScheme | Set password storage scheme, if configuring Oracle Unified Directory for Enterprise User Security.  Set this to a value of either "sha1" or "sha2". By default this parameter is not set. | ------ |
+| jmxPort | Port on which the Directory Server should listen for JMX communication.  Use 'disabled' if you do not want to enable it. | disabled |
+| javaSecurityFile | Specify the path to the Java security file. If required this should specify the path, for example, `/u01/oracle/config/new_security_file`. By default this parameter is not set. | ------ |
+| schemaConfigFile_n | 'n' in the variable name represents a numeric value between 1 and 50. This variable is used to set the full path of LDIF files that need to be passed to the Oracle Unified Directory instance for schema configuration/extension. If required this should specify the path, for example, `schemaConfigFile_1=/u01/oracle/config/00_test.ldif`. | ------ |
+| ldifFile_n | 'n' in the variable name represents a numeric value between 1 and 50. This variable is used to set the full path of LDIF files that need to be passed to the Oracle Unified Directory instance for initial data population. If required this should specify the path, for example, `ldifFile_1=/u01/oracle/config/test1.ldif`. | ------ |
+| dsconfigBatchFile_n | 'n' in the variable name represents a numeric value between 1 and 50. This variable is used to set the full path of LDIF files that need to be passed to the Oracle Unified Directory instance for batch processing by the `dsconfig` command. If required this should specify the path, for example, `dsconfigBatchFile_1=/u01/oracle/config/dsconfig_1.txt`.  When executing the `dsconfig` command the following values are added implicitly to the arguments contained in the batch file : ${hostname}, ${adminConnectorPort}, ${bindDN} and ${bindPasswordFile} | ------ |
+| dstune_n | 'n' in the variable name represents a numeric value between 1 and 50. Allows commands and options to be passed to the `dstune` utility as a full command. | ------ |
+| dsconfig_n | 'n' in the variable name represents a numeric value between 1 and 300. Each file represents a set of execution parameters for the `dsconfig` command.  For each `dsconfig` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| dsreplication_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `dsreplication` command.  For each `dsreplication` execution, the following variables are added implicitly : ${hostname}, ${ldapPort}, ${ldapsPort}, ${adminConnectorPort}, ${replicationPort}, ${sourceHost}, ${initializeFromHost}, and ${baseDN}.  Depending on the dsreplication sub-command, the following variables are added implicitly : ${bindDN1}, ${bindPasswordFile1}, ${bindDN2}, ${bindPasswordFile2}, ${adminUID}, and ${adminPasswordFile}. | ------ |
+| post_dsreplication_dsconfig_n | 'n' in the variable name represents a numeric value between 1 and 300. Each file represents a set of execution parameters for the `dsconfig` command to be run following execution of the `dsreplication` command. For each `dsconfig` execution, the following variables/values are added implicitly : --provider-name "Multimaster Synchronization", ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| rebuildIndex_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `rebuild-index` command. For each `rebuild-index` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}, and ${baseDN}. | ------ |
+| manageSuffix_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `manage-suffix` command. For each `manage-suffix` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| importLdif_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `import-ldif` command. For each `import-ldif` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| execCmd_n | 'n' in the variable name represents a numeric value between 1 and 300. Each file represents a command to be executed in the container. For each command execution, the following variables are replaced, if present in the command : ${hostname}, ${ldapPort}, ${ldapsPort}, ${adminConnectorPort}. | ------ |
+| restartAfterRebuildIndex | Specifies whether to restart the server after building the index. | false |
+| restartAfterSchemaConfig | Specifies whether to restart the server after configuring the schema. | false |
+
+**Note** For the following parameters above, the following statement applies:
+
+* dsconfig_n
+* dsreplication_n
+* post_dsreplication_dsconfig_n
+* rebuildIndex_n
+* manageSuffix_n
+* importLdif_n
+* execCmd_n
+
+If values are provided the following variables will be substituted with their values: ${hostname},${ldapPort},${ldapsPort},${adminConnectorPort},${replicationPort},${sourceHost},${initializeFromHost},${sourceAdminConnectorPort},${sourceReplicationPort},${baseDN},${rootUserDN},${adminUID},${rootPwdFile},${bindPasswordFile},${adminPwdFile},${bindPwdFile1},${bindPwdFile2}

@@ -1,5 +1,5 @@
 ---
-title: "b. Upgrade an operator release"
+title: "a. Upgrade an operator release"
 description: "Instructions on how to update the WebLogic Kubernetes Operator version."
 ---
 
@@ -43,7 +43,7 @@ These instructions apply to upgrading operators within the 3.x release family as
    ```
    Release "weblogic-kubernetes-operator" has been upgraded. Happy Helming!
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Tue Jul 13 09:24:40 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: operator
    STATUS: deployed
    REVISION: 3

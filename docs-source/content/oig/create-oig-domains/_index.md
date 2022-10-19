@@ -71,7 +71,7 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    ```
    domainUID: governancedomain
    domainHome: /u01/oracle/user_projects/domains/governancedomain
-   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22>
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'22>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: oig-domain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/governancedomain
@@ -174,7 +174,7 @@ generated artifacts:
    export initialManagedServerReplicas="1"
    export managedServerNameBase="oim_server"
    export managedServerPort="14000"
-   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22>"
+   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'22>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -463,7 +463,7 @@ The default domain created by the script has the following characteristics:
    API Version:  weblogic.oracle/v8
    Kind:         Domain
    Metadata:
-     Creation Timestamp:  2022-07-13T11:44:17Z
+     Creation Timestamp:  <DATE>
      Generation:          2
      Managed Fields:
        API Version:  weblogic.oracle/v8
@@ -478,7 +478,7 @@ The default domain created by the script has the following characteristics:
              f:weblogic.domainUID:
        Manager:      kubectl-client-side-apply
        Operation:    Update
-       Time:         2022-07-13T14:59:44Z
+       Time:         <DATE>
        API Version:  weblogic.oracle/v8
        Fields Type:  FieldsV1
        fieldsV1:
@@ -491,7 +491,7 @@ The default domain created by the script has the following characteristics:
            f:startTime:
        Manager:         Kubernetes Java Client
        Operation:       Update
-       Time:            2022-07-13T11:51:12Z
+       Time:            <DATE>
      Resource Version:  383381
      UID:               ea95c549-c414-42a6-8de4-beaf1204872e
    Spec:
@@ -545,7 +545,7 @@ The default domain created by the script has the following characteristics:
      Domain Home:                    /u01/oracle/user_projects/domains/governancedomain
      Domain Home Source Type:        PersistentVolume
      Http Access Log In Log Home:    true
-     Image:                          container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22>
+     Image:                          container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'22>
      Image Pull Policy:              IfNotPresent
 	 Image Pull Secrets:
        Name:                         orclcred
@@ -583,7 +583,7 @@ The default domain created by the script has the following characteristics:
        Replicas:          1
        Replicas Goal:     1
      Conditions:
-       Last Transition Time:        2022-07-13T11:59:53.249700Z
+       Last Transition Time:        <DATE>
        Reason:                      ServersReady
        Status:                      True
        Type:                        Available
@@ -591,7 +591,7 @@ The default domain created by the script has the following characteristics:
      Servers:
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-13T11:46:49.874000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -602,7 +602,7 @@ The default domain created by the script has the following characteristics:
        Cluster Name:   oim_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-13T15:06:21.693000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -625,7 +625,7 @@ The default domain created by the script has the following characteristics:
        Cluster Name:   soa_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-13T11:49:26.340000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -645,7 +645,7 @@ The default domain created by the script has the following characteristics:
        Cluster Name:   soa_cluster
        Desired State:  SHUTDOWN
        Server Name:    soa_server5
-     Start Time:       2022-07-13T14:50:19.148541Z
+     Start Time:       <DATE>
    Events:
      Type    Reason                     Age                From               Message
      ----    ------                     ----               ----               -------

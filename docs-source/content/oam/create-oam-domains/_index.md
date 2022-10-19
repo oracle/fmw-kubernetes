@@ -66,7 +66,7 @@ The sample scripts for Oracle Access Management domain deployment are available 
    ```bash   
    domainUID: accessdomain
    domainHome: /u01/oracle/user_projects/domains/accessdomain
-   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<july'22>
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`22>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: accessdomain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/accessdomain
@@ -162,7 +162,7 @@ generated artifacts:
    export initialManagedServerReplicas="2"
    export managedServerNameBase="oam_server"
    export managedServerPort="14100"
-   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<july'22>"
+   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`22>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -446,7 +446,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
    API Version:  weblogic.oracle/v8
    Kind:         Domain
    Metadata:
-     Creation Timestamp:  2022-07-07T11:59:51Z
+     Creation Timestamp:  <DATE>
      Generation:          1
      Managed Fields:
        API Version:  weblogic.oracle/v8
@@ -461,7 +461,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
            f:startTime:
        Manager:      Kubernetes Java Client
        Operation:    Update
-       Time:         2022-07-07T11:59:51Z
+       Time:         <DATE>
        API Version:  weblogic.oracle/v8
        Fields Type:  FieldsV1
        fieldsV1:
@@ -474,7 +474,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
              f:weblogic.domainUID:
        Manager:         kubectl-client-side-apply
        Operation:       Update
-       Time:            2022-07-07T11:59:51Z
+       Time:            <DATE>
      Resource Version:  1495179
      UID:               a90107d5-dbaf-4d86-9439-d5369faabd35
    Spec:
@@ -530,7 +530,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Domain Home:                    /u01/oracle/user_projects/domains/accessdomain
      Domain Home Source Type:        PersistentVolume
      Http Access Log In Log Home:    true
-     Image:                          container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<july'22>
+     Image:                          container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`22>
      Image Pull Policy:              IfNotPresent
 	 Image Pull Secrets:
        Name:                         orclcred
@@ -568,7 +568,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Replicas:          2
        Replicas Goal:     2
      Conditions:
-       Last Transition Time:        2022-07-07T12:11:52.623959Z
+       Last Transition Time:        <DATE>
        Reason:                      ServersReady
        Status:                      True
        Type:                        Available
@@ -576,7 +576,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Servers:
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-07T12:08:29.271000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -587,7 +587,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   oam_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-07T12:11:02.696000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -598,7 +598,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   oam_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-07T12:11:46.175000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -618,7 +618,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   policy_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-07T12:11:20.404000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -629,7 +629,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   policy_cluster
        Desired State:  RUNNING
        Health:
-         Activation Time:  2022-07-07T12:11:09.719000Z
+         Activation Time:  <DATE>
          Overall Health:   ok
          Subsystems:
            Subsystem Name:  ServerRuntime
@@ -646,7 +646,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
        Cluster Name:   policy_cluster
        Desired State:  SHUTDOWN
        Server Name:    oam_policy_mgr5
-     Start Time:       2022-07-07T11:59:51.682687Z
+     Start Time:       <DATE>
    Events:
      Type    Reason                     Age                 From               Message
      ----    ------                     ----                ----               -------

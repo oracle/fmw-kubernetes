@@ -41,7 +41,7 @@ function initialize {
 
   if [ -z ${wlsMonitoringExporterTosoaCluster} ]; then
     echo "wlsMonitoringExporterTosoaCluster is empty, setting to default \"false\""
-    wlsMonitoringExporterTosoaCluster="true"
+    wlsMonitoringExporterTosoaCluster="false"
   fi
   if [ -z ${oimClusterName} ]; then
     echo "oimClusterName is empty, setting to default \"oim_cluster\""
@@ -55,7 +55,7 @@ function initialize {
 
   if [ -z ${wlsMonitoringExporterTooimCluster} ]; then
     echo "wlsMonitoringExporterTooimCluster is empty, setting to default \"false\""
-    wlsMonitoringExporterTooimCluster="true"
+    wlsMonitoringExporterTooimCluster="false"
   fi
 }
 

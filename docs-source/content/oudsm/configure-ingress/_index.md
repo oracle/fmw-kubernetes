@@ -133,7 +133,7 @@ Use Helm to install NGINX.
 
    ```
    NAME: lbr-nginx
-   LAST DEPLOYED: Mon Jul 11 17:07:32 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: mynginx
    STATUS: deployed
    REVISION: 1
@@ -209,12 +209,12 @@ If it is not possible to have LoadBalancer configuration updated to have host na
 
 1. Launch a browser and access the OUDSM console. 
 
-* If using an External LoadBalancer: `https://<External LBR Host>/oudsm`. 
-* If not using an External LoadBalancer use `https://<Kubernetes Node>:30443/oudsm`. 
+   * If using an External LoadBalancer: `https://<External LBR Host>/oudsm`. 
+   * If not using an External LoadBalancer use `https://<Kubernetes Node>:30443/oudsm`. 
 
 1. Access the WebLogic Administration console by accessing the following URL and login with `weblogic/<password>` where `weblogic/<password>` is the `adminUser` and `adminPass` set when creating the OUDSM instance.
 
-* If using an External LoadBalancer: `https://<External LBR Host>/console`. 
-* If not using an External LoadBalancer use `https://<Kubernetes Node>:30443/console`. 
+   * If using an External LoadBalancer: `https://<External LBR Host>/console`. 
+   * If not using an External LoadBalancer use `https://<Kubernetes Node>:30443/console`. 
 
 

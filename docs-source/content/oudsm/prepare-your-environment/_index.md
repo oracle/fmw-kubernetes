@@ -6,7 +6,6 @@ description = "Prepare your environment"
 +++
 
 
-
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
 1. [Obtain the OUDSM container image](#obtain-the-oudsm-container-image)
 1. [Setup the code repository to deploy OUDSM](#setup-the-code-repository-to-deploy-oudsm)
@@ -55,17 +54,15 @@ The Oracle Unified Directory Services Manager (OUDSM) Kubernetes deployment requ
 #### Prebuilt OUDSM container image
 
 
-The prebuilt OUDSM July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The prebuilt OUDSM October 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oudsm_cpu` and accept the license agreement.
-
-Alternatively the same image can also be downloaded from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1.
 
 You can use this image in the following ways:
 
 - Pull the container image from the Oracle Container Registry automatically during the OUDSM Kubernetes deployment.
-- Manually pull the container image from the Oracle Container Registry or My Oracle Support, and then upload it to your own container registry.
-- Manually pull the container image from the Oracle Container Registry or My Oracle Support and manually stage it on the master node and each worker node.
+- Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.
+- Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node.
 
 #### Build your own OUDSM container image using WebLogic Image Tool
 

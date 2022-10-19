@@ -64,17 +64,15 @@ The OIG Kubernetes deployment requires access to an OIG container image. The ima
 #### Prebuilt OIG container image
 
 
-The latest prebuilt OIG July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The latest prebuilt OIG October 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
-
-Alternatively the same image can also be downloaded from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1.
 
 You can use this image in the following ways:
 
 - Pull the container image from the Oracle Container Registry automatically during the OIG Kubernetes deployment.
-- Manually pull the container image from the Oracle Container Registry or My Oracle Support, and then upload it to your own container registry.
-- Manually pull the container image from the Oracle Container Registry or My Oracle Support and manually stage it on the master node and each worker node. 
+- Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.
+- Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node. 
 
 
 #### Build your own OIG container image using WebLogic Image Tool
@@ -201,7 +199,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -215,7 +213,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.3.0 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -227,7 +225,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    
    ```
    NAME: weblogic-kubernetes-operator
-   LAST DEPLOYED: Wed Jul 13 11:51:37 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: opns
    STATUS: deployed
    REVISION: 1
@@ -250,16 +248,16 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
 
    ```
    NAME                                     READY   STATUS    RESTARTS   AGE
-   pod/weblogic-operator-676d5cc6f4-rwzxf   2/2     Running   0          59s
+   pod/weblogic-operator-5f75f48f99-2p86g   1/1     Running   0          23s
 
-   NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-   service/internal-weblogic-operator-svc   ClusterIP   10.102.7.232   <none>        8082/TCP   59s
+   NAME                                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+   service/internal-weblogic-operator-svc   ClusterIP   10.97.190.110   <none>        8082/TCP   23s
 
    NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-   deployment.apps/weblogic-operator   1/1     1            1           59s
+   deployment.apps/weblogic-operator   1/1     1            1           23s
 
    NAME                                           DESIRED   CURRENT   READY   AGE
-   replicaset.apps/weblogic-operator-676d5cc6f4   1         1         1       59s
+   replicaset.apps/weblogic-operator-5f75f48f99   1         1         1       23s
    ```
 
 1. Verify the operator pod's log:
@@ -277,9 +275,9 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    The output will look similar to the following:
 	
    ```
-   {"timestamp":"2022-07-13T11:52:53.167756673Z","thread":23,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650293167,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-07-13T11:53:03.170083172Z","thread":30,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650303170,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2022-07-13T11:52:13.172302644Z","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650313172,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":23,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650293167,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":30,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650303170,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1636650313172,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
    ```
 
 ### Create a namespace for Oracle Identity Governance
@@ -337,10 +335,11 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
 	
    ```
    Name:         oigns
-   Labels:       weblogic-operator=enabled
+   Labels:       kubernetes.io/metadata.name=oigns
+                 weblogic-operator=enabled
    Annotations:  <none>
    Status:       Active
-
+   
    No resource quota.
 
    No LimitRange resource.
@@ -398,7 +397,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October`22> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -410,7 +409,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-<july'22> -n oigns -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-<October`22> -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:
@@ -514,7 +513,7 @@ Before following the steps in this section, make sure that the database and list
    The output will look similar to the following:
 	
    ```
-   RCU Logfile: /tmp/RCU2022-07-13_17-09_964981565/logs/rcu.log
+   RCU Logfile: /tmp/RCU<DATE>/logs/rcu.log
 
    Processing command line ....
    Repository Creation Utility - Checking Prerequisites
@@ -596,22 +595,22 @@ Before following the steps in this section, make sure that the database and list
    Service Name                                 : ORCL.EXAMPLE.COM
    Connected As                                 : sys
    Prefix for (prefixable) Schema Owners        : OIGK8S
-   RCU Logfile                                  : /tmp/RCU2022-07-13_17-09_964981565/logs/rcu.log
+   RCU Logfile                                  : /tmp/RCU<DATE>/logs/rcu.log
 
    Component schemas created:
    -----------------------------
    Component                                    Status         Logfile
 
-   Common Infrastructure Services               Success        /tmp/RCU2022-07-13_17-09_964981565/logs/stb.log
-   Oracle Platform Security Services            Success        /tmp/RCU2022-07-13_17-09_964981565/logs/opss.log
-   SOA Infrastructure                           Success        /tmp/RCU2022-07-13_17-09_964981565/logs/soainfra.log
-   Oracle Identity Manager                      Success        /tmp/RCU2022-07-13_17-09_964981565/logs/oim.log
-   User Messaging Service                       Success        /tmp/RCU2022-07-13_17-09_964981565/logs/ucsums.log
-   Audit Services                               Success        /tmp/RCU2022-07-13_17-09_964981565/logs/iau.log
-   Audit Services Append                        Success        /tmp/RCU2022-07-13_17-09_964981565/logs/iau_append.log
-   Audit Services Viewer                        Success        /tmp/RCU2022-07-13_17-09_964981565/logs/iau_viewer.log
-   Metadata Services                            Success        /tmp/RCU2022-07-13_17-09_964981565/logs/mds.log
-   WebLogic Services                            Success        /tmp/RCU2022-07-13_17-09_964981565/logs/wls.log
+   Common Infrastructure Services               Success        /tmp/RCU<DATE>/logs/stb.log
+   Oracle Platform Security Services            Success        /tmp/RCU<DATE>/logs/opss.log
+   SOA Infrastructure                           Success        /tmp/RCU<DATE>/logs/soainfra.log
+   Oracle Identity Manager                      Success        /tmp/RCU<DATE>/logs/oim.log
+   User Messaging Service                       Success        /tmp/RCU<DATE>/logs/ucsums.log
+   Audit Services                               Success        /tmp/RCU<DATE>/logs/iau.log
+   Audit Services Append                        Success        /tmp/RCU<DATE>/logs/iau_append.log
+   Audit Services Viewer                        Success        /tmp/RCU<DATE>/logs/iau_viewer.log
+   Metadata Services                            Success        /tmp/RCU<DATE>/logs/mds.log
+   WebLogic Services                            Success        /tmp/RCU<DATE>/logs/wls.log
 
    Repository Creation Utility - Create : Operation Completed
    [oracle@helper oracle]$
@@ -654,14 +653,14 @@ Before following the steps in this section, make sure that the database and list
    
    ```
    ...
-      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/StoredProcedures/OfflineDataPurge/oim_pkg_offline_datapurge_pkg_body.sql
-      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_dml_pty_insert_sysprop_RequestJustificationLocale.sql
-      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_dml_pty_insert_sysprop_reportee_chain_for_mgr.sql
-      [sql] 36 of 36 SQL statements executed successfully
+      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_bkp.sql
+      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_fix.sql
+      [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_restore_bkp.sql
+      [sql] 58 of 58 SQL statements executed successfully
 
 
    BUILD SUCCESSFUL
-   Total time: 5 second
+   Total time: 8 seconds
    ```
    
    
@@ -733,7 +732,7 @@ In this section you prepare the environment for the OIG domain creation. This in
      username: d2VibG9naWM=
    kind: Secret
    metadata:
-     creationTimestamp: "2022-07-13T17:47:29Z"
+     creationTimestamp: "<DATE>"
      labels:
        weblogic.domainName: governancedomain
        weblogic.domainUID: governancedomain
@@ -805,7 +804,7 @@ In this section you prepare the environment for the OIG domain creation. This in
      username: T0lHSzhT
    kind: Secret
    metadata:
-     creationTimestamp: "2022-07-13T17:50:50Z"
+     creationTimestamp: "<DATE>"
      labels:
        weblogic.domainName: governancedomain
        weblogic.domainUID: governancedomain
@@ -826,7 +825,7 @@ When a container is started, it needs to mount that volume. The physical volume 
    
 The example below uses an NFS mounted volume (<persistent_volume>/governancedomainpv). Other volume types can also be used. See the official [Kubernetes documentation for Volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
    
-**Note**: The persistent volume directory needs to be accessible to both the master and worker node(s). Make sure this path has **full** access permissions, and that the folder is empty. In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS. 
+**Note**: The persistent volume directory needs to be accessible to both the master and worker node(s). In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS. 
 
 
 
@@ -837,7 +836,7 @@ The example below uses an NFS mounted volume (<persistent_volume>/governancedoma
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
    $ mkdir output
    $ mkdir -p <persistent_volume>/governancedomainpv
-   $ chmod -R 777 <persistent_volume>/governancedomainpv
+   $ sudo chown -R 1000:0 <persistent_volume>/governancedomainpv
    ```
 
    For example:
@@ -847,7 +846,7 @@ The example below uses an NFS mounted volume (<persistent_volume>/governancedoma
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
    $ mkdir output
    $ mkdir -p /scratch/shared/governancedomainpv
-   $ chmod -R 777 /scratch/shared/governancedomainpv
+   $ sudo chown -R 1000:0 /scratch/shared/governancedomainpv
    ```
    
    
