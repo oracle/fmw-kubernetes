@@ -1,11 +1,171 @@
-## Monitor the OracleIdentityGovernance instance using Prometheus and Grafana
+# Monitor the OracleIdentityGovernance instance using Prometheus and Grafana
 Using the `WebLogic Monitoring Exporter` you can scrape runtime information from a running OracleIdentityGovernance instance and monitor them using Prometheus and Grafana.
 
-### Prerequisites
+## Prerequisites
 
 - Have Docker and a Kubernetes cluster running and have `kubectl` installed and configured.
 - Have Helm installed.
 - An OracleIdentityGovernance domain deployed by `weblogic-operator` is running in the Kubernetes cluster.
+
+## Set up monitoring for OracleIdentityGovernance domain 
+
+Set up the WebLogic Monitoring Exporter that will collect WebLogic Server metrics and monitor OracleIdentityGovernance domain. 
+
+**Note**: Either of the following methods can be used to set up monitoring for OracleIdentityGovernance domain. Using `setup-monitoring.sh` does the set up in an automated way.
+
+1. [Set up manually](#set-up-manually)
+1. [Set up using `setup-monitoring.sh`](#set-up-using-setup-monitoringsh)
+
+## Set up manually
+
+### Deploy Prometheus and Grafana
+
+Refer to the compatibility matrix of [Kube Prometheus](https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix) and clone the [release](https://github.com/coreos/kube-prometheus/releases) version of the `kube-prometheus` repository according to the Kubernetes version of your cluster.
+
+1. Clone the `kube-prometheus` repository:
+    ```
+    $ git clone https://github.com/coreos/kube-prometheus.git
+    ```
+
+1. Change to folder `kube-prometheus` and enter the following commands to create the namespace and CRDs, and then wait for their availability before creating the remaining resources:
+
+    ```
+    $ cd kube-prometheus
+    $ kubectl create -f manifests/setup
+    $ until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
+    $ kubectl create -f manifests/
+    ```
+
+1. `kube-prometheus` requires all nodes in the Kubernetes cluster to be labeled with `kubernetes.io/os=linux`. If any node is not labeled with this, then you need to label it using the following command:
+
+    ```
+    $ kubectl label nodes --all kubernetes.io/os=linux
+    ```
+
+1. Enter the following commands to provide external access for Grafana, Prometheus, and Alertmanager:
+
+    ```
+    $ kubectl patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
+
+    $ kubectl patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
+
+    $ kubectl patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
+    ```
+
+    Note:
+    * `32100` is the external port for Grafana
+    * `32101` is the external port for Prometheus
+    * `32102` is the external port for Alertmanager
+
+### Generate the WebLogic Monitoring Exporter Deployment Package  
+
+The `wls-exporter.war` package need to be updated and created for each listening ports (Administration Server and Managed Servers) in the domain.
+Set the below environment values based on your environment and run the script `get-wls-exporter.sh` to generate the required WAR files at `${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy`:
+- adminServerPort
+- wlsMonitoringExporterTosoaCluster
+- soaManagedServerPort
+- wlsMonitoringExporterTooimCluster
+- oimManagedServerPort
+
+For example:
+
+```
+$ cd ${WORKDIR}/monitoring-service/scripts
+$ export adminServerPort=7001 
+$ export wlsMonitoringExporterTosoaCluster=true
+$ export soaManagedServerPort=8001
+$ export wlsMonitoringExporterTooimCluster=true
+$ export oimManagedServerPort=14000
+$ sh get-wls-exporter.sh
+```
+
+Verify whether the required WAR files are generated at `${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy`.
+
+```
+$ ls ${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy
+```
+
+### Deploy the WebLogic Monitoring Exporter into the OracleIdentityGovernance domain
+
+Follow these steps to copy and deploy the WebLogic Monitoring Exporter WAR files into the OracleIdentityGovernance Domain. 
+
+**Note**: Replace the `<xxxx>` with appropriate values based on your environment:
+
+```
+$ cd ${WORKDIR}/monitoring-service/scripts
+$ kubectl cp wls-exporter-deploy <namespace>/<admin_pod_name>:/u01/oracle
+$ kubectl cp deploy-weblogic-monitoring-exporter.py <namespace>/<admin_pod_name>:/u01/oracle/wls-exporter-deploy
+$ kubectl exec -it -n <namespace> <admin_pod_name> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
+-domainName <domainUID> -adminServerName <adminServerName> -adminURL <adminURL> \
+-soaClusterName <soaClusterName> -wlsMonitoringExporterTosoaCluster <wlsMonitoringExporterTosoaCluster> \
+-oimClusterName <oimClusterName> -wlsMonitoringExporterTooimCluster <wlsMonitoringExporterTooimCluster> \
+-username <username> -password <password> 
+```
+
+For example:
+
+```
+$ cd ${WORKDIR}/monitoring-service/scripts
+$ kubectl cp wls-exporter-deploy oimcluster/oimcluster-adminserver:/u01/oracle
+$ kubectl cp deploy-weblogic-monitoring-exporter.py oimcluster/oimcluster-adminserver:/u01/oracle/wls-exporter-deploy
+$ kubectl exec -it -n oimcluster oimcluster-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
+-domainName oimcluster -adminServerName AdminServer -adminURL oimcluster-adminserver:7001 \
+-soaClusterName soa_cluster -wlsMonitoringExporterTosoaCluster true \
+-oimClusterName oim_cluster -wlsMonitoringExporterTooimCluster true \
+-username weblogic -password Welcome1 
+```
+
+### Configure Prometheus Operator 
+
+Prometheus enables you to collect metrics from the WebLogic Monitoring Exporter. The Prometheus Operator identifies the targets using service discovery. To get the WebLogic Monitoring Exporter end point discovered as a target, you must create a service monitor pointing to the service.
+
+The service monitor deployment YAML configuration file is available at `${WORKDIR}/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml.template`. Copy the file as `wls-exporter-ServiceMonitor.yaml` to update with appropriate values as detailed below.
+
+The exporting of metrics from `wls-exporter` requires `basicAuth`, so a Kubernetes `Secret` is created with the user name and password that are base64 encoded. This `Secret` is used in the `ServiceMonitor` deployment. The `wls-exporter-ServiceMonitor.yaml` has namespace as `oimcluster` and has `basicAuth` with credentials as `username: %USERNAME%` and `password: %PASSWORD%`. Update `%USERNAME%` and `%PASSWORD% ` in base64 encoded and all occurences of `oimcluster` based on your environment.  
+
+Use the following example for base64 encoded:
+
+```
+$ echo -n "Welcome1" | base64
+V2VsY29tZTE=
+```
+
+You need to add `RoleBinding` and `Role` for the namespace (oimcluster) under which the WebLogic Servers pods are running in the Kubernetes cluster. These are required for Prometheus to access the endpoints provided by the WebLogic Monitoring Exporters. The YAML configuration files for oimcluster namespace are provided in "${WORKDIR}/monitoring-service/manifests/".
+
+If you are using namespace other than `oimcluster`, update the namespace details in `prometheus-roleBinding-domain-namespace.yaml` and `prometheus-roleSpecific-domain-namespace.yaml`.
+
+Perform the below steps for enabling Prometheus to collect the metrics from the WebLogic Monitoring Exporter:
+
+```
+$ cd ${WORKDIR}/monitoring-service/manifests
+$ kubectl apply -f .
+```
+
+### Verify the service discovery of WebLogic Monitoring Exporter
+
+After the deployment of the service monitor, Prometheus should be able to discover wls-exporter and collect the metrics.
+
+1. Access the Prometheus dashboard at `http://mycompany.com:32101/` 
+
+1. Navigate to **Status** to see the **Service Discovery** details.
+
+1. Verify that `wls-exporter` is listed in the discovered Services.
+
+
+### Deploy Grafana Dashboard
+
+You can access the Grafana dashboard at `http://mycompany.com:32100/`. 
+
+1. Log in to Grafana dashboard with username: admin and password: admin`.
+
+1. Navigate to + (Create) -> Import -> Upload the `weblogic-server-dashboard-import.json` file (provided at `${WORKDIR}/monitoring-service/config/weblogic-server-dashboard-import.json`).
+
+
+## Set up using `setup-monitoring.sh`
+
+Alternatively, you can run the helper script `setup-monitoring.sh` available at `${WORKDIR}/monitoring-service` to setup the monitoring for OracleIdentityGovernance domain. 
+
+This script creates kube-prometheus-stack(Prometheus, Grafana and Alertmanager), WebLogic Monitoring Exporter and imports `weblogic-server-dashboard.json` into Grafana for WebLogic Server Dashboard.
 
 ### Prepare to use the setup monitoring script
 
@@ -36,7 +196,7 @@ The following parameters can be provided in the inputs file.
 | `prometheusNodePort` | Port number of the Prometheus outside the Kubernetes cluster. | `32101` |
 | `grafanaNodePort` | Port number of the Grafana outside the Kubernetes cluster. | `32100` |
 | `alertmanagerNodePort` | Port number of the Alertmanager outside the Kubernetes cluster. | `32102` |
-| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server’s user name and password. | `oimcluster-domain-credentials` |
+| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server's user name and password. | `oimcluster-domain-credentials` |
 
 Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and deploying WebLogic Monitoring Exporter into the OracleIdentityGovernance domain. Hence make the domain specific values to be same as that used during domain creation.
 
@@ -54,12 +214,10 @@ The script will perform the following steps:
 - Helm install `prometheus-community/kube-prometheus-stack` of version "16.5.0" if `setupKubePrometheusStack` is set to `true`.
 - Deploys WebLogic Monitoring Exporter to Administration Server.
 - Deploys WebLogic Monitoring Exporter to `soaCluster` if `wlsMonitoringExporterTosoaCluster` is set to `true`.
-- Exposes the Monitoring Services (Prometheus at `32101`, Grafana at `32100` and Alertmanager at `32102`) outside of the Kubernetes cluster if `exposeMonitoringNodePort` is set to `true`.
-- Imports the WebLogic Server Grafana Dashboard if `setupKubePrometheusStack` is set to `true`.
-- Deploys WebLogic Monitoring Exporter to Administration Server.
 - Deploys WebLogic Monitoring Exporter to `oimCluster` if `wlsMonitoringExporterTooimCluster` is set to `true`.
 - Exposes the Monitoring Services (Prometheus at `32101`, Grafana at `32100` and Alertmanager at `32102`) outside of the Kubernetes cluster if `exposeMonitoringNodePort` is set to `true`.
 - Imports the WebLogic Server Grafana Dashboard if `setupKubePrometheusStack` is set to `true`.
+
 
 ### Verify the results
 The setup monitoring script will report failure if there was any error. However, verify that required resources were created by the script.
@@ -116,5 +274,4 @@ $ cd ${WORKDIR}/monitoring-service
 $ ./delete-monitoring.sh \
   -i monitoring-inputs.yaml
 ```
-
 	

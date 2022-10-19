@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # setup-monitoring.sh
@@ -78,17 +78,17 @@ function installKubePrometheusStack {
   if [ ${exposeMonitoringNodePort} == "true" ]; then
    
      helm install ${monitoringNamespace} prometheus-community/kube-prometheus-stack \
-       --namespace ${monitoringNamespace} \
+       --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
        --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
        --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
-       --version "16.5.0" ${additionalParamForKubePrometheusStack} \
+       --version "16.5.0" --values ${scriptDir}/values.yaml \
        --atomic --wait
   else
      helm install ${monitoringNamespace}  prometheus-community/kube-prometheus-stack \
-       --namespace ${monitoringNamespace} \
+       --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set grafana.adminPassword=admin \
-       --version "16.5.0" ${additionalParamForKubePrometheusStack} \
+       --version "16.5.0" --values ${scriptDir}/values.yaml \
        --atomic --wait
   fi
   exitIfError $? "ERROR: prometheus-community/kube-prometheus-stack install failed."
@@ -134,7 +134,7 @@ if [ "${setupKubePrometheusStack}" = "true" ]; then
      echo "The namespace ${monitoringNamespace} for install prometheus-community/kube-prometheus-stack does not exist. Creating the namespace ${monitoringNamespace}"
      kubectl create namespace ${monitoringNamespace} 
    fi
-   echo -e "Monitoring setup in  ${monitoringNamespace} in progress\n"
+   echo -e "Monitoring setup in  ${monitoringNamespace} in progress.......\n"
 
    # Create the namespace and CRDs, and then wait for them to be availble before creating the remaining resources
    kubectl label nodes --all kubernetes.io/os=linux --overwrite=true
@@ -146,8 +146,8 @@ if [ "${setupKubePrometheusStack}" = "true" ]; then
    echo "Setup prometheus-community/kube-prometheus-stack completed"
 fi
 
-username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
-password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+export username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+export password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
 # Setting up the WebLogic Monitoring Exporter
 echo "Deploy WebLogic Monitoring Exporter started"
@@ -173,10 +173,7 @@ kubectl apply -f ${serviceMonitor}
 if [ "${setupKubePrometheusStack}" = "true" ]; then
    # Deploying  WebLogic Server Grafana Dashboard
    echo "Deploying WebLogic Server Grafana Dashboard...."
-   grafanaEndpointIP=$(kubectl get endpoints ${monitoringNamespace}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].addresses[].ip}")
-   grafanaEndpointPort=$(kubectl get endpoints ${monitoringNamespace}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].ports[].port}")
-   grafanaEndpoint="${grafanaEndpointIP}:${grafanaEndpointPort}"
-   curl --noproxy "*" -X POST -H "Content-Type: application/json" -d @config/weblogic-server-dashboard.json http://admin:admin@${grafanaEndpoint}/api/dashboards/db
+   sh ${scriptDir}/scripts/deploy-weblogic-server-grafana-dashboard.sh
    echo ""
    echo "Deployed WebLogic Server Grafana Dashboard successfully"
    echo ""

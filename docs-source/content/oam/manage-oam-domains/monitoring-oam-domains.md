@@ -18,7 +18,7 @@ The  `$WORKDIR/kubernetes/monitoring-service/setup-monitoring.sh` sets up  the m
 
 For usage details execute `./setup-monitoring.sh -h`.
 
-1. Edit the `$WORKDIR/kubernetes/monitoring-service/monitoring-inputs.yaml` and change the `domainUID`, `domainNamespace`, and `weblogicCredentialsSecretName` to correspond to your deployment. For example:
+1. Edit the `$WORKDIR/kubernetes/monitoring-service/monitoring-inputs.yaml` and change the `domainUID`, `domainNamespace`, and `weblogicCredentialsSecretName` to correspond to your deployment. Also change `wlsMonitoringExporterTooamCluster`, `wlsMonitoringExporterTopolicyCluster`, `exposeMonitoringNodePort` to `true`.  For example:
 
    ```
    version: create-accessdomain-monitoring-inputs-v1
@@ -108,7 +108,7 @@ For usage details execute `./setup-monitoring.sh -h`.
    Update Complete. ⎈ Happy Helming!⎈ 
    Setup prometheus-community/kube-prometheus-stack in progress
    NAME: monitoring
-   LAST DEPLOYED: Tue Jul 12 14:13:49 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: monitoring
    STATUS: deployed
    REVISION: 1
@@ -159,14 +159,14 @@ For usage details execute `./setup-monitoring.sh -h`.
 
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war to targets AdminServer (upload=true) ...
-   <Jul 12, 2022 2:14:31 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .> 
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .> 
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-adminserver.
-   <Jul 12, 2022 2:14:36 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .> 
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .> 
    Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -177,14 +177,14 @@ For usage details execute `./setup-monitoring.sh -h`.
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-oam.war to targets oam_cluster (upload=true) ...
-   <Jul 12, 2022 2:14:37 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oam [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oam.war], to oam_cluster .> 
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oam [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oam.war], to oam_cluster .> 
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-oam.
-   <Jul 12, 2022 2:14:41 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oam [archive: null], to oam_cluster .> 
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oam [archive: null], to oam_cluster .> 
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -192,14 +192,14 @@ For usage details execute `./setup-monitoring.sh -h`.
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-policy.war to targets policy_cluster (upload=true) ...
-   <Jul 12, 2022 2:14:44 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-policy [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-policy.war], to policy_cluster .> 
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-policy [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-policy.war], to policy_cluster .> 
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-policy.
-   <Jul 12, 2022 2:14:49 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-policy [archive: null], to policy_cluster .> 
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-policy [archive: null], to policy_cluster .> 
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -210,7 +210,7 @@ For usage details execute `./setup-monitoring.sh -h`.
 
    Exiting WebLogic Scripting Tool.
 
-   <Jul 12, 2022 2:14:52 PM GMT> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.> 
+   <DATE> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.> 
    14:27
    Deploy WebLogic Monitoring Exporter completed
    secret/basic-auth created
@@ -567,14 +567,14 @@ Install Prometheus, Grafana and WebLogic Monitoring Exporter manually. Create th
 
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war to targets AdminServer (upload=true) ...
-   <Jul 12, 2022 3:38:15 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive:    /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-adminserver [archive:    /u01/oracle/wls-exporter-deploy/wls-exporter-adminserver.war], to AdminServer .>
    ..Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-adminserver.
-   <Jul 12, 2022 3:38:25 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-adminserver [archive: null], to AdminServer .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -582,14 +582,14 @@ Install Prometheus, Grafana and WebLogic Monitoring Exporter manually. Create th
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-oam.war to targets oam_cluster (upload=true) ...
-   <Jul 12, 2022 3:38:28 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oam [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oam.war], to oam_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-oam [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-oam.war], to oam_cluster .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-oam.
-   <Jul 12, 2022 3:38:34 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oam [archive: null], to oam_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-oam [archive: null], to oam_cluster .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -597,14 +597,14 @@ Install Prometheus, Grafana and WebLogic Monitoring Exporter manually. Create th
    Deployment Message : no message
    Deploying .........
    Deploying application from /u01/oracle/wls-exporter-deploy/wls-exporter-policy.war to targets policy_cluster (upload=true) ...
-   <Jul 12, 2022 3:38:38 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-policy [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-policy.war], to policy_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating deploy operation for application, wls-exporter-policy [archive: /u01/oracle/wls-exporter-deploy/wls-exporter-policy.war], to policy_cluster .>
    .Completed the deployment of Application with status completed
    Current Status of your Deployment:
    Deployment command type: deploy
    Deployment State : completed
    Deployment Message : no message
    Starting application wls-exporter-policy.
-   <Jul 12, 2022 3:38:44 PM GMT> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-policy [archive: null], to policy_cluster .>
+   <DATE> <Info> <J2EE Deployment SPI> <BEA-260121> <Initiating start operation for application, wls-exporter-policy [archive: null], to policy_cluster .>
    .Completed the start of Application with status completed
    Current Status of your Deployment:
    Deployment command type: start
@@ -614,7 +614,7 @@ Install Prometheus, Grafana and WebLogic Monitoring Exporter manually. Create th
 
    Exiting WebLogic Scripting Tool.
 
-   <Jul 12, 2022 3:38:47 PM GMT> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.>
+   <DATE> <Warning> <JNDI> <BEA-050001> <WLContext.close() was called in a different thread than the one in which it was created.>
    ```
 
 ####  Configure Prometheus Operator

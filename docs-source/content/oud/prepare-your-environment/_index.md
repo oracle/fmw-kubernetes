@@ -54,17 +54,15 @@ The OUD Kubernetes deployment requires access to an OUD container image. The ima
 #### Prebuilt OUD container image
 
 
-The prebuilt OUD July 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The prebuilt OUD October 2022 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oud_cpu` and accept the license agreement.
-
-Alternatively the same image can also be downloaded from [My Oracle Support](https://support.oracle.com) by referring to the document ID 2723908.1.
 
 You can use this image in the following ways:
 
 - Pull the container image from the Oracle Container Registry automatically during the OUD Kubernetes deployment.
-- Manually pull the container image from the Oracle Container Registry or My Oracle Support, and then upload it to your own container registry.
-- Manually pull the container image from the Oracle Container Registry or My Oracle Support and manually stage it on the master node and each worker node. 
+- Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.
+- Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node. 
 
 #### Build your own OUD container image using WebLogic Image Tool
 
@@ -82,14 +80,14 @@ You can use an image built with WebLogic Image Tool in the following ways:
 
 As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system. 
 
-Make sure the persistent volume path has **full** access permissions, and that the folder is empty. In this example `/scratch/shared/` is a shared directory accessible from all nodes.
+In this example `/scratch/shared/` is a shared directory accessible from all nodes.
    
 1. On the master node run the following command to create a `user_projects` directory:
 
    ```bash 
    $ cd <persistent_volume>
    $ mkdir oud_user_projects   
-   $ chmod 777 oud_user_projects
+   $ sudo chown -R 1000:0 oud_user_projects
    ```
    
    For example:
@@ -97,7 +95,7 @@ Make sure the persistent volume path has **full** access permissions, and that t
    ```bash 
    $ cd /scratch/shared
    $ mkdir oud_user_projects   
-   $ chmod 777 oud_user_projects
+   $ sudo chown -R 1000:0 oud_user_projects
    ```
    
 1. On the master node run the following to ensure it is possible to read and write to the persistent volume:

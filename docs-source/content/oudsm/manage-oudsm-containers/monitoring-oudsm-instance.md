@@ -88,7 +88,7 @@ After the Oracle Unified Directory Services Manager instance is set up you can m
 
    ```bash
    NAME: monitoring
-   LAST DEPLOYED: Mon Jul 11 16:29:23 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: monitoring
    STATUS: deployed
    REVISION: 1
@@ -118,7 +118,7 @@ The output will look similar to the following:
 ```
 NAME                                                         READY   STATUS    RESTARTS   AGE   IP               NODE            NOMINATED NODE   READINESS GATES
 pod/alertmanager-monitoring-kube-prometheus-alertmanager-0   2/2     Running   0          27s   10.244.2.141     <worker-node>   <none>           <none>
-pod/monitoring-grafana-578f79599c-qqdfb                      2/3     Running   0          34s   10.244.1.127     <worker-node>   <none>           <none>
+pod/monitoring-grafana-578f79599c-qqdfb                      3/3     Running   0          34s   10.244.1.127     <worker-node>   <none>           <none>
 pod/monitoring-kube-prometheus-operator-65cdf7995-w6btr      1/1     Running   0          34s   10.244.1.126     <worker-node>   <none>           <none>
 pod/monitoring-kube-state-metrics-56bfd4f44f-5ls8t           1/1     Running   0          34s   10.244.2.139     <worker-node>   <none>           <none>
 pod/monitoring-prometheus-node-exporter-5b2f6                1/1     Running   0          34s   100.102.48.84    <worker-node>   <none>           <none>
@@ -195,7 +195,7 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 
 1. Download the K8 Cluster Detail Dashboard json file from: https://grafana.com/grafana/dashboards/10856.
 
-1. Import the Grafana dashboard by navigating on the left hand menu to **Create** > **Import**. Click **Upload JSON file** and select the json downloaded file. In the `Prometheus` drop down box select `Prometheus`. Click **Import**. The dashboard should be displayed.
+1. Import the Grafana dashboard by navigating on the left hand menu to **Dashboards** > **Import**. Click **Upload JSON file** and select the json downloaded file. In the `Prometheus` drop down box select `Prometheus`. Click **Import**. The dashboard should be displayed.
 
 1. Verify your installation by viewing some of the customized dashboard views.
 

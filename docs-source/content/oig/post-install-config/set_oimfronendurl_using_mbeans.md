@@ -142,8 +142,9 @@ Follow these post install configuration steps.
 1. Enter a new value for the `OimFrontEndURL` attribute, in the format:
 
    * If using an External LoadBalancer for your ingress: `https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`
-   * If using NodePort for your ingress: `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
+   * If using NodePort for your ingress: `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
   
+   If using HTTP instead of HTTPS for your ingress, change the URL appropriately.
 
    Then click `Apply`.
    

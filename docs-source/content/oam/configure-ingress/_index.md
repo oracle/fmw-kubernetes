@@ -124,7 +124,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ``` 
    NAME: nginx-ingress
-   LAST DEPLOYED: Mon Jul 12 13:57:21 2022
+   LAST DEPLOYED: <DATE>
 
    NAMESPACE: oamns
    STATUS: deployed
@@ -193,7 +193,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    $ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
    
    NAME: nginx-ingress
-   LAST DEPLOYED: Mon Jul 12 13:57:21 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: nginxssl
    STATUS: deployed
    REVISION: 1
@@ -262,7 +262,9 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    # Type of Configuration Supported Values are : SSL and NONSSL
    sslType: SSL
 
-   # domainType Supported values are soa,osb and soaosb.
+   # domainType. Supported values are: oam
+   domainType: oam
+
 
    #WLS domain as backend to the load balancer
    wlsDomain:
@@ -276,8 +278,15 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
      policyClusterName: policy_cluster
      policyManagedServerPort: 15100
      policyManagedServerSSLPort:
+	 
+   # Host  specific values
+   hostName:
+     enabled: false
+     admin: 
+     runtime: 
    ```
-   
+
+
 1. Run the following helm command to install the ingress:
 
    ```bash
@@ -296,7 +305,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    
    ```
    NAME: oam-nginx
-   LAST DEPLOYED: Mon Jul 12 14:01:01 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: oamns
    STATUS: deployed
    REVISION: 1
@@ -333,7 +342,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    ```bash
    $ kubectl --namespace oamns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller
    ```
-   
+     
    The output will look similar to the following:
    
    ```
@@ -343,60 +352,64 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 1. Run the following command to check the ingress:
 
    ```bash
-   $ kubectl describe ing access-ingress -n <domain_namespace>
+   $ kubectl describe ing <domainUID>-nginx -n <domain_namespace>
    ```
    
    For example:
    
    ```bash
-   $ kubectl describe ing access-ingress -n oamns
+   $ kubectl describe ing accessdomain-nginx -n oamns
    ```
    
    The output will look similar to the following:
    
    ```
-   Name:             access-ingress
+   Name:             accessdomain-nginx
    Namespace:        oamns
-   Address:          10.101.132.251
+   Address:          10.106.70.55
    Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
    Rules:
      Host        Path  Backends
      ----        ----  --------
      *
-                 /console                        accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /rreg/rreg                      accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /em                             accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /oamconsole                     accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /dms                            accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /oam/services/rest              accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /iam/admin/config               accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /iam/admin/diag                 accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /iam/access                     accessdomain-cluster-oam-cluster:14100 (10.244.5.12:14100,10.244.6.64:14100)
-                 /oam/admin/api                  accessdomain-adminserver:7001 (10.244.6.63:7001)
-                 /oam/services/rest/access/api   accessdomain-cluster-oam-cluster:14100 (10.244.5.12:14100,10.244.6.64:14100)
-                 /access                         accessdomain-cluster-policy-cluster:15100 (10.244.5.13:15100,10.244.6.65:15100)
-                 /                               accessdomain-cluster-oam-cluster:14100 (10.244.5.12:14100,10.244.6.64:14100)
+                 /console                        accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /consolehelp                    accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /rreg/rreg                      accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /em                             accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /oamconsole                     accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /dms                            accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /oam/services/rest              accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /iam/admin/config               accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /iam/admin/diag                 accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /iam/access                     accessdomain-cluster-oam-cluster:14100 (10.244.1.20:14100,10.244.2.13:14100)
+                 /oam/admin/api                  accessdomain-adminserver:7001 (10.244.1.18:7001)
+                 /oam/services/rest/access/api   accessdomain-cluster-oam-cluster:14100 (10.244.1.20:14100,10.244.2.13:14100)
+                 /access                         accessdomain-cluster-policy-cluster:15100 (10.244.1.19:15100,10.244.2.12:15100)
+                 /                               accessdomain-cluster-oam-cluster:14100 (10.244.1.20:14100,10.244.2.13:14100)
    Annotations:  kubernetes.io/ingress.class: nginx
                  meta.helm.sh/release-name: oam-nginx
                  meta.helm.sh/release-namespace: oamns
                  nginx.ingress.kubernetes.io/configuration-snippet:
+                   more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
                    more_set_input_headers "X-Forwarded-Proto: https";
                    more_set_input_headers "WL-Proxy-SSL: true";
                  nginx.ingress.kubernetes.io/enable-access-log: false
                  nginx.ingress.kubernetes.io/ingress.allow-http: false
                  nginx.ingress.kubernetes.io/proxy-buffer-size: 2000k
    Events:
-     Type    Reason  Age                    From                      Message
-     ----    ------  ----                   ----                      -------
-     Normal  Sync    6m22s (x2 over 6m31s)  nginx-ingress-controller  Scheduled for sync
+     Type    Reason  Age                From                      Message
+     ----    ------  ----               ----                      -------
+     Normal  Sync    14m (x2 over 15m)  nginx-ingress-controller  Scheduled for sync
    ```
 
   
-1. To confirm that the new ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the `WebLogic ReadyApp framework`:
+1. To confirm that the new ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the 'WebLogic ReadyApp framework':
 
    ```bash
    $ curl -v -k https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/weblogic/ready
    ```
+  
+   
    
    For example:
    
@@ -422,8 +435,8 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    * SSL connection using TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
    * Server certificate:
    *       subject: CN=masternode.example.com
-   *       start date: Jul 12 14:31:07 2021 GMT
-   *       expire date: Jul 12 14:31:07 2022 GMT
+   *       start date: <DATE>
+   *       expire date: <DATE>
    *       common name: masternode.example.com
    *       issuer: CN=masternode.example.com
    > GET /weblogic/ready HTTP/1.1

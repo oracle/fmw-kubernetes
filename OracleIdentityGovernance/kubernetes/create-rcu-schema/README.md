@@ -23,7 +23,7 @@ The script assumes that either the image, `oracle/oig:12.2.1.4.0`, is available 
 
 ```
 $ ./create-rcu-schema.sh -h
-usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables>  [-h]
+usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <image> -u <imagePullPolicy> -p <docker-store> -n <namespace> -q <sysPassword> -r <schemaPassword>  -o <rcuOutputDir>  -c <customVariables> [-l] <timeoutLimit> [-h]
   -s RCU Schema Prefix (required)
   -t RCU Schema Type (optional)
       (supported values: oim)
@@ -44,11 +44,13 @@ usage: ./create-rcu-schema.sh -s <schemaPrefix> -t <schemaType> -d <dburl> -i <i
   -o Output directory for the generated YAML file. (optional)
       (default: rcuoutput)
   -c Comma-separated variables in the format variablename=value. (optional).
-      (default: none)      
+      (default: none)
+  -l Timeout limit in seconds. (optional).
+      (default: 300)
   -h Help
 
 $ ./create-rcu-schema.sh -s domain1
-ImagePullSecret[none] Image[oracle/oig:12.2.1.4.0] dburl[oracle-db.default.svc.cluster.local:1521/devpdb.k8s] rcuType[fmw] customVariables[none]
+ImagePullSecret[none] Image[oracle/oig:12.2.1.4.0] dburl[oracle-db.default.svc.cluster.local:1521/devpdb.k8s] rcuType[oig] customVariables[none]
 pod/rcu created
 [rcu] already initialized ..
 Checking Pod READY column for State [1/1]
@@ -63,7 +65,7 @@ PATH=/u01/oracle/wlserver/server/bin:/u01/oracle/wlserver/../oracle_common/modul
 
 Your environment has been set.
 Check if the DB Service is ready to accept request
-DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s], schemaPrefix [oimcluster] rcuType [fmw]
+DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s], schemaPrefix [oimcluster] rcuType [oig]
 
 **** Success!!! ****
 
@@ -153,7 +155,7 @@ PATH=/u01/oracle/wlserver/server/bin:/u01/oracle/wlserver/../oracle_common/modul
 
 Your environment has been set.
 Check if the DB Service is ready to accept request
-DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s] schemaPrefix [domain1] rcuType[fmw]
+DB Connection String [oracle-db.default.svc.cluster.local:1521/devpdb.k8s] schemaPrefix [domain1] rcuType[oig]
 
 **** Success!!! ****
 

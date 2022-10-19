@@ -28,30 +28,30 @@ if len(sys.argv) < 1:
     usage()
 
 # domainName will be passed by command line parameter -domainName.
-domainName = "accessdomain"
+domainName = "accessinfra"
 
 # adminServerName will be passed by command line parameter  -adminServerName
 adminServerName = "AdminServer"
 
 # adminURL will be passed by command line parameter  -adminURL
-adminURL = "accessdomain-adminserver:7001"
+adminURL = "accessinfra-adminserver:7001"
 
 # oamClusterName will be passed by command line parameter -oamClusterName
 oamClusterName = "oam_cluster"
 
 # wlsMonitoringExporterTooamCluster will be passed by command line parameter -wlsMonitoringExporterTooamCluster
-wlsMonitoringExporterTooamCluster = "true"
+wlsMonitoringExporterTooamCluster = "false"
 # policyClusterName will be passed by command line parameter -policyClusterName
 policyClusterName = "policy_cluster"
 
 # wlsMonitoringExporterTopolicyCluster will be passed by command line parameter -wlsMonitoringExporterTopolicyCluster
-wlsMonitoringExporterTopolicyCluster = "true"
+wlsMonitoringExporterTopolicyCluster = "false"
 
 # username will be passed by command line parameter  -username
 username = "weblogic"
 
 # password will be passed by command line parameter -password
-password = "welcome1"
+password = "Welcome1"
 
 
 i=1

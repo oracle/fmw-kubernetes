@@ -42,8 +42,6 @@ echo "INGRESS_NAME: $INGRESS_NAME"
 
 if [ $INGRESS == "nginx" ]; then
 	ING_TYPE=`kubectl --namespace $OAM_NAMESPACE get services $INGRESS_NAME-ingress-nginx-controller -o jsonpath="{.spec.type}"`
-elif [ $INGRESS == "voyager" ]; then
-	ING_TYPE=`kubectl --namespace $OAM_NAMESPACE get services voyager-$domainUID-voyager -o jsonpath="{.spec.type}"`
 else
 	 echo "Error: Invalid INGRESS : $INGRESS"		
  exit 1 
@@ -54,8 +52,6 @@ echo "ING_TYPE : $ING_TYPE "
 if [ $ING_TYPE == "NodePort" ]; then
 	if [ $INGRESS == "nginx" ]; then
 	 LBR_PORT=`kubectl --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[1].nodePort}" $INGRESS_NAME-ingress-nginx-controller`
-	elif [ $INGRESS == "voyager" ]; then
-	 LBR_PORT=`kubectl --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[0].nodePort}" voyager-$domainUID-voyager`
 	else
 	 echo "Error: Invalid INGRESS : $INGRESS"	
 	 exit 1 
@@ -70,8 +66,6 @@ fi
 if [ $ING_TYPE == "LoadBalancer" ]; then
   if [ $INGRESS == "nginx" ]; then	
 	LBR_HOST=`kubectl --namespace $OAM_NAMESPACE get service $INGRESS_NAME-ingress-nginx-controller | grep controller | awk '{ print $4 }' | tr -d '\n'`
-  elif [ $INGRESS == "voyager" ]; then
-	LBR_HOST=`kubectl --namespace $OAM_NAMESPACE get services voyager-$domainUID-voyager |grep voyager-$domainUID-voyager | awk '{ print $4 }' | tr -d '\n'`
   else 
     echo "Error: Invalid INGRESS : $INGRESS"	
 	exit 1 	

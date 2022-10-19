@@ -89,7 +89,7 @@ Name:         oudsm-1
 Namespace:    oudsmns
 Priority:     0
 Node:         <worker-node>/100.102.48.28
-Start Time:   Mon, 11 Jul 2022 09:56:11 +0000
+Start Time:   <DATE>
 Labels:       app.kubernetes.io/instance=oudsm
               app.kubernetes.io/managed-by=Helm
               app.kubernetes.io/name=oudsm
@@ -110,7 +110,7 @@ Containers:
     Ports:          7001/TCP, 7002/TCP
     Host Ports:     0/TCP, 0/TCP
     State:          Running
-      Started:      Tue, 12 Jul 2022 09:56:12 +0000
+      Started:      <DATE>
     Ready:          True
     Restart Count:  0
     Liveness:       http-get http://:7001/oudsm delay=1200s timeout=15s period=60s #success=1 #failure=3
@@ -151,7 +151,7 @@ Events:
   ----     ------            ----  ----               -------
   Warning  FailedScheduling  39m   default-scheduler  0/3 nodes are available: 3 pod has unbound immediate PersistentVolumeClaims.
   Normal   Scheduled         39m   default-scheduler  Successfully assigned oudsmns/oudsm-1 to <worker-node>
-  Normal   Pulled            39m   kubelet            Container image "container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol7-<july'22>" already present on machine
+  Normal   Pulled            39m   kubelet            Container image "container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol7-<October'22>" already present on machine
   Normal   Created           39m   kubelet            Created container oudsm
   Normal   Started           39m   kubelet            Started container oudsm
 

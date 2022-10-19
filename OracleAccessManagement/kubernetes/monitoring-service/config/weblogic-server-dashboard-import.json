@@ -125,7 +125,7 @@
           "expr": "count(count (wls_jvm_uptime{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\"}) by (name))",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{weblogic_serverName}}",
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -750,7 +750,7 @@
           "expr": "wls_jvm_heap_free_current{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": " Heap Free  ({{weblogic_serverName}})",
+          "legendFormat": " Heap Free  ()",
           "refId": "B"
         },
         {
@@ -758,7 +758,7 @@
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "Heap Size ({{weblogic_serverName}})",
+          "legendFormat": "Heap Size ()",
           "refId": "A"
         },
         {
@@ -766,7 +766,7 @@
           "format": "time_series",
           "hide": true,
           "intervalFactor": 1,
-          "legendFormat": "Heap Max  ({{weblogic_serverName}})",
+          "legendFormat": "Heap Max  ()",
           "refId": "C"
         }
       ],
@@ -859,7 +859,7 @@
           "expr": "wls_jvm_process_cpu_load{weblogic_domainUID=~\"$domainName\", weblogic_clusterName=~\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"} * 100",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": " {{weblogic_serverName}}",
+          "legendFormat": " ",
           "refId": "B"
         }
       ],
@@ -947,14 +947,14 @@
           "expr": "wls_threadpool_execute_thread_total_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Total Threads ({{weblogic_serverName}})",
+          "legendFormat": "Total Threads ()",
           "refId": "A"
         },
         {
           "expr": "wls_threadpool_stuck_thread_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Stuck Threads ({{weblogic_serverName}})",
+          "legendFormat": "Stuck Threads ()",
           "refId": "D"
         },
         {
@@ -1338,7 +1338,7 @@
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{app}}",
+              "legendFormat": "",
               "refId": "A"
             },
             {
@@ -1434,7 +1434,7 @@
               "expr": " sum(irate(wls_webapp_config_sessions_opened_total_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}[5m])) by (app)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{app}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],
@@ -1526,7 +1526,7 @@
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{app}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],
@@ -1616,7 +1616,7 @@
               "expr": "sum(irate(wls_servlet_invocation_total_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}[5m])) by (app)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{app}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],
@@ -1888,7 +1888,7 @@
               "expr": "wls_datasource_active_connections_current_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": " {{name}} @ {{weblogic_serverName}}",
+              "legendFormat": "  @ ",
               "refId": "A"
             }
           ],
@@ -1977,7 +1977,7 @@
               "expr": "irate(wls_datasource_connections_total_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": " {{name}} @ {{weblogic_serverName}}",
+              "legendFormat": "  @ ",
               "refId": "A"
             }
           ],
@@ -2065,7 +2065,7 @@
               "expr": "wls_datasource_waiting_for_connection_current_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": " {{name}} @ {{weblogic_serverName}}",
+              "legendFormat": "  @ ",
               "refId": "A"
             }
           ],
@@ -2153,7 +2153,7 @@
               "expr": "wls_datasource_connection_delay_time{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": " {{name}} @ {{weblogic_serverName}}",
+              "legendFormat": "  @ ",
               "refId": "A"
             }
           ],
@@ -2256,7 +2256,7 @@
               "expr": "sum(wls_jmsruntime_connections_current_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}) by (weblogic_serverName)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{weblogic_serverName}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],
@@ -2345,7 +2345,7 @@
               "expr": "sum(irate(wls_jmsruntime_connections_total_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}[5m])) by (weblogic_serverName)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{weblogic_serverName}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],
@@ -2599,14 +2599,14 @@
               "expr": "sum(wls_jms_messages_current_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}) by (jmsserver)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Current ({{jmsserver}})",
+              "legendFormat": "Current ()",
               "refId": "A"
             },
             {
               "expr": "sum(wls_jms_messages_pending_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}) by (jmsserver)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Pending ({{jmsserver}})",
+              "legendFormat": "Pending ()",
               "refId": "B"
             }
           ],
@@ -2694,14 +2694,14 @@
               "expr": "sum(wls_jms_bytes_current_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}) by (jmsserver)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Current ({{jmsserver}})",
+              "legendFormat": "Current ()",
               "refId": "A"
             },
             {
               "expr": "sum(wls_jms_bytes_pending_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}) by (jmsserver)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Pending ({{jmsserver}})",
+              "legendFormat": "Pending ()",
               "refId": "B"
             }
           ],
@@ -2788,7 +2788,7 @@
               "expr": "sum(irate(wls_jms_messages_received_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}[5m])) by (jmsserver)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{jmsserver}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],
@@ -2875,7 +2875,7 @@
               "expr": "sum(irate(wls_jms_bytes_received_count{weblogic_domainUID=\"$domainName\", weblogic_clusterName=\"$clusterName\", weblogic_serverName=~\"${serverName:regex}\"}[5m])) by (jmsserver)",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{jmsserver}}",
+              "legendFormat": "",
               "refId": "A"
             }
           ],

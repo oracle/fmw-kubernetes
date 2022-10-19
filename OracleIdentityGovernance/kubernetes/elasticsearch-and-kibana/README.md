@@ -19,7 +19,7 @@ To control Elasticsearch memory parameters (Heap allocation and Enabling/Disabli
 
 * ES_JAVA_OPTS: value may contain for example -Xms512m -Xmx512m to lower the default memory usage (please be aware that this value is only applicable for demo purpose and it is not the one recommended by Elasticsearch itself)
 * bootstrap.memory_lock: value may contain true (enables the usage of mlockall to try to lock the process address space into RAM, preventing any Elasticsearch memory from being swapped out) or false (disables the usage of mlockall to try to lock the process address space into RAM, preventing any Elasticsearch memory from being swapped out). 
-* imagePullSecrets: It has been added to resolve the issue with Docker Hub Rate Limiting. One needs to create a secret using your docker hub credentials to work around the error and replace the value dockercred.
+
 To install Elasticsearch and Kibana, use:
 ```shell
 $ kubectl apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
@@ -29,3 +29,4 @@ To remove them, use:
 ```shell
 $ kubectl delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
 ```
+

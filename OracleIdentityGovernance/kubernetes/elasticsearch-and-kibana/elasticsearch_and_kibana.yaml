@@ -1,5 +1,6 @@
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 
 # When a user installs the WebLogic operator Helm chart, the user can set
 # elkIntegrationEnabled to true in their values.yaml to tell the operator to send the
@@ -27,7 +28,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: "oigns"
+  namespace: "oimcluster"
   name: "elasticsearch"
   labels:
     app: "elasticsearch"
@@ -67,7 +68,7 @@ spec:
 kind: "Service"
 apiVersion: "v1"
 metadata:
-  namespace: "oigns"
+  namespace: "oimcluster"
   name: "elasticsearch"
 spec:
   ports:
@@ -86,7 +87,7 @@ spec:
 apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
-  namespace: "oigns"
+  namespace: "oimcluster"
   name: "kibana"
   labels:
     app: "kibana"
@@ -112,7 +113,7 @@ spec:
 apiVersion: "v1"
 kind: "Service"
 metadata: 
-  namespace: "oigns"
+  namespace: "oimcluster"
   name: "kibana"
   labels: 
     app: "kibana"
@@ -122,3 +123,4 @@ spec:
     - port: 5601
   selector: 
     app: "kibana"
+

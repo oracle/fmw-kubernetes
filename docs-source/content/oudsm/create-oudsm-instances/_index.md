@@ -89,14 +89,14 @@ Create a Kubernetes secret that stores the credentials for the container registr
 
 As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system. 
 
-Make sure the persistent volume path has **full** access permissions, and that the folder is empty. In this example `/scratch/shared/` is a shared directory accessible from all nodes.
+In this example `/scratch/shared/` is a shared directory accessible from all nodes.
    
 1. On the master node run the following command to create a `user_projects` directory:
 
    ```bash 
    $ cd <persistent_volume>
    $ mkdir oudsm_user_projects   
-   $ chmod 777 oudsm_user_projects
+   $ sudo chown -R 1000:0 oudsm_user_projects
    ```
    
    For example:
@@ -104,7 +104,7 @@ Make sure the persistent volume path has **full** access permissions, and that t
    ```bash 
    $ cd /scratch/shared
    $ mkdir oudsm_user_projects   
-   $ chmod 777 oudsm_user_projects
+   $ sudo chown -R 1000:0 oudsm_user_projects
    ```
    
 1. On the master node run the following to ensure it is possible to read and write to the persistent volume:
@@ -198,7 +198,7 @@ You can create OUDSM instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oudsm_cpu
-     tag: 12.2.1.4-jdk8-ol7-<july'22>
+     tag: 12.2.1.4-jdk8-ol7-<October'22>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -272,7 +272,7 @@ You can create OUDSM instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudsmns \
-   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol7-<july'22> \
+   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol7-<October'22> \
    --set imagePullSecrets[0].name="orclcred" \
    oudsm oudsm
    ```
@@ -291,7 +291,7 @@ In all the examples above, the following output is shown following a successful 
 
    ```bash
    NAME: oudsm
-   LAST DEPLOYED: Mon Jul 11 12:21:06 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: oudsmns
    STATUS: deployed
    REVISION: 1
@@ -388,8 +388,8 @@ With an OUDSM instance now deployed you are now ready to configure an ingress co
    The output will look similar to the following:
    
    ```
-   NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
-   oudsm   oudsmns         2               2022-07-11 16:46:34.05531056 +0000 UTC  deployed        oudsm-0.1       12.2.1.4.0
+   NAME    NAMESPACE       REVISION        UPDATED    STATUS          CHART           APP VERSION
+   oudsm   oudsmns         2               <DATE>     deployed        oudsm-0.1       12.2.1.4.0
    ```
         
 1. Delete the deployment using the following command:

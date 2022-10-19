@@ -1,10 +1,10 @@
 ---
-title: "a. Using Design Console with NGINX(non-SSL)"
-weight: 1
-description: "Configure Design Console with NGINX(non-SSL)."
+title: "b. Using Design Console with NGINX(SSL)"
+weight: 2
+description: "Configure Design Console with NGINX(SSL)."
 ---
 
-Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your Kubernetes cluster.
+Configure an NGINX ingress (SSL) to allow Design Console to connect to your Kubernetes cluster.
 
 1. [Prerequisites](#prerequisites)
 1. [Setup routing rules for the Design Console ingress](#setup-routing-rules-for-the-design-console-ingress)
@@ -19,13 +19,13 @@ Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your 
 
 1. [Login to the Design Console](#login-to-the-design-console)
 
+
 ### Prerequisites
 
-If you haven't already configured an NGINX ingress controller (Non-SSL) for OIG, follow [Using an Ingress with NGINX (non-SSL)]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S">}}).
+If you haven't already configured an NGINX ingress controller (SSL) for OIG, follow [Using an Ingress with NGINX (SSL)]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl">}}).
 
-Make sure you know the master hostname and ingress port for NGINX before proceeding e.g `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`.
+Make sure you know the master hostname and ingress port for NGINX before proceeding e.g `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`. Also make sure you know the Kubernetes secret for SSL that was generated e.g `governancedomain-tls-cert`.
 
-**Note**: In all steps below if you are using a load balancer for your ingress instead of NodePort then replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}.
 
 ### Setup routing rules for the Design Console ingress
 
@@ -35,16 +35,17 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
    $ cd $WORKDIR/kubernetes/design-console-ingress
    ```
    
-   Edit `values.yaml` and ensure that `tls: NONSSL`  and `domainUID: governancedomain` are set, for example:
+
+   Edit `values.yaml` and ensure that `tls: SSL` is set. Change `domainUID:` and `secretName:` to match the values for your `<domain_uid>` and your SSL Kubernetes secret, for example:
    
    ```
    # Load balancer type.  Supported values are: NGINX
    type: NGINX
    # Type of Configuration Supported Values are : NONSSL,SSL
    # tls: NONSSL
-   tls: NONSSL
+   tls: SSL
    # TLS secret name if the mode is SSL
-   secretName: dc-tls-cert
+   secretName: governancedomain-tls-cert
 
 
    # WLS domain as backend to the load balancer
@@ -62,14 +63,12 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
    $ cd $WORKDIR
    $ helm install governancedomain-nginx-designconsole kubernetes/design-console-ingress  --namespace oigns  --values kubernetes/design-console-ingress/values.yaml
    ```
-  
-   For example:
    
    The output will look similar to the following:
 
    ```
    NAME: governancedomain-nginx-designconsole
-   LAST DEPLOYED: Thu Jul 13 14:32:16 2022
+   <DATE>
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -90,7 +89,7 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
    
    The output will look similar to the following:
 
-   ```
+   ```  
    Name:             governancedomain-nginx-designconsole
    Namespace:        oigns
    Address:
@@ -99,21 +98,26 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
      Host        Path  Backends
      ----        ----  --------
      *
-                    governancedomain-cluster-oim-cluster:14002 (10.244.1.25:14002)
+                    governancedomain-cluster-oim-cluster:14002 (10.244.2.103:14002)
    Annotations:  kubernetes.io/ingress.class: nginx
                  meta.helm.sh/release-name: governancedomain-nginx-designconsole
                  meta.helm.sh/release-namespace: oigns
                  nginx.ingress.kubernetes.io/affinity: cookie
+                 nginx.ingress.kubernetes.io/configuration-snippet:
+                   more_set_input_headers "X-Forwarded-Proto: https";
+                   more_set_input_headers "WL-Proxy-SSL: true";
                  nginx.ingress.kubernetes.io/enable-access-log: false
+                 nginx.ingress.kubernetes.io/ingress.allow-http: false
+                 nginx.ingress.kubernetes.io/proxy-buffer-size: 2000k
    Events:
      Type    Reason  Age   From                      Message
      ----    ------  ----  ----                      -------
-     Normal  Sync    13s   nginx-ingress-controller  Scheduled for sync
+     Normal  Sync    6s    nginx-ingress-controller  Scheduled for sync
    ```
-
+   
 ### Update the T3 channel
 
-1. Log in to the WebLogic Console using `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
+1. Log in to the WebLogic Console using `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
 
 1. Navigate to **Environment**, click **Servers**, and then select **oim_server1**.
 
@@ -124,7 +128,7 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 1. Click **Lock and Edit**.
 
 1. Set the **External Listen Address** to the ingress controller hostname `${MASTERNODE-HOSTNAME}`.
-
+  
 1. Set the **External Listen Port** to the ingress controller port `${MASTERNODE-PORT}`. 
 
 1. Click **Save**.
@@ -148,7 +152,7 @@ $ cd $WORKDIR/kubernetes/domain-lifecycle
 ./restartServer.sh -s oim_server1 -d governancedomain -n oigns
 ```
 
-Make sure the `<domain_uid>-oim-server1` has a `READY` status of `1/1` before continuing:
+Make sure the <domain_uid>-oim-server1 has a `READY` status of `1/1` before continuing:
    
 ```bash
 $ kubectl get pods -n oigns | grep oim-server1   
@@ -159,18 +163,33 @@ The output will look similar to the following:
 ```
 governancedomain-oim-server1                                1/1     Running     0          8m
 ```
-
-### Design Console client
+   
+### Design Console Client
 
 It is possible to use Design Console from an on-premises install, or from a container image.
 
 #### Using an on-premises installed Design Console
 
-1. Install Design Console on an on-premises machine
+The instructions below should be performed on the client where Design Console is installed.
 
-1. Follow [Login to the Design Console](#login-to-the-design-console).
+1. Import the CA certificate into the java keystore
+
+   If in [Generate SSL Certificate]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl.md#generate-ssl-certificate">}}) you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.
+
+   If in [Generate SSL Certificate]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl.md#generate-ssl-certificate">}}) you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.
+
+   Import the certificate using the following command:
+
+   ```bash
+   $ keytool -import -trustcacerts -alias dc -file <certificate> -keystore $JAVA_HOME/jre/lib/security/cacerts
+   ```
+
+   where `<certificate>` is the CA certificate, or self-signed certicate.
+
+1. Once complete follow [Login to the Design Console](#login-to-the-design-console).
 
 #### Using a container image for Design Console
+
 
 ##### Using Docker
 
@@ -187,7 +206,7 @@ The Design Console can be run from a container using X windows emulation.
    The output will look similar to the following:
    
    ```
-   governancedomain-oim-server1                                1/1     Running     0          31m     10.244.2.98   worker-node2   <none>           <none>
+   governancedomain-oim-server1                                1/1     Running     0          31m     10.244.2.98   worker-node2   
    ```
 
 
@@ -206,7 +225,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22> bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'22> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -257,6 +276,41 @@ The Design Console can be run from a container using X windows emulation.
    bash-4.2#
    ```
    
+1. Copy the Ingress CA certificate into the container
+
+   If in [Generate SSL Certificate]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl.md#generate-ssl-certificate">}}) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
+
+   If in [Generate SSL Certificate]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl.md#generate-ssl-certificate">}}) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
+   
+   **Note**: You will have to copy the certificate over to the worker node where the oigdc image is created before running the following.
+
+   Run the following command outside the container:
+
+   ```bash
+   $ cd <workdir>/ssl
+   $ docker cp <certificate> <container_name>:/u01/jdk/jre/lib/security/<certificate>
+   ```
+
+   For example:
+   
+   ```bash
+   $ cd /scratch/OIGK8S/ssl
+   $ docker cp tls.crt oigdc:/u01/jdk/jre/lib/security/tls.crt
+   ```   
+
+1. Import the certificate using the following command:
+
+   ```bash
+   bash-4.2# /u01/jdk/bin/keytool -import -trustcacerts -alias dc -file /u01/jdk/jre/lib/security/<certificate> -keystore /u01/jdk/jre/lib/security/cacerts
+   ```
+
+   For example:
+   
+   ```bash
+   bash-4.2# /u01/jdk/bin/keytool -import -trustcacerts -alias dc -file /u01/jdk/jre/lib/security/tls.crt -keystore /u01/jdk/jre/lib/security/cacerts
+   ```
+
+
 1. In the container run the following to export the DISPLAY:
 
    ```bash
@@ -270,9 +324,8 @@ The Design Console can be run from a container using X windows emulation.
    bash-4.2# sh xlclient.sh
    ```
    
-   The Design Console login should be displayed. Now follow [Login to the Design Console](#login-to-the-design-console).   
-   
-   
+   The Design Console login should be displayed. Now follow [Login to the Design Console](#login-to-the-design-console).
+
 ##### Using podman
 
 1. On the parent machine where the Design Console is to be displayed, run `xhost +`.
@@ -286,7 +339,7 @@ The Design Console can be run from a container using X windows emulation.
    The output will look similar to the following:
    
    ```
-   governancedomain-oim-server1                                1/1     Running     0          31m     10.244.2.98   worker-node2   <none>           <none>
+   governancedomain-oim-server1                                1/1     Running     0          19h   10.244.2.55   worker-node2   <none> 
    ```
 
 1. On the worker node returned above e.g `worker-node2`, execute the following command to find the OIG container image name:
@@ -304,7 +357,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<july'22> bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'22> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -355,6 +408,40 @@ The Design Console can be run from a container using X windows emulation.
    bash-4.2#
    ```
    
+1. Copy the Ingress CA certificate into the container
+
+   If in [Generate SSL Certificate]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl.md#generate-ssl-certificate">}}) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
+
+   If in [Generate SSL Certificate]({{< relref "/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-K8S-ssl.md#generate-ssl-certificate">}}) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
+
+   **Note**: You will have to copy the certificate over to the worker node where the oigdc image is created before running the following.
+
+   Run the following command outside the container:
+
+   ```bash
+   $ cd <workdir>/ssl
+   $  podman cp <certificate> <container_name>:/u01/jdk/jre/lib/security/<certificate>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ cd /scratch/OIGK8S/ssl
+   $ podman cp tls.crt oigdc:/u01/jdk/jre/lib/security/tls.crt
+   ```   
+
+1. Inside the container, import the certificate using the following command:
+
+   ```bash
+   bash-4.2# /u01/jdk/bin/keytool -import -trustcacerts -alias dc -file /u01/jdk/jre/lib/security/<certificate> -keystore /u01/jdk/jre/lib/security/cacerts
+   ```
+
+   For example:
+   
+   ```bash
+   bash-4.2# /u01/jdk/bin/keytool -import -trustcacerts -alias dc -file /u01/jdk/jre/lib/security/tls.crt -keystore /u01/jdk/jre/lib/security/cacerts
+   ```
+
 1. In the container run the following to export the DISPLAY:
 
    ```bash
@@ -369,8 +456,8 @@ The Design Console can be run from a container using X windows emulation.
    ```
    
    The Design Console login should be displayed. Now follow [Login to the Design Console](#login-to-the-design-console).
-   
-### Login to the Design Console
+
+#### Login to the Design Console
 
 1. Launch the Design Console and in the Oracle Identity Manager Design Console login page enter the following details: 
 
@@ -379,8 +466,6 @@ The Design Console can be run from a container using X windows emulation.
    * `User ID`: `xelsysadm`
    * `Password`: `<password>`.
 
-    where `<url>` is `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
+    where `<url>` is  where `<url>` is `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`.
 
 1. If successful the Design Console will be displayed.
-
-

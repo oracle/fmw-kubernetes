@@ -89,7 +89,7 @@ After the Oracle Unified Directory instance (OUD) is set up you can monitor it u
 
    ```bash
    NAME: monitoring
-   LAST DEPLOYED: Mon Jul 11 09:57:54 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: monitoring
    STATUS: deployed
    REVISION: 1
@@ -195,6 +195,6 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 
 1. Download the K8 Cluster Detail Dashboard json file from: https://grafana.com/grafana/dashboards/10856.
 
-1. Import the Grafana dashboard by navigating on the left hand menu to **Create** > **Import**. Click **Upload JSON file** and select the json downloaded file. In the `Prometheus` drop down box select `Prometheus`. Click **Import**. The dashboard should be displayed.
+1. Import the Grafana dashboard by navigating on the left hand menu to **Dashboards** > **Import**. Click **Upload JSON file** and select the json downloaded file. In the `Prometheus` drop down box select `Prometheus`. Click **Import**. The dashboard should be displayed.
 
 1. Verify your installation by viewing some of the customized dashboard views.

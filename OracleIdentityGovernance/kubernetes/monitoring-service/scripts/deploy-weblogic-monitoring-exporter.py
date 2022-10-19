@@ -41,14 +41,14 @@ adminURL = "oimcluster-adminserver:7001"
 soaClusterName = "soa_cluster"
 
 # wlsMonitoringExporterTosoaCluster will be passed by command line parameter -wlsMonitoringExporterTosoaCluster
-wlsMonitoringExporterTosoaCluster = "true"
+wlsMonitoringExporterTosoaCluster = "false"
 
 
 # oimClusterName will be passed by command line parameter -oimClusterName
 oimClusterName = "oim_cluster"
 
 # wlsMonitoringExporterTooimCluster will be passed by command line parameter -wlsMonitoringExporterTooimCluster
-wlsMonitoringExporterTooimCluster = "true"
+wlsMonitoringExporterTooimCluster = "false"
 
 # username will be passed by command line parameter  -username
 username = "weblogic"

@@ -5,18 +5,18 @@
 
 function initialize {
   if [ -z ${domainNamespace} ]; then
-    echo "domainNamespace is empty, setting to default oamns"
-    domainNamespace="oamns"
+    echo "domainNamespace is empty, setting to default accessns"
+    domainNamespace="accessns"
   fi
 
   if [ -z ${domainUID} ]; then
-    echo "domainUID is empty, setting to default accessdomain"
-    domainUID="accessdomain"
+    echo "domainUID is empty, setting to default accessinfra"
+    domainUID="accessinfra"
   fi
 
   if [ -z ${weblogicCredentialsSecretName} ]; then
-    echo "weblogicCredentialsSecretName is empty, setting to default \"accessdomain-domain-credentials\""
-    weblogicCredentialsSecretName="accessdomain-domain-credentials"
+    echo "weblogicCredentialsSecretName is empty, setting to default \"accessinfra-domain-credentials\""
+    weblogicCredentialsSecretName="accessinfra-domain-credentials"
   fi
 
   if [ -z ${adminServerName} ]; then
@@ -41,7 +41,7 @@ function initialize {
 
   if [ -z ${wlsMonitoringExporterTooamCluster} ]; then
     echo "wlsMonitoringExporterTooamCluster is empty, setting to default \"false\""
-    wlsMonitoringExporterTooamCluster="true"
+    wlsMonitoringExporterTooamCluster="false"
   fi
   if [ -z ${policyClusterName} ]; then
     echo "policyClusterName is empty, setting to default \"policy_cluster\""
@@ -55,7 +55,7 @@ function initialize {
 
   if [ -z ${wlsMonitoringExporterTopolicyCluster} ]; then
     echo "wlsMonitoringExporterTopolicyCluster is empty, setting to default \"false\""
-    wlsMonitoringExporterTopolicyCluster="true"
+    wlsMonitoringExporterTopolicyCluster="false"
   fi
 }
 

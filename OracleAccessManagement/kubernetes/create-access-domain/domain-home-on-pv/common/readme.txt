@@ -9,7 +9,7 @@ Sample oamconfig.properties
 # The name space where OAM servers are created
 OAM_NAMESPACE=accessns
 
-# Define the INGRESS CONTROLLER used. typical values are voyager/nginx
+# Define the INGRESS CONTROLLER used. typical value is nginx
 INGRESS=nginx
 
 # Define the INGRESS CONTROLLER name used during installation. 

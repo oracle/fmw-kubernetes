@@ -1,5 +1,5 @@
 ---
-title: "a. Patch an image"
+title: "b. Patch an image"
 description: "Instructions on how to update your OAM Kubernetes cluster with a new OAM container image."
 ---
 

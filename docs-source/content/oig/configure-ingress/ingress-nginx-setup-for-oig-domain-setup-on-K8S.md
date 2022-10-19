@@ -86,7 +86,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Thu 13 Jul 2022 14:13:33 GMT
+   LAST DEPLOYED: <DATE>
    NAMESPACE: nginx
    STATUS: deployed
    REVISION: 1
@@ -151,7 +151,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
    ```
    NAME: nginx-ingress
-   LAST DEPLOYED: Thu Jul 13 14:15:33 2022
+   LAST DEPLOYED: <DATE>
    NAMESPACE: nginx
    STATUS: deployed
    REVISION: 1
@@ -212,27 +212,38 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    Edit `values.yaml` and change the `domainUID` parameter to match your `domainUID`, for example `domainUID: governancedomain`. Also change `sslType` to `NONSSL`.  The file should look as follows:
    
    ```
-   # Load balancer type.  Supported values are: TRAEFIK, NGINX
+   # Load balancer type. Supported values are: NGINX
    type: NGINX
 
-   # Type of Configuration Supported Values are : NONSSL, SSL
+   # SSL configuration Type. Supported Values are : NONSSL,SSL
    sslType: NONSSL
-   
-   # TimeOut value to be set for nginx parameters proxy-read-timeout and proxy-send-timeout
-   nginxTimeOut: 180
 
-   # TLS secret name if the mode is SSL
-   secretName: domain1-tls-cert
+   # domainType. Supported values are: oim
+   domainType: oim
 
    #WLS domain as backend to the load balancer
    wlsDomain:
      domainUID: governancedomain
      adminServerName: AdminServer
      adminServerPort: 7001
+     adminServerSSLPort:
      soaClusterName: soa_cluster
      soaManagedServerPort: 8001
+     soaManagedServerSSLPort:
      oimClusterName: oim_cluster
      oimManagedServerPort: 14000
+     oimManagedServerSSLPort:
+
+   # Host  specific values
+   hostName:
+     enabled: false
+     admin:
+     runtime:
+     internal:
+
+   # Ngnix specific values
+   nginx:
+     nginxTimeOut: 180
    ```
 
 
@@ -245,7 +256,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    $ helm install governancedomain-nginx kubernetes/charts/ingress-per-domain --namespace <namespace> --values kubernetes/charts/ingress-per-domain/values.yaml
    ```
   
-   **Note**: The `<workdir>/samples/kubernetes/charts/ingress-per-domain/templates//nginx-ingress-k8s1.19.yaml and nginx-ingress.yaml` has `nginx.ingress.kubernetes.io/enable-access-log` set to `false`. If you want to enable access logs then set this value to `true` before executing the command. Enabling access-logs can cause issues with disk space if not regularly maintained.   
+   **Note**: The `<workdir>/kubernetes/charts/ingress-per-domain/templates/nginx-ingress-nonssl.yaml` has `nginx.ingress.kubernetes.io/enable-access-log` set to `false`. If you want to enable access logs then set this value to `true` before executing the command. Enabling access-logs can cause issues with disk space if not regularly maintained.   
    
    For example:
    
@@ -259,7 +270,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    ```
    $ helm install governancedomain-nginx kubernetes/charts/ingress-per-domain --namespace oigns --values kubernetes/charts/ingress-per-domain/values.yaml
    NAME: governancedomain-nginx
-   LAST DEPLOYED:  Thu Jul 13 14:18:23 2022
+   LAST DEPLOYED:  <DATE>
    NAMESPACE: oigns
    STATUS: deployed
    REVISION: 1
@@ -320,38 +331,42 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
      Host        Path  Backends
      ----        ----  --------
      *
-                 /console                        governancedomain-adminserver:7001 (10.244.2.59:7001)
-                 /em                             governancedomain-adminserver:7001 (10.244.2.59:7001)
-                 /soa                            governancedomain-cluster-soa-cluster:8001 (10.244.2.60:8001)
-                 /integration                    governancedomain-cluster-soa-cluster:8001 (10.244.2.60:8001)
-                 /soa-infra                      governancedomain-cluster-soa-cluster:8001 (10.244.2.60:8001)
-                 /identity                       governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /admin                          governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /oim                            governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /sysadmin                       governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /workflowservice                governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /xlWebApp                       governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /Nexaweb                        governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /callbackResponseService        governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /spml-xsd                       governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /HTTPClnt                       governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /reqsvc                         governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /iam                            governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /provisioning-callback          governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /CertificationCallbackService   governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /ucs                            governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /FacadeWebApp                   governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /OIGUI                          governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
-                 /weblogic                       governancedomain-cluster-oim-cluster:14000 (10.244.1.25:14000)
+                 /console                        governancedomain-adminserver:7001 (10.244.2.50:7001)
+                 /consolehelp                    governancedomain-adminserver:7001 (10.244.2.50:7001)
+                 /em                             governancedomain-adminserver:7001 (10.244.2.50:7001)
+                 /ws_utc                         governancedomain-cluster-soa-cluster:8001 (10.244.2.51:8001)
+                 /soa                            governancedomain-cluster-soa-cluster:8001 (10.244.2.51:8001)
+                 /integration                    governancedomain-cluster-soa-cluster:8001 (10.244.2.51:8001)
+                 /soa-infra                      governancedomain-cluster-soa-cluster:8001 (10.244.2.51:8001)
+                 /identity                       governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /admin                          governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /oim                            governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /sysadmin                       governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /workflowservice                governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /callbackResponseService        governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /spml-xsd                       governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /HTTPClnt                       governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /reqsvc                         governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /iam                            governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /provisioning-callback          governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /CertificationCallbackService   governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /ucs                            governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /FacadeWebApp                   governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /OIGUI                          governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
+                 /weblogic                       governancedomain-cluster-oim-cluster:14000 (10.244.2.52:14000)
    Annotations:  kubernetes.io/ingress.class: nginx
                  meta.helm.sh/release-name: governancedomain-nginx
                  meta.helm.sh/release-namespace: oigns
                  nginx.ingress.kubernetes.io/affinity: cookie
+                 nginx.ingress.kubernetes.io/affinity-mode: persistent
                  nginx.ingress.kubernetes.io/enable-access-log: false
+                 nginx.ingress.kubernetes.io/proxy-read-timeout: 180
+                 nginx.ingress.kubernetes.io/proxy-send-timeout: 180
+                 nginx.ingress.kubernetes.io/session-cookie-name: sticky
    Events:
      Type    Reason  Age   From                      Message
      ----    ------  ----  ----                      -------
-     Normal  Sync    35s   nginx-ingress-controller  Scheduled for sync
+     Normal  Sync    27s   nginx-ingress-controller  Scheduled for sync
    ```
 
 1. To confirm that the new ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the `WebLogic ReadyApp framework`:
@@ -390,7 +405,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    >
    < HTTP/1.1 200 OK
    < Server: nginx/1.19.2
-   < Date: Thu Jul 13 14:21:14 2022
+   < Date: <DATE>
    < Content-Length: 0
    < Connection: keep-alive
    <
