@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Patch and Upgrade on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/</link>
+    <description>Recent content in Patch and Upgrade on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>a. Upgrade an operator release</title>
+      <link>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/upgrade-an-operator-release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/upgrade-an-operator-release/</guid>
+      <description>These instructions apply to upgrading the operator within the 3.x release family as additional versions are released.
+  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
+$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
+$ mkdir /scratch/OAMK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OAMK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
+  Run the following helm command to upgrade the operator:</description>
+    </item>
+    
+    <item>
+      <title>b. Patch an image</title>
+      <link>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/patch-an-image/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/patch-an-image/</guid>
+      <description>Choose one of the following options to update your OAM kubernetes cluster to use the new image:
+ Run the kubectl edit domain command Run the kubectl patch domain command  In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
+Note: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.</description>
+    </item>
+    
+    <item>
+      <title>c. Upgrade Ingress</title>
+      <link>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/upgrade-an-ingress/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/upgrade-an-ingress/</guid>
+      <description>This section shows how to upgrade the ingress.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Download the latest code repository Download the latest code repository as follows:
+  Create a working directory to setup the source code.
+$ mkdir &amp;lt;workdir&amp;gt; For example:
+$ mkdir /scratch/OAMK8Slatest   Download the latest OAM deployment scripts from the OAM repository.</description>
+    </item>
+    
+    <item>
+      <title>d. Upgrade Elasticsearch and Kibana</title>
+      <link>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/upgrade-elk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oam/patch-and-upgrade/upgrade-elk/</guid>
+      <description>This section shows how to upgrade Elasticsearch and Kibana.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Undeploy Elasticsearch and Kibana From October 22 (22.4.1) onwards, OAM logs should be stored on a centralized Elasticsearch and Kibana stack.
+Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana.
+If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.</description>
+    </item>
+    
+  </channel>
+</rss>

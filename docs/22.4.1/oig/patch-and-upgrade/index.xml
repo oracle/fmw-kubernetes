@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Patch and upgrade on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/</link>
+    <description>Recent content in Patch and upgrade on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>a. Upgrade an operator release</title>
+      <link>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/upgrade-an-operator-release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/upgrade-an-operator-release/</guid>
+      <description>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.
+  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
+$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
+$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
+  Run the following helm command to upgrade the operator:</description>
+    </item>
+    
+    <item>
+      <title>b. Patch an image</title>
+      <link>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/patch-an-image/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/patch-an-image/</guid>
+      <description>Introduction The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image.
+The script executes the following steps sequentially:
+ Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod. Brings up a new helper pod with the new image. Stops the Administration Server, SOA and OIM managed servers using serverStartPolicy set as NEVER in the domain definition yaml.</description>
+    </item>
+    
+    <item>
+      <title>c. Upgrade Ingress</title>
+      <link>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/upgrade-an-ingress/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/upgrade-an-ingress/</guid>
+      <description>This section shows how to upgrade the ingress.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Upgrading the ingress To upgrade the existing ingress rules, follow the steps below:
+  List the existing ingress:
+$ helm list -n &amp;lt;domain_namespace&amp;gt; For example:
+$ helm list -n oigns The output will look similar to the following:
+NAME NAMESPACE REVISION UPDATED STATUS CHART APP VERSION governancedomain-nginx oigns 1 &amp;lt;DATE&amp;gt; deployed ingress-per-domain-0.</description>
+    </item>
+    
+    <item>
+      <title>d. Upgrade Elasticsearch and Kibana</title>
+      <link>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/upgrade-elk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/22.4.1/oig/patch-and-upgrade/upgrade-elk/</guid>
+      <description>This section shows how to upgrade Elasticsearch and Kibana.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Download the latest code repository  Make sure you have downloaded the latest code as per Download the latest code repository.  Undeploy Elasticsearch and Kibana From October 22 (22.4.1) onwards, OIG logs should be stored on a centralized Elasticsearch and Kibana stack.</description>
+    </item>
+    
+  </channel>
+</rss>
