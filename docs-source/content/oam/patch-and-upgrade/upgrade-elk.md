@@ -18,7 +18,6 @@ If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.4.1) or
 1. Make sure you have downloaded the latest code repository as per [Download the latest code repository](../upgrade-an-ingress/#download-the-latest-code-repository)
 
 1. Edit the `$WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml` and change all instances of namespace to correspond to your deployment. 
-=======
 
 1. Delete the Elasticsearch and Kibana resources using the following command:
 
