@@ -77,4 +77,3 @@ If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.4.1) or
 ### Deploy Elasticsearch and Kibana in centralized stack
 
 1. Follow [Install Elasticsearch stack and Kibana](../../manage-oudsm-containers/logging-and-visualization/#install-elasticsearch-stack-and-kibana) to deploy Elasticsearch and Kibana in a centralized stack.
-
