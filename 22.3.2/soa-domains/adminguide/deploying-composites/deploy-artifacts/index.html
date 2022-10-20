@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Deploy Oracle SOA Suite and Oracle Service Bus composite applications artifacts in a persistent volume or in an image.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.3.2/images/favicon.png" type="image/png">
+
+    <title>Deploy using composites in a persistent volume or image :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.3.2/css/nucleus.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/fontawesome-all.min.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/hybrid.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/featherlight.min.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/perfect-scrollbar.min.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/auto-complete.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/atom-one-dark-reasonable.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/theme.css?1662389034" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.3.2/css/hugo-theme.css?1662389034" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.3.2/js/jquery-3.6.0.min.js?1662389034"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.3.2">
+  <img src="/fmw-kubernetes/22.3.2/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.3.2/js/lunr.min.js?1662389034"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.3.2/js/auto-complete.js?1662389034"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.3.2";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.3.2/js/search.js?1662389034"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache web tier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/" title="Deploy using composites in a persistent volume or image" class="dd-item active">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/">
+        <b>c. </b>Deploy using composites in a persistent volume or image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/performing-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/edg-guide/" title="Enterprise Deployment Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/edg-guide/">
+          <b>7. </b>Enterprise Deployment Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/edg-guide/topology/" title="Topology" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/edg-guide/topology/">
+        <b>a. </b>Topology
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/edg-guide/setup-edg/" title="Setup steps" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/edg-guide/setup-edg/">
+        <b>b. </b>Setup steps
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/faq/">
+        <b>8. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/appendix/">
+          <b>9. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.3.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.3.2/soa-domains/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.3.2/soa-domains/troubleshooting/">
+          <b>10. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.3.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.3.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/22.3.2/soa-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/'>Deploy composite applications</a> > Deploy using composites in a persistent volume or image
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Deploy using composites in a persistent volume or image
+            </h1>
+          
+
+        
+
+
+
+<p>Learn how to deploy Oracle SOA Suite and Oracle Service Bus composite applications artifacts in a Kubernetes persistent volume or in an image to an Oracle SOA Suite environment deployed using a WebLogic Kubernetes Operator.</p>
+<p>The deployment methods described in <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/supportjdev/">Deploy using JDeveloper</a> and <a href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">Deploy using Maven and Ant</a> are manual processes. If you have the deployment artifacts (archives) already built, then you can package them either into a Kubernetes persistent volume or in an image and use this automated process to deploy the artifacts to an Oracle SOA Suite domain.</p>
+<h4 id="prepare-to-use-the-deploy-artifacts-script">Prepare to use the deploy artifacts script</h4>
+<p>The sample scripts for deploying artifacts are available at <code>${WORKDIR}/create-soa-domain/domain-home-on-pv/</code></p>
+<p>You must edit <code>deploy-artifacts-inputs.yaml</code> (or a copy of it) to provide the details of your domain and artifacts.
+Refer to the configuration parameters below to understand the information that you must provide in this file.</p>
+<h4 id="configuration-parameters">Configuration parameters</h4>
+<p>The following parameters can be provided in the inputs file.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Definition</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>adminPort</code></td>
+<td>Port number of the Administration Server inside the Kubernetes cluster.</td>
+<td><code>7001</code></td>
+</tr>
+<tr>
+<td><code>adminServerName</code></td>
+<td>Name of the Administration Server.</td>
+<td><code>AdminServer</code></td>
+</tr>
+<tr>
+<td><code>domainUID</code></td>
+<td>Unique ID that is used to identify the domain. This ID cannot contain any characters that are not valid in a Kubernetes service name.</td>
+<td><code>soainfra</code></td>
+</tr>
+<tr>
+<td><code>domainType</code></td>
+<td>Type of the domain. Mandatory input for Oracle SOA Suite domains. You must provide one of the supported domain type values: <code>soa</code> (deploys artifacts into an Oracle SOA Suite domain), <code>osb</code> (deploys artifacts into an Oracle Service Bus domain), or <code>soaosb</code> (deploys artifacts into both Oracle SOA Suite and Oracle Service Bus domains).</td>
+<td><code>soa</code></td>
+</tr>
+<tr>
+<td><code>soaClusterName</code></td>
+<td>Name of the SOA WebLogic Server cluster instance in the domain. By default, the cluster name is <code>soa_cluster</code>. This configuration parameter is applicable only for <code>soa</code> and <code>soaosb</code> domain types.</td>
+<td><code>soa_cluster</code></td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>SOA Suite Docker image. The artifacts deployment process requires Oracle SOA Suite 12.2.1.4. Refer to <a href="/fmw-kubernetes/22.3.2/soa-domains/installguide/prepare-your-environment/#obtain-the-oracle-soa-suite-docker-image">Obtain the Oracle SOA Suite Docker image</a> for details on how to obtain or create the image.</td>
+<td><code>soasuite:12.2.1.4</code></td>
+</tr>
+<tr>
+<td><code>imagePullPolicy</code></td>
+<td>Oracle SOA Suite Docker image pull policy. Valid values are <code>IfNotPresent</code>, <code>Always</code>, <code>Never</code>.</td>
+<td><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td><code>imagePullSecretName</code></td>
+<td>Name of the Kubernetes secret to access the Docker Store to pull the Oracle SOA Suite Docker image. The presence of the secret will be validated when this parameter is specified.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>weblogicCredentialsSecretName</code></td>
+<td>Name of the Kubernetes secret for the Administration Server&rsquo;s user name and password. If not specified, then the value is derived from the <code>domainUID</code> as <code>&lt;domainUID&gt;-weblogic-credentials</code>.</td>
+<td><code>soainfra-domain-credentials</code></td>
+</tr>
+<tr>
+<td><code>namespace</code></td>
+<td>Kubernetes namespace in which the domain was created.</td>
+<td><code>soans</code></td>
+</tr>
+<tr>
+<td><code>artifactsSourceType</code></td>
+<td>The deploy artifacts source type. Set to <code>PersistentVolume</code> for deploy artifacts available in a persistent volume and <code>Image</code> for deploy artifacts available as an image.</td>
+<td><code>Image</code></td>
+</tr>
+<tr>
+<td><code>persistentVolumeClaimName</code></td>
+<td>Name of the persistent volume claim created that hosts the deployment artifacts. If not specified, the value is derived from the <code>domainUID</code> as <code>&lt;domainUID&gt;-deploy-artifacts-pvc</code>.</td>
+<td><code>soainfra-deploy-artifacts-pvc</code></td>
+</tr>
+<tr>
+<td><code>artifactsImage</code></td>
+<td>Deploy artifacts image. Required if <code>artifactsSourceType</code> is <code>Image</code>.</td>
+<td><code>artifacts:12.2.1.4</code></td>
+</tr>
+<tr>
+<td><code>artifactsImagePullPolicy</code></td>
+<td>Deploy artifacts image pull policy. Valid values are <code>IfNotPresent</code>, <code>Always</code>, <code>Never</code>.</td>
+<td><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td><code>artifactsImagePullSecretName</code></td>
+<td>Name of the Kubernetes secret to access the deploy artifacts image. The presence of the secret will be validated when this parameter is specified.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>deployScriptFilesDir</code></td>
+<td>Directory on the host machine to locate the required files to deploy artifacts to the Oracle SOA Suite domain, including the script that is specified in the <code>deployScriptName</code> parameter. By default, this directory is set to the relative path <code>deploy</code>.</td>
+<td><code>deploy</code></td>
+</tr>
+<tr>
+<td><code>deployScriptsMountPath</code></td>
+<td>Mount path where the deploy artifacts scripts are located inside a pod. The <code>deploy-artifacts.sh</code> script creates a Kubernetes job to run the script (specified by the <code>deployScriptName</code> parameter) in a Kubernetes pod to deploy the artifacts. Files in the <code>deployScriptFilesDir</code> directory are mounted to this location in the pod, so that the Kubernetes pod can use the scripts and supporting files to deploy artifacts.</td>
+<td><code>/u01/weblogic</code></td>
+</tr>
+<tr>
+<td><code>deployScriptName</code></td>
+<td>Script that the deploy artifacts script uses to deploy artifacts to the Oracle SOA Suite domain. For Oracle SOA Suite, the script placed in the <code>soa</code> directory is used. For Oracle Service Bus, the script placed in the <code>osb</code> directory is used. The <code>deploy-artifacts.sh</code> script creates a Kubernetes job to run this script to deploy artifacts. The script is located in the in-pod directory that is specified by the <code>deployScriptsMountPath</code> parameter.</td>
+<td><code>deploy.sh</code></td>
+</tr>
+<tr>
+<td><code>soaArtifactsArchivePath</code></td>
+<td>Directory inside container where Oracle SOA Suite archives are placed.</td>
+<td><code>/u01/sarchives</code></td>
+</tr>
+<tr>
+<td><code>osbArtifactsArchivePath</code></td>
+<td>Directory inside container where Oracle Service Bus archives are placed.</td>
+<td><code>/u01/sbarchives</code></td>
+</tr>
+</tbody>
+</table>
+<p>The sample demonstrates how to deploy Oracle SOA Suite composites or Oracle Service Bus applications to an Oracle SOA Suite domain home.</p>
+<h4 id="run-the-deploy-artifacts-script">Run the deploy artifacts script</h4>
+<p>Run the deploy artifacts script, specifying your inputs file and an output directory to store the
+generated artifacts:</p>
+<pre><code>$ ./deploy-artifacts.sh \
+  -i deploy-artifacts-inputs.yaml \
+  -o &lt;path to output-directory&gt;
+</code></pre><p>The script performs the following steps:</p>
+<ul>
+<li>Creates a directory for the generated Kubernetes YAML files for the artifacts deployment process if it does not
+already exist. The path name is <code>&lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;/&lt;YYYYMMDD-hhmmss&gt;</code>.
+If the directory already exists, its contents must be removed before running this script.</li>
+<li>Creates a Kubernetes job that starts a utility Oracle SOA Suite container and run
+scripts to deploy artifacts provided either in an image or in a persistent volume.</li>
+</ul>
+<h5 id="deploy-artifacts-from-an-image">Deploy artifacts from an image</h5>
+<ol>
+<li>
+<p>Create an image with artifacts</p>
+<p>a. A sample Dockerfile to create the artifacts in an image is available at <code>$WORKDIR/create-soa-domain/domain-home-on-pv/deploy-docker-file</code>. This expects the Oracle SOA Suite related archives to be available in the <code>soa</code> directory and Oracle Service Bus archives to be available in the <code>osb</code> directory.</p>
+<p>b. Create the <code>soa</code> directory and copy the Oracle SOA Suite archives to be deployed to the directory:</p>
+<pre><code>$ cd $WORKDIR/create-soa-domain/domain-home-on-pv/deploy-docker-file
+$ mkdir soa
+$ cp /path/sca_sampleBPEL.jar soa
+</code></pre><p>c. Create the <code>osb</code> directory and copy the Oracle Service Bus archives to be deployed to the directory:</p>
+<pre><code>$ cd $WORKDIR/create-soa-domain/domain-home-on-pv/deploy-docker-file
+$ mkdir osb
+$ cp /path/simple_sbconfig.jar osb
+</code></pre><p>d. Create the image using <code>build.sh</code>. This script creates the image with default tag 12.2.1.4 (<code>artifacts:12.2.1.4</code>):</p>
+<pre><code>$ cd $WORKDIR/create-soa-domain/domain-home-on-pv/deploy-docker-file
+$ ./build.sh  -h
+  Usage: build.sh -t [tag]
+  Builds a Docker Image with Oracle SOA/OSB artifacts
+  Parameters:
+     -h: view usage
+     -t: tag for image, default is 12.2.1.4
+</code></pre>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see sample output of script with tag 12.2.1.4-v1
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>  ```
+  $ ./build.sh -t 12.2.1.4-v1
+    Sending build context to Docker daemon  36.35kB
+    Step 1/13 : FROM busybox
+     ---&gt; 16ea53ea7c65
+    Step 2/13 : ARG SOA_ARTIFACTS_ARCHIVE_PATH=/u01/sarchives
+     ---&gt; Using cache
+     ---&gt; 411edf07f267
+    Step 3/13 : ARG OSB_ARTIFACTS_ARCHIVE_PATH=/u01/sbarchives
+     ---&gt; Using cache
+     ---&gt; c4214b9cf0ae
+    Step 4/13 : ARG USER=oracle
+     ---&gt; Using cache
+     ---&gt; c8ebcd5ee546
+    Step 5/13 : ARG USERID=1000
+     ---&gt; Using cache
+     ---&gt; 5780beb0c3cf
+    Step 6/13 : ARG GROUP=root
+     ---&gt; Using cache
+     ---&gt; 048e67c71f92
+    Step 7/13 : ENV SOA_ARTIFACTS_ARCHIVE_PATH=${SOA_ARTIFACTS_ARCHIVE_PATH}
+     ---&gt; Using cache
+     ---&gt; 31ae33cfd9bb
+    Step 8/13 : ENV OSB_ARTIFACTS_ARCHIVE_PATH=${OSB_ARTIFACTS_ARCHIVE_PATH}
+     ---&gt; Using cache
+     ---&gt; 79602bf64dc0
+    Step 9/13 : RUN adduser -D -u ${USERID} -G $GROUP $USER
+     ---&gt; Using cache
+     ---&gt; 07c12cea52f9
+    Step 10/13 : COPY soa/ ${SOA_ARTIFACTS_ARCHIVE_PATH}/
+     ---&gt; bfeb138516d8
+    Step 11/13 : COPY osb/ ${OSB_ARTIFACTS_ARCHIVE_PATH}/
+     ---&gt; 0359a11f8f76
+    Step 12/13 : RUN chown -R $USER:$GROUP ${SOA_ARTIFACTS_ARCHIVE_PATH}/ ${OSB_ARTIFACTS_ARCHIVE_PATH}/
+     ---&gt; Running in 285fb2bd8434
+    Removing intermediate container 285fb2bd8434
+     ---&gt; 2e8d8c337de0
+    Step 13/13 : USER $USER
+     ---&gt; Running in c9db494e46ab
+    Removing intermediate container c9db494e46ab
+     ---&gt; 40295aa15317
+    Successfully built 40295aa15317
+    Successfully tagged artifacts:12.2.1.4-v1
+    INFO: Artifacts image for Oracle SOA suite
+          is ready to be extended.
+          --&gt; artifacts:12.2.1.4-v1
+    INFO: Build completed in 4 seconds.
+  ```
+</code></pre>
+
+    </div>
+</div>
+</li>
+<li>
+<p>Update the image details in <code>deploy-artifacts-inputs.yaml</code> for parameter <code>artifactsImage</code> and invoke <code>deploy-artifacts.sh</code> to perform deployment of artifacts.</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see sample output of deployment for domainType of soaosb
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>$ ./deploy-artifacts.sh -i deploy-artifacts-inputs.yaml -o out-deploy
+ Input parameters being used
+ export version=&quot;deploy-artifacts-inputs-v1&quot;
+ export adminPort=&quot;7001&quot;
+ export adminServerName=&quot;AdminServer&quot;
+ export domainUID=&quot;soainfra&quot;
+ export domainType=&quot;soaosb&quot;
+ export soaClusterName=&quot;soa_cluster&quot;
+ export soaManagedServerPort=&quot;8001&quot;
+ export image=&quot;soasuite:12.2.1.4&quot;
+ export imagePullPolicy=&quot;IfNotPresent&quot;
+ export weblogicCredentialsSecretName=&quot;soainfra-domain-credentials&quot;
+ export namespace=&quot;soans&quot;
+ export artifactsSourceType=&quot;Image&quot;
+ export artifactsImage=&quot;artifacts:12.2.1.4-v1&quot;
+ export artifactsImagePullPolicy=&quot;IfNotPresent&quot;
+ export deployScriptsMountPath=&quot;/u01/weblogic&quot;
+ export deployScriptName=&quot;deploy.sh&quot;
+ export deployScriptFilesDir=&quot;deploy&quot;
+ export soaArtifactsArchivePath=&quot;/u01/sarchives&quot;
+ export osbArtifactsArchivePath=&quot;/u01/sbarchives&quot;
+
+ Generating out-deploy/deploy-artifacts/soainfra/20211022-152335/deploy-artifacts-job.yaml
+ Checking to see if the secret soainfra-domain-credentials exists in namespace soans
+ configmap/soainfra-deploy-scripts-soa-job-cm created
+ Checking the configmap soainfra-deploy-scripts-soa-job-cm was created
+ configmap/soainfra-deploy-scripts-soa-job-cm labeled
+ configmap/soainfra-deploy-scripts-osb-job-cm created
+ Checking the configmap soainfra-deploy-scripts-osb-job-cm was created
+ configmap/soainfra-deploy-scripts-osb-job-cm labeled
+ Checking if object type job with name soainfra-deploy-artifacts-job-20211022-152335 exists
+ Deploying artifacts by creating the job out-deploy/deploy-artifacts/soainfra/20211022-152335/deploy-artifacts-job.yaml
+ job.batch/soainfra-deploy-artifacts-job-20211022-152335 created
+ Waiting for the job to complete...
+ status on iteration 1 of 20 for soainfra
+ pod soainfra-deploy-artifacts-job-20211022-152335-r7ffj status is NotReady
+ status on iteration 2 of 20 for soainfra
+ pod soainfra-deploy-artifacts-job-20211022-152335-r7ffj status is Completed
+ configmap &quot;soainfra-deploy-scripts-soa-job-cm&quot; deleted
+ configmap &quot;soainfra-deploy-scripts-osb-job-cm&quot; deleted
+ The following files were generated:
+   out-deploy/deploy-artifacts/soainfra/20211022-152335/deploy-artifacts-inputs.yaml
+   out-deploy/deploy-artifacts/soainfra/20211022-152335/deploy-artifacts-job.yaml
+
+
+ Completed
+
+$ kubectl get all -n soans|grep deploy
+pod/soainfra-deploy-artifacts-job-20211022-152335-r7ffj   0/2     Completed   0          15m
+job.batch/soainfra-deploy-artifacts-job-20211022-152335   1/1           43s        15m
+$
+</code></pre>
+    </div>
+</div>
+<blockquote>
+<p>Note: When you are running the script for domainType <code>soaosb</code>, a deployment pod is created with two containers, one for Oracle SOA Suite artifacts deployments and another for Oracle Service Bus artifacts deployments. When the deployment completes for one container while other container is still running, the pod status will move from <code>Ready</code> to <code>NotReady</code>. Once both the deployments  complete successfully, the status of the pod moves to <code>Completed</code>.</p>
+</blockquote>
+</li>
+</ol>
+<h5 id="deploy-artifacts-from-a-persistent-volume">Deploy artifacts from a persistent volume</h5>
+<ol>
+<li>
+<p>Copy the artifacts for Oracle SOA Suite to the <code>soa</code> directory and Oracle Service Bus to the <code>osb</code> directory at the share location.
+For example, with location <code>/share</code>, artifacts for Oracle SOA Suite are in <code>/share/soa</code> and Oracle Service Bus are in <code>/share/osb</code>.</p>
+<pre><code>$ ls /share/soa
+sca_sampleBPEL.jar
+$
+$ ls /share/osb/
+simple_sbconfig.jar
+$
+</code></pre></li>
+<li>
+<p>Create a <code>PersistentVolume</code> with the sample provided (<code>artifacts-pv.yaml</code>):</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: soainfra-deploy-artifacts-pv
+spec:
+  storageClassName: deploy-storage-class
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: &quot;/share&quot;
+</code></pre><pre><code>$ kubectl apply -f artifacts-pv.yaml
+</code></pre></li>
+<li>
+<p>Create a <code>PersistentVolumeClaim</code> with the sample provided (<code>artifacts-pvc.yaml</code>):</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: soainfra-deploy-artifacts-pvc
+  namespace: soans
+spec:
+  storageClassName: deploy-storage-class
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 10Gi
+</code></pre><pre><code>$ kubectl apply -f artifacts-pvc.yaml
+</code></pre></li>
+<li>
+<p>Update the <code>artifactsSourceType</code> to <code>PersistentVolume</code> and provide the name for <code>persistentVolumeClaimName</code> in <code>deploy-artifacts-inputs.yaml</code>.</p>
+</li>
+<li>
+<p>Invoke <code>deploy-artifacts.sh</code> to deploy artifacts for artifacts present in <code>persistentVolumeClaimName</code>.</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see sample output of deployment for domainType of soaosb
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>$ ./deploy-artifacts.sh -i deploy-artifacts-inputs.yaml -o out-deploy
+ Input parameters being used
+ export version=&quot;deploy-artifacts-inputs-v1&quot;
+ export adminPort=&quot;7001&quot;
+ export adminServerName=&quot;AdminServer&quot;
+ export domainUID=&quot;soainfra&quot;
+ export domainType=&quot;soaosb&quot;
+ export soaClusterName=&quot;soa_cluster&quot;
+ export soaManagedServerPort=&quot;8001&quot;
+ export image=&quot;soasuite:12.2.1.4&quot;
+ export imagePullPolicy=&quot;IfNotPresent&quot;
+ export weblogicCredentialsSecretName=&quot;soainfra-domain-credentials&quot;
+ export namespace=&quot;soans&quot;
+ export artifactsSourceType=&quot;PersistentVolume&quot;
+ export persistentVolumeClaimName=&quot;soainfra-deploy-artifacts-pvc&quot;
+ export deployScriptsMountPath=&quot;/u01/weblogic&quot;
+ export deployScriptName=&quot;deploy.sh&quot;
+ export deployScriptFilesDir=&quot;deploy&quot;
+ export soaArtifactsArchivePath=&quot;/u01/sarchives&quot;
+ export osbArtifactsArchivePath=&quot;/u01/sbarchives&quot;
+
+ Generating out-deploy/deploy-artifacts/soainfra/20211022-164735/deploy-artifacts-job.yaml
+ Checking to see if the secret soainfra-domain-credentials exists in namespace soans
+ configmap/soainfra-deploy-scripts-soa-job-cm created
+ Checking the configmap soainfra-deploy-scripts-soa-job-cm was created
+ configmap/soainfra-deploy-scripts-soa-job-cm labeled
+ configmap/soainfra-deploy-scripts-osb-job-cm created
+ Checking the configmap soainfra-deploy-scripts-osb-job-cm was created
+ configmap/soainfra-deploy-scripts-osb-job-cm labeled
+ Checking if object type job with name soainfra-deploy-artifacts-job-20211022-164735 exists
+ Deploying artifacts by creating the job out-deploy/deploy-artifacts/soainfra/20211022-164735/deploy-artifacts-job.yaml
+ job.batch/soainfra-deploy-artifacts-job-20211022-164735 created
+ Waiting for the job to complete...
+ status on iteration 1 of 20 for soainfra
+ pod soainfra-deploy-artifacts-job-20211022-164735-66fvn status is NotReady
+ status on iteration 2 of 20 for soainfra
+ pod soainfra-deploy-artifacts-job-20211022-164735-66fvn status is Completed
+ configmap &quot;soainfra-deploy-scripts-soa-job-cm&quot; deleted
+ configmap &quot;soainfra-deploy-scripts-osb-job-cm&quot; deleted
+ The following files were generated:
+   out-deploy/deploy-artifacts/soainfra/20211022-164735/deploy-artifacts-inputs.yaml
+   out-deploy/deploy-artifacts/soainfra/20211022-164735/deploy-artifacts-job.yaml
+
+
+ Completed
+
+$ kubectl get all -n soans |grep deploy
+pod/soainfra-deploy-artifacts-job-20211022-164735-66fvn   0/2     Completed   0          3m1s
+job.batch/soainfra-deploy-artifacts-job-20211022-164735   1/1           37s        3m1s
+$
+</code></pre>
+    </div>
+</div>
+<blockquote>
+<p>Note: When you are running the script for domainType of <code>soaosb</code>, a deployment pod is created with two containers, one for Oracle SOA Suite artifacts deployments and one for Oracle Service Bus artifacts deployments. When the deployment completes for one container while other container is still running, the pod status moves from <code>Ready</code> to <code>NotReady</code>. Once both the deployments  successfully complete, the status of the pod moves to <code>Completed</code>.</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="verify-the-deployment-logs">Verify the deployment logs</h4>
+<p>To confirm the deployment of artifacts was successful, verify the output using the <code>kubectl logs</code> command:</p>
+<blockquote>
+<p>Note: Replace <code>&lt;YYYYMMDD-hhmmss&gt;</code>, <code>&lt;domainUID&gt;</code> and <code>&lt;namespace&gt;</code> with values for your environment.</p>
+</blockquote>
+<p>For Oracle SOA Suite artifacts:</p>
+<pre><code>$ kubectl logs job.batch/&lt;domainUID&gt;-deploy-artifacts-job-&lt;YYYYMMDD-hhmmss&gt; -n &lt;namespace&gt;  soa-deploy-artifacts-job
+</code></pre><p>For Oracle Service Bus artifacts:</p>
+<pre><code>$ kubectl logs job.batch/&lt;domainUID&gt;-deploy-artifacts-job-&lt;YYYYMMDD-hhmmss&gt; -n &lt;namespace&gt;  osb-deploy-artifacts-job
+</code></pre>
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.3.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.3.2/js/clipboard.min.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/perfect-scrollbar.min.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/perfect-scrollbar.jquery.min.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/jquery.sticky.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/featherlight.min.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/highlight.pack.js?1662389034"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.3.2/js/modernizr.custom-3.6.0.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/learn.js?1662389034"></script>
+    <script src="/fmw-kubernetes/22.3.2/js/hugo-learn.js?1662389034"></script>
+
+    <link href="/fmw-kubernetes/22.3.2/mermaid/mermaid.css?1662389034" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.3.2/mermaid/mermaid.js?1662389034"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

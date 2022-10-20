@@ -226,7 +226,7 @@ If you have access to the Oracle WebCenter Content patches, you can patch an exi
       
       <guid>/fmw-kubernetes/oam/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle Access Management on Kubernetes.
-Recent changes    Date Version Change     July, 2022 22.3.1 Supports Oracle Access Management 12.2.1.4 domain deployment using the July 2022 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.   April, 2022 22.2.1 Updated for CRI-O support.   November, 2021 21.</description>
+Recent changes    Date Version Change     October, 2022 22.4.1 Supports Oracle Access Management 12.2.1.4 domain deployment using the October 2022 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.     Support for WebLogic Kubernetes Operator 3.4.2.     Additional Ingress mappings added.</description>
     </item>
     
     <item>
@@ -246,7 +246,7 @@ Recent changes    Date Version Change     July, 2022 22.3.1 As of July 2022, Con
       
       <guid>/fmw-kubernetes/oig/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle Identity Governance on Kubernetes.
-Recent changes    Date Version Change     July, 2022 22.3.1 Supports Oracle Identity Governance 12.2.1.4 domain deployment using the July 2022 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.   April, 2022 22.2.1 Updated for CRI-O support.   November, 2021 21.</description>
+Recent changes    Date Version Change     October, 2022 22.4.1 Supports Oracle Identity Governance 12.2.1.4 domain deployment using the October 2022 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.     Support for WebLogic Kubernetes Operator 3.4.2.     Additional Ingress mappings added.</description>
     </item>
     
     <item>
@@ -256,7 +256,7 @@ Recent changes    Date Version Change     July, 2022 22.3.1 Supports Oracle Iden
       
       <guid>/fmw-kubernetes/oud/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle Unified Directory on Kubernetes.
-Recent changes    Date Version Change     July, 2022 22.3.1 Supports Oracle Unified Directory 12.2.1.4 domain deployment using the July 2022 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program. From July 2022 onwards OUD deployment is performed using StatefulSets.   April, 2022 22.</description>
+Recent changes    Date Version Change     October, 2022 22.4.1 Supports Oracle Unified Directory 12.2.1.4 domain deployment using the October 2022 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.     Changes to deployment of Logging and Visualization with Elasticsearch and Kibana.</description>
     </item>
     
     <item>
@@ -266,7 +266,7 @@ Recent changes    Date Version Change     July, 2022 22.3.1 Supports Oracle Unif
       
       <guid>/fmw-kubernetes/oudsm/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle Unified Directory Services Manager on Kubernetes.
-Recent changes    Date Version Change     July, 2022 22.3.1 Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the July 2022 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.   April, 2022 22.2.1 Updated for CRI-O support.</description>
+Recent changes    Date Version Change     October, 2022 22.4.1 Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the October 2022 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.     Changes to deployment of Logging and Visualization with Elasticsearch and Kibana.</description>
     </item>
     
     <item>
@@ -747,9 +747,8 @@ Follow these steps to set up Apache webtier as a load balancer for an Oracle Web
       
       <guid>/fmw-kubernetes/oig/manage-oig-domains/logging-and-visualization/</guid>
       <description>After the OIG domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
-Install Elasticsearch and Kibana   If your domain namespace is anything other than oigns, edit the $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml and change all instances of oigns to your domain namespace.
-  Create a Kubernetes secret to access the elasticsearch and kibana container images:
-Note: You must first have a user account on hub.</description>
+Install Elasticsearch and Kibana If you do not already have a centralized Elasticsearch (ELK) stack then you must configure this first. For details on how to configure the ELK stack, follow Installing Elasticsearch (ELK) Stack and Kibana
+Create the logstash pod Variables used in this chapter In order to create the logstash pod, you must create several files.</description>
     </item>
     
     <item>
@@ -909,20 +908,8 @@ If you do not want to expose additional ports and perform WLST administration op
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/oud/patch-and-upgrade/</guid>
-      <description>Introduction Upgrading to July 22 (22.3.1) or later from earlier versions Upgrading from July 22 (22.3.1) to a later release  Introduction In this section the Oracle Unified Directory (OUD) deployment is updated with a new OUD container image.
-Upgrading to July 22 (22.3.1) or later from earlier versions In releases prior to July 22 (22.3.1) OUD used pod based deployment. From July 22 (22.3.1) onwards OUD is deployed using StatefulSets.</description>
-    </item>
-    
-    <item>
-      <title>Patch and Upgrade</title>
-      <link>/fmw-kubernetes/oudsm/patch-and-upgrade/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/fmw-kubernetes/oudsm/patch-and-upgrade/</guid>
-      <description>Introduction In this section the Oracle Unified Directory Services Manager (OUDSM) deployment is updated with a new OUDSM container image.
-Note: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.
-You can update the deployment with a new OUDSM container image using one of the following methods:
- Using a YAML file Using --set argument  Using a YAML file   Navigate to the $WORKDIR/kubernetes/helm directory:</description>
+      <description>In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from.
+ Upgrading to October 22 (22.4.1) or later from releases prior to July 22 (22.3.1) Upgrading to October 22 (22.4.1) or later from July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Upgrading to October 22 (22.4.1) or later from releases prior to July 22 (22.3.1) In releases prior to July 22 (22.</description>
     </item>
     
     <item>
@@ -962,24 +949,14 @@ For more detailed information refer to Domain Life Cycle in the WebLogic Kuberne
     
     <item>
       <title>a. Patch an image</title>
-      <link>/fmw-kubernetes/oam/patch-and-upgrade/patch_an_image/</link>
+      <link>/fmw-kubernetes/oudsm/patch-and-upgrade/patch-an-oudsm-image/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/fmw-kubernetes/oam/patch-and-upgrade/patch_an_image/</guid>
-      <description>Choose one of the following options to update your OAM kubernetes cluster to use the new image:
- Run the kubectl edit domain command Run the kubectl patch domain command  In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
-Note: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.</description>
-    </item>
-    
-    <item>
-      <title>a. Patch an image</title>
-      <link>/fmw-kubernetes/oig/patch-and-upgrade/patch_an_image/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/fmw-kubernetes/oig/patch-and-upgrade/patch_an_image/</guid>
-      <description>Choose one of the following options to update your OIG kubernetes cluster to use the new image:
- Run the kubectl edit domain command Run the kubectl patch domain command  In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OIG Managed Servers.
-Note: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.</description>
+      <guid>/fmw-kubernetes/oudsm/patch-and-upgrade/patch-an-oudsm-image/</guid>
+      <description>Introduction In this section the Oracle Unified Directory Services Manager (OUDSM) deployment is updated with a new OUDSM container image.
+Note: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.
+You can update the deployment with a new OUDSM container image using one of the following methods:
+ Using a YAML file Using --set argument  Using a YAML file   Navigate to the $WORKDIR/kubernetes/helm directory:</description>
     </item>
     
     <item>
@@ -993,6 +970,32 @@ Note: If you are not using Oracle Container Registry or your own container regis
 cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain   Create a setUserOverrides.sh with the following contents:
 DERBY_FLAG=false JAVA_OPTIONS=&amp;quot;${JAVA_OPTIONS} -Djava.net.preferIPv4Stack=true&amp;quot; MEM_ARGS=&amp;quot;-Xms8192m -Xmx8192m&amp;quot;   Copy the setUserOverrides.sh file to the Administration Server pod:
 $ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.sh oigns/governancedomain-adminserver:/u01/oracle/user_projects/domains/governancedomain/bin/setUserOverrides.sh Where oigns is the OIG namespace and governancedomain is the domain_UID.</description>
+    </item>
+    
+    <item>
+      <title>a. Upgrade an operator release</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/upgrade-an-operator-release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/upgrade-an-operator-release/</guid>
+      <description>These instructions apply to upgrading the operator within the 3.x release family as additional versions are released.
+  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
+$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
+$ mkdir /scratch/OAMK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OAMK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
+  Run the following helm command to upgrade the operator:</description>
+    </item>
+    
+    <item>
+      <title>a. Upgrade an operator release</title>
+      <link>/fmw-kubernetes/oig/patch-and-upgrade/upgrade-an-operator-release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oig/patch-and-upgrade/upgrade-an-operator-release/</guid>
+      <description>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.
+  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
+$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
+$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
+  Run the following helm command to upgrade the operator:</description>
     </item>
     
     <item>
@@ -1017,7 +1020,7 @@ d. Setup routing rules for the domain
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/oud/manage-oud-containers/logging-and-visualization/</guid>
-      <description>Introduction Installation  Create a Kubernetes secret Enable Elasticsearch, Logstash, and Kibana Upgrade OUD deployment with ELK configuration Verify the pods   Verify using the Kibana application  Introduction This section describes how to install and configure logging and visualization for the oud-ds-rs Helm chart deployment.
+      <description>Introduction Install Elasticsearch and Kibana Create a Kubernetes secret Enable Logstash  Upgrade OUD deployment with ELK configuration Verify the pods   Verify and access the Kibana console  Introduction This section describes how to install and configure logging and visualization for the oud-ds-rs Helm chart deployment.
 The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK you can gain insights in real-time from the log data from your applications.</description>
     </item>
     
@@ -1027,8 +1030,9 @@ The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK you can
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/oudsm/manage-oudsm-containers/logging-and-visualization/</guid>
-      <description>Introduction Installation  Create a Kubernetes secret Enable Elasticsearch, Logstash, and Kibana Upgrade OUDSM deployment with ELK configuration Verify the pods   Verify using the Kibana application  Introduction This section describes how to install and configure logging and visualization for the oudsm Helm Chart deployment.
-The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK we can gain insights in real-time from the log data from your applications.</description>
+      <description>Introduction This section describes how to install and configure logging and visualization for the oudsm Helm chart deployment.
+The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK you can gain insights in real-time from the log data from your applications.
+ Elasticsearch is a distributed, RESTful search and analytics engine capable of solving a growing number of use cases. As the heart of the Elastic Stack, it centrally stores your data so you can discover the expected and uncover the unexpected.</description>
     </item>
     
     <item>
@@ -1044,29 +1048,39 @@ $ cp $HOME/Downloads/Exchange-12.2.1.3.0.zip /scratch/OIGK8S/stage/ $ cd /scratc
     </item>
     
     <item>
-      <title>b. Upgrade an operator release</title>
-      <link>/fmw-kubernetes/oam/patch-and-upgrade/upgrade_an_operator_release/</link>
+      <title>b. Patch an image</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/patch-an-image/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/fmw-kubernetes/oam/patch-and-upgrade/upgrade_an_operator_release/</guid>
-      <description>These instructions apply to upgrading the operator within the 3.x release family as additional versions are released.
-  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
-$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
-$ mkdir /scratch/OAMK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OAMK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-  Run the following helm command to upgrade the operator:</description>
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/patch-an-image/</guid>
+      <description>Choose one of the following options to update your OAM kubernetes cluster to use the new image:
+ Run the kubectl edit domain command Run the kubectl patch domain command  In all of the above cases, the WebLogic Kubernetes Operator will restart the Administration Server pod first and then perform a rolling restart on the OAM Managed Servers.
+Note: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.</description>
     </item>
     
     <item>
-      <title>b. Upgrade an operator release</title>
-      <link>/fmw-kubernetes/oig/patch-and-upgrade/upgrade_an_operator_release/</link>
+      <title>b. Patch an image</title>
+      <link>/fmw-kubernetes/oig/patch-and-upgrade/patch-an-image/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/fmw-kubernetes/oig/patch-and-upgrade/upgrade_an_operator_release/</guid>
-      <description>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.
-  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
-$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
-$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-  Run the following helm command to upgrade the operator:</description>
+      <guid>/fmw-kubernetes/oig/patch-and-upgrade/patch-an-image/</guid>
+      <description>Introduction The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image.
+The script executes the following steps sequentially:
+ Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod. Brings up a new helper pod with the new image. Stops the Administration Server, SOA and OIM managed servers using serverStartPolicy set as NEVER in the domain definition yaml.</description>
+    </item>
+    
+    <item>
+      <title>b. Upgrade Elasticsearch and Kibana</title>
+      <link>/fmw-kubernetes/oudsm/patch-and-upgrade/upgrade-elk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oudsm/patch-and-upgrade/upgrade-elk/</guid>
+      <description>This section shows how to upgrade Elasticsearch and Kibana.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Download the latest code repository Download the latest code repository as follows:
+  Create a working directory to setup the source code.
+$ mkdir &amp;lt;workdir&amp;gt; For example:
+$ mkdir /scratch/OUDSMK8Slatest   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
     </item>
     
     <item>
@@ -1125,9 +1139,37 @@ Install Prometheus and Grafana Create a Kubernetes namespace   Create a Kubernet
       
       <guid>/fmw-kubernetes/oam/manage-oam-domains/logging-and-visualization/</guid>
       <description>After the OAM domain is set up you can publish operator and WebLogic Server logs into Elasticsearch and interact with them in Kibana.
-Install Elasticsearch and Kibana   If your domain namespace is anything other than oamns, edit the $WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml and change all instances of oamns to your domain namespace.
-  Create a Kubernetes secret to access the Elasticsearch and Kibana container images:
-Note: You must first have a user account on hub.</description>
+Install Elasticsearch stack and Kibana If you do not already have a centralized Elasticsearch (ELK) stack then you must configure this first. For details on how to configure the ELK stack, follow Installing Elasticsearch (ELK) Stack and Kibana
+Create the logstash pod Variables used in this chapter In order to create the logstash pod, you must create several files.</description>
+    </item>
+    
+    <item>
+      <title>c. Upgrade Ingress</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/upgrade-an-ingress/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/upgrade-an-ingress/</guid>
+      <description>This section shows how to upgrade the ingress.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Download the latest code repository Download the latest code repository as follows:
+  Create a working directory to setup the source code.
+$ mkdir &amp;lt;workdir&amp;gt; For example:
+$ mkdir /scratch/OAMK8Slatest   Download the latest OAM deployment scripts from the OAM repository.</description>
+    </item>
+    
+    <item>
+      <title>c. Upgrade Ingress</title>
+      <link>/fmw-kubernetes/oig/patch-and-upgrade/upgrade-an-ingress/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oig/patch-and-upgrade/upgrade-an-ingress/</guid>
+      <description>This section shows how to upgrade the ingress.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Upgrading the ingress To upgrade the existing ingress rules, follow the steps below:
+  List the existing ingress:
+$ helm list -n &amp;lt;domain_namespace&amp;gt; For example:
+$ helm list -n oigns The output will look similar to the following:
+NAME NAMESPACE REVISION UPDATED STATUS CHART APP VERSION governancedomain-nginx oigns 1 &amp;lt;DATE&amp;gt; deployed ingress-per-domain-0.</description>
     </item>
     
     <item>
@@ -1139,6 +1181,30 @@ Note: You must first have a user account on hub.</description>
       <description>After the OAM domain is set up you can monitor the OAM instance using Prometheus and Grafana. See Monitoring a domain.
 The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape runtime information and then exports Prometheus-compatible metrics. It is deployed as a web application in a WebLogic Server (WLS) instance, version 12.2.1 or later, typically, in the instance from which you want to get metrics.
 There are two ways to setup monitoring and you should choose one method or the other:</description>
+    </item>
+    
+    <item>
+      <title>d. Upgrade Elasticsearch and Kibana</title>
+      <link>/fmw-kubernetes/oam/patch-and-upgrade/upgrade-elk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oam/patch-and-upgrade/upgrade-elk/</guid>
+      <description>This section shows how to upgrade Elasticsearch and Kibana.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Undeploy Elasticsearch and Kibana From October 22 (22.4.1) onwards, OAM logs should be stored on a centralized Elasticsearch and Kibana stack.
+Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana.
+If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.</description>
+    </item>
+    
+    <item>
+      <title>d. Upgrade Elasticsearch and Kibana</title>
+      <link>/fmw-kubernetes/oig/patch-and-upgrade/upgrade-elk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/oig/patch-and-upgrade/upgrade-elk/</guid>
+      <description>This section shows how to upgrade Elasticsearch and Kibana.
+To determine if this step is required for the version you are upgrading to, refer to the Release Notes.
+Download the latest code repository  Make sure you have downloaded the latest code as per Download the latest code repository.  Undeploy Elasticsearch and Kibana From October 22 (22.4.1) onwards, OIG logs should be stored on a centralized Elasticsearch and Kibana stack.</description>
     </item>
     
     <item>
