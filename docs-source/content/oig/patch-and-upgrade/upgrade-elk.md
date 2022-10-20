@@ -19,7 +19,7 @@ Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch
 
 If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.4.1) or later, you must first undeploy Elasticsearch and Kibana using the steps below:
 
-1. If your domain namespace is anything other than `oigns`, edit the `$WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml` and change all instances of `namespace: "oigns"` to your domain namespace.
+1. Edit the `$WORKDIR/kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml` and change all instances of namespace to correspond to your deployment.
 
 1. Delete the Elasticsearch and Kibana resources using the following command:
 
@@ -29,4 +29,4 @@ If you are upgrading from July 22 (22.3.1) or earlier, to October 22 (22.4.1) or
 
 ### Deploy Elasticsearch and Kibana in centralized stack
 
-1. Follow [Install Elasticsearch stack and Kibana](../manage-oig-domains/logging-and-visualization/#install-elasticsearch-stack-and-kibana) to deploy Elasticsearch and Kibana in a centralized stack.
+1. Follow [Install Elasticsearch stack and Kibana](../../manage-oig-domains/logging-and-visualization/#install-elasticsearch-stack-and-kibana) to deploy Elasticsearch and Kibana in a centralized stack.

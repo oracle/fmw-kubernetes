@@ -1,7 +1,7 @@
 +++
 title = "Patch and upgrade"
-weight = 11 
-pre = "<b>11. </b>"
+weight = 8 
+pre = "<b>8. </b>"
 description=  "This document provides steps to patch or upgrade an OUD image, and Elasticsearch and Kibana."
 +++
 
