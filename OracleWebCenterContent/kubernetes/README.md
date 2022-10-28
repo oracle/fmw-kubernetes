@@ -3,7 +3,7 @@
 WebLogic Kubernetes Operator (the “operator”) supports deployment of Oracle WebCenter Content servers such as Oracle WebCenter Content Server and Oracle WebCenter Inbound Refinery Server.
 
 ***
-The current supported production release is [22.2.3](https://github.com/oracle/fmw-kubernetes/releases).
+The current supported production release is [22.4.1](https://github.com/oracle/fmw-kubernetes/releases).
 ***
 
 In this release, Oracle WebCenter Content domain is supported using the “domain on a persistent volume”
