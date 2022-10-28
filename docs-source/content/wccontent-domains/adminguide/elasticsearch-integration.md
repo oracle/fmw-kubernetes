@@ -7,9 +7,9 @@ description: "Monitor an Oracle WebCenter Sites domain and publish the WebLogic 
 
 #### 1. Integrate Elasticsearch to WebLogic Kubernetes Operator 
 
-For reference information, see [Elasticsearch integration for the WebLogic Kubernetes Operator](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/).
+For reference information, see [Elasticsearch integration for the WebLogic Kubernetes Operator](https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/).
 
-To enable elasticsearch integration, you must edit file `kubernetes/charts/weblogic-operator/values.yaml` before deploying the WebLogic Kubernetes Operator.
+To enable elasticsearch integration, you must edit file `${WORKDIR}/charts/weblogic-operator/values.yaml` before deploying the WebLogic Kubernetes Operator.
 
 ```
 # elkIntegrationEnabled specifies whether or not ELK integration is enabled.                                            
@@ -17,7 +17,7 @@ elkIntegrationEnabled: true
                                                                                                                         
 # logStashImage specifies the docker image containing logstash.                                                         
 # This parameter is ignored if 'elkIntegrationEnabled' is false.                                                        
-logStashImage: "logstash:6.6.0"                                                                                         
+logStashImage: "logstash:6.8.23"                                                                                         
                                                                                                                         
 # elasticSearchHost specifies the hostname of where Elasticsearch is running.                                           
 # This parameter is ignored if 'elkIntegrationEnabled' is false.                                                        
@@ -43,21 +43,22 @@ NAME                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM  
 wccinfra-domain-pv   10Gi       RWX            Retain           Bound    wccns/wccinfra-domain-pvc   wccinfra-domain-storage-class            33d
 
 ```
-Create the deployment yaml for Logstash pod. The mounted persistent volume of the domain home will provide access to the WebLogic server logs to Logstash pod. Given below is a sample Logstash deployment yaml. 
+Create the deployment yaml for Logstash pod by updating the `logstash.yaml`, located at `$WORKDIR/logging-services/logstash/logstash.yaml` according to your configurations.
+The mounted persistent volume of the domain home will provide access to the WebLogic server logs to Logstash pod. Given below is a sample Logstash deployment yaml. 
 ```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logstash-wls
+  name: logstash
   namespace: wccns
 spec:
   selector:
     matchLabels:
-      app: "logstash-wls"
+      app: logstash
   template: # create pods using pod definition in this template
     metadata:
       labels:
-        app: logstash-wls
+        app: logstash
     spec:
       volumes:
       - name: weblogic-domain-storage-volume
@@ -67,7 +68,7 @@ spec:
         emptyDir: {}
       containers:
       - name: logstash
-        image: logstash:6.6.0
+        image: logstash:6.8.23
         command: ["/bin/sh"]
         args: ["/usr/share/logstash/bin/logstash", "-f", "/u01/oracle/user_projects/domains/logstash.conf"]
         imagePullPolicy: IfNotPresent
@@ -81,114 +82,53 @@ spec:
           name: logstash
 ```
 
-Sample Logstash configuration file is located at `kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf`
+Sample Logstash configuration file is located at 
+`$WORKDIR/logging-services/logstash/logstash.conf`
+
 ```bash
-$ vi kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf
+$ vi $WORKDIR/logging-services/logstash/logstash.conf
 ```
 ```
-input {
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/AdminServer.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ucm_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ibr_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ipm_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/capture_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/wccadf_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/AdminServer.out"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ucm_server*.out"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ibr_server*.out"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/ipm_server*.out"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/capture_server*.out"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/logs/wccinfra/wccadf_server*.out"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/wccinfra/servers/AdminServer/logs/AdminServer-diagnostic.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ucm_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ibr_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/ipm_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/capture_server*.log"
-    start_position => beginning
-  }
-  file {
-    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/wccadf_server*.log"
-    start_position => beginning
-  }
+input {                                                                                                                
+  file {                                                                                                               
+    path => "/u01/oracle/user_projects/domains/wccinfra/servers/**/logs/*-diagnostic.log"                                          
+    start_position => beginning                                                                                        
+  }              
+  file {                                                                                                               
+    path => "/u01/oracle/user_projects/domains/logs/wccinfra/*.log"                                          
+    start_position => beginning                                                                                        
+  }                                                                                                                                                                                                                                       
 }
-filter {
-  grok {
-    match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}> <%{DATA:log_number}> <%{DATA:log_message}>" ]
-  }
-}
-output {
-  elasticsearch {
-    hosts => ["elasticsearch.default.svc.cluster.local:9200"]
-  }
+
+filter {                                                                                                               
+  grok {                                                                                                               
+    match => [ "message", "<%{DATA:log_timestamp}> <%{WORD:log_level}> <%{WORD:thread}> <%{HOSTNAME:hostname}> <%{HOSTNAME:servername}> <%{DATA:timer}> <<%{DATA:kernel}>> <> <%{DATA:uuid}> <%{NUMBER:timestamp}> <%{DATA:misc}> <%{DATA:log_number}> <%{DATA:log_message}>" ]                                                                                        
+  }                                                                                                                    
+}                                                                                                                         
+output {                                                                                                               
+  elasticsearch {                                                                                                      
+    hosts => ["elasticsearch.default.svc.cluster.local:9200"]                                                          
+  }                                                                                                                    
 }
 ```
-Here ** means that all ucm_server.log and ibr_server.log from any servers under `wccinfra` will be pushed to Logstash.
+This sample configuration will publish all server and Diagnostic logs under `wccinfra` to Logstash.
 ```bash
-$ kubectl cp kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.conf wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/logstash.conf
+$ kubectl cp $WORKDIR/logging-services/logstash/logstash.conf wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/logstash.conf
 ```
 #### Deploy Logstash pod
 
 After you have created the Logstash deployment yaml and Logstash configuration file, deploy Logstash using following command:
 
 ```bash
-$ kubectl create -f kubernetes/samples/scripts/create-wcc-domain/logstash/logstash.yaml
+$ kubectl create -f $WORKDIR/logging-services/logstash/logstash.yaml
 ```
 
 #### 3. Test the deployment of Elasticsearch and Kibana
 
 The WebLogic Kubernetes Operator also provides a sample deployment of Elasticsearch and Kibana for testing purpose. You can deploy Elasticsearch and Kibana on the Kubernetes cluster as shown below:
 ```bash
-$ cd ${WORKDIR}/weblogic-kubernetes-operator/
-$ kubectl create -f kubernetes/samples/scripts/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+$ cd ${WORKDIR}/elasticsearch-and-kibana/
+$ kubectl create -f elasticsearch_and_kibana.yaml
 ```
 ##### Get the Kibana dashboard port information as shown below:
 

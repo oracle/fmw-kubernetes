@@ -35,31 +35,18 @@ To create your Oracle WebCenter Content domain in Kubernetes OKE environment, co
 Oracle WebCenter Content domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. To deploy an Oracle WebCenter Content domain, you must set up the deployment scripts.
 
 1. Create a working directory to set up the source code:
-   ```bash
-   $ export WORKDIR=$HOME/wcc_3.3.0
-   $ mkdir ${WORKDIR}
+   ```bash  
+   $ mkdir $HOME/wcc_3.4.2
+   $ cd $HOME/wcc_3.4.2
    ```
 
-1. Download the supported version of the WebLogic Kubernetes Operator source code from the WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0):
+1. Download the WebLogic Kubernetes Operator source code and  Oracle WebCenter Content Suite Kubernetes deployment scripts from the WCContent [repository](https://github.com/oracle/fmw-kubernetes.git). Required artifacts are available at `OracleWebCenterContent/kubernetes`.
 
     ``` bash
-	$ cd ${WORKDIR}
-    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.3.0
+	$ git clone https://github.com/oracle/fmw-kubernetes.git
+	$ export WORKDIR=$HOME/wcc_3.4.2/fmw-kubernetes/OracleWebCenterContent/kubernetes
     ```
-1. Download the Oracle WebCenter Content Kubernetes deployment scripts from the WCC [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them to the WebLogic Kubernetes Operator samples location:
 
-    ``` bash
-    $ git clone https://github.com/oracle/fmw-kubernetes.git
-    
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/create-wcc-domain ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/	  
-	
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/
-	
-	$ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/charts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-    
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-	```
-	
 ### Create a namespace for the Oracle WebCenter Content domain
 
    Create a Kubernetes namespace (for example, `wccns`) for the domain unless you intend to use the default namespace. Use the new namespace in the remaining steps in this section.
@@ -99,9 +86,9 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   ```
 #### Install WebLogic Kubernetes Operator  
   ```
-  $ cd ${WORKDIR}/weblogic-kubernetes-operator    
+  $ cd ${WORKDIR} 
     
-  $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=phx.ocir.io/xxxxxxxxxxx/oracle/weblogic-kubernetes-operator:3.3.0 --set imagePullSecret=image-secret --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace opns  --set image=phx.ocir.io/xxxxxxxxxxx/oracle/weblogic-kubernetes-operator:3.4.2 --set imagePullSecret=image-secret --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
   ```
 #### Verify the WebLogic Kubernetes Operator pod
   
@@ -115,15 +102,15 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   $ helm list -n opns
  
   NAME                            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                          APP VERSION
-  weblogic-kubernetes-operator    opns            3               2022-02-24 06:50:29.810106777 +0000 UTC deployed        weblogic-operator-3.3.0        3.3.0
+  weblogic-kubernetes-operator    opns            3               2022-02-24 06:50:29.810106777 +0000 UTC deployed        weblogic-operator-3.4.2        3.4.2
   ```
 ### Prepare the environment for Oracle WebCenter Content domain
 
 #### Upgrade the WebLogic Kubernetes Operator with the Oracle WebCenter Content domain-namespace
 
   ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={wccns}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator    
+   $ cd ${WORKDIR}
+   $ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={wccns}" --wait weblogic-kubernetes-operator charts/weblogic-operator    
   ```
 #### Create a persistent storage for the Oracle WebCenter Content domain
 
@@ -131,7 +118,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
    
    Here we will use the NFS Server and mount path, created on [this page]({{< relref "/wccontent-domains/oracle-cloud/filesystem" >}}).
 
-  * Review the configuration parameters for PV creation [here](https://oracle.github.io/weblogic-kubernetes-operator/samples/storage/#configuration-parameters). Based on your requirements, update the values in the `create-pv-pvc-inputs.yaml` file located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/`. Sample configuration parameter values for the Oracle WebCenter Content domain are:
+  * Review the configuration parameters for PV creation [here](https://oracle.github.io/weblogic-kubernetes-operator/samples/storage/#configuration-parameters). Based on your requirements, update the values in the `create-pv-pvc-inputs.yaml` file located at `${WORKDIR}/create-weblogic-domain-pv-pvc/`. Sample configuration parameter values for the Oracle WebCenter Content domain are:
     * `baseName`: domain
     * `domainUID`: wccinfra
     * `namespace`: wccns    
@@ -145,7 +132,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   
   * Run the `create-pv-pvc.sh` script:
     ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+    $ cd ${WORKDIR}/create-weblogic-domain-pv-pvc
     
 	$ rm -rf output/
 		
@@ -166,13 +153,13 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
 
    Create the Kubernetes secrets `username` and `password` of the administrative account in the same Kubernetes namespace as the domain:
 
-  ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
+   ```
+   $ cd ${WORKDIR}/create-weblogic-domain-credentials
     
-	$ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wccns -d wccinfra -s wccinfra-domain-credentials
-  ```
+   $ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wccns -d wccinfra -s wccinfra-domain-credentials
+   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.2/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 
@@ -226,7 +213,7 @@ from this secret.
 Use the provided sample script to create the secret:
 
 ```bash
-$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+$ cd ${WORKDIR}/create-rcu-credentials
 
 $ ./create-rcu-credentials.sh -u weblogic -p welcome1 -a sys -q welcome1 -d wccinfra -n wccns -s wccinfra-rcu-credentials
 ```
@@ -297,7 +284,7 @@ Sample provides steps to create the database in a container.
 The database in a container can be created with a PV attached for persisting the data or without attaching the PV.
 In this setup we will be creating database in a container without PV attached.
 ```bash
-$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-oracle-db-service
+$ cd ${WORKDIR}/create-oracle-db-service
 
 $ ./start-db-service.sh -i phx.ocir.io/xxxxxxxxxxxx/oracle/database/enterprise:x.x.x.x -s image-secret -n wccns
 ```
@@ -379,6 +366,8 @@ echo -e welcome1"\n"welcome1> /tmp/pwd.txt
 # Exit from the container
 exit
 ```
+> Note: In the create and drop schema commands above, pass additional components ( -component IPM -component CAPTURE ) if IPM and CAPTURE applications are enabled resepectively.
+
 ### Create Oracle WebCenter Content domain
 
 Now that you have your Docker images and you have created your RCU schemas, you are ready to create your domain. To continue, follow the Step-3 and Step-4.

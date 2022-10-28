@@ -8,6 +8,20 @@ description = "Create Oracle WebCenter Content domain home on an existing PV or 
 
 The  WebCenter Content deployment scripts demonstrate the creation of Oracle WebCenter Content domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.
 
+#### Contents
+* [Prerequisites](#prerequisites)
+* [Prepare to use the create domain script](#prepare-to-use-the-create-domain-script)
+* [Configuration parameters](#configuration-parameters)
+* [Run the create domain script](#run-the-create-domain-script)
+* [Run the managed-server-wrapper script](#run-the-managed-server-wrapper-script)
+* [Verify the results](#verify-the-results)
+* [Verify the domain](#verify-the-domain)
+* [Verify the pods](#verify-the-pods)
+* [Verify the services](#verify-the-services)
+* [Scale-up/down Managed Server Counts](#scale-updown-managed-server-counts)
+* [Details required for configuring IBR provider on UCM](#details-required-for-configuring-ibr-provider-on-ucm)
+* [Configure an additional mount or shared space to a domain for Imaging and Capture](#configure-an-additional-mount-or-shared-space-to-a-domain-for-imaging-and-capture)
+
 #### Prerequisites
 
 Before you begin, complete the following steps:
@@ -20,9 +34,9 @@ Before you begin, complete the following steps:
 
 #### Prepare to use the create domain script
 
-The sample scripts for Oracle WebCenter Content domain deployment are available at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain`.
+The sample scripts for Oracle WebCenter Content domain deployment are available at `${WORKDIR}/create-wcc-domain`.
 
-You must edit `create-domain-inputs.yaml` (or a copy of it) located under `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domian-home-on-pv` to provide the details for your domain.
+You must edit `create-domain-inputs.yaml` (or a copy of it) located under `${WORKDIR}/create-wcc-domain/domian-home-on-pv` to provide the details for your domain.
 Refer to the configuration parameters below to understand the information that you must
 provide in this file.
 
@@ -50,7 +64,7 @@ The following parameters can be provided in the inputs file.
 | `imagePullPolicy` | WebLogic Docker image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never`. | `IfNotPresent` |
 | `imagePullSecretName` | Name of the Kubernetes secret to access the Docker Store to pull the WebLogic Server Docker image. The presence of the secret will be validated when this parameter is specified. |  |
 | `includeServerOutInPodLog` | Boolean indicating whether to include the server .out to the pod's stdout. | `true` |
-| `initialManagedServerReplicas` | Number of Managed Servers to initially start for the domain. | `3` |
+| `initialManagedServerReplicas` | Number of UCM Managed Servers to initially start for the domain. | `3` |
 | `javaOptions` | Java options for starting the Administration Server and Managed Servers. A Java option can have references to one or more of the following pre-defined variables to obtain WebLogic domain information: `$(DOMAIN_NAME)`, `$(DOMAIN_HOME)`, `$(ADMIN_NAME)`, `$(ADMIN_PORT)`, and `$(SERVER_NAME)`. If `sslEnabled` is set to `true` and the WebLogic demo certificate is used, add `-Dweblogic.security.SSL.ignoreHostnameVerification=true` to allow the Managed Servers to connect to the Administration Server while booting up.  The WebLogic generated demo certificate in this environment typically contains a host name that is different from the runtime container's host name.  | `-Dweblogic.StdoutDebugEnabled=false` |
 | `logHome` | The in-pod location for the domain log, server logs, server out, and Node Manager log files. If not specified, the value is derived from the `domainUID` as `/shared/logs/<domainUID>`. | `/u01/oracle/user_projects/domains/logs/wccinfra` |
 | `managedServerNameBase` | Base string used to generate Managed Server names. | `ucm_server` |
@@ -71,6 +85,9 @@ The following parameters can be provided in the inputs file.
 | `ipmEnabled` | Boolean indicating whether to enable WebCenter Imaging application | `false` |
 | `captureEnabled` | Boolean indicating whether to enable WebCenter Capture application | `false` |
 | `adfuiEnabled` | Boolean indicating whether to enable WebCenter ADF UI application | `false` | 
+| `initialIpmServerReplicas` | Number of IPM Managed Servers to initially start for the domain. | `0` |
+| `initialCaptureServerReplicas` | Number of CAPTURE Managed Servers to initially start for the domain. | `0` |
+| `initialAdfuiServerReplicas` | Number of ADFUI Managed Servers to initially start for the domain. | `0` | 
 
 Note that the names of the Kubernetes resources in the generated YAML files may be formed with the
 value of some of the properties specified in the `create-inputs.yaml` file. Those properties include
@@ -80,6 +97,8 @@ valid values in the generated YAML files. For example, an uppercase letter is co
 lowercase letter and an underscore `("_")` is converted to a hyphen `("-")`.
 
 >Note: The properties ipmEnabled, captureEnabled, adfuiEnabled are set to `false` by default and should be updated to `true` if you need to enable the respective applications.
+       If any of those three applications (IPM, CAPTURE & ADFUI) are enabled, respective initial replica count must be a non-zero number.
+	   
 
 The sample demonstrates how to create the Oracle WebCenter Content domain home and associated Kubernetes resources for that domain.
 In addition, the sample provides the capability for users to supply their own scripts
@@ -91,7 +110,7 @@ Run the create domain script, specifying your inputs file and an output director
 generated artifacts:
 
 ```
-$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/
+$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
 
 $ ./create-domain.sh \
   -i create-domain-inputs.yaml \
@@ -108,21 +127,50 @@ The script will perform the following steps:
 * Run and wait for the job to finish.
 * Create a Kubernetes domain YAML file, `domain.yaml`, in the "output" directory that was created above.
   This YAML file can be used to create the Kubernetes resource using the `kubectl create -f`
-  or `kubectl apply -f` command. 
-* Run `managed-server-wrapper` script, which intrenally applies the domain YAML. This script also applies initial 
-  configurations for Managed Server containers and readies Managed Servers for future inter-container communications.
-
-    ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/
-
-    $ ./start-managed-servers-wrapper.sh -o <path_to_output_directory> -p <load_balancer_port>
-    ```
-
+  or `kubectl apply -f` command.
 * Create a convenient utility script, `delete-domain-job.yaml`, to clean up the domain home
-  created by the create script.
+  created by the create script.  
 
+#### Run the managed-server-wrapper script
 
+Run `managed-server-wrapper` script, which internally applies the domain YAML. This script also applies initial configurations for Managed Server containers and readies Managed Servers for future inter-container communications.
 
+```    
+$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
+
+$ ./start-managed-servers-wrapper.sh -o <path_to_output_directory> -p <load_balancer_port> -n <ibr_node_port> -m <ucm_node_port>
+```    
+
+> Note: In the above command, parameters `-n` and `-m` refers to the node-ports to be used for exposing `IBR intradoc port` and `UCM intradoc port` respectively.
+  Suggested values for both these node-ports should be within a range of 30000-32767.
+  Please keep in mind that `<ibr_node_port>` value must be specified at all time, whereas `<ucm_node_port>` value is only required when IPM and ADFUI Managed Servers are enabled.
+
+#### Run the startup configuration scripts for IPM and WCCADF applications as applicable
+
+Run the script configure-ipm-connection.sh to do startup configurations if IPM is enabled.
+
+```
+$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
+$ ./configure-ipm-connection.sh -l <load_balancer_external_ip> -p <load_balancer_port>
+```
+Run the script configure-wccadf-domain.sh to do startup configurations if ADFUI is enabled.
+
+```
+$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
+$ ./configure-wccadf-domain.sh -n <node_ip>
+
+```    
+Patch the domain for the changes to be applied to the domain.
+
+```
+#STOP
+$ kubectl patch domain DOMAINUID -n NAMESPACE --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
+
+$ sleep 2m
+
+#START
+$ kubectl patch domain DOMAINUID -n NAMESPACE --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]'
+```
 The default domain created by the script has the following characteristics:
 
 * An Administration Server named `AdminServer` listening on port `7001`.
@@ -810,7 +858,8 @@ $ kubectl get services -n wccns
 NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP       PORT(S)          AGE
 wccinfra-adminserver               ClusterIP   None             <none>            7001/TCP         9d
 wccinfra-adminserver-external      NodePort    10.104.100.193   <none>            7001:30701/TCP   9d
-wccinfra-cluster-ibr-cluster       ClusterIP   10.98.100.212    <none>            16250/TCP        114s
+wccinfra-cluster-ibr-cluster       ClusterIP   10.98.100.212    <none>            16250/TCP        9d
+wccinfra-cluster-ibr-cluster-ext   NodePort    10.109.247.52    <none>            5555:30555/TCP   9d
 wccinfra-cluster-ucm-cluster       ClusterIP   10.108.47.178    <none>            16200/TCP        9d
 wccinfra-cluster-ipm-cluster       ClusterIP   10.108.217.111   <none>            16000/TCP        9d
 wccinfra-cluster-capture-cluster   ClusterIP   10.110.193.252   <none>            16400/TCP        9d
@@ -842,6 +891,41 @@ wccinfra-wccadf-server4            ClusterIP   10.99.91.229     <none>          
 wccinfra-wccadf-server5            ClusterIP   10.105.114.38    <none>            16225/TCP        9d
 ```
 {{% /expand %}}
+
+#### Scale-up/down Managed Server Counts
+
+For an existing domain, these managed-server replica counts can be modified, independent of each other, by modifying the domain.yaml  (to be handled by the customers with sufficient access). To scale up or scale down managed server counts in an existing domain, the following steps need to be performed.
+
+```bash    
+$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/output/weblogic-domains/wccinfra/
+
+# modify respective managed server replicas to scale up or scale down and save it.
+$ vim domain.yaml
+
+# Apply the updated domain.yaml configuration file
+$ kubectl apply -f domain.yaml
+```
+
+#### Details required for configuring IBR provider on UCM
+
+1. Obtain details for service `wccinfra-cluster-ibr-cluster-ext` for the NodePort mapped to IBR intradoc port
+
+    ```
+    NAME                            TYPE      CLUSTER-IP    EXTERNAL-IP PORT(S)                      
+    wccinfra-cluster-ibr-cluster-ext NodePort 10.109.247.52 <none>     5555:30555/TCP               
+    ```
+
+2. Create the outgoing provider by providing following details and restart the servers.
+
+   Please provide the NodePort value (in the above sample - 30555), as `Server Port`.
+
+    ```yaml
+    Server Host Name:  <hostname in which IBR Server pod is deployed>
+
+    Server Port: 30555
+   ```
+    ![wcc-provider-ucm-ibr](images/wcc-provider-ucm-ibr.png)
+ 
 
 #### Configure an additional mount or shared space to a domain for Imaging and Capture
 

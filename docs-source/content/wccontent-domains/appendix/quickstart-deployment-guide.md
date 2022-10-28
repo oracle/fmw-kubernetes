@@ -274,8 +274,8 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ export HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
     $ export HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-    ### install kubernetes 1.18.4-1
-    $ VERSION=1.18.4-1
+    ### install kubernetes 1.23.6-0
+    $ VERSION=1.23.6-0
     $ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes=kubernetes
 
     ### enable kubelet service so that it auto-restart on reboot
@@ -300,17 +300,25 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ systemctl restart kubelet    
     ```
 
+1. From Kubernetes version v1.22 onward, `kubeadm` will default `cgroup-driver` to `systemd`. If your Docker is using cgroup driver as `cgroupfs`, set `--cgroup-driver=cgroupfs` for kubelet.
+    ```
+    $ sed -i 's/^KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS="--fail-swap-on=false --cgroup-driver=cgroupfs"/' /etc/sysconfig/kubelet
+    $ cat /etc/sysconfig/kubelet
+    ### Reload and restart kubelet
+    $ systemctl daemon-reload
+    $ systemctl restart kubelet
+    ```
 #### 1.4 Set up Helm
 
 1. Install Helm v3.x.
 
-   a. Download Helm from https://github.com/helm/helm/releases. Example to download Helm v3.2.4:
+   a. Download Helm from https://github.com/helm/helm/releases. Example to download Helm v3.5.4:
       ```
-      $ wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz
+      $ wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
       ```
    b. Unpack `tar.gz`:
       ```
-      $ tar -zxvf helm-v3.2.4-linux-amd64.tar.gz
+      $ tar -zxvf helm-v3.5.4-linux-amd64.tar.gz
       ```
    c. Find the Helm binary in the unpacked directory, and move it to its desired destination:
       ```
@@ -320,7 +328,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 1. Run `helm version` to verify its installation:
    ```
    $ helm version
-     version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
+     version.BuildInfo{Version:"v3.5.4", GitCommit:"1b5edb69df3d3a08df77c9902dc17af864ff05d1", GitTreeState:"clean", GoVersion:"go1.15.11"}
    ```
 
 ### 2. Set up a single instance Kubernetes cluster
@@ -391,7 +399,9 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
    > Note: If you are using a different cidr block than `10.244.0.0/16`, then download and update `kube-flannel.yml` with the correct cidr address before deploying into the cluster:
    ```
-   $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.12.0/Documentation/kube-flannel.yml
+   $ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.17.0/Documentation/kube-flannel.yml
+   $ ### Update the CIDR address if you are using a CIDR block other than the default 10.244.0.0/16
+   $ kubectl apply -f kube-flannel.yml
    ```
 
 1. Verify that the master node is in Ready status:
@@ -401,7 +411,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
    For example:
    ```
    NAME        STATUS   ROLES    AGE     VERSION
-   mymasternode Ready    master   8m26s   v1.18.4
+   mymasternode Ready    master   8m26s   v1.23.6
    ```
    or:
    ```
@@ -435,18 +445,13 @@ For additional references on Kubernetes cluster setup, check the [cheat sheet](h
 
 Follow [these steps]({{< relref "/wccontent-domains/installguide/prepare-your-environment/#set-up-the-code-repository-to-deploy-oracle-webcenter-content-domain" >}}) to set up the source code repository required to deploy Oracle WebCenter Content domains.
 
-#### 3.2 Get required Docker images and add them to your local registry
+#### 3.2 Get dependent images and add them to your local registry
 
-Follow [these steps]({{< relref "/wccontent-domains/installguide/prepare-your-environment/#pull-dependent-images" >}}) to set up the source code repository required to deploy Oracle WebCenter Content domains.
-
-
-#### 3.3 Build Oracle WebCenter Content Docker image and add it to your local registry
-
-Follow [these steps]({{< relref "/wccontent-domains/installguide/prepare-your-environment/#obtain-the-oracle-webcenter-content-docker-image" >}}) to set up the source code repository required to deploy Oracle WebCenter Content domains.
+Follow [these steps]({{< relref "/wccontent-domains/installguide/prepare-your-environment/#pull-dependent-images" >}}) to pull dependent Docker images required to deploy Oracle WebCenter Content domains.
 
 
-> Note: For test and development purposes this Oracle WebCenter Content image need not contain any product patches.
-	 
+#### 3.3 Get Oracle WebCenter Content Docker image and add it to your local registry
+Follow [these steps]({{< relref "/wccontent-domains/installguide/prepare-your-environment/#obtain-the-oracle-webcenter-content-docker-image" >}}) to obtain Oracle WebCenter Content image.
 
 ### 4. Install WebLogic Kubernetes Operator
 
@@ -466,13 +471,13 @@ Follow [these steps]({{< relref "/wccontent-domains/installguide/prepare-your-en
 Use Helm to install and start WebLogic Kubernetes Operator from the directory you just cloned:
 
 ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
-   --namespace opns \
-   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
-   --set serviceAccount=op-sa \
-   --set "domainNamespaces={}" \
-   --wait
+$ cd ${WORKDIR}
+$ helm install weblogic-kubernetes-operator charts/weblogic-operator \
+--namespace opns \
+--set image=oracle/weblogic-kubernetes-operator:3.4.2 \
+--set serviceAccount=op-sa \
+--set "domainNamespaces={}" \
+--wait
 ```
 #### 4.3 Verify the WebLogic Kubernetes Operator
 
@@ -486,7 +491,7 @@ Use Helm to install and start WebLogic Kubernetes Operator from the directory yo
    $ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.
+The WebLogic Kubernetes Operator v3.4.2 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 
@@ -506,10 +511,10 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Install the Traefik operator in the `traefik` namespace with the provided sample values:
    ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
+   $ cd ${WORKDIR}
    $ helm install traefik traefik/traefik \
     --namespace traefik \
-    --values kubernetes/samples/scripts/charts/traefik/values.yaml \
+    --values charts/traefik/values.yaml \
     --set "kubernetes.namespaces={traefik}" \
     --set "service.type=NodePort" \
     --wait
@@ -525,8 +530,8 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Use Helm to configure the WebLogic Kubernetes Operator to manage Oracle WebCenter Content domains in this namespace:
    ```
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm upgrade weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
+   $ cd ${WORKDIR}
+   $ helm upgrade weblogic-kubernetes-operator charts/weblogic-operator \
       --reuse-values \
       --namespace opns \
       --set "domainNamespaces={wccns}" \
@@ -538,8 +543,8 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
    a. Create a Kubernetes secret for the domain in the same Kubernetes namespace as the domain. In this example, the username is `weblogic`, the password in `welcome1`, and the namespace is `wccns`:
 
       ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
-      $ ./create-weblogic-credentials.sh \
+        $ cd ${WORKDIR}/create-weblogic-domain-credentials
+        $ ./create-weblogic-credentials.sh \
            -u weblogic \
            -p welcome1 \
            -n wccns    \
@@ -557,7 +562,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
      * Secret name          : wccinfra-rcu-credentials
 
      ```
-     $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+     $ cd ${WORKDIR}/create-rcu-credentials
      $ ./create-rcu-credentials.sh \
             -u WCC1 \
             -p Oradoc_db1 \
@@ -594,13 +599,10 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
       * namespace: wccns
       * weblogicDomainStoragePath: /scratch/k8s_dir
 
-      ```
-      $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
-      $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
-      $ sed -i -e "s:baseName\: weblogic-sample:baseName\: domain:g" create-pv-pvc-inputs.yaml
-      $ sed -i -e "s:domainUID\::domainUID\: wccinfra:g" create-pv-pvc-inputs.yaml
-      $ sed -i -e "s:namespace\: default:namespace\: wccns:g" create-pv-pvc-inputs.yaml
-      $ sed -i -e "s:#weblogicDomainStoragePath\: /scratch/k8s_dir:weblogicDomainStoragePath\: /scratch/k8s_dir:g" create-pv-pvc-inputs.yaml
+      Review and update if any changes required.
+	  ```
+      $ cd ${WORKDIR}/create-weblogic-domain-pv-pvc
+      $ vim create-pv-pvc-inputs.yaml  
       ```
 
     c. Run the `create-pv-pvc.sh` script to create the PV and PVC configuration files:
@@ -625,11 +627,11 @@ Now the environment is ready to start the Oracle WebCenter Content domain creati
 
 #### 6.2 Create an Oracle WebCenter Content domain
 
-1. The sample scripts for Oracle WebCenter Content domain deployment are available at `<weblogic-kubernetes-operator-project>/kubernetes/samples/scripts/create-wcc-domain`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
+1. The sample scripts for Oracle WebCenter Content domain deployment are available at `${WORKDIR}/create-wcc-domain/domain-home-on-pv`. You must edit `create-domain-inputs.yaml` (or a copy of it) to provide the details for your domain.
 
  1. Run the `create-domain.sh` script to create a domain:
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/
+    $ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
     $ ./create-domain.sh -i create-domain-inputs.yaml -o output
     ```
 
@@ -638,7 +640,7 @@ Now the environment is ready to start the Oracle WebCenter Content domain creati
     Once the create-domain.sh is successful, it generates the `output/weblogic-domains/wccinfra/domain.yaml` that you can use to create the Kubernetes resource domain, which starts the domain and servers:
 
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv
+    $ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv
     $ kubectl create -f output/weblogic-domains/wccinfra/domain.yaml
     ```
 
@@ -673,11 +675,12 @@ Watch the `wccns` namespace for the status of domain creation:
 
 1. Create an ingress for the domain in the domain namespace by using the sample Helm chart:
     ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
-    $ helm install wcc-traefik-ingress  kubernetes/samples/charts/ingress-per-domain \
+    $ cd ${WORKDIR}
+    $ helm install wcc-traefik-ingress charts/ingress-per-domain \
     --namespace wccns \
-    --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
-    --set "traefik.hostname=$(hostname -f)"
+    --values charts/ingress-per-domain/values.yaml \
+    --set "traefik.hostname=$(hostname -f)" \
+	--set tls=NONSSL
     ```
 1. Verify the created ingress per domain details:
     ```

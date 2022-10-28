@@ -15,7 +15,7 @@ To upgrade WebLogic Kubernetes Operator, use the `helm upgrade` command. Make su
 ```
 $ helm upgrade \
   --reuse-values \
-  --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
+  --set image=oracle/weblogic-kubernetes-operator:3.4.2 \
   --namespace weblogic-operator-namespace \
   --wait \
   weblogic-kubernetes-operator \
