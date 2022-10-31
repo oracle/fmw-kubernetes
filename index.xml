@@ -276,7 +276,7 @@ Recent changes    Date Version Change     October, 2022 22.4.1 Supports Oracle U
       
       <guid>/fmw-kubernetes/wccontent-domains/release-notes/</guid>
       <description>Review the latest changes for Oracle WebCenter Content on Kubernetes.
-Recent changes    Date Version Change     June 28, 2022 22.2.3 Supports Oracle WebCenter Content 12.2.1.4 domains deployment using May 2022 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 3.3.0. Oracle WebCenter Content 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 34192566).   March 11, 2022 22.</description>
+Recent changes    Date Version Change     October 28, 2022 22.4.1 Supports Oracle WebCenter Content 12.2.1.4 domains deployment using July 2022 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 3.4.2. Oracle WebCenter Content 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 34409720).   June 28, 2022 22.</description>
     </item>
     
     <item>
@@ -294,7 +294,7 @@ Recent changes    Date Version Change     June 28, 2022 22.2.3 Supports Oracle W
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/traefik/</guid>
-      <description>This section provides information about how to install and configure the ingress-based Traefik load balancer (version 2.2.1 or later for production deployments) to load balance Oracle WebCenter Content domain clusters. You can configure Traefik for non-SSL, SSL termination and end-to-end SSL access of the application URL.
+      <description>This section provides information about how to install and configure the ingress-based Traefik load balancer (version 2.6.0 or later for production deployments) to load balance Oracle WebCenter Content domain clusters. You can configure Traefik for non-SSL, SSL termination and end-to-end SSL access of the application URL.
 Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Content	domain in a Kubernetes cluster:
   Non-SSL and SSL termination</description>
     </item>
@@ -305,9 +305,10 @@ Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/traefik/</guid>
-      <description>This section provides information about how to install and configure the ingress-based Traefik load balancer (version 2.2.8 or later for production deployments) to load balance Oracle WebCenter Content domain clusters.
+      <description>This section provides information about how to install and configure the ingress-based Traefik load balancer (version 2.6.0 or later for production deployments) to load balance Oracle WebCenter Content domain clusters.
 Follow these steps to set up Traefik as a load balancer for an Oracle WebCenter Content	domain in a Kubernetes cluster:
-Contents  Install the Traefik (ingress-based) load balancer Configure Traefik to manage ingresses Create an Ingress for the domain Verify domain application URL access Uninstall the Traefik ingress  Install the Traefik (ingress-based) load balancer   Use Helm to install the Traefik (ingress-based) load balancer.</description>
+Contents   Non-SSL and SSL termination
+ Install the Traefik (ingress-based) load balancer Configure Traefik to manage ingresses Create an Ingress for the domain Create a certificate and generate a Kubernetes secret Create Traefik custom resource Install Ingress for SSL termination configuration    End-to-End SSL configuration</description>
     </item>
     
     <item>
@@ -340,6 +341,18 @@ Hardware requirements Supported Linux kernel for deploying and running Oracle We
 Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Content domain in a Kubernetes cluster:
 See the official installation document for prerequisites.
   Non-SSL and SSL termination</description>
+    </item>
+    
+    <item>
+      <title>NGINX</title>
+      <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/</link>
+      <pubDate>Tue, 22 Dec 2020 15:44:42 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/</guid>
+      <description>This section provides information about how to install and configure the ingress-based NGINX load balancer to load balance Oracle WebCenter Content domain clusters. You can configure NGINX for non-SSL, SSL termination, and end-to-end SSL access of the application URL.
+Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Content domain in a Kubernetes cluster:
+See the official installation document for prerequisites.
+Contents   Non-SSL and SSL termination</description>
     </item>
     
     <item>
@@ -485,8 +498,8 @@ b. Using a container image for Design Console
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/</guid>
-      <description>You can monitor a WebCenter Content domain using Prometheus and Grafana by exporting the metrics from the domain instance using the WebLogic Monitoring Exporter. This sample shows you how to set up the WebLogic Monitoring Exporter to push the data to Prometheus.
-Prerequisites This document assumes that the Prometheus Operator is deployed on the Kubernetes cluster. If it is not already deployed, follow the steps below for deploying the Prometheus Operator.</description>
+      <description>You can monitor a WebCenter Content domain using Prometheus and Grafana by exporting the metrics from the domain instance using the WebLogic Monitoring Exporter.
+Set up monitoring for OracleWebCenterContent domain Using the WebLogic Monitoring Exporter you can scrape runtime information from a running Oracle WebCenter Content Suite instance and monitor them using Prometheus and Grafana. Follow these steps to set up monitoring for an Oracle WebCenter Content Suite instance. For more details on WebLogic Monitoring Exporter, see here.</description>
     </item>
     
     <item>
@@ -538,8 +551,8 @@ The deployment methods described in Deploy using JDeveloper and Deploy using Mav
       
       <guid>/fmw-kubernetes/wccontent-domains/adminguide/elasticsearch-integration/</guid>
       <description>1. Integrate Elasticsearch to WebLogic Kubernetes Operator For reference information, see Elasticsearch integration for the WebLogic Kubernetes Operator.
-To enable elasticsearch integration, you must edit file kubernetes/charts/weblogic-operator/values.yaml before deploying the WebLogic Kubernetes Operator.
-# elkIntegrationEnabled specifies whether or not ELK integration is enabled. elkIntegrationEnabled: true # logStashImage specifies the docker image containing logstash. # This parameter is ignored if &#39;elkIntegrationEnabled&#39; is false. logStashImage: &amp;quot;logstash:6.6.0&amp;quot; # elasticSearchHost specifies the hostname of where Elasticsearch is running.</description>
+To enable elasticsearch integration, you must edit file ${WORKDIR}/charts/weblogic-operator/values.yaml before deploying the WebLogic Kubernetes Operator.
+# elkIntegrationEnabled specifies whether or not ELK integration is enabled. elkIntegrationEnabled: true # logStashImage specifies the docker image containing logstash. # This parameter is ignored if &#39;elkIntegrationEnabled&#39; is false. logStashImage: &amp;quot;logstash:6.8.23&amp;quot; # elasticSearchHost specifies the hostname of where Elasticsearch is running.</description>
     </item>
     
     <item>
@@ -730,17 +743,6 @@ Prerequisites This document assumes that you have already set up Elasticsearch a
     </item>
     
     <item>
-      <title>Apache webtier</title>
-      <link>/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/</guid>
-      <description>This section provides information about how to install and configure Apache webtier to load balance Oracle WebCenter Content domain clusters. You can configure Apache webtier for non-SSL and SSL termination access of the application URL.
-Follow these steps to set up Apache webtier as a load balancer for an Oracle WebCenter Content domain in a Kubernetes cluster:
- Build the Apache webtier image Create the Apache plugin configuration file Prepare the certificate and private key Install the Apache webtier Helm chart Verify domain application URL access Uninstall Apache webtier  Build the Apache webtier image Refer to the sample, to build the Apache webtier Docker image.</description>
-    </item>
-    
-    <item>
       <title>Logging and visualization</title>
       <link>/fmw-kubernetes/oig/manage-oig-domains/logging-and-visualization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -805,6 +807,19 @@ $ kubectl create -f delete-domain-job.yaml Clean Up the create-domain-job script
       <description>After the OIG domain is set up you can monitor the OIG instance using Prometheus and Grafana. See Monitoring a domain.
 The WebLogic Monitoring Exporter uses the WLS RESTful Management API to scrape runtime information and then exports Prometheus-compatible metrics. It is deployed as a web application in a WebLogic Server (WLS) instance, version 12.2.1 or later, typically, in the instance from which you want to get metrics.
 There are two ways to setup monitoring and you should choose one method or the other:</description>
+    </item>
+    
+    <item>
+      <title>Configure an additional mount or shared space to a domain for Imaging and Capture</title>
+      <link>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/</link>
+      <pubDate>Sun, 10 Apr 2022 16:43:45 -0500</pubDate>
+      
+      <guid>/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/</guid>
+      <description>A volume can be mounted to a server pod which can be accessible directly from outside Kubernetes cluster so that an external application could write new files to it.
+This can be used specifically in WebCenter Imaging and WebCenter Capture applications for File Imports.
+Kubernetes supports several types of volumes as given in Volumes | Kubernetes.
+Further in this section, we will take nfs volume as an example.
+Mount &amp;ldquo;nfs&amp;rdquo; as volume Create a NFS File system as described in the section Preparing a file system or an already existing NFS server can also be used.</description>
     </item>
     
     <item>

@@ -12,18 +12,18 @@
     <title>Create Oracle WebCenter Content domain :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1666243798" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1666243798" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1667223045" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1666243798"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1667223045"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1666243798"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1666243798"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1667223045"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1667223045"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1666243798"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1667223045"></script>
 
     
   </div>
@@ -3020,25 +3020,6 @@
 
             
           
-            
-            
-
-
- 
-  
-    
-      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
-        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/">
-        <b>c. </b>Apache webtier
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
         
         </ul>
               
@@ -3438,6 +3419,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3490,6 +3490,25 @@
       
               
     </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/">
+        <b>6.  </b>Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
   
  
 
@@ -5072,6 +5091,21 @@
 
 
 	<p>The  WebCenter Content deployment scripts demonstrate the creation of Oracle WebCenter Content domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.</p>
+<h4 id="contents">Contents</h4>
+<ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#prepare-to-use-the-create-domain-script">Prepare to use the create domain script</a></li>
+<li><a href="#configuration-parameters">Configuration parameters</a></li>
+<li><a href="#run-the-create-domain-script">Run the create domain script</a></li>
+<li><a href="#run-the-managed-server-wrapper-script">Run the managed-server-wrapper script</a></li>
+<li><a href="#verify-the-results">Verify the results</a></li>
+<li><a href="#verify-the-domain">Verify the domain</a></li>
+<li><a href="#verify-the-pods">Verify the pods</a></li>
+<li><a href="#verify-the-services">Verify the services</a></li>
+<li><a href="#scale-updown-managed-server-counts">Scale-up/down Managed Server Counts</a></li>
+<li><a href="#details-required-for-configuring-ibr-provider-on-ucm">Details required for configuring IBR provider on UCM</a></li>
+<li><a href="#configure-an-additional-mount-or-shared-space-to-a-domain-for-imaging-and-capture">Configure an additional mount or shared space to a domain for Imaging and Capture</a></li>
+</ul>
 <h4 id="prerequisites">Prerequisites</h4>
 <p>Before you begin, complete the following steps:</p>
 <ol>
@@ -5081,8 +5115,8 @@
 <li>Ensure that the database schemas were created and the WebLogic Kubernetes Operator are running.</li>
 </ol>
 <h4 id="prepare-to-use-the-create-domain-script">Prepare to use the create domain script</h4>
-<p>The sample scripts for Oracle WebCenter Content domain deployment are available at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain</code>.</p>
-<p>You must edit <code>create-domain-inputs.yaml</code> (or a copy of it) located under <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domian-home-on-pv</code> to provide the details for your domain.
+<p>The sample scripts for Oracle WebCenter Content domain deployment are available at <code>${WORKDIR}/create-wcc-domain</code>.</p>
+<p>You must edit <code>create-domain-inputs.yaml</code> (or a copy of it) located under <code>${WORKDIR}/create-wcc-domain/domian-home-on-pv</code> to provide the details for your domain.
 Refer to the configuration parameters below to understand the information that you must
 provide in this file.</p>
 <h4 id="configuration-parameters">Configuration parameters</h4>
@@ -5193,7 +5227,7 @@ provide in this file.</p>
 </tr>
 <tr>
 <td><code>initialManagedServerReplicas</code></td>
-<td>Number of Managed Servers to initially start for the domain.</td>
+<td>Number of UCM Managed Servers to initially start for the domain.</td>
 <td><code>3</code></td>
 </tr>
 <tr>
@@ -5296,6 +5330,21 @@ provide in this file.</p>
 <td>Boolean indicating whether to enable WebCenter ADF UI application</td>
 <td><code>false</code></td>
 </tr>
+<tr>
+<td><code>initialIpmServerReplicas</code></td>
+<td>Number of IPM Managed Servers to initially start for the domain.</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>initialCaptureServerReplicas</code></td>
+<td>Number of CAPTURE Managed Servers to initially start for the domain.</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>initialAdfuiServerReplicas</code></td>
+<td>Number of ADFUI Managed Servers to initially start for the domain.</td>
+<td><code>0</code></td>
+</tr>
 </tbody>
 </table>
 <p>Note that the names of the Kubernetes resources in the generated YAML files may be formed with the
@@ -5305,7 +5354,8 @@ characters that are invalid in a Kubernetes service name, those characters are c
 valid values in the generated YAML files. For example, an uppercase letter is converted to a
 lowercase letter and an underscore <code>(&quot;_&quot;)</code> is converted to a hyphen <code>(&quot;-&quot;)</code>.</p>
 <blockquote>
-<p>Note: The properties ipmEnabled, captureEnabled, adfuiEnabled are set to <code>false</code> by default and should be updated to <code>true</code> if you need to enable the respective applications.</p>
+<p>Note: The properties ipmEnabled, captureEnabled, adfuiEnabled are set to <code>false</code> by default and should be updated to <code>true</code> if you need to enable the respective applications.
+If any of those three applications (IPM, CAPTURE &amp; ADFUI) are enabled, respective initial replica count must be a non-zero number.</p>
 </blockquote>
 <p>The sample demonstrates how to create the Oracle WebCenter Content domain home and associated Kubernetes resources for that domain.
 In addition, the sample provides the capability for users to supply their own scripts
@@ -5313,43 +5363,52 @@ to create the domain home for other use cases. The generated domain YAML file co
 <h4 id="run-the-create-domain-script">Run the create domain script</h4>
 <p>Run the create domain script, specifying your inputs file and an output directory to store the
 generated artifacts:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/
+<pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
 
 $ ./create-domain.sh \
   -i create-domain-inputs.yaml \
   -o &lt;path to output-directory&gt;
 </code></pre><p>The script will perform the following steps:</p>
 <ul>
-<li>
-<p>Create a directory for the generated Kubernetes YAML files for this domain if it does not
+<li>Create a directory for the generated Kubernetes YAML files for this domain if it does not
 already exist.  The path name is <code>&lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;</code>.
-If the directory already exists, its contents must be removed before using this script.</p>
-</li>
-<li>
-<p>Create a Kubernetes job that will start up a utility Oracle WebCenter Content container and run
-offline WLST scripts to create the domain on the shared storage.</p>
-</li>
-<li>
-<p>Run and wait for the job to finish.</p>
-</li>
-<li>
-<p>Create a Kubernetes domain YAML file, <code>domain.yaml</code>, in the &ldquo;output&rdquo; directory that was created above.
+If the directory already exists, its contents must be removed before using this script.</li>
+<li>Create a Kubernetes job that will start up a utility Oracle WebCenter Content container and run
+offline WLST scripts to create the domain on the shared storage.</li>
+<li>Run and wait for the job to finish.</li>
+<li>Create a Kubernetes domain YAML file, <code>domain.yaml</code>, in the &ldquo;output&rdquo; directory that was created above.
 This YAML file can be used to create the Kubernetes resource using the <code>kubectl create -f</code>
-or <code>kubectl apply -f</code> command.</p>
-</li>
-<li>
-<p>Run <code>managed-server-wrapper</code> script, which intrenally applies the domain YAML. This script also applies initial
-configurations for Managed Server containers and readies Managed Servers for future inter-container communications.</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/
-
-$ ./start-managed-servers-wrapper.sh -o &lt;path_to_output_directory&gt; -p &lt;load_balancer_port&gt;
-</code></pre></li>
-<li>
-<p>Create a convenient utility script, <code>delete-domain-job.yaml</code>, to clean up the domain home
-created by the create script.</p>
-</li>
+or <code>kubectl apply -f</code> command.</li>
+<li>Create a convenient utility script, <code>delete-domain-job.yaml</code>, to clean up the domain home
+created by the create script.</li>
 </ul>
-<p>The default domain created by the script has the following characteristics:</p>
+<h4 id="run-the-managed-server-wrapper-script">Run the managed-server-wrapper script</h4>
+<p>Run <code>managed-server-wrapper</code> script, which internally applies the domain YAML. This script also applies initial configurations for Managed Server containers and readies Managed Servers for future inter-container communications.</p>
+<pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
+
+$ ./start-managed-servers-wrapper.sh -o &lt;path_to_output_directory&gt; -p &lt;load_balancer_port&gt; -n &lt;ibr_node_port&gt; -m &lt;ucm_node_port&gt;
+</code></pre><blockquote>
+<p>Note: In the above command, parameters <code>-n</code> and <code>-m</code> refers to the node-ports to be used for exposing <code>IBR intradoc port</code> and <code>UCM intradoc port</code> respectively.
+Suggested values for both these node-ports should be within a range of 30000-32767.
+Please keep in mind that <code>&lt;ibr_node_port&gt;</code> value must be specified at all time, whereas <code>&lt;ucm_node_port&gt;</code> value is only required when IPM and ADFUI Managed Servers are enabled.</p>
+</blockquote>
+<h4 id="run-the-startup-configuration-scripts-for-ipm-and-wccadf-applications-as-applicable">Run the startup configuration scripts for IPM and WCCADF applications as applicable</h4>
+<p>Run the script configure-ipm-connection.sh to do startup configurations if IPM is enabled.</p>
+<pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
+$ ./configure-ipm-connection.sh -l &lt;load_balancer_external_ip&gt; -p &lt;load_balancer_port&gt;
+</code></pre><p>Run the script configure-wccadf-domain.sh to do startup configurations if ADFUI is enabled.</p>
+<pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
+$ ./configure-wccadf-domain.sh -n &lt;node_ip&gt;
+
+</code></pre><p>Patch the domain for the changes to be applied to the domain.</p>
+<pre><code>#STOP
+$ kubectl patch domain DOMAINUID -n NAMESPACE --type='json' -p='[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/serverStartPolicy&quot;, &quot;value&quot;: &quot;NEVER&quot; }]'
+
+$ sleep 2m
+
+#START
+$ kubectl patch domain DOMAINUID -n NAMESPACE --type='json' -p='[{&quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;/spec/serverStartPolicy&quot;, &quot;value&quot;: &quot;IF_NEEDED&quot; }]'
+</code></pre><p>The default domain created by the script has the following characteristics:</p>
 <ul>
 <li>An Administration Server named <code>AdminServer</code> listening on port <code>7001</code>.</li>
 <li>A configured cluster named <code>ucm_cluster</code> of size 3.</li>
@@ -6039,7 +6098,8 @@ wccinfra-wccadf-server3                             1/1     Running     0       
 NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP       PORT(S)          AGE
 wccinfra-adminserver               ClusterIP   None             &lt;none&gt;            7001/TCP         9d
 wccinfra-adminserver-external      NodePort    10.104.100.193   &lt;none&gt;            7001:30701/TCP   9d
-wccinfra-cluster-ibr-cluster       ClusterIP   10.98.100.212    &lt;none&gt;            16250/TCP        114s
+wccinfra-cluster-ibr-cluster       ClusterIP   10.98.100.212    &lt;none&gt;            16250/TCP        9d
+wccinfra-cluster-ibr-cluster-ext   NodePort    10.109.247.52    &lt;none&gt;            5555:30555/TCP   9d
 wccinfra-cluster-ucm-cluster       ClusterIP   10.108.47.178    &lt;none&gt;            16200/TCP        9d
 wccinfra-cluster-ipm-cluster       ClusterIP   10.108.217.111   &lt;none&gt;            16000/TCP        9d
 wccinfra-cluster-capture-cluster   ClusterIP   10.110.193.252   &lt;none&gt;            16400/TCP        9d
@@ -6072,6 +6132,31 @@ wccinfra-wccadf-server5            ClusterIP   10.105.114.38    &lt;none&gt;    
 </code></pre>
     </div>
 </div>
+<h4 id="scale-updown-managed-server-counts">Scale-up/down Managed Server Counts</h4>
+<p>For an existing domain, these managed-server replica counts can be modified, independent of each other, by modifying the domain.yaml  (to be handled by the customers with sufficient access). To scale up or scale down managed server counts in an existing domain, the following steps need to be performed.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/create-wcc-domain/domain-home-on-pv/output/weblogic-domains/wccinfra/
+
+<span style="color:#75715e"># modify respective managed server replicas to scale up or scale down and save it.</span>
+$ vim domain.yaml
+
+<span style="color:#75715e"># Apply the updated domain.yaml configuration file</span>
+$ kubectl apply -f domain.yaml
+</code></pre></div><h4 id="details-required-for-configuring-ibr-provider-on-ucm">Details required for configuring IBR provider on UCM</h4>
+<ol>
+<li>
+<p>Obtain details for service <code>wccinfra-cluster-ibr-cluster-ext</code> for the NodePort mapped to IBR intradoc port</p>
+<pre><code>NAME                            TYPE      CLUSTER-IP    EXTERNAL-IP PORT(S)                      
+wccinfra-cluster-ibr-cluster-ext NodePort 10.109.247.52 &lt;none&gt;     5555:30555/TCP               
+</code></pre></li>
+<li>
+<p>Create the outgoing provider by providing following details and restart the servers.</p>
+<p>Please provide the NodePort value (in the above sample - 30555), as <code>Server Port</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">Server Host Name</span>:  &lt;hostname in which IBR Server pod is deployed<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Server Port: 30555</span>
+</code></pre></div><p><img src="images/wcc-provider-ucm-ibr.png" alt="wcc-provider-ucm-ibr"></p>
+</li>
+</ol>
 <h4 id="configure-an-additional-mount-or-shared-space-to-a-domain-for-imaging-and-capture">Configure an additional mount or shared space to a domain for Imaging and Capture</h4>
 <p>Optionally, if you want to configure an additional mount or shared space to a domain, for WebCenter Imaging and WebCenter Capture applications for file imports, refer to the <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-mount-share/">Configure an Additional Mount or Shared-Space to a Domain for Imaging and Capture</a>.</p>
 
@@ -8151,22 +8236,6 @@ wccinfra-wccadf-server5            ClusterIP   10.105.114.38    &lt;none&gt;    
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8456,6 +8525,38 @@ wccinfra-wccadf-server5            ClusterIP   10.105.114.38    &lt;none&gt;    
                     
             
         
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
             
         
@@ -9496,19 +9597,19 @@ wccinfra-wccadf-server5            ClusterIP   10.105.114.38    &lt;none&gt;    
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1666243798"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1667223045"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1666243798"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1666243798"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1667223045"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1666243798" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1666243798"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1667223045" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1667223045"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

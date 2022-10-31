@@ -12,18 +12,18 @@
     <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1666243797" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1667223044" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1666243797"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1667223044"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1666243797"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1666243797"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1667223044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1667223044"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1666243797"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1667223044"></script>
 
     
   </div>
@@ -3020,25 +3020,6 @@
 
             
           
-            
-            
-
-
- 
-  
-    
-      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
-        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/">
-        <b>c. </b>Apache webtier
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
         
         </ul>
               
@@ -3438,6 +3419,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3490,6 +3490,25 @@
       
               
     </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/">
+        <b>6.  </b>Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
   
  
 
@@ -5095,7 +5114,11 @@
 <li><a href="#install-the-nginx-load-balancer-for-end-to-end-ssl">Install the NGINX load balancer for End-to-end SSL</a></li>
 <li><a href="#deploy-tls-to-access-individual-managed-servers">Deploy tls to access individual Managed Servers</a></li>
 <li><a href="#deploy-tls-to-access-administration-server">Deploy tls to access Administration Server</a></li>
+<li><a href="#uninstall-ingress-nginx-tls">Uninstall ingress-nginx tls</a></li>
 </ol>
+</li>
+<li>
+<p><a href="#uninstall-the-nginx"> Uninstall the NGINX</a></p>
 </li>
 </ul>
 <p>To get repository information, enter the following Helm commands:</p>
@@ -5106,15 +5129,11 @@
 <ol>
 <li>
 <p>Deploy the <code>ingress-nginx</code> controller by using Helm on the domain namespace:</p>
-<p>For Kubernetes versions up to v1.18.x:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n wccns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --version<span style="color:#f92672">=</span>3.34.0 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>        --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>          ingress-nginx/ingress-nginx
-</code></pre></div></li>
-</ol>
-
+</span><span style="color:#ae81ff"></span>          ingress-nginx/ingress-nginx 
+</code></pre></div>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
         <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
@@ -5127,10 +5146,10 @@
     </div>
     <div class="expand-content" style="display: none;">
         <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: nginx-ingress
-LAST DEPLOYED: Sun Feb  <span style="color:#ae81ff">7</span> 23:19:30 <span style="color:#ae81ff">2021</span>
+LAST DEPLOYED: Fri Jul <span style="color:#ae81ff">29</span> 00:14:19 <span style="color:#ae81ff">2022</span>
 NAMESPACE: wccns
 STATUS: deployed
-REVISION: <span style="color:#ae81ff">2</span>
+REVISION: <span style="color:#ae81ff">1</span>
 TEST SUITE: None
 NOTES:
 The ingress-nginx controller has been installed.
@@ -5138,36 +5157,33 @@ Get the application URL by running these commands:
   export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
   export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
   export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
-
   echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
   echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
-
 An example Ingress that makes use of the controller:
-
-  apiVersion: networking.k8s.io/v1beta1
+  apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
-    annotations:
-      kubernetes.io/ingress.class: nginx
     name: example
     namespace: foo
   spec:
+    ingressClassName: nginx
     rules:
       - host: www.example.com
         http:
           paths:
-            - backend:
-                serviceName: exampleService
-                servicePort: <span style="color:#ae81ff">80</span>
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: <span style="color:#ae81ff">80</span>
               path: /
     <span style="color:#75715e"># This section is only required if TLS is to be enabled for the Ingress</span>
     tls:
-        - hosts:
-            - www.example.com
-          secretName: example-tls
-
+      - hosts:
+        - www.example.com
+        secretName: example-tls
 If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret containing the certificate and key must also be provided:
-
   apiVersion: v1
   kind: Secret
   metadata:
@@ -5180,7 +5196,7 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
 </code></pre></div>
     </div>
 </div>
-<ol>
+</li>
 <li>
 <p>Check the status of the deployed ingress controller:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace wccns get services | grep ingress-nginx-controller
@@ -5190,23 +5206,23 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
 </ol>
 <h4 id="configure-nginx-to-manage-ingresses">Configure NGINX to manage ingresses</h4>
 <ol>
-<li>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code>, <code>tls</code> is <code>Non-SSL</code>, and <code>domainType</code> is <code>wccinfra</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>. If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at <code>${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml</code></li>
-</ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
-    $ helm install wccinfra-nginx-ingress  kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --namespace wccns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --set type<span style="color:#f92672">=</span>NGINX <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        --set tls<span style="color:#f92672">=</span>NONSSL
+<li>
+<p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code>, <code>tls</code> is <code>Non-SSL</code>, and <code>domainType</code> is <code>wccinfra</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>. If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at <code>${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
+$ helm install wccinfra-nginx-ingress charts/ingress-per-domain <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--namespace wccns <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set type<span style="color:#f92672">=</span>NGINX <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set tls<span style="color:#f92672">=</span>NONSSL
 </code></pre></div><p>Sample output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  NAME: wccinfra-nginx-ingress
-  LAST DEPLOYED: Sun Feb  <span style="color:#ae81ff">7</span> 23:52:38 <span style="color:#ae81ff">2021</span>
-  NAMESPACE: wccns
-  STATUS: deployed
-  REVISION: <span style="color:#ae81ff">1</span>
-  TEST SUITE: None
-</code></pre></div><ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME: wccinfra-nginx-ingress
+LAST DEPLOYED: Sun Feb  <span style="color:#ae81ff">7</span> 23:52:38 <span style="color:#ae81ff">2021</span>
+NAMESPACE: wccns
+STATUS: deployed
+REVISION: <span style="color:#ae81ff">1</span>
+TEST SUITE: None
+</code></pre></div></li>
 <li>
 <p>For <strong>secured access (SSL)</strong> to the Oracle WebCenter Content application, create a certificate and generate a Kubernetes secret:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ openssl req -x509 -nodes -days <span style="color:#ae81ff">365</span> -newkey rsa:2048 -keyout /tmp/tls1.key -out /tmp/tls1.crt -subj <span style="color:#e6db74">&#34;/CN=*&#34;</span>
@@ -5214,11 +5230,12 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
 </code></pre></div></li>
 <li>
 <p>Install <code>ingress-per-domain</code> using Helm for SSL configuration:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator
- $ helm install wccinfra-nginx-ingress  kubernetes/samples/charts/ingress-per-domain <span style="color:#ae81ff">\
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
+ $ helm install wccinfra-nginx-ingress charts/ingress-per-domain <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --namespace wccns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>     --values kubernetes/samples/charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --values charts/ingress-per-domain/values.yaml <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostname=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>     --set <span style="color:#e6db74">&#34;nginx.hostnameorip=</span><span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>     --set type<span style="color:#f92672">=</span>NGINX --set tls<span style="color:#f92672">=</span>SSL
 </code></pre></div><p>Sample output:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME: wccinfra-nginx-ingress
@@ -5231,9 +5248,7 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
 <li>
 <p>For <strong>non-SSL access or SSL</strong> to the Oracle WebCenter Content application, get the details of the services by the ingress:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ kubectl describe ingress wccinfra-nginx  -n wccns
-</code></pre></div></li>
-</ol>
-
+</code></pre></div>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
         <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
@@ -5279,6 +5294,8 @@ Events:                                       &lt;none&gt;
 </code></pre></div>
     </div>
 </div>
+</li>
+</ol>
 <h4 id="verify-non-ssl-and-ssl-termination-access">Verify non-SSL and SSL termination access</h4>
 <h5 id="non-ssl-configuration">Non-SSL configuration</h5>
 <p>Verify that the Oracle WebCenter Content domain application URLs are accessible through the <code>LOADBALANCER-Non-SSLPORT</code>:</p>
@@ -5313,14 +5330,12 @@ Events:                                       &lt;none&gt;
 </code></pre></div></li>
 <li>
 <p>Deploy the ingress-nginx controller by using Helm on the domain namespace:</p>
-<p>For Kubernetes versions up to v1.18.x:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n wccns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> --version<span style="color:#f92672">=</span>3.34.0 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>wccns/domain1-tls-cert <span style="color:#ae81ff">\
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ helm install nginx-ingress -n wccns <span style="color:#ae81ff">\	</span> 
+ --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>wccns/domain1-tls-cert <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> --set controller.service.type<span style="color:#f92672">=</span>NodePort <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span> --set controller.extraArgs.enable-ssl-passthrough<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span> ingress-nginx/ingress-nginx		
+</span><span style="color:#ae81ff"></span> ingress-nginx/ingress-nginx
 </code></pre></div>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
@@ -5333,9 +5348,9 @@ Events:                                       &lt;none&gt;
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Release <span style="color:#e6db74">&#34;nginx-ingress&#34;</span> has been upgraded. Happy Helming!
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
 NAME: nginx-ingress
-LAST DEPLOYED: Mon Feb  <span style="color:#ae81ff">8</span> 02:07:26 <span style="color:#ae81ff">2021</span>
+LAST DEPLOYED: Thu Sep  <span style="color:#ae81ff">8</span> 23:59:54 <span style="color:#ae81ff">2022</span>
 NAMESPACE: wccns
 STATUS: deployed
 REVISION: <span style="color:#ae81ff">1</span>
@@ -5346,36 +5361,33 @@ Get the application URL by running these commands:
   export HTTP_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[0].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
   export HTTPS_NODE_PORT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get services -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.spec.ports[1].nodePort}&#34;</span> nginx-ingress-ingress-nginx-controller<span style="color:#66d9ef">)</span>
   export NODE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl --namespace wccns get nodes -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.items[0].status.addresses[1].address}&#34;</span><span style="color:#66d9ef">)</span>
-
   echo <span style="color:#e6db74">&#34;Visit http://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTP_NODE_PORT<span style="color:#e6db74"> to access your application via HTTP.&#34;</span>
   echo <span style="color:#e6db74">&#34;Visit https://</span>$NODE_IP<span style="color:#e6db74">:</span>$HTTPS_NODE_PORT<span style="color:#e6db74"> to access your application via HTTPS.&#34;</span>
-
 An example Ingress that makes use of the controller:
-
-  apiVersion: networking.k8s.io/v1beta1
+  apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
-    annotations:
-      kubernetes.io/ingress.class: nginx
     name: example
     namespace: foo
   spec:
+    ingressClassName: nginx
     rules:
       - host: www.example.com
         http:
           paths:
-            - backend:
-                serviceName: exampleService
-                servicePort: <span style="color:#ae81ff">80</span>
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: <span style="color:#ae81ff">80</span>
               path: /
     <span style="color:#75715e"># This section is only required if TLS is to be enabled for the Ingress</span>
     tls:
-        - hosts:
-            - www.example.com
-          secretName: example-tls
-
+      - hosts:
+        - www.example.com
+        secretName: example-tls
 If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret containing the certificate and key must also be provided:
-
   apiVersion: v1
   kind: Secret
   metadata:
@@ -5385,6 +5397,7 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
     tls.crt: &lt;base64 encoded cert&gt;
     tls.key: &lt;base64 encoded key&gt;
   type: kubernetes.io/tls
+
 </code></pre></div>
     </div>
 </div>
@@ -5400,8 +5413,13 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
 <ol>
 <li>
 <p>Deploy tls to securely access the services. Only one application can be configured with <code>ssl-passthrough</code>. A sample tls file for NGINX is shown below for the service <code>wccinfra-cluster-ucm-cluster</code> and port <code>16201</code>. All the applications running on port <code>16201</code> can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation <code>ssl-passthrough</code>. That is, for <code>wccinfra-cluster-ucm-cluster</code>, <code>wccinfra-cluster-ibr-cluster</code>, <code>wccinfra-cluster-ipm-cluster</code>, <code>wccinfra-cluster-capture-cluster</code>, <code>wccinfra-cluster-wccadf-cluster</code> and <code>wccinfra-adminserver</code>, different ingresses must be created.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+<blockquote>
+<p>Note: There  is a limitation with load-balancer in end-to-end SSL configuration - accessing multiple types of servers (different Managed Servers and/or Administration Server) at the same time, is currently not supported. We can access only one Managed Server at a time.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/charts/ingress-per-domain/tls
 </code></pre></div><p>Sample nginx-ucm-tls.yaml:</p>
+</li>
+</ol>
 
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
@@ -5414,38 +5432,40 @@ If TLS is enabled <span style="color:#66d9ef">for</span> the Ingress, a Secret c
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: wcc-ucm-ingress
-  namespace: wccns
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-passthrough: <span style="color:#e6db74">&#34;true&#34;</span>
-spec:
-  tls:
-  - hosts:
-    - <span style="color:#e6db74">&#39;domain1.org&#39;</span>
-    secretName: domain1-tls-cert
-  rules:
-  - host: <span style="color:#e6db74">&#39;domain1.org&#39;</span>
-    http:
-      paths:
-      - path: 
-        backend:
-          serviceName: wccinfra-cluster-ucm-cluster
-          servicePort: <span style="color:#ae81ff">16201</span>
-
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: networking.k8s.io/v1
+<span style="color:#66d9ef">kind</span>: Ingress
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: wcc-ucm-ingress
+  <span style="color:#66d9ef">namespace</span>: wccns
+  <span style="color:#66d9ef">annotations</span>:
+    <span style="color:#66d9ef">kubernetes.io/ingress.class</span>: nginx
+    <span style="color:#66d9ef">nginx.ingress.kubernetes.io/ssl-passthrough</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">tls</span>:
+  - <span style="color:#66d9ef">hosts</span>:
+    - <span style="color:#e6db74">&#39;your_host_name&#39;</span>
+    <span style="color:#66d9ef">secretName</span>: domain1-tls-cert
+  <span style="color:#66d9ef">rules</span>:
+  - <span style="color:#66d9ef">host</span>: <span style="color:#e6db74">&#39;your_host_name&#39;</span>
+    <span style="color:#66d9ef">http</span>:
+      <span style="color:#66d9ef">paths</span>:
+      - <span style="color:#66d9ef">path</span>:
+        <span style="color:#66d9ef">pathType</span>: ImplementationSpecific
+        <span style="color:#66d9ef">backend</span>:
+          <span style="color:#66d9ef">service</span>:
+            <span style="color:#66d9ef">name</span>: wccinfra-cluster-ucm-cluster
+            <span style="color:#66d9ef">port</span>: 
+              <span style="color:#66d9ef">number</span>: <span style="color:#ae81ff">16201</span>
 </code></pre></div>
     </div>
 </div>
 <blockquote>
 <p>Note: host is the server on which this ingress is deployed.</p>
 </blockquote>
-</li>
+<ol>
 <li>
 <p>Deploy the secured ingress:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/charts/ingress-per-domain/tls
 $ kubectl create -f nginx-ucm-tls.yaml
 </code></pre></div></li>
 <li>
@@ -5513,27 +5533,31 @@ Events:
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: wcc-admin-ingress
-  namespace: wccns
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-passthrough: <span style="color:#e6db74">&#34;true&#34;</span>
-spec:
-  tls:
-  - hosts:
-    - <span style="color:#e6db74">&#39;domain1.org&#39;</span>
-    secretName: domain1-tls-cert
-  rules:
-  - host: <span style="color:#e6db74">&#39;domain1.org&#39;</span>
-    http:
-      paths:
-      - path: 
-        backend:
-          serviceName: wccinfra-adminserver-nginx-ssl
-          servicePort: <span style="color:#ae81ff">7002</span>
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">
+<span style="color:#66d9ef">apiVersion</span>: networking.k8s.io/v1
+<span style="color:#66d9ef">kind</span>: Ingress
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: wcc-admin-ingress
+  <span style="color:#66d9ef">namespace</span>: wccns
+  <span style="color:#66d9ef">annotations</span>:
+    <span style="color:#66d9ef">kubernetes.io/ingress.class</span>: nginx
+    <span style="color:#66d9ef">nginx.ingress.kubernetes.io/ssl-passthrough</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">tls</span>:
+  - <span style="color:#66d9ef">hosts</span>:
+    - <span style="color:#e6db74">&#39;your_host_name&#39;</span>
+    <span style="color:#66d9ef">secretName</span>: domain1-tls-cert
+  <span style="color:#66d9ef">rules</span>:
+  - <span style="color:#66d9ef">host</span>: <span style="color:#e6db74">&#39;your_host_name&#39;</span>
+    <span style="color:#66d9ef">http</span>:
+      <span style="color:#66d9ef">paths</span>:
+      - <span style="color:#66d9ef">path</span>:
+        <span style="color:#66d9ef">pathType</span>: ImplementationSpecific
+        <span style="color:#66d9ef">backend</span>:
+          <span style="color:#66d9ef">service</span>:
+            <span style="color:#66d9ef">name</span>: wccinfra-adminserver-nginx-ssl
+            <span style="color:#66d9ef">port</span>:
+              <span style="color:#66d9ef">number</span>: <span style="color:#ae81ff">7002</span>
 
 </code></pre></div>
     </div>
@@ -5541,16 +5565,22 @@ spec:
 <blockquote>
 <p>Note: host is the server on which this ingress is deployed.</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/charts/ingress-per-domain/tls
  $ kubectl create -f nginx-admin-tls.yaml
 </code></pre></div></li>
 </ol>
 <h4 id="verify-end-to-end-ssl-access-1">Verify end-to-end SSL access</h4>
 <p>Verify that the Oracle WebCenter Content Administration Server URL is accessible through the <code>LOADBALANCER-SSLPORT</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://<span style="color:#e6db74">${</span>LOADBALANCER-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>LOADBALANCER-SSLPORT<span style="color:#e6db74">}</span>/console
 </code></pre></div><h4 id="uninstall-ingress-nginx-tls">Uninstall ingress-nginx tls</h4>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  $ cd weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
-  $ kubectl  delete -f nginx-ucm-tls.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/charts/ingress-per-domain/tls
+$ kubectl  delete -f nginx-ucm-tls.yaml
+</code></pre></div><h4 id="uninstall-the-nginx">Uninstall the NGINX</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">//Uninstall and delete the <span style="color:#e6db74">`</span>ingress-nginx<span style="color:#e6db74">`</span> deployment
+$ helm delete wccinfra-nginx-ingress -n wccns
+  
+//Uninstall NGINX
+$ helm delete nginx-ingress -n wccns
 </code></pre></div>
 
 <footer class=" footline" >
@@ -7624,25 +7654,6 @@ spec:
             
         
                     
-                        
-            
-            
-                
-                    
-                        
-                        
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -7650,6 +7661,9 @@ spec:
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -7932,6 +7946,38 @@ spec:
                     
             
         
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
             
         
@@ -8962,7 +9008,7 @@ spec:
 			<a class="nav nav-prev" href="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/traefik/" title="Traefik"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wccontent-domains/adminguide/weblogic-monitoring-exporter-setup/" title="Monitor an Oracle WebCenter Content domain" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -8972,19 +9018,19 @@ spec:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1666243797"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1667223044"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1666243797"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1667223044"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1666243797" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1666243797"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1667223044" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1667223044"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
