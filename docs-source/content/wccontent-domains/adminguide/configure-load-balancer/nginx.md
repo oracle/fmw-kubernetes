@@ -23,7 +23,9 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Co
   1. [Install the NGINX load balancer for End-to-end SSL](#install-the-nginx-load-balancer-for-end-to-end-ssl)
   2. [Deploy tls to access individual Managed Servers](#deploy-tls-to-access-individual-managed-servers)
   3. [Deploy tls to access Administration Server](#deploy-tls-to-access-administration-server)
+  4. [Uninstall ingress-nginx tls](#uninstall-ingress-nginx-tls)
 
+* [ Uninstall the NGINX](#uninstall-the-nginx)
 
  To get repository information, enter the following Helm commands:
 
@@ -37,21 +39,19 @@ Follow these steps to set up NGINX as a load balancer for an Oracle WebCenter Co
 
 1. Deploy the `ingress-nginx` controller by using Helm on the domain namespace:
    
-   For Kubernetes versions up to v1.18.x:
    ```bash
     $ helm install nginx-ingress -n wccns \
-	       --version=3.34.0 \
-           --set controller.service.type=NodePort \
+	       --set controller.service.type=NodePort \
            --set controller.admissionWebhooks.enabled=false \
-	         ingress-nginx/ingress-nginx
+	         ingress-nginx/ingress-nginx 
    ```
-{{%expand "Click here to see the sample output." %}}
+   {{%expand "Click here to see the sample output." %}}
 ```bash
 NAME: nginx-ingress
-LAST DEPLOYED: Sun Feb  7 23:19:30 2021
+LAST DEPLOYED: Fri Jul 29 00:14:19 2022
 NAMESPACE: wccns
 STATUS: deployed
-REVISION: 2
+REVISION: 1
 TEST SUITE: None
 NOTES:
 The ingress-nginx controller has been installed.
@@ -59,36 +59,33 @@ Get the application URL by running these commands:
   export HTTP_NODE_PORT=$(kubectl --namespace wccns get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-ingress-nginx-controller)
   export HTTPS_NODE_PORT=$(kubectl --namespace wccns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
   export NODE_IP=$(kubectl --namespace wccns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
-
   echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
   echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
-
 An example Ingress that makes use of the controller:
-
-  apiVersion: networking.k8s.io/v1beta1
+  apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
-    annotations:
-      kubernetes.io/ingress.class: nginx
     name: example
     namespace: foo
   spec:
+    ingressClassName: nginx
     rules:
       - host: www.example.com
         http:
           paths:
-            - backend:
-                serviceName: exampleService
-                servicePort: 80
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: 80
               path: /
     # This section is only required if TLS is to be enabled for the Ingress
     tls:
-        - hosts:
-            - www.example.com
-          secretName: example-tls
-
+      - hosts:
+        - www.example.com
+        secretName: example-tls
 If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
-
   apiVersion: v1
   kind: Secret
   metadata:
@@ -113,27 +110,27 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 
 #### Configure NGINX to manage ingresses
 
-1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/values.yaml`. By default, `type` is `TRAEFIK`, `tls` is `Non-SSL`, and `domainType` is `wccinfra`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml`. If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/templates/nginx-ingress.yaml`
+1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file `${WORKDIR}/charts/ingress-per-domain/values.yaml`. By default, `type` is `TRAEFIK`, `tls` is `Non-SSL`, and `domainType` is `wccinfra`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml`. If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at `${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml`
 
-```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
-    $ helm install wccinfra-nginx-ingress  kubernetes/samples/charts/ingress-per-domain \
-        --namespace wccns \
-        --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
-        --set "nginx.hostname=$(hostname -f)" \
-        --set type=NGINX \
-        --set tls=NONSSL
-```
+   ```bash
+   $ cd ${WORKDIR}
+   $ helm install wccinfra-nginx-ingress charts/ingress-per-domain \
+   --namespace wccns \
+   --values charts/ingress-per-domain/values.yaml \
+   --set "nginx.hostname=$(hostname -f)" \
+   --set type=NGINX \
+   --set tls=NONSSL
+   ```
 
-  Sample output:
-  ```bash
-    NAME: wccinfra-nginx-ingress
-    LAST DEPLOYED: Sun Feb  7 23:52:38 2021
-    NAMESPACE: wccns
-    STATUS: deployed
-    REVISION: 1
-    TEST SUITE: None
-  ```
+   Sample output:
+   ```bash
+   NAME: wccinfra-nginx-ingress
+   LAST DEPLOYED: Sun Feb  7 23:52:38 2021
+   NAMESPACE: wccns
+   STATUS: deployed
+   REVISION: 1
+   TEST SUITE: None
+   ```
 
 1. For **secured access (SSL)** to the Oracle WebCenter Content application, create a certificate and generate a Kubernetes secret:
    ```bash
@@ -144,11 +141,12 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 1. Install `ingress-per-domain` using Helm for SSL configuration:
 
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator
-    $ helm install wccinfra-nginx-ingress  kubernetes/samples/charts/ingress-per-domain \
+    $ cd ${WORKDIR}
+    $ helm install wccinfra-nginx-ingress charts/ingress-per-domain \
         --namespace wccns \
-        --values kubernetes/samples/charts/ingress-per-domain/values.yaml \
+        --values charts/ingress-per-domain/values.yaml \
         --set "nginx.hostname=$(hostname -f)" \
+		--set "nginx.hostnameorip=$(hostname -f)" \
         --set type=NGINX --set tls=SSL
    ```
    Sample output:
@@ -167,7 +165,7 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
     ```bash
  	  $ kubectl describe ingress wccinfra-nginx  -n wccns
     ```
-{{%expand "Click here to see the sample output of the services supported by the above deployed ingress." %}}
+   {{%expand "Click here to see the sample output of the services supported by the above deployed ingress." %}}
 ```bash
 Name:             wccinfra-nginx
 Namespace:        wccns
@@ -257,21 +255,19 @@ Uninstall and delete the `ingress-nginx` deployment:
 
 1. Deploy the ingress-nginx controller by using Helm on the domain namespace:
 
-   For Kubernetes versions up to v1.18.x:
     ```bash
-     $ helm install nginx-ingress -n wccns \
-	 --version=3.34.0 \
+     $ helm install nginx-ingress -n wccns \	 
 	 --set controller.extraArgs.default-ssl-certificate=wccns/domain1-tls-cert \
 	 --set controller.service.type=NodePort \
 	 --set controller.admissionWebhooks.enabled=false \
 	 --set controller.extraArgs.enable-ssl-passthrough=true \
-	 ingress-nginx/ingress-nginx		
-    ```
+	 ingress-nginx/ingress-nginx
+	```   
    {{%expand "Click here to see the sample output." %}}
 ```bash
-Release "nginx-ingress" has been upgraded. Happy Helming!
+
 NAME: nginx-ingress
-LAST DEPLOYED: Mon Feb  8 02:07:26 2021
+LAST DEPLOYED: Thu Sep  8 23:59:54 2022
 NAMESPACE: wccns
 STATUS: deployed
 REVISION: 1
@@ -282,36 +278,33 @@ Get the application URL by running these commands:
   export HTTP_NODE_PORT=$(kubectl --namespace wccns get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-ingress-nginx-controller)
   export HTTPS_NODE_PORT=$(kubectl --namespace wccns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
   export NODE_IP=$(kubectl --namespace wccns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
-
   echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
   echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
-
 An example Ingress that makes use of the controller:
-
-  apiVersion: networking.k8s.io/v1beta1
+  apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
-    annotations:
-      kubernetes.io/ingress.class: nginx
     name: example
     namespace: foo
   spec:
+    ingressClassName: nginx
     rules:
       - host: www.example.com
         http:
           paths:
-            - backend:
-                serviceName: exampleService
-                servicePort: 80
+            - pathType: Prefix
+              backend:
+                service:
+                  name: exampleService
+                  port:
+                    number: 80
               path: /
     # This section is only required if TLS is to be enabled for the Ingress
     tls:
-        - hosts:
-            - www.example.com
-          secretName: example-tls
-
+      - hosts:
+        - www.example.com
+        secretName: example-tls
 If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
-
   apiVersion: v1
   kind: Secret
   metadata:
@@ -321,6 +314,7 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
     tls.crt: <base64 encoded cert>
     tls.key: <base64 encoded key>
   type: kubernetes.io/tls
+
 ```
    {{% /expand %}}
 
@@ -338,14 +332,16 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
 
 1. Deploy tls to securely access the services. Only one application can be configured with `ssl-passthrough`. A sample tls file for NGINX is shown below for the service `wccinfra-cluster-ucm-cluster` and port `16201`. All the applications running on port `16201` can be securely accessed through this ingress. For each backend service, create different ingresses as NGINX does not support multiple path/rules with annotation `ssl-passthrough`. That is, for `wccinfra-cluster-ucm-cluster`, `wccinfra-cluster-ibr-cluster`, `wccinfra-cluster-ipm-cluster`, `wccinfra-cluster-capture-cluster`, `wccinfra-cluster-wccadf-cluster` and `wccinfra-adminserver`, different ingresses must be created.
 
+   >  Note: There  is a limitation with load-balancer in end-to-end SSL configuration - accessing multiple types of servers (different Managed Servers and/or Administration Server) at the same time, is currently not supported. We can access only one Managed Server at a time.
+
    ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+    $ cd ${WORKDIR}/charts/ingress-per-domain/tls
    ```
    Sample nginx-ucm-tls.yaml:
-
-   {{%expand "Click here to see the content of the file nginx-ucm-tls.yaml" %}}
-```bash
-apiVersion: extensions/v1beta1
+   
+{{%expand "Click here to see the content of the file nginx-ucm-tls.yaml" %}}   
+```yaml
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wcc-ucm-ingress
@@ -356,26 +352,28 @@ metadata:
 spec:
   tls:
   - hosts:
-    - 'domain1.org'
+    - 'your_host_name'
     secretName: domain1-tls-cert
   rules:
-  - host: 'domain1.org'
+  - host: 'your_host_name'
     http:
       paths:
-      - path: 
+      - path:
+        pathType: ImplementationSpecific
         backend:
-          serviceName: wccinfra-cluster-ucm-cluster
-          servicePort: 16201
-
+          service:
+            name: wccinfra-cluster-ucm-cluster
+            port: 
+              number: 16201
 ```
-   {{% /expand %}}
-
+{{% /expand %}}
+  
    >  Note: host is the server on which this ingress is deployed.
    
 1. Deploy the secured ingress:
 
    ```bash
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+   $ cd ${WORKDIR}/charts/ingress-per-domain/tls
    $ kubectl create -f nginx-ucm-tls.yaml
    ```
 
@@ -437,8 +435,9 @@ Verify that the Oracle WebCenter Content domain application URLs are accessible 
     Sample nginx-admin-tls.yaml:
 
     {{%expand "Click here to see the content of the file nginx-admin-tls.yaml" %}}
-```bash
-apiVersion: extensions/v1beta1
+```yaml
+
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wcc-admin-ingress
@@ -449,16 +448,19 @@ metadata:
 spec:
   tls:
   - hosts:
-    - 'domain1.org'
+    - 'your_host_name'
     secretName: domain1-tls-cert
   rules:
-  - host: 'domain1.org'
+  - host: 'your_host_name'
     http:
       paths:
-      - path: 
+      - path:
+        pathType: ImplementationSpecific
         backend:
-          serviceName: wccinfra-adminserver-nginx-ssl
-          servicePort: 7002
+          service:
+            name: wccinfra-adminserver-nginx-ssl
+            port:
+              number: 7002
 
 ```
     {{% /expand %}}
@@ -466,18 +468,27 @@ spec:
     >  Note: host is the server on which this ingress is deployed.
    
     ```bash
-     $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
+     $ cd ${WORKDIR}/charts/ingress-per-domain/tls
      $ kubectl create -f nginx-admin-tls.yaml
     ```
 #### Verify end-to-end SSL access
 
 Verify that the Oracle WebCenter Content Administration Server URL is accessible through the `LOADBALANCER-SSLPORT`:
-   ```bash     
-      https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/console
-   ```
+```bash     
+https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-SSLPORT}/console
+```
 #### Uninstall ingress-nginx tls
 
-  ```bash
-    $ cd weblogic-kubernetes-operator/kubernetes/samples/charts/ingress-per-domain/tls
-    $ kubectl  delete -f nginx-ucm-tls.yaml
-  ```
+```bash
+$ cd ${WORKDIR}/charts/ingress-per-domain/tls
+$ kubectl  delete -f nginx-ucm-tls.yaml
+```
+####  Uninstall the NGINX
+
+```bash
+//Uninstall and delete the `ingress-nginx` deployment
+$ helm delete wccinfra-nginx-ingress -n wccns
+  
+//Uninstall NGINX
+$ helm delete nginx-ingress -n wccns
+```  

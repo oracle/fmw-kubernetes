@@ -40,7 +40,7 @@ Using the WebLogic Image Tool, you can [create]({{< relref "/wccontent-domains/c
 
 Verify that your environment meets the following prerequisites:
 
-* Docker client and daemon on the build machine, with minimum Docker version 18.03.1.ce.
+* Docker client and daemon on the build machine, with minimum Docker version 19.03.1.
 * Bash version 4.0 or later, to enable the <tab> command complete feature.
 * JAVA_HOME environment variable set to the appropriate JDK location.
 

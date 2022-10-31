@@ -232,25 +232,28 @@ function createDomainHome {
   if [ "${ipmEnabled}" == "true" ]
   then
      echo "adding IPM cluster info"
-     sed -n "/- clusterName: ${clusterName}/,/# replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
-     sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: ipm_cluster/" ${dcrOutput}
-     sed -i "0,/- ${clusterName}/s//- ipm_cluster/" ${dcrOutput}
+     sed -n "/- clusterName: ${clusterName}/,/replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
+     sed -i -z "/- clusterName: ${clusterName}/s//- clusterName: ipm_cluster/2" ${dcrOutput}
+     sed -i  "$ s/replicas: ${initialManagedServerReplicas}/replicas: ${initialIpmServerReplicas}/" ${dcrOutput}
+     sed -i -z "/- ${clusterName}/s//- ipm_cluster/2" ${dcrOutput}
   fi
 
   if [ "${captureEnabled}" == "true" ]
   then
      echo "adding CAPTURE cluster info"
-     sed -n "/- clusterName: ${clusterName}/,/# replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
-     sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: capture_cluster/" ${dcrOutput}
-     sed -i "0,/- ${clusterName}/s//- capture_cluster/" ${dcrOutput}
+     sed -n "/- clusterName: ${clusterName}/,/replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
+     sed -i -z "/- clusterName: ${clusterName}/s//- clusterName: capture_cluster/2" ${dcrOutput}
+     sed -i  "$ s/replicas: ${initialManagedServerReplicas}/replicas: ${initialCaptureServerReplicas}/" ${dcrOutput}
+     sed -i -z "/- ${clusterName}/s//- capture_cluster/2" ${dcrOutput}
   fi
 
   if [ "${adfuiEnabled}" == "true" ]
   then
      echo "adding WCCADF cluster info"
-     sed -n "/- clusterName: ${clusterName}/,/# replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
-     sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: wccadf_cluster/" ${dcrOutput}
-     sed -i "0,/- ${clusterName}/s//- wccadf_cluster/" ${dcrOutput}
+     sed -n "/- clusterName: ${clusterName}/,/replicas: /{p}" ${dcrOutput} >> ${dcrOutput}
+     sed -i -z  "/- clusterName: ${clusterName}/s//- clusterName: wccadf_cluster/2" ${dcrOutput}
+     sed -i  "$ s/replicas: ${initialManagedServerReplicas}/replicas: ${initialAdfuiServerReplicas}/" ${dcrOutput}
+     sed -i -z  "/- ${clusterName}/s//- wccadf_cluster/2" ${dcrOutput}
   fi
 
   #Traefik sticky session Setting

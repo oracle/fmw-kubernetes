@@ -58,13 +58,13 @@ This step is required once at every node to get access to the Oracle Container R
 
 WebLogic Kubernetes Operator image:
 ```bash
-$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
-$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
+$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.4.2
+$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.4.2 oracle/weblogic-kubernetes-operator:3.4.2
 ```
 
 Pull Traefik Image
 ```bash
-$ docker pull traefik:2.2.8
+$ docker pull traefik:2.6.0
 ```
 
 ### Set up the code repository to deploy Oracle WebCenter Content domain
@@ -73,73 +73,87 @@ Oracle WebCenter Content domain deployment on Kubernetes leverages the WebLogic 
 
 1. Create a working directory to set up the source code:
    ```bash
-   $ export WORKDIR=$HOME/wcc_3.3.0
-   $ mkdir ${WORKDIR}
+   $ mkdir $HOME/wcc_3.4.2
+   $ cd $HOME/wcc_3.4.2
    ```
-
-1. Download the supported version of the WebLogic Kubernetes Operator source code from WebLogic Kubernetes Operator github  project. Currently the supported WebLogic Kubernetes Operator version is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0):
-
-    ``` bash
-    $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.3.0
-    ```
-1. Download the Oracle WebCenter Content Kubernetes deployment scripts from the WCC [repository](https://github.com/oracle/fmw-kubernetes.git) and copy them to the WebLogic Kubernetes Operator samples location:
+1. Download the WebLogic Kubernetes Operator source code and  Oracle WebCenter Content Suite Kubernetes deployment scripts from the WebCenter Content [repository](https://github.com/oracle/fmw-kubernetes.git). Required artifacts are available at `OracleWebCenterContent/kubernetes`.
 
     ``` bash
     $ git clone https://github.com/oracle/fmw-kubernetes.git
-    
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/create-wcc-domain ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/	  
-	
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/ingress-per-domain  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/charts/
-	
-	$ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/charts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-    
-    $ cp -rf ${WORKDIR}/fmw-kubernetes/OracleWebCenterContent/kubernetes/imagetool-scripts  ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/
-	```
+    $ export WORKDIR=$HOME/wcc_3.4.2/fmw-kubernetes/OracleWebCenterContent/kubernetes
+    ```
 
 ### Obtain the Oracle WebCenter Content Docker image
 
+Obtain the Oracle WebCenter Content image using any one of the options.
+
+1 Get Oracle WebCenter Content image from `My Oracle Support (MOS)`
+ 
+2 Get Oracle WebCenter Content image from `Oracle Container Registry (OCR)`
+
+3 Build Oracle WebCenter Content Container image
+
+#### 1. Get Oracle WebCenter Content image from My Oracle Support (MOS):
 The Oracle WebCenter Content image with latest bundle patch and required interim patches can be obtained from My Oracle Support (MOS). This is the only image supported for production deployments. Follow the below steps to download the Oracle WebCenter Content image from My Oracle Support.
 
-1. Download patch [34192566](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34192566) from My Oracle Support (MOS).
+1. Download patch [34409720](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34409720) from My Oracle Support (MOS).
 1. Unzip the downloaded patch zip file.
 
    For example:
    ```bash
-   $ unzip p34192566_122140_Linux-x86-64.zip
+   $ unzip p34409720_122140_Linux-x86-64.zip
    # sample output
-   Archive:  p34192566_122140_Linux-x86-64.zip
-   inflating: wccontent-12.2.1.4-jdk8-ol7-220519.2037.tar
+   Archive:  p34409720_122140_Linux-x86-64.zip
+   inflating: wccontent-12.2.1.4-jdk8-ol7-220721.1014.tar
    inflating: README.html
    ```
 1. Load the image archive using the `docker load` command.
 
    For example:
    ```bash
-   $ docker load < wccontent-12.2.1.4-jdk8-ol7-220519.2037.tar
+   $ docker load < wccontent-12.2.1.4-jdk8-ol7-220721.1014.tar
    ```
    
    {{%expand "Click here to see sample output" %}}
    ```
-   d0df970fe76a: Loading layer [==================================================>]  138.3MB/138.3MB
-   3b64a4bdc552: Loading layer [==================================================>]  13.45MB/13.45MB
-   ee5141cc5c13: Loading layer [==================================================>]  20.99kB/20.99kB
-   51f637dc720f: Loading layer [==================================================>]    334MB/334MB
-   ffc8b247ad07: Loading layer [==================================================>]   3.98GB/3.98GB
-   cd87862f5c14: Loading layer [==================================================>]  4.608kB/4.608kB
-   12661fb5186c: Loading layer [==================================================>]  137.2kB/137.2kB
-   f84db83c8dfa: Loading layer [==================================================>]  69.12kB/69.12kB
-   Loaded image: oracle/wccontent:12.2.1.4-jdk8-ol7-220519.2037
+   9ba403017e5e: Loading layer [==================================================>]  139.7MB/139.7MB
+   d8b11c461bec: Loading layer [==================================================>]  10.97MB/10.97MB
+   f4a30ae83f54: Loading layer [==================================================>]  20.99kB/20.99kB
+   8c8c62aea489: Loading layer [==================================================>]  344.3MB/344.3MB
+   2aaff97723b2: Loading layer [==================================================>]  4.084GB/4.084GB
+   13861e24e5de: Loading layer [==================================================>]  4.608kB/4.608kB
+   fb87a672a557: Loading layer [==================================================>]  138.2kB/138.2kB
+   67c9ad2fbf79: Loading layer [==================================================>]  70.14kB/70.14kB
+   Loaded image: oracle/wccontent:12.2.1.4-jdk8-ol7-220721.1014
    ```
    {{% /expand %}}
 
-1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `f83a7f6c-b564-4367-93e3-f809371dfa79`.
+1. Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `38be8314-7315-4cc8-95a1-0b4970b2b92c`.
 
    For example:
    ```bash
-   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/wccontent:12.2.1.4-jdk8-ol7-220519.2037
-   f83a7f6c-b564-4367-93e3-f809371dfa79
+   $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}'  oracle/wccontent:12.2.1.4-jdk8-ol7-220721.1014
+   38be8314-7315-4cc8-95a1-0b4970b2b92c
    ```
 
+#### 2. Get Oracle WebCenter Content image from the Oracle Container Registry (OCR):
+For first time users, to pull an image from the Oracle Container Registry, navigate to https://container-registry.oracle.com and log in using the Oracle Single Sign-On (SSO) authentication service. If you do not already have SSO credentials, you can create an Oracle Account using:
+    https://profile.oracle.com/myprofile/account/create-account.jspx.
+
+Use the web interface to accept the Oracle Standard Terms and Restrictions for the Oracle software images that you intend to deploy. Your acceptance of these terms are stored in a database that links the software images to your Oracle Single Sign-On login credentials.
+
+To obtain the image, log in to the Oracle Container Registry:
+
+   ```bash
+   $ docker login container-registry.oracle.com
+   ```
+Find and then pull the prebuilt Oracle WebCenter Content Suite image 12.2.1.4:
+
+   ```bash
+   $ docker pull container-registry.oracle.com/middleware/webcenter-content_cpu:12.2.1.4-jdk8-ol7-220721
+   ```
+
+#### 3. Build Oracle WebCenter Content Container image :
 Alternatively, if you want to build and use Oracle WebCenter Content Container image, using WebLogic Image Tool, with any additional bundle patch or interim patches, then follow these [steps]({{< relref "/wccontent-domains/create-or-update-image/#create-or-update-an-oracle-webcenter-content-docker-image-using-the-weblogic-image-tool" >}}) to create the image.
 
 > Note: The default Oracle WebCenter Content image name used for Oracle WebCenter Content domain deployment is `oracle/wccontent:12.2.1.4.0`. The image created must be tagged as `oracle/wccontent:12.2.1.4.0` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wccontent:12.2.1.4.0` image name is used.
@@ -147,8 +161,8 @@ Alternatively, if you want to build and use Oracle WebCenter Content Container i
 
 ### Install the WebLogic Kubernetes Operator
 
-The WebLogic Kubernetes Operator supports the deployment of Oracle WebCenter Content domain in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/documentation/3.3/content/quickstart/install.md) to install WebLogic Kubernetes Operator.
-> Note: Optionally, you can execute these [steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/operator/) to send the contents of the operator’s logs to Elasticsearch.
+The WebLogic Kubernetes Operator supports the deployment of Oracle WebCenter Content domain in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.2/documentation/3.4/content/quickstart/install.md) to install WebLogic Kubernetes Operator.
+> Note: Optionally, you can execute these [steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/) to send the contents of the operator’s logs to Elasticsearch.
 
 In the following example commands to install the WebLogic Kubernetes Operator, `opns` is the namespace and `op-sa` is the service account created for WebLogic Kubernetes Operator:
 
@@ -156,14 +170,13 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   
   ```
   $ kubectl create namespace opns
-  $ kubectl create serviceaccount -n opns  op-sa
-  
+  $ kubectl create serviceaccount -n opns  op-sa  
   ```
 ### Install WebLogic Kubernetes Operator  
   ```
-  $ cd ${WORKDIR}/weblogic-kubernetes-operator
+  $ cd ${WORKDIR}
   
-  $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.4.2 --set serviceAccount=op-sa --set "domainNamespaces={}" --set "javaLoggingLevel=FINE" --wait  
   ```
 
 ### Prepare the environment for Oracle WebCenter Content domain
@@ -176,27 +189,31 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
   ```
    $ kubectl create namespace wccns
    
-   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={wccns}" --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
-   
+   $ cd ${WORKDIR}
+   $ helm upgrade --reuse-values --namespace opns --set "domainNamespaces={wccns}" --wait weblogic-kubernetes-operator charts/weblogic-operator
   ```
 
 #### Create a persistent storage for the Oracle WebCenter Content domain
 
-   In the Kubernetes namespace you created, create the PV and PVC for the domain by running the [create-pv-pvc.sh](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/storage/) script. Follow the instructions for using the script to create a dedicated PV and PVC for the Oracle WebCenter Content domain.
+   In the Kubernetes namespace you created, create the PV and PVC for the domain by running the [create-pv-pvc.sh](https://oracle.github.io/weblogic-kubernetes-operator/samples/storage/) script. Follow the instructions for using the script to create a dedicated PV and PVC for the Oracle WebCenter Content domain.
 
-  * Review the configuration parameters for PV creation [here](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/storage/#configuration-parameters). Based on your requirements, update the values in the `create-pv-pvc-inputs.yaml` file located at `${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc/`. Sample configuration parameter values for the Oracle WebCenter Content domain are:
+  * Review the configuration parameters for PV creation [here](https://oracle.github.io/weblogic-kubernetes-operator/samples/storage/#configuration-parameters). Based on your requirements, update the values in the `create-pv-pvc-inputs.yaml` file located at `${WORKDIR}/create-weblogic-domain-pv-pvc/`. Sample configuration parameter values for the Oracle WebCenter Content domain are:
     * `baseName`: domain
     * `domainUID`: wccinfra
     * `namespace`: wccns
     * `weblogicDomainStorageType`: HOST_PATH
     * `weblogicDomainStoragePath`: /net/<your_host_name>/scratch/k8s_dir/wcc
+    > Note: Alternatively, you can use `NFS` as the value of `weblogicDomainStorageType` if you choose to use an NFS server for the persistent storage.
+  
+  * Ensure that the path for the `weblogicDomainStoragePath` property exists and have the ownership for 1000:0. If not, you need to create it as follows:
+    ```
+	$ sudo mkdir /scratch/k8s_dir/wcc
+    $ sudo chown -R 1000:0 /scratch/k8s_dir/wcc
 
-  * Ensure that the path for the `weblogicDomainStoragePath` property exists (if not, please refer subsection 4 of [this](https://oracle.github.io/fmw-kubernetes/wccontent-domains/appendix/quickstart-deployment-guide/#61-prepare-for-an-oracle-webcenter-content-domain) document to create it first) and
-    has full access permissions, and that the folder is empty.
+	```
   * Run the `create-pv-pvc.sh` script:
     ```bash
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
+    $ cd ${WORKDIR}/create-weblogic-domain-pv-pvc
     $ rm -rf output/
 		
 	$ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output
@@ -219,12 +236,12 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
    Create the Kubernetes secrets `username` and `password` of the administrative account in the same Kubernetes namespace as the domain:
 
   ```
-    $ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
+    $ cd ${WORKDIR}/create-weblogic-domain-credentials
     
 	$ ./create-weblogic-credentials.sh -u weblogic -p welcome1 -n wccns -d wccinfra -s wccinfra-domain-credentials
   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.3.0/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.2/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 
@@ -279,7 +296,7 @@ from this secret.
 Use the provided sample script to create the secret:
 
 ```bash
-$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+$ cd ${WORKDIR}/create-rcu-credentials
 
 $ ./create-rcu-credentials.sh -u weblogic -p welcome1 -a sys -q welcome1 -d wccinfra -n wccns -s wccinfra-rcu-credentials 
 
@@ -347,10 +364,10 @@ type: Opaque
 Run a container to create `rcu pod`
 
 ```bash
-   kubectl run rcu --generator=run-pod/v1 --image oracle/wccontent:12.2.1.4 -n wccns  -- sleep infinity
+$ kubectl run rcu --image oracle/wccontent:12.2.1.4 -n wccns -- sleep infinity
    
-   #check the status of rcu pod
-   kubectl get pods -n wccns
+#check the status of rcu pod
+$ kubectl get pods -n wccns
 ```
 
 #### Run the Repository Creation Utility to set up your database schemas
@@ -362,24 +379,25 @@ To create the database schemas for Oracle WebCenter Content, run the `create-rcu
 For example:
 
 ```bash
-   # make sure rcu pod status is running before executing this 
-   kubectl exec -n wccns -ti rcu /bin/bash
+# make sure rcu pod status is running before executing this 
+kubectl exec -n wccns -ti rcu /bin/bash
+
+# DB details 
+export CONNECTION_STRING=your_db_host:1521/your_db_service
+export RCUPREFIX=your_schema_prefix
+echo -e welcome1"\n"welcome1> /tmp/pwd.txt
    
-   # DB details 
-   export CONNECTION_STRING=your_db_host:1521/your_db_service
-   export RCUPREFIX=your_schema_prefix
-   echo -e welcome1"\n"welcome1> /tmp/pwd.txt
+# Create schemas
+/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component CONTENT -component MDS   -component STB -component OPSS  -component IAU -component IAU_APPEND -component IAU_VIEWER -component WLS  -tablespace USERS -tempTablespace TEMP -f < /tmp/pwd.txt
    
-   # Create schemas
-   /u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component CONTENT -component MDS   -component STB -component OPSS  -component IAU -component IAU_APPEND -component IAU_VIEWER -component WLS  -tablespace USERS -tempTablespace TEMP -f < /tmp/pwd.txt
-   
-   # Drop schemas
-   /u01/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component CONTENT -component MDS  -component STB -component OPSS  -component IAU -component IAU_APPEND -component IAU_VIEWER -component WLS -f < /tmp/pwd.txt 
-   
-   #exit from the container
-   exit
+# Drop schemas
+/u01/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component CONTENT -component MDS  -component STB -component OPSS  -component IAU -component IAU_APPEND -component IAU_VIEWER -component WLS -f < /tmp/pwd.txt 
+
+#exit from the container
+exit
    
 ```
+> Note: In the create and drop schema commands above, pass additional components ( -component IPM -component CAPTURE ) if IPM and CAPTURE applications are enabled respectively.
 
 ### Create Oracle WebCenter Content domain
 

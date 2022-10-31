@@ -48,8 +48,8 @@ The arguments required for updating the image can be passed as file to the WebLo
     '--fromImage' option provides the existing docker image that has to be updated.
     '--tag' option should be provided with the new tag for the updated image.
     '--additionalBuildCommands' option should be provided with the above created additional build commands file.
-    '--chown oracle:root' option should be provided to update file permissions.
-	
+	'--chown oracle:root' option should be provided to update file permissions.
+
 Below is a sample build argument (buildArgs) file, to be used for updating the image,
 
 

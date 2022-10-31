@@ -1,0 +1,39 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: wccns
+spec:
+  selector:
+    matchLabels:
+      app: logstash
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      volumes:
+      - name: domain-storage-volume
+        persistentVolumeClaim:
+          claimName: domain-pvc
+      - name: shared-logs
+        emptyDir: {}
+      containers:
+      - name: logstash
+        image: logstash:6.6.0
+        command: ["/bin/sh"]
+        args: ["/usr/share/logstash/bin/logstash", "-f", "/u01/oracle/user_projects/domains/logstash.conf"]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+          name: domain-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        ports:
+        - containerPort: 5044
+          name: logstash
+

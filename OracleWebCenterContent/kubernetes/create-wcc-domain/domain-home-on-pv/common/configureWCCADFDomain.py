@@ -6,7 +6,7 @@ class ConfigureWCCADFDomain:
     def configureMbeanAttribs(self):
         print 'Configuring MBean attributes of '+domainUID+'-wccadf-server1'
         # login to wlst online
-        connect(domainUser,domainPassword, domainProtocol+'://'+domainUID+'-wccadf-server1:'+domainPort+'')
+        connect(domainUser,domainPassword, 't3://'+domainUID+'-wccadf-server1:'+domainPort+'')
 
         custom()
         
@@ -30,10 +30,7 @@ class ConfigureWCCADFDomain:
         cd ('oracle.adf.share.connections')
         cd ('oracle.adf.share.connections:type=WccConnection,beantype=Runtime,ADFConnections=ADFConnections,Application=Oracle WebCenter Content - Web UI,name=WccAdfServerConnection,ApplicationName=Oracle WebCenter Content - Web UI')
 
-        if (sslEnabled == 'true'):
-            set('PropConnectionUrl','idcs://'+hostName+':'+intradocPort+'')
-        else:
-            set('PropConnectionUrl','idc://'+hostName+':'+intradocPort+'')
+        set('PropConnectionUrl','idc://'+hostName+':'+intradocPort+'')
 
         # Invoke save operation for the setting done above
         cd('..')
@@ -62,16 +59,9 @@ while i < len(sys.argv):
         i += 2
     elif sys.argv[i] == '-intradocPort':
         intradocPort = sys.argv[i + 1]
-        i += 2  
-    elif sys.argv[i] == '-sslEnabled':
-        sslEnabled = sys.argv[i + 1]
-        i += 2    
-    elif sys.argv[i] == '-domainProtocol':
-        domainProtocol = sys.argv[i + 1]
         i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
-        usage()
         sys.exit(1)
 
 config = ConfigureWCCADFDomain()

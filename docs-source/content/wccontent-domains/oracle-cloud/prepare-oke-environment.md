@@ -38,7 +38,7 @@ Within your tenancy, there must be a compartment to contain the necessary networ
 1. On the Create Cluster page specify the values as per your environment (like the sample values shown below)
    * NAME:  WCCOKEPHASE1
    * COMPARTMENT: WCCStorage
-   * KUBERNETES VERSION: v1.18.10
+   * KUBERNETES VERSION: v1.23.4
    * CHOOSE VISIBILITY TYPE: Private
    * SHAPE: VM.Standard.E3.Flex  (Choose the available shape for worker node pool. The list shows only those shapes available in your tenancy that are supported by Container Engine for Kubernetes. See Supported Images and Shapes for Worker Nodes.)
    * NUMBER OF NODES:  3 (The number of worker nodes to create in the node pool, placed in the regional subnet created for the 'quick cluster').
@@ -196,18 +196,18 @@ Login to OCI Console and navigate to `User Settings`, which is in the drop down 
    ```bash
    $ kubectl get nodes
    NAME          STATUS   ROLES   AGE   VERSION
-   10.0.10.197   Ready    node    14d   v1.18.10
-   10.0.10.206   Ready    node    14d   v1.18.10
-   10.0.10.50    Ready    node    14d   v1.18.10
+   10.0.10.197   Ready    node    14d   v1.23.4
+   10.0.10.206   Ready    node    14d   v1.23.4
+   10.0.10.50    Ready    node    14d   v1.23.4
    ```
 1. Install required add-ons for Oracle WebCenter Content Cluster setup
    * Install helm v3
      ```bash
-     $ wget https://get.helm.sh/helm-v3.1.1-linux-amd64.tar.gz
-     $ tar -zxvf  helm-v3.1.1-linux-amd64.tar.gz
+     $ wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
+     $ tar -zxvf  helm-v3.5.4-linux-amd64.tar.gz
      $ sudo mv linux-amd64/helm  /bin/helm
      $ helm version
-     version.BuildInfo{Version:"v3.1.1", GitCommit:"afe70585407b420d0097d07b21c47dc511525ac8", GitTreeState:"clean", GoVersion:"go1.13.8"}
+     version.BuildInfo{Version:"v3.5.4", GitCommit:"1b5edb69df3d3a08df77c9902dc17af864ff05d1", GitTreeState:"clean", GoVersion:"go1.15.11"}
      ```
    * Install git
      ```bash

@@ -10,15 +10,15 @@ This section provides information about the system requirements and limitations 
 
 ### System requirements for Oracle WebCenter Content domains
 
-For the current production release 22.2.3:
+For the current production release 22.4.1:
 
 * Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes) are supported.
-* Supported Kubernetes versions are: 1.16.15+, 1.17.13+ and 1.18.10+ (check with `kubectl version`).
-* Docker 18.09.1ce, 19.03.1 (check with `docker version`) or CRI-O 1.14.7 (check with `crictl version | grep RuntimeVersion`).
-* Flannel networking v0.12.0-amd64 or later (check with `docker images | grep flannel`).
-* Helm 3.4.1 (check with `helm version --client --short`).
-* Oracle WebLogic Kubernetes Operator 3.3.0 (see [WebLogic Kubernetes Operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
-* Oracle WebCenter Content 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [34192566](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34192566)). This image contains the latest bundle patch and one-off patches for Oracle WebCenter Content.
+* Supported Kubernetes versions are: 1.19.15+, 1.20.11+, 1.21.5+, 1.22.5+ and 1.23.4+ (check with `kubectl version`).
+* Docker 19.03.1+ (check with `docker version`).
+* Flannel networking v0.13.0-amd64 or later (check with `docker images | grep flannel`).
+* Helm 3.3.4+ (check with `helm version --client --short`).
+* Oracle WebLogic Kubernetes Operator 3.4.2 (see [WebLogic Kubernetes Operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
+* Oracle WebCenter Content 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch [34409720](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34409720)). This image contains the latest bundle patch and one-off patches for Oracle WebCenter Content.
 * You must have the `cluster-admin` role to install WebLogic Kubernetes Operator. The WebLogic Kubernetes Operator does not need the `cluster-admin` role at runtime.
 * We do not currently support running Oracle WebCenter Content in non-Linux containers.
 * Additionally, see the Oracle WebCenter Content [documentation](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/inecm/preparing-install-and-configure-product.html#GUID-16F78BFD-4095-45EE-9C3B-DB49AD5CBAAD) for other requirements such as database version.

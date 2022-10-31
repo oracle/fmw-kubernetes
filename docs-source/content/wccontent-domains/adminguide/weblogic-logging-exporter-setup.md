@@ -8,7 +8,7 @@ description: "Use the WebLogic Logging Exporter to publish the WebLogic Server l
 The WebLogic Logging Exporter adds a log event handler to WebLogic Server. WebLogic Server logs can be pushed to Elasticsearch in Kubernetes directly
 by using the Elasticsearch REST API. For more details, see to the [WebLogic Logging Exporter](https://github.com/oracle/weblogic-logging-exporter) project.  
 
-This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing WebLogic Kubernetes Operator logs, see this [sample](https://oracle.github.io/weblogic-kubernetes-operator/samples/simple/elastic-stack/operator/).
+This sample shows you how to publish WebLogic Server logs to Elasticsearch and view them in Kibana. For publishing WebLogic Kubernetes Operator logs, see this [sample](https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/).
 
 #### Prerequisites
 
@@ -22,9 +22,14 @@ The pre-built binaries are available on the WebLogic Logging Exporter [Releases]
 
 Download:
 
-* [weblogic-logging-exporter-1.0.0.jar](https://github.com/oracle/weblogic-logging-exporter/releases/download/v1.0.0/weblogic-logging-exporter-1.0.0.jar) from the Releases page.
-* [snakeyaml-1.25.jar](https://repo1.maven.org/maven2/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar) from Maven Central.
+* [weblogic-logging-exporter-1.0.1.jar](https://github.com/oracle/weblogic-logging-exporter/releases/download/v1.0.1/weblogic-logging-exporter.jar) from the Releases page.
+* [snakeyaml-1.27.jar](https://repo1.maven.org/maven2/org/yaml/snakeyaml/1.27/snakeyaml-1.27.jar) from Maven Central.
 
+```
+$ wget https://github.com/oracle/weblogic-logging-exporter/releases/download/v1.0.1/weblogic-logging-exporter.jar
+$ wget -O snakeyaml-1.27.jar https://search.maven.org/remotecontent?filepath=org/yaml/snakeyaml/1.27/snakeyaml-1.27.jar
+
+```
 {{% notice note %}} These identifiers are used in the sample commands in this document.
 
 * `wccns`: WebCenter Content domain namespace
@@ -34,17 +39,17 @@ Download:
 
 #### Copy the JAR Files to the WebLogic Domain Home
 
-Copy the `weblogic-logging-exporter-1.0.0.jar` and `snakeyaml-1.25.jar` files to the domain home directory in the Administration Server pod.
+Copy the `weblogic-logging-exporter.jar` and `snakeyaml-1.27.jar` files to the domain home directory in the Administration Server pod.
 
 ```
-$ kubectl cp <file-to-copy>   <namespace>/<Administration-Server-pod>:<domainhome>
+$ kubectl cp <file-to-copy>   <namespace>/<administration-server-pod>:<domainhome>
 
 ```
 
 ```
-$ kubectl cp weblogic-logging-exporter-1.0.0.jar wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/
+$ kubectl cp weblogic-logging-exporter.jar wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/
 
-$ kubectl cp snakeyaml-1.25.jar wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/
+$ kubectl cp snakeyaml-1.27.jar wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/
 
 ```
 
@@ -69,7 +74,7 @@ In this step, we configure weblogic-logging-exporter JAR as a startup class in t
     ```
     <startup-class>
       <name>weblogic-logging-exporter</name>
-      <target>AdminServer,ucm_cluster,ibr_cluster,ipm_cluster,capture_cluster,wccadf_cluster</target>
+      <target>adminServer,ucm_cluster,ibr_cluster,ipm_cluster,capture_cluster,wccadf_cluster</target>
       <class-name>weblogic.logging.exporter.Startup</class-name>
     </startup-class>
     ```  
@@ -79,14 +84,14 @@ In this step, we configure weblogic-logging-exporter JAR as a startup class in t
 1. Copy the `setDomainEnv.sh` file from the pod to a local folder:
     ```
     $  kubectl cp wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/bin/setDomainEnv.sh $PWD/setDomainEnv.sh
-    tar: Removing leading `/' from member names
+    
     ```
 	
 	Ignore exception: `tar: Removing leading '/' from member names`
 
 1. Modify `setDomainEnv.sh` to update the Server Class path, add below code  at the end of file:
     ```
-    CLASSPATH=/u01/oracle/user_projects/domains/wccinfra/weblogic-logging-exporter-1.0.0.jar:/u01/oracle/user_projects/domains/wccinfra/snakeyaml-1.25.jar:${CLASSPATH}
+    CLASSPATH=/u01/oracle/user_projects/domains/wccinfra/weblogic-logging-exporter.jar:/u01/oracle/user_projects/domains/wccinfra/snakeyaml-1.27.jar:${CLASSPATH}
     export CLASSPATH
     ```  
 
@@ -99,9 +104,9 @@ In this step, we configure weblogic-logging-exporter JAR as a startup class in t
 
 In this step, we will be creating the configuration file for weblogic-logging-exporter.
 
-1. Specify the Elasticsearch server host and port number in file `kubernetes/samples/scripts/create-wcc-domain/utils/weblogic-logging-exporter/WebLogicLoggingExporter.yaml`:
+1. Specify the Elasticsearch server host and port number in file `$WORKDIR/logging-services/weblogic-logging-exporter/WebLogicLoggingExporter.yaml`:
 
-	Example:
+	Sample:
 	```
 	weblogicLoggingIndexName: wls
 	publishHost: elasticsearch.default.svc.cluster.local
@@ -109,14 +114,14 @@ In this step, we will be creating the configuration file for weblogic-logging-ex
 	domainUID: wccinfra
 	weblogicLoggingExporterEnabled: true
 	weblogicLoggingExporterSeverity: Notice
-	weblogicLoggingExporterBulkSize: 2
+	weblogicLoggingExporterBulkSize: 1
 	weblogicLoggingExporterFilters:
 	- FilterExpression: NOT(MSGID = 'BEA-000449')
 	```  
 
 2. Copy the `WebLogicLoggingExporter.yaml` file to the domain home directory in the WebLogic Administration Server pod:
 	```
-	$ kubectl cp kubernetes/samples/scripts/create-wcc-domain/utils/weblogic-logging-exporter/WebLogicLoggingExporter.yaml  wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/config/
+	$ kubectl cp ${WORKDIR}/logging-services/weblogic-logging-exporter/WebLogicLoggingExporter.yaml  wccns/wccinfra-adminserver:/u01/oracle/user_projects/domains/wccinfra/config/
 	```  
 
 #### Restart All the Servers in the Domain

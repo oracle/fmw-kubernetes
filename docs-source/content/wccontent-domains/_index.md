@@ -20,7 +20,7 @@ The WebLogic Kubernetes Operator has several key features to assist you with dep
 
 #### Current production release
 
-The current supported production release of WebLogic Kubernetes Operator, for Oracle WebCenter Content domain deployment is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0).
+The current supported production release of WebLogic Kubernetes Operator, for Oracle WebCenter Content domain deployment is [3.4.2](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.4.2).
 
 #### Recent changes
 
@@ -48,7 +48,13 @@ please consult this table of contents:
    * Removing/deleting domain.
    * And much more!
 
-
+#### Documentation for earlier releases
+To view documentation for an earlier release, see:
+* [Version 22.2.3](https://oracle.github.io/fmw-kubernetes/22.2.3/wccontent-domains/)
+* [Version 22.1.3](https://oracle.github.io/fmw-kubernetes/22.1.3/wccontent-domains/)
+* [Version 21.4.3](https://oracle.github.io/fmw-kubernetes/21.4.3/wccontent-domains/)
+* [Version 21.2.3](https://oracle.github.io/fmw-kubernetes/21.2.3/wccontent-domains/)
+* [Version 21.1.2](https://oracle.github.io/fmw-kubernetes/21.1.2/wccontent-domains/)
 #### Additional reading
 
 Oracle WebCenter Content domain deployment on Kubernetes leverages WebLogic Kubernetes Operator framework.

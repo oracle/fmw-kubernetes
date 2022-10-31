@@ -1,0 +1,155 @@
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+{{- if eq .Values.type "NGINX" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx
+  namespace: {{ .Release.Namespace }}
+
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
+{{- if eq .Values.tls "SSL" }}
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_input_headers "X-Forwarded-Proto: https";
+      more_set_input_headers "WL-Proxy-SSL: true";
+    nginx.ingress.kubernetes.io/ingress.allow-http: "false"
+{{- end }}
+spec:
+  rules:
+  - host: '{{ .Values.nginx.hostname }}'
+    http:
+      paths:
+      - path: /console
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /wls-exporter
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /cs
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /adfAuthentication
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /_ocsh
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /_dav
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /idcws
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /idcnativews
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /wsm-pm
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /ibr
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ibrClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ibrManagedServerPort }}
+      - path: /ibr/adfAuthentication
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ibrClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ibrManagedServerPort }}
+      - path: /weblogic/ready
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ucmManagedServerPort }}
+      - path: /imaging
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ipmClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.ipmManagedServerPort }}
+      - path: /dc-console
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.captureClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.captureManagedServerPort }}
+      - path: /dc-client
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.captureClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.captureManagedServerPort }}
+      - path: /wcc
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wccadfClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.wccadfManagedServerPort }}
+
+{{- if eq .Values.tls "SSL" }}
+  tls:
+  - hosts:
+    - '{{ .Values.nginx.hostnameorip }}'
+    secretName: domain1-tls-cert
+{{- end }}
+
+{{- end }}
+

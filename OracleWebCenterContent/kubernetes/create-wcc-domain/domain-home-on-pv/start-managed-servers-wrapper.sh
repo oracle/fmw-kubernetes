@@ -4,20 +4,26 @@
 #
 
 function  usage {
-  echo usage: ${script} -o path_to_output_dir -p load_balancer_port [-u ucm_intradocport] [-i ibr_intradocport] [-h]
+  echo usage: ${script} -o path_to_output_dir -p load_balancer_port -n node_port [-m ucm_node_port] [-u ucm_intradocport] [-i ibr_intradocport] [-h]
   echo "  -o output directory which was used during domain creation to generate yaml files, must be specified."
   echo "  -p load balancer port, must be specified."
+  echo "  -n node port, to be used for exposing IBR intradoc-port (suggested value should be within a range of 30000-32767) - must be specified."
+  echo "  -m ucm node port, to be used for exposing UCM intradoc-port (suggested value should be within a range of 30000-32767) - optional."
   echo "  -u ucm intradocport, optional"
   echo "  -i ibr intradocport, optional"
   echo "  -h Help"
   exit $1
 }
 
-while getopts "ho:p:u:i:" opt; do
+while getopts "ho:p:n:m:u:i:" opt; do
   case $opt in
 	o) outputDir="${OPTARG}"
 	;;
 	p) LoadBalancerPort="${OPTARG}"
+	;;
+        n) NodePort="${OPTARG}"
+	;;
+        m) UcmNodePort="${OPTARG}"
 	;;
 	u) UCMIntradocPort="${OPTARG}"
 	;;
@@ -37,6 +43,11 @@ fi
 
 if [ -z ${LoadBalancerPort} ]; then
   echo "${script}: -p(LoadBalancerPort) must be specified."
+  usage 1
+fi
+
+if [ -z ${NodePort} ]; then
+  echo "${script}: -n(NodePort) to be used for exposing IBR intradoc-port (suggested value should be within a range of 30000-32767) must be specified."
   usage 1
 fi
 
@@ -151,28 +162,27 @@ kubectl cp  autoinstall.cfg.ibr $domainNS/$domainUID-ibr-server1:/u01/oracle/use
 
 ip_addr=`hostname -i`
 
-kubectl expose  service/wccinfra-cluster-ibr-cluster --name wccinfra-cluster-ibr-cluster-ext --port=$IBRIntradocPort --target-port=$IBRIntradocPort  --external-ip=$ip_addr -n $domainNS
+echo "Expose the IBR intradoc port using service type NodePort"
+kubectl expose  service/$domainUID-cluster-ibr-cluster --name $domainUID-cluster-ibr-cluster-ext --port=$IBRIntradocPort --type=NodePort -n $domainNS --dry-run=client -o yaml > $domainUID-cluster-ibr-cluster-ext.yaml
+sed -i -e "/targetPort:*/a\ \ \ \ nodePort: $NodePort" $domainUID-cluster-ibr-cluster-ext.yaml
+kubectl -n $domainNS apply -f $domainUID-cluster-ibr-cluster-ext.yaml
 
-kubectl get service/wccinfra-cluster-ibr-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ibr-cluster-ext.yaml
-sed -i "0,/$IBRIntradocPort/s//16250/" wccinfra-cluster-ibr-cluster-ext.yaml
-kubectl -n $domainNS apply -f wccinfra-cluster-ibr-cluster-ext.yaml
-
-echo " Expose the UCM intradoc port"
-kubectl expose  service/wccinfra-cluster-ucm-cluster --name wccinfra-cluster-ucm-cluster-ext --port=$UCMIntradocPort --target-port=$UCMIntradocPort  --external-ip=$ip_addr -n $domainNS
-
-
-kubectl get service/wccinfra-cluster-ucm-cluster-ext -n $domainNS -o yaml  > wccinfra-cluster-ucm-cluster-ext.yaml
-sed -i "0,/$UCMIntradocPort/s//16200/" wccinfra-cluster-ucm-cluster-ext.yaml
-kubectl -n $domainNS apply -f wccinfra-cluster-ucm-cluster-ext.yaml
-
-# Load the script to configure wccadf domain if adfui is enabled
 wccadfEnabled=$(grep  'adfuiEnabled:' create-domain-inputs.yaml);
 wccadfEnabled=${wccadfEnabled//*adfuiEnabled: /};
 
-script="${BASH_SOURCE[0]}"
-scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
-if [ true  == "$wccadfEnabled" ]; then
-   source ${scriptDir}/configure-wccadf-domain.sh
+ipmAppEnabled=$(grep  'ipmEnabled:' create-domain-inputs.yaml);
+ipmAppEnabled=${ipmAppEnabled//*ipmEnabled: /};
+
+if [[ true  == "$ipmAppEnabled" || true  == "$wccadfEnabled" ]]; then
+  if [ -z ${UcmNodePort} ]; then
+    echo "${script}: -m(UcmNodePort) to be used for exposing UCM intradoc-port (suggested value should be within a range of 30000-32767) must be specified if IPM and/or ADFUI is enabled."
+    usage 1
+  fi
+
+  echo " Expose the UCM intradoc port using service type NodePort"
+  kubectl expose service/$domainUID-cluster-ucm-cluster --name $domainUID-cluster-ucm-cluster-ext --port=$UCMIntradocPort --type=NodePort -n $domainNS --dry-run=client -o yaml > $domainUID-cluster-ucm-cluster-ext.yaml
+  sed -i -e "/targetPort:*/a\ \ \ \ nodePort: $UcmNodePort" $domainUID-cluster-ucm-cluster-ext.yaml
+  kubectl -n $domainNS apply -f $domainUID-cluster-ucm-cluster-ext.yaml
 fi
 
 #STOP
@@ -184,3 +194,4 @@ sleep 2m
 kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]'
 
 echo "Please monitor server pods status at console using kubectl get pod -n $domainNS"
+
