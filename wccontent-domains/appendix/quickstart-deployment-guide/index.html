@@ -12,18 +12,18 @@
     <title>Quick start deployment guide :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1666243797" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1666243797" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1667223044" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1666243797"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1667223044"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1666243797"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1666243797"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1667223044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1667223044"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1666243797"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1667223044"></script>
 
     
   </div>
@@ -3020,25 +3020,6 @@
 
             
           
-            
-            
-
-
- 
-  
-    
-      <li data-nav-id="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/" title="Apache webtier" class="dd-item ">
-        <a href="/fmw-kubernetes/wccontent-domains/adminguide/configure-load-balancer/apache/">
-        <b>c. </b>Apache webtier
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
         
         </ul>
               
@@ -3438,6 +3419,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -3490,6 +3490,25 @@
       
               
     </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture" class="dd-item ">
+        <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/">
+        <b>6.  </b>Configure an additional mount or shared space to a domain for Imaging and Capture
+        
+        </a>
+    </li>
+     
   
  
 
@@ -5318,8 +5337,8 @@ $ export https_proxy=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-### install kubernetes 1.18.4-1
-$ VERSION=1.18.4-1
+### install kubernetes 1.23.6-0
+$ VERSION=1.23.6-0
 $ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes=kubernetes
 
 ### enable kubelet service so that it auto-restart on reboot
@@ -5341,22 +5360,30 @@ $ cat /etc/sysconfig/kubelet
 $ systemctl daemon-reload
 $ systemctl restart kubelet    
 </code></pre></li>
+<li>
+<p>From Kubernetes version v1.22 onward, <code>kubeadm</code> will default <code>cgroup-driver</code> to <code>systemd</code>. If your Docker is using cgroup driver as <code>cgroupfs</code>, set <code>--cgroup-driver=cgroupfs</code> for kubelet.</p>
+<pre><code>$ sed -i 's/^KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=&quot;--fail-swap-on=false --cgroup-driver=cgroupfs&quot;/' /etc/sysconfig/kubelet
+$ cat /etc/sysconfig/kubelet
+### Reload and restart kubelet
+$ systemctl daemon-reload
+$ systemctl restart kubelet
+</code></pre></li>
 </ol>
 <h4 id="14-set-up-helm">1.4 Set up Helm</h4>
 <ol>
 <li>
 <p>Install Helm v3.x.</p>
-<p>a. Download Helm from <a href="https://github.com/helm/helm/releases">https://github.com/helm/helm/releases</a>. Example to download Helm v3.2.4:</p>
-<pre><code>$ wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz
+<p>a. Download Helm from <a href="https://github.com/helm/helm/releases">https://github.com/helm/helm/releases</a>. Example to download Helm v3.5.4:</p>
+<pre><code>$ wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
 </code></pre><p>b. Unpack <code>tar.gz</code>:</p>
-<pre><code>$ tar -zxvf helm-v3.2.4-linux-amd64.tar.gz
+<pre><code>$ tar -zxvf helm-v3.5.4-linux-amd64.tar.gz
 </code></pre><p>c. Find the Helm binary in the unpacked directory, and move it to its desired destination:</p>
 <pre><code>$ mv linux-amd64/helm /usr/bin/helm
 </code></pre></li>
 <li>
 <p>Run <code>helm version</code> to verify its installation:</p>
 <pre><code>$ helm version
-  version.BuildInfo{Version:&quot;v3.2.4&quot;, GitCommit:&quot;0ad800ef43d3b826f31a5ad8dfbb4fe05d143688&quot;, GitTreeState:&quot;clean&quot;, GoVersion:&quot;go1.13.12&quot;}
+  version.BuildInfo{Version:&quot;v3.5.4&quot;, GitCommit:&quot;1b5edb69df3d3a08df77c9902dc17af864ff05d1&quot;, GitTreeState:&quot;clean&quot;, GoVersion:&quot;go1.15.11&quot;}
 </code></pre></li>
 </ol>
 <h3 id="2-set-up-a-single-instance-kubernetes-cluster">2. Set up a single instance Kubernetes cluster</h3>
@@ -5435,14 +5462,16 @@ $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 <blockquote>
 <p>Note: If you are using a different cidr block than <code>10.244.0.0/16</code>, then download and update <code>kube-flannel.yml</code> with the correct cidr address before deploying into the cluster:</p>
 </blockquote>
-<pre><code>$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.12.0/Documentation/kube-flannel.yml
+<pre><code>$ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.17.0/Documentation/kube-flannel.yml
+$ ### Update the CIDR address if you are using a CIDR block other than the default 10.244.0.0/16
+$ kubectl apply -f kube-flannel.yml
 </code></pre></li>
 <li>
 <p>Verify that the master node is in Ready status:</p>
 <pre><code>$ kubectl get nodes
 </code></pre><p>For example:</p>
 <pre><code>NAME        STATUS   ROLES    AGE     VERSION
-mymasternode Ready    master   8m26s   v1.18.4
+mymasternode Ready    master   8m26s   v1.23.6
 </code></pre><p>or:</p>
 <pre><code>$ kubectl get pods -n kube-system
 </code></pre><p>For example:</p>
@@ -5466,13 +5495,10 @@ pod/kube-scheduler-mymasternode             1/1         Running         0       
 <h3 id="3-get-scripts-and-images">3. Get scripts and images</h3>
 <h4 id="31-set-up-the-code-repository-to-deploy-oracle-webcenter-content-domains">3.1 Set up the code repository to deploy Oracle WebCenter Content domains</h4>
 <p>Follow <a href="/fmw-kubernetes/wccontent-domains/installguide/prepare-your-environment/#set-up-the-code-repository-to-deploy-oracle-webcenter-content-domain">these steps</a> to set up the source code repository required to deploy Oracle WebCenter Content domains.</p>
-<h4 id="32-get-required-docker-images-and-add-them-to-your-local-registry">3.2 Get required Docker images and add them to your local registry</h4>
-<p>Follow <a href="/fmw-kubernetes/wccontent-domains/installguide/prepare-your-environment/#pull-dependent-images">these steps</a> to set up the source code repository required to deploy Oracle WebCenter Content domains.</p>
-<h4 id="33-build-oracle-webcenter-content-docker-image-and-add-it-to-your-local-registry">3.3 Build Oracle WebCenter Content Docker image and add it to your local registry</h4>
-<p>Follow <a href="/fmw-kubernetes/wccontent-domains/installguide/prepare-your-environment/#obtain-the-oracle-webcenter-content-docker-image">these steps</a> to set up the source code repository required to deploy Oracle WebCenter Content domains.</p>
-<blockquote>
-<p>Note: For test and development purposes this Oracle WebCenter Content image need not contain any product patches.</p>
-</blockquote>
+<h4 id="32-get-dependent-images-and-add-them-to-your-local-registry">3.2 Get dependent images and add them to your local registry</h4>
+<p>Follow <a href="/fmw-kubernetes/wccontent-domains/installguide/prepare-your-environment/#pull-dependent-images">these steps</a> to pull dependent Docker images required to deploy Oracle WebCenter Content domains.</p>
+<h4 id="33-get-oracle-webcenter-content-docker-image-and-add-it-to-your-local-registry">3.3 Get Oracle WebCenter Content Docker image and add it to your local registry</h4>
+<p>Follow <a href="/fmw-kubernetes/wccontent-domains/installguide/prepare-your-environment/#obtain-the-oracle-webcenter-content-docker-image">these steps</a> to obtain Oracle WebCenter Content image.</p>
 <h3 id="4-install-weblogic-kubernetes-operator">4. Install WebLogic Kubernetes Operator</h3>
 <h4 id="41-prepare-for-weblogic-kubernetes-operator">4.1 Prepare for WebLogic Kubernetes Operator.</h4>
 <ol>
@@ -5487,13 +5513,13 @@ pod/kube-scheduler-mymasternode             1/1         Running         0       
 </ol>
 <h4 id="42-install-the-weblogic-kubernetes-operator">4.2 Install the WebLogic Kubernetes Operator</h4>
 <p>Use Helm to install and start WebLogic Kubernetes Operator from the directory you just cloned:</p>
-<pre><code>   $ cd ${WORKDIR}/weblogic-kubernetes-operator
-   $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
-   --namespace opns \
-   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
-   --set serviceAccount=op-sa \
-   --set &quot;domainNamespaces={}&quot; \
-   --wait
+<pre><code>$ cd ${WORKDIR}
+$ helm install weblogic-kubernetes-operator charts/weblogic-operator \
+--namespace opns \
+--set image=oracle/weblogic-kubernetes-operator:3.4.2 \
+--set serviceAccount=op-sa \
+--set &quot;domainNamespaces={}&quot; \
+--wait
 </code></pre><h4 id="43-verify-the-weblogic-kubernetes-operator">4.3 Verify the WebLogic Kubernetes Operator</h4>
 <ol>
 <li>
@@ -5505,7 +5531,7 @@ pod/kube-scheduler-mymasternode             1/1         Running         0       
 <pre><code>$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></li>
 </ol>
-<p>The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.</p>
+<p>The WebLogic Kubernetes Operator v3.4.2 has been installed. Continue with the load balancer and Oracle WebCenter Content domain setup.</p>
 <h3 id="5-install-the-traefik-ingress-based-load-balancer">5. Install the Traefik (ingress-based) load balancer</h3>
 <p>WebLogic Kubernetes Operator supports these load balancers: Traefik, NGINX and Apache. Samples are provided in the documentation.</p>
 <p>This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle WebCenter Content domain.</p>
@@ -5520,10 +5546,10 @@ pod/kube-scheduler-mymasternode             1/1         Running         0       
 </code></pre></li>
 <li>
 <p>Install the Traefik operator in the <code>traefik</code> namespace with the provided sample values:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator
+<pre><code>$ cd ${WORKDIR}
 $ helm install traefik traefik/traefik \
  --namespace traefik \
- --values kubernetes/samples/scripts/charts/traefik/values.yaml \
+ --values charts/traefik/values.yaml \
  --set &quot;kubernetes.namespaces={traefik}&quot; \
  --set &quot;service.type=NodePort&quot; \
  --wait
@@ -5538,8 +5564,8 @@ $ helm install traefik traefik/traefik \
 </code></pre></li>
 <li>
 <p>Use Helm to configure the WebLogic Kubernetes Operator to manage Oracle WebCenter Content domains in this namespace:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator
-$ helm upgrade weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
+<pre><code>$ cd ${WORKDIR}
+$ helm upgrade weblogic-kubernetes-operator charts/weblogic-operator \
    --reuse-values \
    --namespace opns \
    --set &quot;domainNamespaces={wccns}&quot; \
@@ -5548,8 +5574,8 @@ $ helm upgrade weblogic-kubernetes-operator kubernetes/charts/weblogic-operator 
 <li>
 <p>Create Kubernetes secrets.</p>
 <p>a. Create a Kubernetes secret for the domain in the same Kubernetes namespace as the domain. In this example, the username is <code>weblogic</code>, the password in <code>welcome1</code>, and the namespace is <code>wccns</code>:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-credentials
-$ ./create-weblogic-credentials.sh \
+<pre><code>  $ cd ${WORKDIR}/create-weblogic-domain-credentials
+  $ ./create-weblogic-credentials.sh \
      -u weblogic \
      -p welcome1 \
      -n wccns    \
@@ -5564,7 +5590,7 @@ $ ./create-weblogic-credentials.sh \
 <li>Domain Namespace     : wccns</li>
 <li>Secret name          : wccinfra-rcu-credentials</li>
 </ul>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-rcu-credentials
+<pre><code>$ cd ${WORKDIR}/create-rcu-credentials
 $ ./create-rcu-credentials.sh \
        -u WCC1 \
        -p Oradoc_db1 \
@@ -5591,12 +5617,9 @@ $ sudo chown -R 1000:0 /scratch/k8s_dir
 <li>namespace: wccns</li>
 <li>weblogicDomainStoragePath: /scratch/k8s_dir</li>
 </ul>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-weblogic-domain-pv-pvc
-$ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
-$ sed -i -e &quot;s:baseName\: weblogic-sample:baseName\: domain:g&quot; create-pv-pvc-inputs.yaml
-$ sed -i -e &quot;s:domainUID\::domainUID\: wccinfra:g&quot; create-pv-pvc-inputs.yaml
-$ sed -i -e &quot;s:namespace\: default:namespace\: wccns:g&quot; create-pv-pvc-inputs.yaml
-$ sed -i -e &quot;s:#weblogicDomainStoragePath\: /scratch/k8s_dir:weblogicDomainStoragePath\: /scratch/k8s_dir:g&quot; create-pv-pvc-inputs.yaml
+<p>Review and update if any changes required.</p>
+<pre><code>$ cd ${WORKDIR}/create-weblogic-domain-pv-pvc
+$ vim create-pv-pvc-inputs.yaml  
 </code></pre><p>c. Run the <code>create-pv-pvc.sh</code> script to create the PV and PVC configuration files:</p>
 <pre><code>$ ./create-pv-pvc.sh -i create-pv-pvc-inputs.yaml -o output
 </code></pre><p>d. Create the PV and PVC using the configuration files created in the previous step:</p>
@@ -5613,17 +5636,17 @@ and <a href="/fmw-kubernetes/wccontent-domains/installguide/prepare-your-environ
 <h4 id="62-create-an-oracle-webcenter-content-domain">6.2 Create an Oracle WebCenter Content domain</h4>
 <ol>
 <li>
-<p>The sample scripts for Oracle WebCenter Content domain deployment are available at <code>&lt;weblogic-kubernetes-operator-project&gt;/kubernetes/samples/scripts/create-wcc-domain</code>. You must edit <code>create-domain-inputs.yaml</code> (or a copy of it) to provide the details for your domain.</p>
+<p>The sample scripts for Oracle WebCenter Content domain deployment are available at <code>${WORKDIR}/create-wcc-domain/domain-home-on-pv</code>. You must edit <code>create-domain-inputs.yaml</code> (or a copy of it) to provide the details for your domain.</p>
 </li>
 <li>
 <p>Run the <code>create-domain.sh</code> script to create a domain:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/
+<pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
 $ ./create-domain.sh -i create-domain-inputs.yaml -o output
 </code></pre></li>
 <li>
 <p>Create a Kubernetes domain object:</p>
 <p>Once the create-domain.sh is successful, it generates the <code>output/weblogic-domains/wccinfra/domain.yaml</code> that you can use to create the Kubernetes resource domain, which starts the domain and servers:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator/kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv
+<pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv
 $ kubectl create -f output/weblogic-domains/wccinfra/domain.yaml
 </code></pre></li>
 <li>
@@ -5654,11 +5677,12 @@ Watch the <code>wccns</code> namespace for the status of domain creation:</p>
 </code></pre></li>
 <li>
 <p>Create an ingress for the domain in the domain namespace by using the sample Helm chart:</p>
-<pre><code>$ cd ${WORKDIR}/weblogic-kubernetes-operator
-$ helm install wcc-traefik-ingress  kubernetes/samples/charts/ingress-per-domain \
+<pre><code>$ cd ${WORKDIR}
+$ helm install wcc-traefik-ingress charts/ingress-per-domain \
 --namespace wccns \
---values kubernetes/samples/charts/ingress-per-domain/values.yaml \
---set &quot;traefik.hostname=$(hostname -f)&quot;
+--values charts/ingress-per-domain/values.yaml \
+--set &quot;traefik.hostname=$(hostname -f)&quot; \
+--set tls=NONSSL
 </code></pre></li>
 <li>
 <p>Verify the created ingress per domain details:</p>
@@ -7752,22 +7776,6 @@ http://${LOADBALANCER_HOSTNAME}:30305/wcc
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -8057,6 +8065,38 @@ http://${LOADBALANCER_HOSTNAME}:30305/wcc
                     
             
         
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
             
         
@@ -9105,19 +9145,19 @@ http://${LOADBALANCER_HOSTNAME}:30305/wcc
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1666243797"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1667223044"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1666243797"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1666243797"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1667223044"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1666243797" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1666243797"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1667223044" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1667223044"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
