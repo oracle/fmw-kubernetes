@@ -33,13 +33,13 @@ fi
 
 if [ "$INSTALL_OAM" = "true" ] && [ ! "$INSTALL_WLSOPER" = "true" ]
 then
-    echo "Install OAM requires Installation of the WebLogic Operator"
+    echo "Install OAM requires Installation of the WebLogic Kubernetes Operator"
     FAIL=$((FAIL+1))
 fi
 
 if [ "$INSTALL_OIG" = "true" ] && [ ! "$INSTALL_WLSOPER" = "true" ]
 then
-    echo "Install OAM requires Installation of the WebLogic Operator"
+    echo "Install OAM requires Installation of the WebLogic Kubernetes Operator"
     FAIL=$((FAIL+1))
 fi
 
@@ -278,6 +278,77 @@ then
        FAIL=$((FAIL+1))
     fi
 fi
+
+
+# OHS CHECKS
+#
+
+
+if [ "$INSTALL_OHS" = "true" ] || [ "$USE_OHS" = "true" ]
+then
+    echo ""
+    echo "Checking Oracle Http Server Pre-requisties"
+    echo "------------------------------------------"
+
+    if [ ! "$OHS_HOST1" = "" ] 
+    then
+       echo -n "Checking $OHS_HOST1 is reachable : "
+       nc -z $OHS_HOST1 22
+       if [ $? = 0 ] 
+       then
+          echo "Success"
+       else
+          echo "Failed"
+          FAIL=$((FAIL+1))
+       fi
+       
+       echo -n "Checking Passwordless SSH to $OHS_HOST1: "
+       ssh -o ConnectTimeout=4 $OHS_HOST1 date > /dev/null 2>&1
+       if [ $? = 0 ] 
+       then
+          echo "Success"
+       else
+          echo "Failed"
+          FAIL=$((FAIL+1))
+       fi
+
+    fi
+
+    if [ ! "$OHS_HOST2" = "" ] 
+    then
+       echo -n "Checking $OHS_HOST2 is reachable : "
+       nc -z $OHS_HOST2 22
+       if [ $? = 0 ] 
+       then
+          echo "Success"
+       else
+          echo "Failed"
+          FAIL=$((FAIL+1))
+       fi
+       echo -n "Checking Passwordless SSH to $OHS_HOST2: "
+       ssh -o ConnectTimeout=4 $OHS_HOST2 date > /dev/null 2>&1
+       if [ $? = 0 ] 
+       then
+          echo "Success"
+       else
+          echo "Failed"
+          FAIL=$((FAIL+1))
+       fi
+    fi
+
+    if [  "$INSTALL_OHS" = "true" ] 
+    then
+       echo -n "Checking OHS Installer exists : "
+       if [ -e $SCRIPTDIR/templates/ohs/installer/$OHS_INSTALLER ]
+       then
+          echo "Success"
+       else
+          echo "Failed"
+          FAIL=$((FAIL+1))
+       fi 
+    fi
+fi
+
 
 
 # OUD CHECKS

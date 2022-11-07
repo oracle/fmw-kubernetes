@@ -2,7 +2,7 @@
 # Copyright (c) 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-# This is an example of a script which will delete an OUD deployment
+# This is an example of a script which will delete an Elastic Search deployment
 #
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
@@ -25,7 +25,7 @@ START_TIME=`date +%s`
 ST=`date +%s`
 
 echo "Deleting ELK and Kibana Controller"
-echo "---------------------------------"
+echo "----------------------------------"
 echo
 echo Log of Delete Session can be found at: $LOG
 echo

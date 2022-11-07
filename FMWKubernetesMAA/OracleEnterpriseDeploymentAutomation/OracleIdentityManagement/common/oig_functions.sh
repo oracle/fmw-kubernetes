@@ -68,6 +68,7 @@ edit_domain_creation_file()
      replace_value2 productionModeEnabled true $filename
      replace_value2 adminNodePort $OIG_ADMIN_K8 $filename
      replace_value2 adminPort $OIG_ADMIN_PORT $filename
+     replace_value2 t3ChannelPort $OIG_ADMIN_T3_K8 $filename
      replace_value2 frontEndHost $OIG_LBR_HOST $filename
      replace_value2 frontEndPort $OIG_LBR_PORT $filename
      print_status $?
@@ -137,6 +138,7 @@ update_java_parameters()
           OIMSERVER_JAVA_PARAMS="$OIMSERVER_JAVA_PARAMS -Dweblogic.rjvm.allowUnknownHost=true"
      fi
      update_variable "<OIMSERVER_JAVA_PARAMS>" "$OIMSERVER_JAVA_PARAMS" $WORKDIR/oigDomain.sedfile
+     update_variable "<SOASERVER_JAVA_PARAMS>" "$SOASERVER_JAVA_PARAMS" $WORKDIR/oigDomain.sedfile
 
      sed -i -f $WORKDIR/oigDomain.sedfile output/weblogic-domains/$OIG_DOMAIN_NAME/domain_oim_soa.yaml
      print_status $?
@@ -163,7 +165,7 @@ perform_initial_start()
      check_running $OIGNS adminserver
      check_running $OIGNS soa-server1
  
-     kubectl apply -f output/weblogic-domains/governancedomain/domain_oim_soa.yaml > $LOGDIR/initial_start.log 2>&1
+     kubectl apply -f output/weblogic-domains/$OIG_DOMAIN_NAME/domain_oim_soa.yaml > $LOGDIR/initial_start.log 2>&1
 
      check_running $OIGNS oim-server1
   
@@ -181,7 +183,7 @@ perform_initial_start()
 
 # Create Ingress Services for OIG
 #
-create_oig_ingress()
+create_oig_ingress_manual()
 {
      ST=`date +%s`
      print_msg  "Creating OIG Ingress Services "
@@ -211,6 +213,37 @@ create_oig_ingress()
      print_time STEP "Create Kubernetes OIG Ingress Services " $ST $ET >> $LOGDIR/timings.log
 }
 
+create_oig_ingress()
+{
+     ST=`date +%s`
+     print_msg  "Creating OIG Ingress Services "
+
+     cp $WORKDIR/samples/charts/ingress-per-domain/values.yaml $WORKDIR/override_ingress.yaml
+     filename=$WORKDIR/override_ingress.yaml
+
+     replace_value2 sslType NONSSL $filename
+     replace_value2 domainUID $OIG_DOMAIN_NAME $filename
+     replace_value2  adminServerPort $OIG_ADMIN_PORT $filename
+     replace_value2  enabled true $filename
+     replace_value2 runtime $OIG_LBR_HOST $filename
+     replace_value2 admin  $OIG_ADMIN_LBR_HOST $filename
+     replace_value2 internal  $OIG_LBR_INT_HOST $filename
+
+     cd $WORKDIR/samples
+     helm install oig-nginx charts/ingress-per-domain --namespace $OIGNS --values $filename  > $LOGDIR/ingress.log 2>>$LOGDIR/ingress.log
+     print_status $? $LOGDIR/ingress.log
+
+     if [ "$OIG_ENABLE_T3" = "true" ]
+     then
+          printf "\t\t\tExposing OIM T3 - :"
+          cp $WORKDIR/samples/design-console-ingress/values.yaml $WORKDIR/design-console-ingress.yaml
+          replace_value2 domainUID $OIG_DOMAIN_NAME $WORKDIR/design-console-ingress.yaml
+          helm install oig-designconsole-ingress design-console-ingress --namespace $OIGNS --values $WORKDIR/design-console-ingress.yaml >> $LOGDIR/design_console_ingress.log 2>&1
+          print_status $? $LOGDIR/design_console_ingress.log
+     fi
+     ET=`date +%s`
+     print_time STEP "Create Kubernetes OIG Ingress Services " $ST $ET >> $LOGDIR/timings.log
+}
 # Create NodePort Services for OIG
 #
 create_oig_nodeport()
@@ -272,7 +305,7 @@ copy_connector()
        exit 1
     fi
  
-    printf "\n\t\t\tCopy Connector to container - "
+    printf "\t\t\tCopy Connector to container - "
     kubectl cp $CONNECTOR_DIR/OID-12.2*  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     print_status $?
 
@@ -961,4 +994,81 @@ create_logstash_cm()
    fi
    ET=`date +%s`
    print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Deploy WebLogic Monitoring Service
+#
+generate_wls_monitor()
+{
+   ST=`date +%s`
+   print_msg "Generate WebLogic Monitoring Service"
+
+   cd $WORKDIR/samples/monitoring-service/scripts
+   export adminServerPort=$OIG_ADMIN_PORT
+   export wlsMonitoringExporterTosoaCluster=true
+   export soaManagedServerPort=8001
+   export wlsMonitoringExporterTooimCluster=true
+   export oimManagedServerPort=14000
+   export domainNamespace=$OIGNS
+   export domainUID=$OIG_DOMAIN_NAME
+   export weblogicCredentialsSecretName=$OIG_DOMAIN_NAME-credentials
+
+   $PWD/get-wls-exporter.sh > $LOGDIR/generate_wls_monitor.log 2>&1
+   print_status $? $LOGDIR/generate_wls_monitor.log
+   ET=`date +%s`
+   print_time STEP "Generate WebLogic Monitoring Service" $ST $ET >> $LOGDIR/timings.log
+
+}
+
+deploy_wls_monitor()
+{
+   ST=`date +%s`
+   print_msg "Deploy WebLogic Monitoring Service"
+
+   cd $WORKDIR/samples/monitoring-service/scripts
+
+   printf "\n\t\t\tCopy Deployment Script 1 - "
+   kubectl cp $WORKDIR/samples/monitoring-service/scripts/wls-exporter-deploy  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle > $LOGDIR/deploy_wls_monitor.log 2>&1
+   print_status $? $LOGDIR/deploy_wls_monitor.log
+
+   printf "\t\t\tCopy Deployment Script 2 - "
+   kubectl cp $WORKDIR/samples/monitoring-service/scripts/deploy-weblogic-monitoring-exporter.py  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/wls-exporter-deploy > $LOGDIR/deploy_wls_monitor.log 2>&1
+   print_status $? $LOGDIR/deploy_wls_monitor.log
+
+
+   printf "\t\t\tDeploy monitoring service - "
+   run_wlst_command $OIGNS $OIG_DOMAIN_NAME "/u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py -domainName $OIG_DOMAIN_NAME -adminServerName AdminServer -adminURL $OIG_DOMAIN_NAME-adminserver:$OIG_ADMIN_PORT -username $OIG_WEBLOGIC_USER -password $OIG_WEBLOGIC_PWD -oimClusterName oim_cluster -wlsMonitoringExporterTooimCluster true -soaClusterName soa_cluster -wlsMonitoringExporterTosoaCluster true" >> $LOGDIR/deploy_wls_monitor.log 2>&1
+
+   print_status $WLSRETCODE $LOGDIR/deploy_wls_monitor.log
+
+   ET=`date +%s`
+   print_time STEP "Deploy WebLogic Monitoring Service" $ST $ET >> $LOGDIR/timings.log
+
+}
+
+enable_monitor()
+{
+   ST=`date +%s`
+   print_msg "Configuring Prometheus Operator"
+
+   ENC_WEBLOGIC_USER=`encode_pwd $OIG_WEBLOGIC_USER`
+   ENC_WEBLOGIC_PWD=`encode_pwd $OIG_WEBLOGIC_PWD`
+
+
+   replace_value2 domainName $OIG_DOMAIN_NAME $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   replace_value2 namespace $OIGNS $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   sed -i  "/namespaceSelector/,/-/{s/-.*/- $OIGNS/}" $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+
+   replace_value2 namespace $OIGNS $WORKDIR/samples/monitoring-service/manifests/prometheus-roleSpecific-domain-namespace.yaml
+   sed -i  "0,/namespace/{s/namespace:.*/namespace: $OIGNS/}" $WORKDIR/samples/monitoring-service/manifests/prometheus-roleBinding-domain-namespace.yaml
+
+   sed -i '0,/password/{s/'password':.*/'password': '"$ENC_WEBLOGIC_PWD"'/}' $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   sed -i '0,/user/{s/'user':.*/'user': '"$ENC_WEBLOGIC_USER"'/}' $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+
+   kubectl apply -f $WORKDIR/samples/monitoring-service/manifests/ > $LOGDIR/enable_monitor.log
+   print_status $? $LOGDIR/enable_monitor.log
+
+   ET=`date +%s`
+   print_time STEP "Configure Prometheus Operator" $ST $ET >> $LOGDIR/timings.log
+
 }

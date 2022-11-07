@@ -128,7 +128,11 @@ then
     update_progress
 fi
 
+
+FINISH_TIME=`date +%s`
+print_time TOTAL "Create Elastic Search" $START_TIME $FINISH_TIME 
+print_time TOTAL "Create Elastic Search" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
+
 touch $LOCAL_WORKDIR/elk_installed
 exit
 
-#

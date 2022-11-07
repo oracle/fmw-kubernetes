@@ -22,8 +22,8 @@ START_TIME=`date +%s`
 
 ST=`date +%s`
 
-echo "Deleting Oracle WebLogic Operator"
-echo "---------------------------------"
+echo "Deleting WebLogic Operator"
+echo "--------------------------"
 echo
 echo Log of Delete Session can be found at: $LOG
 echo

@@ -2,7 +2,7 @@
 # Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-# This is an example of deploying the Oracle WebLogic Operator
+# This is an example of deploying the WebLogic Kubernetes Operator
 #
 # Dependencies: ./common/functions.sh
 #               ./responsefile/idm.rsp
@@ -25,12 +25,12 @@ fi
 
 if [ "$INSTALL_WLSOPER" != "true" ]
 then
-     echo "You have not requested WebLogic Operator installation"
+     echo "You have not requested WebLogic Kubernetes Operator installation"
      exit 1
 fi
 
 echo
-echo -n "Provisioning WLS Operator on "
+echo -n "Provisioning WebLogic Kubernetes Operator on "
 date +"%a %d %b %Y %T"
 echo "-----------------------------------------------------"
 echo
@@ -39,7 +39,7 @@ START_TIME=`date +%s`
 create_local_workdir
 create_logdir
 
-echo -n "Provisioning WLS Operator on " >> $LOGDIR/timings.log
+echo -n "Provisioning WebLogic Kubernetes Operator on " >> $LOGDIR/timings.log
 date >> $LOGDIR/timings.log
 echo "----------------------------------------------------" >> $LOGDIR/timings.log
 
