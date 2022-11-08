@@ -73,7 +73,7 @@ then
     update_progress
 fi
 
-# Ensure Weblogic Operator has been created
+# Ensure Weblogic Kubernetes Operator has been created
 #
 
 new_step
@@ -473,15 +473,15 @@ then
     if [ $STEPNO -gt $PROGRESS ]
     then
       create_email_driver
+      update_progress
     fi
-    update_progress
 
     new_step
     if [ $STEPNO -gt $PROGRESS ]
     then
       set_email_notifications
+      update_progress
     fi
-    update_progress
 fi
 
 # Integrate OIG and BI
@@ -492,8 +492,8 @@ then
     if [ $STEPNO -gt $PROGRESS ]
     then
       update_biconfig
+      update_progress
     fi
-    update_progress
 fi
 
 new_step
@@ -528,8 +528,8 @@ then
    if [ $STEPNO -gt $PROGRESS ]
    then
         stop_domain $OAMNS $OAM_DOMAIN_NAME
+        update_progress
    fi
-   update_progress
 
    new_step
    if [ $STEPNO -gt $PROGRESS ]
@@ -576,8 +576,32 @@ then
     fi
 
 fi
+
+if [ "$USE_PROM" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     generate_wls_monitor
+     update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     deploy_wls_monitor
+     update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     enable_monitor
+     update_progress
+   fi
+fi
 FINISH_TIME=`date +%s`
+print_time TOTAL "Create OIG" $START_TIME $FINISH_TIME 
 print_time TOTAL "Create OIG" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
-cat $LOGDIR/timings.log
 
 touch $LOCAL_WORKDIR/oig_installed

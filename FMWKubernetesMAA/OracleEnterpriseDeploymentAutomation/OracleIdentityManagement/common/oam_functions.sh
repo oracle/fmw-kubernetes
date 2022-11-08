@@ -65,6 +65,8 @@ edit_domain_creation_file()
      replace_value2 exposeAdminT3Channel true $filename
      replace_value2 adminPort $OAM_ADMIN_PORT $filename
      replace_value2 adminNodePort $OAM_ADMIN_K8 $filename
+     replace_value2 t3ChannelPort $OAM_ADMIN_T3_K8 $filename
+
      print_status $?
      printf "\t\t\tCopy saved to $WORKDIR\n"
      ET=`date +%s`
@@ -221,7 +223,7 @@ create_oam_nodeport()
 
 # Create Ingress Services for OAM
 #
-create_oam_ingress()
+create_oam_ingress_manual()
 {
      ST=`date +%s`
      print_msg  "Creating OAM Ingress Services "
@@ -235,6 +237,29 @@ create_oam_ingress()
      update_variable "<OAM_ADMIN_PORT>" $OAM_ADMIN_PORT $filename
 
      kubectl create -f $filename > $LOGDIR/ingress.log 2>>$LOGDIR/ingress.log
+     print_status $? $LOGDIR/ingress.log
+     ET=`date +%s` 
+     print_time STEP "Create Kubernetes OAM Ingress Services " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Ingress Services for OAM
+#
+create_oam_ingress()
+{
+     ST=`date +%s`
+     print_msg  "Creating OAM Ingress Services "
+     cp $WORKDIR/samples/charts/ingress-per-domain/values.yaml $WORKDIR/override_ingress.yaml
+     filename=$WORKDIR/override_ingress.yaml
+
+     replace_value2 domainUID $OAM_DOMAIN_NAME $filename
+     replace_value2  adminServerPort $OAM_ADMIN_PORT $filename
+     replace_value2  enabled true $filename
+     replace_value2 runtime $OAM_LOGIN_LBR_HOST $filename
+     replace_value2 admin  $OAM_ADMIN_LBR_HOST $filename
+     replace_value2 sslType  NONSSL $filename
+
+     cd $WORKDIR/samples
+     helm install oam-nginx charts/ingress-per-domain --namespace $OAMNS --values $filename  > $LOGDIR/ingress.log 2>>$LOGDIR/ingress.log
      print_status $? $LOGDIR/ingress.log
      ET=`date +%s` 
      print_time STEP "Create Kubernetes OAM Ingress Services " $ST $ET >> $LOGDIR/timings.log
@@ -786,4 +811,81 @@ create_logstash_cm()
    fi
    ET=`date +%s`
    print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Deploy WebLogic Monitoring Service
+#
+generate_wls_monitor()
+{
+   ST=`date +%s`
+   print_msg "Generate WebLogic Monitoring Service"
+
+   cd $WORKDIR/samples/monitoring-service/scripts
+   export adminServerPort=$OAM_ADMIN_PORT
+   export wlsMonitoringExporterTopolicyCluster=true
+   export policyManagedServerPort=15100
+   export wlsMonitoringExporterTooamCluster=true
+   export oamManagedServerPort=14100
+   export domainNamespace=$OAMNS
+   export domainUID=$OAM_DOMAIN_NAME
+   export weblogicCredentialsSecretName=$OAM_DOMAIN_NAME-credentials
+
+   $PWD/get-wls-exporter.sh > $LOGDIR/generate_wls_monitor.log 2>&1
+   print_status $? $LOGDIR/generate_wls_monitor.log
+   ET=`date +%s`
+   print_time STEP "Generate WebLogic Monitoring Service" $ST $ET >> $LOGDIR/timings.log
+
+}
+
+deploy_wls_monitor()
+{
+   ST=`date +%s`
+   print_msg "Deploy WebLogic Monitoring Service"
+
+   cd $WORKDIR/samples/monitoring-service/scripts
+
+   printf "\n\t\t\tCopy Deployment Script 1 - "
+   kubectl cp $WORKDIR/samples/monitoring-service/scripts/wls-exporter-deploy  $OAMNS/$OAM_DOMAIN_NAME-adminserver:/u01/oracle > $LOGDIR/deploy_wls_monitor.log 2>&1
+   print_status $? $LOGDIR/deploy_wls_monitor.log
+
+   printf "\t\t\tCopy Deployment Script 2 - "
+   kubectl cp $WORKDIR/samples/monitoring-service/scripts/deploy-weblogic-monitoring-exporter.py  $OAMNS/$OAM_DOMAIN_NAME-adminserver:/u01/oracle/wls-exporter-deploy > $LOGDIR/deploy_wls_monitor.log 2>&1
+   print_status $? $LOGDIR/deploy_wls_monitor.log
+
+
+   printf "\t\t\tDeploy monitoring service - "
+   run_wlst_command $OAMNS $OAM_DOMAIN_NAME "/u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py -domainName $OAM_DOMAIN_NAME -adminServerName AdminServer -adminURL $OAM_DOMAIN_NAME-adminserver:$OAM_ADMIN_PORT -username $OAM_WEBLOGIC_USER -password $OAM_WEBLOGIC_PWD -oamClusterName oam_cluster -wlsMonitoringExporterTooamCluster true -policyClusterName policy_cluster -wlsMonitoringExporterTopolicyCluster true" >> $LOGDIR/deploy_wls_monitor.log 2>&1
+
+   print_status $WLSRETCODE $LOGDIR/deploy_wls_monitor.log
+
+   ET=`date +%s`
+   print_time STEP "Deploy WebLogic Monitoring Service" $ST $ET >> $LOGDIR/timings.log
+
+}
+
+enable_monitor()
+{
+   ST=`date +%s`
+   print_msg "Configuring Prometheus Operator"
+
+   ENC_WEBLOGIC_USER=`encode_pwd $OAM_WEBLOGIC_USER`
+   ENC_WEBLOGIC_PWD=`encode_pwd $OAM_WEBLOGIC_PWD`
+   
+
+   replace_value2 domainName $OAM_DOMAIN_NAME $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   replace_value2 namespace $OAMNS $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   sed -i  "/namespaceSelector/,/-/{s/-.*/- $OAMNS/}" $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+
+   replace_value2 namespace $OAMNS $WORKDIR/samples/monitoring-service/manifests/prometheus-roleSpecific-domain-namespace.yaml
+   sed -i  "0,/namespace/{s/namespace:.*/namespace: $OAMNS/}" $WORKDIR/samples/monitoring-service/manifests/prometheus-roleBinding-domain-namespace.yaml
+
+   sed -i '0,/password/{s/'password':.*/'password': '"$ENC_WEBLOGIC_PWD"'/}' $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   sed -i '0,/user/{s/'user':.*/'user': '"$ENC_WEBLOGIC_USER"'/}' $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+
+   kubectl apply -f $WORKDIR/samples/monitoring-service/manifests/ > $LOGDIR/enable_monitor.log
+   print_status $? $LOGDIR/enable_monitor.log
+
+   ET=`date +%s`
+   print_time STEP "Configure Prometheus Operator" $ST $ET >> $LOGDIR/timings.log
+
 }

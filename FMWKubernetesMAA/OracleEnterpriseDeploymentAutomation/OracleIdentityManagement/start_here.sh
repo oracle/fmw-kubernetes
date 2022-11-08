@@ -20,19 +20,21 @@ PWDFILE=responsefile/.idmpwds
 echo "Checking Pre-requisites"
 echo "-----------------------"
 
-echo -n "Have you downloaded and staged the container images (y/n) :"
+echo -n "Do you wish to get the images from a container registry (y/n) :"
 read ANS
 if ! check_yes $ANS
 then
-    echo -n "Do you wish to get the images from a container registry (y/n) :"
-    read ANS
-    if check_yes $ANS
-    then
-       USE_REGISTRY=true
-    else
-       echo "Download the docker images referring to support note (2723908.1)"
-       exit 1
-    fi
+  echo -n "Have you downloaded and staged the container images (y/n) :"
+  read ANS
+  if check_yes $ANS
+  then
+     USE_REGISTRY=false
+  else
+     echo "Download the docker images referring to support note (2723908.1)"
+     exit 1
+  fi
+else
+  USE_REGISTRY=true
 fi
 
 replace_value USE_REGISTRY $USE_REGISTRY $RSPFILE
@@ -150,6 +152,7 @@ then
 fi
      
 
+
 echo 
 echo -n  "Do you wish to change the default ports (y/n) : "
 read ANS
@@ -178,6 +181,25 @@ else
     GET_USER=false
 fi
 
+echo
+echo -n  "Do you wish to update OHS config files (y/n) : "
+read ANS
+if  check_yes $ANS
+then
+    UPDATE_OHS=true
+else
+    UPDATE_OHS=false
+fi
+
+echo -n  "Do you wish to copy WebGate config files (y/n) : "
+read ANS
+if  check_yes $ANS
+then
+    COPY_WG_FILES=true
+else
+    COPY_WG_FILES=false
+fi
+
 echo -n "Do you wish to configure products using Ingress (y/n) : "
 read ANS
 
@@ -188,10 +210,50 @@ else
     USE_INGRESS=false
 fi
 
+echo -n "Do you wish to send Logs to Elastic Search (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    USE_ELK=true
+else
+    USE_ELK=false
+fi
+
+echo -n "Do you wish to send Monitoring Information to Prometheus (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    USE_PROM=true
+else
+    USE_PROM=false
+fi
+
 echo 
 echo "Products to Install and Configure"
 echo "---------------------------------"
 echo " "
+echo -n  "  Do you wish to install/config Elastic Search and Kibana (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_ELK=true
+else
+    INSTALL_ELK=false
+fi
+
+echo -n  "  Do you wish to install/config Prometheus and Grafana (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_PROM=true
+else
+    INSTALL_PROM=false
+fi
+
 echo -n  "  Do you wish to install/config an Ingress Controller (y/n) : "
 read ANS
 
@@ -202,7 +264,26 @@ else
     INSTALL_INGRESS=false
 fi
 
-echo
+echo -n  "  Do you wish to install/config Oracle HTTP Server (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_OHS=true
+else
+    INSTALL_OHS=false
+fi
+
+echo -n  "  Do you wish to deploy Oracle WebGate (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    DEPLOY_WG=true
+else
+    DEPLOY_WG=false
+fi
+
 echo -n  "  Do you wish to install/config OUD (y/n) : "
 read ANS
 
@@ -213,7 +294,6 @@ else
     INSTALL_OUD=false
 fi
 
-echo 
 echo -n  "  Do you wish to install/config OUDSM (y/n) : "
 read ANS
 
@@ -224,8 +304,7 @@ else
     INSTALL_OUDSM=false
 fi
 
-echo " "
-echo -n  "  Do you wish to install/config Oracle WebLogic Operator (y/n) : "
+echo -n  "  Do you wish to install/config WebLogic Kubernetes Operator (y/n) : "
 read ANS
 
 if check_yes $ANS 
@@ -235,7 +314,6 @@ else
     INSTALL_WLSOPER=false
 fi
 
-echo " "
 echo -n  "  Do you wish to install/config Oracle Access Manager (y/n) : "
 read ANS
 
@@ -246,7 +324,6 @@ else
     INSTALL_OAM=false
 fi
 
-echo " "
 echo -n  "  Do you wish to install/config Oracle Identity Governance (y/n) : "
 read ANS
 
@@ -257,7 +334,6 @@ else
     INSTALL_OIG=false
 fi
 
-echo " "
 echo -n  "  Do you wish to install/config Oracle Identity Role Intelligence (y/n) : "
 read ANS
 
@@ -268,7 +344,6 @@ else
     INSTALL_OIRI=false
 fi
 
-echo
 echo -n  "  Do you wish to install/config Oracle Advanced Authentication (y/n) : "
 read ANS
 
@@ -279,7 +354,11 @@ else
     INSTALL_OAA=false
 fi
 
+replace_value INSTALL_ELK $INSTALL_ELK $RSPFILE
+replace_value INSTALL_PROM $INSTALL_PROM $RSPFILE
 replace_value INSTALL_INGRESS $INSTALL_INGRESS $RSPFILE
+replace_value INSTALL_OHS $INSTALL_OHS $RSPFILE
+replace_value DEPLOY_WG $DEPLOY_WG $RSPFILE
 replace_value INSTALL_OUD $INSTALL_OUD $RSPFILE
 replace_value INSTALL_OUDSM $INSTALL_OUDSM $RSPFILE
 replace_value INSTALL_WLSOPER $INSTALL_WLSOPER $RSPFILE
@@ -289,6 +368,10 @@ replace_value INSTALL_OIRI $INSTALL_OIRI $RSPFILE
 replace_value INSTALL_OAA $INSTALL_OAA $RSPFILE
 
 replace_value USE_INGRESS $USE_INGRESS $RSPFILE
+replace_value USE_ELK $USE_ELK $RSPFILE
+replace_value USE_PROM $USE_PROM $RSPFILE
+replace_value UPDATE_OHS $UPDATE_OHS $RSPFILE
+replace_value COPY_WG_FILES $COPY_WG_FILES $RSPFILE
 
 echo " "
 echo "File Locations"
@@ -367,6 +450,192 @@ then
 fi
 
 
+if [ "$INSTALL_ELK" = "true" ] || [ "$USE_ELK" = "true" ]
+then
+
+      echo " "
+      echo "Elastic Search/Kibana"
+      echo "---------------------"
+
+      if [ "$INSTALL_ELK" = "true" ]
+      then
+        if [ "$GET_NS" = "true" ] 
+        then
+          echo -n "Enter Kubernetes Namespace for Elastic Search [$ELKNS] :"
+          read ANS
+
+          if [ ! "$ANS" = "" ]
+          then
+               replace_value ELKNS $ANS $RSPFILE
+          fi
+        fi
+
+        echo -n "Version to Install [$ELK_VER] :"
+        read ANS
+        if [ ! "$ANS" = "" ]
+        then
+           replace_value ELK_VER $ANS $RSPFILE
+        fi
+
+        echo -n "Kubernetes Storage Class to Use [$ELK_STORAGE] :"
+        read ANS
+        if [ ! "$ANS" = "" ]
+        then
+          replace_value ELK_STORAGE $ANS $RSPFILE
+        fi
+
+        echo -n "Enter ELK Persistent Volume NFS Mount Point [$ELK_SHARE] :"
+        read ANS
+
+        if [ ! "$ANS" = "" ]
+        then
+           replace_value ELK_SHARE $ANS $RSPFILE
+        fi
+
+      else
+        echo -n "Elastic Search Host [$ELK_HOST] : "
+        read ANS
+
+        if [ ! "$ANS" = "" ]
+        then
+          replace_value ELK_HOST $ELK_HOST $RSPFILE
+        fi
+      fi
+
+      if [ "$GET_PORT" = "true" ]
+      then
+         echo -n "Enter Elastic Search Port [$ELK_K8] :"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+           if check_number $ANS
+           then
+             replace_value ELK_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
+         fi
+
+         echo -n "Enter Kibana Port [$ELK_KIBANA_K8] :"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+           if check_number $ANS
+           then
+              replace_value ELK_KIBANA_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
+         fi
+      fi
+
+      echo -n "Enter logstash_writer Password :"
+      read -s ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           echo
+           echo -n "Confirm Password of logstash_writer :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_password ELK_USER_PWD $ANS $PWDFILE
+           fi
+      else
+           echo "Leaving value as previously defined"
+      fi
+fi
+
+if [ "$INSTALL_PROM" = "true" ] || [ "$USE_PROM" = "true" ]
+then
+
+      echo " "
+      echo "Prometheus and Grafana"
+      echo "----------------------"
+
+      if [ "$INSTALL_PROM" = "true" ]
+      then
+        if [ "$GET_NS" = "true" ] 
+        then
+          echo -n "Enter Kubernetes Namespace for Prometheus [$PROMNS]:"
+          read ANS
+
+          if [ ! "$ANS" = "" ]
+          then
+               replace_value PROMNS $ANS $RSPFILE
+          fi
+
+        echo -n "Enter Grafana Admin Password :"
+        read -s ANS
+
+        if [ ! "$ANS" = "" ]
+        then
+             echo
+             echo -n "Confirm Password of Grafana :"
+             read -s ACHECK
+             if [ ! "$ANS" = "$ACHECK" ]
+             then
+                echo "Passwords do not match!"
+                exit
+             else
+                 echo
+                 replace_password PROM_ADMIN_PWD $ANS $PWDFILE
+             fi
+          else
+             echo "Leaving value as previously defined"
+          fi
+        fi
+
+        if [ "$GET_PORT" = "true" ]
+        then
+          echo -n "Enter Prometheus Port [$PROM_K8]:"
+          read ANS
+  
+          if [ ! "$ANS" = "" ]
+          then
+            if check_number $ANS
+            then
+              replace_value PROM_K8 $ANS $RSPFILE
+            else
+               echo "Port must be numeric - leaving value unchanged."
+            fi
+          fi
+
+          echo -n "Enter Alert Manager Port [$PROM_ALERT_K8]:"
+          read ANS
+  
+          if [ ! "$ANS" = "" ]
+          then
+            if check_number $ANS
+            then
+              replace_value PROM_ALERT_K8 $ANS $RSPFILE
+            else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
+          fi
+
+          echo -n "Enter Grafana Port [$PROM_GRAF_K8]:"
+          read ANS
+  
+          if [ ! "$ANS" = "" ]
+          then
+            if check_number $ANS
+            then
+               replace_value PROM_GRAF_K8 $ANS $RSPFILE
+            else
+               echo "Port must be numeric - leaving value unchanged."
+            fi
+          fi
+        fi
+      fi
+fi
+
 if [ "$INSTALL_INGRESS" = "true" ]
 then
 
@@ -428,7 +697,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value INGRESS_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       if [ "$GET_PORT" = "true" ]
@@ -438,18 +712,28 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value INGRESS_HTTP_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
 
-         if [ "$INGRESS_SSL" ="true" ]
+         if [ "$INGRESS_SSL" = "true" ]
          then
-             echo -n "Enter Ingress HTTPS Port [$INGRESS_HTTPS_K8]:"
-             read ANS
+           echo -n "Enter Ingress HTTPS Port [$INGRESS_HTTPS_K8]:"
+           read ANS
 
-             if [ ! "$ANS" = "" ]
+           if [ ! "$ANS" = "" ]
+           then
+             if check_number $ANS
              then
-                  replace_value INGRESS_HTTPS_K8 $ANS $RSPFILE
+                replace_value INGRESS_HTTPS_K8 $ANS $RSPFILE
+             else
+                echo "Port must be numeric - leaving value unchanged."
              fi
+           fi
          fi
       fi
 fi
@@ -593,7 +877,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OUD_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
       
       echo -n "Create OUD Node Port Service (true/false) [$OUD_CREATE_NODEPORT]:"
@@ -829,8 +1118,8 @@ fi
 if [ "$INSTALL_OAM" = "true" ] || [ "$INSTALL_OIG" = "true" ]
 then
       echo
-      echo "WebLogic Operator Parameters"
-      echo "----------------------------"
+      echo "WebLogic Kubernetes Operator Parameters"
+      echo "---------------------------------------"
       echo
 
       if [ "$GET_NS" = "true" ]
@@ -913,7 +1202,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAM_SERVER_COUNT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter Number of OAM Servers to start (Number you normally use) [$OAM_SERVER_INITIAL]:"
@@ -921,7 +1215,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAM_SERVER_INITIAL $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo ""
@@ -933,7 +1232,12 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OAM_ADMIN_PORT $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
        
          echo -n "Enter Kubernetes Service Port for Admin Server [$OAM_ADMIN_K8]:"
@@ -941,7 +1245,12 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OAM_ADMIN_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
        
          echo -n "Enter Kubernetes Service Port for OAM Server [$OAM_OAM_K8]:"
@@ -949,7 +1258,12 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OAM_OAM_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
 
          echo -n "Enter Kubernetes Service Port for OAM Policy Server [$OAM_POLICY_K8]:"
@@ -957,7 +1271,12 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OAM_POLICY_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
 
       fi
@@ -966,7 +1285,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAM_DB_SCAN $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter Database Listener Port [$OAM_DB_LISTENER]:"
@@ -974,7 +1298,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAM_DB_LISTENER $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OAM Database Service Name [$OAM_DB_SERVICE]:"
@@ -1059,7 +1388,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAM_LOGIN_LBR_PORT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OAM Login Loadbalancer Protocol [$OAM_LOGIN_LBR_PROTOCOL]:"
@@ -1081,7 +1415,12 @@ then
       read ANS
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAM_ADMIN_LBR_PORT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
 
@@ -1182,7 +1521,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIG_SERVER_COUNT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter Number of OIG Servers to start (Number you normally use) [$OIG_SERVER_INITIAL]:"
@@ -1190,7 +1534,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIG_SERVER_INITIAL $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo ""
@@ -1209,7 +1558,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIG_DB_LISTENER $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OIG Database Service Name [$OIG_DB_SERVICE]:"
@@ -1299,7 +1653,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIG_LBR_PORT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OIG Loadbalancer Protocol [$OIG_LBR_PROTOCOL]:"
@@ -1321,7 +1680,12 @@ then
       read ANS
       if  [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIG_ADMIN_LBR_PORT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       if [ "$GET_PORT" = "true" ]
@@ -1331,14 +1695,24 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OIG_ADMIN_PORT $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
       
          echo -n "Enter Kubernetes Service Port for Admin Server [$OIG_ADMIN_K8]:"
          read ANS
          if [ ! "$ANS" = "" ]
          then
-              replace_value OIG_LBR_INT_PROTOCOL $ANS $RSPFILE
+           if check_number $ANS
+           then
+              replace_value OIG_ADMIN_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
 
          echo -n "Enter Kubernetes Service Port for OIM Servers [$OIG_OIM_PORT_K8]:"
@@ -1346,14 +1720,24 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OIG_OIM_PORT_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
 
          echo -n "Enter Kubernetes Service Port for SOA Servers [$OIG_SOA_PORT_K8]:"
          read ANS
          if  [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OIG_SOA_PORT_K8 $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
       fi
        
@@ -1370,7 +1754,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIG_LBR_PORT $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OIG Internal Loadbalancer Protocol [$OIG_LBR_INT_PROTOCOL]:"
@@ -1443,7 +1832,12 @@ then
 
          if [ ! "$ANS" = "" ]
          then
+           if check_number $ANS
+           then
               replace_value OIG_BI_PORT $ANS $RSPFILE
+           else
+              echo "Port must be numeric - leaving value unchanged."
+           fi
          fi
 
          echo -n "Enter BI Prototol can be a loadbalancer [$OIG_BI_PROTOCOL]:"
@@ -1622,7 +2016,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIRI_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter Number of OIRI UI Servers to start  [$OIRI_UI_REPLICAS]:"
@@ -1630,7 +2029,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIRI_UI_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter Number of OIRI DING Servers to start  [$OIRI_SPARK_REPLICAS]:"
@@ -1638,7 +2042,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIRI_SPARK_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo ""
@@ -1656,7 +2065,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OIRI_DB_LISTENER $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OIRI Database Service Name [$OIRI_DB_SERVICE]:"
@@ -2037,6 +2451,8 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAA_REPLICAS $ANS $RSPFILE
            replace_value OAA_ADMIN_REPLICAS $ANS $RSPFILE
            replace_value OAA_POLICY_REPLICAS $ANS $RSPFILE
@@ -2047,6 +2463,9 @@ then
            replace_value OAA_EMAIL_REPLICAS $ANS $RSPFILE
            replace_value OAA_SMS_REPLICAS $ANS $RSPFILE
            replace_value OAA_PUSH_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter Number of OAA Risk Servers to start  [$OAA_RISK_REPLICAS]:"
@@ -2054,8 +2473,13 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAA_RISK_REPLICAS $ANS $RSPFILE
            replace_value OAA_RISKCC_REPLICAS $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo ""
@@ -2073,7 +2497,12 @@ then
 
       if [ ! "$ANS" = "" ]
       then
+        if check_number $ANS
+        then
            replace_value OAA_DB_LISTENER $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
       fi
 
       echo -n "Enter OAA Database Service Name [$OAA_DB_SERVICE]:"
@@ -2366,29 +2795,152 @@ echo "Oracle HTTP Server Parameters"
 echo "-----------------------------"
 echo
 
-echo -n "Enter OHS1 Hostname [$OHS_HOST1]:"
-read ANS
-
-if [ ! "$ANS" = "" ]
+if [ "$INSTALL_OHS" = "true" ] || [ "$UPDATE_OHS" = "true" ]
 then
-    replace_value OHS_HOST1 $ANS $RSPFILE
+
+    echo -n "Enter OHS1 Hostname [$OHS_HOST1]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+      replace_value OHS_HOST1 $ANS $RSPFILE
+    fi
+
+
+    echo -n "Enter OHS1 Instance Name [$OHS1_NAME]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+      replace_value OHS1_NAME $ANS $RSPFILE
+    fi
+
+    echo -n "Enter OHS2 Hostname [$OHS_HOST2]:"
+    read ANS
+
+    if  [ ! "$ANS" = "" ]
+    then
+      replace_value OHS_HOST2 $ANS $RSPFILE
+    fi
+
+    echo -n "Enter OHS2 Instance Name [$OHS2_NAME]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+      replace_value OHS2_NAME $ANS $RSPFILE
+    fi
+
+    echo -n "Enter OHS Listen Port [$OHS_PORT]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+      replace_value OHS_PORT $ANS $RSPFILE
+    fi
+
+    echo -n "Oracle HTTP Base Directory [$OHS_BASE]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+      replace_value OHS_BASE $ANS $RSPFILE
+      OHS_BASE=$ANS
+    fi
+
+    echo -n "Oracle HTTP Oracle Home Directory [$OHS_ORACLE_HOME]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+       replace_value OHS_ORACLE_HOME $ANS $RSPFILE
+    fi
+
+    echo -n "Oracle HTTP Domain Directory [$OHS_DOMAIN]:"
+    read ANS
+
+    if [ ! "$ANS" = "" ]
+    then
+      replace_value OHS_DOMAIN $ANS $RSPFILE
+    fi
+
 fi
 
-
-echo -n "Enter OHS2 Hostname [$OHS_HOST2]:"
-read ANS
-
-if  [ ! "$ANS" = "" ]
+if [ "$INSTALL_OHS" = "true" ]
 then
-    replace_value OHS_HOST2 $ANS $RSPFILE
-fi
+    echo -n "Oracle HTTP Installer Name [$OHS_INSTALLER]:"
+    read ANS
 
-echo -n "Enter OHS Listen Port [$OHS_PORT]:"
-read ANS
+    if [ ! "$ANS" = "" ]
+    then
+       replace_value OHS_INSTALLER $ANS $RSPFILE
+    fi
 
-if [ ! "$ANS" = "" ]
-then
-    replace_value OHS_PORT $ANS $RSPFILE
+    if [ "$GET_USER" = "true" ]
+    then
+       echo -n "Enter Name of Node Manager Admin User to be used [$NM_ADMIN_USER]:"
+       read ANS
+
+       if [ ! "$ANS" = "" ]
+       then
+          replace_value NM_ADMIN_USER $ANS $RSPFILE
+       fi
+
+       echo -n "Enter Password for $NM_ADMIN_USER account: "
+       read -s ANS
+
+       if [ ! "$ANS" = "" ]
+       then
+          echo
+          echo -n "Confirm Password :"
+          read -s ACHECK
+          if [ ! "$ANS" = "$ACHECK" ]
+          then
+             echo "Passwords do not match!"
+             exit 1
+          else
+              echo
+              if  check_password "UN" $ANS
+              then
+                 replace_password NM_ADMIN_PWD $ANS $PWDFILE
+              else
+                 echo "Password not set"
+                 exit 1
+              fi
+          fi
+       else
+          echo "Leaving value as previously defined"
+       fi
+      fi
+
+    if [ "$GET_PORT" = "true" ]
+    then
+       echo -n "Enter SSL Listen Port for OHS [$OHS_HTTPS_PORT]:"
+       read ANS
+
+       if [ ! "$ANS" = "" ]
+       then
+         if check_number $ANS
+         then
+            replace_value OHS_HTTPS_PORT $ANS $RSPFILE
+         else
+            echo "Port must be numeric - leaving value unchanged."
+         fi
+       fi
+
+       echo -n "Enter Node Manager Listen Port [$NM_PORT]:"
+       read ANS
+
+       if [ ! "$ANS" = "" ]
+       then
+         if check_number $ANS
+         then
+          replace_value NM_PORT $ANS $RSPFILE
+         else
+          echo "Port must be numeric - leaving value unchanged."
+         fi
+       fi
+    fi
 fi
 
 
@@ -2411,3 +2963,11 @@ fi
 replace_value K8_WORKER_HOST1 $K8_WORKER_HOST1 $RSPFILE
 replace_value K8_WORKER_HOST2 $K8_WORKER_HOST2 $RSPFILE
 replace_value OAM_OAP_HOST $K8_WORKER_HOST1 $RSPFILE
+
+echo ""
+echo "You have Successfully created/edited the response file : $SCRIPTDIR/responsefile/idm.rsp."
+echo "You have Successfully created/edited the response password file: $SCRIPTDIR/responsefile/.idmpwds"
+echo ""
+echo "Review these files before starting provisioning."
+echo "You can run $SCRIPTDIR/prereqchecks.sh to check your environment before proceeding."
+

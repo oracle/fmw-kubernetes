@@ -17,46 +17,67 @@ MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$INSTALL_OAA" = "true" ] || [ "$INSTALL_OAA" = "TRUE" ]
 then
      $MYDIR/delete_oaa.sh
+     echo 
 fi
 
 if [ "$INSTALL_OIRI" = "true" ] || [ "$INSTALL_OIRI" = "TRUE" ]
 then
      $MYDIR/delete_oiri.sh
+     echo 
 fi
 
 if [ "$INSTALL_OIG" = "true" ] || [ "$INSTALL_OIG" = "TRUE" ]
 then
      $MYDIR/delete_oig.sh
+     echo 
 fi
 
 
 if [ "$INSTALL_OAM" = "true" ] || [ "$INSTALL_OAM" = "TRUE" ]  
 then
      $MYDIR/delete_oam.sh
+     echo 
 fi
 
 if [ "$INSTALL_OUDSM" = "true" ] || [ "$INSTALL_OUDSM" = "TRUE" ]
 then
      $MYDIR/delete_oudsm.sh
+     echo 
 fi
 
 if [ "$INSTALL_OUD" = "true" ] || [ "$INSTALL_OUD" = "TRUE" ]
 then
      $MYDIR/delete_oud.sh
+     echo 
 fi
 
-if [ "$INSTALL_OAM" = "true" ] || [ "$INSTALL_OAM" = "TRUE" ]  [ "$INSTALL_OIG" = "true" ] || [ "$INSTALL_OIG" = "TRUE" ]
+if [ "$INSTALL_OAM" = "true" ] || [ "$INSTALL_OAM" = "TRUE" ] || [ "$INSTALL_OIG" = "true" ] || [ "$INSTALL_OIG" = "TRUE" ]
 then
      $MYDIR/delete_operator.sh
+     echo 
 fi
 
+
+if [ "$INSTALL_OHS" = "true" ] 
+then
+     $MYDIR/delete_ohs.sh
+     echo 
+fi
 
 if [ "$INSTALL_INGRESS" = "true" ] || [ "$INSTALL_INGRESS" = "TRUE" ]
 then
      $MYDIR/delete_ingress.sh
+     echo 
 fi
 
 if [ "$INSTALL_ELK" = "true" ] || [ "$INSTALL_ELK" = "TRUE" ]
 then
      $MYDIR/delete_elk.sh
+     echo 
+fi
+
+if [ "$INSTALL_PROM" = "true" ] || [ "$INSTALL_PROM" = "TRUE" ]
+then
+     $MYDIR/delete_prom.sh
+     echo 
 fi

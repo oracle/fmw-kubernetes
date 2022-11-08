@@ -63,6 +63,26 @@ create_override()
    update_variable "<IMAGE_VER>" $OUD_VER $OVERRIDE_FILE
    update_variable "<USE_INGRESS>" $USE_INGRESS $OVERRIDE_FILE
 
+   update_variable "<USE_ELK>" $USE_ELK $OVERRIDE_FILE
+   update_variable "<ELK_VER>" $ELK_VER $OVERRIDE_FILE
+   update_variable "<ELK_USER>" $ELK_USER $OVERRIDE_FILE
+   update_variable "<ELK_HOST>" $ELK_HOST $OVERRIDE_FILE
+#   if [ ! "$ELK_API" = "" ]
+#   then
+#      update_variable "<ELK_API_SECRET>" elk-logstash $OVERRIDE_FILE
+#      sed -i '/espassword/d'  $OVERRIDE_FILE
+#   else
+#      update_variable "<ELK_SECRET>" elk-logstash $OVERRIDE_FILE
+#      sed -i '/esapikey/d'  $OVERRIDE_FILE
+#   fi
+
+#   if [ -e $LOCAL_WORKDIR/ELK/ca.crt ] && [ "$USE_ELK" = "true" ]
+#   then
+#       replace_value2 escert "|" $OVERRIDE_FILE
+#       sed -i "/escert/ r $LOCAL_WORKDIR/ELK/ca.crt" $OVERRIDE_FILE
+#   fi
+       
+
    update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $OVERRIDE_FILE
 
    KUBERNETES_VER=`kubectl version --short=true | grep Server | cut -f2 -d: | cut -f1 -d + | sed 's/ v//' | cut -f 1-3 -d.`
@@ -88,6 +108,7 @@ update_logstash()
    update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $FILENAME
    update_variable "<ELK_HOST>" $ELK_HOST $FILENAME
    update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $FILENAME
+   update_variable "<ELK_USER>" $ELK_USER $FILENAME
    echo "Success"
 
    printf "\t\t\tDeleting existing config map  - "
@@ -135,7 +156,6 @@ copy_files_to_share()
    cp $TEMPLATE_DIR/99-user.ldif $OUD_LOCAL_CONFIG_SHARE
    chmod 777 $OUD_LOCAL_CONFIG_SHARE/*.ldif
    print_status $?
-
    printf "\t\t\tCopy Helm Files to Local Share - "
    cp -r $WORKDIR/samples/kubernetes/helm/* $OUD_LOCAL_CONFIG_SHARE
    print_status $?
@@ -173,12 +193,15 @@ check_oud_started()
    ET=`date +%s`
    print_time STEP "OUD Primary Started " $ST $ET >> $LOGDIR/timings.log
    ST=`date +%s`
-   print_msg "Check First OUD Replica starts"
-   echo
-   check_running $OUDNS $OUD_POD_PREFIX-oud-ds-rs-1
-   kubectl logs $OUD_POD_PREFIX-oud-ds-rs-1 -n $OUDNS > $LOGDIR/$OUD_POD_PREFIX-oud-ds-rs-1.log
-   ET=`date +%s`
-   print_time STEP "OUD Replica Started " $ST $ET >> $LOGDIR/timings.log
+   if [ $OUD_REPLICAS -gt 1 ]
+   then
+      print_msg "Check First OUD Replica starts"
+      echo
+      check_running $OUDNS $OUD_POD_PREFIX-oud-ds-rs-1
+      kubectl logs $OUD_POD_PREFIX-oud-ds-rs-1 -n $OUDNS > $LOGDIR/$OUD_POD_PREFIX-oud-ds-rs-1.log
+      ET=`date +%s`
+      print_time STEP "OUD Replica Started " $ST $ET >> $LOGDIR/timings.log
+   fi
 }
 
 

@@ -134,6 +134,6 @@ then
 
 fi
 FINISH_TIME=`date +%s`
+print_time TOTAL "Create OUDSM" $START_TIME $FINISH_TIME 
 print_time TOTAL "Create OUDSM" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 touch $LOCAL_WORKDIR/oudsm_installed
-cat $LOGDIR/timings.log

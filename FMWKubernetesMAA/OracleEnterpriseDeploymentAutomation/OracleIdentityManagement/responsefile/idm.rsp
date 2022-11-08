@@ -11,15 +11,17 @@
 
 # Products to Deploy
 #
+INSTALL_OHS=true
 INSTALL_INGRESS=true
 INSTALL_OUDSM=true
 INSTALL_WLSOPER=true
 INSTALL_OUD=true
 INSTALL_OAM=true
 INSTALL_OIG=true
-INSTALL_OIRI=true
-INSTALL_OAA=true
+INSTALL_OIRI=false
+INSTALL_OAA=false
 INSTALL_ELK=false
+INSTALL_PROM=false
 
 
 # Control Parameters
@@ -27,6 +29,7 @@ INSTALL_ELK=false
 USE_REGISTRY=true
 USE_INGRESS=true
 USE_ELK=false
+USE_PROM=false
 
 IMAGE_TYPE=crio
 
@@ -95,18 +98,18 @@ OAA_MGT_IMAGE=$REGISTRY/oaa-mgmt
 
 # Image Versions
 # 
-OUD_VER=statefulset2
-OUDSM_VER=12.2.1.4-jdk8-ol7-220119.2054
-OAM_VER=latest
-OIG_VER=latest
+OUD_VER=12.2.1.4-jdk8-ol7-221014
+OUDSM_VER=12.2.1.4-jdk8-ol7-221014
+OAM_VER=12.2.1.4-jdk8-ol7-221014
+OIG_VER=12.2.1.4-jdk8-ol7-221014
 OIRICLI_VER=12.2.1.4.220429
 OIRI_VER=12.2.1.4.220429
 OIRIUI_VER=12.2.1.4.220429
 OIRIDING_VER=12.2.1.4.220429
-OAAMGT_VER=12.2.1.4.1_20220419
-OAA_VER=12.2.1.4.1_20220419
+OAAMGT_VER=12.2.1.4.1-20220927
+OAA_VER=12.2.1.4.1-20220927
 
-OPER_VER=3.4.1
+OPER_VER=3.4.2
 
 
 ############################################################################################
@@ -117,10 +120,22 @@ OPER_VER=3.4.1
 ELKNS=elkns
 ELK_HOST=https://elasticsearch-es-http.$ELKNS.svc:9200
 ELK_VER=8.3.1
-ELK_SHARE=/exports/IAMPVS/elk_data
+ELK_SHARE=/export/IAMPVS/elk_data
 ELK_STORAGE=nfs-client
+ELK_USER=logstash_internal
+ELK_API=
 ELK_KIBANA_K8=31800
 ELK_K8=31920
+
+############################################################################################
+#                          Prometheus / Grafana Parameters                                 #
+############################################################################################
+
+PROMNS=monitoring
+#PROM_VER=release-0.10
+PROM_GRAF_K8=30900
+PROM_K8=30901
+PROM_ALERT_K8=30902
 
 ############################################################################################
 #                               INGRESS Parameters                                         #
@@ -145,7 +160,7 @@ INGRESS_HTTPS_K8=30443
 ############################################################################################
 #
 PVSERVER=nfsserver.example.com
-IAM_PVS=/exports/IAMPVS
+IAM_PVS=/export/IAMPVS
 PV_MOUNT=/u01/oracle/user_projects
 
 ############################################################################################
@@ -241,6 +256,7 @@ OAMSERVER_JAVA_PARAMS="-Xms2048m -Xmx8192m "
 #
 OAM_ADMIN_PORT=7001
 OAM_ADMIN_K8=30701
+OAM_ADMIN_T3_K8=30012
 OAM_OAM_K8=30410
 OAM_POLICY_K8=30510
 OAM_OAP_PORT=5575
@@ -285,11 +301,13 @@ OIG_EMAIL_FROM_ADDRESS=fromaddress@example.com
 OIG_EMAIL_REPLY_ADDRESS=noreplies@example.com
 
 OIMSERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
+SOASERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
 
 # OIG Ports
 #
 OIG_ADMIN_PORT=7101
 OIG_ADMIN_K8=30711
+OIG_ADMIN_T3_K8=30012
 OIG_OIM_PORT_K8=30140
 OIG_SOA_PORT_K8=30801
 OIG_OIM_T3_PORT_K8=30712
@@ -300,12 +318,20 @@ OIG_OIM_T3_PORT_K8=30712
 ############################################################################################
 # 
 UPDATE_OHS=true
+DEPLOY_WG=true
 COPY_WG_FILES=true
 OHS_HOST1=webhost1.example.com
 OHS_HOST2=webhost2.example.com
+OHS_INSTALLER=fmw_12.2.1.4.0_ohs_linux64_Disk1_1of1.zip
+NM_ADMIN_USER=admin
+NM_PORT=5556
+
+
 OHS_PORT=7777
-OHS_ORACLE_HOME=/u02/private/oracle/products/ohs
-OHS_DOMAIN=/u02/private/oracle/config/domains/ohsDomain
+OHS_HTTPS_PORT=4443
+OHS_BASE=/u02/private
+OHS_ORACLE_HOME=$OHS_BASE/oracle/products/ohs
+OHS_DOMAIN=$OHS_BASE/oracle/config/domains/ohsDomain
 OHS1_NAME=ohs1
 OHS2_NAME=ohs2
 
@@ -366,7 +392,6 @@ OIRI_UI_K8=30306
 ############################################################################################
 # 
 OAANS=oaans
-OAACONS=coherence
 OAA_DEPLOYMENT=edg
 OAA_DOMAIN=OAADomain
 
@@ -391,9 +416,6 @@ OAA_DB_SCAN=db-scan.example.com
 OAA_DB_LISTENER=1521
 OAA_DB_SERVICE=edgoaa.example.com
 OAA_RCU_PREFIX=OAA
-OAA_DB_HOST=dbhost1.example.com
-OAA_DB_USER=oracle
-OAA_DB_HOME=/u01/app/oracle/product/19.0.0.0/dbhome_1
 OAA_DB_SID=iamdb1
 
 # Users/Groups

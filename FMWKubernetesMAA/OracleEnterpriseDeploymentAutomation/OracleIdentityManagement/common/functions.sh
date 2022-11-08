@@ -122,6 +122,36 @@ create_git_secret()
     print_time STEP "Creating GitHub Secret" $ST $ET >> $LOGDIR/timings.log
 }
 #
+# Create ELK Secret
+#
+create_elk_secret()
+{
+    value=$1
+    namespace=$2
+
+    ST=`date +%s`
+    print_msg "Creating Elastic Search Secret in namespace $namespace"
+    
+    kubectl create secret -n $namespace generic elk-logstash --from-literal --password="$token" > $LOGDIR/create_elk_secret.log 2>&1
+    grep -q created $LOGDIR/create_elk_secret.log
+    if [ $? = 0 ]
+    then 
+         echo "Success"
+    else
+          grep -q exists $LOGDIR/create_elk_secret.log
+          if [ $? = 0 ]
+          then 
+               echo "Already Exists"
+          else
+               echo "Failed - See $LOGDIR/create_elk_secret.log."
+               exit 1
+          fi
+    fi
+    ET=`date +%s`
+    print_time STEP "Creating ELK Secret" $ST $ET >> $LOGDIR/timings.log
+}
+
+#
 check_oper_exists()
 {
    print_msg "Check Operator has been installed"
@@ -441,7 +471,7 @@ run_wlst_command()
    command=$3
   
    WLSRETCODE=0
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh $command 2> /dev/null
+   kubectl exec -n $namespace -ti $domain_name-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh $command 
    if [ $? -gt 0 ]
    then 
       echo "Failed to Execute wlst command: $command"
@@ -782,6 +812,22 @@ update_variable()
      fi
 }
 
+#
+# Check variable is numeric
+#
+
+check_number()
+{
+   VAL=$1
+
+   if   ! [[ "$VAL" =~  ^[0-9]+$ ]]
+   then
+       return 1
+   else
+       return 0
+   fi
+}
+
 # Check Password format
 # TYP=UC - Must contain a Uppercase and a Number
 # TYP=UCS - Must contain a Uppercase and a Number and Symbol
@@ -789,12 +835,12 @@ update_variable()
 #
 function check_password ()
 {
-TYP=$1
-password=$2
+  TYP=$1
+  password=$2
 
-LEN=$(echo ${#password})
+  LEN=$(echo ${#password})
 
-RETCODE=0
+  RETCODE=0
 
    if [ $LEN -lt 8 ]; then
 
@@ -1574,11 +1620,10 @@ create_elk_user()
    print_msg "Creating Elastic Search User"
    ST=`date +%s`
 
-   USER_NAME=logstash_internal
 
    ADMINURL=https://$K8_WORKER_HOST1:$ELK_K8
 
-   REST_API="'$ADMINURL/_security/user/$USER_NAME'"
+   REST_API="'$ADMINURL/_security/user/$ELK_USER'"
 
    USER=`encode_pwd elastic:${ELK_PWD}`
 
@@ -1594,4 +1639,26 @@ create_elk_user()
 
    ET=`date +%s`
    print_time STEP "Create Elastic Search User" $ST $ET >> $LOGDIR/timings.log
+}
+
+check_ingress()
+{
+   NAMESPACE=$1
+   INGRESS_NAME=$2
+
+   print_msg "Checking Ingress $INGRESS_NAME exists in $NAMESPACE"
+   ST=`date +%s`
+
+   kubectl get ingress -n $NAMESPACE > $LOGDIR/ingress_${INGRESS_NAME}.log 2>&1
+
+   grep -q "No resources found" $LOGDIR/ingress_${INGRESS_NAME}.log
+
+   if [ $? = 0 ]
+   then
+       echo "Failed - See logfile $LOGDIR/ingress_${INGRESS_NAME}.log"
+       exit 1
+   else
+       echo "Success"
+   fi
+
 }

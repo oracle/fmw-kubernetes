@@ -92,6 +92,7 @@ create_ingress_controller()
     update_variable "<INGRESS_REPLICAS>" $INGRESS_REPLICAS $filename
     update_variable "<INGRESS_HTTP_K8>" $INGRESS_HTTP_K8 $filename
     update_variable "<INGRESS_HTTPS_K8>" $INGRESS_HTTPS_K8 $filename
+    update_variable "<USE_PROM>" $USE_PROM $filename
    
 
     helm install nginx-ingress -n $INGRESSNS --values $filename\

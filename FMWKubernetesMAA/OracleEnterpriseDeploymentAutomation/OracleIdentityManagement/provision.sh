@@ -6,11 +6,16 @@
 #
 # Dependencies: ./prechecks.sh
 #               ./responsefile/idm.rsp
+#               ./provision_ingress.sh
+#               ./provision_elk.sh
+#               ./provision_prom.sh
 #               ./provision_oud.sh
 #               ./provision_oudsm.sh
 #               ./provision_operator.sh
 #               ./provision_oam.sh
 #               ./provision_oig.sh
+#               ./provision_oaa.sh
+#               ./provision_oiri.sh
 #
 # Usage: provision.sh
 #
@@ -40,6 +45,22 @@ then
         if [ $? -gt 0 ] || [ ! -f $LOCAL_WORKDIR/elk_installed ]
         then 
           echo "Provisioning Elastic Search Failed"
+          exit 1
+        fi
+     fi
+fi
+
+echo ""
+if [ "$INSTALL_PROM" = "true" ] 
+then
+     if [  -f $LOCAL_WORKDIR/prom_installed ]
+     then
+        echo "Prometheus Already Installed."
+     else 
+        ./provision_prom.sh
+        if [ $? -gt 0 ] || [ ! -f $LOCAL_WORKDIR/prom_installed ]
+        then 
+          echo "Provisioning Prometheus"
           exit 1
         fi
      fi
@@ -86,6 +107,21 @@ then
         if [ $? -gt 0 ] || [ ! -f $LOCAL_WORKDIR/oudsm_installed ]
         then 
            echo "Provisioning OUDSM Failed"
+           exit 1
+        fi
+     fi
+fi
+
+if [ "$INSTALL_OHS" = "true" ] 
+then
+     if [  -f $LOCAL_WORKDIR/ohs_installed ]
+     then
+        echo "OHS Already Installed."
+     else
+        ./provision_ohs.sh
+        if [ $? -gt 0 ] || [ ! -f $LOCAL_WORKDIR/ohs_installed ]
+        then 
+           echo "Provisioning OHS Failed"
            exit 1
         fi
      fi

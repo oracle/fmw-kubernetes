@@ -97,7 +97,7 @@ fi
 
 
 FINISH_TIME=`date +%s`
+print_time TOTAL "Create Ingress" $START_TIME $FINISH_TIME 
 print_time TOTAL "Create Ingress" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
-cat $LOGDIR/timings.log
 touch $LOCAL_WORKDIR/ingress_installed
