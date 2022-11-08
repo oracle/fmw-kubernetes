@@ -119,6 +119,7 @@ prepare_property_file()
    replace_value database.datafile /tmp/dbfiles/oaa.dat $propfile
    replace_value database.validaitonfile /tmp/dbfiles/validate.sql $propfile
    replace_value database.name $OAA_DB_SID $propfile
+   replace_value database.createschema true $propfile
    replace_value common.deployment.name $OAA_DEPLOYMENT $propfile
    replace_value common.kube.namespace $OAANS $propfile
    replace_value common.deployment.namespace.coherenceoperator $OAACONS $propfile
@@ -240,6 +241,7 @@ prepare_property_file()
    sed -i "/oaa-policy:/{n;s/replicaCount.*/replicaCount: $OAA_POLICY_REPLICAS/}"  $override
    sed -i "/push:/{n;s/replicaCount.*/replicaCount: $OAA_PUSH_REPLICAS/}"  $override
 
+
    copy_to_oaa $propfile /u01/oracle/scripts/settings/installOAA.properties $OAANS oaa-mgmt  >> $LOGDIR/create_property.log 2>&1
    copy_to_oaa $override /u01/oracle/scripts/settings/oaaoverride.yaml $OAANS oaa-mgmt  >> $LOGDIR/create_property.log 2>&1
    print_status $COPYCODE $LOGDIR/create_property.log
@@ -248,59 +250,6 @@ prepare_property_file()
    print_time STEP "Create property_file" $ST $ET >> $LOGDIR/timings.log
 }
 
-# Copy to DB
-#
-copy_db_files()
-{
-   ST=`date +%s`
-   print_msg "Copy files to Database Server"
-
-   mkdir $WORKDIR/dbfiles > $LOGDIR/copy_db_files.log 2>&1
-   cp $TEMPLATE_DIR/create_schemas.sh $WORKDIR/dbfiles
-
-   printf "\n\t\t\tCreate shell script - "
-   update_variable "<OAA_DB_HOME>" $OAA_DB_HOME $WORKDIR/dbfiles/create_schemas.sh  >> $LOGDIR/copy_db_files.log 2>&1
-   update_variable "<OAA_DB_SID>" $OAA_DB_SID $WORKDIR/dbfiles/create_schemas.sh  >> $LOGDIR/copy_db_files.log 2>&1
-   print_status $? copy_db_files.log
-
-   printf "\t\t\tCreating db tar archive - "
-   copy_from_oaa /u01/oracle/scripts/createOAASchema.sh $WORKDIR/dbfiles/createOAASchema.sh $OAANS oaa-mgmt >> $LOGDIR/copy_db_files.log 2>&1
-   copy_from_oaa /u01/oracle/scripts/importDBData.sh $WORKDIR/dbfiles/importDBData.sh $OAANS oaa-mgmt >> $LOGDIR/copy_db_files.log 2>&1
-   copy_from_oaa /u01/oracle/scripts/validateOAASchema.sh $WORKDIR/dbfiles/validateOAASchema.sh $OAANS oaa-mgmt >> $LOGDIR/copy_db_files.log 2>&1
-   copy_from_oaa /u01/oracle/scripts/oaa.dat $WORKDIR/dbfiles/oaa.dat $OAANS oaa-mgmt >> $LOGDIR/copy_db_files.log 2>&1
-   copy_from_oaa /u01/oracle/scripts/validate.sql $WORKDIR/dbfiles/validate.sql $OAANS oaa-mgmt >> $LOGDIR/copy_db_files.log 2>&1
-   cp $WORKDIR/installOAA.properties $WORKDIR/dbfiles >> $LOGDIR/copy_db_files.log 2>&1
-   chmod +x $WORKDIR/dbfiles/*.sh
-   cd $WORKDIR
-   tar cvfz $WORKDIR/dbfiles.tar.gz dbfiles >> $LOGDIR/copy_db_files.log 2>&1
-   print_status $? $LOGDIR/copy_db_files.log
-
-
-   printf "\t\t\tCopy files to Database host $OAA_DB_HOST - "
-   scp $WORKDIR/dbfiles.tar.gz ${OAA_DB_USER}@$OAA_DB_HOST:/tmp  >> $LOGDIR/copy_db_files.log 2>&1
-   print_status $? $LOGDIR/copy_db_files.log
-
-   printf "\t\t\tExtract Files on DB server - "
-   ssh  ${OAA_DB_USER}@$OAA_DB_HOST -C "mkdir /tmp/dbfiles; cd /tmp ; tar xvfz /tmp/dbfiles.tar.gz ; chmod +x dbfiles/*.sh " >> $LOGDIR/copy_db_files.log 2>&1
-
-   print_status $? $LOGDIR/copy_db_files.log
-   ET=`date +%s`
-   print_time STEP "Copy Files to DB" $ST $ET >> $LOGDIR/timings.log
-}
-
-# Create Database Schemas
-#
-create_schemas()
-{
-   ST=`date +%s`
-   print_msg "Create Database Schemas"
-
-
-   ssh  ${OAA_DB_USER}@$OAA_DB_HOST -C "cd /tmp/dbfiles ; ./create_schemas.sh" >> $LOGDIR/create_schemas.log 2>&1
-   print_status $? $LOGDIR/create_schemas.log
-   ET=`date +%s`
-   print_time STEP "Create Schemas" $ST $ET >> $LOGDIR/timings.log
-}
 
 # Create RBAC for OCI
 #
@@ -614,10 +563,15 @@ add_ohs_rewrite_rules()
      if [ $? -gt 0 ]
      then
          sed -i "/RewriteEngine/r $WORKDIR/ohs_header.conf" $OHSHOST1FILES/login_vh.conf
-         if [ ! "$OHS_HOST2" = "" ]
-         then
-            sed -i '/RewriteEngine/r $WORKDIR/ohs_header.conf' $OHSHOST2FILES/login_vh.conf
-         fi
+     fi
+
+     if [ ! "$OHS_HOST2" = "" ]
+     then
+       grep -q X-OAUTH-IDENTITY-DOMAIN-NAME $OHSHOST2FILES/login_vh.conf
+       if [ $? -gt 0 ]
+       then
+         sed -i "/RewriteEngine/r $WORKDIR/ohs_header.conf" $OHSHOST2FILES/login_vh.conf
+       fi
      fi
 
      print_status $? 
@@ -803,7 +757,6 @@ deploy_oaa()
 
    printf "\n\t\t\tUpdate Property File - "
    propfile=$WORKDIR/installOAA.properties
-   replace_value database.createschema false $propfile
 
    copy_to_oaa $propfile /u01/oracle/scripts/settings/installOAA.properties $OAANS oaa-mgmt  >> $LOGDIR/create_property.log 2>&1
    print_status $COPYCODE $LOGDIR/create_property.log
@@ -814,6 +767,49 @@ deploy_oaa()
 
    ET=`date +%s`
    print_time STEP "Deploy OAA" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Deploy OAA Snapshot
+#
+import_snapshot()
+{
+
+   print_msg "Import OAA Snapshot"
+   ST=`date +%s`
+
+   printf "\n\t\t\tUpdate Property File - "
+   propfile=$WORKDIR/installOAA.properties
+   echo "common.deployment.import.snapshot=true" >> $propfile
+   echo "common.deployment.import.snapshot.file=/u01/oracle/scripts/oarm-12.2.1.4.1-base-snapshot.zip" >> $propfile
+   copy_to_oaa $propfile /u01/oracle/scripts/settings/installOAA.properties $OAANS oaa-mgmt  > $LOGDIR/import_snapshot.log 2>&1
+   print_status $COPYCODE $LOGDIR/import_snapshot.log
+
+   printf "\t\t\tImport Snapshot - " 
+   oaa_mgmt "/u01/oracle/scripts/importPolicySnapshot.sh -f /u01/oracle/scripts/settings/installOAA.properties " >> $LOGDIR/import_snapshot.log 2>&1
+
+   if [ $? -gt 0 ]
+   then
+        grep -q "504 Gateway Time-out" $LOGDIR/import_snapshot.log
+        if [ $? = 0 ]
+        then
+          printf "\n\t\t\tTrying again because of Timeout - "
+          oaa_mgmt "/u01/oracle/scripts/importPolicySnapshot.sh -f /u01/oracle/scripts/settings/installOAA.properties " >> $LOGDIR/import_snapshot.log 2>&1
+          print_status $? $LOGDIR/import_snapshot.log 2>&1
+        else
+          echo "Failed - Check Logfile $LOGDIR/import_snapshot.log"
+          exit 1
+        fi
+   else
+        echo "Success"
+   fi
+       
+   printf "\t\t\tResetting Snapshot Flag in property file - "
+   replace_value common.deployment.import.snapshot false $propfile
+   copy_to_oaa $propfile /u01/oracle/scripts/settings/installOAA.properties $OAANS oaa-mgmt  >> $LOGDIR/import_snapshot.log 2>&1
+   print_status $COPYCODE $LOGDIR/import_snapshot.log
+
+   ET=`date +%s`
+   print_time STEP "Import OAA Snapshot" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Update OAuth redirect URLS
@@ -871,7 +867,7 @@ delete_schemas()
    oaa_mgmt /tmp/delete_schemas.sh 
 
    ET=`date +%s`
-   print_time STEP "Deploy OAA" $ST $ET 
+   print_time STEP "Drop OAA Schemas" $ST $ET 
 }
 
 # Register OAA as an OAM Partner Application
@@ -975,6 +971,7 @@ create_oaa_agent()
    echo "$POST_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/create_oaa_agent.log 2>&1
    eval "$POST_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/create_oaa_agent.log 2>&1
 
+   sleep 10
    echo "$GET_CURL_COMMAND | jq -r .agents[].agentgid" >> $LOGDIR/create_oaa_agent.log 2>&1
    XX="$GET_CURL_COMMAND | jq -r .agents[].agentgid"
    AGENTID=`eval $XX`
@@ -1038,7 +1035,7 @@ install_plugin()
    GET_OAMCONFIG="curl -x '' -X GET http://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT/iam/admin/config/api/v1/config -ikL -H 'Content-Type: application/xml'  $USER_HEADER -H 'cache-control: no-cache'"
 
    echo  $GET_OAMCONFIG > $LOGDIR/install_plugin.log
-   eval $GET_OAMCONFIG > $WORKDIR/oam-config.xml
+   eval $GET_OAMCONFIG > $WORKDIR/oam-config.xml 2>$LOGDIR/oam_config.log
 
    grep -q "Configuration Configuration.xsd" $WORKDIR/oam-config.xml
    if [ $? = 1 ]

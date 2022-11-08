@@ -83,12 +83,6 @@ then
    update_progress
 fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   create_namespace $OAACONS
-   update_progress
-fi
 
 # Create a Container Registry Secret if requested
 #
@@ -100,14 +94,6 @@ then
 fi
 
 
-# Create a Container Registry Secret if requested
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
-then
-   create_registry_secret $REGISTRY $REG_USER $REG_PWD $OAACONS
-   update_progress
-fi
 
 # Create GitHub Secret if requested
 #
@@ -187,21 +173,6 @@ then
    update_progress
 fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   copy_db_files 
-   update_progress
-fi
-
-# Create Schemas
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   create_schemas
-   update_progress
-fi
 
 # Enable OAM Auth
 
@@ -260,14 +231,6 @@ then
     fi
 fi
 
-# Deploy Coherence
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   deploy_coherence
-   update_progress
-fi
 
 # Deploy OAA
 #
@@ -278,15 +241,6 @@ then
    update_progress
 fi
 
-
-# Update URLs
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   update_urls
-   update_progress
-fi
 
 
 # Add OHS entries for OAA to OAM ohs config files if Ingress is not being used
@@ -334,8 +288,25 @@ then
    check_running $OAANS push 0
    check_running $OAANS spui 0
    check_running $OAANS policy 0
-   check_running $OAANS cache-rest-0 0
    check_running $OAANS fido 0
+   update_progress
+fi
+
+# Import Snapshot
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   import_snapshot
+   update_progress
+fi
+# Update URLs
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   check_running $OAMNS adminserver 0
+   update_urls
    update_progress
 fi
 
@@ -416,7 +387,7 @@ then
 fi
 
 FINISH_TIME=`date +%s`
+print_time TOTAL "Create OAA" $START_TIME $FINISH_TIME 
 print_time TOTAL "Create OAA" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
-cat $LOGDIR/timings.log
 touch $LOCAL_WORKDIR/oaa_installed

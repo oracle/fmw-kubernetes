@@ -72,7 +72,7 @@ then
     update_progress
 fi
 
-# Ensure Weblogic Operator has been created
+# Ensure Weblogic Kubernetes Operator has been created
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
@@ -211,8 +211,19 @@ then
    if [ "$USE_INGRESS" = "true" ]
    then
        create_oam_ingress
+       #create_oam_ingress_manual
    else
        create_oam_nodeport
+   fi
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   if [ "$USE_INGRESS" = "true" ]
+   then
+       check_ingress $OAMNS oam-runtime
    fi
    update_progress
 fi
@@ -415,9 +426,33 @@ then
 
 fi
 
+if [ "$USE_PROM" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     generate_wls_monitor
+     update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     deploy_wls_monitor
+     update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     enable_monitor
+     update_progress
+   fi
+fi
+
 
 FINISH_TIME=`date +%s`
+print_time TOTAL "Create OAM" $START_TIME $FINISH_TIME 
 print_time TOTAL "Create OAM" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 
-cat $LOGDIR/timings.log
 touch $LOCAL_WORKDIR/oam_installed

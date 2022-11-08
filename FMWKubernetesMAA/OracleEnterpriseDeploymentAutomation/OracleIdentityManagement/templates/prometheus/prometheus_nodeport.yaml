@@ -1,0 +1,26 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Example of creating an NodePort service for Prometheus
+#
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-nodeport
+  namespace: monitoring
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/component: prometheus
+    app.kubernetes.io/instance: k8s
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: kube-prometheus
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+    - targetPort: 9090
+      port: 9090
+      nodePort: <PROM_K8>
+      protocol: TCP

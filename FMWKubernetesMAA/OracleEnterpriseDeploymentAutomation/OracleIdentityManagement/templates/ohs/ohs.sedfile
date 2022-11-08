@@ -1,0 +1,14 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of updating httpd.conf using sed
+#
+/IfModule mpm_worker_module/a\    ServerLimit              20
+/IfModule mpm_worker_module/a\    MaxClients             1500
+/IfModule mpm_worker_module/a\    ThreadLimit             250
+/IfModule mpm_worker_module/a\    MaxRequestsPerChild    1000
+s/StartServers.*/StartServers             10/
+s/MinSpareThreads.*/MinSpareThreads         200/
+s/MaxSpareThreads.*/MaxSpareThreads         800/
+s/ThreadsPerChild.*/ThreadsPerChild         250/
+s/MaxRequestWorkers.*/MaxRequestWorkers     400/

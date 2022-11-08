@@ -44,17 +44,20 @@ The scripts will deploy Oracle Unified Directory (OUD), Oracle Access Manager (O
 The scripts perform the following actions:
 
 * Create an Ingress controller as described in [Creating the Ingress Controller](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-ingress-controller.html).
-* Create an Elastic Search deployment as described in [Installing the Monitoring and Visualization Software](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualisation-software.html#GUID-25AB6AAF-50CD-4E5B-9C39-91C2B0487348).
+* Create an Elastic Search deployment as described in [Installing the Logging and Visualization Software](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-CB3E079B-A17C-4A04-A727-889511325093).
+* Create a Prometheus and Grafana installation as described in [Installing the Monitoring Software] (https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-865DFA94-47EA-4B14-AE2D-FC5B75F49746).
+* Install and configure Oracle HTTP Server as described in [Installing and Configuring Oracle HTTP Server](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-http-server.html#GUID-6D1AC6B0-EA4B-4413-AD6D-B21A30C3C441).
+* Deploy and configure Oracle WebGate as described in [Configuring Single Sign-On for an Enterprise Deployment](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/configuring-single-sign-enterprise-deployment.html#GUID-10906355-241B-4B74-B8A9-39721E1F6CA0).
 * Create any number of OUD instances as described in [Configuring Oracle Unified Directory](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html). 
 * Extend OUD with OAM object classes as described in [Creating the Schema Extensions File](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html#GUID-C064336F-E112-4F8A-AF32-3CC9E9D363DC).
 * Seed the directory with users and groups required by Oracle Identity and Access Management as described in [Creating the Seeding File](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html#GUID-71732A8A-6353-41EF-AA58-CDE65D95B17A).
 * Create indexes and ACI’s in OUD as described in [Creating OUD Containers](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html#GUID-EEC7A9AB-3BA8-4558-9A81-3F64539B0731).
 * Set up replication agreements between different OUD instances.
-* Create OUDSM.
+* Create OUDSM as described in [Installing and Configuring Oracle Unified Directory Service Manager](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-unified-directory.html#GUID-260F2B41-DE57-46B8-B63A-A1B0DE639AAD)
 * Setup Kubernetes Namespaces, Secrets, and Persistent Volumes.
 * Create Kubernetes NodePort Services as required.
 * Create the RCU schema objects for the product being installed.
-* Deploy the WebLogic Kubernetes Operator as described in [Installing the Oracle WebLogic Kubernetes Operator](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-weblogic-kubernetes-operator.html#GUID-C9D2A88B-9A25-4746-97F0-2ECA79D1870E). 
+* Deploy the WebLogic Kubernetes Operator as described in [Installing the WebLogic Kubernetes Operator](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-weblogic-kubernetes-operator.html#GUID-C9D2A88B-9A25-4746-97F0-2ECA79D1870E). 
 * Create an Oracle Access Manager Domain with user defined Managed Servers as described in [Creating the Access Domain](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-access-manager.html#GUID-FF3351D2-E799-42CE-80DB-C716D2C88ED9).
 * Perform an initial configuration of the OAM domain as described in [Updating the Domain](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-access-manager.html#GUID-25C771AF-248E-45E2-B6FF-DE81DE1C7337).
 * Perform post configuration tasks as described in [Performing the Post-Configuration Tasks for Oracle Access Management Domain](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-access-manager.html#GUID-25BBC3EB-BB05-4358-9593-0BB7C1621D41).
@@ -66,7 +69,7 @@ The scripts perform the following actions:
 * Add OAM policies as described in [Adding Missing Policies to OAM](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-access-manager.html#GUID-E8285EDD-24A1-48D4-9F75-C5783D85EDE7).
 * Configure ADF and OPSS as described in [Configuring Oracle ADF and OPSS Security with Oracle Access Manager](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-access-manager.html#GUID-BBEB6E0F-4D78-4975-A772-FB52674FB484).
 * Set the initial server count as described in [Setting the Initial Server Count](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-access-manager.html#GUID-DAE29639-FC4B-4339-9452-AE2C485E2659). 
-* Create an Oracle Identity Governance Domain.
+* Create an Oracle Identity Governance Domain as described in [Installing and Configuring Oracle Identity Governance](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-14196492-4391-4547-B395-5E2AE19A93B3)
 * Integrate OIG and SOA as described in [Integrating Oracle Identity Governance with Oracle SOA Suite](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-85C54A4D-BED6-4F80-99DE-9A6E0AFD481F).
 * Integrate OIG with LDAP as described in [Integrating Oracle Identity Governance with LDAP](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-C3E85C57-2D54-47C5-811D-152C21E96493).
 * Add missing object classes as described in [Adding Missing Object Classes](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-1256BC51-E785-430A-B415-E3CCC2653487).
@@ -100,8 +103,6 @@ The scripts perform the following actions:
 While the scripts perform the majority of the deployment, they do not perform the following tasks:
 
 * Deploy Container Runtime Environment, Kubernetes, or Helm.
-* Install a database or Oracle HTTP Server.
-* Deploy Oracle Webgate.
 * Configure load balancer.
 * Download the container images for these products.
 * Tune the WebLogic Server.
@@ -111,15 +112,17 @@ While the scripts perform the majority of the deployment, they do not perform th
 * Provision Business Intelligence Publisher (BIP).
 * Set up the links to the Oracle BI Publisher environment. However, the scripts will deploy reports into the environment.
 * Enable BI certification reports in OIG as described in [Enable Certification Reports](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-7DBE7D6E-3F62-45F9-8063-398128D6B462).
-* Send Oracle HTTP Server log files to Elastic Search.
-* Send Oracle Database Audit log files to Elastic Search.
+* Configure Oracle HTTP Server to send log files and monitoring data to Elastic Search and Prometheus.
+* Configure Oracle Database Server to send log files and monitoring data to Elastic Search and Prometheus.
+* Send Oracle HTTP Monitoring data to Prometheus.
+* Send Oracle Database Monitioring data to Prometheus.
 
 ## Key Concepts of the Scripts
 
 To make things simple and easy to manage the scripts are based around two concepts:
 
 * A response file with details of your environment.
-* Template files you can easily modify or add as required.
+* Template files you can easily modify or add to as required.
 
 > Note: Provisioning scripts are re-enterant, if something fails it can be restarted at the point at which it failed.
 
@@ -128,6 +131,12 @@ To make things simple and easy to manage the scripts are based around two concep
 Before you get started, you should edit the `common/functions.sh` file and set the value of `SCRIPTDIR` to the location of the script's home directory. For example:
 
 `SCRIPTDIR=/workdir/scripts`
+
+If you are provisioning Oracle Identity Governance, you must also download the Oracle Connector Bundle for OUD and extract it to a location which is accessible by the provisioning scripts. For example, `/workdir/connectors/OID-12.2.1.3.0`. The connector directory name must start with `OID-12.2.1.`
+
+If you are provisioning the Oracle HTTP Server, you must download the Oracle HTTP installer and place it in the location `$SCRIPTDIR/templates/ohs/installer` the installer MUST be the ZIP file for example, fmw\_12.2.1.4.0\_ohs\_linux64\_Disk1\_1of1.zip.
+
+If you wish to Install the Oracle HTTP Server or copy files to it, you must setup passwordless SSH from the deployment host, during the provisioning.
 
 ## Creating a Response File
 
@@ -165,9 +174,11 @@ There are a number of provisioning scripts located in the script directory:
 |provision.sh | Umbrella script that invokes each of the scripts (which can be invoked manually) mentioned in the following rows.|
 |provision_ingress.sh| Deploys an Ingress controller. |
 |provision_elk.sh| Deploys Elastic Search and Kibana. |
+|provision_prom.sh| Deploys Prometheus and Grafana. |
+|provision_ohs.sh| Installs Oracle HTTP Server and Deploys WebGate. |
 |provision_oud.sh | Deploys Oracle Unified Directory. |
 |provision_oudsm.sh | Deploys Oracle Unified Directory Services Manager. |
-|provision_operator.sh| Deploys WebLogic Operator.|
+|provision_operator.sh| Deploys WebLogic Kubernetes Operator.|
 |provision_oam.sh | Deploys Oracle Access Manager. |
 |provision_oig.sh | Deploys Oracle Identity Governance. |
 |provision_oiri.sh| Deploys Oracle Identity Role Intelligence.|
@@ -198,6 +209,7 @@ The responsfile uses a hidden file in the responsefile directory to store passwo
 
 Each provisioning script creates sample files for configuring your Oracle HTTP server. These files are generated and stored in the working directory under the `OHS` subdirectory. If required, the scripts can also copy these configuration files to Oracle HTTP server and restart it.
 
+
 ## Utilities
 
 In the `scripts` directory there is a subdirectory called `utils` . This directory contains sample utilities you may find useful. Utilities for:
@@ -216,9 +228,11 @@ These parameters determine which products the deployment scripts attempt to depl
 | --- | --- | --- |
 | **INSTALL\_INGRESS** | `true` | Set to `true` to configure an Ingress controller. |
 | **INSTALL\_ELK** | `false` | Set to `true` to deploy and configure an Elastic Search and Kibana. |
-| **INSTALL\_OUDSM** | `true` | Set to `true` to configure OUDSM. |
+| **INSTALL\_PROM** | `false` | Set to `true` to deploy and configure an Prometheus and Grafana. |
+| **INSTALL\_OHS** | `true` | Set to `true` to Install Oracle HTTP Server. |
 | **INSTALL\_OUD** | `true` | Set to `true` to configure OUD. |
-| **INSTALL\_WLSOPER** | `true` | Set to `true` to deploy Oracle WebLogic Operator. |
+| **INSTALL\_OUDSM** | `true` | Set to `true` to configure OUDSM. |
+| **INSTALL\_WLSOPER** | `true` | Set to `true` to deploy WebLogic Kubernetes Operator. |
 | **INSTALL\_OAM** | `true` | Set to `true` to configure OAM. |
 | **INSTALL\_OIG** | `true` | Set to `true` to configure OIG. |
 |**INSTALL\_OIRI** | `true` | Set to `true` to configure OIRI. |
@@ -321,21 +335,36 @@ These parameters determine how to send log files to Elastic Search.
 |**ELK\_SHARE** | `/export/IAMPVS/elkpv` | Mount point on NFS where ELK persistent volume is exported.|
 |**ELK\_STORAGE** | `nfs-client` | The storage class to use for Elastic Search Stateful Sets.|
 
-### Oracle HTTP Server Parameters
-These parameters are specific to OHS.  These parameters are used to construct the Oracle HTTP Server configuration files.  
+### Prometheus Parameters
+These parameters determine how to send monitoring information to Prometheus.
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
+|**USE\_PROM** |`false`| Set to `true` if you send monitoring data to Prometheus|
+|**PROMNS** |`monitoring`| The Kubernetes namespace used to hold the Prometheus Deployement.|
+
+
+### Oracle HTTP Server Parameters
+These parameters are specific to OHS.  These parameters are used to construct the Oracle HTTP Server configuration files and Install the Oracle HTTP Server if requested. 
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**UPDATE\_OHS** |`true`| Set this to true if you wish the scripts to automatically copy the generated OHS configuration files.  Once copied the Oracle HTTP server will be restarted. `Note: This is independent of whether you are installing the Oracle HTTP server or not`|
 |**OHS\_HOST1** |`webhost1.example.com`| The fully qualified name of the host running the first Oracle HTTP Server|
 |**OHS\_HOST2** |`webhost2.example.com`| The fully qualified name of the host running the second Oracle HTTP Server, leave blank if you do not have a second Oracle HTTP Server.|
-|**OHS\_PORT** |`7777`| The port your Oracle HTTP Servers listen on.|
-|**OHS\_ORACLE\_HOME** |`/u02/private/oracle/products/ohs`| The location of your OHS binaries|
-|**OHS\_DOMAIN** |`/u02/private/oracle/config/domains/ohsDomain`| The location of your OHS domain|
+|**OHS\_INSTALLER** |`fmw_12.2.1.4.0_ohs_linux64_Disk1_1of1.zip`| The name of the OHS installer ZIP file.|
+|**DEPLOY\_WG** |`true`| Deploy WebGate in the `OHS_ORACLE_HOME`.|
+|**COPY\_WG\_FILES** |`true`| Set this to true if you wish the scripts to automatically copy the generated Webgate Artifacts to your OHS Server.  Note: You must first have deployed your Webgate.|
+|**OHS\_BASE** |`/u02/private`| The location of your OHSbase directory.  Binaries and Configuration files are below this location.  The OracleInventory is also placed into this location when installing the Oracle HTTP Server|
+|**OHS\_ORACLE\_HOME** |`$OHS_BASE/oracle/products/ohs`| The location of your OHS binaries|
+|**OHS\_DOMAIN** |`$OHS_BASE/oracle/config/domains/ohsDomain`| The location of your OHS domain|
 |**OHS1\_NAME** |`ohs1`| The component name of your first OHS instance|
 |**OHS2\_NAME** |`ohs1`| The component name of your second OHS instance|
-|**UPDATE\_OHS** |`true`| Set this to true if you wish the scripts to automatically copy the generated OHS configuration files.  Once copied the Oracle HTTP server will be restarted.|
-|**COPY_WG_FILES** |`true`| Set this to true if you wish the scripts to automatically copy the generated Webgate Artifacts to your OHS Server.  Note: You must first have deployed your Webgate.|
-
+|**NM\_ADMIN\_USER** |`admin`| The name of the admin user you wish to assign to Node Manager if Installing the Oracle HTTP Server.|
+|**NM\_ADMIN\_PWD** |`password`| The password of the admin user you wish to assign to Node Manager if Installing the Oracle HTTP Server.|
+|**OHS\_PORT** |`7777`| The port your Oracle HTTP Servers listen on.|
+|**OHS\_HTTPS\_PORT** |`4443`| The SSL port your Oracle HTTP Servers listen on.|
+|**NM\_PORT** |`5556`| The port to use for Node Manager.|
 ### OUD Parameters
 These parameters are specific to OUD. When deploying OUD, you also require the generic LDAP parameters.
 
@@ -400,7 +429,7 @@ The deployment scripts create self-signed certificates. The parameters are used 
 
 
 ### WebLogic Kubernetes Operator Parameters
-These parameters determines how the Oracle WebLogic Kubernetes Operator is provisioned.
+These parameters determines how the WebLogic Kubernetes Operator is provisioned.
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
@@ -474,6 +503,7 @@ These parameters determine how OIG is provisioned and configured.
 |**OIG\_BI\_USER** | `idm_report` | The BI user name you want to use for running reports in the BI Publisher deployment.|
 |**OIG\_BI\_USER\_PWD** | `BIPassword` | The password of the **OIG_BI_USER**.|
 |**OIMSERVER\_JAVA\_PARAMS** | "`-Xms4096m -Xmx8192m`" | The memory parameters to use for `oim_servers`.|
+|**SOASERVER\_JAVA\_PARAMS** | "`-Xms4096m -Xmx8192m`" | The memory parameters to use for `soa_servers`.|
 |**OIG\_EMAIL\_CREATE** | `true` | If set to `true`, OIG will be configured for email notifications.|
 |**OIG\_EMAIL\_SERVER** | `sendmail.example.com` | The name of your SMTP email server.|
 |**OIG\_EMAIL\_PORT** | `25` | The port of your SMTP server. The valid values are `None` or `TLS`.|
@@ -544,9 +574,6 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_DB\_SYS\_PWD** |`MySysPassword`| The SYS password of the OAA database.|
 |**OAA\_RCU\_PREFIX** |`OAAEDG RCU`| The prefix to use for the OAA schemas.|
 |**OAA\_SCHEMA\_PWD** |`MySchemPassword`| The password to use for the OAA schemas that are created. If you are using special characters, you may need to escape them with a '`\`'. For example: '`Password\#`'.|
-|**OAA\_DB\_HOST** |`dbhost1`| The name of one of the database hosts. Used to copy the schema creation files to the DB server.|
-|**OAA\_DB\_USER** |`oracle`| The name of the user who owns the Oracle Software; used to copy the schema creation files to the db server.|
-|**OAA\_DB\_HOME** |`/u01/app/oracle/product/19.0.0.0/dbhome_1 `| The database home directory on the database server.|
 |**OAA\_DB\_SID** |`iamdb11`| The SID of the database on the database server.|
 
 #### OAA Users/Groups/Passwords
@@ -633,22 +660,6 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_RISK\_REPLICAS** |`2`| The number of OAA RISK service pods to be created. For HA, the minimum number is two.|
 |**OAA\_RISKCC\_REPLICAS** |`2`| The number of OAA RISK CC service pods to be created. For HA, the minimum number is two.|
 
-
-### OHS Parameters
-
-OHS parameters are used to formulate how sample OHS configuration files are created. They also control whether you want the Oracle HTTP server files to be propagated to the Oracle HTTP server hosts automatically. If you choose automatic propagation, you should ensure that passwordless SSL is possible from the deployment host to the Oracle HTTP servers.
-
-| **Parameter** | **Sample Value** | **Comments** |
-| --- | --- | --- |
-|**OHS\_HOST1** |`webhost1.example.com`| The host name of the Oracle HTTP Server.|
-|**OHS\_HOST2** |`webhost2.example.com`| The host name of the secondary Oracle HTTP Server.|
-|**UPDATE\_OHS** |`true`| Set to `true` if you want the OHS configuration to be automatically copied to the OHS servers. Passwordless SCP must be enabled.|
-|**OHS\_PORT** |`7777`| Set to the HTTP Server listen address.|
-|**OHS\_DOMAIN** |`/u02/private/oracle/config/domains/ohsDomain`| Set to the location of the OHS domain on OHS_HOST1 and OHS_HOST2.|
-|**OHS1\_NAME** |`ohs1`| Set to the component name of the OHS instance on OHS_HOST1.|
-|**OHS2\_NAME** |`ohs2`| Set to the component name of the OHS instance on OHS_HOST2.|
-
-
 ### Port Mappings
 
 In some cases, you can specify your own ports. The scripts allow you to override the default values by setting these parameters.
@@ -657,6 +668,9 @@ In some cases, you can specify your own ports. The scripts allow you to override
 | --- | --- | --- |
 |**ELK\_KIBANA\_K8** |`31800`| The port to use for Kibana requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**ELK\_K8** |`31920`| The port to use for Elastic Search requests. <p>**Note**: This value must be within the Kubernetes service port range.|
+|**PROM\_GRAF\_K8** |`30900`| The port to use for Grafana requests. <p>**Note**: This value must be within the Kubernetes service port range.|
+|**PROM\_K8** |`30901`| The port to use for Prometheus requests. <p>**Note**: This value must be within the Kubernetes service port range.|
+|**PROM\_ALERT\_K8** |`30902`| The port to use for Alert Manager requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**OUD\_LDAP\_K8** |`31389`| The port to use for OUD LDAP requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**OUD\_LDAPS\_K8** |`31636`| The port to use for OUD LDAPS requests. <p>**Note**: This value must be within the Kubernetes service port range.|
 |**OUDSM\_SERVICE\_PORT** |`30901`| The port to use for OUDSM requests. <p>**Note**: This value must be within the Kubernetes service port range.|
@@ -684,9 +698,10 @@ For reference purposes this section includes the name and function of all the ob
 | **.idmpwds** | responsefile | Contains details of the target environment. Needs to be updated for each deployment. |
 | **start\_here.sh** | | Populates the responsefile. |
 | **prereqchecks.sh** | | Checks the environment prior to provisioning. |
+| **provision.sh** | | Provisions everything. |
 | **provision\_ingress.sh** | | Installs/configures the Ingress controller.|
 | **provision\_elk.sh** | | Installs/configures Elastic Search and Kibana.|
-| **provision.sh** | | Provisions everything |
+| **provision\_prom.sh** | | Installs/configures Prometheus and Grafana.|
 | **provision\_oud.sh** | | Installs/configures OUD. |
 | **provision\_oudsm.sh** | | Installs/configures OUDSM. |
 | **provision\_oam.sh** | | Installs/configures OAM. |
@@ -695,66 +710,75 @@ For reference purposes this section includes the name and function of all the ob
 | **provision\_oaa.sh** | | Installs/configures OAA.|
 | **ingress\_functions.sh** | common | The common functions/procedures used by the Ingress provisioning scripts.|
 | **functions.sh** | common | The common functions/procedures used by all provisioning scripts. |
+| **prom\_functions.sh** | common | functions/procedures used by Prometheus provisioning scripts. |
 | **oud\_functions.sh** | common | functions/procedures used by OUD and OUDSM provisioning scripts. |
 | **oam\_functions.sh** | common | Common functions/procedures used by the oam provisioning scripts. |
 | **oig\_functions.sh** | common | The common functions/procedures used by the OIG provisioning scripts. |
 | **oiri\_functions.sh** | common | The common functions/procedures used by OIRI provisioning scripts. |
 | **oaa\_functions.sh** | common | The common functions/procedures used by the OAA provisioning scripts. |
-| **base.ldif** | templates/oud | Used to seed OUD with users and groups |
+| **elk\_cluster.yaml** | templates/elk | Used to create an ELK Cluster. |
+| **kibana.yaml** | templates/elk | Used to create an a Kibana Deployment. |
+| **elk\_nodeport.yaml** | templates/elk | The template file to create an ELK NodePort service. |
+| **kibana\_nodeport.yaml** | templates/elk | The template file to create an Kibana NodePort service. |
+| **override_prom.yaml** | templates/prometheus | Used to create a Prometheus deployment. |
+| **alert\_nodeport.yaml** | templates/prometheus | Used to create Alert Manager Node Port Service. |
+| **grafana\_nodeport.yaml** | templates/prometheus | Used to create Grafana Node Port Service. |
+| **prometheus\_nodeport.yaml** | templates/prometheus | Used to create Prometheus Node Port Service. |
+| **base.ldif** | templates/oud | Used to seed OUD with users and groups. |
 | **99-user.ldif** | templates/oud | Used to seed OUD schema changes. |
-| **oud\_nodeport.yaml** | templates/oud | The template to create OUD NodePort services for Kubernetes |
+| **oud\_nodeport.yaml** | templates/oud | The template to create OUD NodePort services for Kubernetes. |
 | **override\_oud.yaml** | templates/oud | OUD Helm override template file. |
-| **oudsm\_nodeport.yaml** | templates/oudsm | The template to create OUDSM NodePort services for Kubernetes |
+| **oudsm\_nodeport.yaml** | templates/oudsm | The template to create OUDSM NodePort services for Kubernetes. |
 | **override\_oudsm.yaml** | templates/oudsm | The OUD Helm override template file. |
-| **add\_admin\_roles.py** | templates/oam | The template to add LDAP Groups to WebLogic Admin Role |
-| **configoam.props** | templates/oam | The template property file for running idmConfigTool -configOAM |
-| **runidmConfigTool.sh** | templates/oam | The template file to run idmConfigTool in container |
-| **fix\_gridlink.sh** | templates/oam | The template file to GridLink Enable Datasources |
-| **oamconfig\_modify\_template.xml** | templates/oam | Template file to perform initial OAM setup |
-| **oam\_nodeport.yaml** | templates/oam | The template file to create OAM Managed server NodePort service |
-| **oap\_clusterip.yaml** | templates/oam | The template file to create OAM OAP internal Managed server NodePort service |
-| **oap\_nodeport.yaml** | templates/oam | The template file to create OAM OAP external Managed server NodePort service |
-| **policy\_nodeport.yaml** | templates/oam | The template file to create Policy Manager Managed server NodePort service |
-| **resource\_list.txt** | templates/oam | The list of resources to add to OAM IAMSuite Resource list |
-| **set\_weblogic\_plugin.py** | templates/oam | The template file to enable WebLogic plug in in the domain |
-| **create\_wg.sh** | templates/oam | The template file to manually create Webgate Agent |
-| **Webgate\_IDM.xml** | templates/oam | The template property file to manually create Webgate Agent |
-| **config\_adf\_security.py** | templates/oam | Template file to create sso partner app |
-| **oamDomain.sedfile** | templates/oam | Template sed file to exit domain.yaml |
-| **oamSetUserOverrides.sh** | templates/oam | The template setUserOverrides.sh file |
-| **remove\_coherence.py** | templates/oam | The template file to remove OAM from default coherence cluster |
+| **add\_admin\_roles.py** | templates/oam | The template to add LDAP Groups to WebLogic Admin Role. |
+| **configoam.props** | templates/oam | The template property file for running idmConfigTool -configOAM. |
+| **runidmConfigTool.sh** | templates/oam | The template file to run idmConfigTool in container. |
+| **fix\_gridlink.sh** | templates/oam | The template file to GridLink Enable Datasources. |
+| **oamconfig\_modify\_template.xml** | templates/oam | Template file to perform initial OAM setup. |
+| **oam\_nodeport.yaml** | templates/oam | The template file to create OAM Managed server NodePort service. |
+| **oap\_clusterip.yaml** | templates/oam | The template file to create OAM OAP internal Managed server NodePort service. |
+| **oap\_nodeport.yaml** | templates/oam | The template file to create OAM OAP external Managed server NodePort service. |
+| **policy\_nodeport.yaml** | templates/oam | The template file to create Policy Manager Managed server NodePort service. |
+| **resource\_list.txt** | templates/oam | The list of resources to add to OAM IAMSuite Resource list. |
+| **set\_weblogic\_plugin.py** | templates/oam | The template file to enable WebLogic plug in in the domain. |
+| **create\_wg.sh** | templates/oam | The template file to manually create Webgate Agent. |
+| **Webgate\_IDM.xml** | templates/oam | The template property file to manually create Webgate Agent. |
+| **config\_adf\_security.py** | templates/oam | Template file to create sso partner app. |
+| **oamDomain.sedfile** | templates/oam | Template sed file to exit domain.yaml. |
+| **oamSetUserOverrides.sh** | templates/oam | The template setUserOverrides.sh file. |
+| **remove\_coherence.py** | templates/oam | The template file to remove OAM from default coherence cluster. |
 | **update\_oamds.py** | templates/oam | The template file to update the OAMDS data source. |
-| **login\_vh.conf** | templates/oam | The template file to create sample OHS Config |
-| **iadadmin\_vh.conf** | templates/oam | The template file to create sample OHS Config |
-| **create\_admin\_roles.py** | templates/oig | The template to assign LDAP Groups to WebLogic administration role |
-| **create\_oud\_authenticator.py** | templates/oig | The template file to create OUD Authenticator |
-| **get\_passphrase.sh** | templates/oig | The template file to obtain global passphrase from OAM |
-| **get\_passphrase.py** | templates/oig | The template file to obtain OAM Global passphrase |
-| **oam\_integration.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -configureSSOIntegration |
-| **oigSetUserOverrides.sh** | templates/oig | The template setUserOverrides.sh file |
-| **soa\_nodeport.yaml** | templates/oig | The template file to create SOA external Managed server NodePort service |
-| **oim\_nodeport.yaml** | templates/oig | The template file to create OIM external Managed server NodePort service |
-| **add\_object\_classes.sh** | templates/oig | The template file to run IGOAMIntegration.sh -addMissingObjectClasses |
-| **createWLSAuthenticators.sh** | templates/oig | Template file to run OIGOAMIntegration.sh -configureWLSAuthnProviders |
-| **oam\_notifications.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -enableOAMSessionDeletion |
-| **config\_connector.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -configureLDAPConnector |
-| **create\_oim\_auth.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -configureWLSAuthnProviders |
+| **login\_vh.conf** | templates/oam | The template file to create sample OHS Config. |
+| **iadadmin\_vh.conf** | templates/oam | The template file to create sample OHS Config. |
+| **create\_admin\_roles.py** | templates/oig | The template to assign LDAP Groups to WebLogic administration role. |
+| **create\_oud\_authenticator.py** | templates/oig | The template file to create OUD Authenticator. |
+| **get\_passphrase.sh** | templates/oig | The template file to obtain global passphrase from OAM. |
+| **get\_passphrase.py** | templates/oig | The template file to obtain OAM Global passphrase. |
+| **oam\_integration.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -configureSSOIntegration. |
+| **oigSetUserOverrides.sh** | templates/oig | The template setUserOverrides.sh file. |
+| **soa\_nodeport.yaml** | templates/oig | The template file to create SOA external Managed server NodePort service. |
+| **oim\_nodeport.yaml** | templates/oig | The template file to create OIM external Managed server NodePort service. |
+| **add\_object\_classes.sh** | templates/oig | The template file to run IGOAMIntegration.sh -addMissingObjectClasses. |
+| **createWLSAuthenticators.sh** | templates/oig | Template file to run OIGOAMIntegration.sh -configureWLSAuthnProviders. |
+| **oam\_notifications.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -enableOAMSessionDeletion. |
+| **config\_connector.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -configureLDAPConnector. |
+| **create\_oim\_auth.sh** | templates/oig | The template file to run OIGOAMIntegration.sh -configureWLSAuthnProviders. |
 | **runJob.sh** | templates/oig | The template shell script to run the reconciliation jobs. |
-| **runJob.java** | templates/oig | The Java Script to run Reconciliation jobs |
-| **lib** | templates/oig | The OIM Libraries required by runJob.java |
-| **update\_soa.py** | templates/oig | The template script to update SOA URLS |
-| **oamoig.sedfile** | templates/oig | The Sedfile to create OIGOAMIntegration property files |
-| **autn.sedfile** | templates/oig | The supplementary Sedfile to create OIGOAMIntegration property files |
-| **create\_oigoam\_files.sh** | templates/oig | The template script to generate OIGOAMIntegration property files |
-| **fix\_gridlink.sh** | templates/oig | The template to enable gridlink on data sources |
-| **update\_match\_attr.sh** | templates/oig | The template script to update Match Attribute |
-| **oigDomain.sedfile** | templates/oig | The template script to update domain\_soa\_oim.yaml |
-| **update\_mds.py** | templates/oig | The template file to update MDS datasource |
-| **set\_weblogic\_plugin.py** | templates/oig | The template file to set WebLogic Plugin |
-| **update\_bi.py** | templates/oig | The template file to enable BI integration |
-| **igdinternal\_vh.conf** | templates/oig | The template file to create sample OHS Config |
-| **igdadmin\_vh.conf** | templates/oig | The template file to create sample OHS Config |
-| **prov\_vh.conf** | templates/oig | The template file to create sample OHS Config |
+| **runJob.java** | templates/oig | The Java Script to run Reconciliation jobs. |
+| **lib** | templates/oig | The OIM Libraries required by runJob.java. |
+| **update\_soa.py** | templates/oig | The template script to update SOA URLS. |
+| **oamoig.sedfile** | templates/oig | The Sedfile to create OIGOAMIntegration property files. |
+| **autn.sedfile** | templates/oig | The supplementary Sedfile to create OIGOAMIntegration property files. |
+| **create\_oigoam\_files.sh** | templates/oig | The template script to generate OIGOAMIntegration property files. |
+| **fix\_gridlink.sh** | templates/oig | The template to enable gridlink on data sources. |
+| **update\_match\_attr.sh** | templates/oig | The template script to update Match Attribute. |
+| **oigDomain.sedfile** | templates/oig | The template script to update domain\_soa\_oim.yaml. |
+| **update\_mds.py** | templates/oig | The template file to update MDS datasource. |
+| **set\_weblogic\_plugin.py** | templates/oig | The template file to set WebLogic Plugin. |
+| **update\_bi.py** | templates/oig | The template file to enable BI integration. |
+| **igdinternal\_vh.conf** | templates/oig | The template file to create sample OHS Config. |
+| **igdadmin\_vh.conf** | templates/oig | The template file to create sample OHS Config. |
+| **prov\_vh.conf** | templates/oig | The template file to create sample OHS Config. |
 | **createAdminUser.java** | templates/oiri | The template file to create the OIRI user names in OIG.|
 | **createAdminUser.sh** | templates/oiri | Template file to create, compile, and run **createAdminUser.java**.|
 | **setCompliance.java** | templates/oiri | The template file to place OIG into the Compliance Mode.|
@@ -788,12 +812,15 @@ For reference purposes this section includes the name and function of all the ob
 | **test\_user.ldif** | templates/oaa | The template file used to create OAA test user in LDAP.|
 | **test\_user.ldif** | templates/oaa | The template file used to create OAA test user in LDAP.|
 | **delete\_image.sh** | utils | Deletes a container image from the Kubernetes worker hosts. |
+| **delete\_all.sh** | utils | Deletes all deployments. |
+| **delete\_elk.sh** | utils | Deletes Elastic Search deployment. |
+| **delete\_prom.sh** | utils | Deletes Prometheus deployment. |
 | **delete\_oam.sh** | utils | Deletes the OAM deployment. |
-| **delete\_oig.sh** | utils | Deletes the OIG deployment |
-| **delete\_operator.sh** | utils | Deletes the WebLogic Kubernetes Operator deployment |
-| **delete\_oud.sh** | utils | Deletes the OUD deployment |
-| **delete\_oudsm.sh** | utils | Deletes the OUDSM deployment |
-| **delete\_oiri.sh** | utils | Deletes the OIRI deployment |
+| **delete\_oig.sh** | utils | Deletes the OIG deployment. |
+| **delete\_operator.sh** | utils | Deletes the WebLogic Kubernetes Operator deployment. |
+| **delete\_oud.sh** | utils | Deletes the OUD deployment. |
+| **delete\_oudsm.sh** | utils | Deletes the OUDSM deployment. |
+| **delete\_oiri.sh** | utils | Deletes the OIRI deployment. |
 | **delete\_oaa.sh** | utils | Deletes the OAA deployment. |
 | **delete\_ingress.sh** | utils | Deletes the Ingress controller. |
 | **load\_images.sh** | utils | Loads the container image onto each Kubernetes worker host. | 

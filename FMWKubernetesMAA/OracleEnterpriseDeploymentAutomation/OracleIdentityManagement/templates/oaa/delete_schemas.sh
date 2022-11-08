@@ -7,6 +7,8 @@
 sqlplus sys/<OAA_DB_SYS_PWD>@<OAA_DB_SCAN>:<OAA_DB_LISTENER>/<OAA_DB_SERVICE> as sysdba << EOF
 alter session set "_oracle_script"=TRUE;
 drop user <OAA_RCU_PREFIX>_oaa cascade;
+delete from SCHEMA_VERSION_REGISTRY where comp_name='Oracle Advanced Authentication' and OWNER=UPPER('<OAA_RCU_PREFIX>_OAA');
+commit;
 set pages 0
 set feedback off
 spool /tmp/drop_directories.sql

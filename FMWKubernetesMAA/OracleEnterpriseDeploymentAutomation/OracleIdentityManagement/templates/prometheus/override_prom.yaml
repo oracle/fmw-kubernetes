@@ -1,0 +1,33 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a helm override file to deploy Prometheus
+# It will also seed users and groups and create ACIs for integration with other Oracle Identity Products.
+#
+#
+# Usage: Used and Input to Helm command
+#
+alertmanager:
+  service:
+    nodePort: <PROM_ALERT_K8>
+    type: NodePort
+
+
+prometheus:
+  service:
+    nodePort: <PROM_K8>
+    type: NodePort
+
+  #prometheusSpec:
+    #additionalScrapeConfigs:
+      #- job_name: "External servers"
+        #static_configs:
+          #- targets: ["<OHS_HOST1>:9100","<OHS_HOST2>:9100"]
+
+grafana:
+  service:
+    nodePort: <PROM_GRAF_K8>
+    type: NodePort
+
+  adminPassword: <PROM_ADMIN_PWD>
+
