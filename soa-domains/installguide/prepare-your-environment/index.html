@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1667223045" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1667223045" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1669810747" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1669810747" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1669810747"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1667223045"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1667223045"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1669810747"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1669810747"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1667223045"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1669810747"></script>
 
     
   </div>
@@ -5137,7 +5137,7 @@
 <h3 id="set-up-your-kubernetes-cluster">Set up your Kubernetes cluster</h3>
 <p>Refer the official Kubernetes set up <a href="https://kubernetes.io/docs/setup/#production-environment">documentation</a> to set up a production grade Kubernetes cluster.</p>
 <h3 id="install-helm">Install Helm</h3>
-<p>The operator uses Helm to create and deploy the necessary resources and then run the operator in a Kubernetes cluster. For Helm installation and usage information, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-operators/#install-helm">here</a>.</p>
+<p>The operator uses Helm to create and deploy the necessary resources and then run the operator in a Kubernetes cluster. For Helm installation and usage information, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-operators/#install-helm">here</a>.</p>
 <h3 id="get-dependent-images">Get dependent images</h3>
 <p>Obtain dependent images and add them to your local registry.</p>
 <ol>
@@ -5149,8 +5149,8 @@
 </code></pre></div></li>
 <li>
 <p>Pull the operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2
-$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2  oracle/weblogic-kubernetes-operator:3.4.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:3.4.4
+$ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.4.4  oracle/weblogic-kubernetes-operator:3.4.4
 </code></pre></div></li>
 </ol>
 <h3 id="set-up-the-code-repository-to-deploy-oracle-soa-suite-domains">Set up the code repository to deploy Oracle SOA Suite domains</h3>
@@ -5158,75 +5158,46 @@ $ docker tag ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2  oracle/weblogic-
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_22.3.2
-$ cd $HOME/soa_22.3.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_22.4.2
+$ cd $HOME/soa_22.4.2
 </code></pre></div></li>
 <li>
 <p>Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a>. Required artifacts are available at <code>OracleSOASuite/kubernetes</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git
-$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_22.3.2/fmw-kubernetes/OracleSOASuite/kubernetes
+$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_22.4.2/fmw-kubernetes/OracleSOASuite/kubernetes
 </code></pre></div></li>
 </ol>
 <h3 id="obtain-the-oracle-soa-suite-docker-image">Obtain the Oracle SOA Suite Docker image</h3>
-<p>The Oracle SOA Suite image with the latest bundle patch and required interim patches is prebuilt by Oracle and includes Oracle SOA Suite 12.2.1.4.0, the July Patch Set Update (PSU), and other fixes released with the Critical Patch Update (CPU) program. This is the only image supported for production deployments. Obtain the Oracle SOA Suite image using either of the following methods:</p>
-<ol>
-<li>
-<p>Download from Oracle Container Registry:</p>
+<p>The Oracle SOA Suite image with the latest bundle patch and required interim patches is prebuilt by Oracle and includes Oracle SOA Suite 12.2.1.4.0, the October Patch Set Update (PSU), and other fixes released with the Critical Patch Update (CPU) program. This is the only image supported for production deployments.</p>
+<p>To download the Oracle SOA Suite image from Oracle Container Registry, follow these steps:</p>
 <ul>
 <li>
-<p>Log in to <code>Oracle Container Registry</code>, navigate to <strong>Middleware</strong> &gt; <strong>soasuite_cpu</strong> and accept the license agreement if not already done.</p>
+<p>Log in to Oracle Container Registry, navigate to <strong>Middleware</strong> &gt; <strong>soasuite_cpu</strong> and accept the license agreement if not already done.</p>
 </li>
 <li>
-<p>Log in to the Oracle Container Registry (container-registry.oracle.com) from your Docker client:</p>
+<p>Log in to Oracle Container Registry (<code>container-registry.oracle.com</code>) from your Docker client:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker login container-registry.oracle.com
 </code></pre></div></li>
 <li>
-<p>Pull the image:</p>
+<p>Pull the image.</p>
 <p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull container-registry.oracle.com/middleware/soasuite_cpu:12.2.1.4-jdk8-ol7-220726
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull container-registry.oracle.com/middleware/soasuite_cpu:12.2.1.4-jdk8-ol7-&lt;TAG&gt;
 </code></pre></div></li>
 </ul>
-</li>
-<li>
-<p>Download from My Oracle Support:</p>
-<ul>
-<li>
-<p>Download patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34410491">34410491</a> from My Oracle Support (MOS).</p>
-</li>
-<li>
-<p>Unzip the downloaded patch zip file.</p>
-</li>
-<li>
-<p>Load the image archive using the <code>docker load</code> command.</p>
-<p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker load &lt; soasuite-12.2.1.4-jdk8-ol7-220726.1801.tar
-Loaded image: oracle/soasuite:12.2.1.4-jdk8-ol7-220726.1801
-$
-</code></pre></div></li>
-<li>
-<p>Run the <code>docker inspect</code> command to verify that the downloaded image is the latest released image. The value of label <code>com.oracle.weblogic.imagetool.buildid</code> must match to <code>c35d47e7-10a6-4fe6-908d-2d50aa23ed75</code>.</p>
-<p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker inspect --format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{{ index .Config.Labels &#34;com.oracle.weblogic.imagetool.buildid&#34; }}&#39;</span> oracle/soasuite:12.2.1.4-jdk8-ol7-220726.1801
-    c35d47e7-10a6-4fe6-908d-2d50aa23ed75
-$
-</code></pre></div></li>
-</ul>
-</li>
-</ol>
-<p>If you want to build and use an Oracle SOA Suite Docker image with any additional bundle patch or interim patches that are not part of the image obtained from My Oracle Support, then follow these <a href="/fmw-kubernetes/soa-domains/create-or-update-image/#create-or-update-an-oracle-soa-suite-docker-image-using-the-weblogic-image-tool">steps</a> to create the image.</p>
+<p>If you want to build and use an Oracle SOA Suite Docker image with any additional bundle patch or interim patches that are not part of the image obtained from My Oracle Support, then follow <a href="/fmw-kubernetes/soa-domains/create-or-update-image/#create-or-update-an-oracle-soa-suite-docker-image-using-the-weblogic-image-tool">these steps</a> to create the image.</p>
 <blockquote>
 <p>Note: The default Oracle SOA Suite image name used for Oracle SOA Suite domains deployment is <code>soasuite:12.2.1.4</code>. The image obtained must be tagged as <code>soasuite:12.2.1.4</code> using the <code>docker tag</code> command. If you want to use a different name for the image, make sure to update the new image tag name in the <code>create-domain-inputs.yaml</code> file and also in other instances where the <code>soasuite:12.2.1.4</code> image name is used.</p>
 </blockquote>
 <h3 id="install-the-weblogic-kubernetes-operator">Install the WebLogic Kubernetes Operator</h3>
-<p>The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.2/documentation/3.4/content/quickstart/install.md#install-the-operator">this document</a> to install the operator.</p>
+<p>The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.4/documentation/3.4/content/quickstart/install.md#install-the-operator">this document</a> to install the operator.</p>
 <blockquote>
-<p>Note: Optionally, you can execute these <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/">steps</a> to send the contents of the operator&rsquo;s logs to Elasticsearch.</p>
+<p>Note: Optionally, you can follow <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/">these steps</a> to send the contents of the operator&rsquo;s logs to Elasticsearch.</p>
 </blockquote>
 <p>In the following example commands to install the WebLogic Kubernetes Operator, <code>opns</code> is the namespace and <code>op-sa</code> is the service account created for the operator:</p>
 <pre><code>$ kubectl create namespace opns
 $ kubectl create serviceaccount -n opns  op-sa
 $ cd ${WORKDIR}
-$ helm install weblogic-kubernetes-operator charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.4.2 --set serviceAccount=op-sa --set &quot;domainNamespaces={}&quot; --set &quot;javaLoggingLevel=FINE&quot; --wait
+$ helm install weblogic-kubernetes-operator charts/weblogic-operator  --namespace opns  --set image=oracle/weblogic-kubernetes-operator:3.4.4 --set serviceAccount=op-sa --set &quot;domainNamespaces={}&quot; --set &quot;javaLoggingLevel=FINE&quot; --wait
 </code></pre><h3 id="prepare-the-environment-for-oracle-soa-suite-domains">Prepare the environment for Oracle SOA Suite domains</h3>
 <h4 id="create-a-namespace-for-an-oracle-soa-suite-domain">Create a namespace for an Oracle SOA Suite domain</h4>
 <p>Create a Kubernetes namespace (for example, <code>soans</code>) for the domain unless you intend to use the default namespace. Use the new namespace in the remaining steps in this section.
@@ -5266,7 +5237,7 @@ $ kubectl create -f output_soainfra/pv-pvcs/soainfra-domain-pvc.yaml
 <p>Create the Kubernetes secrets <code>username</code> and <code>password</code> of the administrative account in the same Kubernetes namespace as the domain:</p>
 <pre><code>  $ cd ${WORKDIR}/create-weblogic-domain-credentials
   $ ./create-weblogic-credentials.sh -u weblogic -p Welcome1 -n soans -d soainfra -s soainfra-domain-credentials
-</code></pre><p>For more details, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.2/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md">this document</a>.</p>
+</code></pre><p>For more details, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v3.4.4/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md">this document</a>.</p>
 <p>You can check the secret with the <code>kubectl get secret</code> command.</p>
 <p>For example:</p>
 
@@ -8936,19 +8907,19 @@ You must specify one of these using the <code>-t</code> flag.</li>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1669810747"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1667223045"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1667223045"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1669810747"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1669810747"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1667223045" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1667223045"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1669810747" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1669810747"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

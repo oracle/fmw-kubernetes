@@ -12,18 +12,18 @@
     <title>Setup steps :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1669810746" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1669810746"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1667223044"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1667223044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1669810746"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1669810746"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1667223044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1669810746"></script>
 
     
   </div>
@@ -5066,6 +5066,7 @@
         <li><a href="#create-a-database-and-the-appropriate-database-services">Create a database and the appropriate database services</a></li>
         <li><a href="#install-and-configure-oracle-http-server-in-the-dmz">Install and configure Oracle HTTP Server in the DMZ</a></li>
         <li><a href="#configure-a-front-end-load-balancer">Configure a front-end load balancer</a></li>
+        <li><a href="#create-worker-nodes">Create worker nodes</a></li>
         <li><a href="#apply-operating-system-changes-for-coherence">Apply operating system changes for Coherence</a></li>
         <li><a href="#deploy-weblogic-kubernetes-operator-and-oracle-soa-suite">Deploy WebLogic Kubernetes Operator and Oracle SOA Suite</a></li>
         <li><a href="#configure-redundant-persistent-volume">Configure redundant persistent volume</a></li>
@@ -5115,6 +5116,7 @@
 <li><a href="#create-a-database-and-the-appropriate-database-services">Create a database and the appropriate database services</a></li>
 <li><a href="#install-and-configure-oracle-http-server-in-the-dmz">Install and configure Oracle HTTP Server in the DMZ</a></li>
 <li><a href="#configure-a-front-end-load-balancer">Configure a front-end load balancer</a></li>
+<li><a href="#create-worker-nodes">Create worker nodes</a></li>
 <li><a href="#apply-operating-system-changes-for-coherence">Apply operating system changes for Coherence</a></li>
 <li><a href="#deploy-weblogic-kubernetes-operator-and-oracle-soa-suite">Deploy WebLogic Kubernetes Operator and Oracle SOA Suite</a></li>
 <li><a href="#configure-redundant-persistent-volume">Configure redundant persistent volume</a></li>
@@ -5126,7 +5128,35 @@
 <li><a href="#adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</a></li>
 </ol>
 <h3 id="set-up-your-kubernetes-cluster">Set up your Kubernetes cluster</h3>
-<p>Refer to the official Kubernetes <a href="https://kubernetes.io/docs/setup/#production-environment">documentation</a> to set up a production-grade Kubernetes cluster. It is recommended to set up the control plane (Master) with three nodes and three worker nodes. See the <a href="../topology/#topology-diagram">Topology</a> for more details.</p>
+<h4 id="prepare-the-environment-for-the-kubernetes-control-plane-master-nodes">Prepare the environment for the Kubernetes control plane (Master nodes)</h4>
+<ul>
+<li>
+<p>Create the L4/TCP listener for the load balancer (LBR).</p>
+</li>
+<li>
+<p>Create the LBR backend pool with the list of control plane nodes that will be added (do not use IPs, always use hostnames).</p>
+</li>
+<li>
+<p>Enable the L4 LBR to route to the backend set/pool.</p>
+<blockquote>
+<p><strong>Note</strong>: It is important that this is an L4/TCP listener, not an HTTP/HTTPS listener.</p>
+</blockquote>
+</li>
+<li>
+<p>Make sure that the nodes are in ready state.</p>
+</li>
+<li>
+<p>Create an ssh key (use a common ssh key to enable access from the node executing the setup to the control plane nodes).</p>
+</li>
+<li>
+<p>Allow traffic in intermediate firewalls between control plane nodes and the front-end LBR. Refer to the <a href="https://kubernetes.io/docs/reference/ports-and-protocols/">Kubernetes documentation</a> for the required ports.</p>
+</li>
+</ul>
+<h4 id="set-up-master-nodes">Set up Master nodes</h4>
+<p>Refer to the <a href="https://github.com/oracle/fmw-kubernetes/blob/master/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleSOASuite/README.md">README</a> to set up the master nodes.</p>
+<blockquote>
+<p>Note: It is recommended to set up the control plane (Master) with three nodes. See the <a href="../topology/#topology-diagram">Topology</a> for more details.</p>
+</blockquote>
 <h3 id="prepare-the-environment">Prepare the environment</h3>
 <h4 id="configure-firewalls-and-network">Configure firewalls and network</h4>
 <ul>
@@ -5178,6 +5208,8 @@
 <p>Configure the front-end load balancer to route to the OHS pool.</p>
 </li>
 </ul>
+<h3 id="create-worker-nodes">Create worker nodes</h3>
+<p>Refer to <a href="https://github.com/oracle/fmw-kubernetes/blob/master/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleSOASuite/README.md">Set up Worker nodes</a> for details.</p>
 <h3 id="apply-operating-system-changes-for-coherence">Apply operating system changes for Coherence</h3>
 <p>Coherence requires specific settings to create clusters in a Kubernetes environment. Refer to the steps provided in the WebLogic Kubernetes Operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/faq/coherence-requirements/">documentation</a>.</p>
 <h3 id="deploy-weblogic-kubernetes-operator-and-oracle-soa-suite">Deploy WebLogic Kubernetes Operator and Oracle SOA Suite</h3>
@@ -5727,7 +5759,7 @@ kube-system   coredns-84b49c57fd-nqlwb                         1/1     Running  
    periodSeconds: <span style="color:#ae81ff">5</span>
    successThreshold: <span style="color:#ae81ff">1</span>
    timeoutSeconds: <span style="color:#ae81ff">3</span>
-</code></pre></div><p>Refer WebLogic Kubernetes Operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/domain-lifecycle/liveness-readiness-probe-customization/#liveness-probe-customization">documentation</a> for details on how to customize the liveness probe.</p>
+</code></pre></div><p>Refer WebLogic Kubernetes Operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-lifecycle/liveness-readiness-probe-customization/#liveness-probe-customization">documentation</a> for details on how to customize the liveness probe.</p>
 
 
 <footer class=" footline" >
@@ -9164,19 +9196,19 @@ kube-system   coredns-84b49c57fd-nqlwb                         1/1     Running  
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1669810746"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1669810746"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1667223044" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1667223044"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1669810746" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1669810746"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
