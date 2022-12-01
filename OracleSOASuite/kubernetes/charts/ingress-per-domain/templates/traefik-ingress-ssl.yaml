@@ -141,15 +141,12 @@ spec:
             port:
               number: {{ .Values.wlsDomain.soaManagedServerPort }}
       {{- end }}
-{{- if eq .Values.sslType "SSL" }}
   tls:
   - hosts:
     - '{{ .Values.traefik.hostname }}'
     secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
-{{- end }}
 ---
 #Create Traefik Middleware custom resource for SSL Termination
-{{- if eq .Values.sslType "SSL" }}
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
@@ -164,7 +161,6 @@ spec:
       WL-Proxy-SSL: ""
       WL-Proxy-SSL: "true"
     sslRedirect: true
-{{- end }}
 
 {{- end }}
 {{- end }}
