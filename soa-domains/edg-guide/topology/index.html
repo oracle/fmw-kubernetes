@@ -12,18 +12,18 @@
     <title>Topology :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1667223044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1667223044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1669810746" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1669810746" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1669810746"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1667223044"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1667223044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1669810746"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1669810746"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1667223044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1669810746"></script>
 
     
   </div>
@@ -5127,7 +5127,7 @@ soans         soaedgdomain-soa-server2                         1/1     Running  
 <p>Node manager is used to monitor the managed server&rsquo;s health.</p>
 </li>
 </ul>
-<p>There are significant differences with an on-premises Enterprise Deployment Guide. The most relevant are:</p>
+<p>There are significant differences with an on-premises enterprise deployment. The most relevant are:</p>
 <ul>
 <li>
 <p>WebLogic Kubernetes Operator is used to manage the lifecycle of the managed servers, instead of the WebLogic Administration Console or WLST.</p>
@@ -5143,6 +5143,31 @@ soans         soaedgdomain-soa-server2                         1/1     Running  
 </li>
 <li>
 <p>The OHS/DMZ tier routes to the back-end WebLogic clusters and Administration Server, using a precise node port available in the different nodes.</p>
+</li>
+</ul>
+<h4 id="external-subsystems-lbr-ohs-and-database">External subsystems: LBR, OHS, and Database</h4>
+<p>Oracle SOA Suite interacts with the following external artifacts: front-end LBR, OHS/DMZ-proxy, Database, and external authenticators.</p>
+<ul>
+<li>
+<p>The LBR is used both to route to <code>kube-api</code> and as a standard Oracle SOA Suite front end.</p>
+</li>
+<li>
+<p>The front-end LBR Oracle SOA Suite configuration is identical to an on-premises system. For more information, see the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/understanding-enterprise-deployment.html">Enterprise Deployment Guide for Oracle SOA Suite 12c 12.2.1.4</a>.</p>
+</li>
+<li>
+<p>For <code>kube-api</code> access, the LBR uses a layer4 (TCP) listener. This listener forwards to the backend control plane nodes. <strong>Note</strong>: Use hostnames and avoid IP address.</p>
+</li>
+<li>
+<p>The Database tier consists of a RAC Database that hosts JMS/JTA persistent stores, OPSS, and MDS information. The setup of this RAC database is out of the scope of these procedures. All the standard MAA best practices for database services, processes, and DB configuration for a SOA cluster are applicable on Kubernetes. For more details, see the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/preparing-database-enterprise-deployment.html#GUID-E3705EFF-AEF2-4F75-B5CE-1A829CDF0A1F">Enterprise Deployment Guide for Oracle SOA Suite 12c 12.2.1.4</a>.</p>
+</li>
+<li>
+<p>External auth providers can be used as described in the Oracle SOA Suite EDG procedures.</p>
+</li>
+<li>
+<p>Single Sign-On through OHS with OAM is possible, as in a standard on-premises Oracle SOA Suite deployment.</p>
+</li>
+<li>
+<p>OHS routes to precise node ports for the SOA Cluster, OSB Cluster, and Administration Server. This is based on the fact that Oracle SOA Suite exposes very few services, which do not change much through the system&rsquo;s lifecycle. This also avoids overhead and dependencies on ingress and additional third party controllers. The OHS configuration is similar to a standard on-premises configuration, except that it disables the Dynamic Server list and uses the list of worker nodes with the precise node port for each cluster.</p>
 </li>
 </ul>
 
@@ -8578,19 +8603,19 @@ soans         soaedgdomain-soa-server2                         1/1     Running  
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1669810746"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1667223044"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1667223044"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1669810746"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1669810746"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1667223044" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1667223044"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1669810746" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1669810746"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
