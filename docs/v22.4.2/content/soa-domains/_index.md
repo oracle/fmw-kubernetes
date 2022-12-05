@@ -53,6 +53,7 @@ please consult this table of contents:
    * Patching an Oracle SOA Suite Docker image.
    * Removing domains.
    * And much more!
+* [Enterprise Deployment Guide (preview release)]({{< relref "/soa-domains/edg-guide/_index.md" >}}) provides information on the topology and set up steps for Oracle SOA Suite Enterprise Deployment on Kubernetes.
 
 #### Documentation for earlier releases
 
