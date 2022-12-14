@@ -1,0 +1,103 @@
+<!--
+    Copyright (c) 2022, Oracle and/or its affiliates.
+    The Universal Permissive License (UPL), Version 1.0
+-->
+
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+    <id>zip</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+            <directory>../core/src/main/python</directory>
+            <outputDirectory>soasuitedeploy/lib/python</outputDirectory>
+            <includes>
+                <include>**/*.py</include>
+            </includes>
+        </fileSet>
+
+		<fileSet>
+            <directory>src/main/bin</directory>
+            <outputDirectory>soasuitedeploy/bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>0750</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+       <fileSet>
+            <directory>src/main/typedefs</directory>
+            <outputDirectory>soasuitedeploy/typedefs</outputDirectory>
+            <includes>
+                <include>*.json</include>
+            </includes>
+            <fileMode>0750</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+        <fileSet>
+            <directory>../installer/target/weblogic-deploy/etc</directory>
+            <outputDirectory>weblogic-deploy/etc</outputDirectory>
+            <includes>
+                <include>logging.properties</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../installer/target/weblogic-deploy/lib</directory>
+            <outputDirectory>weblogic-deploy/lib</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../installer/target/weblogic-deploy/bin</directory>
+            <outputDirectory>weblogic-deploy/bin</outputDirectory>
+            <includes>
+                <include>*.cmd</include>
+            </includes>
+            <lineEnding>dos</lineEnding>
+        </fileSet>
+
+        <fileSet>
+            <directory>../installer/target/weblogic-deploy/bin</directory>
+            <outputDirectory>weblogic-deploy/bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>0750</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+        <fileSet>
+            <directory>../installer/target/weblogic-deploy/samples</directory>
+            <outputDirectory>weblogic-deploy/samples</outputDirectory>
+            <includes>
+                <include>*.json</include>
+            </includes>
+            <fileMode>0750</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+	</fileSets>
+
+    <files>
+        <file>
+            <source>../installer/target/weblogic-deploy/LICENSE.txt</source>
+            <outputDirectory>weblogic-deploy</outputDirectory>
+        </file>
+
+        <file>
+            <source>../installer/target/weblogic-deploy/VERSION.txt</source>
+            <outputDirectory>weblogic-deploy</outputDirectory>
+        </file>
+    </files>
+
+</assembly>
