@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="Set up Oracle SOA Suite Enterprise Deployment on Kubernetes.">
+
+
+    <link rel="icon" href="/fmw-kubernetes/22.4.2/images/favicon.png" type="image/png">
+
+    <title>Setup steps :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/22.4.2/css/nucleus.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/fontawesome-all.min.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/hybrid.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/featherlight.min.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/perfect-scrollbar.min.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/auto-complete.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/atom-one-dark-reasonable.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/theme.css?1669986843" rel="stylesheet">
+    <link href="/fmw-kubernetes/22.4.2/css/hugo-theme.css?1669986843" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/22.4.2/js/jquery-3.6.0.min.js?1669986843"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/setup-edg/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/22.4.2">
+  <img src="/fmw-kubernetes/22.4.2/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/22.4.2/js/lunr.min.js?1669986843"></script>
+<script type="text/javascript" src="/fmw-kubernetes/22.4.2/js/auto-complete.js?1669986843"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/22.4.2";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/22.4.2/js/search.js?1669986843"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/">
+          Oracle SOA Suite
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/installguide/">
+          <b>2. </b>Install Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/installguide/prerequisites/" title="Requirements and limitations" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/installguide/prerequisites/">
+          <b>  </b>Requirements and limitations
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/installguide/prepare-your-environment/">
+          <b>  </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/installguide/create-soa-domains/" title="Create Oracle SOA Suite domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/installguide/create-soa-domains/">
+          <b>  </b>Create Oracle SOA Suite domains
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/">
+          <b>3.  </b>Administration Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/" title="Set up a load balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/">
+          <b> </b>Set up a load balancer
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/traefik/" title="Traefik" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/traefik/">
+        <b>a. </b>Traefik
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/nginx/" title="NGINX" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/nginx/">
+        <b>b. </b>NGINX
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configure-load-balancer/apache/">
+        <b>c. </b>Apache web tier
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/enable-additional-url-access/">
+        <b> </b>Enable additional URL access
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/configuring-custom-ssl-certificates/">
+        <b> </b>Configure SSL certificates
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/monitoring-soa-domains/">
+        <b> </b>Monitor a domain and publish logs
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/enablingt3/">
+        <b> </b>Expose the T3/T3S protocol
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/">
+          <b>  </b>Deploy composite applications
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/supportjdev/">
+        <b>a. </b>Deploy using JDeveloper
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
+        <b>b. </b>Deploy using Maven and Ant
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/" title="Deploy using composites in a persistent volume or image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/">
+        <b>c. </b>Deploy using composites in a persistent volume or image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
+        <b></b>Persist adapter customizations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/adminguide/performing-wlst-operations/">
+        <b></b>Perform WLST operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/">
+          <b>4. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/patch-an-image/">
+        <b>a. </b>Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/upgrade-operator-release/">
+        <b>b. </b>Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
+        <b>c. </b>Upgrade a Kubernetes cluster
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/create-or-update-image/">
+          <b>5. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/cleanup-domain-setup/">
+        <b>6. </b>Uninstall
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/" title="Enterprise Deployment Guide" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/">
+          <b>7. </b>Enterprise Deployment Guide
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/topology/" title="Topology" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/topology/">
+        <b>a. </b>Topology
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/setup-edg/" title="Setup steps" class="dd-item active">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/setup-edg/">
+        <b>b. </b>Setup steps
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/faq/" title="Frequently Asked Questions" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/faq/">
+        <b>8. </b>Frequently Asked Questions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/appendix/" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/appendix/">
+          <b>9. </b>Appendix
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/appendix/soa-cluster-sizing-info/" title="Domain resource sizing" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/appendix/soa-cluster-sizing-info/">
+        <b> </b>Domain resource sizing
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/appendix/quickstart-deployment-on-prem/" title="Quick start deployment on-premise" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/appendix/quickstart-deployment-on-prem/">
+        <b> </b>Quick start deployment on-premise
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/appendix/docker-k8s-hardening/" title="Security hardening" class="dd-item ">
+        <a href="/fmw-kubernetes/22.4.2/soa-domains/appendix/docker-k8s-hardening/">
+        <b> </b>Security hardening
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/22.4.2/soa-domains/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/22.4.2/soa-domains/troubleshooting/">
+          <b>10. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/22.4.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/22.4.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/22.4.2/soa-domains/edg-guide/'>Enterprise Deployment Guide</a> > Setup steps
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#set-up-your-kubernetes-cluster">Set up your Kubernetes cluster</a></li>
+        <li><a href="#prepare-the-environment">Prepare the environment</a></li>
+        <li><a href="#create-a-database-and-the-appropriate-database-services">Create a database and the appropriate database services</a></li>
+        <li><a href="#install-and-configure-oracle-http-server-in-the-dmz">Install and configure Oracle HTTP Server in the DMZ</a></li>
+        <li><a href="#configure-a-front-end-load-balancer">Configure a front-end load balancer</a></li>
+        <li><a href="#create-worker-nodes">Create worker nodes</a></li>
+        <li><a href="#apply-operating-system-changes-for-coherence">Apply operating system changes for Coherence</a></li>
+        <li><a href="#deploy-weblogic-kubernetes-operator-and-oracle-soa-suite">Deploy WebLogic Kubernetes Operator and Oracle SOA Suite</a></li>
+        <li><a href="#configure-redundant-persistent-volume">Configure redundant persistent volume</a></li>
+        <li><a href="#configure-the-required-priority-for-mounts">Configure the required priority for mounts</a></li>
+        <li><a href="#set-front-end-addresses">Set front-end addresses</a></li>
+        <li><a href="#enable-fan-for-gridlink-data-sources">Enable FAN for GridLink data sources</a></li>
+        <li><a href="#configure-asm">Configure ASM</a></li>
+        <li><a href="#configure-coredns-allocation">Configure coredns allocation</a></li>
+        <li><a href="#adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Setup steps
+            </h1>
+          
+
+        
+
+
+
+<p>This section provides recommended steps to set up Oracle SOA Suite enterprise deployment on Kubernetes to eliminate single points of failure and to provide high availability.</p>
+<ol>
+<li><a href="#set-up-your-kubernetes-cluster">Set up your Kubernetes cluster</a></li>
+<li><a href="#prepare-the-environment">Prepare the environment</a>
+<ul>
+<li><a href="#configure-firewalls-and-network">Configure firewalls and network</a></li>
+<li><a href="#load-oracle-soa-suite-images-on-all-the-worker-nodes">Load Oracle SOA Suite images on all the worker nodes</a></li>
+<li><a href="#enable-a-shared-storage-location-for-the-persistent-volume">Enable a shared storage location for the persistent volume</a></li>
+</ul>
+</li>
+<li><a href="#create-a-database-and-the-appropriate-database-services">Create a database and the appropriate database services</a></li>
+<li><a href="#install-and-configure-oracle-http-server-in-the-dmz">Install and configure Oracle HTTP Server in the DMZ</a></li>
+<li><a href="#configure-a-front-end-load-balancer">Configure a front-end load balancer</a></li>
+<li><a href="#create-worker-nodes">Create worker nodes</a></li>
+<li><a href="#apply-operating-system-changes-for-coherence">Apply operating system changes for Coherence</a></li>
+<li><a href="#deploy-weblogic-kubernetes-operator-and-oracle-soa-suite">Deploy WebLogic Kubernetes Operator and Oracle SOA Suite</a></li>
+<li><a href="#configure-redundant-persistent-volume">Configure redundant persistent volume</a></li>
+<li><a href="#configure-the-required-priority-for-mounts">Configure the required priority for mounts</a></li>
+<li><a href="#set-front-end-addresses">Set front-end addresses</a></li>
+<li><a href="#enable-fan-for-gridlink-data-sources">Enable FAN for GridLink data sources</a></li>
+<li><a href="#configure-asm">Configure ASM</a></li>
+<li><a href="#configure-coredns-allocation">Configure coredns allocation</a></li>
+<li><a href="#adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</a></li>
+</ol>
+<h3 id="set-up-your-kubernetes-cluster">Set up your Kubernetes cluster</h3>
+<h4 id="prepare-the-environment-for-the-kubernetes-control-plane-master-nodes">Prepare the environment for the Kubernetes control plane (Master nodes)</h4>
+<ul>
+<li>
+<p>Create the L4/TCP listener for the load balancer (LBR).</p>
+</li>
+<li>
+<p>Create the LBR backend pool with the list of control plane nodes that will be added (do not use IPs, always use hostnames).</p>
+</li>
+<li>
+<p>Enable the L4 LBR to route to the backend set/pool.</p>
+<blockquote>
+<p><strong>Note</strong>: It is important that this is an L4/TCP listener, not an HTTP/HTTPS listener.</p>
+</blockquote>
+</li>
+<li>
+<p>Make sure that the nodes are in ready state.</p>
+</li>
+<li>
+<p>Create an ssh key (use a common ssh key to enable access from the node executing the setup to the control plane nodes).</p>
+</li>
+<li>
+<p>Allow traffic in intermediate firewalls between control plane nodes and the front-end LBR. Refer to the <a href="https://kubernetes.io/docs/reference/ports-and-protocols/">Kubernetes documentation</a> for the required ports.</p>
+</li>
+</ul>
+<h4 id="set-up-master-nodes">Set up Master nodes</h4>
+<p>Refer to the <a href="https://github.com/oracle/fmw-kubernetes/blob/master/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleSOASuite/README.md">README</a> to set up the master nodes.</p>
+<blockquote>
+<p>Note: It is recommended to set up the control plane (Master) with three nodes. See the <a href="../topology/#topology-diagram">Topology</a> for more details.</p>
+</blockquote>
+<h3 id="prepare-the-environment">Prepare the environment</h3>
+<h4 id="configure-firewalls-and-network">Configure firewalls and network</h4>
+<ul>
+<li>Allow traffic from the load balancer (LBR) to the Oracle HTTP Server (OHS) port that will be configured (7777 by default for OHS).</li>
+<li>Allow traffic from the OHS to the node port that will be configured in the worker nodes for the Administration Server (30701), SOA cluster (30801), and Service Bus cluster (30901).</li>
+<li>Allow traffic from the worker nodes to the control plane front-end <code>kube-api</code> virtual server port and also to the front-end Oracle SOA Suite.</li>
+<li>Allow traffic from worker nodes to the database listener and ONS port (1521 and 6200 by default, respectively).</li>
+</ul>
+<p>You can use the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/preparing-load-balancer-and-firewalls-enterprise-deployment.html#GUID-D1104FF7-2F80-4F72-917C-49B58DD77631">Enterprise Deployment Guide for Oracle SOA Suite on-premise</a> as a reference.</p>
+<h4 id="load-oracle-soa-suite-images-on-all-the-worker-nodes">Load Oracle SOA Suite images on all the worker nodes</h4>
+<p>Refer to <a href="https://oracle.github.io/fmw-kubernetes/soa-domains/installguide/prepare-your-environment/#obtain-the-oracle-soa-suite-docker-image">Obtain the Oracle SOA Suite Docker image</a> to load the images on each worker node and tag appropriately.</p>
+<h4 id="enable-a-shared-storage-location-for-the-persistent-volume">Enable a shared storage location for the persistent volume</h4>
+<p>A shared storage device must be used from the different worker nodes. This storage hosts the Oracle SOA Suite domain directory. Initially, a single storage location is used to create a persistent volume that will host the Oracle SOA Suite domain. Mount this shared storage (NFS/NAS) from all the worker nodes using the same mount path in all of them.</p>
+<p>For example, mount NFS1 (10.10.0.21:/k8nfs) in all the worker nodes to a share directory <code>/k8nfs</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ grep <span style="color:#e6db74">&#34;k8nfs nfs&#34;</span>  /etc/fstab
+10.10.0.21:/k8nfs /k8nfs nfs rw,relatime,vers<span style="color:#f92672">=</span>3,rsize<span style="color:#f92672">=</span>1048576,wsize<span style="color:#f92672">=</span>1048576,namlen<span style="color:#f92672">=</span>255,hard,proto<span style="color:#f92672">=</span>tcp,timeo<span style="color:#f92672">=</span>600,retrans<span style="color:#f92672">=</span>2,sec<span style="color:#f92672">=</span>sys,mountaddr<span style="color:#f92672">=</span>10.10.0.21,mountvers<span style="color:#f92672">=</span>3,mountport<span style="color:#f92672">=</span>2048,mountproto<span style="color:#f92672">=</span>udp,local_lock<span style="color:#f92672">=</span>none,addr<span style="color:#f92672">=</span>10.10.0.21
+</code></pre></div><p>Later, steps are provided to configure a second storage location for high availability.</p>
+<h3 id="create-a-database-and-the-appropriate-database-services">Create a database and the appropriate database services</h3>
+<p>The installation and creation of the RAC database is out of the scope of this document. Once the database is configured, the appropriate services must be created to access the schemas from the middle tier. It is critical that a precise non-default/administration service is created for Oracle SOA Suite. Refer to <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/preparing-existing-database-enterprise-deployment.html#GUID-650C573F-C82D-4FAC-90DF-74D324CB7DAF">Preparing the Database for an Enterprise Deployment</a> in the Enterprise Deployment Guide for Oracle SOA Suite 12.2.1.4.</p>
+<h3 id="install-and-configure-oracle-http-server-in-the-dmz">Install and configure Oracle HTTP Server in the DMZ</h3>
+<p>Follow the steps in the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/configuring-oracle-http-server-enterprise-deployment.html#GUID-6D1AC6B0-EA4B-4413-AD6D-B21A30C3C441">Enterprise Deployment Guide for Oracle SOA Suite</a> to create two Oracle HTTP Server (OHS) instances in separate nodes from the worker nodes. To configure OHS with the back-end Kubernetes Oracle SOA Suite or Service Bus servers, you must use a port in the range of <strong>30000 - 32767</strong>. You will use this port in the Oracle SOA Suite configuration scripts later on.</p>
+<ul>
+<li><a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/configuring-oracle-http-server-enterprise-deployment.html#GUID-700902EE-08EB-47B0-8193-CB1D7F572FC4">Configuring Oracle HTTP Server to Route Requests to the Administration Server URL and WSMPM</a></li>
+<li><a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/extending-domain-oracle-soa-suite.html#GUID-FAEF2CF5-A956-4C20-9949-E4D001D3BE6C">Configuring the Web Tier for the Oracle SOA Extended Domain</a></li>
+<li><a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/extending-domain-oracle-service-bus.html#GUID-A984BD97-83FD-432F-B3F7-2A7B7DAA8478">Configuring the Web Tier for the Oracle Service Bus Extended Domain</a></li>
+</ul>
+<p>In this Kubernetes Enterprise Deployment Guide, OHS routes to node ports configured for each separate Oracle SOA Suite/Service Bus cluster in the SOA domain. OHS then routes to these node ports, which  redirect to the pertaining server pods. The OHS directive for the configuration must disable DynamicServerList because the node ports are not really WebLogic listeners and it is the node port configuration that maintains an intelligent list of available WebLogic servers. The OHS directive for the soa-infra mount in OHS looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;Location /soa-infra&gt;
+  WLSRequest ON
+  DynamicServerList OFF
+  WebLogicCluster workernode1:30801,workernode2:30801,workernode3:30801
+  WLProxySSL OFF
+  WLProxySSLPassThrough OFF
+&lt;/Location&gt;
+</code></pre></div><p>Similarly, the other directives for other paths should reflect similar node port addresses.</p>
+<h3 id="configure-a-front-end-load-balancer">Configure a front-end load balancer</h3>
+<p>You can either use BigIp F5 LBR or any standard LBR, such as CISCO. Refer to the Enterprise Deployment Guide for Oracle SOA Suite for the required virtual servers: <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/preparing-load-balancer-and-firewalls-enterprise-deployment.html#GUID-D1104FF7-2F80-4F72-917C-49B58DD77631">Preparing the Load Balancer and Firewalls for an Enterprise Deployment</a>. The on-premises Enterprise Deployment Guide provides a detailed list of virtual servers/listeners that can be used for optimum isolation of services and traffic. For Kubernetes, at a minimum you should have a virtual server/listener for Oracle SOA Suite using the OHS listeners as back-end pool.</p>
+<ul>
+<li>
+<p>Create the load balancer&rsquo;s L7/http listener.</p>
+</li>
+<li>
+<p>Create a back-end pool with the list of OHS nodes/ports that will be used by Oracle SOA Suite (do not use IPs, always use hostnames).</p>
+</li>
+<li>
+<p>Enable the L7/http listener load balancer to route to the OHS back-end set/pool.</p>
+</li>
+<li>
+<p>Configure the front-end load balancer to route to the OHS pool.</p>
+</li>
+</ul>
+<h3 id="create-worker-nodes">Create worker nodes</h3>
+<p>Refer to <a href="https://github.com/oracle/fmw-kubernetes/blob/master/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleSOASuite/README.md">Set up Worker nodes</a> for details.</p>
+<h3 id="apply-operating-system-changes-for-coherence">Apply operating system changes for Coherence</h3>
+<p>Coherence requires specific settings to create clusters in a Kubernetes environment. Refer to the steps provided in the WebLogic Kubernetes Operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/faq/coherence-requirements/">documentation</a>.</p>
+<h3 id="deploy-weblogic-kubernetes-operator-and-oracle-soa-suite">Deploy WebLogic Kubernetes Operator and Oracle SOA Suite</h3>
+<p>The steps to deploy WebLogic Kubernetes Operator and the Oracle SOA Suite domain are automated with the scripts. Refer to the <a href="https://github.com/oracle/fmw-kubernetes/tree/master/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleSOASuite/README.md">README</a> for details.</p>
+<p>After successful Oracle SOA Suite domain creation and starting the servers, check the pods and the different services created. Once the Oracle SOA Suite managed servers reach RUNNING state (the pods are ready), check typical Oracle SOA Suite URLs using the front-end load balancer:</p>
+<p>SOA pods and services deployed and ready:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all -n soans
+NAME                                                 READY   STATUS      RESTARTS   AGE
+pod/soaedgdomain-adminserver                         1/1     Running     <span style="color:#ae81ff">0</span>          47h
+pod/soaedgdomain-create-soa-infra-domain-job-6pq9z   0/1     Completed   <span style="color:#ae81ff">0</span>          68d
+pod/soaedgdomain-soa-server1                         1/1     Running     <span style="color:#ae81ff">0</span>          2d2h
+pod/soaedgdomain-soa-server2                         1/1     Running     <span style="color:#ae81ff">0</span>          2d2h
+
+NAME                                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>                          AGE
+service/soaedgdomain-adminserver                     ClusterIP   None             &lt;none&gt;        30012/TCP,7001/TCP               2d4h
+service/soaedgdomain-adminserver-ext                 NodePort    10.104.20.22     &lt;none&gt;        30012:30012/TCP,7001:30701/TCP   31d
+service/soaedgdomain-cluster-osb-cluster             ClusterIP   10.100.97.127    &lt;none&gt;        9001/TCP                         68d
+service/soaedgdomain-cluster-soa-cluster             ClusterIP   10.101.101.113   &lt;none&gt;        8001/TCP                         68d
+service/soaedgdomain-cluster-soa-cluster-node-port   NodePort    10.105.51.223    &lt;none&gt;        8001:30801/TCP                   68d
+service/soaedgdomain-osb-server1                     ClusterIP   10.110.81.153    &lt;none&gt;        9001/TCP                         2d4h
+service/soaedgdomain-osb-server2                     ClusterIP   10.103.220.112   &lt;none&gt;        9001/TCP                         2d4h
+service/soaedgdomain-osb-server3                     ClusterIP   10.97.50.117     &lt;none&gt;        9001/TCP                         2d4h
+service/soaedgdomain-osb-server4                     ClusterIP   10.98.48.247     &lt;none&gt;        9001/TCP                         2d4h
+service/soaedgdomain-osb-server5                     ClusterIP   10.102.137.176   &lt;none&gt;        9001/TCP                         2d4h
+service/soaedgdomain-soa-server1                     ClusterIP   None             &lt;none&gt;        8001/TCP                         2d4h
+service/soaedgdomain-soa-server2                     ClusterIP   None             &lt;none&gt;        8001/TCP                         2d4h
+service/soaedgdomain-soa-server3                     ClusterIP   10.105.108.74    &lt;none&gt;        8001/TCP                         2d4h
+service/soaedgdomain-soa-server4                     ClusterIP   10.109.191.102   &lt;none&gt;        8001/TCP                         2d4h
+service/soaedgdomain-soa-server5                     ClusterIP   10.107.2.99      &lt;none&gt;        8001/TCP                         2d4h
+
+NAME                                                 COMPLETIONS   DURATION   AGE
+job.batch/soaedgdomain-create-soa-infra-domain-job   1/1           4m24s      68d
+</code></pre></div><h3 id="configure-redundant-persistent-volume">Configure redundant persistent volume</h3>
+<p>To increase the flexibility in moving Oracle SOA Suite or Service Bus pods around in the Kubernetes cluster, we use node selectors where odd server pods (soa_server1, soa_server3, soa_server5, and so on) are assigned to node selector 1 and even server pods (soa_server2, soa_server4, soa_server6, and so on) are assigned to node selector 2. The resulting configuration is:</p>
+<p><img src="/fmw-kubernetes/images/soa-domains/SOA_EDG_PersistentVolume.png" alt="Redundant PV"></p>
+<p>To use this configuration, follow these steps:</p>
+<ul>
+<li>
+<p>Stop the Oracle SOA Suite domain. Refer to <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/main/kubernetes/samples/scripts/domain-lifecycle/README.md#scripts-to-start-and-stop-a-domain">Scripts to start and stop a domain</a>.</p>
+</li>
+<li>
+<p>Mount NFS1 in all even worker nodes and NFS2 in all odd worker nodes as in the diagram above. For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">MOUNT ON ODD NODE
+<span style="color:#f92672">[</span>opc@olk8-w1 ~<span style="color:#f92672">]</span>$ grep <span style="color:#e6db74">&#34;k8nfs nfs&#34;</span>  /etc/fstab
+10.10.0.21:/k8nfs /k8nfs nfs rw,relatime,vers<span style="color:#f92672">=</span>3,rsize<span style="color:#f92672">=</span>1048576,wsize<span style="color:#f92672">=</span>1048576,namlen<span style="color:#f92672">=</span>255,hard,proto<span style="color:#f92672">=</span>tcp,timeo<span style="color:#f92672">=</span>600,retrans<span style="color:#f92672">=</span>2,sec<span style="color:#f92672">=</span>sys,mountaddr<span style="color:#f92672">=</span>10.10.0.21,mountvers<span style="color:#f92672">=</span>3,mountport<span style="color:#f92672">=</span>2048,mountproto<span style="color:#f92672">=</span>udp,local_lock<span style="color:#f92672">=</span>none,addr<span style="color:#f92672">=</span>10.10.0.21
+
+MOUNT ON EVEN NODE
+<span style="color:#f92672">[</span>opc@olk8-w2 ~<span style="color:#f92672">]</span>$  grep <span style="color:#e6db74">&#34;k8nfs nfs&#34;</span>  /etc/fstab
+10.10.0.27:/k8nfs2 /k8nfs nfs rw,relatime,vers<span style="color:#f92672">=</span>3,rsize<span style="color:#f92672">=</span>1048576,wsize<span style="color:#f92672">=</span>1048576,namlen<span style="color:#f92672">=</span>255,hard,proto<span style="color:#f92672">=</span>tcp,timeo<span style="color:#f92672">=</span>600,retrans<span style="color:#f92672">=</span>2,sec<span style="color:#f92672">=</span>sys,mountaddr<span style="color:#f92672">=</span>10.10.0.27,mo  untvers<span style="color:#f92672">=</span>3,mountport<span style="color:#f92672">=</span>2048,mountproto<span style="color:#f92672">=</span>udp,local_lock<span style="color:#f92672">=</span>none,addr<span style="color:#f92672">=</span>10.10.0.27
+
+MOUNT ON ODD NODE
+<span style="color:#f92672">[</span>opc@olk8-w3 ~<span style="color:#f92672">]</span>$  grep <span style="color:#e6db74">&#34;k8nfs nfs&#34;</span>  /etc/fstab
+10.10.0.21:/k8nfs /k8nfs nfs rw,relatime,vers<span style="color:#f92672">=</span>3,rsize<span style="color:#f92672">=</span>1048576,wsize<span style="color:#f92672">=</span>1048576,namlen<span style="color:#f92672">=</span>255,hard,proto<span style="color:#f92672">=</span>tcp,timeo<span style="color:#f92672">=</span>600,retrans<span style="color:#f92672">=</span>2,sec<span style="color:#f92672">=</span>sys,mountaddr<span style="color:#f92672">=</span>10.10.0.21,mountvers<span style="color:#f92672">=</span>3,  mountport<span style="color:#f92672">=</span>2048,mountproto<span style="color:#f92672">=</span>udp,local_lock<span style="color:#f92672">=</span>none,addr<span style="color:#f92672">=</span>10.10.0.21
+</code></pre></div></li>
+<li>
+<p>Copy the domain mount to an NFS replica, NFS2 (this can be done through a snapshot or through direct sftp/secure copy).</p>
+<p>For example, if the domain is deployed in <code>/k8nfs</code> hosted by NFS1, after stopping the domain, secure copy the data present at <code>/k8nfs</code> on NFS1 to <code>/k8nfs2</code> on NFS2:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /k8nfs
+$ scp -R * user@<span style="color:#f92672">[</span>NFS2<span style="color:#f92672">]</span>:/k8nfs2
+</code></pre></div></li>
+<li>
+<p>Label the odd nodes for NFS1 and the even nodes for NFS2.</p>
+<p>For example, add the label <code>diskgroup=dg1</code> for NFS1 and <code>diskgroup=dg2</code> for NFS2:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl label nodes olk8-w1 diskgroup<span style="color:#f92672">=</span>dg1
+$ kubectl label nodes olk8-w2 diskgroup<span style="color:#f92672">=</span>dg2
+$ kubectl label nodes olk8-w3 diskgroup<span style="color:#f92672">=</span>dg1
+</code></pre></div><p>Verify the added labels using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get nodes --show-labels
+</code></pre></div><p>Sample output is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME      STATUS   ROLES    AGE   VERSION   LABELS
+olk8-m1   Ready    master   10d   v1.XX.X   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>olk8-m1,kubernetes.io/os<span style="color:#f92672">=</span>linux,node-role.kubernetes.io/master<span style="color:#f92672">=</span>
+olk8-m2   Ready    master   10d   v1.XX.X   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>olk8-m2,kubernetes.io/os<span style="color:#f92672">=</span>linux,node-role.kubernetes.io/master<span style="color:#f92672">=</span>
+olk8-m3   Ready    master   10d   v1.XX.X   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>olk8-m3,kubernetes.io/os<span style="color:#f92672">=</span>linux,node-role.kubernetes.io/master<span style="color:#f92672">=</span>
+olk8-w1   Ready    &lt;none&gt;   10d   v1.XX.X   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,diskgroup<span style="color:#f92672">=</span>dg1,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>olk8-w1,kubernetes.io/os<span style="color:#f92672">=</span>linux,name<span style="color:#f92672">=</span>admin
+olk8-w2   Ready    &lt;none&gt;   10d   v1.XX.X   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,diskgroup<span style="color:#f92672">=</span>dg2,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>olk8-w2,kubernetes.io/os<span style="color:#f92672">=</span>linux,name<span style="color:#f92672">=</span>wls1
+olk8-w3   Ready    &lt;none&gt;   10d   v1.XX.X   beta.kubernetes.io/arch<span style="color:#f92672">=</span>amd64,beta.kubernetes.io/os<span style="color:#f92672">=</span>linux,diskgroup<span style="color:#f92672">=</span>dg1,kubernetes.io/arch<span style="color:#f92672">=</span>amd64,kubernetes.io/hostname<span style="color:#f92672">=</span>olk8-w3,kubernetes.io/os<span style="color:#f92672">=</span>linux,name<span style="color:#f92672">=</span>wls2
+</code></pre></div></li>
+<li>
+<p>To assign the appropriate selectors in the domain:</p>
+<p>a. Edit the domain (<code>domain.yaml</code>).</p>
+<p>b. Alter the managed servers section for all the managed servers configured in the cluster, sample for <code>soa_server1</code> and <code>soa_server2</code> as shown below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   managedServers:
+   - serverName: soa_server1
+     serverPod:
+       nodeSelector:
+         diskgroup: dg1
+   - serverName: soa_server2
+     serverPod:
+       nodeSelector:
+         diskgroup: dg2
+</code></pre></div><p>c. Apply the <code>domain.yaml</code> changes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f domain.yaml
+</code></pre></div></li>
+</ul>
+<blockquote>
+<p><strong>IMPORTANT</strong>: Once this redundant PV configuration is in use, all changes that reside out of the config directory in the domain will need to be copied/synced to the secondary NAS mount manually. The managed servers using NFS2 in the diagram above will replicate only configuration changes that modify files/artifacts under the <code>$DOMAIN_HOME/config</code> directory. The rest of changes are NOT copied automatically by the WebLogic infrastructure.</p>
+</blockquote>
+<p>For example, if you deploy an <code>ear</code> and specify an upload or stage directory out of the <code>config</code> directory, the <code>ear</code> files will NOT be copied by WebLogic). <code>Fileadapter composites</code> will place output files in mounts accessible from the pods. The mount point and PV/PVC for the different Oracle SOA Suite server file locations need to be the same, hence a different one from the one used for the $DOMAIN_HOME location.</p>
+<h3 id="configure-the-required-priority-for-mounts">Configure the required priority for mounts</h3>
+<p>When using block volume mounts for the Docker/CRIO images, it may occur that the mount takes time to complete on reboot. This is the case block volume with mount point being affected by network and storage latency. In this case, it is required to adjust the priority and dependency of the process on reboot, otherwise Docker will start and many images will be missing. To resolve this issue:</p>
+<ul>
+<li>
+<p>Identify the systemd units for the mounts that the container will depend on, including the NFS where the Oracle SOA Suite domain will reside.
+Identify mount systemd units in the Operating System:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+$ cat /etc/fstab  | grep <span style="color:#e6db74">&#34;docker ext4&#34;</span>
+  UUID<span style="color:#f92672">=</span>c07d39e4-5d8f-47af-b936-bf276cc43664  /docker ext4 defaults,_netdev,nofail <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">2</span>
+
+$ ls  /run/systemd/generator/ | grep docker
+docker.mount
+scratch-docker.mount
+</code></pre></div></li>
+<li>
+<p>Add the units to the Docker/CRIO service as a dependency in the AFTER list.
+Identify mount systemd units in the operating system expand source:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat /lib/systemd/system/docker.service  | grep After
+After<span style="color:#f92672">=</span>network-online.target firewalld.service containerd.service docker.mount
+</code></pre></div></li>
+<li>
+<p>This guarantees that the container will start only after the required mount is ready.</p>
+</li>
+</ul>
+<h3 id="set-front-end-addresses">Set front-end addresses</h3>
+<p>For each of the Oracle SOA Suite (<code>soa_cluster</code>) and Service Bus (<code>osb_cluster</code>) clusters, set the appropriate front-end address as follows:</p>
+<ol>
+<li>
+<p>Sign in to the WebLogic Administration Console.</p>
+</li>
+<li>
+<p>Navigate to <strong>domain_name</strong> -&gt; <strong>environment</strong> -&gt; <strong>clusters</strong>.</p>
+</li>
+<li>
+<p>Click the cluster name.</p>
+</li>
+<li>
+<p>Click the <strong>HTTP</strong> tab.</p>
+</li>
+<li>
+<p>Enter the <strong>Frontend Host</strong> and <strong>Frontend Port</strong> details.</p>
+</li>
+</ol>
+<p><img src="/fmw-kubernetes/images/soa-domains/SOA_EDG_FrontEndAddress.png" alt="FrontEndAddress"></p>
+<blockquote>
+<p>Note: Set the front-end details for each cluster and for the Administration Server.</p>
+</blockquote>
+<h3 id="enable-fan-for-gridlink-data-sources">Enable FAN for GridLink data sources</h3>
+<p>Data sources in the default deployment for Oracle SOA Suite on Kubernetes use generic data sources. With ONS auto-registration in 12.2 Database and later, it is only necessary to enable FAN for the data sources to convert to GridLink (GLDS). You can do this by using the WebLogic Administration Console or the following command and restarting the Administration Server and the managed servers:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">grep -L fan-enabled $domain_home/config/jdbc/*.xml | xargs sed -i <span style="color:#e6db74">&#34;s/&lt;\/jdbc-data-source&gt;/&lt;jdbc-oracle-params&gt;&lt;fan-enabled&gt;true&lt;\/fan-enabled&gt;&lt;\/jdbc-oracle-params&gt;&lt;\/jdbc-data-source&gt;/g&#34;</span>
+</code></pre></div><p>After the change is applied, verify that all data sources are marked as <code>GridLink Data Sources</code> in the WebLogic Administration Console.</p>
+<h3 id="configure-asm">Configure ASM</h3>
+<p>Refer to the on-premises <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/soedg/extending-domain-oracle-soa-suite.html#GUID-82F8255C-2D71-4CBF-941A-59CD4F2AEC9A">Enterprise Deployment Guide</a> for steps to configure Automatic Service Migration.</p>
+<h3 id="configure-coredns-allocation">Configure coredns allocation</h3>
+<blockquote>
+<p><strong>NOTE</strong>: This step is applicable to any Kubernetes system using <code>coredns</code> regardless of Oracle SOA Suite deployment. However, the worker node creation is implicit in the setup, hence it is applied in this context (post Oracle SOA Suite deployment).</p>
+</blockquote>
+<p>Configure replicas for <code>cordens</code> to spawn both control plane and master plane. If a restore operation is performed on the control plane, worker nodes may stop working properly. If the <code>coredns</code> lands entirely in the worker nodes, the control plane may not function correctly if they are brought down for maintenance. Place at least two <code>coredns</code> pods on the control plane and another two on the worker nodes. The <code>coredns</code> footprint is low.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+
+<span style="color:#ae81ff">146268</span>  <span style="color:#ae81ff">41684</span>  <span style="color:#ae81ff">29088</span> S   0.3  0.1  25:44.04 coredns
+</code></pre></div><p>According to the <a href="https://github.com/coredns/deployment/blob/master/kubernetes/Scaling_CoreDNS.md#with-default-coredns-settings">CoreDNS documentation</a>, you can estimate the amount of memory required for a CoreDNS instance (using default settings) with the following formula:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">MB required <span style="color:#f92672">(</span>default settings<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Pods + Services<span style="color:#f92672">)</span> / <span style="color:#ae81ff">1000</span> + <span style="color:#ae81ff">54</span>
+</code></pre></div><p>Hence, first label nodes in both control and worker plane.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl label nodes olk8-m1 area<span style="color:#f92672">=</span>dnsarea
+$ kubectl label nodes olk8-m2 area<span style="color:#f92672">=</span>dnsarea
+$ kubectl label nodes olk8-m3 area<span style="color:#f92672">=</span>dnsarea
+$ kubectl label nodes olk8-w1 area<span style="color:#f92672">=</span>dnsarea
+$ kubectl label nodes olk8-w2 area<span style="color:#f92672">=</span>dnsarea
+$ kubectl label nodes olk8-w3 area<span style="color:#f92672">=</span>dnsarea
+</code></pre></div><p>And then update the <code>coredns</code> deployment to use topology spread constraints</p>
+<blockquote>
+<p><strong>NOTE</strong>: Topology spread constraints is beta starting in Kubernetes v1.18</p>
+</blockquote>
+<p>First, enable the feature gate in <code>kube-api</code> server and in <code>kube-scheduler</code>. Then, modify the <code>coredns</code> deployment for an appropriate spread of pods across worker and control plane nodes.</p>
+<p>The <code>coredns</code> topology spread config details are:</p>
+<p><strong>Click below for sample updated coredns deployment</strong>:
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Coredns deployment YAML
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>  $ kubectl get deployment coredns -n kube-system -o yaml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: &quot;7&quot;
+    creationTimestamp: &quot;2021-01-15T13:15:05Z&quot;
+    generation: 8
+    labels:
+      area: dnsarea
+      k8s-app: kube-dns
+    managedFields:
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:k8s-app: {}
+        f:spec:
+          f:progressDeadlineSeconds: {}
+          f:revisionHistoryLimit: {}
+          f:selector:
+            f:matchLabels:
+              .: {}
+              f:k8s-app: {}
+          f:strategy:
+            f:rollingUpdate:
+              .: {}
+              f:maxSurge: {}
+              f:maxUnavailable: {}
+            f:type: {}
+          f:template:
+            f:metadata:
+              f:labels:
+                .: {}
+                f:k8s-app: {}
+            f:spec:
+              f:containers:
+                k:{&quot;name&quot;:&quot;coredns&quot;}:
+                  .: {}
+                  f:args: {}
+                  f:image: {}
+                  f:imagePullPolicy: {}
+                  f:livenessProbe:
+                    .: {}
+                    f:failureThreshold: {}
+                    f:httpGet:
+                      .: {}
+                      f:path: {}
+                      f:port: {}
+                      f:scheme: {}
+                    f:initialDelaySeconds: {}
+                    f:periodSeconds: {}
+                    f:successThreshold: {}
+                    f:timeoutSeconds: {}
+                  f:name: {}
+                  f:ports:
+                    .: {}
+                    k:{&quot;containerPort&quot;:53,&quot;protocol&quot;:&quot;TCP&quot;}:
+                      .: {}
+                      f:containerPort: {}
+                      f:name: {}
+                      f:protocol: {}
+                    k:{&quot;containerPort&quot;:53,&quot;protocol&quot;:&quot;UDP&quot;}:
+                      .: {}
+                      f:containerPort: {}
+                      f:name: {}
+                      f:protocol: {}
+                    k:{&quot;containerPort&quot;:9153,&quot;protocol&quot;:&quot;TCP&quot;}:
+                      .: {}
+                      f:containerPort: {}
+                      f:name: {}
+                      f:protocol: {}
+                  f:readinessProbe:
+                    .: {}
+                    f:failureThreshold: {}
+                    f:httpGet:
+                      .: {}
+                      f:path: {}
+                      f:port: {}
+                      f:scheme: {}
+                    f:periodSeconds: {}
+                    f:successThreshold: {}
+                    f:timeoutSeconds: {}
+                  f:resources:
+                    .: {}
+                    f:limits:
+                      .: {}
+                      f:memory: {}
+                    f:requests:
+                      .: {}
+                      f:cpu: {}
+                      f:memory: {}
+                  f:securityContext:
+                    .: {}
+                    f:allowPrivilegeEscalation: {}
+                    f:capabilities:
+                      .: {}
+                      f:add: {}
+                      f:drop: {}
+                    f:readOnlyRootFilesystem: {}
+                  f:terminationMessagePath: {}
+                  f:terminationMessagePolicy: {}
+                  f:volumeMounts:
+                    .: {}
+                    k:{&quot;mountPath&quot;:&quot;/etc/coredns&quot;}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                      f:readOnly: {}
+              f:dnsPolicy: {}
+              f:nodeSelector:
+                .: {}
+                f:kubernetes.io/os: {}
+              f:priorityClassName: {}
+              f:restartPolicy: {}
+              f:schedulerName: {}
+              f:securityContext: {}
+              f:serviceAccount: {}
+              f:serviceAccountName: {}
+              f:terminationGracePeriodSeconds: {}
+              f:tolerations: {}
+              f:volumes:
+                .: {}
+                k:{&quot;name&quot;:&quot;config-volume&quot;}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:items: {}
+                    f:name: {}
+                  f:name: {}
+      manager: kubeadm
+      operation: Update
+      time: &quot;2021-01-15T13:15:05Z&quot;
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            f:area: {}
+        f:spec:
+          f:replicas: {}
+          f:template:
+            f:metadata:
+              f:annotations:
+                .: {}
+                f:kubectl.kubernetes.io/restartedAt: {}
+              f:labels:
+                f:foo: {}
+            f:spec:
+              f:topologySpreadConstraints:
+                .: {}
+                k:{&quot;topologyKey&quot;:&quot;area&quot;,&quot;whenUnsatisfiable&quot;:&quot;DoNotSchedule&quot;}:
+                  .: {}
+                  f:labelSelector:
+                    .: {}
+                    f:matchLabels:
+                      .: {}
+                      f:foo: {}
+                  f:maxSkew: {}
+                  f:topologyKey: {}
+                  f:whenUnsatisfiable: {}
+      manager: kubectl
+      operation: Update
+      time: &quot;2021-01-28T16:00:21Z&quot;
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:deployment.kubernetes.io/revision: {}
+        f:status:
+          f:availableReplicas: {}
+          f:conditions:
+            .: {}
+            k:{&quot;type&quot;:&quot;Available&quot;}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+            k:{&quot;type&quot;:&quot;Progressing&quot;}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+          f:observedGeneration: {}
+          f:readyReplicas: {}
+          f:replicas: {}
+          f:updatedReplicas: {}
+      manager: kube-controller-manager
+      operation: Update
+      time: &quot;2021-01-28T16:00:39Z&quot;
+    name: coredns
+    namespace: kube-system
+    resourceVersion: &quot;2520507&quot;
+    selfLink: /apis/apps/v1/namespaces/kube-system/deployments/coredns
+    uid: 79d24e61-98f4-434f-b682-132625b04c49
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 4
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: kube-dns
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: &quot;2021-01-28T15:29:48Z&quot;
+        creationTimestamp: null
+        labels:
+          foo: bar
+          k8s-app: kube-dns
+      spec:
+        containers:
+        - args:
+          - -conf
+          - /etc/coredns/Corefile
+          image: k8s.gcr.io/coredns:1.6.7
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: coredns
+          ports:
+          - containerPort: 53
+            name: dns
+            protocol: UDP
+          - containerPort: 53
+            name: dns-tcp
+            protocol: TCP
+          - containerPort: 9153
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ready
+              port: 8181
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 170Mi
+            requests:
+              cpu: 100m
+              memory: 70Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+              - NET_BIND_SERVICE
+              drop:
+              - all
+            readOnlyRootFilesystem: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/coredns
+            name: config-volume
+            readOnly: true
+        dnsPolicy: Default
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: coredns
+        serviceAccountName: coredns
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              foo: bar
+          maxSkew: 1
+          topologyKey: area
+          whenUnsatisfiable: DoNotSchedule
+        volumes:
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: Corefile
+              path: Corefile
+            name: coredns
+          name: config-volume
+  status:
+    availableReplicas: 4
+    conditions:
+    - lastTransitionTime: &quot;2021-01-21T19:08:12Z&quot;
+      lastUpdateTime: &quot;2021-01-21T19:08:12Z&quot;
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: &quot;True&quot;
+      type: Available
+    - lastTransitionTime: &quot;2021-01-28T15:29:48Z&quot;
+      lastUpdateTime: &quot;2021-01-28T16:00:39Z&quot;
+      message: ReplicaSet &quot;coredns-84b49c57fd&quot; has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: &quot;True&quot;
+      type: Progressing
+    observedGeneration: 8
+    readyReplicas: 4
+    replicas: 4
+    updatedReplicas: 4
+</code></pre>
+
+    </div>
+</div></p>
+<p>The labels and spread topology changes are:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  labels:
+        foo: bar
+        k8s-app: kube-dns
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        foo: bar
+    maxSkew: <span style="color:#ae81ff">1</span>
+    topologyKey: area
+    whenUnsatisfiable: DoNotSchedule
+</code></pre></div><p>This guarantees an even distribution across the master and worker nodes, so that if the control plane is restored, the worker pods will continue without issues and the other way around.</p>
+<p>Sample resulting <code>coredns</code> distribution:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -A -o wide | grep coredns
+kube-system   coredns-84b49c57fd-4fz4g                         1/1     Running     <span style="color:#ae81ff">0</span>          166m    10.244.1.20   olk8-m2   &lt;none&gt;           &lt;none&gt;
+kube-system   coredns-84b49c57fd-5mrkw                         1/1     Running     <span style="color:#ae81ff">0</span>          165m    10.244.4.76   olk8-w2   &lt;none&gt;           &lt;none&gt;
+kube-system   coredns-84b49c57fd-5zm88                         1/1     Running     <span style="color:#ae81ff">0</span>          165m    10.244.2.17   olk8-m3   &lt;none&gt;           &lt;none&gt;
+kube-system   coredns-84b49c57fd-nqlwb                         1/1     Running     <span style="color:#ae81ff">0</span>          166m    10.244.4.75   olk8-w2   &lt;none&gt;           &lt;none&gt;
+</code></pre></div><h3 id="adjust-servers-pods-liveness-probe">Adjust server&rsquo;s pods Liveness Probe</h3>
+<p>By default, the liveness probe is configured to check liveness every 45 seconds, which might cause requests to be routed to backend pods that are no longer available during outage scenarios. Recommended to adjust liveness probe values so that on hard node failures pods are marked as down faster. To configure a more aggressive probe, edit the domain and change the <code>serverPods.livenessProbe</code> values to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">livenessProbe:
+   failureThreshold: <span style="color:#ae81ff">1</span>
+   initialDelaySeconds: <span style="color:#ae81ff">30</span>
+   periodSeconds: <span style="color:#ae81ff">5</span>
+   successThreshold: <span style="color:#ae81ff">1</span>
+   timeoutSeconds: <span style="color:#ae81ff">3</span>
+</code></pre></div><p>Refer WebLogic Kubernetes Operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-lifecycle/liveness-readiness-probe-customization/#liveness-probe-customization">documentation</a> for details on how to customize the liveness probe.</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/22.4.2/soa-domains/edg-guide/topology/" title="Topology"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/22.4.2/soa-domains/faq/" title="Frequently Asked Questions" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/22.4.2/js/clipboard.min.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/perfect-scrollbar.min.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/perfect-scrollbar.jquery.min.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/jquery.sticky.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/featherlight.min.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/highlight.pack.js?1669986843"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/22.4.2/js/modernizr.custom-3.6.0.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/learn.js?1669986843"></script>
+    <script src="/fmw-kubernetes/22.4.2/js/hugo-learn.js?1669986843"></script>
+
+    <link href="/fmw-kubernetes/22.4.2/mermaid/mermaid.css?1669986843" rel="stylesheet" />
+    <script src="/fmw-kubernetes/22.4.2/mermaid/mermaid.js?1669986843"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
