@@ -138,12 +138,14 @@ Run `managed-server-wrapper` script, which internally applies the domain YAML. T
 ```    
 $ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
 
-$ ./start-managed-servers-wrapper.sh -o <path_to_output_directory> -p <load_balancer_port> -n <ibr_node_port> -m <ucm_node_port>
+$ ./start-managed-servers-wrapper.sh -o <path_to_output_directory> -p <load_balancer_port> -n <ibr_node_port> -m <ucm_node_port> -s <ssl_termination>
 ```    
 
 > Note: In the above command, parameters `-n` and `-m` refers to the node-ports to be used for exposing `IBR intradoc port` and `UCM intradoc port` respectively.
   Suggested values for both these node-ports should be within a range of 30000-32767.
   Please keep in mind that `<ibr_node_port>` value must be specified at all time, whereas `<ucm_node_port>` value is only required when IPM and ADFUI Managed Servers are enabled.
+  A value for parameter `-s` needs to be provided only if SSL termination at loadbalancer is being used - acceptable value is either `true` or `false`. 
+  If this parameter value is not supplied, the script assumes that ssl termination at loadbalancer is not being used and by default the value will be taken as `false`. 
 
 #### Run the startup configuration scripts for IPM and WCCADF applications as applicable
 

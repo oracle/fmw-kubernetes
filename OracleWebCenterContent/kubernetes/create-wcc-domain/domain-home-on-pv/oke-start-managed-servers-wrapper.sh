@@ -1,20 +1,21 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
 function  usage {
-  echo usage: ${script} -o path_to_output_dir -l load_balancer_external_ip -p load_balancer_port [-u ucm_intradocport] [-i ibr_intradocport] [-h]
+  echo usage: ${script} -o path_to_output_dir -l load_balancer_external_ip -p load_balancer_port [-u ucm_intradocport] [-i ibr_intradocport] [-s ssl_termination] [-h]
   echo "  -o output directory which was used during domain creation to generate yaml files, must be specified."
   echo "  -l load balancer external ip, must be specified."
   echo "  -p load balancer port, must be specified."
   echo "  -u ucm intradocport, optional"
   echo "  -i ibr intradocport, optional"
+  echo "  -s provide if ssl termination at loadbalancer is used (acceptable value is either true or false) - optional"
   echo "  -h Help"
   exit $1
 }
 
-while getopts "ho:l:p:u:i:" opt; do
+while getopts "ho:l:p:u:i:s:" opt; do
   case $opt in
 	o) outputDir="${OPTARG}"
 	;;
@@ -25,6 +26,8 @@ while getopts "ho:l:p:u:i:" opt; do
 	u) UCMIntradocPort="${OPTARG}"
 	;;
 	i) IBRIntradocPort="${OPTARG}"
+	;;
+	s) SSLTermination="${OPTARG}"
 	;;
 	h) usage 0
 	;;
@@ -54,6 +57,10 @@ fi
 
 if [ -z ${IBRIntradocPort} ]; then
      IBRIntradocPort=5555
+fi
+
+if [ -z ${SSLTermination} ]; then
+     SSLTermination=false
 fi
 
 function wait_admin_pod {
@@ -114,6 +121,12 @@ adminServerName=${adminServerName//*adminServerName: /};
 managedServerNameBase=$(grep  'managedServerNameBase:' create-domain-inputs.yaml);
 managedServerNameBase=${managedServerNameBase//*managedServerNameBase: /};
 
+sslEnabled=$(grep  'sslEnabled:' create-domain-inputs.yaml);
+sslEnabled=${sslEnabled//*sslEnabled: /};
+
+loadBalancerType=$(grep  'loadBalancerType:' create-domain-inputs.yaml);
+loadBalancerType=${loadBalancerType//*loadBalancerType: /};
+
 adminPod=$domainUID-$adminServerName
 ucmPod=$domainUID-$managedServerNameBase
 
@@ -140,11 +153,23 @@ then
     truncatedhostname=${truncatedhostname:0:14}
 fi
 
-sed -i "s/@UCM_PORT@/$UCM_PORT/g" autoinstall.cfg.cs
+if [ $loadBalancerType == "nginx" ]; then
+	sed -i "s/:@UCM_PORT@//g" autoinstall.cfg.cs
+	sed -i "s/@UCM_PORT@/$UCM_PORT/g" autoinstall.cfg.cs
+else
+	sed -i "s/@UCM_PORT@/$UCM_PORT/g" autoinstall.cfg.cs
+fi
+
 sed -i "s/@INSTALL_HOST_FQDN@/$hostname/g" autoinstall.cfg.cs
 sed -i "s/@INSTALL_HOST_NAME@/$hostalias/g" autoinstall.cfg.cs
 sed -i "s/@HOST_NAME_PREFIX@/$truncatedhostname/g" autoinstall.cfg.cs
 sed -i "s/@UCM_INTRADOC_PORT@/$UCM_INTRADOC_PORT/g" autoinstall.cfg.cs
+
+if [ "${SSLTermination}" == "true" ]; then
+	sed -i "s/@SSL_ENABLED@/$SSLTermination/g" autoinstall.cfg.cs
+else
+	sed -i "s/@SSL_ENABLED@/$sslEnabled/g" autoinstall.cfg.cs
+fi
 
 kubectl cp  autoinstall.cfg.cs $domainNS/$domainUID-ucm-server1:/u01/oracle/user_projects/domains/$domainUID/ucm/cs/bin/autoinstall.cfg
 
@@ -152,6 +177,7 @@ sed -i "s/@IBR_PORT@/$IBR_PORT/g" autoinstall.cfg.ibr
 sed -i "s/@INSTALL_HOST_FQDN@/$hostname/g" autoinstall.cfg.ibr
 sed -i "s/@INSTALL_HOST_NAME@/$hostalias/g" autoinstall.cfg.ibr
 sed -i "s/@IBR_INTRADOC_PORT@/$IBR_INTRADOC_PORT/g" autoinstall.cfg.ibr
+sed -i "s/@SSL_ENABLED@/$sslEnabled/g" autoinstall.cfg.ibr
 
 kubectl cp  autoinstall.cfg.ibr $domainNS/$domainUID-ibr-server1:/u01/oracle/user_projects/domains/$domainUID/ucm/ibr/bin/autoinstall.cfg
 

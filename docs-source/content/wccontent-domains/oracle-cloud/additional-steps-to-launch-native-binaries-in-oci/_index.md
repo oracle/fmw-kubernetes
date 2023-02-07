@@ -1,18 +1,18 @@
 ---
-title: "Launch Oracle Webcenter Content Native Applications in Containers"
+title: "Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure"
 date: 2020-12-3T07:32:31-05:00
-weight: 4
-pre : "<b>  </b>"
-description: "How to launch Oracle WebCenter Content native binaries from inside containerized environment."
+weight: 7
+pre : "<b>7. </b>"
+description: "How to launch Oracle WebCenter Content native binaries from inside containerized environment in OCI."
 ---
 
-This section provides the steps required to use product native binaries with user interfaces.
+This section provides the steps required to use Oracle WebCenter Content native binaries with user interfaces, from containerized Managed Servers deployed in OCI. 
 
 ### Issue with Launching Headful User Interfaces for Oracle WebCenter Content Native Binaries
 
 Oracle WebCenter Content (UCM) provide a set of native binaries with headful UIs, which are delivered as part of the product container image. 
-WebCenter Content container images are, by default, created with Oracle slim linux image, which doesn't come with all the packages pre-installed to support headful applications with UIs to be launched. UCM provides many such native binaries which uses JAVA AWT for UI support.
-With current Oracle WebCenter Content container images, running native applications fails, being unable to launch UIs.
+WebCenter Content container images are, by default, created with Oracle slim linux image, which doesn't come with all the packages pre-installed to support headful applications with UIs to be launched. UCM provides many such native binaries which uses JAVA AWT for UI support. 
+With current Oracle WebCenter Content container images, native applications fails to run, being unable to launch UIs.
 
 The following sections document the solution, by providing a set of instructions, enabling users to run UCM native applications with UIs.
 
@@ -83,6 +83,7 @@ $ docker inspect -f '{{.Config.Cmd}}' <name_of_updated_Wccontent_image>
 ### Steps to launch Oracle WebCenter Content native applications using VNC sessions.
 
 Once updated image is successfully built and available on all required nodes, do the following:
+
 a.  Update the domain.yaml file with updated image name and apply the domain.yaml file.  
 ```
 $ kubectl apply -f domain.yaml
@@ -93,47 +94,52 @@ b.  After applying the modified domain.yaml, pods will get restarted and start r
 ```
 $ kubectl get pods -n <namespace_being_used_for_wccontent_domain>
 ```
-c.  Create VNC sessions on the master node to launch native apps. These are the steps to be followed using the VNC session.
+c.  Install VNC SERVER on any one worker node, on which there is an UCM server pod deployed.
 
-d.  Run this command on each VNC session:
-
-```
-$ xhost + <HOST-IP or HOST-NAME of the node, on which POD is deployed> 
-```
->Note: The above command works for multi-node clusters (in which master node and worker nodes are deployed on different hosts and pods are distributed among worker nodes, running on different hosts). In case of single node clusters (where there is only master node and no worker nodes and all pods are deployed on the host, on which master node is
-running), one needs to use container/pod’s IP instead of the master-node’s HOST-IP itself.
-
-To obtain the container IP, follow the command mentioned in step `g`, from within that container's shell.
+d.  After starting vncserver systemctl daemon in the Worker Node, execute the following command from Bastion Host to the Private Subnet Instance (Worker Node).
 
 ```
-$ xhost + <IP of the container, from which binaries are to be run >  
+# The default VNC port is 5900, but that number is incremented according to the configured display number. Thus, display 1 corresponds to 5901, display 2 to 5902, and so on.
+$ ssh -i <Workernode_private.key> -L 590<display_number>:localhost:590<display_number> -p 22 -L 590<display number>:localhost:590<display number> -N -f <user>@<Workernode_privateIPAddress>
+
+# Sample command 
+$ ssh -i <Workernode_private.key> -L 5901:localhost:5901 -p 22 -L 5901:localhost:5901 -N -f opc@10.0.10.xx
 ```
-e.  Get into the pod's (for example, `wccinfra-ucm-server1`) shell:
+
+e.  From personal client execute the below command with the above session opened.
 
 ```
-$ kubectl exec -n wccns -it wccinfra-ucm-server1 -- /bin/bash 
+# Use any Linux emulator (like, Windows Power Shell for Windows) to run the following command
+$ ssh -i <Bastionnode_private.key> -L 590<display_number>:localhost:590<display_number> -p 22 -L 590<display_number>:localhost:590<display_number> -N -f <user>@<BastionHost_publicIPAddress>
+
+#  Sample command
+$ ssh -i <Bastionnode_private.key> -L 5901:localhost:5901 -p 22 -L 5901:localhost:5901 -N -f opc@129.xxx.249.xxx
 ```
-f.  Traverse to the binaries location:
+
+f.  Open VNC Client software in personal client and connect to Worker Node VNC Server using `localhost:590<display_number>`.
+
+g.  Open a terminal once the VNC session to the Worker Node is connected -
 
 ```
-$ cd /u01/oracle/user_projects/domains/wccinfra/ucm/cs/bin 
+$ xhost +
 ```
-g.  Get the container IP:
+h.  Run the following commands from Bastion Host terminal –
 
 ```
-$ hostname -i 
-```
-h.  Set DISPLAY variable within the container:
+# Get into the pod's (for example, wccinfra-ucm-server1) shell:
+$ kubectl exec -n wccns -it wccinfra-ucm-server1 -- /bin/bash
 
-```
-$ export DISPLAY=<HOST-IP/HOST-NAME of the master node, where VNC session was
-created>:vnc-session display-id 
-```
-i.  Launch any native UCM application, from within the container, like this:
+# Traverse to the Native Binaries' location
+$ cd /u01/oracle/user_projects/domains/wccinfra/ucm/cs/bin
 
+# Set DISPLAY variable within the container
+$ export DISPLAY=<Workernode_privateIPAddress, where VNC session was created>:<dispay_number>
+# Sample command 
+$ export DISPLAY=10.0.10.xx:1
+
+# Launch any native UCM application, from within the container, like this:
+$ ./SystemProperties 
 ```
-$ ./SystemProperties
-```
-If the application has an UI, it will get launched now.
+i. If the application has an UI, it'll get launched now in the VNC session connected from personal client.
 
 
