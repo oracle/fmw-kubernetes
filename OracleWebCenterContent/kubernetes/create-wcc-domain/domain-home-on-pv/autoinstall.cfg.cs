@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
@@ -14,6 +14,7 @@ IDC_Name=@INSTALL_HOST_NAME@@UCM_PORT@
 InstanceMenuLabel=@INSTALL_HOST_NAME@@UCM_PORT@
 InstanceDescription=Instance @INSTALL_HOST_NAME@@UCM_PORT@
 HttpServerAddress=@INSTALL_HOST_FQDN@:@UCM_PORT@
+UseSSL=@SSL_ENABLED@
 MailServer=mail.oracle.com
 SysAdminAddress=first.last@oracle.com
 

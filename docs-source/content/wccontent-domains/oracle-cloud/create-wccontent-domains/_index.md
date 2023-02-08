@@ -44,8 +44,11 @@ Run `oke-start-managed-server-wrapper.sh` script, which intrenally applies the d
 ```
 $ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
 
-$ ./oke-start-managed-servers-wrapper.sh -o <path_to_output_directory> -l <load_balancer_external_ip> -p <load_balancer_port>
+$ ./oke-start-managed-servers-wrapper.sh -o <path_to_output_directory> -l <load_balancer_external_ip> -p <load_balancer_port> -s <ssl_termination>
 ```
+> Note: A value for parameter `-s` needs to be provided only if SSL termination at loadbalancer is being used - acceptable value is either `true` or `false`. 
+  If this parameter value is not supplied, the script assumes that ssl termination at loadbalancer is not being used and by default the value will be taken as `false`.
+  
 #### Run the startup configuration scripts for IPM and WCCADF applications as applicable
 
 Run the script `configure-ipm-connection.sh` to do startup configurations if IPM is enabled.
