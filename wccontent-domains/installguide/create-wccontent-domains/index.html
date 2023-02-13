@@ -12,18 +12,18 @@
     <title>Create Oracle WebCenter Content domain :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1674558936" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1674558936" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1675939346" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1674558936"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1675939346"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1674558936"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1674558936"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1675939346"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1675939346"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1674558936"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1675939346"></script>
 
     
   </div>
@@ -1663,6 +1663,30 @@
         </a>
     </li>
      
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/additional-steps-to-launch-native-binaries-in-oci/" title="Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/additional-steps-to-launch-native-binaries-in-oci/">
+          <b>7. </b>Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure
+          
+      </a>
+      
+              
+    </li>
   
  
 
@@ -5630,11 +5654,13 @@ created by the create script.</li>
 <p>Run <code>managed-server-wrapper</code> script, which internally applies the domain YAML. This script also applies initial configurations for Managed Server containers and readies Managed Servers for future inter-container communications.</p>
 <pre><code>$ cd ${WORKDIR}/create-wcc-domain/domain-home-on-pv/
 
-$ ./start-managed-servers-wrapper.sh -o &lt;path_to_output_directory&gt; -p &lt;load_balancer_port&gt; -n &lt;ibr_node_port&gt; -m &lt;ucm_node_port&gt;
+$ ./start-managed-servers-wrapper.sh -o &lt;path_to_output_directory&gt; -p &lt;load_balancer_port&gt; -n &lt;ibr_node_port&gt; -m &lt;ucm_node_port&gt; -s &lt;ssl_termination&gt;
 </code></pre><blockquote>
 <p>Note: In the above command, parameters <code>-n</code> and <code>-m</code> refers to the node-ports to be used for exposing <code>IBR intradoc port</code> and <code>UCM intradoc port</code> respectively.
 Suggested values for both these node-ports should be within a range of 30000-32767.
-Please keep in mind that <code>&lt;ibr_node_port&gt;</code> value must be specified at all time, whereas <code>&lt;ucm_node_port&gt;</code> value is only required when IPM and ADFUI Managed Servers are enabled.</p>
+Please keep in mind that <code>&lt;ibr_node_port&gt;</code> value must be specified at all time, whereas <code>&lt;ucm_node_port&gt;</code> value is only required when IPM and ADFUI Managed Servers are enabled.
+A value for parameter <code>-s</code> needs to be provided only if SSL termination at loadbalancer is being used - acceptable value is either <code>true</code> or <code>false</code>.
+If this parameter value is not supplied, the script assumes that ssl termination at loadbalancer is not being used and by default the value will be taken as <code>false</code>.</p>
 </blockquote>
 <h4 id="run-the-startup-configuration-scripts-for-ipm-and-wccadf-applications-as-applicable">Run the startup configuration scripts for IPM and WCCADF applications as applicable</h4>
 <p>Run the script configure-ipm-connection.sh to do startup configurations if IPM is enabled.</p>
@@ -7513,6 +7539,22 @@ wccinfra-cluster-ibr-cluster-ext NodePort 10.109.247.52 &lt;none&gt;     5555:30
                     
             
         
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
             
         
@@ -9973,19 +10015,19 @@ wccinfra-cluster-ibr-cluster-ext NodePort 10.109.247.52 &lt;none&gt;     5555:30
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1674558936"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1675939346"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1674558936"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1674558936"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1675939346"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1674558936" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1674558936"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1675939346" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1675939346"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
