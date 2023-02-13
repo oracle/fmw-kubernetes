@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="How to launch Oracle WebCenter Content native binaries from inside containerized environment.">
+    <meta name="description" content="How to launch Oracle WebCenter Content native binaries from inside containerized environment in OCI.">
 
 
     <link rel="icon" href="/fmw-kubernetes/images/favicon.png" type="image/png">
 
-    <title>Launch Oracle Webcenter Content Native Applications in Containers :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/css/nucleus.css?1675939346" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/">
+  <body class="" data-url="/fmw-kubernetes/wccontent-domains/oracle-cloud/additional-steps-to-launch-native-binaries-in-oci/">
     <nav id="sidebar" class="">
 
 
@@ -960,7 +960,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wccontent-domains/installguide/" title="Install Guide" class="dd-item 
-        parent
+        
         
         
         ">
@@ -1059,8 +1059,8 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/" title="Launch Oracle Webcenter Content Native Applications in Containers" class="dd-item 
-        parent
-        active
+        
+        
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/installguide/additional-steps-to-launch-native-binaries/">
@@ -1429,7 +1429,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/" title="Oracle Cloud Infrastructure" class="dd-item 
-        
+        parent
         
         
         ">
@@ -1676,8 +1676,8 @@
   
     
     <li data-nav-id="/fmw-kubernetes/wccontent-domains/oracle-cloud/additional-steps-to-launch-native-binaries-in-oci/" title="Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure" class="dd-item 
-        
-        
+        parent
+        active
         
         ">
       <a href="/fmw-kubernetes/wccontent-domains/oracle-cloud/additional-steps-to-launch-native-binaries-in-oci/">
@@ -5310,7 +5310,7 @@
             
           
           
-            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wccontent-domains/'>Oracle WebCenter Content</a> > <a href='/fmw-kubernetes/wccontent-domains/installguide/'>Install Guide</a> > Launch Oracle Webcenter Content Native Applications in Containers
+            <a href='/fmw-kubernetes/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/wccontent-domains/'>Oracle WebCenter Content</a> > <a href='/fmw-kubernetes/wccontent-domains/oracle-cloud/'>Oracle Cloud Infrastructure</a> > Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure
           
          
           
@@ -5351,7 +5351,7 @@
           
             <h1>
               
-              Launch Oracle Webcenter Content Native Applications in Containers
+              Launch Oracle Webcenter Content Native Applications in Containers deployed in Oracle Cloud Infrastructure
             </h1>
           
 
@@ -5360,11 +5360,11 @@
 
 
 
-	<p>This section provides the steps required to use product native binaries with user interfaces.</p>
+	<p>This section provides the steps required to use Oracle WebCenter Content native binaries with user interfaces, from containerized Managed Servers deployed in OCI.</p>
 <h3 id="issue-with-launching-headful-user-interfaces-for-oracle-webcenter-content-native-binaries">Issue with Launching Headful User Interfaces for Oracle WebCenter Content Native Binaries</h3>
 <p>Oracle WebCenter Content (UCM) provide a set of native binaries with headful UIs, which are delivered as part of the product container image.
 WebCenter Content container images are, by default, created with Oracle slim linux image, which doesn&rsquo;t come with all the packages pre-installed to support headful applications with UIs to be launched. UCM provides many such native binaries which uses JAVA AWT for UI support.
-With current Oracle WebCenter Content container images, running native applications fails, being unable to launch UIs.</p>
+With current Oracle WebCenter Content container images, native applications fails to run, being unable to launch UIs.</p>
 <p>The following sections document the solution, by providing a set of instructions, enabling users to run UCM native applications with UIs.</p>
 <p>These instructions are divided in two parts -</p>
 <ol>
@@ -5408,32 +5408,42 @@ USER oracle
 <pre><code>$ docker inspect -f '{{.Config.Cmd}}' &lt;name_of_updated_Wccontent_image&gt;
 [/u01/oracle/container-scripts/createDomainandStartAdmin.sh]
 </code></pre><h3 id="steps-to-launch-oracle-webcenter-content-native-applications-using-vnc-sessions">Steps to launch Oracle WebCenter Content native applications using VNC sessions.</h3>
-<p>Once updated image is successfully built and available on all required nodes, do the following:
-a.  Update the domain.yaml file with updated image name and apply the domain.yaml file.</p>
+<p>Once updated image is successfully built and available on all required nodes, do the following:</p>
+<p>a.  Update the domain.yaml file with updated image name and apply the domain.yaml file.</p>
 <pre><code>$ kubectl apply -f domain.yaml
 </code></pre><p>b.  After applying the modified domain.yaml, pods will get restarted and start running with updated image with required packages.</p>
 <pre><code>$ kubectl get pods -n &lt;namespace_being_used_for_wccontent_domain&gt;
-</code></pre><p>c.  Create VNC sessions on the master node to launch native apps. These are the steps to be followed using the VNC session.</p>
-<p>d.  Run this command on each VNC session:</p>
-<pre><code>$ xhost + &lt;HOST-IP or HOST-NAME of the node, on which POD is deployed&gt; 
-</code></pre><blockquote>
-<p>Note: The above command works for multi-node clusters (in which master node and worker nodes are deployed on different hosts and pods are distributed among worker nodes, running on different hosts). In case of single node clusters (where there is only master node and no worker nodes and all pods are deployed on the host, on which master node is
-running), one needs to use container/pod’s IP instead of the master-node’s HOST-IP itself.</p>
-</blockquote>
-<p>To obtain the container IP, follow the command mentioned in step <code>g</code>, from within that container&rsquo;s shell.</p>
-<pre><code>$ xhost + &lt;IP of the container, from which binaries are to be run &gt;  
-</code></pre><p>e.  Get into the pod&rsquo;s (for example, <code>wccinfra-ucm-server1</code>) shell:</p>
-<pre><code>$ kubectl exec -n wccns -it wccinfra-ucm-server1 -- /bin/bash 
-</code></pre><p>f.  Traverse to the binaries location:</p>
-<pre><code>$ cd /u01/oracle/user_projects/domains/wccinfra/ucm/cs/bin 
-</code></pre><p>g.  Get the container IP:</p>
-<pre><code>$ hostname -i 
-</code></pre><p>h.  Set DISPLAY variable within the container:</p>
-<pre><code>$ export DISPLAY=&lt;HOST-IP/HOST-NAME of the master node, where VNC session was
-created&gt;:vnc-session display-id 
-</code></pre><p>i.  Launch any native UCM application, from within the container, like this:</p>
-<pre><code>$ ./SystemProperties
-</code></pre><p>If the application has an UI, it will get launched now.</p>
+</code></pre><p>c.  Install VNC SERVER on any one worker node, on which there is an UCM server pod deployed.</p>
+<p>d.  After starting vncserver systemctl daemon in the Worker Node, execute the following command from Bastion Host to the Private Subnet Instance (Worker Node).</p>
+<pre><code># The default VNC port is 5900, but that number is incremented according to the configured display number. Thus, display 1 corresponds to 5901, display 2 to 5902, and so on.
+$ ssh -i &lt;Workernode_private.key&gt; -L 590&lt;display_number&gt;:localhost:590&lt;display_number&gt; -p 22 -L 590&lt;display number&gt;:localhost:590&lt;display number&gt; -N -f &lt;user&gt;@&lt;Workernode_privateIPAddress&gt;
+
+# Sample command 
+$ ssh -i &lt;Workernode_private.key&gt; -L 5901:localhost:5901 -p 22 -L 5901:localhost:5901 -N -f opc@10.0.10.xx
+</code></pre><p>e.  From personal client execute the below command with the above session opened.</p>
+<pre><code># Use any Linux emulator (like, Windows Power Shell for Windows) to run the following command
+$ ssh -i &lt;Bastionnode_private.key&gt; -L 590&lt;display_number&gt;:localhost:590&lt;display_number&gt; -p 22 -L 590&lt;display_number&gt;:localhost:590&lt;display_number&gt; -N -f &lt;user&gt;@&lt;BastionHost_publicIPAddress&gt;
+
+#  Sample command
+$ ssh -i &lt;Bastionnode_private.key&gt; -L 5901:localhost:5901 -p 22 -L 5901:localhost:5901 -N -f opc@129.xxx.249.xxx
+</code></pre><p>f.  Open VNC Client software in personal client and connect to Worker Node VNC Server using <code>localhost:590&lt;display_number&gt;</code>.</p>
+<p>g.  Open a terminal once the VNC session to the Worker Node is connected -</p>
+<pre><code>$ xhost +
+</code></pre><p>h.  Run the following commands from Bastion Host terminal –</p>
+<pre><code># Get into the pod's (for example, wccinfra-ucm-server1) shell:
+$ kubectl exec -n wccns -it wccinfra-ucm-server1 -- /bin/bash
+
+# Traverse to the Native Binaries' location
+$ cd /u01/oracle/user_projects/domains/wccinfra/ucm/cs/bin
+
+# Set DISPLAY variable within the container
+$ export DISPLAY=&lt;Workernode_privateIPAddress, where VNC session was created&gt;:&lt;dispay_number&gt;
+# Sample command 
+$ export DISPLAY=10.0.10.xx:1
+
+# Launch any native UCM application, from within the container, like this:
+$ ./SystemProperties 
+</code></pre><p>i. If the application has an UI, it&rsquo;ll get launched now in the VNC session connected from personal client.</p>
 
 
 
@@ -6094,7 +6104,6 @@ created&gt;:vnc-session display-id
             
                 
                     
-                    
                 
                 
 
@@ -6109,9 +6118,6 @@ created&gt;:vnc-session display-id
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -6161,7 +6167,6 @@ created&gt;:vnc-session display-id
             
                 
                     
-                    
                 
                 
 
@@ -6180,9 +6185,6 @@ created&gt;:vnc-session display-id
             
             
                 
-                    
-                        
-                        
                     
                 
                 
@@ -6426,6 +6428,7 @@ created&gt;:vnc-session display-id
             
                 
                     
+                    
                 
                 
 
@@ -6440,6 +6443,9 @@ created&gt;:vnc-session display-id
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -6601,6 +6607,7 @@ created&gt;:vnc-session display-id
             
                 
                     
+                    
                 
                 
 
@@ -6619,6 +6626,9 @@ created&gt;:vnc-session display-id
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -9007,10 +9017,10 @@ created&gt;:vnc-session display-id
 	 
 	 
 		
-			<a class="nav nav-prev" href="/fmw-kubernetes/wccontent-domains/installguide/create-wccontent-domains/" title="Create Oracle WebCenter Content domain"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/fmw-kubernetes/wccontent-domains/oracle-cloud/configure-mount-share/" title="Configure an additional mount or shared space to a domain for Imaging and Capture"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/wccontent-domains/adminguide/" title="Administration Guide" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/fmw-kubernetes/wccontent-domains/appendix/" title="Appendix" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
