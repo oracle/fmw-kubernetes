@@ -33,6 +33,7 @@ Update the values in the `maak8master.env`, `maak8worker.env` and `maak8soa.env`
 | `share_dir` | Kubernetes PV shared storage that will host the Oracle SOA Suite domain. | `/k8nfs` |
 | `script_dir` | Directory for deployment scripts | `/scripts` |
 | `output_dir` | Location to generate the output log and deployment files | `/soak8edg/output$dt` |
+| `log_dir` | Location to generate output log | `/scratch/k8logs` |
 | `user` | User with passwordless sudo access to the master node| `myuser` |
 | `ssh_key` | ssh key for master node access | `/home/myuser/KeySOAMAA.ppk` |
 | `mnode1` | Kubernetes control plane node1 hostname | `olk8-m1` |
@@ -41,7 +42,7 @@ Update the values in the `maak8master.env`, `maak8worker.env` and `maak8soa.env`
 | `wnode1` | Worker node1 hostname | `olk8-w1` |
 | `wnode2` | Worker node2 hostname | `olk8-w2` |
 | `wnode3` | Worker node3 hostname | `olk8-w3` |
-| `helm_version` | Helm version to be used | `3.5.4` |
+| `helm_version` | Helm version to be used | `3.10.2` |
 | `wlsoperator_version` | WebLogic Kubernetes Operator version to be used | `3.4.4` |
 | `soak8branch` | fmw-kubernetes release version | `22.4.2`  |
 | `soaimage` | Oracle SOA Suite Docker image | `soasuite:12.2.1.4`  |

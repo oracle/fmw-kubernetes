@@ -20,11 +20,11 @@ $ ./create-pv-pvc.sh \
   -o /path/to/output-directory
 ```
 
-The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `kubectl create -f` command.
+The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `${KUBERNETES_CLI:-kubectl} create -f` command.
 
 ```
-$ kubectl create -f soainfra-domain-pv.yaml
-$ kubectl create -f soainfra-domain-pvc.yaml
+$ ${KUBERNETES_CLI:-kubectl} create -f soainfra-domain-pv.yaml
+$ ${KUBERNETES_CLI:-kubectl} create -f soainfra-domain-pvc.yaml
 
 ```
 
@@ -171,7 +171,7 @@ You can use this command to verify the persistent volume was created, note that 
 should have the value `Bound`, indicating the that persistent volume has been claimed:
 
 ```
-$ kubectl describe pv soainfra-domain-pv
+$ ${KUBERNETES_CLI:-kubectl} describe pv soainfra-domain-pv
 Name:            soainfra-domain-pv
 Annotations:     pv.kubernetes.io/bound-by-controller=yes
 StorageClass:    soainfra-domain-storage-class
@@ -192,7 +192,7 @@ Events:            <none>
 You can use this command to verify the persistent volume claim was created:
 
 ```
-$ kubectl describe pvc soainfra-domain-pvc
+$ ${KUBERNETES_CLI:-kubectl} describe pvc soainfra-domain-pvc
 Name:          soainfra-domain-pvc
 Namespace:     default
 StorageClass:  soainfra-domain-storage-class

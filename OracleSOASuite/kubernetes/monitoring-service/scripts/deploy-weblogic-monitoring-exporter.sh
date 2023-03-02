@@ -19,8 +19,8 @@ function toDNS1123Legal {
 }
 
 # username and password from Kubernetes secret
-username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
-password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
 adminServerPodName="${domainUID}-$(toDNS1123Legal ${adminServerName})"
 
@@ -30,8 +30,8 @@ InputParameterList="${InputParameterList} -osbClusterName ${osbClusterName} -wls
 
 echo "Deploying WebLogic Monitoring Exporter with domainNamespace[$domainNamespace], domainUID[$domainUID], adminServerPodName[$adminServerPodName]"
 . $scriptDir/get-wls-exporter.sh 
-kubectl cp $scriptDir/wls-exporter-deploy ${domainNamespace}/${adminServerPodName}:/u01/oracle
-kubectl cp $scriptDir/deploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/wls-exporter-deploy
-EXEC_DEPLOY="kubectl exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py ${InputParameterList}"
+${KUBERNETES_CLI:-kubectl} cp $scriptDir/wls-exporter-deploy ${domainNamespace}/${adminServerPodName}:/u01/oracle
+${KUBERNETES_CLI:-kubectl} cp $scriptDir/deploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/wls-exporter-deploy
+EXEC_DEPLOY="${KUBERNETES_CLI:-kubectl} exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py ${InputParameterList}"
 eval ${EXEC_DEPLOY}
 

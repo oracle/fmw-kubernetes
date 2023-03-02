@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -103,7 +103,8 @@ function initialize {
   # Validate the required files exist
   validateErrors=false
 
-  validateKubectlAvailable
+  #validateKubectlAvailable
+  validateKubernetesCLIAvailable
 
   if [ -z "${valuesInputFile}" ]; then
     validationError "You must use the -i option to specify the name of the inputs parameter file (a modified copy of kubernetes/create-soa-domain/domain-home-on-pv/deploy-artifacts-inputs.yaml)."
@@ -249,14 +250,14 @@ function deployConfigmap {
      cp ${deployScriptFilesDir}/soa/* ${soaExternalFilesTmpDir}/
      cp ${deployOutputDir}/deploy-artifacts-inputs.yaml ${soaExternalFilesTmpDir}/
      local cmName=${domainUID}-deploy-scripts-soa-job-cm
-     kubectl create configmap ${cmName} -n $namespace --from-file $soaExternalFilesTmpDir --dry-run=client -o yaml | kubectl apply -f -
+     ${KUBERNETES_CLI:-kubectl} create configmap ${cmName} -n $namespace --from-file $soaExternalFilesTmpDir --dry-run=client -o yaml | ${KUBERNETES_CLI:-kubectl} apply -f -
      echo Checking the configmap $cmName was created
-     local num=`kubectl get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
+     local num=`${KUBERNETES_CLI:-kubectl} get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
      if [ "$num" != "1" ]; then
        fail "The configmap ${cmName} was not created"
      fi
 
-     kubectl label configmap ${cmName} --overwrite=true -n $namespace weblogic.domainUID=$domainUID weblogic.domainName=$domainName
+     ${KUBERNETES_CLI:-kubectl} label configmap ${cmName} --overwrite=true -n $namespace weblogic.domainUID=$domainUID weblogic.domainName=$domainName
      rm -rf $soaExternalFilesTmpDir
   fi
  
@@ -267,14 +268,14 @@ function deployConfigmap {
      cp ${deployScriptFilesDir}/osb/* ${osbExternalFilesTmpDir}/
      cp ${deployOutputDir}/deploy-artifacts-inputs.yaml ${osbExternalFilesTmpDir}/
      local cmName=${domainUID}-deploy-scripts-osb-job-cm
-     kubectl create configmap ${cmName} -n $namespace --from-file $osbExternalFilesTmpDir --dry-run=client -o yaml | kubectl apply -f -
+     ${KUBERNETES_CLI:-kubectl} create configmap ${cmName} -n $namespace --from-file $osbExternalFilesTmpDir --dry-run=client -o yaml | ${KUBERNETES_CLI:-kubectl} apply -f -
      echo Checking the configmap $cmName was created
-     local num=`kubectl get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
+     local num=`${KUBERNETES_CLI:-kubectl} get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
      if [ "$num" != "1" ]; then
        fail "The configmap ${cmName} was not created"
      fi
 
-     kubectl label configmap ${cmName} --overwrite=true -n $namespace weblogic.domainUID=$domainUID weblogic.domainName=$domainName
+     ${KUBERNETES_CLI:-kubectl} label configmap ${cmName} --overwrite=true -n $namespace weblogic.domainUID=$domainUID weblogic.domainName=$domainName
      rm -rf $osbExternalFilesTmpDir
   fi
 }
@@ -285,12 +286,12 @@ function cleanUpConfigMaps {
  
  if [[ "$domainType" =~ "soa" ]]; then
      local cmName=${domainUID}-deploy-scripts-soa-job-cm
-     kubectl delete configmap ${cmName} -n $namespace
+     ${KUBERNETES_CLI:-kubectl} delete configmap ${cmName} -n $namespace
  fi
 
  if [[ "$domainType" =~ "osb" ]]; then
      local cmName=${domainUID}-deploy-scripts-osb-job-cm
-     kubectl delete configmap ${cmName} -n $namespace
+     ${KUBERNETES_CLI:-kubectl} delete configmap ${cmName} -n $namespace
  fi
 
 }
@@ -327,7 +328,7 @@ function checkForErrors {
   CONTAINER_NAME_SUFFIX="deploy-artifacts-job"
   JOB_NAME="${domainUID}-${CONTAINER_NAME_SUFFIX}-${runId}"
   CONTAINER_NAME="${domain}-${CONTAINER_NAME_SUFFIX}"
-  CONTAINER_ERRORS=`kubectl logs jobs/${JOB_NAME} ${CONTAINER_NAME} -n ${namespace} | grep "ERROR:" `
+  CONTAINER_ERRORS=`${KUBERNETES_CLI:-kubectl} logs jobs/${JOB_NAME} ${CONTAINER_NAME} -n ${namespace} | grep "ERROR:" `
   CONTAINER_ERR_COUNT=`echo ${CONTAINER_ERRORS} | grep "ERROR:" | wc | awk ' {print $1; }'`
       if [ "$CONTAINER_ERR_COUNT" != "0" ]; then
         echo "A failure was detected in the log file for job ${JOB_NAME}."
@@ -358,7 +359,7 @@ function deployArtifacts {
   deleteK8sObj job $JOB_NAME ${createJobOutput}
 
   echo Deploying artifacts by creating the job ${createJobOutput}
-  kubectl create -f ${createJobOutput}
+  ${KUBERNETES_CLI:-kubectl} create -f ${createJobOutput}
 
   echo "Waiting for the job to complete..."
   JOB_STATUS="0"
@@ -367,7 +368,7 @@ function deployArtifacts {
   while [ "$JOB_STATUS" != "Completed" -a $count -lt $max ] ; do
     sleep 30
     count=`expr $count + 1`
-    JOBS=`kubectl get pods -n ${namespace} | grep ${JOB_NAME}`
+    JOBS=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME}`
     JOB_STATUS=`echo $JOBS | awk ' { print $3; } '`
     JOB_INFO=`echo $JOBS | awk ' { print "pod", $1, "status is", $3; } '`
     echo "status on iteration $count of $max for $domainUID"
@@ -388,31 +389,31 @@ function deployArtifacts {
     echo "The deploy artifacts job is not showing status completed after waiting ${timeout} seconds."
     echo "Check the log output for errors."
     if [[ $domainType =~ "soa" ]]; then
-       kubectl logs jobs/$JOB_NAME $SOA_CONTAINER_NAME -n ${namespace}
+       ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $SOA_CONTAINER_NAME -n ${namespace}
     fi
     if [[ $domainType =~ "osb" ]]; then
-       kubectl logs jobs/$JOB_NAME $OSB_CONTAINER_NAME -n ${namespace}
+       ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $OSB_CONTAINER_NAME -n ${namespace}
     fi
     fail "Exiting due to failure - the job status is not Completed!"
   fi
 
   # Check for successful completion in log file
-  JOB_POD=`kubectl get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
+  JOB_POD=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
   if [[ $domainType =~ "soa" ]]; then
-     SOA_JOB_STS=`kubectl logs jobs/$JOB_NAME $SOA_CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
+     SOA_JOB_STS=`${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $SOA_CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
      if [ "${SOA_JOB_STS}" != "Successfully" ]; then
         echo The log file for the deploy artifacts job does not contain a successful completion status
         echo Check the log output for errors
-        kubectl logs jobs/$JOB_NAME $SOA_CONTAINER_NAME -n ${namespace}
+        ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $SOA_CONTAINER_NAME -n ${namespace}
         deployFail="true"
      fi
   fi
   if [[ $domainType =~ "osb" ]]; then
-     OSB_JOB_STS=`kubectl logs jobs/$JOB_NAME $OSB_CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
+     OSB_JOB_STS=`${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $OSB_CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
      if [ "${OSB_JOB_STS}" != "Successfully" ]; then
         echo The log file for the deploy artifacts job does not contain a successful completion status
         echo Check the log output for errors
-        kubectl logs jobs/$JOB_NAME $OSB_CONTAINER_NAME -n ${namespace}
+        ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $OSB_CONTAINER_NAME -n ${namespace}
         deployFail="true"
      fi
   fi

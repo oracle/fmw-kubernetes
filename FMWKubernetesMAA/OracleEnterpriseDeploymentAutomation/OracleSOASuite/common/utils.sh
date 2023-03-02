@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Utility functions that are shared by multiple scripts
@@ -18,6 +18,20 @@ printError() {
   echo [ERROR] $*
 }
 
+setupProxy(){
+
+if [[ "$proxy" != "false" ]]; then
+  cat <<EOF > /tmp/setup_proxy.env
+export http_proxy=$http_proxy
+export https_proxy=$https_proxy
+export no_proxy=$no_proxy
+export HTTP_PROXY=$http_proxy
+export HTTPS_PROXY=$https_proxy
+export NO_PROXY=$no_proxy
+EOF
+fi
+
+}
 
 # Function to create scripts for Docker and Kubernetes setup
 createSetupScripts() {
@@ -31,9 +45,8 @@ name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 enabled=1
 gpgcheck=1
-repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-exclude=kube*
+exclude=kubelet kubeadm kubectl
 EOF
 
   # sysctl params required by setup, params persist across reboots
@@ -66,9 +79,9 @@ echo "Configuring OS..."
 sysctl net.ipv4.conf.${vnic}.forwarding=1
 sysctl net.ipv4.conf.lo.forwarding=1
 sysctl net.ipv4.ip_nonlocal_bind=1
-'net.ipv4.conf.${vnic}.forwarding=1' | sudo tee -a /etc/sysctl.conf
-"net.ipv4.conf.lo.forwarding=1" | sudo tee -a /etc/sysctl.conf
-"net.ipv4.ip_nonlocal_bind=1" | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv4.conf.${vnic}.forwarding=1' | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.conf.lo.forwarding=1" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.ip_nonlocal_bind=1" | sudo tee -a /etc/sysctl.conf
 iptables -P FORWARD ACCEPT
 firewall-cmd --add-masquerade --permanent
 firewall-cmd --add-port=2379-2380/tcp --permanent
@@ -122,29 +135,6 @@ EOF
 }
 EOF
 
-  cat <<EOF > ${setupScriptsDir}/docker_configure_$host.sh
-if [[ -f /tmp/maa/proxy.env ]]; then
-  source /tmp/maa/proxy.env
-fi
-mkdir -p /etc/docker/
-cp /tmp/maa/daemon.json /etc/docker/
-if [[ -f /tmp/maa/http-proxy.conf ]]; then
-  mkdir -p /etc/systemd/system/docker.service.d
-  cp /tmp/maa/http-proxy.conf /etc/systemd/system/docker.service.d/
-fi
-systemctl daemon-reload
-systemctl enable docker
-systemctl start docker
-systemctl restart docker
-systemctl status docker
-echo "Sleeping for possible break..."
-sleep 30
-sysctl net.ipv4.conf.docker0.forwarding=1
-systemctl daemon-reload
-systemctl restart docker
-echo "Docker restarted."
-EOF    
-
   cat <<EOF > ${setupScriptsDir}/k8s_install_$host.sh  
 if [[ -f /tmp/maa/proxy.env ]]; then
   source /tmp/maa/proxy.env
@@ -167,5 +157,28 @@ systemctl restart kubelet
 wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml -O /tmp/maa/kube-flannel.yml
 wget https://get.helm.sh/helm-v${helm_version}-linux-amd64.tar.gz -O /tmp/maa/helm-v${helm_version}-linux-amd64.tar.gz
 echo "kube* packages installed and started."
+EOF
+
+  cat <<EOF > ${setupScriptsDir}/docker_configure_$host.sh
+if [[ -f /tmp/maa/proxy.env ]]; then
+  source /tmp/maa/proxy.env
+fi
+mkdir -p /etc/docker/
+cp /tmp/maa/daemon.json /etc/docker/
+if [[ -f /tmp/maa/http-proxy.conf ]]; then
+  mkdir -p /etc/systemd/system/docker.service.d
+  cp /tmp/maa/http-proxy.conf /etc/systemd/system/docker.service.d/
+fi
+systemctl daemon-reload
+systemctl enable docker
+systemctl start docker
+systemctl restart docker
+systemctl status docker
+echo "Sleeping for possible break..."
+sleep 30
+sysctl net.ipv4.conf.docker0.forwarding=1
+systemctl daemon-reload
+systemctl restart docker
+
 EOF
 }

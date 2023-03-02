@@ -33,8 +33,8 @@ domainType: soa
 domainHome: /u01/oracle/user_projects/domains/soainfra
 
 # Determines which WebLogic Servers the operator will start up
-# Legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
-serverStartPolicy: IF_NEEDED
+# Legal values are "Never", "IfNeeded", or "AdminOnly"
+serverStartPolicy: IfNeeded
 
 # Number of managed servers to generate for the domain
 configuredManagedServerCount: 5
@@ -109,7 +109,7 @@ httpAccessLogInLogHome: true
 t3ChannelPort: 30012
 
 # Public address for T3Channel of the NetworkAccessPoint.  This value should be set to the
-# kubernetes server address, which you can get by running "kubectl cluster-info".  If this
+# kubernetes server address, which you can get by running "${KUBERNETES_CLI:-kubectl} cluster-info".  If this
 # value is not set to that address, WLST will not be able to connect from outside the
 # kubernetes cluster.
 #t3PublicAddress:

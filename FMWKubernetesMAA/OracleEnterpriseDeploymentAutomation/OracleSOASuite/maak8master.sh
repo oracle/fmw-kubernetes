@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Script for Kubernetes Master High Availablility set up
@@ -38,7 +38,7 @@ do
         echo "TOKEN_CA=$token_ca"
         export cp_ca=`ssh -i $ssh_key $user@$host "sudo grep '\-\-certificate-key' $log_dir/kubeadm-exec_$host_$dt.log" | awk '{print $3}'`
         ssh -i $ssh_key $user@$host "mkdir -p $HOME/.kube";
-        ssh -i $ssh_key $user@$host "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config";
+        ssh -i $ssh_key $user@$host "sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config";
         ssh -i $ssh_key $user@$host "sudo chown $(id -u):$(id -g) $HOME/.kube/config";
         echo "Giving some time for first node..."
         sleep 20

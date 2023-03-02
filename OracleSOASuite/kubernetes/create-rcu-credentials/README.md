@@ -23,9 +23,9 @@ The parameters are as follows:
 
 ```  
   -u username for schema owner (regular user), must be specified.
-  -p password for schema owner (regular user), must be specified.
+   -p password for schema owner (regular user), must be provided using the -p argument or user will be prompted to enter a value.
   -a username for SYSDBA user, must be specified.
-  -q password for SYSDBA user, must be specified.
+  -q password for SYSDBA user, must be provided using the -q argument or user will be prompted to enter a value.
   -d domainUID, optional. The default value is soainfra. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
   -n namespace, optional. Use the soans namespace if not specified.
   -s secretName, optional. If not specified, the secret name will be determined based on the domainUID value.
@@ -33,11 +33,11 @@ The parameters are as follows:
 
 This creates a `generic` secret containing the user name and password as literal values.
 
-You can check the secret with the `kubectl describe secret` command.  An example is shown below,
+You can check the secret with the `${KUBERNETES_CLI:-kubectl} describe secret` command.  An example is shown below,
 including the output:
 
 ```
-$ kubectl -n soans describe secret soainfra-rcu-credentials -o yaml
+$ ${KUBERNETES_CLI:-kubectl} -n soans describe secret soainfra-rcu-credentials -o yaml
 Name:         soainfra-rcu-credentials
 Namespace:    soans
 Labels:       weblogic.domainName=soainfra
