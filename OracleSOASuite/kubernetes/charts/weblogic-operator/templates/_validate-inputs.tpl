@@ -7,10 +7,6 @@
 {{- $ignore := include "utils.pushValidationContext" (list $scope "Release") -}}
 {{- $ignore := include "utils.verifyResourceName" (list $scope "Namespace" 63) -}}
 {{- $ignore := include "utils.popValidationContext" $scope -}}
-{{- if not (.APIVersions.Has "policy/v1beta1") }}
-{{-   $errorMsg := "Kubernetes version must be between 1.19 and 1.24." -}}
-{{-   include "utils.recordValidationError" (list $scope $errorMsg) -}}
-{{- end -}}
 {{- $ignore := include "utils.verifyString" (list $scope "serviceAccount") -}}
 {{- $ignore := include "utils.verifyK8SResource" (list $scope .serviceAccount "ServiceAccount" .Release.Namespace) -}}
 {{- $ignore := include "utils.verifyString" (list $scope "image") -}}
@@ -37,27 +33,27 @@
 {{-   end -}}
 {{- end -}}
 {{- $ignore := include "utils.verifyOptionalBoolean" (list $scope "enableClusterRoleBinding") -}}
-{{- if and .enableClusterRoleBinding (or (eq (default "List" .domainNamespaceSelectionStrategy) "Dedicated") (and .dedicated (eq (default "List" .domainNamespaceSelectionStrategy) "List"))) }}
-{{-   $errorMsg := "The enableClusterRoleBinding value may not be true when either dedicated is true or domainNamespaceSelectionStrategy is Dedicated" -}}
-{{-   include "utils.recordValidationError" (list $scope $errorMsg) -}}
-{{- end -}}
-{{- if eq (default "List" $scope.domainNamespaceSelectionStrategy) "List" -}}
-{{-     $ignore := include "utils.verifyStringList" (list $scope "domainNamespaces") -}}
-{{- end -}}
 {{- if include "utils.verifyBoolean" (list $scope "elkIntegrationEnabled") -}}
 {{-   if $scope.elkIntegrationEnabled -}}
 {{-     $ignore := include "utils.verifyString" (list $scope "logStashImage") -}}
 {{-     $ignore := include "utils.verifyString" (list $scope "elasticSearchHost") -}}
 {{-     $ignore := include "utils.verifyInteger" (list $scope "elasticSearchPort") -}}
+{{-     $ignore := include "utils.verifyBoolean" (list $scope "createLogStashConfigMap") -}}
 {{-   end -}}
 {{- end -}}
-{{- $ignore := include "utils.verifyOptionalBoolean" (list $scope "dedicated") -}}
-{{- $ignore := include "utils.verifyOptionalEnum" (list $scope "domainNamespaceSelectionStrategy" (list "List" "LabelSelector" "RegExp" "Dedicated")) -}}
-{{- if eq (default "List" $scope.domainNamespaceSelectionStrategy) "LabelSelector" -}}
-{{-   $ignore := include "utils.verifyString" (list $scope "domainNamespaceLabelSelector") -}}
-{{- end -}}
-{{- if eq (default "List" $scope.domainNamespaceSelectionStrategy) "RegExp" -}}
-{{-   $ignore := include "utils.verifyString" (list $scope "domainNamespaceRegExp") -}}
+{{- if not $scope.webhookOnly -}}
+{{-   $ignore := include "utils.verifyOptionalEnum" (list $scope "domainNamespaceSelectionStrategy" (list "List" "LabelSelector" "RegExp" "Dedicated")) -}}
+{{-   if eq $scope.domainNamespaceSelectionStrategy "List" -}}
+{{-     $ignore := include "utils.verifyStringList" (list $scope "domainNamespaces") -}}
+{{-   end -}}
+{{-   if eq (default "LabelSelector" $scope.domainNamespaceSelectionStrategy) "LabelSelector" -}}
+{{-     $ignore := include "utils.verifyOptionalString" (list $scope "domainNamespaceLabelSelector") -}}
+{{-   end -}}
+{{-   if eq $scope.domainNamespaceSelectionStrategy "RegExp" -}}
+{{-     $ignore := include "utils.verifyOptionalString" (list $scope "domainNamespaceRegExp") -}}
+{{-   end -}}
+{{- else if not $scope.enableClusterRoleBinding -}}
+{{-   fail "enableClusterRoleBinding must be true when webHookOnly is true." }}
 {{- end -}}
 {{- $ignore := include "utils.verifyOptionalBoolean" (list $scope "mockWLS") -}}
 {{- $ignore := include "utils.verifyIntrospectorJobNameSuffix" (list $scope "introspectorJobNameSuffix" 25) -}}

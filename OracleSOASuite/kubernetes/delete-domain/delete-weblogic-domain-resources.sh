@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description:
@@ -14,7 +14,7 @@
 
 script="${BASH_SOURCE[0]}"
 
-function usage {
+usage() {
 cat << EOF
   Usage:
 
@@ -34,8 +34,9 @@ cat << EOF
 
   The script runs in phases:  
 
-    Phase 1:  Set the serverStartPolicy of each domain to NEVER if
-              it's not already NEVER.  This should cause each
+    Phase 1:  Set the serverStartPolicy of each domain. For v9 domains
+              set serverStartPolicy to Never. For v8 domains set the
+              serverStartPolicy to NEVER. This will cause each
               domain's operator to initiate a controlled shutdown
               of the domain.  Immediately proceed to phase 2.
 
@@ -67,7 +68,7 @@ EOF
 #    PersistentVolumeClaim domain1-pv-claim -n default 
 #    PersistentVolume domain1-pv 
 #
-function getDomainResources {
+getDomainResources() {
   local domain_regex=''
   LABEL_SELECTOR="weblogic.domainUID in ($1)"
   IFS=',' read -ra UIDS <<< "$1"
@@ -86,24 +87,24 @@ function getDomainResources {
   # first, let's get all namespaced types with -l $LABEL_SELECTOR
   NAMESPACED_TYPES="pod,job,deploy,rs,service,pvc,ingress,cm,serviceaccount,role,rolebinding,secret"
 
-  kubectl get $NAMESPACED_TYPES \
+  ${KUBERNETES_CLI:-kubectl} get $NAMESPACED_TYPES \
           -l "$LABEL_SELECTOR" \
           -o=jsonpath='{range .items[*]}{.kind}{" "}{.metadata.name}{" -n "}{.metadata.namespace}{"\n"}{end}' \
           --all-namespaces=true >> $2
 
   # if domain crd exists, look for domains too:
-  kubectl get crd domains.weblogic.oracle > /dev/null 2>&1
+  ${KUBERNETES_CLI:-kubectl} get crd domains.weblogic.oracle > /dev/null 2>&1
   if [ $? -eq 0 ]; then
-    kubectl get domain \
+    ${KUBERNETES_CLI:-kubectl} get domain \
             -o=jsonpath='{range .items[*]}{.kind}{" "}{.metadata.name}{" -n "}{.metadata.namespace}{"\n"}{end}' \
-            --all-namespaces=true | egrep "$domain_regex" >> $2
+            --all-namespaces=true | grep -E "$domain_regex" >> $2
   fi
 
   # now, get all non-namespaced types with -l $LABEL_SELECTOR
 
   NOT_NAMESPACED_TYPES="pv,clusterroles,clusterrolebindings"
 
-  kubectl get $NOT_NAMESPACED_TYPES \
+  ${KUBERNETES_CLI:-kubectl} get $NOT_NAMESPACED_TYPES \
           -l "$LABEL_SELECTOR" \
           -o=jsonpath='{range .items[*]}{.kind}{" "}{.metadata.name}{"\n"}{end}' \
           --all-namespaces=true >> $2
@@ -116,7 +117,7 @@ function getDomainResources {
 #   deleteDomains domainA,domainB,... maxwaitsecs
 #
 # Internal helper function
-#   This function first sets the serverStartPolicy of each Domain to NEVER
+#   This function first sets the serverStartPolicy of each Domain to Never
 #   and waits up to half of $2 for pods to 'self delete'.  It then performs
 #   a helm delete on $1, and finally it directly deletes
 #   any remaining k8s resources for domain $1 (including any remaining pods)
@@ -125,7 +126,7 @@ function getDomainResources {
 #   If global $test_mode is true, it shows candidate actions but doesn't
 #   actually perform them
 #
-function deleteDomains {
+deleteDomains() {
 
   if [ "$test_mode" = "true" ]; then
     echo @@ Test mode! Displaying commands for deleting kubernetes resources with label weblogic.domainUID \'$1\' without actually deleting them.
@@ -165,20 +166,20 @@ function deleteDomains {
       exit $allcount
     fi
 
-    # In phase 1, set the serverStartPolicy of each domain to NEVER and then immediately
+    # In phase 1, set the serverStartPolicy of each domain to Never and then immediately
     # proceed to phase 2.  If there are no domains or WLS pods, we also immediately go to phase 2.
 
     if [ $phase -eq 1 ]; then
       phase=2
       if [ $podcount -gt 0 ]; then
-        echo @@ "Setting serverStartPolicy to NEVER on each domain (this should cause operator(s) to initiate a controlled shutdown of the domain's pods.)"
+        echo @@ "Setting serverStartPolicy to Never on each domain (this should cause operator(s) to initiate a controlled shutdown of the domain's pods.)"
         cat $tempfile | grep "^Domain" | while read line; do 
           local name="`echo $line | awk '{ print $2 }'`"
           local namespace="`echo $line | awk '{ print $4 }'`"
           if [ "$test_mode" = "true" ]; then
-            echo "kubectl patch domain $name -n $namespace -p '{\"spec\":{\"serverStartPolicy\":\"NEVER\"}}' --type merge"
+            echo "${KUBERNETES_CLI:-kubectl} patch domain $name -n $namespace -p '{\"spec\":{\"serverStartPolicy\":\"Never\"}}' --type merge"
           else
-            kubectl patch domain $name -n $namespace -p '{"spec":{"serverStartPolicy":"NEVER"}}' --type merge
+            ${KUBERNETES_CLI:-kubectl} patch domain $name -n $namespace -p '{"spec":{"serverStartPolicy":"Never"}}' --type merge
           fi
         done
       fi
@@ -207,9 +208,9 @@ function deleteDomains {
     # for each namespace with leftover resources, try delete them
     cat $tempfile | awk '{ print $4 }' | grep -v "^$" | sort -u | while read line; do 
       if [ "$test_mode" = "true" ]; then
-        echo kubectl -n $line delete $NAMESPACED_TYPES -l "$LABEL_SELECTOR"
+        echo ${KUBERNETES_CLI:-kubectl} -n $line delete $NAMESPACED_TYPES -l "$LABEL_SELECTOR"
       else
-        kubectl -n $line delete $NAMESPACED_TYPES -l "$LABEL_SELECTOR"
+        ${KUBERNETES_CLI:-kubectl} -n $line delete $NAMESPACED_TYPES -l "$LABEL_SELECTOR"
       fi
     done
 
@@ -217,18 +218,18 @@ function deleteDomains {
     local no_namespace_count=`grep -c -v " -n " $tempfile`
     if [ ! "$no_namespace_count" = "0" ]; then
       if [ "$test_mode" = "true" ]; then
-        echo kubectl delete $NOT_NAMESPACED_TYPES -l "$LABEL_SELECTOR" 
+        echo ${KUBERNETES_CLI:-kubectl} delete $NOT_NAMESPACED_TYPES -l "$LABEL_SELECTOR" 
       else
-        kubectl delete $NOT_NAMESPACED_TYPES -l "$LABEL_SELECTOR" 
+        ${KUBERNETES_CLI:-kubectl} delete $NOT_NAMESPACED_TYPES -l "$LABEL_SELECTOR" 
       fi
     fi
 
     # Delete domains, if any
     cat $tempfile | grep "^Domain " | while read line; do
       if [ "$test_mode" = "true" ]; then
-        echo kubectl delete $line
+        echo ${KUBERNETES_CLI:-kubectl} delete $line
       else
-        kubectl delete $line
+        ${KUBERNETES_CLI:-kubectl} delete $line
       fi
     done
 
@@ -274,8 +275,8 @@ if [ "$domains" = "" ]; then
   exit 9999
 fi
 
-if [ ! -x "$(command -v kubectl)" ]; then
-  echo "@@ Error! kubectl is not installed."
+if [ ! -x "$(command -v ${KUBERNETES_CLI:-kubectl})" ]; then
+  echo "@@ Error! ${KUBERNETES_CLI:-kubectl} is not installed."
   exit 9999
 fi
 

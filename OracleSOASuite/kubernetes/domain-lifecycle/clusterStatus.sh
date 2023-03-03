@@ -1,11 +1,11 @@
-# !/bin/sh
-# Copyright (c) 2021, Oracle and/or its affiliates.
+#!/bin/sh
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 set -eu
 set -o pipefail
 
-function usage() {
+usage() {
 cat<<EOF
 
 Usage:
@@ -41,7 +41,7 @@ exit $1
 
 # function to display the domain cluster status in a table
 # $1=ns $2=uid, pass "" to mean "any"
-function clusterStatus() {
+clusterStatus() {
   local __ns="${1:-}"
   if [ -z "$__ns" ]; then
     # an empty ns means check all namespaces
@@ -70,7 +70,7 @@ function clusterStatus() {
 
     local __val
     for __val in \
-      $($__kubernetes_cli $__ns_filter get domains.v8.weblogic.oracle \
+      $($__kubernetes_cli $__ns_filter get domains \
         -o=jsonpath='{range .items[*]}{.metadata.namespace}{","}{.metadata.name}{","}{.spec.domainUID}{"\n"}{end}')
     do
       local __ns_cur=$(  echo $__val | cut -d ',' -f 1)
@@ -97,7 +97,7 @@ function clusterStatus() {
       __jp+='{"\n"}'
       __jp+='{end}'
 
-      $__kubernetes_cli -n "$__ns_cur" get domain.v8.weblogic.oracle "$__uid_cur" -o=jsonpath="$__jp"
+      $__kubernetes_cli -n "$__ns_cur" get domain "$__uid_cur" -o=jsonpath="$__jp"
 
     done | sed 's/~!\([0-9][0-9]*\)/\1/g'\
          | sed 's/~!/0/g' \

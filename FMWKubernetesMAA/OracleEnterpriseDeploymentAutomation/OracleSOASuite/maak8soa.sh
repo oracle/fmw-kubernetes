@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -10,6 +10,7 @@
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/maak8soa.env
+source ${scriptDir}/common/utils.sh
 
 read -s -p "Enter WebLogic password: " wlpswd
 echo
@@ -22,8 +23,13 @@ export wlpswd syspwd schemapwd
 
 echo "Sleeping 10 seconds in case you want to break..."
 sleep 10
+
+ssh -i $ssh_key $user@$mnode1 "mkdir -p /tmp/maa; mkdir -p $log_dir"
+setupProxy
+[[ -e /tmp/setup_proxy.env ]] && scp -i $ssh_key /tmp/setup_proxy.env  $user@$mnode1:/tmp/maa
 # Labeling nodes for the Oracle SOA Suite domain (may need to parameterize this for larger clusters)
 echo "Labeling nodes..."
+ssh -i $ssh_key $user@$mnode1 "kubectl get nodes"
 ssh -i $ssh_key $user@$mnode1 "kubectl  label node $wnode1 name=admin"
 ssh -i $ssh_key $user@$mnode1 "kubectl  label node $wnode2 name=wls1"
 ssh -i $ssh_key $user@$mnode1 "kubectl  label node $wnode3 name=wls2"
@@ -32,11 +38,11 @@ echo "Nodes labeled."
 # Steps specific to Oracle SOA Suite
 echo "Git cloning fmw-kubernetes repository..."
 ssh -i $ssh_key $user@$mnode1 "sudo mkdir -p $soaopdir && sudo chown $user:$user $soaopdir"
-ssh -i $ssh_key $user@$mnode1 "sudo yum install -y git-all";
+ssh -i $ssh_key $user@$mnode1 "sudo bash -c '[[ -e /tmp/maa/setup_proxy.env ]] && source /tmp/maa/setup_proxy.env; yum install -y git-all'";
 sleep 5
 
 
-ssh -i $ssh_key $user@$mnode1 "cd $soaopdir && git clone https://github.com/oracle/fmw-kubernetes.git --branch release/$soak8branch"
+ssh -i $ssh_key $user@$mnode1 "[[ -e /tmp/maa/setup_proxy.env ]] && source /tmp/maa/setup_proxy.env ; env; cd $soaopdir && git clone https://github.com/oracle/fmw-kubernetes.git --branch release/$soak8branch"
 echo "Set up code repository to deploy Oracle SOA Suite domains done"
 
 echo "Sleeping 10 seconds in case you want to break..."
@@ -95,7 +101,7 @@ echo "Sleeping 10 seconds in case you want to break..."
 sleep 10
 
 echo "Creating RCU schemas..."
-ssh -i $ssh_key $user@$mnode1 "cd $soaopdir/fmw-kubernetes/OracleSOASuite/kubernetes/create-rcu-schema && $soaopdir/fmw-kubernetes/OracleSOASuite/kubernetes/create-rcu-schema/create-rcu-schema.sh -s $soaedgprefix -t $domain_type -d $db_url -i $soaimage -q $syspwd -r $schemapwd -l LARGE"
+ssh -i $ssh_key $user@$mnode1 "cd $soaopdir/fmw-kubernetes/OracleSOASuite/kubernetes/create-rcu-schema && $soaopdir/fmw-kubernetes/OracleSOASuite/kubernetes/create-rcu-schema/create-rcu-schema.sh -s $soaedgprefix -t $domain_type -d $db_url -i $soaimage -q $syspwd -r $schemapwd -c SOA_PROFILE_TYPE=LARGE,HEALTHCARE_INTEGRATION=NO"
 echo "RCU schemas created!"
 echo "Sleeping 10 seconds in case you want to break..."
 sleep 10
@@ -249,8 +255,8 @@ EOF
    echo "OSB CLUSTER PORT: $osbport"
 fi
 
-export adminport=`ssh -i $ssh_key $user@$mnode1 "kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services ${soaedgdomain}-adminserver-node-port -n soans"`
+export adminport=30701
 echo "ADMINISTRATION SERVER PORT: $adminport"
 echo "Node port services created!"
-
+echo "Note: Administration server node port service will be available once the server is up and running"
 echo "ALL DONE!"
