@@ -12,18 +12,18 @@
     <title>Upgrade an operator release :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1675939345" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1675939345" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784008" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1675939345"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784008"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1675939345"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1675939345"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784008"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784008"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1675939345"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784008"></script>
 
     
   </div>
@@ -5361,7 +5361,7 @@
 <pre><code>$ cd ${WORKDIR}
 $ helm upgrade \
   --reuse-values \
-  --set image=oracle/weblogic-kubernetes-operator:3.4.4 \
+  --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 \
   --namespace weblogic-operator-namespace \
   --wait \
   weblogic-kubernetes-operator \
@@ -5370,27 +5370,34 @@ $ helm upgrade \
 <p>Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.2.1 to 3.3.0 or later, it may be expected that the Administration Server pod in the domain gets restarted.</p>
 </blockquote>
 <h4 id="post-upgrade-steps">Post upgrade steps</h4>
-<p>From operator 3.1.1, the T3 channel Kubernetes service name extension is changed from <code>-external</code> to <code>-ext</code>. If the Administration Server was configured to expose a T3 channel in your domain, then follow these steps to recreate the Kubernetes service (for T3 channel) with the new name <code>-ext</code>.</p>
+<p>When you upgrade a 3.x operator to 4.0, the upgrade process creates a WebLogic Domain resource conversion webhook deployment and its associated resources in the same namespace. If the conversion webhook deployment already exists in another namespace, then a new conversion webhook deployment is not created. The webhook automatically and transparently upgrades the existing WebLogic Domains from the 3.x schema to the 4.0 schema. For more information, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-operators/conversion-webhook/">WebLogic Domain resource conversion webhook</a>.</p>
+<p>If you have a single WebLogic Kubernetes Operator per Kubernetes cluster (most common use case), you can upgrade directly from any 3.x operator release to 4.0.4. The Helm chart for 4.0.4 automatically installs the schema conversion webhook.</p>
+<p>If there is more than one WebLogic Kubernetes Operator in a single Kubernetes cluster:</p>
+<ul>
+<li>You must upgrade every operator to at least version 3.4.1 before upgrading any operator to 4.0.0.</li>
+<li>As the 4.0.x Helm chart also installs a singleton schema conversion webhook that is shared by all 4.0.x operators in the cluster, use the webhookOnly Helm chart option to install this webhook in its own namespace prior to installing any of the 4.0.0 operators, and also use the preserveWebhook Helm chart option with each operator to prevent an operator uninstall from uninstalling the shared webhook.</li>
+<li>The operator provides a utility that can be used to convert existing “v8” Domain YAML files to “v9”.</li>
+<li>Several Helm chart default values have been changed. If you upgrade 3.x installations using the <code>--reuse-values</code> option during the Helm upgrade, the installations will continue to use the values from their original installation.</li>
+</ul>
+<p>If you are still using an older operator version (from 3.1.1) the T3 channel Kubernetes service name extension is changed from <code>-external</code> to <code>-ext</code>. If the Administration Server was configured to expose a T3 channel in your domain, then follow these steps to recreate the Kubernetes service (for T3 channel) with the new name <code>-ext</code>.</p>
 <blockquote>
-<p>Note: If these steps are not performed, then the domain restart using <code>spec.serverStartPolicy</code>, would fail to bring up the servers.</p>
+<p>Note: If these steps are not performed, then the domain restart using <code>spec.serverStartPolicy</code> fails to bring up the servers.</p>
 </blockquote>
 <ol>
 <li>
-<p>Get the existing Kubernetes service name for T3 channel from the domain namespace. For example, if the <code>domainUID</code> is <code>soainfra</code>, and the Administration Server name is <code>adminserver</code>, then the service would be:</p>
+<p>Get the existing Kubernetes service name for the T3 channel from the domain namespace. For example, if the <code>domainUID</code> is <code>soainfra</code>, and the Administration Server name is <code>adminserver</code>, then the service is:</p>
 <pre><code>soainfra-adminserver-external
 </code></pre></li>
 <li>
 <p>Delete the existing Kubernetes service for T3 channel, so that operator 3.1.1 creates a new one:</p>
 <pre><code>$ kubectl delete service &lt;T3 channel service&gt; --namespace &lt;domain-namespace&gt;
-</code></pre><p>For example, if the <code>domainUID</code> is <code>soainfra</code>, the Administration Server name is <code>adminserver</code> and domain namespace is <code>soans</code>, then the  command would be:</p>
+</code></pre><p>For example, if the <code>domainUID</code> is <code>soainfra</code>, the Administration Server name is <code>adminserver</code> and domain namespace is <code>soans</code>, then the command is:</p>
 <pre><code>$ kubectl delete service soainfra-adminserver-external --namespace soans
 </code></pre></li>
-<li>
-<p>Then the operator automatically creates a new Kubernetes service with <code>-ext</code> instead of <code>-external</code>:</p>
-<pre><code>soainfra-adminserver-ext
-</code></pre></li>
 </ol>
-
+<p>Now, the operator automatically creates a new Kubernetes service with <code>-ext</code> instead of <code>-external</code>:</p>
+<pre><code>soainfra-adminserver-ext
+</code></pre>
 
 <footer class=" footline" >
 	
@@ -8971,19 +8978,19 @@ $ helm upgrade \
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1675939345"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784008"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1675939345"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1675939345"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784008"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1675939345" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1675939345"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784008" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784008"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

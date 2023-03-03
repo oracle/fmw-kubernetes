@@ -12,18 +12,18 @@
     <title>Requirements and limitations :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1675939346" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1675939346" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784009" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784009"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1675939346"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1675939346"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784009"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1675939346"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784009"></script>
 
     
   </div>
@@ -5361,21 +5361,20 @@
 
 	<p>This section provides information about the system requirements and limitations for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes Operator.</p>
 <h3 id="system-requirements-for-oracle-soa-suite-domains">System requirements for Oracle SOA Suite domains</h3>
-<p>For the current production release 22.4.2:</p>
+<p>For the current production release 23.1.2:</p>
 <ul>
 <li>Operating systems supported:
 <ul>
 <li>Oracle Linux 7 (UL6+)</li>
 <li>Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes)</li>
-<li>Oracle Linux Cloud Native Environment (OLCNE) version 1.3.</li>
+<li>Oracle Linux Cloud Native Environment (OLCNE) version 1.5.</li>
 </ul>
 </li>
-<li>Kubernetes 1.19.15+, 1.20.11+, 1.21.5+, 1.22.5+, and 1.23.4+ (check with <code>kubectl version</code>).</li>
+<li>Kubernetes 1.21.10+, 1.22.7+, 1.23.4+, 1.24.0+, and 1.25.0+ (check with <code>kubectl version</code>).</li>
 <li>Docker 19.03.1+ (check with <code>docker version</code>) or CRI-O 1.20.2+ (check with <code>crictl version | grep RuntimeVersion</code>).</li>
 <li>Flannel networking v0.13.0-amd64 or later (check with <code>docker images | grep flannel</code>), Calico networking v3.16.1 or later.</li>
 <li>Helm 3.10.2+ (check with <code>helm version --client --short</code>).</li>
-<li>WebLogic Kubernetes Operator 3.4.4 (see the <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.4.4">operator releases</a> page).</li>
-<li>Oracle SOA Suite 12.2.1.4 Docker image downloaded from My Oracle Support (MOS patch <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34410491">34410491</a>). This image contains the latest bundle patch and one-off patches for Oracle SOA Suite.</li>
+<li>WebLogic Kubernetes Operator 4.0.4 (see the <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v4.0.0">operator releases 4.0.x</a> pages).</li>
 <li>You must have the <code>cluster-admin</code> role to install the operator. The operator does not need the <code>cluster-admin</code> role at runtime.
 For more information, see the role-based access control (RBAC) <a href="https://oracle.github.io/weblogic-kubernetes-operator/security/rbac/">documentation</a>.</li>
 <li>We do not currently support running SOA in non-Linux containers.</li>
@@ -5392,12 +5391,8 @@ following limitations currently exist for Oracle SOA Suite domains:</p>
 <li>Only configured clusters are supported.  Dynamic clusters are not supported for
 Oracle SOA Suite domains.  Note that you can still use all of the scaling features,
 but you need to define the maximum size of your cluster at domain creation time. Mixed clusters (configured servers targeted to a dynamic cluster) are not supported.</li>
-<li>The <a href="https://github.com/oracle/weblogic-logging-exporter">WebLogic Logging Exporter</a>
-currently supports WebLogic Server logs only.  Other logs will not be sent to
-Elasticsearch.  Note, however, that you can use a sidecar with a log handling tool
-like Logstash or Fluentd to get logs.</li>
-<li>The <a href="https://github.com/oracle/weblogic-monitoring-exporter">WebLogic Monitoring Exporter</a>
-currently supports WebLogic MBean trees only. Support for JRF and Oracle SOA Suite MBeans is not available. Also, a metrics dashboard specific to Oracle SOA Suite is not available. Instead, use the WebLogic Server dashboard to monitor the Oracle SOA Suite server metrics in Grafana.</li>
+<li>The <a href="https://github.com/oracle/weblogic-logging-exporter">WebLogic Logging Exporter</a> project has been archived. Users are encouraged to use Fluentd or Logstash.</li>
+<li>The <a href="https://github.com/oracle/weblogic-monitoring-exporter">WebLogic Monitoring Exporter</a> currently supports WebLogic MBean trees only. Support for JRF and Oracle SOA Suite MBeans is not available. Also, a metrics dashboard specific to Oracle SOA Suite is not available. Instead, use the WebLogic Server dashboard to monitor the Oracle SOA Suite server metrics in Grafana.</li>
 <li>Some features such as multicast, multitenancy, production redeployment, and Node Manager (although it is used internally for the liveness probe and to start WebLogic Server instances) are not supported in this release.</li>
 <li>Features such as Java Messaging Service whole server migration and consensus leasing are not supported in this release.</li>
 <li>Maximum availability architecture (Oracle SOA Suite EDG setup) is available for preview.</li>
@@ -8985,19 +8980,19 @@ currently supports WebLogic MBean trees only. Support for JRF and Oracle SOA Sui
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784009"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1675939346"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1675939346"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784009"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1675939346" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1675939346"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784009" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784009"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

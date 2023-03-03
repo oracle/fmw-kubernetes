@@ -12,18 +12,18 @@
     <title>Frequently Asked Questions :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1675939344" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1675939344" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1677784008" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784008" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1675939344"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784008"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1675939344"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1675939344"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784008"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784008"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1675939344"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784008"></script>
 
     
   </div>
@@ -5368,14 +5368,23 @@ See <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-doma
           value: <span style="color:#e6db74">&#39;-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m &#39;</span>
       serverStartState: RUNNING
 </code></pre></div><p>For example, to override the value at a specific cluster level (<code>soa_cluster</code> or <code>osb_cluster</code>):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  - clusterName: soa_cluster
-  serverService:
-    precreateService: true
-  serverStartState: <span style="color:#e6db74">&#34;RUNNING&#34;</span>
-  serverPod:
-    env:
-    - name: K8S_REFCONF_OVERRIDES
-      value: <span style="color:#e6db74">&#34;-Dsoa.payload.threshold.kb=102410&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  apiVersion: <span style="color:#e6db74">&#34;weblogic.oracle/v1&#34;</span>
+  kind: Cluster
+  metadata:
+    name: soainfra-soa-cluster
+    <span style="color:#75715e"># Update this with the namespace your domain will run in:</span>
+    namespace: soans
+    labels:
+      <span style="color:#75715e"># Update this with the `domainUID` of your domain:</span>
+      weblogic.domainUID: soainfra
+  spec:
+    clusterName: soa_cluster
+    serverService:
+      precreateService: true
+    serverPod:
+      env:
+      - name: K8S_REFCONF_OVERRIDES
+        value: <span style="color:#e6db74">&#34;-Dsoa.payload.threshold.kb=102410&#34;</span>
 </code></pre></div><blockquote>
 <p>Note: When multiple system properties are specified for <code>serverPod.env.value</code>, make sure each system property is separated by a space.</p>
 </blockquote>
@@ -9038,19 +9047,19 @@ $ helm upgrade soa-nginx-ingress \
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1675939344"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784008"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1675939344"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1675939344"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784008"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1675939344" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1675939344"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784008" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784008"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
