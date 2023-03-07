@@ -21,3 +21,18 @@ For support and certification information, please consult the documentation for 
 For support, bug reporting and feedback about the provided Kubernetes deployment scripts, please open an [issue on GitHub](https://github.com/oracle/fmw-kubernetes/issues).
 
 If you need general support with running containers on Oracle Linux, please visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers).
+
+## Contributing
+
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md)
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
+
+## License
+
+Copyright (c) 2020, 2023 Oracle and/or its affiliates.
+
+Released under the Universal Permissive License v1.0 as shown at
+<https://oss.oracle.com/licenses/upl/>.
