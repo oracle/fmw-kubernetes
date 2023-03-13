@@ -15,6 +15,11 @@ In addition, we've provided the deployment scripts in this repository to assist 
  - [Oracle WebCenter Portal](/OracleWebCenterPortal)
  - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
+## Installation
+
+Refer the following documentation link for detailed information about deploying Oracle Fusion Middleware Products on Kubernetes.  
+[Documentation](https://oracle.github.io/fmw-kubernetes)
+
 ## Support
 For support and certification information, please consult the documentation for each product.
 
