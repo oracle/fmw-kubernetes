@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # The script automates OIG domain patching with given image and modifies the DB Schema.
 # The script will first bring down the helper pod and create a new helper pod with latest image
-# Then it will stop admin, soa and oim servers using serverRestartPolicy as NEVER.
+# Then it will stop admin, soa and oim servers using serverStartPolicy as Never.
 # After all servers are stopped, then it will perform the db schema changes from helper pod.
 # the script will rely on job configmap for fetching db credentials. Post DB schema changes, it will
-# bring admin, soa and oim servers up using the latest image and serverRestartPolicy set to IF_NEEDED
+# bring admin, soa and oim servers up using the latest image and serverStartPolicy set to IfNeeded
 # The script will exit with zero return code if all servers come up and be in ready state.
 
 # Example usage:
 #   patch_oig_domain.sh -n oigns -i 12.2.1.4.0-oct22
 #
+
+# Changes
+# 02/28/2023 - changes related to Weblogic Kubernetes Operator 4.0.4
 
 script="${BASH_SOURCE[0]}"
 
@@ -126,12 +129,12 @@ function usage {
     - Check if helper pod exists in given namespace. If yes, then it deletes
       the helper pod. It will bring up a new helper pod with new image.
     - Stops Admin, SOA and OIM servers using serverStartPolicy set as
-      NEVER in domain definition yaml.
+      Never in domain definition yaml.
     - Wait for all servers to be stopped (default timeout 2000s)
     - Introspect db properties including credentials from job configmap.
     - Perform DB schema changes from helper pod
     - Starts Admin, SOA and OIM server by setting serverStartPolicy to
-      IF_NEEDED and image to new image tag.
+      IfNeeded and image to new image tag.
     - Waits for all servers to be ready (default timeout 2000s)
 
     The script exits non zero if a configurable timeout is reached
@@ -248,16 +251,10 @@ current_image_reg=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="
 info "Domain $domainUID is currently running with image: $current_image_reg:$current_image_tag"
 
 #fetch no. of current weblogic pod under given domain
-##fetch oim and soa replica count from domain config
+##fetch oim and soa replica count from cluster resource config
 NO_OF_PODS_ORIG=0
-cluster_name=`kubectl get domains ${domainUID} -n ${namespace} -o jsonpath="{.spec.clusters[0]['clusterName']}"`
-if [ $cluster_name == 'soa_cluster' ]; then
-  NO_OF_SOA_REPLICAS=`kubectl get domains ${domainUID} -n ${namespace} -o jsonpath="{.spec.clusters[0]['replicas']}"`
-  NO_OF_OIM_REPLICAS=`kubectl get domains ${domainUID} -n ${namespace} -o jsonpath="{.spec.clusters[1]['replicas']}"`
-else
-  NO_OF_OIM_REPLICAS=`kubectl get domains ${domainUID} -n ${namespace} -o jsonpath="{.spec.clusters[0]['replicas']}"`
-  NO_OF_SOA_REPLICAS=`kubectl get domains ${domainUID} -n ${namespace} -o jsonpath="{.spec.clusters[1]['replicas']}"`
-fi
+NO_OF_SOA_REPLICAS=`kubectl get cluster ${domainUID}-soa-cluster -n ${namespace} -o jsonpath='{.spec.replicas}'`
+NO_OF_OIM_REPLICAS=`kubectl get cluster ${domainUID}-oim-cluster -n ${namespace} -o jsonpath='{.spec.replicas}'`
 
 (( NO_OF_PODS_ORIG = NO_OF_PODS_ORIG + NO_OF_SOA_REPLICAS + NO_OF_OIM_REPLICAS + 1  ))
 echo "current no of pods under $domainUID are $NO_OF_PODS_ORIG"
@@ -295,7 +292,7 @@ check_running $namespace $helper_pod_name $timeout $image_registry:$imagetag $do
 
 #Stopping Admin, SOA and OIM servers
 info "Stopping Admin, SOA and OIM servers in domain $domainUID. This may take some time, monitor log $LOG_DIR/stop_servers.log for details"
-kubectl patch domain ${domainUID} -n ${namespace} --type merge -p '{"spec":{"serverStartPolicy":"NEVER"}}' > $LOG_DIR/stop_servers.log 2>&1
+kubectl patch domain ${domainUID} -n ${namespace} --type merge -p '{"spec":{"serverStartPolicy":"Never"}}' > $LOG_DIR/stop_servers.log 2>&1
 
 #wait for all pods to be down
 sh wl-pod-wait.sh -d ${domainUID} -n ${namespace} -t $timeout -p 0 >> $LOG_DIR/stop_servers.log 2>&1
@@ -376,7 +373,7 @@ fi
 kubectl exec -it $helper_pod_name -n $namespace -- rm -rf /tmp/pwd.txt
 
 info "Starting Admin, SOA and OIM servers with new image $image_registry:$imagetag"
-kubectl patch domain ${domainUID} -n ${namespace} --type merge  -p '{"spec":{"image":'\"${image_registry}':'${imagetag}\"', "serverStartPolicy":"IF_NEEDED"}}' > $LOG_DIR/patch_domain.log 2>&1
+kubectl patch domain ${domainUID} -n ${namespace} --type merge  -p '{"spec":{"image":'\"${image_registry}':'${imagetag}\"', "serverStartPolicy":"IfNeeded"}}' > $LOG_DIR/patch_domain.log 2>&1
 if [ $? -eq 1 ]; then
   fail "Domain update failed.."
 fi

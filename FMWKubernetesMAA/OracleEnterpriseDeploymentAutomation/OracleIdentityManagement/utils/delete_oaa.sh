@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OAA deployment
@@ -8,17 +8,52 @@
 #               ../common/oaa_functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: delete_oaa.sh
+# Usage: delete_oaa.sh [-r responsefile -p passwordfile]
 #
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR=$SCRIPTDIR/..
 
-. $MYDIR/../common/functions.sh
-. $MYDIR/../common/oaa_functions.sh
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/oaa_functions.sh
+
 WORKDIR=$LOCAL_WORKDIR/OAA
 LOGDIR=$WORKDIR/logs
 PROGRESS=$(get_progress)
-TEMPLATE_DIR=$MYDIR/../templates/oaa
+TEMPLATE_DIR=$SCRIPTDIR/templates/oaa
 
 START_TIME=`date +%s`
 
@@ -105,9 +140,16 @@ echo "Deleting Namespaces"
 kubectl delete namespace $OAANS >> $LOG 2>&1
 
 echo  "Deleting Volumes"
-rm -rf $LOGDIR/progressfile $WORKDIR/* >> $LOG 2>&1
-rm -rf $OAA_LOCAL_CRED_SHARE/* $OAA_LOCAL_CONFIG_SHARE/* $OAA_LOCAL_LOG_SHARE/*  >> $LOG 2>&1
-rm -rf $LOGDIR/progressfile $WORKDIR/* $LOCAL_WORKDIR/oaa_installed >> $LOG 2>&1
+
+if [ ! "$WORKDIR" = "" ] && [ ! "$LOGDIR" = "" ] && [ ! "$LOCAL_WORKDIR" = "" ]
+then
+   rm -rf $LOGDIR/progressfile $WORKDIR/* $LOCAL_WORKDIR/oaa_installed >> $LOG 2>&1
+fi
+
+if [ ! "$OAA_LOCAL_CRED_SHARE" = "" ] && [ ! "$OAA_LOCAL_CONFIG_SHARE" = "" ] && [ ! "$OAA_LOCAL_LOG_SHARE" = "" ]
+then
+   rm -rf $OAA_LOCAL_CRED_SHARE/* $OAA_LOCAL_CONFIG_SHARE/* $OAA_LOCAL_LOG_SHARE/*  >> $LOG 2>&1
+fi
 
 if [ "$OAA_VAULT_TYPE" = "file" ]
 then

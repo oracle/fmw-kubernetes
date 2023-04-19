@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of procedures used to configure OAM
@@ -66,6 +66,7 @@ edit_domain_creation_file()
      replace_value2 adminPort $OAM_ADMIN_PORT $filename
      replace_value2 adminNodePort $OAM_ADMIN_K8 $filename
      replace_value2 t3ChannelPort $OAM_ADMIN_T3_K8 $filename
+     replace_value2 datasourceType agl $filename
 
      print_status $?
      printf "\t\t\tCopy saved to $WORKDIR\n"
@@ -477,6 +478,14 @@ run_idmConfigTool()
    update_variable "<PV_MOUNT>" $PV_MOUNT $WORKDIR/runidmConfigTool.sh
    update_variable "<WORK_DIR>" $K8_WORKDIR $WORKDIR/runidmConfigTool.sh
 
+   if [ "$LDAP_EXTERNAL_HOST" = "" ] 
+   then
+      update_variable "<LDAP_HOST>" ${OUD_POD_PREFIX}-oud-ds-rs-lbr-ldap.${OUDNS}.svc.cluster.local $WORKDIR/configoam.props
+      update_variable "<LDAP_PORT>" 1389 $WORKDIR/configoam.props
+   else
+      update_variable "<LDAP_HOST>" $EXTERNAL_LDAP_HOST $WORKDIR/configoam.props
+      update_variable "<LDAP_PORT>" $EXTERNAL_LDAP_PORT $WORKDIR/configoam.props
+   fi
    update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/configoam.props
    update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $WORKDIR/configoam.props
    update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $WORKDIR/configoam.props
@@ -730,15 +739,15 @@ create_oam_ohs_config()
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OAM_ADMIN_LBR_HOST>" $OAM_ADMIN_LBR_HOST $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OAM_ADMIN_LBR_PORT>" $OAM_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
+      update_variable "<K8_WORKER_HOST1>" ${INGRESS_HOST:=$K8_WORKER_HOST1} $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
+      update_variable "<K8_WORKER_HOST2>" ${INGRESS_HOST:=$K8_WORKER_HOST2} $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OAM_LOGIN_LBR_PROTOCOL>" $OAM_LOGIN_LBR_PROTOCOL $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OAM_LOGIN_LBR_HOST>" $OAM_LOGIN_LBR_HOST $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OAM_LOGIN_LBR_PORT>" $OAM_LOGIN_LBR_PORT $OHS_PATH/$OHS_HOST1/login_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/login_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/login_vh.conf
+      update_variable "<K8_WORKER_HOST1>" ${INGRESS_HOST:=$K8_WORKER_HOST1} $OHS_PATH/$OHS_HOST1/login_vh.conf
+      update_variable "<K8_WORKER_HOST2>" ${INGRESS_HOST:=$K8_WORKER_HOST2} $OHS_PATH/$OHS_HOST1/login_vh.conf
 
       if [ "$USE_INGRESS" = "true" ]
       then

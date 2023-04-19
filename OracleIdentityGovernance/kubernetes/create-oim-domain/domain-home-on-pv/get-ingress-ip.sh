@@ -6,7 +6,7 @@
 myServiceLB=$1
 nameSpace=$2
 while true; do
-    successCond="$(kubectl -n "$nameSpace" get svc "$myServiceLB" \
+    successCond="$(${KUBERNETES_CLI:-kubectl} -n "$nameSpace" get svc "$myServiceLB" \
         --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")"
     if [[ -z "$successCond" ]]; then
         echo "Waiting for endpoint readiness..."

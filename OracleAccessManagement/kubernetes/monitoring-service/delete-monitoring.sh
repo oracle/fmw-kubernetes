@@ -103,7 +103,7 @@ rm ${exportValuesFile}
 
 echo "Undeploy WebLogic Monitoring Exporter started"
 serviceMonitor=${scriptDir}/manifests/wls-exporter-ServiceMonitor.yaml
-kubectl delete --ignore-not-found=true -f ${serviceMonitor}
+${KUBERNETES_CLI:-kubectl} delete --ignore-not-found=true -f ${serviceMonitor}
 script=${scriptDir}/scripts/undeploy-weblogic-monitoring-exporter.sh
 sh ${script}
 if [ "$?" != "0" ]; then

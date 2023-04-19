@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -218,6 +218,13 @@ oudPorts:
   http: 1080
   https: 1081
   replication: 1898
+  nodePorts:
+    ldap:
+    ldaps:
+    adminhttps:
+    adminldaps:
+    http:
+    https:
 
 # Configuration Parameters related to deployment of OUD instances on Kubernetes Cluster
 deploymentConfig:
@@ -282,9 +289,9 @@ oudConfig:
   # This it to  make sure that replicas are initialized in sequence. 
   sleepBeforeConfig: 300
   # This parameter is used to remove the individual pod directories during restart
-  cleanupbeforeStart: true
+  cleanupbeforeStart: false
   # This parameter is used to disable replication when a pod is restarted. 
-  disablereplicationbeforeStop: true
+  disablereplicationbeforeStop: false
   
   # memory, cpu parameters for both requests and limits for oud instances
   resources:
@@ -337,27 +344,6 @@ elk:
   esuser: logstash_internal
   espassword: elasticsearch-pw-elastic
   esapikey:
-  escert: |
-    -----BEGIN CERTIFICATE-----
-    MIIDVjCCAj6gAwIBAgIRAOqQ3Gy75NvPPQUN5kXqNQUwDQYJKoZIhvcNAQELBQAw
-    NTEWMBQGA1UECxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJj
-    aC1odHRwMB4XDTIyMDgyNDA1MTU1OVoXDTIzMDgyNDA1MjU1OVowNTEWMBQGA1UE
-    CxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJjaC1odHRwMIIB
-    IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsQOnxUm9uF32+lyc9SA3WcMZ
-    P1X7TbHMDuO/l3UHBUf5F/bt2m3YkGw+enIos9wzuUNpjIwVt8q4WrRCMl80nAQ0
-    yCXrfLSI9zaHxEC8Ht7V0U+7Sgu5uysD4tyZ9T0Q5zjvkWS6oBPxhfri3OQfPvUW
-    gQ6wJaPGDteYZAwiBMvPEkmh0VUTBTXjToHrtrT7pzmz5BBWnUzdf+jv0+nEfedm
-    mMWw/8jqyqid7bu7bo6gKBZ8zk06n2iMaXzmGW34QlYRLBgubThhxyDE7joZ4NTA
-    UFEJecZR2fccmpN8CNkT9Ex4Hq88nh2OP5XKKPNF4kLh2u6F4auF7Uz42jwvIwID
-    AQABo2EwXzAOBgNVHQ8BAf8EBAMCAoQwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsG
-    AQUFBwMCMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLQb/IjHHkSmHgKSPY7r
-    zBIJZMbdMA0GCSqGSIb3DQEBCwUAA4IBAQA01qY0tGIPsKNkn7blxRjEYkTg59Z5
-    vi6MCpGtdoyZeJgH621IpwyB34Hpu1RQfyg1aNgmOtIK9cvQZRl008DHF4AiHYhU
-    6xe3cjI/QxDXwitoBgWl+a0mkwhSmzJt7TuzImq7RMO4ws3M/nGeNUwFjwsQu86+
-    N/Y3RuuUVbK1xy8Jdz3FZADIgHVPN6GQwYKEpWrZNapKBXjunjCZmpBFxqGMRF44
-    fcSKFlFkwjyTq4kgq44NPv18NMfKCYZcK7ttRTiep77vKB7No/TM69Oz5ZHhQ+2Q
-    pSGg3QF+1fOCFCgWXFEOle6lQ5i8a/GihY0FuphrZxP9ovZ/EKPpE6Gq
-    -----END CERTIFICATE-----
 
 # Cron job will run based on the schedule defined. By default it will run every 30 minutes
 

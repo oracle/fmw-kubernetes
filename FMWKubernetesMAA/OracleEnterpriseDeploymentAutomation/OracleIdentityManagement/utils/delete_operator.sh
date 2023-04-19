@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete the WebLogic Operator
@@ -7,12 +7,36 @@
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: delete_operator.sh
+# Usage: delete_operator.sh  [-r responsefile ]
 #
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR=$SCRIPTDIR/..
 
-. $MYDIR/../common/functions.sh
+while getopts 'r:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile ] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+
+. $SCRIPTDIR/common/functions.sh
 
 mkdir $LOCAL_WORKDIR/deleteLogs > /dev/null 2>&1
 
@@ -35,7 +59,18 @@ echo "Delete Namepace"
 kubectl delete namespace $OPERNS >> $LOG 2>&1
 
 echo "Delete Work Directory"
-rm -rf $LOCAL_WORKDIR/OPER/* >> $LOG 2>&1
+if [ ! "$LOCAL_WORKDIR" = "" ]
+then
+  rm -rf $LOCAL_WORKDIR/OPER/*  $LOCAL_WORKDIR/operator_installed >> $LOG 2>&1
 
-echo "Delete Samples Directory"
-rm -rf $LOCAL_WORKDIR/$SAMPLES_DIR $LOCAL_WORKDIR/samples $LOCAL_WORKDIR/operator_installed>> $LOG 2>&1
+  if [ ! "$DELETE_SAMPLES" = "false" ]
+  then
+    echo "Delete Samples Directory"
+    rm -rf $LOCAL_WORKDIR/$SAMPLES_DIR $LOCAL_WORKDIR/samples >> $LOG 2>&1
+  else
+    echo "Samples not deleted."
+  fi
+else
+  echo "Unable to Delete Work Directory."
+fi
+

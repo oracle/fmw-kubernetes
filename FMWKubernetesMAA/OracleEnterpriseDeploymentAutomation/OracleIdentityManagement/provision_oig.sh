@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of provisioning Oracle Identity Governance and wiring it to Oracle Unified Directory
@@ -10,18 +10,51 @@
 #               ./templates/oig
 #               ./responsefile/idm.rsp
 #
-# Usage: provision_oig.sh
+# Usage: provision_oig.sh [-r responsefile -p passwordfile]
 #
 
-. common/functions.sh
-. common/oig_functions.sh
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
-TEMPLATE_DIR=$SCRIPTDIR/templates/oig
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
 
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
 
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/oig_functions.sh
 
 START_TIME=`date +%s`
 
+TEMPLATE_DIR=$SCRIPTDIR/templates/oig
 WORKDIR=$LOCAL_WORKDIR/OIG
 LOGDIR=$WORKDIR/logs
 OPER_DIR=OracleIdentityGovernance
@@ -46,7 +79,7 @@ fi
 echo
 echo -n "Provisioning OIG on "
 date +"%a %d %b %Y %T"
-echo "------------------------------------------------"
+echo "---------------------------------------------"
 echo
 
 create_local_workdir
@@ -129,7 +162,6 @@ then
     update_progress
 fi
 
-
 # Create Kubernetes Secrets
 #
 
@@ -146,6 +178,7 @@ then
     create_rcu_secret $OIGNS $OIG_DOMAIN_NAME $OIG_RCU_PREFIX $OIG_SCHEMA_PWD $OIG_DB_SYS_PWD
     update_progress
 fi
+
 # Create Persistent Volumes
 #
 
@@ -190,6 +223,15 @@ then
     update_progress
 fi
 
+# Update Java Parameters
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    update_java_parameters
+    update_progress
+fi
+
 # Perform Initial Domain Start
 #
 new_step
@@ -198,7 +240,6 @@ then
     perform_initial_start
     update_progress
 fi
-
 # Create Services
 #
 
@@ -242,13 +283,6 @@ then
     update_progress
 fi
 
-# Enable DB FAN
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    fix_gridlink
-    update_progress
-fi
 
 # Set Weblogic Plugin
 #
@@ -309,7 +343,7 @@ then
    if [ $STEPNO -gt $PROGRESS ]
    then
       start_domain $OIGNS $OIG_DOMAIN_NAME
-       update_progress
+      update_progress
    fi
 
 
@@ -364,7 +398,7 @@ then
    if [ $STEPNO -gt $PROGRESS ]
    then
       enable_oam_notifications
-       update_progress
+      update_progress
    fi
 
    # Update Match Attribute
@@ -539,16 +573,27 @@ then
    fi
 fi 
 
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+  start_domain $OIGNS $OIG_DOMAIN_NAME
+  update_progress
+fi
+
 #
 # Set the initial server count
 # 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   update_replica_count oig $OIG_SERVER_INITIAL
-   sleep 90
-   check_running $OIGNS adminserver
-   check_running $OIGNS soa-server1
+   scale_cluster $OIGNS $OIG_DOMAIN_NAME oim-cluster $OIG_SERVER_INITIAL
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   scale_cluster $OIGNS $OIG_DOMAIN_NAME soa-cluster $OIG_SERVER_INITIAL
    update_progress
 fi
 

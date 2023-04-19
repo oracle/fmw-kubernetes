@@ -1,0 +1,111 @@
+./charts/apache-samples/custom-sample/README.md:7:$ ${KUBERNETES_CLI:-kubectl} create namespace apache-sample
+./charts/apache-webtier/README.md:81:$ ${KUBERNETES_CLI:-kubectl} api-versions | grep rbac
+./create-rcu-schema/create-rcu-schema.sh.mustache:59: pname=`${KUBERNETES_CLI:-kubectl} get po -n ${ns} | grep -w ${pod} | awk '{print $1}'`
+./create-rcu-schema/create-rcu-schema.sh.mustache:65: rcode=`${KUBERNETES_CLI:-kubectl} get po ${pname} -n ${ns} | grep -w ${pod} | awk '{print $2}'`
+./create-rcu-schema/create-rcu-schema.sh.mustache:70:  rcode=`${KUBERNETES_CLI:-kubectl} get po/$pod -n ${ns} | grep -v NAME | awk '{print $2}'`
+./create-rcu-schema/create-rcu-schema.sh.mustache:80: pname=`${KUBERNETES_CLI:-kubectl} get po -n ${ns} | grep -w ${pod} | awk '{print $1}'`
+./create-rcu-schema/create-rcu-schema.sh.mustache:81: ${KUBERNETES_CLI:-kubectl} -n ${ns} get po ${pname}
+./create-rcu-schema/create-rcu-schema.sh.mustache:123:${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- /bin/bash /u01/oracle/createRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${customVariables}
+./create-rcu-schema/README.md.mustache:28:$ ${KUBERNETES_CLI:-kubectl} -n default create secret generic oracle-rcu-secret \
+./create-rcu-schema/README.md.mustache:71:$ ${KUBERNETES_CLI:-kubectl} -n MYNAMESPACE create secret generic oracle-rcu-secret \
+./create-rcu-schema/README.md.mustache:203:$ ${KUBERNETES_CLI:-kubectl} -n default create secret generic oracle-rcu-secret \
+./create-rcu-schema/drop-rcu-schema.sh.mustache:78:#fmwimage=`${KUBERNETES_CLI:-kubectl} get pod/rcu  -o jsonpath="{..image}"`
+./create-rcu-schema/drop-rcu-schema.sh.mustache:81:${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- /bin/bash /u01/oracle/dropRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${customVariables}
+./create-rcu-schema/common/create-rcu-pod.sh.mustache:67:rcupod=`${KUBERNETES_CLI:-kubectl} get po -n ${namespace} | grep "^rcu " | cut -f1 -d " " `
+./create-rcu-schema/common/create-rcu-pod.sh.mustache:86:  ${KUBERNETES_CLI:-kubectl} delete po rcu -n ${namespace} --ignore-not-found
+./create-rcu-schema/common/create-rcu-pod.sh.mustache:87:  ${KUBERNETES_CLI:-kubectl} apply -f $rcuYaml
+./create-rcu-schema/common/create-rcu-pod.sh.mustache:98:${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- bash -c 'cat > /u01/oracle/dropRepository.sh' < ${scriptDir}/dropRepository.sh || exit -5
+./create-rcu-schema/common/create-rcu-pod.sh.mustache:99:${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- bash -c 'cat > /u01/oracle/createRepository.sh' < ${scriptDir}/createRepository.sh || exit -6
+./create-rcu-schema/common/create-rcu-pod.sh.mustache:101:${KUBERNETES_CLI:-kubectl} get po/rcu -n $namespace
+./create-rcu-schema/create-image-pull-secret.sh.mustache:57:${KUBERNETES_CLI:-kubectl} delete secret/${secret} --ignore-not-found
+./create-rcu-schema/create-image-pull-secret.sh.mustache:59:${KUBERNETES_CLI:-kubectl} create secret docker-registry ${secret} --docker-server=container-registry.oracle.com --docker-username=${username} --docker-password=${password} --docker-email=${email}
+./create-rcu-credentials/README.md.mustache:36:You can check the secret with the `${KUBERNETES_CLI:-kubectl} describe secret` command.  An example is shown below,
+./create-rcu-credentials/README.md.mustache:40:$ ${KUBERNETES_CLI:-kubectl} -n <%namespace%> describe secret <%domainUID%>-rcu-credentials -o yaml
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:34:# Try to execute ${KUBERNETES_CLI:-kubectl} to see whether ${KUBERNETES_CLI:-kubectl} is available
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:36:  if ! [ -x "$(command -v ${KUBERNETES_CLI:-kubectl})" ]; then
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:37:    fail "${KUBERNETES_CLI:-kubectl} is not installed"
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:132:result=$(${KUBERNETES_CLI:-kubectl} get secret "${secretName}" -n "${namespace}" --ignore-not-found=true | grep "${secretName}" | wc | awk ' { print $1; }')
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:138:${KUBERNETES_CLI:-kubectl} -n "$namespace" create secret generic "$secretName" \
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:146:  ${KUBERNETES_CLI:-kubectl} label secret "${secretName}" -n "$namespace" weblogic.domainUID="$domainUID" weblogic.domainName="$domainUID"
+./create-rcu-credentials/create-rcu-credentials.sh.mustache:150:SECRET=$(${KUBERNETES_CLI:-kubectl} get secret "${secretName}" -n "${namespace}" | grep "${secretName}" | wc | awk ' { print $1; }')
+./logging-services/weblogic-logging-exporter/README.md.mustache:11:$ ${KUBERNETES_CLI:-kubectl} create -f https://raw.githubusercontent.com/oracle/weblogic-kubernetes-operator/master/kubernetes/samples/scripts/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+./logging-services/weblogic-logging-exporter/README.md.mustache:35:    $ ${KUBERNETES_CLI:-kubectl} cp weblogic-logging-exporter.jar <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/user_projects/domains/<%domainUID%>/
+./logging-services/weblogic-logging-exporter/README.md.mustache:36:    $ ${KUBERNETES_CLI:-kubectl} cp snakeyaml-1.27.jar <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/user_projects/domains/<%domainUID%>/ 
+./logging-services/weblogic-logging-exporter/README.md.mustache:65:    $ ${KUBERNETES_CLI:-kubectl} cp <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/user_projects/domains/<%domainUID%>/bin/setDomainEnv.sh setDomainEnv.sh
+./logging-services/weblogic-logging-exporter/README.md.mustache:75:    $ ${KUBERNETES_CLI:-kubectl} cp setDomainEnv.sh <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/user_projects/domains/<%domainUID%>/bin/setDomainEnv.sh
+./logging-services/weblogic-logging-exporter/README.md.mustache:81:    $ ${KUBERNETES_CLI:-kubectl} cp WebLogicLoggingExporter.yaml <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/user_projects/domains/<%domainUID%>/config/
+./logging-services/weblogic-logging-exporter/README.md.mustache:104:    $ ${KUBERNETES_CLI:-kubectl} get pods -n <%namespace%> 
+./logging-services/weblogic-logging-exporter/README.md.mustache:123:    $ ${KUBERNETES_CLI:-kubectl} get pods -n <%namespace%> 
+./logging-services/logstash/README.md.mustache:35:    $ ${KUBERNETES_CLI:-kubectl} get pvc -n <%namespace%>  
+./logging-services/logstash/README.md.mustache:41:    $ ${KUBERNETES_CLI:-kubectl} cp logstash.conf  <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/user_projects/domains --namespace <%namespace%>
+./logging-services/logstash/README.md.mustache:55:    $ ${KUBERNETES_CLI:-kubectl} create -f  logstash.yaml
+./monitoring-service/README.md.mustache:6:- Have Docker and a Kubernetes cluster running and have `${KUBERNETES_CLI:-kubectl}` installed and configured.
+./monitoring-service/README.md.mustache:34:    $ ${KUBERNETES_CLI:-kubectl} create -f manifests/setup
+./monitoring-service/README.md.mustache:35:    $ until ${KUBERNETES_CLI:-kubectl} get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
+./monitoring-service/README.md.mustache:36:    $ ${KUBERNETES_CLI:-kubectl} create -f manifests/
+./monitoring-service/README.md.mustache:42:    $ ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux
+./monitoring-service/README.md.mustache:48:    $ ${KUBERNETES_CLI:-kubectl} patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
+./monitoring-service/README.md.mustache:50:    $ ${KUBERNETES_CLI:-kubectl} patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
+./monitoring-service/README.md.mustache:52:    $ ${KUBERNETES_CLI:-kubectl} patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
+./monitoring-service/README.md.mustache:100:$ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy <namespace>/<admin_pod_name>:/u01/oracle
+./monitoring-service/README.md.mustache:101:$ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py <namespace>/<admin_pod_name>:/u01/oracle/wls-exporter-deploy
+./monitoring-service/README.md.mustache:102:$ ${KUBERNETES_CLI:-kubectl} exec -it -n <namespace> <admin_pod_name> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
+./monitoring-service/README.md.mustache:116:$ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle
+./monitoring-service/README.md.mustache:117:$ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py <%namespace%>/<%domainUID%>-<%adminServerNameToLegal%>:/u01/oracle/wls-exporter-deploy
+./monitoring-service/README.md.mustache:118:$ ${KUBERNETES_CLI:-kubectl} exec -it -n <%namespace%> <%domainUID%>-<%adminServerNameToLegal%> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
+./monitoring-service/README.md.mustache:151:$ ${KUBERNETES_CLI:-kubectl} apply -f .
+./monitoring-service/scripts/undeploy-weblogic-monitoring-exporter.sh.mustache:21:username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+./monitoring-service/scripts/undeploy-weblogic-monitoring-exporter.sh.mustache:22:password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+./monitoring-service/scripts/undeploy-weblogic-monitoring-exporter.sh.mustache:36:${KUBERNETES_CLI:-kubectl} cp $scriptDir/undeploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/undeploy-weblogic-monitoring-exporter.py
+./monitoring-service/scripts/undeploy-weblogic-monitoring-exporter.sh.mustache:37:EXEC_UNDEPLOY="${KUBERNETES_CLI:-kubectl} exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/undeploy-weblogic-monitoring-exporter.py ${InputParameterList}"
+./monitoring-service/scripts/deploy-weblogic-server-grafana-dashboard.sh.mustache:23:grafanaEndpointIP=$(${KUBERNETES_CLI:-kubectl} get endpoints ${monitoringNamespace}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].addresses[].ip}")
+./monitoring-service/scripts/deploy-weblogic-server-grafana-dashboard.sh.mustache:24:grafanaEndpointPort=$(${KUBERNETES_CLI:-kubectl} get endpoints ${monitoringNamespace}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].ports[].port}")
+./monitoring-service/scripts/deploy-weblogic-server-grafana-dashboard.sh.mustache:26:${KUBERNETES_CLI:-kubectl} cp $scriptDir/../config/weblogic-server-dashboard.json ${domainNamespace}/${adminServerPodName}:/tmp/weblogic-server-dashboard.json
+./monitoring-service/scripts/deploy-weblogic-server-grafana-dashboard.sh.mustache:27:EXEC_DEPLOY="${KUBERNETES_CLI:-kubectl} exec -it -n ${domainNamespace} ${adminServerPodName} -- curl --noproxy \"*\" -X POST -H \"Content-Type: application/json\" -d @/tmp/weblogic-server-dashboard.json http://admin:admin@${grafanaEndpoint}/api/dashboards/db"
+./monitoring-service/scripts/deploy-weblogic-monitoring-exporter.sh.mustache:22:username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+./monitoring-service/scripts/deploy-weblogic-monitoring-exporter.sh.mustache:23:password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+./monitoring-service/scripts/deploy-weblogic-monitoring-exporter.sh.mustache:36:${KUBERNETES_CLI:-kubectl} cp $scriptDir/wls-exporter-deploy ${domainNamespace}/${adminServerPodName}:/u01/oracle
+./monitoring-service/scripts/deploy-weblogic-monitoring-exporter.sh.mustache:37:${KUBERNETES_CLI:-kubectl} cp $scriptDir/deploy-weblogic-monitoring-exporter.py ${domainNamespace}/${adminServerPodName}:/u01/oracle/wls-exporter-deploy
+./monitoring-service/scripts/deploy-weblogic-monitoring-exporter.sh.mustache:38:EXEC_DEPLOY="${KUBERNETES_CLI:-kubectl} exec -it -n ${domainNamespace} ${adminServerPodName} -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py ${InputParameterList}"
+./monitoring-service/delete-monitoring.sh.mustache:106:${KUBERNETES_CLI:-kubectl} delete --ignore-not-found=true -f ${serviceMonitor}
+./monitoring-service/setup-monitoring.sh.mustache:133:   if test "$(${KUBERNETES_CLI:-kubectl} get namespace ${monitoringNamespace} --ignore-not-found | wc -l)" = 0; then
+./monitoring-service/setup-monitoring.sh.mustache:135:     ${KUBERNETES_CLI:-kubectl} create namespace ${monitoringNamespace} 
+./monitoring-service/setup-monitoring.sh.mustache:140:   ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux --overwrite=true
+./monitoring-service/setup-monitoring.sh.mustache:149:export username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+./monitoring-service/setup-monitoring.sh.mustache:150:export password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+./monitoring-service/setup-monitoring.sh.mustache:170:${KUBERNETES_CLI:-kubectl} apply -f ${serviceMonitor}
+./create-oracle-db-service/README.md.mustache:15:`${KUBERNETES_CLI:-kubectl} -n MYNAMESPACE create secret generic MYSECRETNAME --from-literal='password=MYSYSPASSWORD'`
+./create-oracle-db-service/README.md.mustache:41:$ ${KUBERNETES_CLI:-kubectl} -n MYNAMESPACE create secret generic MYSECRETNAME --from-literal='password=MYSYSPASSWORD'
+./create-oracle-db-service/start-db-service.sh.mustache:55:domns=`${KUBERNETES_CLI:-kubectl} get ns ${namespace} | grep ${namespace} | awk '{print $1}'`
+./create-oracle-db-service/start-db-service.sh.mustache:58: ${KUBERNETES_CLI:-kubectl} create namespace ${namespace}
+./create-oracle-db-service/start-db-service.sh.mustache:92:${KUBERNETES_CLI:-kubectl} delete service oracle-db -n ${namespace} --ignore-not-found
+./create-oracle-db-service/start-db-service.sh.mustache:95:${KUBERNETES_CLI:-kubectl} apply -f ${dbYaml}
+./create-oracle-db-service/start-db-service.sh.mustache:107:${KUBERNETES_CLI:-kubectl} get po -n ${namespace}
+./create-oracle-db-service/start-db-service.sh.mustache:108:${KUBERNETES_CLI:-kubectl} get service -n ${namespace}
+./create-oracle-db-service/start-db-service.sh.mustache:110:${KUBERNETES_CLI:-kubectl} cp ${scriptDir}/common/checkDbState.sh -n ${namespace} ${dbpod}:/home/oracle/
+./create-oracle-db-service/start-db-service.sh.mustache:112:${KUBERNETES_CLI:-kubectl} exec -it ${dbpod} -n ${namespace} -- /bin/bash /home/oracle/checkDbState.sh
+./create-oracle-db-service/stop-db-service.sh.mustache:32:dbpod=`${KUBERNETES_CLI:-kubectl} get po -n ${namespace}  | grep oracle-db | cut -f1 -d " " `
+./create-oracle-db-service/stop-db-service.sh.mustache:33:${KUBERNETES_CLI:-kubectl} delete -f ${scriptDir}/common/oracle.db.${namespace}.yaml  --ignore-not-found
+./create-oracle-db-service/stop-db-service.sh.mustache:40:  ${KUBERNETES_CLI:-kubectl} delete svc/oracle-db -n ${namespace}  --ignore-not-found
+./create-oracle-db-service/create-image-pull-secret.sh.mustache:57:${KUBERNETES_CLI:-kubectl} delete secret/${secret} --ignore-not-found
+./create-oracle-db-service/create-image-pull-secret.sh.mustache:59:${KUBERNETES_CLI:-kubectl} create secret docker-registry ${secret} --docker-server=container-registry.oracle.com --docker-username=${username} --docker-password=${password} --docker-email=${email}
+./elasticsearch-and-kibana/README.md.mustache:25:$ ${KUBERNETES_CLI:-kubectl} apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+./elasticsearch-and-kibana/README.md.mustache:30:$ ${KUBERNETES_CLI:-kubectl} delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+./elasticsearch-and-kibana/elasticsearch_and_kibana.yaml.mustache:22:#   ${KUBERNETES_CLI:-kubectl} apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+./elasticsearch-and-kibana/elasticsearch_and_kibana.yaml.mustache:25:#   ${KUBERNETES_CLI:-kubectl} delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+./create-weblogic-domain-pv-pvc/README.md.mustache:23:The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `${KUBERNETES_CLI:-kubectl} create -f` command.
+./create-weblogic-domain-pv-pvc/README.md.mustache:26:$ ${KUBERNETES_CLI:-kubectl} create -f <%domainUID%>-domain-pv.yaml
+./create-weblogic-domain-pv-pvc/README.md.mustache:27:$ ${KUBERNETES_CLI:-kubectl} create -f <%domainUID%>-domain-pvc.yaml
+./create-weblogic-domain-pv-pvc/README.md.mustache:174:$ ${KUBERNETES_CLI:-kubectl} describe pv <%domainUID%>-domain-pv
+./create-weblogic-domain-pv-pvc/README.md.mustache:195:$ ${KUBERNETES_CLI:-kubectl} describe pvc <%domainUID%>-domain-pvc
+./create-weblogic-domain-pv-pvc/create-pv-pvc.sh.mustache:212:    ${KUBERNETES_CLI:-kubectl} create -f ${pvOutput}
+./create-weblogic-domain-pv-pvc/create-pv-pvc.sh.mustache:227:    ${KUBERNETES_CLI:-kubectl} create -f ${pvcOutput}
+./create-weblogic-domain-credentials/README.md.mustache:27:You can check the secret with the `${KUBERNETES_CLI:-kubectl} get secret` command.  An example is shown below,
+./create-weblogic-domain-credentials/README.md.mustache:31:$ ${KUBERNETES_CLI:-kubectl} -n <%namespace%> get secret <%domainUID%>-weblogic-credentials -o yaml
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:34:# Try to execute ${KUBERNETES_CLI:-kubectl} to see whether ${KUBERNETES_CLI:-kubectl} is available
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:36:  if ! [ -x "$(command -v ${KUBERNETES_CLI:-kubectl})" ]; then
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:37:    fail "${KUBERNETES_CLI:-kubectl} is not installed"
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:109:result=$(${KUBERNETES_CLI:-kubectl} get secret "${secretName}" -n "${namespace}" --ignore-not-found=true | grep "${secretName}" | wc | awk ' { print $1; }')
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:115:${KUBERNETES_CLI:-kubectl} -n "$namespace" create secret generic "$secretName" \
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:121:  ${KUBERNETES_CLI:-kubectl} label secret "${secretName}" -n "$namespace" weblogic.domainUID="$domainUID" weblogic.domainName="$domainUID"
+./create-weblogic-domain-credentials/create-weblogic-credentials.sh.mustache:125:SECRET=$(${KUBERNETES_CLI:-kubectl} get secret "${secretName}" -n "${namespace}" | grep "${secretName}" | wc | awk ' { print $1; }')

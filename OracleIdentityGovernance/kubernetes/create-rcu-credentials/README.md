@@ -23,25 +23,25 @@ The parameters are as follows:
 
 ```  
   -u username for schema owner (regular user), must be specified.
-  -p password for schema owner (regular user), must be specified.
+   -p password for schema owner (regular user), must be provided using the -p argument or user will be prompted to enter a value.
   -a username for SYSDBA user, must be specified.
-  -q password for SYSDBA user, must be specified.
-  -d domainUID, optional. The default value is oimcluster. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
-  -n namespace, optional. Use the oimcluster namespace if not specified.
+  -q password for SYSDBA user, must be provided using the -q argument or user will be prompted to enter a value.
+  -d domainUID, optional. The default value is governancedomain. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
+  -n namespace, optional. Use the oigns namespace if not specified.
   -s secretName, optional. If not specified, the secret name will be determined based on the domainUID value.
 ```
 
 This creates a `generic` secret containing the user name and password as literal values.
 
-You can check the secret with the `kubectl describe secret` command.  An example is shown below,
+You can check the secret with the `${KUBERNETES_CLI:-kubectl} describe secret` command.  An example is shown below,
 including the output:
 
 ```
-$ kubectl -n oimcluster describe secret oimcluster-rcu-credentials -o yaml
-Name:         oimcluster-rcu-credentials
-Namespace:    oimcluster
-Labels:       weblogic.domainName=oimcluster
-              weblogic.domainUID=oimcluster
+$ ${KUBERNETES_CLI:-kubectl} -n oigns describe secret governancedomain-rcu-credentials -o yaml
+Name:         governancedomain-rcu-credentials
+Namespace:    oigns
+Labels:       weblogic.domainName=governancedomain
+              weblogic.domainUID=governancedomain
 Annotations:  <none>
 
 Type:  Opaque

@@ -1,0 +1,47 @@
+
+#
+## Copyright (c) 2023, Oracle and/or its affiliates.
+##
+## Licensed under the Universal Permissive License v 1.0 as shown at 
+## https://oss.oracle.com/licenses/upl
+##
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}"
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+    {{- with .Values.cronJob.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "oud-ds-rs.serviceAccountName" . }}-job
+      containers:
+        - name: hook-upgrade
+          env: 
+            - name: servicename
+              value: {{ include "oud-ds-rs.fullname" . }}
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "for i in `kubectl get service --no-headers -o custom-columns=:metadata.name -n {{ .Release.Namespace }}| grep $servicename-[0-{{ (.Values.replicaCount|int) }}]`;do if [ \"`kubectl get svc $i -n {{ .Release.Namespace }} --no-headers -o custom-columns=:spec.clusterIP`\" != None ];then `kubectl delete service  $i -n={{ .Release.Namespace }}`;fi; done;"
+          image: "{{ .Values.cronJob.kubectlImage.repository }}:{{ .Values.cronJob.kubectlImage.tag }}"
+          imagePullPolicy: {{ .Values.cronJob.kubectlImage.pullPolicy }}
+      restartPolicy: OnFailure

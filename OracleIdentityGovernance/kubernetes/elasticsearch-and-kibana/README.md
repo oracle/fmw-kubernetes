@@ -22,11 +22,11 @@ To control Elasticsearch memory parameters (Heap allocation and Enabling/Disabli
 
 To install Elasticsearch and Kibana, use:
 ```shell
-$ kubectl apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+$ ${KUBERNETES_CLI:-kubectl} apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
 ```
 
 To remove them, use:
 ```shell
-$ kubectl delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+$ ${KUBERNETES_CLI:-kubectl} delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
 ```
 

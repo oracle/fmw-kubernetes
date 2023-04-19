@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OUD deployment
@@ -7,12 +7,47 @@
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: delete_oud.sh
+# Usage: delete_oud.sh [-r responsefile -p passwordfile]
 #
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-. $MYDIR/../common/functions.sh
+SCRIPTDIR=$SCRIPTDIR/..
+
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
 
 
 mkdir $LOCAL_WORKDIR/deleteLogs > /dev/null 2>&1
@@ -59,13 +94,30 @@ echo "Check Instances Stopped"
 check_stopped $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0
 check_stopped $OUDNS $OUD_POD_PREFIX-oud-ds-rs-1
 
+echo "Deleting DR Cron Job"
+kubectl delete cronjob -n $OUDNS rsyncdr >> $LOG 2>&1
+echo "Deleting DR Persistent Volume Claim "
+kubectl delete pvc -n oudns ouddr-pvc >> $LOG 2>&1
+echo "Deleting Persistent Volume"
+kubectl delete pv oudpv-dr >> $LOG 2>&1
+
 echo "Delete Namespace $OUDNS"
 kubectl delete namespace $OUDNS
 
-
 echo "Delete Volumes"
-rm -rf $LOCAL_WORKDIR/OUD $LOCAL_WORKDIR/oud_installed
-rm -rf $OUD_LOCAL_SHARE/*
+if [ ! "$LOCAL_WORKDIR" = "" ]
+then
+  rm -rf $LOCAL_WORKDIR/OUD $LOCAL_WORKDIR/oud_installed
+else
+  echo "Unable to Delete Volumes."
+fi
+
+if [ ! "$OUD_LOCAL_SHARE" = "" ] && [ ! "$OUD_POD_PREFIX" = "" ]
+then
+  rm -rf $OUD_LOCAL_SHARE/${OUD_POD_PREFIX}*
+else
+  echo "Unable to Delete Volumes."
+fi
 
 
 FINISH_TIME=`date +%s`

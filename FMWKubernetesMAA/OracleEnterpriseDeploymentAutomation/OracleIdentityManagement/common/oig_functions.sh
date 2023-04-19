@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions and procedures to provision and Configure Oracle Identity Governance
@@ -12,7 +12,7 @@
 #
 create_persistent_volumes()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Creating Persistent Volumes"
      cd $WORKDIR/samples/create-weblogic-domain-pv-pvc
      replace_value2 domainUID $OIG_DOMAIN_NAME $PWD/create-pv-pvc-inputs.yaml
@@ -29,7 +29,7 @@ create_persistent_volumes()
      printf "\t\t\tCreating Persistent Volume Claims - "
      kubectl create -f output/pv-pvcs/$OIG_DOMAIN_NAME-domain-pvc.yaml -n $OIGNS> $LOGDIR/create_pvc.log 2> $LOGDIR/create_pvc.log
      print_status $? $LOGDIR/create_pvc.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create Persistent Volumes" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -41,7 +41,7 @@ edit_domain_creation_file()
 
      print_msg "Creating Domain Configuration File"
      cp $WORKDIR/samples/create-oim-domain/domain-home-on-pv/create-domain-inputs.yaml $filename
-     ST=`date +%s`
+     ST=$(date +%s)
      if [  "$CREATE_REGSECRET" = "true" ]
      then
         replace_value2 imagePullSecretName regcred $filename
@@ -57,6 +57,7 @@ edit_domain_creation_file()
      replace_value2 rcuSchemaPrefix $OIG_RCU_PREFIX   $filename
      replace_value2 rcuDatabaseURL $OIG_DB_SCAN:$OIG_DB_LISTENER/$OIG_DB_SERVICE  $filename
      replace_value2 rcuCredentialsSecret $OIG_DOMAIN_NAME-rcu-credentials  $filename
+     replace_value2 datasourceType agl $filename
      if [ "$USE_INGRESS" = "true" ]
      then
           replace_value2 exposeAdminNodePort false $filename
@@ -73,7 +74,7 @@ edit_domain_creation_file()
      replace_value2 frontEndPort $OIG_LBR_PORT $filename
      print_status $?
      printf "\t\t\tCopy saved to $WORKDIR\n"
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create Domain Configuration File" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -83,7 +84,7 @@ create_oig_domain()
 {
 
      print_msg "Initialising the Domain"
-     ST=`date +%s`
+     ST=$(date +%s)
      cd $WORKDIR/samples/create-oim-domain/domain-home-on-pv
 
      ./create-domain.sh -i $WORKDIR/create-domain-inputs.yaml -o output > $LOGDIR/create_domain.log 2> $LOGDIR/create_domain.log
@@ -121,7 +122,7 @@ create_oig_domain()
      else
          echo "Success"
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
 
      print_time STEP "Initialise the Domain" $ST $ET >> $LOGDIR/timings.log
 
@@ -131,7 +132,8 @@ create_oig_domain()
 #
 update_java_parameters()
 {
-     printf "\t\t\tUpdating Java Parameters - "
+     print_msg "Updating Java Parameters"
+     ST=$(date +%s)
      cp $TEMPLATE_DIR/oigDomain.sedfile $WORKDIR
      if [ "$OIG_ENABLE_T3" = "true" ]
      then
@@ -140,8 +142,13 @@ update_java_parameters()
      update_variable "<OIMSERVER_JAVA_PARAMS>" "$OIMSERVER_JAVA_PARAMS" $WORKDIR/oigDomain.sedfile
      update_variable "<SOASERVER_JAVA_PARAMS>" "$SOASERVER_JAVA_PARAMS" $WORKDIR/oigDomain.sedfile
 
-     sed -i -f $WORKDIR/oigDomain.sedfile output/weblogic-domains/$OIG_DOMAIN_NAME/domain_oim_soa.yaml
+     OUTPUT_DIR=$WORKDIR/samples/create-oim-domain/domain-home-on-pv/output/weblogic-domains/$OIG_DOMAIN_NAME
+     cp output/weblogic-domains/$OIG_DOMAIN_NAME/domain.yaml $OUTPUT_DIR/domain.orig
+     sed -i -f $WORKDIR/oigDomain.sedfile $OUTPUT_DIR/domain.yaml
      print_status $?
+     ET=$(date +%s)
+
+     print_time STEP "Update Java Parameters" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Start the OIG domain for the first time.
@@ -153,22 +160,17 @@ perform_initial_start()
      #
      print_msg "Starting the Domain for the first time"
      echo ""
-     ST=`date +%s`
-     cd $WORKDIR/samples/create-oim-domain/domain-home-on-pv
-     cp output/weblogic-domains/$OIG_DOMAIN_NAME/domain_oim_soa.yaml output/weblogic-domains/$OIG_DOMAIN_NAME/domain_oim_soa.orig
-     update_java_parameters
+     ST=$(date +%s)
+     OUTPUT_DIR=$WORKDIR/samples/create-oim-domain/domain-home-on-pv/output/weblogic-domains/$OIG_DOMAIN_NAME
 
-     kubectl apply -f output/weblogic-domains/$OIG_DOMAIN_NAME/domain.yaml > $LOGDIR/initial_start.log 2>&1
+     kubectl apply -f $OUTPUT_DIR/domain.yaml > $LOGDIR/initial_start.log 2>&1
 
      # Check that the domain is started
      #
-     check_running $OIGNS adminserver
+     check_running $OIGNS adminserver 240
      check_running $OIGNS soa-server1
  
-     kubectl apply -f output/weblogic-domains/$OIG_DOMAIN_NAME/domain_oim_soa.yaml > $LOGDIR/initial_start.log 2>&1
-
-     check_running $OIGNS oim-server1
-  
+     scale_cluster $OIGNS $OIG_DOMAIN_NAME oim-cluster 1 
      kubectl logs -n $OIGNS $OIG_DOMAIN_NAME-oim-server1 | grep -q "BootStrap configuration Successfull"
      if [ "$?" = "0" ]
      then 
@@ -177,7 +179,7 @@ perform_initial_start()
           echo "BOOTSTRAP FAILED - See kubectl logs -n $OIGNS $OIG_DOMAIN_NAME-oim-server1"
           exit 1
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "First Domain Start " $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -185,7 +187,7 @@ perform_initial_start()
 #
 create_oig_ingress_manual()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg  "Creating OIG Ingress Services "
      cp $TEMPLATE_DIR/oig_ingress.yaml $WORKDIR
      filename=$WORKDIR/oig_ingress.yaml
@@ -202,20 +204,20 @@ create_oig_ingress_manual()
 
      if [ "$OIG_ENABLE_T3" = "true" ]
      then
-          printf "\t\t\tExposing OIM T3 - :"
+          printf "\t\t\tExposing OIM T3 - "
           cp $TEMPLATE_DIR/design-console-ingress.yaml $WORKDIR
           update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/design-console-ingress.yaml
           cd $WORKDIR/samples
           helm install oig-designconsole-ingress design-console-ingress --namespace oigns --values $WORKDIR/design-console-ingress.yaml >> $LOGDIR/ingress.log 2>&1
           print_status $? $LOGDIR/ingress.log
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create Kubernetes OIG Ingress Services " $ST $ET >> $LOGDIR/timings.log
 }
 
 create_oig_ingress()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg  "Creating OIG Ingress Services "
 
      cp $WORKDIR/samples/charts/ingress-per-domain/values.yaml $WORKDIR/override_ingress.yaml
@@ -241,14 +243,14 @@ create_oig_ingress()
           helm install oig-designconsole-ingress design-console-ingress --namespace $OIGNS --values $WORKDIR/design-console-ingress.yaml >> $LOGDIR/design_console_ingress.log 2>&1
           print_status $? $LOGDIR/design_console_ingress.log
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create Kubernetes OIG Ingress Services " $ST $ET >> $LOGDIR/timings.log
 }
 # Create NodePort Services for OIG
 #
 create_oig_nodeport()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg  "Creating OIG NodePort Services"
      echo
      cp $TEMPLATE_DIR/*nodeport*.yaml $WORKDIR
@@ -277,7 +279,7 @@ create_oig_nodeport()
           kubectl create -f $WORKDIR/oim_t3_nodeport.yaml >> $LOGDIR/nodeport.log 2>&1
           print_status $? $LOGDIR/nodeport.log
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create Kubernetes OIG NodePort Services " $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -286,7 +288,7 @@ create_oig_nodeport()
 copy_connector()
 {
 
-    ST=`date +%s`
+    ST=$(date +%s)
     print_msg "Installing Connector into Container" 
 
     printf "\n\t\t\tCheck Connector Exists - "
@@ -309,7 +311,7 @@ copy_connector()
     kubectl cp $CONNECTOR_DIR/OID-12.2*  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     print_status $?
 
-    ET=`date +%s`
+    ET=$(date +%s)
     print_time STEP "Installing Connector into container" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -317,7 +319,7 @@ copy_connector()
 #
 create_connector_files()
 {
-      ST=`date +%s`
+      ST=$(date +%s)
       print_msg "Creating Sed files to update OAM/OIG intregration config files"
  
       cp $TEMPLATE_DIR/autn.sedfile $WORKDIR
@@ -333,7 +335,6 @@ create_connector_files()
      update_variable "<OIG_ADMIN_PORT>" $OIG_ADMIN_PORT $WORKDIR/oamoig.sedfile
      update_variable "<OIG_WEBLOGIC_PWD>" $OIG_WEBLOGIC_PWD $WORKDIR/oamoig.sedfile
      update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/oamoig.sedfile
-     update_variable "<OUDNS>" $OUDNS $WORKDIR/oamoig.sedfile
      update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $WORKDIR/oamoig.sedfile
      update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $WORKDIR/oamoig.sedfile
      update_variable "<LDAP_USER_SEARCHBASE>" $LDAP_USER_SEARCHBASE $WORKDIR/oamoig.sedfile
@@ -351,6 +352,8 @@ create_connector_files()
      update_variable "<OAM_COOKIE_DOMAIN>" $OAM_COOKIE_DOMAIN $WORKDIR/oamoig.sedfile
      update_variable "<OAM_WEBLOGIC_PWD>" $OAM_WEBLOGIC_PWD $WORKDIR/oamoig.sedfile
      update_variable "<LDAP_OAMADMIN_USER>" $LDAP_OAMADMIN_USER $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_HOST>" ${LDAP_EXTERNAL_HOST:=$OUD_POD_PREFIX-oud-ds-rs-lbr-ldap.$OUDNS.svc.cluster.local} $WORKDIR/oamoig.sedfile
+     update_variable "<LDAP_PORT>" ${LDAP_EXTERNAL_PORT:=1389} $WORKDIR/oamoig.sedfile
 
      copy_to_k8 $WORKDIR/oamoig.sedfile workdir $OIGNS $OIG_DOMAIN_NAME
      copy_to_k8 $WORKDIR/autn.sedfile workdir $OIGNS $OIG_DOMAIN_NAME
@@ -364,7 +367,7 @@ create_connector_files()
       run_command_k8 $OIGNS $OIG_DOMAIN_NAME "chmod 750 /u01/oracle/idm/server/ssointg/bin/_OIGOAMIntegration.sh"
 
       print_status $? 
-      ET=`date +%s`
+      ET=$(date +%s)
       print_time STEP "Creating OAM/OIG intregration config files" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -372,7 +375,7 @@ create_connector_files()
 #
 update_mds()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Updating MDS Datasource"
 
      cp $TEMPLATE_DIR/update_mds.py $WORKDIR
@@ -387,7 +390,7 @@ update_mds()
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/update_mds.py > $LOGDIR/update_mds.log
      print_status $WLSRETCODE $LOGDIR/update_mds.log
 
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Update MDS Datasource" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -395,7 +398,7 @@ update_mds()
 #
 fix_gridlink()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Enabling Database FAN"
 
      cp $TEMPLATE_DIR/fix_gridlink.sh $WORKDIR
@@ -407,7 +410,7 @@ fix_gridlink()
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "chmod 750 $PV_MOUNT/workdir/fix_gridlink.sh"
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/fix_gridlink.sh" $LOGDIR/fix_gridlink.log 2>&1
      print_status $?  $LOGDIR/fix_gridlink.log 2>&1
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Enabling DB FAN" $ST $ET >> $LOGDIR/timings.log
 
 }
@@ -417,7 +420,7 @@ fix_gridlink()
 set_weblogic_plugin()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Setting WebLogic Plugin"
      cp $TEMPLATE_DIR/set_weblogic_plugin.py $WORKDIR
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/set_weblogic_plugin.py
@@ -429,7 +432,7 @@ set_weblogic_plugin()
      copy_to_k8 $WORKDIR/set_weblogic_plugin.py workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/set_weblogic_plugin.py > $LOGDIR/weblogic_plugin.log
      print_status $WLSRETCODE $LOGDIR/weblogic_plugin.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Set WebLogic Plug-in" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -438,7 +441,7 @@ set_weblogic_plugin()
 enable_oim_T3()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Enabling OIM T3 Channel"
      cp $TEMPLATE_DIR/set_oim_t3_channel.py $WORKDIR
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/set_oim_t3_channel.py
@@ -452,7 +455,7 @@ enable_oim_T3()
      copy_to_k8 $WORKDIR/set_oim_t3_channel.py workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/set_oim_t3_channel.py > $LOGDIR/set_oim_t3_channel.log
      print_status $WLSRETCODE $LOGDIR/set_oim_t3_channel.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Enable OIM T3 Channel" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -461,7 +464,7 @@ enable_oim_T3()
 create_oud_authenticator()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Creating OUD Authenticator"
      cp $TEMPLATE_DIR/create_oud_authenticator.py $WORKDIR
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/create_oud_authenticator.py
@@ -477,11 +480,13 @@ create_oud_authenticator()
      update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $WORKDIR/create_oud_authenticator.py
      update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/create_oud_authenticator.py
      update_variable "<OUDNS>" $OUDNS $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_HOST>" ${LDAP_EXTERNAL_HOST:=$OUD_POD_PREFIX-oud-ds-rs-lbr-ldap.$OUDNS.svc.cluster.local} $WORKDIR/create_oud_authenticator.py
+     update_variable "<LDAP_PORT>" ${LDAP_EXTERNAL_PORT:=1389} $WORKDIR/create_oud_authenticator.py
   
      copy_to_k8 $WORKDIR/create_oud_authenticator.py workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/create_oud_authenticator.py > $LOGDIR/create_oud_authenticator.log
      print_status $WLSRETCODE $LOGDIR/create_oud_authenticator.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create OUD Authenticator" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -491,7 +496,7 @@ create_oud_authenticator()
 create_admin_roles()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Create  WebLogic Admin Roles"
      cp $TEMPLATE_DIR/create_admin_roles.py $WORKDIR
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/create_admin_roles.py
@@ -503,7 +508,7 @@ create_admin_roles()
      copy_to_k8 $WORKDIR/create_admin_roles.py workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/create_admin_roles.py > $LOGDIR/create_admin_roles.log
      print_status $WLSRETCODE $LOGDIR/create_admin_roles.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create WebLogic Admin Roles" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -512,7 +517,7 @@ create_admin_roles()
 #
 update_soa_urls()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Update SOA URLs"
      cp $TEMPLATE_DIR/update_soa.py $WORKDIR
      update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/update_soa.py
@@ -531,7 +536,7 @@ update_soa_urls()
      copy_to_k8 $WORKDIR/update_soa.py workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/update_soa.py > $LOGDIR/update_soa.log
      print_status $WLSRETCODE $LOGDIR/update_soa.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Update SOA URLS" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -540,7 +545,7 @@ update_soa_urls()
 #
 assign_wsmroles()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Assign WSM Roles"
      cp $TEMPLATE_DIR/assign_wsm_roles.py $WORKDIR
      filename=$WORKDIR/assign_wsm_roles.py
@@ -556,7 +561,7 @@ assign_wsmroles()
      copy_to_k8 $filename workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/assign_wsm_roles.py > $LOGDIR/assign_wsm_roles.log
      print_status $WLSRETCODE $LOGDIR/assign_wsm_roles.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Assign WSM Roles" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -564,7 +569,7 @@ assign_wsmroles()
 #
 generate_parameter_files()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Generate Integration Parameter Files"
      if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
      then
@@ -591,7 +596,7 @@ generate_parameter_files()
      fi
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/create_oigoam_files.sh"
      print_status $?
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Update SOA URLS" $ST $ET >> $LOGDIR/timings.log
 }
      
@@ -600,7 +605,7 @@ generate_parameter_files()
 #
 configure_connector()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
 
      print_msg "Configure OID Connector"
 
@@ -613,7 +618,7 @@ configure_connector()
      else
         echo "Success"
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Configure OID Connector" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -621,7 +626,7 @@ configure_connector()
 #
 create_wlsauthenticators()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
 
      print_msg "Configure WLS Authenticators"
 
@@ -635,7 +640,7 @@ create_wlsauthenticators()
      else
         echo "Success"
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Configure WLS Authenticators" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -643,7 +648,7 @@ create_wlsauthenticators()
 #
 add_object_classes()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
 
      print_msg  "Add Missing Object Classes to LDAP"
 
@@ -651,7 +656,7 @@ add_object_classes()
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/add_object_classes.sh "> $LOGDIR/add_object_classes.log
      print_status $? $LOGDIR/add_object_classes.log
 
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Add missing object classes to LDAP" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -659,7 +664,7 @@ add_object_classes()
 #
 configure_sso()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
 
      print_msg "Configure SSO Integration"
 
@@ -673,7 +678,7 @@ configure_sso()
      else
         echo "Success"
      fi
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Configure SSO Integration" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -681,21 +686,21 @@ configure_sso()
 #
 enable_oam_notifications()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
 
      print_msg "Enable OAM Notifications"
 
      copy_to_k8 $TEMPLATE_DIR/oam_notifications.sh workdir $OIGNS $OIG_DOMAIN_NAME
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/oam_notifications.sh "> $LOGDIR/oam_notifications.log
      print_status $? $LOGDIR/oam_notifications.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Enable OAM Notifications" $ST $ET >> $LOGDIR/timings.log
 }
 # Update Match Attribute
 #
 update_match_attr()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Update Match Attribute"
      MA=`curl -i -s -u $LDAP_OAMADMIN_USER:$LDAP_USER_PWD  http://$K8_WORKER_HOST1:$OAM_ADMIN_K8/iam/admin/config/api/v1/config?path=/DeployedComponent/Server/NGAMServer/Profile/AuthenticationModules/DAPModules | awk '/Name=\"DAPModules/{p=2} p > 0 { print $0; p--}' | tail -1 | cut -f2 -d\"`
 
@@ -705,7 +710,7 @@ update_match_attr()
 
      curl -s -u $LDAP_OAMADMIN_USER:$LDAP_USER_PWD -H 'Content-Type: text/xml' -X PUT http://$K8_WORKER_HOST1:$OAM_ADMIN_K8/iam/admin/config/api/v1/config -d @/tmp/MatchLDAPAttribute_input.xml > $LOGDIR/update_matchattr.log
      print_status $?  $LOGDIR/update_matchattr.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Update Match Attribute" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -715,7 +720,7 @@ update_match_attr()
 run_recon_jobs()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Run Recon Jobs"
 
      cp $TEMPLATE_DIR/runJob.sh $WORKDIR/
@@ -732,7 +737,7 @@ run_recon_jobs()
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/runJob.sh "> $LOGDIR/recon_jobs.log 2>&1
 
      print_status $?  $LOGDIR/recon_jobs.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Run Recon Jobs" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -742,7 +747,7 @@ run_recon_jobs()
 update_biconfig()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Update BI Integration"
 
      cp $TEMPLATE_DIR/update_bi.py $WORKDIR
@@ -760,7 +765,7 @@ update_biconfig()
      copy_to_k8 $WORKDIR/update_bi.py  workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/update_bi.py > $LOGDIR/update_bi.log
      print_status $WLSRETCODE $LOGDIR/update_bi.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Update BI Integration" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -770,7 +775,7 @@ update_biconfig()
 create_email_driver()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Create Email Driver"
 
      cp $TEMPLATE_DIR/create_email.py $WORKDIR
@@ -802,7 +807,7 @@ create_email_driver()
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/create_email.py > $LOGDIR/create_email.log
 
      print_status $WLSRETCODE $LOGDIR/create_email.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Create Email Driver" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -812,7 +817,7 @@ create_email_driver()
 set_email_notifications()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Set Notifications to Email"
 
      cp $TEMPLATE_DIR/update_notifications.py $WORKDIR
@@ -831,7 +836,7 @@ set_email_notifications()
      kubectl exec -n $OIGNS -ti $OIG_DOMAIN_NAME-adminserver -- /u01/oracle/soa/common/bin/wlst.sh $PV_MOUNT/workdir/update_notifications.py > $LOGDIR/update_notifications.log
 
      print_status $? $LOGDIR/update_notifications.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Set Notifications to Email" $ST $ET >> $LOGDIR/timings.log
 }
 #
@@ -840,7 +845,7 @@ set_email_notifications()
 update_soaconfig()
 {
 
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Update SOA Config"
 
      cp $TEMPLATE_DIR/update_soaconfig.py $WORKDIR
@@ -856,14 +861,14 @@ update_soaconfig()
      copy_to_k8 $WORKDIR/update_soaconfig.py  workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/update_soaconfig.py > $LOGDIR/update_soaconfig.log 2>&1
      print_status $WLSRETCODE $LOGDIR/update_soaconfig.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Update SOA Integration" $ST $ET >> $LOGDIR/timings.log
 }
 # Add Loadbalancer Certs to Oracle Keystore Service
 #
 add_certs_to_kss()
 {
-     ST=`date +%s`
+     ST=$(date +%s)
      print_msg "Add Certificates to Oracle Keystore Service"
      echo "connect('$OIG_WEBLOGIC_USER','$OIG_WEBLOGIC_PWD','t3://$OIG_DOMAIN_NAME-adminserver.$OIGNS.svc.cluster.local:$OIG_ADMIN_PORT') " > $WORKDIR/add_cert_to_kss.py
      echo "svc = getOpssService(name='KeyStoreService')" >> $WORKDIR/add_cert_to_kss.py
@@ -880,7 +885,7 @@ add_certs_to_kss()
      copy_to_k8 $WORKDIR/add_cert_to_kss.py  workdir $OIGNS $OIG_DOMAIN_NAME
      run_wlst_command $OIGNS $OIG_DOMAIN_NAME $PV_MOUNT/workdir/add_cert_to_kss.py > $LOGDIR/add_cert_to_kss.log 2>&1
      print_status $WLSRETCODE $LOGDIR/add_cert_to_kss.log
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Add Certificates to Keystore" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -889,7 +894,7 @@ add_certs_to_kss()
 #
 create_oig_ohs_config()
 {
-   ST=`date +%s`
+   ST=$(date +%s)
 
 
    print_msg "Creating OHS Conf files"
@@ -963,7 +968,7 @@ create_oig_ohs_config()
    
    print_status $?
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Creating OHS config" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -971,7 +976,7 @@ create_oig_ohs_config()
 #
 create_logstash_cm()
 {
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating logstash Config Map"
    cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
 
@@ -992,7 +997,7 @@ create_logstash_cm()
           print_status 1 $LOGDIR/logstash_cm.log
        fi
    fi
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1000,7 +1005,7 @@ create_logstash_cm()
 #
 generate_wls_monitor()
 {
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Generate WebLogic Monitoring Service"
 
    cd $WORKDIR/samples/monitoring-service/scripts
@@ -1015,14 +1020,14 @@ generate_wls_monitor()
 
    $PWD/get-wls-exporter.sh > $LOGDIR/generate_wls_monitor.log 2>&1
    print_status $? $LOGDIR/generate_wls_monitor.log
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Generate WebLogic Monitoring Service" $ST $ET >> $LOGDIR/timings.log
 
 }
 
 deploy_wls_monitor()
 {
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Deploy WebLogic Monitoring Service"
 
    cd $WORKDIR/samples/monitoring-service/scripts
@@ -1041,14 +1046,14 @@ deploy_wls_monitor()
 
    print_status $WLSRETCODE $LOGDIR/deploy_wls_monitor.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Deploy WebLogic Monitoring Service" $ST $ET >> $LOGDIR/timings.log
 
 }
 
 enable_monitor()
 {
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Configuring Prometheus Operator"
 
    ENC_WEBLOGIC_USER=`encode_pwd $OIG_WEBLOGIC_USER`
@@ -1068,7 +1073,7 @@ enable_monitor()
    kubectl apply -f $WORKDIR/samples/monitoring-service/manifests/ > $LOGDIR/enable_monitor.log
    print_status $? $LOGDIR/enable_monitor.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Configure Prometheus Operator" $ST $ET >> $LOGDIR/timings.log
 
 }

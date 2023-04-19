@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions used to create an Ingress Controller
@@ -75,24 +75,45 @@ create_ingress_controller()
     ST=`date +%s`
     print_msg "Create Ingress Controller "
 
+    cp $TEMPLATES_DIR/ingress_override.yaml $WORKDIR/ingress_override.yaml
+    filename=$WORKDIR/ingress_override.yaml
+
     if [ "$INGRESS_ENABLE_TCP" = "true" ]  
     then
-       cp $TEMPLATES_DIR/ldap_override.yaml $WORKDIR/ingress_override.yaml
-       update_variable "<OUDNS>" $OUDNS $WORKDIR/ingress_override.yaml
-       update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/ingress_override.yaml
-       update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/ingress_override.yaml
-       update_variable "<OUD_LDAP_K8>" $OUD_LDAP_K8 $WORKDIR/ingress_override.yaml
-       update_variable "<OUD_LDAPS_K8>" $OUD_LDAPS_K8 $WORKDIR/ingress_override.yaml
-    else
-       cp $TEMPLATES_DIR/ingress_override.yaml $WORKDIR/ingress_override.yaml
+       sed -i '/controller:/i tcp:' $filename
+       sed -i "/tcp:/a\  1389: ${OUDNS}/${OUD_POD_PREFIX}-oud-ds-rs-lbr-ldap:ldap" $filename
+       sed -i "/tcp:/a\  1636: ${OUDNS}/${OUD_POD_PREFIX}-oud-ds-rs-lbr-ldap:ldaps" $filename
+       sed -i "/admissionWebhooks:/i\      tcp:\n        1389: ${OUD_LDAP_K8}\n        1636: ${OUD_LDAPS_K8}" $filename
+       #cp $TEMPLATES_DIR/ldap_override.yaml $WORKDIR/ingress_override.yaml
+       #update_variable "<OUDNS>" $OUDNS $WORKDIR/ingress_override.yaml
+       #update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/ingress_override.yaml
+       #update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/ingress_override.yaml
+       #update_variable "<OUD_LDAP_K8>" $OUD_LDAP_K8 $WORKDIR/ingress_override.yaml
+       #update_variable "<OUD_LDAPS_K8>" $OUD_LDAPS_K8 $WORKDIR/ingress_override.yaml
+    #else
+       #cp $TEMPLATES_DIR/ingress_override.yaml $WORKDIR/ingress_override.yaml
     fi
 
-    filename=$WORKDIR/ingress_override.yaml
+    update_variable "<INGRESS_SSL>" $INGRESS_SSL $filename
     update_variable "<INGRESS_NAME>" $INGRESS_NAME $filename
     update_variable "<INGRESS_REPLICAS>" $INGRESS_REPLICAS $filename
+    update_variable "<INGRESS_SERVICE_TYPE>" $INGRESS_SERVICE_TYPE $filename
+    update_variable "<INGRESS_HTTP>" $INGRESS_HTTP $filename
+    update_variable "<INGRESS_HTTPS>" $INGRESS_HTTPS $filename
     update_variable "<INGRESS_HTTP_K8>" $INGRESS_HTTP_K8 $filename
     update_variable "<INGRESS_HTTPS_K8>" $INGRESS_HTTPS_K8 $filename
     update_variable "<USE_PROM>" $USE_PROM $filename
+
+    if [ "$INGRESS_SERVICE_TYPE" = "LoadBalancer" ] && [ "$ENV_TYPE" = "OCI" ]
+    then
+       sed -i '/type:/a\    annotations:' $filename
+       sed -i "/annotations:/a\      service.beta.kubernetes.io/oci-load-balancer-shape: \"$INGRESS_OCI_SHAPE\"" $filename
+       sed -i "/annotations:/a\      service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: \"$INGRESS_OCI_SHAPE_MAX\"" $filename
+       sed -i "/annotations:/a\      service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: \"$INGRESS_OCI_SHAPE_MIN\"" $filename
+       sed -i "/annotations:/a\      service.beta.kubernetes.io/oci-load-balancer-subnet1: \"$INGRESS_OCI_NETWORK\"" $filename
+       sed -i '/annotations:/a\      service.beta.kubernetes.io/oci-load-balancer-internal: \"true\"' $filename
+    fi
+
    
 
     helm install nginx-ingress -n $INGRESSNS --values $filename\

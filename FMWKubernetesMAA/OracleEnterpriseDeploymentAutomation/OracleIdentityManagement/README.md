@@ -2,13 +2,13 @@
 
 A number of sample scripts have been developed which allow you to deploy Oracle Identity and Access Management on Kubernetes. These scripts are provided as samples for you to use to develop your own applications.
 
-You must ensure that you are using the July 2022 or later release of Identity and Access Management for this utility to work.
+You must ensure that you are using the April 2023 or later release of Identity and Access Management for this utility to work.
 
 The scripts can be run from any host which has access to your Kubernetes cluster. 
 
 If you wish the scripts to automatically copy files to your Oracle HTTP Servers then you must have passwordless ssh set up from the deployment host to each of your webhosts.
 
-If you are deploying Oracle Advanced Authentication then you must have passwordless ssh set up from the deployment host to one of your database nodes.  In addition for the duration of the deployment your OAA database service must only be running on this database host.
+These scripts are provided as examples and can be customized as desired.
 
 ## Obtaining the Scripts
 
@@ -29,7 +29,7 @@ fmw-kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleIdent
 Move these template scripts to your working directory. For example:
 
 ```
-cp -R kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleIdentityManagement/* /workdir/scripts
+cp -R fmw-kubernetes/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleIdentityManagement/* /workdir/scripts
 ```
 
 If you are provisioning Oracle Identity Governance you must also Download the Oracle connector Bundle for OUD and extract it to a location which is accessible by the provisioning scripts.  For example, /workdir/connectors/OID-12.2.1.3.0.    The connector directory name must start with OID-12.2.1.
@@ -128,9 +128,6 @@ To make things simple and easy to manage the scripts are based around two concep
 
 
 ## Getting Started
-Before you get started, you should edit the `common/functions.sh` file and set the value of `SCRIPTDIR` to the location of the script's home directory. For example:
-
-`SCRIPTDIR=/workdir/scripts`
 
 If you are provisioning Oracle Identity Governance, you must also download the Oracle Connector Bundle for OUD and extract it to a location which is accessible by the provisioning scripts. For example, `/workdir/connectors/OID-12.2.1.3.0`. The connector directory name must start with `OID-12.2.1.`
 
@@ -140,15 +137,17 @@ If you wish to Install the Oracle HTTP Server or copy files to it, you must setu
 
 ## Creating a Response File
 
-Sample response and password files are created for you in the `responsefile` directory. You can edit these files either directly or by running the shell script `start_here.sh` in the script's home directory.
+Sample response and password files are created for you in the `responsefile` directory. You can edit these files or create your own file in the same directory using these files as templates.  The files can be editied directly or by running the shell script `start_here.sh` in the script's home directory.
 
 For example
 
 ```
-./start_here.sh
+./start_here.sh [ -r responsefile -p passwordfile ]
 ```
 
-You can run the above script as many times as you like on the same file. Pressing the Enter key on any response retains the existing value in the file and creates `idm.rsp` and `.idmpwds`in the  `responsefile` directory.
+You can run the above script as many times as you want on the same file. Pressing the Enter key on any response retains the existing value.
+
+Values are stored in the files `idm.rsp` and `.idmpwds` files unless the command is started with the -r and -p options in which case the files updated will be those specified..
 
 > Note: 
 > * The file consists of key/value pairs. There should be no spaces between the name of the key and its value. For example:
@@ -164,6 +163,14 @@ The script performs several checks such as (but not limited to) the following:
 * Ensures that the Container images are available on each node.
 * Checks that the NFS file shares have been created.
 * Ensures that the Load balancers are reachable.
+
+To invoke the script use the following command:
+
+`cd <SCRIPTDIR>`
+
+`./prereqchecks.sh [ -r responsefile -p passwordfile ]`
+
+-r and -p are optional.
 
 ## Provisioning the Environment
 
@@ -186,6 +193,18 @@ There are a number of provisioning scripts located in the script directory:
 
 
 These scripts will use a working directory defined in the response file for temporary files. 
+
+Each of the above commands can be provided with a specific responsefile (default is idm.rsp) and passwordfile (default is .idmpwds), by appending:
+
+-r responsefile -p passwordfile
+
+Examples: 
+
+`./provision.sh`
+
+`./provision.sh -r my.rsp -p .mypwds`
+
+These files must exist in the responsefile directory.
 
 ## Log Files
 
@@ -288,7 +307,9 @@ These can include registry prefixes if you use a registry. Use the `local/` pref
 |**OIRI\_UI\_IMAGE** | `$REGISTRY/oiri-ui` | The OIRI UI image name.|
 |**OIRI\_DING\_IMAGE** | `$REGISTRY/oiri-ding` | The OIRI DING image name.|
 |**OAA\_MGT\_IMAGE** | `$REGISTRY/oracle/shared/oaa-mgmt` | The OAA Management container image.|
-|**OPER\_VER** | `3.3.0` | The version of the WebLogic Kubernetes Operator.|
+|**KUBECTL\_REPO** | `bitnami/kubectl` | The kubectl image used by OUD.|
+|**BUSYBOX\_REPO** | `docker.io/busybox` | The busybox image used by OUD.|
+|**OPER\_VER** | `4.0.4` | The version of the WebLogic Kubernetes Operator.|
 |**OUD\_VER** | `12.2.1.4.0-8-ol7-210715.1921` | The OUD version.|
 |**OUDSM\_VER** | `12.2.1.4.0-8-ol7-210721.0755` | The OUDSM version.|
 |**OAM\_VER** | `12.2.1.4.0-8-ol7-210721.0755` | The OAM version.|
@@ -567,14 +588,12 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_LOCAL\_CONFIG\_SHARE** |`/nfs_volumes/oaaconfigpv`| The local directory where **OAA\_CONFIG\_SHARE** is mounted. It is used by the deletion procedure. |
 |**OAA\_LOCAL\_CRED\_SHARE** |`/nfs_volumes/oaacredpv`| The local directory where **OAA\_CRED\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OAA\_LOCAL\_LOG_SHARE** |`/nfs_volumes/oaalogpv`| The local directory where **OAA\_LOG\_SHARE** is mounted. It is used by the deletion procedure. |
-
 |**OAA\_DB\_SCAN** |`dbscan.example.com`| The database SCAN address of the grid infrastructure.|
 |**OAA\_DB\_LISTENER** |`1521`| The database listener port.|
 |**OAA\_DB\_SERVICE** |`edgoaa.example.com`| The database service which connects to the database you want to use for storing the OAA schemas.|
 |**OAA\_DB\_SYS\_PWD** |`MySysPassword`| The SYS password of the OAA database.|
 |**OAA\_RCU\_PREFIX** |`OAAEDG RCU`| The prefix to use for the OAA schemas.|
 |**OAA\_SCHEMA\_PWD** |`MySchemPassword`| The password to use for the OAA schemas that are created. If you are using special characters, you may need to escape them with a '`\`'. For example: '`Password\#`'.|
-|**OAA\_DB\_SID** |`iamdb11`| The SID of the database on the database server.|
 
 #### OAA Users/Groups/Passwords
 
@@ -624,7 +643,7 @@ These parameters determine how OAA is provisioned and configured.
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
-|**OAA_\EMAIL\_SERVER** |`http://governancedomain-cluster-soa-cluster.oigns.svc.cluster.local:8001/ucs/messaging/webservice`| The entry point of the Oracle Unified Messaging server. If the OIG domain is internal to the Kubernetes cluster, you can use the internal Kubernetes service name. For example: `http://<OIG_DOMAIN_NAME>-cluster-soa-cluster.<OIGNS>.svc.cluster.local:8001/ucs/messaging/webservice`. <p><p>If your UMS server is external to the Kubernetes cluster, you can use the URL you configured to access it. For example: `http://igdinternal.example.com/ucs/messaging/webservice`. |
+|**OAA_EMAIL\_SERVER** |`http://governancedomain-cluster-soa-cluster.oigns.svc.cluster.local:8001/ucs/messaging/webservice`| The entry point of the Oracle Unified Messaging server. If the OIG domain is internal to the Kubernetes cluster, you can use the internal Kubernetes service name. For example: `http://<OIG_DOMAIN_NAME>-cluster-soa-cluster.<OIGNS>.svc.cluster.local:8001/ucs/messaging/webservice`. <p><p>If your UMS server is external to the Kubernetes cluster, you can use the URL you configured to access it. For example: `http://igdinternal.example.com/ucs/messaging/webservice`. |
 |**OAA\_EMAIL\_USER** |`weblogic`| The user name you use to connect to the UMS server.|
 |**OAA\_EMAIL\_PWD** |`umspassword`| The password you use to connect to the UMS server.|
 |**OAA\_SMS\_SERVER** |`http://$OIG_DOMAIN_NAME-cluster-soa-cluster.$OIGNS.svc.cluster.local:8001/ucs/messaging/webservice`| The entry point of the Oracle Unified Messaging server you use to send SMS messages. This is usually the same as **OAA\_EMAIL\_SERVER**. |

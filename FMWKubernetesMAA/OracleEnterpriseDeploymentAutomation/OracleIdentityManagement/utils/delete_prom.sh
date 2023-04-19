@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete a Prometheus deployment
@@ -7,12 +7,36 @@
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: delete_prom.sh
+# Usage: delete_prom.sh [-r responsefile ]
 #
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR=$SCRIPTDIR/..
 
-. $MYDIR/../common/functions.sh
+while getopts 'r:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile ] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
 
 WORKDIR=$LOCAL_WORKDIR/PROM
 
@@ -49,7 +73,12 @@ echo "Delete Namespace"
 kubectl delete namespace $PROMNS >> $LOG 2>&1
 
 echo "Delete Working Directory"
-rm  -rf $WORKDIR/* $LOCAL_WORKDIR/prom_installed
+if [ ! "$WORKDIR" = "" ] && [ ! "$LOCAL_WORKDIR" = "" ]
+then
+  rm  -rf $WORKDIR/* $LOCAL_WORKDIR/prom_installed
+else
+  echo "Unable to Delete Working Directory."
+fi
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Delete Prometheus " $START_TIME $FINISH_TIME

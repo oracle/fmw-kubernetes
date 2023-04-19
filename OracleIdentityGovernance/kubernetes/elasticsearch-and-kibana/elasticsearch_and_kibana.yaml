@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
@@ -19,16 +19,16 @@
 # values.yaml file.
 #
 # To configure them, use:
-#   kubectl apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+#   ${KUBERNETES_CLI:-kubectl} apply -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
 #
 # To remove them, use:
-#   kubectl delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
+#   ${KUBERNETES_CLI:-kubectl} delete -f kubernetes/elasticsearch-and-kibana/elasticsearch_and_kibana.yaml
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: "oimcluster"
+  namespace: "oigns"
   name: "elasticsearch"
   labels:
     app: "elasticsearch"
@@ -56,7 +56,7 @@ spec:
         securityContext:
           capabilities:
             add: ["SYS_CHROOT"]
-        image: "elasticsearch:6.8.0"
+        image: "elasticsearch:6.8.23"
         ports:
         - containerPort: 9200
         - containerPort: 9300
@@ -68,7 +68,7 @@ spec:
 kind: "Service"
 apiVersion: "v1"
 metadata:
-  namespace: "oimcluster"
+  namespace: "oigns"
   name: "elasticsearch"
 spec:
   ports:
@@ -87,7 +87,7 @@ spec:
 apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
-  namespace: "oimcluster"
+  namespace: "oigns"
   name: "kibana"
   labels:
     app: "kibana"
@@ -103,7 +103,7 @@ spec:
     spec:
       containers:
       - name: "kibana"
-        image: "kibana:6.8.0"
+        image: "kibana:6.8.23"
         ports:
         - containerPort: 5601
       imagePullSecrets:
@@ -113,7 +113,7 @@ spec:
 apiVersion: "v1"
 kind: "Service"
 metadata: 
-  namespace: "oimcluster"
+  namespace: "oigns"
   name: "kibana"
   labels: 
     app: "kibana"

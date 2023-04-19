@@ -1,22 +1,22 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
 function initialize {
   if [ -z ${domainNamespace} ]; then
-    echo "domainNamespace is empty, setting to default accessns"
-    domainNamespace="accessns"
+    echo "domainNamespace is empty, setting to default oamns"
+    domainNamespace="oamns"
   fi
 
   if [ -z ${domainUID} ]; then
-    echo "domainUID is empty, setting to default accessinfra"
-    domainUID="accessinfra"
+    echo "domainUID is empty, setting to default accessdomain"
+    domainUID="accessdomain"
   fi
 
   if [ -z ${weblogicCredentialsSecretName} ]; then
-    echo "weblogicCredentialsSecretName is empty, setting to default \"accessinfra-domain-credentials\""
-    weblogicCredentialsSecretName="accessinfra-domain-credentials"
+    echo "weblogicCredentialsSecretName is empty, setting to default \"accessdomain-domain-credentials\""
+    weblogicCredentialsSecretName="accessdomain-domain-credentials"
   fi
 
   if [ -z ${adminServerName} ]; then

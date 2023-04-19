@@ -20,11 +20,11 @@ $ ./create-pv-pvc.sh \
   -o /path/to/output-directory
 ```
 
-The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `kubectl create -f` command.
+The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `${KUBERNETES_CLI:-kubectl} create -f` command.
 
 ```
-$ kubectl create -f oimcluster-domain-pv.yaml
-$ kubectl create -f oimcluster-domain-pvc.yaml
+$ ${KUBERNETES_CLI:-kubectl} create -f governancedomain-domain-pv.yaml
+$ ${KUBERNETES_CLI:-kubectl} create -f governancedomain-domain-pvc.yaml
 
 ```
 
@@ -70,7 +70,7 @@ The create script will verify that the PV and PVC were created, and will report 
 
 ### Generated YAML files with the default inputs
 
-The content of the generated `oimcluster-domain-pvc.yaml`:
+The content of the generated `governancedomain-domain-pvc.yaml`:
 
 ```
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
@@ -79,10 +79,10 @@ The content of the generated `oimcluster-domain-pvc.yaml`:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: oimcluster-domain-pvc
+  name: governancedomain-domain-pvc
   namespace: default
 
-  storageClassName: oimcluster-domain-storage-class
+  storageClassName: governancedomain-domain-storage-class
   accessModes:
     - ReadWriteMany
   resources:
@@ -90,7 +90,7 @@ metadata:
       storage: 10Gi
 ```
 
-The content of the generated `oimcluster-domain-pv.yaml`:
+The content of the generated `governancedomain-domain-pv.yaml`:
 ```
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
@@ -98,11 +98,11 @@ The content of the generated `oimcluster-domain-pv.yaml`:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: oimcluster-domain-pv
+  name: governancedomain-domain-pv
   # labels:
   #   weblogic.domainUID:
 spec:
-  storageClassName: oimcluster-domain-storage-class
+  storageClassName: governancedomain-domain-storage-class
   capacity:
     storage: 10Gi
   accessModes:
@@ -118,7 +118,7 @@ spec:
 
 ### Generated YAML files for dedicated PV and PVC
 
-The content of the generated `oimcluster-domain-pvc.yaml` when `domainUID` is set to `domain1`:
+The content of the generated `governancedomain-domain-pvc.yaml` when `domainUID` is set to `domain1`:
 
 ```
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
@@ -127,12 +127,12 @@ The content of the generated `oimcluster-domain-pvc.yaml` when `domainUID` is se
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: oimcluster-domain-pvc
+  name: governancedomain-domain-pvc
   namespace: default
   labels:
-    weblogic.domainUID: oimcluster
+    weblogic.domainUID: governancedomain
 spec:
-  storageClassName: oimcluster-domain-storage-class
+  storageClassName: governancedomain-domain-storage-class
   accessModes:
     - ReadWriteMany
   resources:
@@ -140,7 +140,7 @@ spec:
       storage: 10Gi
 ```
 
-The content of the generated `oimcluster-domain-pv.yaml` when `domainUID` is set to `domain1`:
+The content of the generated `governancedomain-domain-pv.yaml` when `domainUID` is set to `domain1`:
 ```
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
@@ -148,11 +148,11 @@ The content of the generated `oimcluster-domain-pv.yaml` when `domainUID` is set
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: oimcluster-domain-pv
+  name: governancedomain-domain-pv
   labels:
-    weblogic.domainUID: oimcluster
+    weblogic.domainUID: governancedomain
 spec:
-  storageClassName: oimcluster-domain-storage-class
+  storageClassName: governancedomain-domain-storage-class
   capacity:
     storage: 10Gi
   accessModes:
@@ -171,12 +171,12 @@ You can use this command to verify the persistent volume was created, note that 
 should have the value `Bound`, indicating the that persistent volume has been claimed:
 
 ```
-$ kubectl describe pv oimcluster-domain-pv
-Name:            oimcluster-domain-pv
+$ ${KUBERNETES_CLI:-kubectl} describe pv governancedomain-domain-pv
+Name:            governancedomain-domain-pv
 Annotations:     pv.kubernetes.io/bound-by-controller=yes
-StorageClass:    oimcluster-domain-storage-class
+StorageClass:    governancedomain-domain-storage-class
 Status:          Bound
-Claim:           default/oimcluster-domain-pvc
+Claim:           default/governancedomain-domain-pvc
 Reclaim Policy:  Retain
 Access Modes:    RWX
 Capacity:        10Gi
@@ -192,12 +192,12 @@ Events:            <none>
 You can use this command to verify the persistent volume claim was created:
 
 ```
-$ kubectl describe pvc oimcluster-domain-pvc
-Name:          oimcluster-domain-pvc
+$ ${KUBERNETES_CLI:-kubectl} describe pvc governancedomain-domain-pvc
+Name:          governancedomain-domain-pvc
 Namespace:     default
-StorageClass:  oimcluster-domain-storage-class
+StorageClass:  governancedomain-domain-storage-class
 Status:        Bound
-Volume:        oimcluster-domain-pv
+Volume:        governancedomain-domain-pv
 Annotations:   pv.kubernetes.io/bind-completed=yes
                pv.kubernetes.io/bound-by-controller=yes
 Finalizers:    []

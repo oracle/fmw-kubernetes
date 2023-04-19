@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of procedures used to configure OHS
@@ -13,18 +13,18 @@ copy_binary()
    HOSTNAME=$1
    print_msg "Copying Installer to $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    if [ ! -e $TEMPLATE_DIR/installer/$OHS_INSTALLER ]
    then 
        echo "Failed - Installer $OHS_INSTALLER not found in $TEMPLATE_DIR/installer."
        exit 1
    fi
-   scp $TEMPLATE_DIR/installer/$OHS_INSTALLER $HOSTNAME:. > $LOGDIR/$HOSTNAME/copy_installer.log 2>&1
+   $SCP $TEMPLATE_DIR/installer/$OHS_INSTALLER ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/copy_installer.log 2>&1
  
    print_status $? $LOGDIR/$HOSTNAME/copy_installer.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Copy Oracle HTTP Server Installer to $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -37,13 +37,13 @@ unzip_binary()
    HOSTNAME=$1
    print_msg "Unzipping Installer on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   ssh $HOSTNAME "unzip -o $OHS_INSTALLER" > $LOGDIR/$HOSTNAME/unzip_installer.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "unzip -o $OHS_INSTALLER" > $LOGDIR/$HOSTNAME/unzip_installer.log 2>&1
  
    print_status $? $LOGDIR/$HOSTNAME/unzip_installer.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Unzip Installer on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -55,16 +55,15 @@ copy_rsp()
    HOSTNAME=$1
    print_msg "Copy Response File to $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    cp $TEMPLATE_DIR/install_ohs.rsp $WORKDIR
    update_variable "<OHS_ORACLE_HOME>" $OHS_ORACLE_HOME $WORKDIR/install_ohs.rsp
 
-   scp $WORKDIR/install_ohs.rsp $HOSTNAME:. > $LOGDIR/$HOSTNAME/copy_rsp.log 2>&1
-
+   $SCP $WORKDIR/install_ohs.rsp ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/copy_rsp.log 2>&1
    print_status $? $LOGDIR/$HOSTNAME/copy_rsp.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Copy Response File to $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -76,16 +75,19 @@ create_home_dir()
    HOSTNAME=$1
    print_msg "Create Oracle Home on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    printf "\n\t\t\tCreate Directory - "
-   ssh $HOSTNAME "sudo mkdir -p $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/create_oh.log 2>&1 
+   echo $SSH ${OHS_USER}@$HOSTNAME "sudo mkdir -p $OHS_ORACLE_HOME $OHS_BASE $OHS_DOMAIN"  > $LOGDIR/$HOSTNAME/create_oh.log 2>&1 
+   $SSH ${OHS_USER}@$HOSTNAME "sudo mkdir -p $OHS_ORACLE_HOME $OHS_BASE $OHS_DOMAIN"  >> $LOGDIR/$HOSTNAME/create_oh.log 2>&1 
    print_status $? $LOGDIR/$HOSTNAME/create_oh.log
 
-   printf "\t\t\tChange Ownership - "
-   ssh $HOSTNAME "myuid=`id -u` ; mygid=`id -g `; sudo chown -R \$myuid:\$mygid $OHS_BASE"  >> $LOGDIR/$HOSTNAME/create_oh.log 2>&1 
+   printf "\t\t\tChange Ownership of $OHS_BASE - "
+   echo $SSH ${OHS_USER}@$HOSTNAME "sudo sudo find $OHS_BASE ! -name .snapshot -exec chown $OHS_USER:$OHS_GRP {} \;"  >> $LOGDIR/$HOSTNAME/create_oh.log 2>&1 
+   $SSH ${OHS_USER}@$HOSTNAME "sudo sudo find $OHS_BASE ! -name .snapshot -exec chown $OHS_USER:$OHS_GRP {} \;"  >> $LOGDIR/$HOSTNAME/create_oh.log 2>&1 
    print_status $? $LOGDIR/$HOSTNAME/create_oh.log
-   ET=`date +%s`
+
+   ET=$(date +%s)
    print_time STEP "Create Oracle Home on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -97,18 +99,23 @@ create_orainst()
    HOSTNAME=$1
    print_msg "Create Oracle Inventory File on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    mygid=`ssh $HOSTNAME "id -gn" `
    echo "inventory_loc=$OHS_BASE/oraInventory" > $WORKDIR/oraInst.loc
    echo "inst_group=$mygid" >> $WORKDIR/oraInst.loc
 
-   scp $WORKDIR/oraInst.loc $HOSTNAME:. > $LOGDIR/$HOSTNAME/create_orainst.log 2>&1
+   $SCP $WORKDIR/oraInst.loc ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/create_orainst.log 2>&1
    print_status $? $LOGDIR/$HOSTNAME/create_orainst.log
-  
-   ssh $HOSTNAME "sudo mv oraInst.loc /etc" >>$LOGDIR/$HOSTNAME/create_orainst.log 2>&1
 
-   ET=`date +%s`
+   echo $SSH ${OHS_USER}@$HOSTNAME "sudo mv oraInst.loc /etc" >>$LOGDIR/$HOSTNAME/create_orainst.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "sudo mv oraInst.loc /etc" >>$LOGDIR/$HOSTNAME/create_orainst.log 2>&1
+   if [ $? -gt 0 ]
+   then
+     echo "Failed to Move oraInst.loc see logfile $LOGDIR/$HOSTNAME/copy_rsp.log"
+     exit 1
+   fi
+   ET=$(date +%s)
    print_time STEP "Create Oracle Inventory File on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -120,15 +127,28 @@ install_ohs()
    HOSTNAME=$1
    print_msg "Installing Oracle HTTP Server on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    INSTALLER=`echo "$OHS_INSTALLER" | sed 's/_Disk1_1of1.zip/.bin/'`
 
-   ssh $HOSTNAME "./$INSTALLER -silent -responseFile ~/install_ohs.rsp" > $LOGDIR/$HOSTNAME/install_ohs.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "./$INSTALLER -silent -responseFile ~/install_ohs.rsp" > $LOGDIR/$HOSTNAME/install_ohs.log 2>&1
  
-   print_status $? $LOGDIR/$HOSTNAME/install_ohs.log
+   if [ $? -gt 0 ]
+   then
+      ERR=`grep Failed $LOGDIR/$HOSTNAME/install_ohs.log | grep -v compat-libcap | grep -v compat-libstdc | grep -v overall | wc -l`
+      if [ $ERR = 0 ]
+      then
+        ssh $HOSTNAME "./$INSTALLER -silent -ignoreSysPreReqs -responseFile ~/install_ohs.rsp" > $LOGDIR/$HOSTNAME/install_ohs.log 2>&1
+        print_status $? $LOGDIR/$HOSTNAME/install_ohs.log
+      else
+        echo "Failed - See logfile $LOGDIR/$HOSTNAME/install_ohs.log"
+        exit 1
+      fi
+   else
+      echo "Success"
+   fi
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Install Oracle HTTP Server on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -141,7 +161,7 @@ create_instance_file()
    OHS_NAME=$2
    print_msg "Create Instance Creation File for $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    cp $TEMPLATE_DIR/create_instance.py $WORKDIR/create_instance_${OHS_NAME}.py
 
@@ -162,11 +182,11 @@ create_instance_file()
    update_variable "<NM_PORT>" $NM_PORT $filename
 
 
-   scp $filename $HOSTNAME:. > $LOGDIR/$HOSTNAME/copy_instance_file.log 2>&1
+   $SCP $filename ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/copy_instance_file.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/copy_instance_file.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Copy Response File to $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -179,6 +199,11 @@ delete_instance()
    OHS_NAME=$2
 
    cp $TEMPLATE_DIR/delete_instance.py $WORKDIR/delete_instance_${OHS_NAME}.py
+   if [ $? -gt 0 ]
+   then
+     echo "Failed to copy template file $TEMPLATE_DIR/delete_instance.py to $WORKDIR/delete_instance_${OHS_NAME}.py"
+     exit 1
+   fi
 
    filename=$WORKDIR/delete_instance_${OHS_NAME}.py
 
@@ -187,8 +212,8 @@ delete_instance()
    update_variable "<OHS_NAME>" $OHS_NAME $filename
    update_variable "<OHS_DOMAIN>" $OHS_DOMAIN $filename
 
-   scp $filename $HOSTNAME:. 
-   ssh $HOSTNAME "$OHS_ORACLE_HOME/oracle_common/common/bin/wlst.sh delete_instance_${OHS_NAME}.py" 
+   $SCP $filename ${OHS_USER}@$HOSTNAME:. 
+   $SSH ${OHS_USER}@$HOSTNAME "$OHS_ORACLE_HOME/oracle_common/common/bin/wlst.sh delete_instance_${OHS_NAME}.py" 
 
 }
 
@@ -201,12 +226,12 @@ create_instance()
    OHS_NAME=$2
    print_msg "Create Instance $OHS_NAME on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   ssh $HOSTNAME "$OHS_ORACLE_HOME/oracle_common/common/bin/wlst.sh create_instance_${OHS_NAME}.py" > $LOGDIR/$HOSTNAME/create_instance.log
+   $SSH ${OHS_USER}@$HOSTNAME "$OHS_ORACLE_HOME/oracle_common/common/bin/wlst.sh create_instance_${OHS_NAME}.py" > $LOGDIR/$HOSTNAME/create_instance.log 2>&1
    print_status $? $LOGDIR/$HOSTNAME/create_instance.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Instance $OHS_NAME on  $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 
 }
@@ -219,15 +244,15 @@ tune_instance()
    HOSTNAME=$1
    print_msg "Tune Oracle Http Server Instance on $HOSTNAME"
   
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   scp $TEMPLATE_DIR/ohs.sedfile $HOSTNAME:. > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
-   echo ssh $HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/httpd.conf" > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
-   ssh $HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/httpd.conf" >> $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
+   $SCP $TEMPLATE_DIR/ohs.sedfile ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
+   echo $SCP ${OHS_USER}@$HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/httpd.conf" > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/httpd.conf" >> $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/tune_instance.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Tune Instance $OHS_NAME on  $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 
 }  
@@ -240,13 +265,13 @@ start_nm()
    HOSTNAME=$1
    print_msg "Start Node Manager on $HOSTNAME"
   
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   ssh $HOSTNAME "nohup $OHS_DOMAIN/bin/startNodeManager.sh >$OHS_DOMAIN/nodemanager/nohup.out 2>&1 &" >> $LOGDIR/$HOSTNAME/start_nm.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "nohup $OHS_DOMAIN/bin/startNodeManager.sh >$OHS_DOMAIN/nodemanager/nohup.out 2>&1 &" >> $LOGDIR/$HOSTNAME/start_nm.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/start_nm.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Start Node Manager on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 
 }  
@@ -259,9 +284,9 @@ stop_nm()
    HOSTNAME=$1
    print_msg "Stop Node Manager on $HOSTNAME"
   
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   ssh $HOSTNAME "$OHS_DOMAIN/bin/stopNodeManager.sh " 
+   $SSH ${OHS_USER}@$HOSTNAME "$OHS_DOMAIN/bin/stopNodeManager.sh " 
 
 }  
 
@@ -274,17 +299,17 @@ start_ohs()
    OHS_NAME=$2
    print_msg "Start Oracle HTTP Server on $HOSTNAME"
   
-   ST=`date +%s`
+   ST=$(date +%s)
 
    echo $NM_ADMIN_PWD >$WORKDIR/nm.pwd
-   scp $WORKDIR/nm.pwd $HOSTNAME:.nm.pwd > $LOGDIR/$HOSTNAME/start_ohs.log 2>&1
+   $SCP $WORKDIR/nm.pwd ${OHS_USER}@$HOSTNAME:.nm.pwd > $LOGDIR/$HOSTNAME/start_ohs.log 2>&1
 
-   ssh $HOSTNAME "$OHS_DOMAIN/bin/startComponent.sh $OHS_NAME storeUserConfig < \$HOME/.nm.pwd" >> $LOGDIR/$HOSTNAME/start_ohs.log 2>&1
-   ssh $HOSTNAME "rm \$HOME/.nm.pwd" >> $LOGDIR/$HOSTNAME/start_ohs.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "$OHS_DOMAIN/bin/startComponent.sh $OHS_NAME storeUserConfig < \$HOME/.nm.pwd" >> $LOGDIR/$HOSTNAME/start_ohs.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "rm \$HOME/.nm.pwd" >> $LOGDIR/$HOSTNAME/start_ohs.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/start_ohs.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Start Oracle Http Server on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 
 }  
@@ -298,7 +323,7 @@ stop_ohs()
    OHS_NAME=$2
    print_msg "Stop Oracle HTTP Server on $HOSTNAME"
   
-   ssh $HOSTNAME "$OHS_DOMAIN/bin/stopComponent.sh $OHS_NAME " 
+   $SSH ${OHS_USER}@$HOSTNAME "$OHS_DOMAIN/bin/stopComponent.sh $OHS_NAME " 
 
 }  
 #
@@ -310,14 +335,14 @@ deploy_webgate()
    OHS_NAME=$2
    print_msg "Deploy WebGate on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   echo ssh $HOSTNAME "$OHS_ORACLE_HOME/webgate/ohs/tools/deployWebGate/deployWebGateInstance.sh -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/deploy_webgate.log 2>&1
-   ssh $HOSTNAME "$OHS_ORACLE_HOME/webgate/ohs/tools/deployWebGate/deployWebGateInstance.sh -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  >> $LOGDIR/$HOSTNAME/deploy_webgate.log 2>&1
+   echo $SSH ${OHS_USER}@$HOSTNAME "$OHS_ORACLE_HOME/webgate/ohs/tools/deployWebGate/deployWebGateInstance.sh -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/deploy_webgate.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "$OHS_ORACLE_HOME/webgate/ohs/tools/deployWebGate/deployWebGateInstance.sh -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  >> $LOGDIR/$HOSTNAME/deploy_webgate.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/deploy_webgate.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Deploy WebGate on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -330,14 +355,14 @@ install_webgate()
    OHS_NAME=$2
    print_msg "Install WebGate on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   echo ssh $HOSTNAME "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OHS_ORACLE_HOME/lib;$OHS_ORACLE_HOME/webgate/ohs/tools/setup/InstallTools/EditHttpConf -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/install_webgate.log 2>&1
-   ssh $HOSTNAME "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OHS_ORACLE_HOME/lib;$OHS_ORACLE_HOME/webgate/ohs/tools/setup/InstallTools/EditHttpConf -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/install_webgate.log 2>&1
+   echo $SSH ${OHS_USER}@$HOSTNAME "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OHS_ORACLE_HOME/lib;$OHS_ORACLE_HOME/webgate/ohs/tools/setup/InstallTools/EditHttpConf -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/install_webgate.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OHS_ORACLE_HOME/lib;$OHS_ORACLE_HOME/webgate/ohs/tools/setup/InstallTools/EditHttpConf -w $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME -oh $OHS_ORACLE_HOME"  > $LOGDIR/$HOSTNAME/install_webgate.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/install_webgate.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Install WebGate on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -350,14 +375,14 @@ update_webgate()
    OHS_NAME=$2
    print_msg "Enable OAM Rest OAP Calls on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
-   scp $TEMPLATE_DIR/webgate_rest.conf $HOSTNAME:. > $LOGDIR/$HOSTNAME/update_wg.log 2>&1
-   ssh $HOSTNAME "cat \$HOME/webgate_rest.conf >>  $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/webgate.conf"  > $LOGDIR/$HOSTNAME/enable_rest.log 2>&1
+   $SCP $TEMPLATE_DIR/webgate_rest.conf ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/update_wg.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "cat \$HOME/webgate_rest.conf >>  $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/webgate.conf"  > $LOGDIR/$HOSTNAME/enable_rest.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/enable_rest.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Enable OAM Rest OAP calls on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -370,16 +395,16 @@ copy_lbr_cert()
    OHS_NAME=$2
    print_msg "Copy $OAM_LOGIN_LBR_HOST Certificate to WebGate on $HOSTNAME"
 
-   ST=`date +%s`
+   ST=$(date +%s)
 
    printf "\n\t\t\tObtain Certificate - "
    get_lbr_certificate $OAM_LOGIN_LBR_HOST $OAM_LOGIN_LBR_PORT >$LOGDIR/$HOSTNAME/copy_cert.log 2>&1
    print_status $? $LOGDIR/$HOSTNAME/copy_cert.log
 
    printf "\t\t\tCopy Certificate - "
-   scp $WORKDIR/${LBRHOST}.pem $HOSTNAME:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/webgate/config/cacert.pem >>$LOGDIR/$HOSTNAME/copy_cert.log 2>&1
+   $SCP $WORKDIR/${LBRHOST}.pem ${OHS_USER}@$HOSTNAME:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/webgate/config/cacert.pem >>$LOGDIR/$HOSTNAME/copy_cert.log 2>&1
    print_status $? $LOGDIR/$HOSTNAME/copy_cert.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Copy $OAM_LOGIN_LBR_HOST Certificate to WebGate on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }

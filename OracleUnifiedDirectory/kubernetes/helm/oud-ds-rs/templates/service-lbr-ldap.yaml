@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -17,9 +17,15 @@ spec:
       name: ldap
       targetPort: ldap
       protocol: TCP
+      {{- if (eq .Values.service.lbrtype "NodePort") }}
+      nodePort: {{ .Values.oudPorts.nodePorts.ldap }}
+      {{ end }}
     - port: {{ .Values.oudPorts.ldaps }}
       name: ldaps
       targetPort: ldaps
       protocol: TCP
+      {{- if (eq .Values.service.lbrtype "NodePort") }}
+      nodePort: {{ .Values.oudPorts.nodePorts.ldaps }}
+      {{ end }}
   selector:
     {{- include "oud-ds-rs.selectorLabels" . | nindent 4 }}

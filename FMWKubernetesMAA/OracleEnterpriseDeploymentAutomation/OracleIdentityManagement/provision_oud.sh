@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of deploying Oracle Unified Directory, configuring it for use with Oracle Access Manager
@@ -10,11 +10,46 @@
 #               ./responsefile/idm.rsp
 #               ./templates/oud
 #
-# Usage: provision_oud.sh
+# Usage: provision_oud.sh [-r responsefile -p passwordfile]
 #
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-. common/functions.sh
-. common/oud_functions.sh
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
+. $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/oud_functions.sh
 
 TEMPLATE_DIR=$SCRIPTDIR/templates/oud
 
@@ -32,7 +67,7 @@ fi
 echo 
 echo -n "Provisioning OUD on " 
 date +"%a %d %b %Y %T" 
-echo "------------------------------------------------" 
+echo "--------------------------------------------" 
 echo 
 
 create_local_workdir
@@ -86,7 +121,6 @@ then
    create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OUDNS dockercred
    update_progress
 fi
-
 
 # Modify base data template
 #
@@ -157,6 +191,8 @@ then
 fi
 
 
+# Setup Logstash
+#
 if [ "$USE_ELK" = "true" ]
 then
    new_step
@@ -181,6 +217,7 @@ then
     fi
 
 fi
+
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUD" $START_TIME $FINISH_TIME 
 print_time TOTAL "Create OUD" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log

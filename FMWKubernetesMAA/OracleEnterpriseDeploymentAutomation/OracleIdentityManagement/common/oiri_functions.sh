@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions and procedures to provision and Configure Oracle Identity Role Intelligence
@@ -89,7 +89,9 @@ copy_to_oiri()
    if  [  $? -gt 0 ]
    then
       echo "Failed to copy $filename."
-      exit 1
+      RETCODE=1
+   else
+      RETCODE=0
    fi
 }
 
@@ -112,8 +114,19 @@ create_rbac()
 
    kubectl apply -f $WORKDIR/$filename > $LOGDIR/create_rbac.log 2>&1
    print_status $? $LOGDIR/create_rbac.log
- 
-   TOKENNAME=`kubectl -n $OIRINS get serviceaccount/oiri-service-account -o jsonpath='{.secrets[0].name}'`
+   KVER=`kubectl version --short 2>/dev/null | grep Server | cut -f2 -d: |sed 's/v//;s/ //g' `
+   KVER=${KVER:0:4}
+   if [ $KVER > "1.23" ]
+   then
+     printf "\t\t\tCreating Service Account Secret - "
+     cp $TEMPLATE_DIR/create_svc_secret.yaml $WORKDIR
+     update_variable "<OIRINS>" $OIRINS $WORKDIR/create_svc_secret.yaml
+     kubectl apply -f $WORKDIR/create_svc_secret.yaml >> $LOGDIR/create_rbac.log 2>&1
+     print_status $? $LOGDIR/create_rbac.log
+     TOKENNAME=oiri-service-account
+   else
+     TOKENNAME=`kubectl -n $OIRINS get serviceaccount/oiri-service-account -o jsonpath='{.secrets[0].name}'`
+   fi
  
    TOKEN=`kubectl -n $OIRINS get secret $TOKENNAME -o jsonpath='{.data.token}'| base64 --decode`
  
@@ -139,10 +152,12 @@ create_rbac()
    kubectl config --kubeconfig=$WORKDIR/oiri_config use-context oiri >> $LOGDIR/create_rbac.log 2>&1
    print_status $? $LOGDIR/create_rbac.log
 
-   printf "\t\t\tCopy kubeconfig to oiri-cli - "
-   copy_to_oiri $WORKDIR/ca.crt /app/k8s $OIRINS oiri-cli  >> $LOGDIR/create_rbac.log 2>&1
+   printf "\t\t\tCopy ca.crt to oiri-cli - "
+   copy_to_oiri $WORKDIR/ca.crt /app/k8s $OIRINS oiri-cli   >> $LOGDIR/create_rbac.log 2>&1
+   print_status $RETCODE $LOGDIR/create_rbac.log
+   printf "\t\t\tCopy oiri_config to oiri-cli - "
    copy_to_oiri $WORKDIR/oiri_config /app/k8s/config $OIRINS oiri-cli  >> $LOGDIR/create_rbac.log 2>&1
-   print_status $? $LOGDIR/create_rbac.log
+   print_status $RETCODE $LOGDIR/create_rbac.log
 
    ET=`date +%s`
    print_time STEP "Create oiri-cli kubeconfig" $ST $ET >> $LOGDIR/timings.log
@@ -154,7 +169,9 @@ copy_kubeconfig()
 { 
    print_msg "Copying Kubeconfig File to oiri-cli"
    ST=`date +%s`
-   copy_to_oiri $KUBECONFIG /app/k8s/config $OIRINS oiri-cli
+   copy_to_oiri $KUBECONFIG /app/k8s/config $OIRINS oiri-cli >> $LOGDIR/copy_kubeconfig.log 2>&1
+   print_status $RETCODE $LOGDIR/copy_kubeconfig.log
+   printf "\t\t\tSet kubeconfig permissions - "
    oiri_cli "chmod 400  /app/k8s/config"
    print_status $? 
    ET=`date +%s`
@@ -181,8 +198,8 @@ copy_cacert()
 { 
    print_msg "Copying Kubernetes ca.crt File to DING"
    ST=`date +%s`
-   copy_to_oiri $WORKDIR/ca.crt /app $DINGNS oiri-ding-cli
-   print_status $? 
+   copy_to_oiri $WORKDIR/ca.crt /app $DINGNS oiri-ding-cli > $LOGDIR/copy_cacert.log 2>&1
+   print_status $RETCODE $LOGDIR/copy_cacert.log
    ET=`date +%s`
    print_time STEP "Copy Kubernetes ca.crt File to DING " $ST $ET >> $LOGDIR/timings.log
 }
@@ -281,6 +298,7 @@ create_keystore()
 {
    print_msg "Creating OIRI Keystore"
    ST=`date +%s`
+   printf "\n\t\t\tCreating Command - "
 
    echo "#!/bin/bash" > $WORKDIR/create_keystore.sh
    echo "keytool -genkeypair -alias oiri -keypass $OIRI_KEYSTORE_PWD -keyalg RSA \
@@ -288,9 +306,11 @@ create_keystore()
              -storepass $OIRI_KEYSTORE_PWD -storetype pkcs12 \
              -dname \"CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown\" \
              -noprompt"  >> $WORKDIR/create_keystore.sh
-   copy_to_oiri $WORKDIR/create_keystore.sh /app/k8s $OIRINS oiri-cli
+   copy_to_oiri $WORKDIR/create_keystore.sh /app/k8s $OIRINS oiri-cli >> $LOGDIR/create_keystore.log 2>&1
+   print_status $RETCODE $LOGDIR/create_keystore.log
 
-   oiri_cli "chmod 700 /app/k8s/create_keystore.sh" > $LOGDIR/create_keystore.log 2>&1
+   printf "\t\t\tCreating Keystore - "
+   oiri_cli "chmod 700 /app/k8s/create_keystore.sh">> $LOGDIR/create_keystore.log 2>&1
    oiri_cli "/app/k8s/create_keystore.sh" >> $LOGDIR/create_keystore.log 2>&1
    
    print_status $? $LOGDIR/create_keystore.log
@@ -311,20 +331,33 @@ get_oig_certificate()
    print_status $? 
 
    printf "\t\t\tCopy Certificate to working directory -"
-   copy_from_k8 $PV_MOUNT/workdir/xell.pem $WORKDIR/xell.pem $OIGNS $OIG_DOMAIN_NAME
-   print_status $RETCODE
+   copy_from_k8 $PV_MOUNT/workdir/xell.pem $WORKDIR/xell.pem $OIGNS $OIG_DOMAIN_NAME >> $LOGDIR/get_oig_cert.log 2>&1
+   print_status $RETCODE $LOGDIR/get_oig_cert.log 
+
+   printf "\t\t\tCopy Certificate PEM to working directory -"
+   copy_to_oiri $WORKDIR/xell.pem /app/k8s/xell.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
+   print_status $RETCODE $LOGDIR/get_oig_cert.log 
 
    printf "\t\t\tImport OIG Certificate into OIRI -"
-   copy_to_oiri $WORKDIR/xell.pem /app/k8s/xell.pem $OIRINS oiri-cli
    oiri_cli "keytool -import \
                -alias xell \
                -file /app/k8s/xell.pem \
                -keystore /app/oiri/data/keystore/keystore.jks\
                -storepass  $OIRI_KEYSTORE_PWD -noprompt" >> $LOGDIR/get_oig_cert.log 2>&1
    print_status $? $LOGDIR/get_oig_cert.log
-   get_lbr_certificate $OIG_LBR_HOST $OIG_LBR_PORT
+   printf "\t\t\tGet Loadbalancer Certificate - "
+   get_lbr_certificate $OIG_LBR_HOST $OIG_LBR_PORT >> $LOGDIR/get_oig_cert.log 2>&1
+   grep -q Failed $LOGDIR/get_oig_cert.log
+   if [ $? = 0 ]
+   then 
+     echo "Failed see logfile $LOGDIR/get_oig_cert.log"
+   else
+     echo "Success"
+   fi 
 
-   copy_to_oiri $WORKDIR/$OIG_LBR_HOST.pem /app/k8s/$OIG_LBR_HOST.pem $OIRINS oiri-cli
+   printf "\t\t\tCopy Loadbalancer Certificate - "
+   copy_to_oiri $WORKDIR/$OIG_LBR_HOST.pem /app/k8s/$OIG_LBR_HOST.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
+   print_status $RETCODE $LOGDIR/get_oig_cert.log
 
    printf "\t\t\tImport OIG Loadbalancer Certificate into OIRI -"
    oiri_cli "keytool -import \
@@ -550,7 +583,9 @@ get_ding_token()
    print_status $? 
 
    truncate -s -1 $WORKDIR/ding-sa-token
-   copy_to_oiri $WORKDIR/ding-sa-token /app/data/conf $DINGNS oiri-ding-cli
+   printf "Copy token to DING - "
+   copy_to_oiri $WORKDIR/ding-sa-token /app/data/conf $DINGNS oiri-ding-cli > $LOGDIR/copy_ding_cert.log 2>&1
+   print_status $RETCODE $LOGDIR/copy_ding_cert.log
 
    ET=`date +%s`
    print_time STEP "Obtain DING security token" $ST $ET >> $LOGDIR/timings.log

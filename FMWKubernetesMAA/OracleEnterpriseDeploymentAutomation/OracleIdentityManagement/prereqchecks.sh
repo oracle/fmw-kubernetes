@@ -1,18 +1,51 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of the checks that can be performed before Provisioning Identity Management
 # to reduce the likelihood of provisioning failing.
 #
 # Dependencies: ./common/functions.sh
-#               ./responsefile/idm.rsp
 # 
-# Usage: prereqchecks.sh
+# Usage: prereqchecks.sh [-r responsefile -p passwordfile]
 #
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-. ./common/functions.sh
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
 
 echo "***********************************"
 echo "*                                 *"
@@ -303,7 +336,7 @@ then
        fi
        
        echo -n "Checking Passwordless SSH to $OHS_HOST1: "
-       ssh -o ConnectTimeout=4 $OHS_HOST1 date > /dev/null 2>&1
+       $SSH -o ConnectTimeout=4 $OHS_HOST1 date > /dev/null 2>&1
        if [ $? = 0 ] 
        then
           echo "Success"
@@ -326,7 +359,7 @@ then
           FAIL=$((FAIL+1))
        fi
        echo -n "Checking Passwordless SSH to $OHS_HOST2: "
-       ssh -o ConnectTimeout=4 $OHS_HOST2 date > /dev/null 2>&1
+       $SSH -o ConnectTimeout=4 $OHS_HOST2 date > /dev/null 2>&1
        if [ $? = 0 ] 
        then
           echo "Success"
@@ -400,6 +433,98 @@ then
       echo "Success"
     else
       FAIL=$((FAIL+1))
+    fi
+else
+    if [ ! "$LDAP_EXTERNAL_HOST" = "" ]
+    then
+       check_ldapsearch
+       if [ $? = 0 ]
+       then
+          echo "Success"
+       else
+          echo "Failed"
+          FAIL=$((FAIL+1))
+       fi
+   
+       
+       if [ "$INSTALL_OAM" = "true" ]
+       then
+         check_ldap_object $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT 
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+         check_ldap_sys $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_OAMLDAP_USER
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+         check_ldap_user_ext $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_WLSADMIN_USER
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+         check_ldap_group_ext $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_OAMADMIN_GRP
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+         check_ldap_group_ext $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_WLSADMIN_GRP
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+       fi 
+
+       if [ "$INSTALL_OIG" = "true" ]
+       then
+         check_ldap_sys_ext $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_OIGLDAP_USER
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+         check_ldap_user_ext $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_XELSYSADM_USER
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+         check_ldap_group_ext $LDAP_EXTERNAL_HOST $LDAP_EXTERNAL_PORT $LDAP_OIGADMIN_GRP
+         if [ $? = 0 ]
+         then
+            echo "Success"
+         else
+            echo "Failed"
+            FAIL=$((FAIL+1))
+         fi
+
+       fi 
     fi
 fi
 
@@ -661,6 +786,43 @@ then
     else 
       echo "Failed"
       echo "The OIRI config directory must be writeable "
+      FAIL=$((FAIL+1))
+    fi
+
+    echo -n "Checking local OIRI Work dir exists : "
+    if [ -d $OIRI_WORK_LOCAL_SHARE ]
+    then
+        echo "Success"
+    else
+      echo -n "Directory Does not exist - Creating"
+      mkdir -p $OIRI_WORK_LOCAL_SHARE
+      if [ $? = 0 ]
+      then
+         echo ".. Success"
+      else
+         echo ".. Failed"
+         FAIL=$((FAIL+1))
+      fi
+    fi
+
+    echo -n "Checking local OIRI work dir is mounted : "
+    df -k | grep -q $OIRI_WORK_LOCAL_SHARE 
+    if [ $? = 0 ]
+    then
+        echo "Success"
+    else
+      echo "Fail"
+      echo "The OIRI work directory must be mounted Locally"
+      FAIL=$((FAIL+1))
+    fi
+
+    echo -n "Checking local OIRI work dir is writeable : "
+    if [ -w "$OIRI_WORK_LOCAL_SHARE" ] 
+    then 
+      echo "Success" 
+    else 
+      echo "Failed"
+      echo "The OIRI work directory must be writeable "
       FAIL=$((FAIL+1))
     fi
 

@@ -1,11 +1,11 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 apiVersion: v1
 kind: Secret
 metadata:
   name: basic-auth
-  namespace: oimcluster
+  namespace: oigns
 data:
   password: %PASSWORD%
   user: %USERNAME%
@@ -15,17 +15,17 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: wls-exporter
-  namespace: oimcluster
+  namespace: oigns
   labels:
     k8s-app: wls-exporter
     release: monitoring
 spec:
   namespaceSelector:
     matchNames:
-    - oimcluster
+    - oigns
   selector:
     matchLabels:
-      weblogic.domainName: oimcluster
+      weblogic.domainName: governancedomain
   endpoints:
   - basicAuth:
       password:

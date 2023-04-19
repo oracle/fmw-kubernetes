@@ -8,26 +8,43 @@ script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../common/utility.sh
 
-function usage {
-  echo "usage: ${script} -s <schemaPrefix> -d <dburl> -n <namespace> -q <sysPassword> -r <schemaPassword> -c <customVariables> [-h]"
+usage() {
+  echo "usage: ${script} -s <schemaPrefix> [-t <schemaType>] [-d <dburl>] [-n <namespace>] [-c <credentialsSecretName>] [-p <docker-store>] [-i <image>] [-u <imagePullPolicy>] [-o <rcuOutputDir>] [-r <customVariables>] [-h]"
   echo "  -s RCU Schema Prefix (required)"
   echo "  -t RCU Schema Type (optional)"
   echo "      (supported values: oam) "
-  echo "  -d Oracle Database URL (optional)"
+  echo "  -d RCU Oracle Database URL (optional) "
   echo "      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s) "
-  echo "  -n Namespace where RCU pod is deployed (optional)"
-  echo "      (default: default) "
-  echo "  -q password for database SYSDBA user. (optional)"
-  echo "      (default: Oradoc_db1)"
-  echo "  -r password for all schema owner (regular user). (optional)"
-  echo "      (default: Oradoc_db1)"
-  echo "  -c Comma-separated custom variables in the format variablename=value. (optional)."
+  echo "  -n Namespace for RCU pod (optional)"
+  echo "      (default: default)"
+  echo "  -c Name of credentials secret (optional)."
+  echo "       (default: oracle-rcu-secret)"
+  echo "       Must contain SYSDBA username at key 'sys_username',"
+  echo "       SYSDBA password at key 'sys_password',"
+  echo "       and RCU schema owner password at key 'password'."
+  echo "  -p OracleAccessManagement ImagePullSecret (optional) "
+  echo "      (default: none) "
+  echo "  -i OracleAccessManagement Image (optional) "
+  echo "      (default: oracle/oam:12.2.1.4.0) "
+  echo "  -u OracleAccessManagement ImagePullPolicy (optional) "
+  echo "      (default: IfNotPresent) "
+  echo "  -o Output directory for the generated YAML file. (optional)"
+  echo "      (default: rcuoutput)"
+  echo "  -r Comma-separated custom variables in the format variablename=value. (optional)."
   echo "      (default: none)"
   echo "  -h Help"
+  echo ""
+  echo "NOTE: The c, p, i, u, and o arguments are ignored if an rcu pod is already running in the namespace."
+  echo ""
   exit $1
 }
 
-while getopts ":h:s:d:t:n:q:r:c:" opt; do
+dburl="oracle-db.default.svc.cluster.local:1521/devpdb.k8s"
+rcuType="${rcuType}"
+namespace="default"
+createPodArgs=""
+
+while getopts ":s:t:d:n:c:p:i:u:o:v:h:" opt; do
   case $opt in
     s) schemaPrefix="${OPTARG}"
     ;;
@@ -37,11 +54,9 @@ while getopts ":h:s:d:t:n:q:r:c:" opt; do
     ;;
     n) namespace="${OPTARG}"
     ;;
-    q) sysPassword="${OPTARG}"
+    c|p|i|u|o) createPodArgs+=" -${opt} ${OPTARG}"
     ;;
-    r) schemaPassword="${OPTARG}"
-    ;;
-    c) customVariables="${OPTARG}"
+    v) customVariables="${OPTARG}"
     ;;
     h) usage 0
     ;;
@@ -50,59 +65,23 @@ while getopts ":h:s:d:t:n:q:r:c:" opt; do
   esac
 done
 
-if [ -z ${schemaPrefix} ]; then
+if [ -z "${schemaPrefix}" ]; then
   echo "${script}: -s <schemaPrefix> must be specified."
   usage 1
 fi
 
-if [ -z ${dburl} ]; then
-  dburl="oracle-db.default.svc.cluster.local:1521/devpdb.k8s"
-fi
+# this creates the rcu pod if it doesn't already exist
+echo "[INFO] Calling '${scriptDir}/common/create-rcu-pod.sh -n $namespace $createPodArgs'"
+${scriptDir}/common/create-rcu-pod.sh -n $namespace $createPodArgs || exit -4
 
-if [ -z ${rcuType} ]; then
-  rcuType="oam"
-fi
-
-if [ -z ${namespace} ]; then
-  namespace="default"
-fi
-
-if [ -z ${sysPassword} ]; then
-  sysPassword="Oradoc_db1"
-fi
-
-if [ -z ${schemaPassword} ]; then
-  schemaPassword="Oradoc_db1"
-fi
-
-if [ -z ${customVariables} ]; then
-  customVariables="none"
-fi
-
-rcupod=`kubectl get po -n ${namespace} | grep rcu | cut -f1 -d " " `
-if [ -z ${rcupod} ]; then
-  echo "RCU deployment pod not found in [$namespace] Namespace"
-  exit -2
-fi
-
-#fmwimage=`kubectl get pod/rcu  -o jsonpath="{..image}"`
+#fmwimage=`${KUBERNETES_CLI:-kubectl} get pod/rcu  -o jsonpath="{..image}"`
 echo "DB Connection String [$dbUrl], schemaPrefix [${schemaPrefix}] rcuType [${rcuType}] schemaProfileType [${customVariables}]"
 
-echo "${sysPassword}" > pwd.txt
-echo "${schemaPassword}" >> pwd.txt
-
-kubectl exec -n $namespace -i rcu -- bash -c 'cat > /u01/oracle/dropRepository.sh' < ${scriptDir}/common/dropRepository.sh
-kubectl exec -n $namespace -i rcu -- bash -c 'cat > /u01/oracle/pwd.txt' < pwd.txt
-rm -rf dropRepository.sh pwd.txt
-
-kubectl exec -n $namespace -i rcu /bin/bash /u01/oracle/dropRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${sysPassword} ${customVariables}
+${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- /bin/bash /u01/oracle/dropRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${customVariables}
 if [ $? != 0  ]; then
  echo "######################";
  echo "[ERROR] Could not drop the RCU Repository based on dburl[${dburl}] schemaPrefix[${schemaPrefix}]  ";
  echo "######################";
  exit -3;
 fi
-
-kubectl delete pod rcu -n ${namespace}
-checkPodDelete rcu ${namespace}
 

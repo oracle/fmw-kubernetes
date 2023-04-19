@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -21,8 +21,12 @@
 # Initialize
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
+# source weblogic operator provided common utility scripts
 source ${scriptDir}/../../common/utility.sh
 source ${scriptDir}/../../common/validate.sh
+# source OIG specific utility scripts
+source ${scriptDir}/common/utility.sh
+source ${scriptDir}/common/validate.sh
 
 function usage {
   echo usage: ${script} -o dir -i file [-e] [-v] [-h]
@@ -102,7 +106,7 @@ function initialize {
   # Validate the required files exist
   validateErrors=false
 
-  validateKubectlAvailable
+  validateKubernetesCLIAvailable
 
   if [ -z "${valuesInputFile}" ]; then
     validationError "You must use the -i option to specify the name of the inputs parameter file (a modified copy of kubernetes/samples/scripts/create-weblogic-domain/domain-home-on-pv/create-domain-inputs.yaml)."
@@ -133,7 +137,7 @@ function initialize {
 
   failIfValidationErrors
 
-  validateCommonInputs
+  validateCommonInputs_OIG
 
   initOutputDir
   getKubernetesClusterIP
@@ -172,15 +176,15 @@ function createDomainConfigmap {
 
   # create the configmap and label it properly
   local cmName=${domainUID}-create-fmw-infra-sample-domain-job-cm
-  kubectl create configmap ${cmName} -n $namespace --from-file $externalFilesTmpDir
+  ${KUBERNETES_CLI:-kubectl} create configmap ${cmName} -n $namespace --from-file $externalFilesTmpDir
 
   echo Checking the configmap $cmName was created
-  local num=`kubectl get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
+  local num=`${KUBERNETES_CLI:-kubectl} get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
   if [ "$num" != "1" ]; then
     fail "The configmap ${cmName} was not created"
   fi
 
-  kubectl label configmap ${cmName} -n $namespace weblogic.resourceVersion=domain-v2 weblogic.domainUID=$domainUID weblogic.domainName=$domainName
+  ${KUBERNETES_CLI:-kubectl} label configmap ${cmName} -n $namespace weblogic.resourceVersion=domain-v2 weblogic.domainUID=$domainUID weblogic.domainName=$domainName
 
   rm -rf $externalFilesTmpDir
 }
@@ -199,7 +203,7 @@ function createDomainHome {
   deleteK8sObj job $JOB_NAME ${createJobOutput}
 
   echo Creating the domain by creating the job ${createJobOutput}
-  kubectl create -f ${createJobOutput}
+  ${KUBERNETES_CLI:-kubectl} create -f ${createJobOutput}
 
   echo "Waiting for the job to complete..."
   JOB_STATUS="0"
@@ -208,8 +212,8 @@ function createDomainHome {
   while [ "$JOB_STATUS" != "Completed" -a $count -lt $max ] ; do
     sleep 30
     count=`expr $count + 1`
-    JOBS=`kubectl get pods -n ${namespace} | grep ${JOB_NAME}`
-    JOB_ERRORS=`kubectl logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace} | grep "ERROR:" `
+    JOBS=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME}`
+    JOB_ERRORS=`${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace} | grep "ERROR:" `
     JOB_STATUS=`echo $JOBS | awk ' { print $3; } '`
     JOB_INFO=`echo $JOBS | awk ' { print "pod", $1, "status is", $3; } '`
     echo "status on iteration $count of $max"
@@ -231,17 +235,17 @@ function createDomainHome {
   if [ "$JOB_STATUS" != "Completed" ]; then
     echo "The create domain job is not showing status completed after waiting 300 seconds."
     echo "Check the log output for errors."
-    kubectl logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace}
+    ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace}
     fail "Exiting due to failure - the job status is not Completed!"
   fi
 
   # Check for successful completion in log file
-  JOB_POD=`kubectl get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
-  JOB_STS=`kubectl logs $JOB_POD $CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
+  JOB_POD=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
+  JOB_STS=`${KUBERNETES_CLI:-kubectl} logs $JOB_POD $CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
   if [ "${JOB_STS}" != "Successfully" ]; then
     echo The log file for the create domain job does not contain a successful completion status
     echo Check the log output for errors
-    kubectl logs $JOB_POD $CONTAINER_NAME -n ${namespace}
+    ${KUBERNETES_CLI:-kubectl} logs $JOB_POD $CONTAINER_NAME -n ${namespace}
     fail "Exiting due to failure - the job log file does not contain a successful completion status!"
   fi
 }
@@ -285,11 +289,24 @@ $SED -i 's|-\ clusterName:\ oim_cluster|-\ clusterName:\ oim_cluster\n\ \ \ \ se
 cp domain.yaml domain_shutdown.yaml
 
 $SED -i 's|IF_NEEDED|NEVER|g' domain_shutdown.yaml
+$SED -i "s|${domainUID}-oim_cluster|$(toDNS1123Legal ${domainUID}-oim_cluster)|g" domain_shutdown.yaml
 
-cp domain.yaml domain_oim_soa.yaml
-$SED -i 's|clusters:|clusters:\n\ \ -\ clusterName:\ soa_cluster\n\ \ \ \ serverService:\n\ \ \ \ \ \ precreateService:\ true\n\ \ \ \ serverStartState:\ \"RUNNING\"\n\ \ \ \ serverPod:\n\ \ \ \ \ \ # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not\n\ \ \ \ \ \ # already members of the same cluster.\n\ \ \ \ \ \ affinity:\n\ \ \ \ \ \ \ \ \podAntiAffinity:\n\ \ \ \ \ \ \ \ \ \ preferredDuringSchedulingIgnoredDuringExecution:\n\ \ \ \ \ \ \ \ \ \ \ \ - weight: 100\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \podAffinityTerm:\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ labelSelector:\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matchExpressions:\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ - key: \"weblogic.clusterName\"\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ operator: In\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values:\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ - $(CLUSTER_NAME)\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ topologyKey: \"\kubernetes.io/hostname"\n\ \ \ \ replicas:\ 1|g' domain_oim_soa.yaml
 
-$SED -i 's|oim_cluster|soa_cluster|g' domain.yaml
+export PRECREATE_SERVICE="\  \serverService:\n\
+    precreateService: true"
+soaCluster="soa-cluster"
+$SED -i "/- name: ${domainUID}-${clusterName}/a\\  - name: ${domainUID}-${soaCluster}" domain.yaml
+validClusterName=$(toDNS1123Legal ${clusterName})
+$SED -i "0,/- name: ${domainUID}-${clusterName}/s//- name: ${domainUID}-${validClusterName}/" domain.yaml
+$SED -i "0,/  name: ${domainUID}-${clusterName}/s//  name: ${domainUID}-${validClusterName}/" domain.yaml
+$SED -n '/---/,/# replicas: /{p}' domain.yaml >> domain.yaml
+$SED -i "0,/  replicas: ${initialManagedServerReplicas}/s//  replicas: 0/" domain.yaml
+$SED -i "/  name: ${domainUID}-${validClusterName}/s//  name: ${domainUID}-${soaCluster}/1" domain.yaml
+$SED -i "/  clusterName: ${clusterName}/s//  clusterName: soa_cluster/1" domain.yaml
+
+$SED -i "0,/  name: ${domainUID}-${soaCluster}/s//  name: ${domainUID}-${validClusterName}/" domain.yaml
+$SED -i "0,/  clusterName: soa_cluster/s//  clusterName: ${clusterName}/" domain.yaml
+$SED -i -e "/  clusterName:/a ${PRECREATE_SERVICE}" domain.yaml
 
 echo ""
 echo "Completed"
@@ -297,5 +314,5 @@ echo "Completed"
 }
 
 # Perform the sequence of steps to create a domain
-createDomain false
+createDomain_OIG false
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions and procedures to provision and Configure Oracle Identity Governance
@@ -7,15 +7,16 @@
 # Usage: not invoked Directly
 #
 /oim_cluster/,/replicas/ {
-/env:/d
-/topologyKey:/a\      env: \
-\      - name: USER_MEM_ARGS \
-\        value: "-Djava.security.egd=file:/dev/./urandom <OIMSERVER_JAVA_PARAMS> "
+/replicas:/a\  serverPod:\
+\    env: \
+\    - name: USER_MEM_ARGS \
+\      value: "-Djava.security.egd=file:/dev/./urandom <OIMSERVER_JAVA_PARAMS> "
 }
 /soa_cluster/,/replicas/{
-/replicas/i\      env: \
-\      - name: USER_MEM_ARGS \
-\        value: "<SOASERVER_JAVA_PARAMS>"
+/replicas/a\  serverPod:\
+\    env: \
+\    - name: USER_MEM_ARGS \
+\      value: "<SOASERVER_JAVA_PARAMS>"
 }
 
 

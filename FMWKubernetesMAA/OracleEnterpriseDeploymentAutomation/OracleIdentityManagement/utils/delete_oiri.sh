@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OIRI deployment
@@ -7,13 +7,48 @@
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: delete_oiri.sh
+# Usage: delete_oiri.sh [-r responsefile -p passwordfile]
 #
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR=$SCRIPTDIR/..
 
-. $MYDIR/../common/functions.sh
-. $MYDIR/../common/oiri_functions.sh
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/oiri_functions.sh
+
 WORKDIR=$LOCAL_WORKDIR/OIRI
 LOGDIR=$WORKDIR/logs
 PROGRESS=$(get_progress)
@@ -72,11 +107,19 @@ kubectl delete namespace $OIRINS >> $LOG 2>&1
 kubectl delete namespace $DINGNS >> $LOG 2>&1
 
 echo "Deleting Volumes"
-ST=`date +%s`
-rm -rf $LOGDIR/progressfile $WORKDIR/* $LOCAL_WORKDIR/oiri_installed >> $LOG 2>&1
-rm -rf $OIRI_LOCAL_SHARE/* $OIRI_DING_LOCAL_SHARE/*  >> $LOG 2>&1
+if [ ! "$WORKDIR" = "" ] && [ ! "$LOGDIR" = "" ] && [ ! "$LOCAL_WORKDIR" = "" ]
+then
+  rm -rf $LOGDIR/progressfile $WORKDIR/* $LOCAL_WORKDIR/oiri_installed >> $LOG 2>&1
+else
+  echo "Unable to Delete Volumes."
+fi
+if [ ! "$OIRI_LOCAL_SHARE" = "" ] && [ ! "$OIRI_DING_LOCAL_SHARE/" = "" ] 
+then
+  rm -rf $OIRI_LOCAL_SHARE/* $OIRI_DING_LOCAL_SHARE/*  >> $LOG 2>&1
+else
+  echo "Unable to Delete Volumes."
+fi
 ET=`date +%s`
-print_time STEP "Delete Volumes" $ST $ET
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Delete OIRI " $START_TIME $FINISH_TIME
