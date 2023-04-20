@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # When the customer enables the operator's external REST api (by setting
@@ -69,7 +69,7 @@ if [ -z $TEMP_DIR ]; then
   exit 1
 fi
 
-function cleanup {
+cleanup() {
   rm -r $TEMP_DIR
   if [[ $SUCCEEDED != "true" ]]; then
     exit 1
@@ -186,14 +186,14 @@ openssl \
 
 set +e
 # Check if namespace exist
-kubectl get namespace $NAMESPACE >/dev/null 2>/dev/null
+${KUBERNETES_CLI:-kubectl} get namespace $NAMESPACE >/dev/null 2>/dev/null
 if [ $? -eq 1 ]; then
   echo "Namespace $NAMESPACE does not exist"
   exit 1
 fi
-kubectl get secret $SECRET_NAME -n $NAMESPACE >/dev/null 2>/dev/null
+${KUBERNETES_CLI:-kubectl} get secret $SECRET_NAME -n $NAMESPACE >/dev/null 2>/dev/null
 if [ $? -eq 1 ]; then
-  kubectl create secret tls "$SECRET_NAME" --cert=${OP_CERT_PEM} --key=${OP_KEY_PEM} -n $NAMESPACE >/dev/null
+  ${KUBERNETES_CLI:-kubectl} create secret tls "$SECRET_NAME" --cert=${OP_CERT_PEM} --key=${OP_KEY_PEM} -n $NAMESPACE >/dev/null
 fi
 echo "externalRestIdentitySecret: $SECRET_NAME"
 

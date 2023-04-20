@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 export DOMAIN_HOME=${DOMAIN_HOME_DIR}
@@ -13,6 +13,7 @@ fi
 echo 'namespace:' $namespace
 echo 'frontEndHost ,frontEndHttpPort :' ${FRONTENDHOST} ${FRONTENDHTTPPORT} 
 echo 'domain name:' $domainName
+echo 'datasource type:' $DATASOURCE_TYPE
 
 # Create the domain
 wlst.sh -skipWLSModuleScanning \
@@ -37,7 +38,8 @@ wlst.sh -skipWLSModuleScanning \
         -t3ChannelPublicAddress ${T3_PUBLIC_ADDRESS} \
         -t3ChannelPort ${T3_CHANNEL_PORT} \
         -frontEndHost ${FRONTENDHOST} \
-        -frontEndHttpPort ${FRONTENDHTTPPORT}
+        -frontEndHttpPort ${FRONTENDHTTPPORT} \
+        -datasourceType ${DATASOURCE_TYPE}
 
 if [ $? -ne 0 ]
 then

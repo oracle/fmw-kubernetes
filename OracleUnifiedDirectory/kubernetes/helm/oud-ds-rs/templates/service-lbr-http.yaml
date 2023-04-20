@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -17,9 +17,15 @@ spec:
       name: http
       targetPort: http
       protocol: TCP
+      {{- if eq .Values.service.lbrtype "NodePort" }}
+      nodePort: {{ .Values.oudPorts.nodePorts.http }}
+      {{ end }}
     - port: {{ .Values.oudPorts.https }}
       name: https
       targetPort: https
       protocol: TCP
+      {{- if eq .Values.service.lbrtype "NodePort" }}
+      nodePort: {{ .Values.oudPorts.nodePorts.https }}
+      {{ end }}
   selector:
     {{- include "oud-ds-rs.selectorLabels" . | nindent 4 }}

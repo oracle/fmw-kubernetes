@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a helm override file to deploy OUD
@@ -53,16 +53,17 @@ elk:
   imagePullSecrets:
     - name: dockercred
 
-
-
 cronJob:
   kubectlImage:
-    repository: bitnami/kubectl
+    repository: <KUBECTL_REPO>
     tag: <KUBERNETES_VER>
     pullPolicy: IfNotPresent
 
     imagePullSecrets:
     - name: dockercred
+
+busybox:
+ image: <BUSYBOX_REPO>
 
 baseOUD:
   envVars:

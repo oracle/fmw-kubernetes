@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OIG deployment
@@ -7,16 +7,49 @@
 # Dependencies: ../common/functions.sh
 #               ../responsefile/idm.rsp
 #
-# Usage: delete_oig.sh
+# Usage: delete_oig.sh [-r responsefile -p passwordfile]
 #
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTDIR=$SCRIPTDIR/..
 
-. $MYDIR/../common/functions.sh
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
+
 export WORKDIR=$LOCAL_WORKDIR/OIG
-
 LOGDIR=$WORKDIR/logs
-
 START_TIME=`date +%s`
 
 mkdir $LOCAL_WORKDIR/deleteLogs > /dev/null 2>&1
@@ -89,23 +122,23 @@ ET=`date +%s`
 grep -q "Prefix validation failed." $LOG
 if [ $? -eq 0 ]
 then
-     echo "Schema Does not exist"
+  echo "Schema Does not exist"
 else
-     grep -q "ORA-01940" $LOG
-     if [ $? -eq 0 ]
-     then
-          echo "Failed User Connected logfile $LOG"
-          exit 1
-     fi
+  grep -q "ORA-01940" $LOG
+  if [ $? -eq 0 ]
+  then
+    echo "Failed User Connected logfile $LOG"
+    exit 1
+  fi
 
-     grep -q "Repository Creation Utility - Drop : Operation Completed" $LOG
-     if [ $? -eq 0 ]
-     then
-          echo "Success"
-     else
-          echo "Failed see logfile $LOG"
-          exit 1
-     fi
+  grep -q "Repository Creation Utility - Drop : Operation Completed" $LOG
+  if [ $? -eq 0 ]
+  then
+    echo "Success"
+  else
+    echo "Failed see logfile $LOG"
+    exit 1
+  fi
 fi
 
 print_time STEP "Drop Schemas" $ST $ET 
@@ -115,14 +148,21 @@ print_time STEP "Drop Schemas" $ST $ET
 ST=`date +%s`
 echo "Deleting Volumes"
 
-# Delete the files in the persistent volumes
-echo "Deleting $OIG_LOCAL_SHARE/*"  >> $LOG 2>&1
-rm -rf  $OIG_LOCAL_SHARE/*  >> $LOG 2>&1
-echo "Deleting $WORKDIR/*"  >> $LOG 2>&1
-rm  -rf $WORKDIR/*  >> $LOG 2>&1
-echo "Deleting $LOCAL_WORKDIR/OHS/"  >> $LOG 2>&1
-rm  -rf $LOCAL_WORKDIR/OHS/*/prov_vh.conf $LOCAL_WORKDIR/OHS/*/igd*_vh.conf $LOCAL_WORKDIR/oig_installed>> $LOG 2>&1
-echo "Delete Complete" >> $LOG 2>&1
+if [ ! "$OIG_LOCAL_SHARE" = "" ]
+then
+  rm -rf  $OIG_LOCAL_SHARE/*  >> $LOG 2>&1
+else
+  echo "Unable to Delete Volumes."
+fi
+
+if [ ! "$WORKDIR" = "" ] && [ ! "$LOGDIR" = "" ] && [ ! "$LOCAL_WORKDIR" = "" ]
+then
+   rm -rf $LOGDIR/progressfile $WORKDIR/* $LOCAL_WORKDIR/oaa_installed >> $LOG 2>&1
+   rm -rf $LOCAL_WORKDIR/OHS/*/prov_vh.conf $LOCAL_WORKDIR/OHS/*/igd*_vh.conf $LOCAL_WORKDIR/oig_installed>> $LOG 2>&1
+else
+   echo "Unable to Delete Volumes."
+fi
+
 
 ET=`date +%s`
 print_time STEP "Delete Volume" $ST $ET 

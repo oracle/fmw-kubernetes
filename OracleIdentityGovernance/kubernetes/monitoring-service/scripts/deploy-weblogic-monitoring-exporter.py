@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 import sys
@@ -29,13 +29,13 @@ if len(sys.argv) < 1:
     usage()
 
 # domainName will be passed by command line parameter -domainName.
-domainName = "oimcluster"
+domainName = "governancedomain"
 
 # adminServerName will be passed by command line parameter  -adminServerName
 adminServerName = "AdminServer"
 
 # adminURL will be passed by command line parameter  -adminURL
-adminURL = "oimcluster-adminserver:7001"
+adminURL = "governancedomain-adminserver:7001"
 
 # soaClusterName will be passed by command line parameter -soaClusterName
 soaClusterName = "soa_cluster"

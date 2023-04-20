@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -76,9 +76,9 @@ class OAM12214Provisioner:
 
 
     def createOAMDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType,
-                          exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+                          dstype, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
         domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType)
-        self.extendOamDomain(domainHome, db, dbPrefix, dbPassword, managedNameBase, managedServerPort, managedCount, clusterName, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+        self.extendOamDomain(domainHome, db, dbPrefix, dbPassword, managedNameBase, managedServerPort, managedCount, clusterName, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
 
 
     def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, ms_listenAddress):
@@ -232,7 +232,7 @@ class OAM12214Provisioner:
         set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
-    def extendOamDomain(self, domainHome, db, dbPrefix, dbPassword, managedNameBase, managedServerPort, managedCount, clusterName, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort):
+    def extendOamDomain(self, domainHome, db, dbPrefix, dbPassword, managedNameBase, managedServerPort, managedCount, clusterName, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort):
         self.readAndApplyExtensionTemplates(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
         print 'Extension Templates added'
 
@@ -265,6 +265,126 @@ class OAM12214Provisioner:
         self.targetCluster(clusterName);
         self.targetCluster(self.ADDL_CLUSTER);
         cd('/')
+
+        #configure Active Gridlink datasource based on inputs
+        print('Using datasource type: ' + dstype)
+
+        # construct Long URL from short URL for AGL datasource
+        if dstype == "agl":
+            db_host = db.split(":")[0].strip()
+            db_port = db.split(":")[1].split("/")[0].strip()
+            db_service = db.split("/")[1].strip()
+            db_long_url = "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + db_host + ")(PORT=" + db_port + ")))(CONNECT_DATA=(SERVICE_NAME=" + db_service + ")))"
+            print("using long url: " + db_long_url)
+            fmwDb_agl = 'jdbc:oracle:thin:@' + db_long_url
+
+            #create jdbc datasource for opss-auditview
+            print("creating agl datasource for opss-audit-viewDS")
+            cd('/JdbcSystemResource/opss-audit-viewDS/JdbcResource/opss-audit-viewDS')
+            create('opss-audit-viewDS', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/opss-audit-viewDS/JdbcResource/opss-audit-viewDS/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/opss-audit-viewDS/JdbcResource/opss-audit-viewDS/JDBCConnectionPoolParams/NO_NAME_0')
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+
+            cd('/JdbcSystemResource/opss-audit-viewDS/JdbcResource/opss-audit-viewDS/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
+
+            # create jdbc datasource for WLSSchemaDataSource
+            print("creating agl datasource for WLSSchemaDataSource")
+            cd('/JdbcSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource')
+            create('WLSSchemaDataSource', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource/JDBCConnectionPoolParams/NO_NAME_0')
+            set('MaxCapacity', 150)
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+
+            cd('/JdbcSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
+
+            # create jdbc datasource for opss-datasource-jdbc
+            print("creating AGL datasource for opss-data-source")
+            cd('/JdbcSystemResource/opss-data-source/JdbcResource/opss-data-source')
+            create('opss-data-source', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/opss-data-source/JdbcResource/opss-data-source/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/opss-data-source/JdbcResource/opss-data-source/JDBCConnectionPoolParams/NO_NAME_0')
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+
+            cd('/JdbcSystemResource/opss-data-source/JdbcResource/opss-data-source/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
+
+            # create jdbc datasource for opss-audit-jdbc
+            print("creating agl datasource for opss-audit-DBDS")
+            cd('/JdbcSystemResource/opss-audit-DBDS/JdbcResource/opss-audit-DBDS')
+            create('opss-audit-DBDS', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/opss-audit-DBDS/JdbcResource/opss-audit-DBDS/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/opss-audit-DBDS/JdbcResource/opss-audit-DBDS/JDBCConnectionPoolParams/NO_NAME_0')
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+
+            cd('/JdbcSystemResource/opss-audit-DBDS/JdbcResource/opss-audit-DBDS/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
+
+            # create jdbc datasource for LocalSvcTblDataSource
+            print("creating agl datasource for LocalSvcTblDataSource")
+            cd('/JdbcSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource')
+            create('LocalSvcTblDataSource', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JDBCConnectionPoolParams/NO_NAME_0')
+            set('CapacityIncrement', 1)
+            set('ConnectionCreationRetryFrequencySeconds', 10)
+            set('InitialCapacity', 0)
+            set('MaxCapacity', 400)
+            set('SecondsToTrustAnIdlePoolConnection', 0)
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+
+            cd('/JdbcSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
+
+            # create jdbc datasource for oam-db-jdbc
+            print("creating agl datasource for oam-db")
+            cd('/JdbcSystemResource/oamDS/JdbcResource/oamDS')
+            create('oamDS', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/oamDS/JdbcResource/oamDS/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/oamDS/JdbcResource/oamDS/JDBCConnectionPoolParams/NO_NAME_0')
+            set('CapacityIncrement', 1)
+            set('ConnectionCreationRetryFrequencySeconds', 10)
+            set('InitialCapacity', 20)
+            set('MaxCapacity', 200)
+            set('SecondsToTrustAnIdlePoolConnection', 0)
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+            set('InactiveConnectionTimeoutSeconds', 300)
+
+            cd('/JdbcSystemResource/oamDS/JdbcResource/oamDS/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
 
 
         print 'Preparing to update domain...'
@@ -334,7 +454,8 @@ def usage():
           '-managedServerCount <managedCount> -clusterName <clusterName>' \
           '-domainType <oam>' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
-          '-t3ChannelPort <t3 channel port> '
+          '-t3ChannelPort <t3 channel port> ' \
+          '-datasourceType <type of datasource, default generic, Option agl>'
     sys.exit(0)
 
 # Uncomment for Debug only
@@ -427,10 +548,13 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-exposeAdminT3Channel':
         exposeAdminT3Channel = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-datasourceType':
+        dstype = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
 provisioner = OAM12214Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName)
-provisioner.createOAMDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner.createOAMDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)

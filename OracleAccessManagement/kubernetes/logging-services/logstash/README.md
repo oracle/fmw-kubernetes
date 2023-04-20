@@ -32,13 +32,13 @@ The WebLogic server logs or diagnostics logs can be pushed to Elasticsearch serv
 Get the persistent volume details of the domain home of the WebLogic server(s).
 
     ```bash
-    $ kubectl get pvc -n accessns  
+    $ ${KUBERNETES_CLI:-kubectl} get pvc -n oamns  
     ```
 
 1. Create logstash configuration.
 Create logstash configuration file. The logstash configuration file can be loaded from a volume. 
     ```bash
-    $ kubectl cp logstash.conf  accessns/accessinfra-adminserver:/u01/oracle/user_projects/domains --namespace accessns
+    $ ${KUBERNETES_CLI:-kubectl} cp logstash.conf  oamns/accessdomain-adminserver:/u01/oracle/user_projects/domains --namespace oamns
     ```
 
     You can use sample logstash configuration file generated to push server and diagnostic logs of all servers available at DOMAIN_HOME/servers/<server_name>/logs/<server_name>-diagnostic.log
@@ -52,7 +52,7 @@ Make sure to point the logstash configuration file to correct location and also 
 1. Deploy logstash to start publish logs to Elasticsearch:
 
     ```bash
-    $ kubectl create -f  logstash.yaml
+    $ ${KUBERNETES_CLI:-kubectl} create -f  logstash.yaml
     ```
 
 1. Now, you can view the diagnostics logs using Kibana with index pattern `logstash-*`.

@@ -16,35 +16,36 @@ The parameters are as follows:
 
 ```  
   -u user name, must be specified.
-  -p password, must be specified.
-  -d domainUID, optional. The default value is accessinfra. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
-  -n namespace, optional. Use the accessns namespace if not specified.
+  -p password, must be provided using the -p argument or user will be prompted to enter a value.
+  -d domainUID, optional. The default value is accessdomain. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
+  -n namespace, optional. Use the oamns namespace if not specified.
   -s secretName, optional. If not specified, the secret name will be determined based on the domainUID value.
 ```
 
 This creates a `generic` secret containing the user name and password as literal values.
 
-You can check the secret with the `kubectl get secret` command.  An example is shown below,
+You can check the secret with the `${KUBERNETES_CLI:-kubectl} get secret` command.  An example is shown below,
 including the output:
 
 ```
-$ kubectl -n accessns get secret accessinfra-weblogic-credentials -o yaml
+$ ${KUBERNETES_CLI:-kubectl} -n oamns get secret accessdomain-weblogic-credentials -o yaml
 apiVersion: v1
 data:
-  password: d2VsY29tZTE=
-  username: d2VibG9naWM=
+  username: <user name>
+  password: <password>
 kind: Secret
 metadata:
   creationTimestamp: 2018-12-12T20:25:20Z
   labels:
-    weblogic.domainName: accessinfra
-    weblogic.domainUID: accessinfra
-  name: accessinfra-weblogic-credentials
-  namespace: accessns
+    weblogic.domainName: accessdomain
+    weblogic.domainUID: accessdomain
+  name: accessdomain-weblogic-credentials
+  namespace: oamns
   resourceVersion: "5680"
-  selfLink: /api/v1/namespaces/accessns/secrets/accessinfra-weblogic-credentials
+  selfLink: /api/v1/namespaces/oamns/secrets/accessdomain-weblogic-credentials
   uid: 0c2b3510-fe4c-11e8-994d-00001700101d
 type: Opaque
 
 ```
+where `<user name>` and `<password>` are to be replaced with their actual values.
 

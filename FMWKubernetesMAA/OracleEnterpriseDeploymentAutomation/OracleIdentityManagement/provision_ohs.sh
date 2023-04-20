@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022,2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of provisioning Oracle HTTP Server
@@ -9,18 +9,54 @@
 #               ./templates/ohs
 #               ./responsefile/idm.rsp
 #
-# Usage: provision_ohs.sh
+# Usage: provision_ohs.sh [-r responsefile -p passwordfile]
 #
 
-. common/functions.sh
-. common/ohs_functions.sh
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
-TEMPLATE_DIR=$SCRIPTDIR/templates/ohs
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/ohs_functions.sh
+
 
 START_TIME=`date +%s`
 
 WORKDIR=$LOCAL_WORKDIR/OHS
 LOGDIR=$WORKDIR/logs
+TEMPLATE_DIR=$SCRIPTDIR/templates/ohs
 
 
 if [ "$INSTALL_OHS" != "true" ] && [ "$INSTALL_OHS" != "TRUE" ]
@@ -32,7 +68,7 @@ fi
 echo
 echo -n "Provisioning Oracle HTTP Server on "
 date +"%a %d %b %Y %T"
-echo "------------------------------------------------"
+echo "-----------------------------------------------------------"
 echo
 
 
@@ -44,7 +80,7 @@ create_local_workdir
 
 echo -n "Provisioning Oracle HTTP Server on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
-echo "-----------------------------------------------" >> $LOGDIR/timings.log
+echo "----------------------------------------------------------" >> $LOGDIR/timings.log
 echo 
 
 for OHSHOST in $OHS_HOST1 $OHS_HOST2
@@ -52,7 +88,7 @@ do
   new_step
   if [ $STEPNO -gt $PROGRESS ]
   then
-    mkdir $LOGDIR/$OHSHOST 2> /dev/null
+    mkdir $LOGDIR/$OHSHOST 2>/dev/null
     copy_binary $OHSHOST
     update_progress
   fi

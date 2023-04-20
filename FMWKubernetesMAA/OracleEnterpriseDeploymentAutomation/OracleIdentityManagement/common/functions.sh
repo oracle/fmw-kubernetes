@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of common functions and procedures used by the provisioning and deletion scripts
@@ -13,21 +13,17 @@
 # Common Environment Variables
 #
 
-SCRIPTDIR=/home/opc/scripts
-RSPFILE=$SCRIPTDIR/responsefile/idm.rsp
-PWDFILE=$SCRIPTDIR/responsefile/.idmpwds
-. $PWDFILE
-. $RSPFILE
 export SAMPLES_DIR=`echo $SAMPLES_REP | awk -F  "/" '{print $NF}' | sed 's/.git.*//'`
 
-SSH="ssh -q"
+SSH="ssh -q -o StrictHostKeyChecking=no"
+SCP="scp -o StrictHostKeyChecking=no"
 
 
 # Create local Directories
 #
 create_local_workdir()
 {
-    ST=`date +%s`
+    ST=$(date +%s)
     if  [ ! -d $WORKDIR ]
     then
         printf "Creating Working Directory : $WORKDIR - "
@@ -36,12 +32,12 @@ create_local_workdir()
     else
         printf "Using Working Directory    : $WORKDIR\n"
     fi
-    ET=`date +%s`
+    ET=$(date +%s)
 }
 
 create_logdir()
 {
-    ST=`date +%s`
+    ST=$(date +%s)
     if  [ ! -d $LOGDIR ]
     then
         printf "Creating Log Directory     : $LOGDIR  - "
@@ -53,7 +49,7 @@ create_logdir()
 
     echo ""
 
-    ET=`date +%s`
+    ET=$(date +%s)
 }
 
 
@@ -69,7 +65,7 @@ create_registry_secret()
 
     credname=${5:-"regcred"}
 
-    ST=`date +%s`
+    ST=$(date +%s)
     print_msg "Creating Container Registry Secret in namespace $namespace"
     
     kubectl create secret -n $namespace docker-registry $credname --docker-server=$registry --docker-username=$username --docker-password=$pass > $LOGDIR/create_reg_secret.log 2>&1
@@ -87,7 +83,7 @@ create_registry_secret()
                exit 1
           fi
     fi
-    ET=`date +%s`
+    ET=$(date +%s)
     print_time STEP "Creating Container Registry Secret in namespace $namespace" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -100,7 +96,7 @@ create_git_secret()
     token=$2
     namespace=$3
 
-    ST=`date +%s`
+    ST=$(date +%s)
     print_msg "Creating GitHub Secret in namespace $namespace"
     
     kubectl create secret -n $namespace docker-registry github --docker-server=ghcr.io --docker-username=$username --docker-password="$token" > $LOGDIR/create_git_secret.log 2>&1
@@ -118,7 +114,7 @@ create_git_secret()
                exit 1
           fi
     fi
-    ET=`date +%s`
+    ET=$(date +%s)
     print_time STEP "Creating GitHub Secret" $ST $ET >> $LOGDIR/timings.log
 }
 #
@@ -129,7 +125,7 @@ create_elk_secret()
     value=$1
     namespace=$2
 
-    ST=`date +%s`
+    ST=$(date +%s)
     print_msg "Creating Elastic Search Secret in namespace $namespace"
     
     kubectl create secret -n $namespace generic elk-logstash --from-literal --password="$token" > $LOGDIR/create_elk_secret.log 2>&1
@@ -147,7 +143,7 @@ create_elk_secret()
                exit 1
           fi
     fi
-    ET=`date +%s`
+    ET=$(date +%s)
     print_time STEP "Creating ELK Secret" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -169,7 +165,7 @@ check_oper_exists()
 #
 install_operator()
 {
-    ST=`date +%s`
+    ST=$(date +%s)
     
     print_msg  "Installing Operator"
 
@@ -203,7 +199,7 @@ install_operator()
             --wait >> $LOGDIR/install_oper.log 2>&1
 
     print_status $? $LOGDIR/install_oper.log
-    ET=`date +%s`
+    ET=$(date +%s)
     print_time STEP "Install Operator" $ST $ET >> $LOGDIR/timings.log
 
 }
@@ -286,7 +282,7 @@ create_namespace()
 {
    NS=$1
    TYPE=$2
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating Namespace: $NS"
    kubectl get namespace $NS >/dev/null 2> /dev/null
    if [ "$?" = "0" ]
@@ -302,7 +298,7 @@ create_namespace()
           print_status $? $LOGDIR/create_ns.log
        fi
    fi
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Namespace" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -401,13 +397,13 @@ create_domain_secret()
    wlsuser=$3
    wlspwd=$4
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating a Kubernetes Domain Secret"
    cd $WORKDIR/samples/create-weblogic-domain-credentials 
    ./create-weblogic-credentials.sh -u $wlsuser -p $wlspwd -n $namespace -d $domain_name -s $domain_name-credentials > $LOGDIR/domain_secret.log  2>&1
 
    print_status $? $LOGDIR/domain_secret.log
-   ET=`date +%s`
+   ET=$(date +%s)
 
    print_time STEP "Create Domain Secret" $ST $ET >> $LOGDIR/timings.log
 }
@@ -420,13 +416,13 @@ create_rcu_secret()
    rcupwd=$4
    syspwd=$5
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating a Kubernetes RCU Secret"
    cd $WORKDIR/samples/create-rcu-credentials
    ./create-rcu-credentials.sh -u $rcuprefix -p $rcupwd -a sys -q $syspwd -d $domain_name -n $namespace -s $domain_name-rcu-credentials> $LOGDIR/rcu_secret.log  2>&1
 
    print_status $? $LOGDIR/rcu_secret.log
-   ET=`date +%s`
+   ET=$(date +%s)
 
    print_time STEP "Create RCU Secret" $ST $ET >> $LOGDIR/timings.log
 }
@@ -438,7 +434,7 @@ create_workdir()
    namespace=$1
    domain_name=$2
   
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating Work directory inside container"
    kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $K8_WORKDIR
    print_status $? 
@@ -446,7 +442,7 @@ create_workdir()
    printf "\t\t\tCreating Keystores directory inside container - "
    kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $PV_MOUNT/keystores
    print_status $? 
-   ET=`date +%s`
+   ET=$(date +%s)
 
    print_time STEP "Create Container Working Directory" $ST $ET >> $LOGDIR/timings.log
 }
@@ -483,7 +479,7 @@ run_wlst_command()
 #
 download_samples()
 {
-    ST=`date +%s`
+    ST=$(date +%s)
     print_msg "Downloading Oracle Identity Management Samples "
     cd $LOCAL_WORKDIR
 
@@ -499,7 +495,7 @@ download_samples()
         git clone -q $SAMPLES_REP > $LOCAL_WORKDIR/sample_download.log 2>&1
         print_status $? $LOCAL_WORKDIR/sample_download.log
     fi
-    ET=`date +%s`
+    ET=$(date +%s)
 
     print_time STEP "Download IDM Samples" $ST $ET >> $LOGDIR/timings.log
 }
@@ -509,7 +505,7 @@ download_samples()
 copy_samples()
 {
     product=$1
-    ST=`date +%s`
+    ST=$(date +%s)
     print_msg "Copying Samples to Working Directory"
     if [ "$product" = "OracleUnifiedDirectorySM" ] || [ "$product" = "OracleUnifiedDirectory" ]
     then
@@ -524,7 +520,7 @@ copy_samples()
     fi
     print_status $?
 
-    ET=`date +%s`
+    ET=$(date +%s)
 
     print_time STEP "Copied IDM Samples" $ST $ET >> $LOGDIR/timings.log
    
@@ -537,7 +533,7 @@ create_helper_pod ()
    NS=$1
    IMAGE=$2
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating Helper Pod"
    kubectl get pod -n $NS helper > /dev/null 2> /dev/null
    if [ "$?" = "0" ]
@@ -555,7 +551,7 @@ create_helper_pod ()
        fi
        check_running $NS helper
    fi
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Helper Pod" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -576,7 +572,7 @@ update_replica_count()
    noReplicas=$2
 
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Updating Server Start Count to $noReplicas"
    if [ "$install_type" = "oam" ]
    then
@@ -602,8 +598,69 @@ update_replica_count()
       print_status $? 
    fi
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Update Server Count" $ST $ET >> $LOGDIR/timings.log
+}
+
+scale_cluster()
+{
+   NAMESPACE=$1
+   DOMAIN_NAME=$2
+   CLUSTER=$3 
+   REPLICAS=$4
+
+
+   ST=$(date +%s)
+   print_msg "Updating Cluster $CLUSTER Server Count to $REPLICAS"
+
+   CURRENT=$( kubectl get clusters -n $NAMESPACE ${DOMAIN_NAME}-${CLUSTER} -o jsonpath='{.spec.replicas}'  )
+   kubectl patch cluster -n $NAMESPACE ${DOMAIN_NAME}-${CLUSTER} --type=merge -p "{\"spec\":{\"replicas\":$REPLICAS}}" >> $LOGDIR/scale_$CLUSTER.log 2>&1
+   print_status $? $LOGDIR/scale_$CLUSTER.log
+
+   case $CLUSTER in
+     oam-cluster)
+        SERVER_NAME="oam-server"
+        ;;
+     policy-cluster)
+        SERVER_NAME="oam-policy-mgr"
+        ;;
+     oim-cluster)
+        SERVER_NAME="oim-server"
+        ;;
+     soa-cluster)
+        SERVER_NAME="soa-server"
+        ;;
+     *)
+        echo Error
+        ;;
+   esac
+
+   if [ $REPLICAS = $CURRENT ]
+   then
+     printf "\t\t\tNo change\n"
+   else
+     if [ $REPLICAS -gt $CURRENT ]
+     then
+       SCALE_TYP=UP
+     else
+      SCALE_TYP=DOWN
+     fi
+
+     if [ "$SCALE_TYP" = "UP" ]
+     then
+       for i in $(seq $((CURRENT+1)) $REPLICAS)
+       do
+         check_running $NAMESPACE ${SERVER_NAME}${i}
+       done
+     else
+       for i in $(seq $((CURRENT - REPLICAS + 1)) $CURRENT)
+       do
+         check_stopped $NAMESPACE ${SERVER_NAME}${i}
+       done
+     fi
+   fi    
+   ET=$(date +%s)
+   print_time STEP "Update Cluster $CLUSTER Server Count to $REPLICAS" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Image Functions
@@ -737,10 +794,11 @@ replace_value()
      filename=$3
 
      newval=$(echo $val | sed 's/\//\\\//g')
-     sed -i 's/'$name'=.*/'$name'='"$newval"'/' $filename
-     if [ "$?" = "1" ]
+     sed -i 's/'$name'=.*/'$name'='"$newval"'/' $filename 2> /dev/null
+     if [ $? -gt 0 ]
      then 
-        echo "Error Modifying File: $filename"
+        echo "Error Modifying File: $filename, variable $name to $val"
+        exit 1
      fi
 }
 
@@ -751,15 +809,16 @@ replace_value2()
      filename=$3
 
      newval=$(echo $val | sed 's/\//\\\//g')
-     sed -i 's/#'$name':.*/'$name':'" $newval"'/' $filename
-     if [ "$?" = "1" ]
-     then 
-        echo "Error Modifying File: $filename"
+     sed -i 's/#'$name':.*/'$name':'" $newval"'/' $filename 2> /dev/null
+     if [ $? -gt 0 ]
+     then
+        echo "Error Modifying File: $filename variable $name to $val"
      fi
-     sed -i 's/'$name':.*/'$name':'" $newval"'/' $filename
-     if [ "$?" = "1" ]
-     then 
-        echo "Error Modifying File: $filename"
+     sed -i 's/'$name':.*/'$name':'" $newval"'/' $filename 2> /dev/null
+     if [ $? -gt 0 ]
+     then
+        echo "Error Modifying File: $filename variable $name to $val"
+        exit 1
      fi
 
 }
@@ -773,10 +832,11 @@ replace_password()
      filename=$3
 
      newval=$(echo $val | sed 's/\//\\\//g')
-     sed -i 's/'$name'=.*/'$name'='"\"$newval\""'/' $filename
-     if [ "$?" = "1" ]
+     sed -i 's/'$name'=.*/'$name'='"\"$newval\""'/' $filename 2> /dev/null
+     if [ $? -gt 0 ]
      then 
-        echo "Error Modifying File: $filename"
+        echo "Error Modifying File: $filename variable $name to $val"
+        exit 1
      fi
 }
 global_replace_value()
@@ -787,10 +847,11 @@ global_replace_value()
 
      oldval=$(echo $val1 | sed 's/\//\\\//g')
      newval=$(echo $val2 | sed 's/\//\\\//g')
-     sed -i "s/$oldval/$newval/" $filename
-     if [ "$?" = "1" ]
+     sed -i "s/$oldval/$newval/" $filename 2> /dev/null
+     if [ $? -gt 0 ]
      then 
-        echo "Error Modifying File: $filename"
+        echo "Error Modifying File: $filename changing $val1 to $val2"
+        exit 1
      fi
 }
 
@@ -805,10 +866,11 @@ update_variable()
         exit 1
      fi
      NEWVAL=$(echo $VAL | sed 's/\//\\\//g')
-     sed -i "s/$VAR/$NEWVAL/g" $FILE
-     if [ "$?" = "1" ]
+     sed -i "s/$VAR/$NEWVAL/g" $FILE 2> /dev/null
+     if [ $? -gt 0 ]
      then 
-        echo "Error Modifying File: $FILE"
+        echo "Error Modifying File: $FILE variable $VAR to $NEWVAL"
+        exit 1
      fi
 }
 
@@ -909,69 +971,62 @@ create_schemas ()
       SYSPWD=$7
       RCUPWD=$8
 
-      ST=`date +%s`
+      ST=$(date +%s)
       OAM_SCHEMAS=" -component MDS -component IAU -component IAU_APPEND -component IAU_VIEWER -component OPSS -component WLS -component STB -component OAM "
       OIG_SCHEMAS=" -component MDS -component IAU -component SOAINFRA -component IAU_APPEND -component IAU_VIEWER -component OPSS -component WLS -component STB -component OIM -component UCSUMS"
 
-      printf "$SYSPWD\n" > /tmp/pwd.txt
-      printf "$RCUPWD\n" >> /tmp/pwd.txt
+      printf "$SYSPWD\n" > $WORKDIR/pwd.txt
+      printf "$RCUPWD\n" >> $WORKDIR/pwd.txt
       print_msg "Creating $SCHEMA_TYPE Schemas"
 
-      printf "#!/bin/bash\n" > /tmp/create_schema.sh
-      printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> /tmp/create_schema.sh
-      printf " -connectString $DB_HOST:$DB_PORT/$DB_SERVICE " >> /tmp/create_schema.sh
-      printf " -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true " >> /tmp/create_schema.sh
-      printf " -schemaPrefix $RCU_PREFIX" >> /tmp/create_schema.sh
+      printf "#!/bin/bash\n" > $WORKDIR/create_schema.sh
+      printf "/u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE " >> $WORKDIR/create_schema.sh
+      printf " -connectString $DB_HOST:$DB_PORT/$DB_SERVICE " >> $WORKDIR/create_schema.sh
+      printf " -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true " >> $WORKDIR/create_schema.sh
+      printf " -schemaPrefix $RCU_PREFIX" >> $WORKDIR/create_schema.sh
  
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
-           printf "$OIG_SCHEMAS" >> /tmp/create_schema.sh
+           printf "$OIG_SCHEMAS" >> $WORKDIR/create_schema.sh
       elif [ "$SCHEMA_TYPE" = "OAM" ]
       then
-           printf "$OAM_SCHEMAS" >> /tmp/create_schema.sh
+           printf "$OAM_SCHEMAS" >> $WORKDIR/create_schema.sh
       else
            printf "\nInvalid Schema Type: $SCHEMA_TYPE \n"
            exit 1
       fi
 
-      printf " -f < /tmp/pwd.txt \n" >> /tmp/create_schema.sh
-      printf " exit \n" >> /tmp/create_schema.sh
+      printf " -f < /tmp/pwd.txt \n" >> $WORKDIR/create_schema.sh
+      printf " exit \n" >> $WORKDIR/create_schema.sh
 
-      kubectl cp /tmp/pwd.txt  $NAMESPACE/helper:/tmp
-      kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
-      kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/create_schema.sh > $LOGDIR/create_schemas.log 2>&1
+      kubectl cp $WORKDIR/pwd.txt  $NAMESPACE/helper:/tmp
+      kubectl cp $WORKDIR/create_schema.sh  $NAMESPACE/helper:/tmp
+      kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < $WORKDIR/create_schema.sh > $LOGDIR/create_schemas.log 2>&1
       print_status $? $LOGDIR/create_schemas.log
       if [ "$SCHEMA_TYPE" = "OIG" ]
       then
          printf "\t\t\tPatching OIM Schema - " 
-         printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> /tmp/patch_schema.sh
-         printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> /tmp/patch_schema.sh
-         printf " run-patched-sql-files " >> /tmp/patch_schema.sh
-         printf " -logger org.apache.tools.ant.NoBannerLogger " >> /tmp/patch_schema.sh
-         printf " -logfile /tmp/patch_oim_wls.log " >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.host=$DB_HOST" >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.port=$DB_PORT " >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.serviceName=$DB_SERVICE " >> /tmp/patch_schema.sh
-         printf " -DoperationsDB.user=${RCU_PREFIX}_OIM " >> /tmp/patch_schema.sh
-         printf " -DOIM.DBPassword=$RCUPWD " >> /tmp/patch_schema.sh
-         printf " -Dojdbc=/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar \n" >> /tmp/patch_schema.sh
-         printf "exit \n" >> /tmp/patch_schema.sh
+         printf "/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant " >> $WORKDIR/patch_schema.sh
+         printf " -f /u01/oracle/idm/server/setup/deploy-files/automation.xml " >> $WORKDIR/patch_schema.sh
+         printf " run-patched-sql-files " >> $WORKDIR/patch_schema.sh
+         printf " -logger org.apache.tools.ant.NoBannerLogger " >> $WORKDIR/patch_schema.sh
+         printf " -logfile /tmp/patch_oim_wls.log " >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.host=$DB_HOST" >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.port=$DB_PORT " >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.serviceName=$DB_SERVICE " >> $WORKDIR/patch_schema.sh
+         printf " -DoperationsDB.user=${RCU_PREFIX}_OIM " >> $WORKDIR/patch_schema.sh
+         printf " -DOIM.DBPassword=$RCUPWD " >> $WORKDIR/patch_schema.sh
+         printf " -Dojdbc=/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar \n" >> $WORKDIR/patch_schema.sh
+         printf "exit \n" >> $WORKDIR/patch_schema.sh
 
 
-         kubectl cp /tmp/create_schema.sh  $NAMESPACE/helper:/tmp
-         kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < /tmp/patch_schema.sh > $LOGDIR/patch_schema.log 2>&1
+         kubectl cp $WORKDIR/patch_schema.sh  $NAMESPACE/helper:/tmp
+         kubectl exec -n $NAMESPACE -ti helper -- /bin/bash < $WORKDIR/patch_schema.sh > $LOGDIR/patch_schema.log 2>&1
          kubectl cp  $NAMESPACE/helper:/tmp/patch_oim_wls.log $LOGDIR/patch_oim_wls.log > /dev/null
          grep -q "BUILD SUCCESSFUL" $LOGDIR/patch_oim_wls.log
-         if [ $? = 0 ]
-         then
-              echo "Success"
-         else
-              echo "Fail"
-              exit 1
-         fi
+         print_status $? $LOGDIR/patch_oim_wls.log
       fi
-
-      ET=`date +%s`
+      ET=$(date +%s)
       print_time STEP "Create Schemas" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1033,65 +1088,86 @@ check_running()
     printf "\t\t\tChecking $SERVER_NAME "
     if [ "$SERVER_NAME" = "adminserver" ]
     then
-        sleep 120
+        sleep ${DELAY:=120}
     else 
-        sleep ${DELAY:=10}
+        sleep ${DELAY:=120}
     fi
+
     X=0
-    while [ "$X" = "0" ]
+    RETRIES=1
+    MAX_RETRIES=50
+    POD_RUNNING=false
+    while [ $X  -lt $MAX_RETRIES ]
     do
 
-        POD=`kubectl -n $NAMESPACE get pods -o wide | grep $SERVER_NAME | head -1 `
+        POD=$(kubectl -n $NAMESPACE get pods -o wide | grep $SERVER_NAME | head -1 )
+
         if [ "$POD" = "" ]
         then
-             JOB_STATUS=`kubectl -n $NAMESPACE get pod -o wide | grep infra-domain-job | awk '{ print $3 }'`
+             JOB_STATUS=$(kubectl -n $NAMESPACE get pod -o wide | grep infra-domain-job | awk '{ print $3 }')
              if [ "$JOB_STATUS" = "Error" ]
              then
-                  echo "Domain Creation has an Error"
+               echo "Domain Creation has an Error"
+             elif [ $RETRIES -lt 4 ]
+             then
+               sleep 120
+               RETRIES=$((RETRIES+1))
+               echo "Pod Not Found - Retrying."
+               printf "\t\t\tChecking $SERVER_NAME "
              else
-                  echo "Server Does not exist"
+               echo "Server Does not exist"
+               exit 1
              fi
-             exit 1
-        fi
-        PODSTATUS=`echo $POD | awk '{ print $3 }'`
-        RUNNING=`echo $POD | awk '{ print $2 }' | cut -f1 -d/`
-        NODE=`echo $POD | awk '{ print $7 }'`
-
-        if [ "$PODSTATUS" = "Error" ]
-        then
-              echo "Pod $SERVER_NAME has failed to start."
-              X=2
-        elif [ "$PODSTATUS" = "ErrImagePull" ] ||  [ "$PODSTATUS" = "ImagePullBackOff" ]
-        then
+        else 
+           PODSTATUS=`echo $POD | awk '{ print $3 }'`
+           RUNNING=`echo $POD | awk '{ print $2 }' | cut -f1 -d/`
+           NODE=`echo $POD | awk '{ print $7 }'`
+   
+           if [ "$PODSTATUS" = "Error" ]
+           then
+                 echo "Pod $SERVER_NAME has failed to start."
+                 exit 1
+           elif [ "$PODSTATUS" = "ErrImagePull" ]  ||  [ "$PODSTATUS" = "ImagePullBackOff" ] ||  [ "$PODSTATUS" = "Init:ImagePullBackOff" ] ||  [ "$PODSTATUS" = "Init:ErrImagePull" ]
+           then
               echo "Pod $SERVER_NAME has failed to Obtain the image - Check Image is present on $NODE."
-              X=2
-        elif [ "$PODSTATUS" = "CrashLoopBackOff" ]
-        then
+              exit 1
+           elif [ "$PODSTATUS" = "CrashLoopBackOff" ] || [ "$PODSTATUS" = "Pending" ] || [ "$PODSTATUS" = "Init:CrashLoopBackOff" ] || [ "$PODSTATUS" = "Init:Pending" ]
+           then
               echo "Pod $SERVER_NAME has failed to Start - Check Image is present on $NODE."
-              X=2
-        fi
-        if [ "$SERVER_NAME" = "oim-server1" ]
-        then
+              exit 1
+           fi
+
+           if [ "$SERVER_NAME" = "oim-server1" ]
+           then
               kubectl logs -n $OIGNS ${OIG_DOMAIN_NAME}-oim-server1 | grep -q "BootStrap configuration Failed"
               if [ $? = 0 ]
               then
                  echo "BootStrap configuration Failed - check kubectl logs -n $OIGNS ${OIG_DOMAIN_NAME}-oim-server1"
-                 X=3
+                 exit 1
               fi
-        fi
-        if [ ! "$RUNNING" = "0" ] 
-        then
-           echo " Running"
-           X=1
-        elif [ $X -gt 1 ]
-        then
-             exit $X
-        else 
-             echo -e ".\c"
-             sleep 60
-        fi
+           fi
 
+
+           if [ ! "$RUNNING" = "0" ] 
+           then
+              X=$MAX_RETRIES
+              POD_RUNNING=true
+           else 
+              echo -e ".\c"
+              sleep 60
+              X=$((X+1))
+           fi
+
+        fi
     done
+
+    if [ "$POD_RUNNING" = "true" ]
+    then
+       echo " Running"
+    else
+       echo " Failed to Start."
+       exit 1
+    fi
 }
 
 # Check whether a Kubernetes pod has shutdown
@@ -1104,49 +1180,39 @@ check_stopped()
     printf "\t\t\tStopping $SERVER_NAME "
 
     X=0
-    while [ "$X" = "0" ]
+    RETRIES=50
+    STOPPED=false
+    while [ $X  -lt $RETRIES ]
     do
     
-        POD=`kubectl --namespace $NAMESPACE get pod | grep $SERVER_NAME `
-        PODSTATUS=`echo $POD | awk '{ print $3 }'`
-        RUNNING=`echo $POD | awk '{ print $2 }'`
-        if [ "$RUNNING" = "1/1" ]
+        POD=$(kubectl --namespace $NAMESPACE get pod | grep $SERVER_NAME)
+        PODSTATUS=$(echo $POD | awk '{ print $3 }')
+        RUNNING=$(echo $POD | awk '{ print $2 }')
+        if [ "$POD" = "" ]
         then
-           echo -e ".\c"
-           sleep 10
+           X=$RETRIES
+           STOPPED=true
         else
-             echo "Stopped"
-           X=1
+           if [ "$PODSTATUS" = "Terminating" ] && [ "$TERMINATING" = "" ]
+           then
+              echo -n "Terminating "
+              TERMINATING="Y"
+           else
+              echo -e ".\c"
+              sleep 10
+           fi 
+           X=$(( X + 1))
         fi
     done
+    if [ "$STOPPED" = "true" ]
+    then
+       echo "Stopped."
+    else
+       echo "Failed"
+       exit 1
+    fi
 }
 
-# Check an LDAP User exists
-#
-check_ldap_user()
-{
-  userid=$1
-
-  ST=`date +%s`
-  print_msg "Checking User $userid exists in LDAP"
-
-  LDAP_CMD="/u01/oracle/user_projects/${OUD_POD_PREFIX}-oud-ds-rs-0/OUD/bin/ldapsearch -h ${OUD_POD_PREFIX}-oud-ds-rs-lbr-ldap.${OUDNS}.svc.cluster.local -p 1389 -D"
-  LDAP_CMD="$LDAP_CMD ${LDAP_ADMIN_USER} -w ${LDAP_ADMIN_PWD} -b cn=${LDAP_SYSTEMIDS},${LDAP_SEARCHBASE} uid=${userid} "
-
-  USER=`kubectl exec -n $OUDNS -ti ${OUD_POD_PREFIX}-oud-ds-rs-0 -c oud-ds-rs -- $LDAP_CMD | grep uid`
-
-  if [ "$USER" = "" ]
-  then
-     echo "User Does not exist - Fix LDAP before continuing"
-     exit 1
-  else
-     echo " Exists "
-  fi
-
-   ET=`date +%s`
-
-  print_time STEP "Start $DOMAIN_NAME Domain" $ST $ET >> $LOGDIR/timings.log
-}
 
 # Start a WebLogic Domain
 #
@@ -1155,13 +1221,12 @@ start_domain()
   NAMESPACE=$1
   DOMAIN_NAME=$2
 
-  ST=`date +%s`
+  ST=$(date +%s)
   print_msg "Starting Domain $DOMAIN_NAME "
   echo
-  kubectl -n $NAMESPACE patch domains $DOMAIN_NAME --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]' > /dev/null
+  kubectl -n $NAMESPACE patch domains $DOMAIN_NAME --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IfNeeded" }]' > /dev/null
 
-  sleep 120
-  check_running $NAMESPACE adminserver
+  check_running $NAMESPACE adminserver 240
 
   sleep 5
   if [ "$DOMAIN_NAME" = "$OAM_DOMAIN_NAME" ]
@@ -1173,7 +1238,7 @@ start_domain()
        check_running $NAMESPACE oim-server1
   fi
  
-  ET=`date +%s`
+  ET=$(date +%s)
 
   print_time STEP "Start $DOMAIN_NAME Domain" $ST $ET >> $LOGDIR/timings.log      
 
@@ -1188,11 +1253,11 @@ stop_domain()
 
   print_msg "Stopping Domain $DOMAIN_NAME "
   echo
-  ST=`date +%s`
-  kubectl -n $NAMESPACE patch domains $DOMAIN_NAME --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]' > /dev/null
+  ST=$(date +%s)
+  kubectl -n $NAMESPACE patch domains $DOMAIN_NAME --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "Never" }]' > /dev/null
 
   check_stopped $NAMESPACE adminserver
-  ET=`date +%s`
+  ET=$(date +%s)
 
   print_time STEP "Stop $DOMAIN_NAME Domain" $ST $ET >> $LOGDIR/timings.log
 }
@@ -1240,8 +1305,13 @@ print_status()
    then
        echo "Success"
    else
+     if [ "$logfile" = "" ]
+     then
+       echo "Failed"
+     else
        echo "Failed - Check Logfile : $logfile"
-       exit 1
+     fi
+     exit 1
    fi
 }
 
@@ -1252,19 +1322,14 @@ get_lbr_certificate()
      LBRHOST=$1
      LBRPORT=$2
     
-     print_msg "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT"
-     ST=`date +%s`
-     openssl s_client -connect ${LBRHOST}:${LBRPORT} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > $WORKDIR/${LBRHOST}.pem
-     if [ $? = 0 ]
-     then
-        echo "Success"
-        return 0
-     else
-        echo "Fail"
-     return 1
-     fi
+     ST=$(date +%s)
 
-     ET=`date +%s`
+     print_msg "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT"
+     ST=$(date +%s)
+     openssl s_client -connect ${LBRHOST}:${LBRPORT} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > $WORKDIR/${LBRHOST}.pem 2>$LOGDIR/lbr_cert.log
+     print_status $? $LOGDIR/lbr_cert.log
+
+     ET=$(date +%s)
      print_time STEP "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1277,49 +1342,49 @@ copy_ohs_config()
      print_msg "Copying OHS configuration Files to OHS Servers"
      printf "\n\t\t\tOHS Server $OHS_HOST1 - "
 
-     scp $LOCAL_WORKDIR/OHS/$OHS_HOST1/*vh.conf $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs.log 2>&1
+     $SCP $LOCAL_WORKDIR/OHS/$OHS_HOST1/*vh.conf $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs.log 2>&1
      print_status $? $LOGDIR/copy_ohs.log
 
      if [ "$COPY_WG_FILES" = "true" ]
      then
-        scp -r $LOCAL_WORKDIR/OHS/webgate/wallet $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
-        scp -r $LOCAL_WORKDIR/OHS/webgate/ObAccessClient.xml  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
-        scp -r $LOCAL_WORKDIR/OHS/webgate/password.xml  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
-        scp -r $LOCAL_WORKDIR/OHS/webgate/aaa*  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config/simple >> $LOGDIR/copy_ohs.log 2>&1
+        $SCP -r $LOCAL_WORKDIR/OHS/webgate/wallet ${OHS_USER}@$OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+        $SCP -r $LOCAL_WORKDIR/OHS/webgate/ObAccessClient.xml  ${OHS_USER}@$OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+        $SCP -r $LOCAL_WORKDIR/OHS/webgate/password.xml  ${OHS_USER}@$OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+        $SCP -r $LOCAL_WORKDIR/OHS/webgate/aaa*  ${OHS_USER}@$OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/webgate/config/simple >> $LOGDIR/copy_ohs.log 2>&1
      fi
 
      printf "\t\t\tRestarting Oracle HTTP Server $OHS_HOST1 - "
-     ssh $OHS_HOST1 "$OHS_DOMAIN/bin/restartComponent.sh $OHS1_NAME" >> $LOGDIR/copy_ohs.log 2>&1
+     $SSH ${OHS_USER}@$OHS_HOST1 "$OHS_DOMAIN/bin/restartComponent.sh $OHS1_NAME" >> $LOGDIR/copy_ohs.log 2>&1
      print_status $? $LOGDIR/copy_ohs.log
 
      if [ ! "$OHS_HOST2" = "" ]
      then
-         printf "\n\t\t\tOHS Server $OHS_HOST2 - "
+         printf "\t\t\tOHS Server $OHS_HOST2 - "
 
-         scp $LOCAL_WORKDIR/OHS/$OHS_HOST2/*vh.conf $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/moduleconf/ >> $LOGDIR/copy_ohs.log 2>&1
+         $SCP $LOCAL_WORKDIR/OHS/$OHS_HOST2/*vh.conf ${OHS_USER}@$OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/moduleconf/ >> $LOGDIR/copy_ohs.log 2>&1
          print_status $? $LOGDIR/copy_ohs.log
     
          if [ "$COPY_WG_FILES" = "true" ]
          then
-            scp -r $LOCAL_WORKDIR/OHS/webgate/wallet $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
-            scp -r $LOCAL_WORKDIR/OHS/webgate/ObAccessClient.xml  $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
-            scp -r $LOCAL_WORKDIR/OHS/webgate/password.xml  $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
-            scp -r $LOCAL_WORKDIR/OHS/webgate/aaa*  $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config/simple >> $LOGDIR/copy_ohs.log 2>&1
+            $SCP -r $LOCAL_WORKDIR/OHS/webgate/wallet ${OHS_USER}@$OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+            $SCP -r $LOCAL_WORKDIR/OHS/webgate/ObAccessClient.xml  ${OHS_USER}@$OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+            $SCP -r $LOCAL_WORKDIR/OHS/webgate/password.xml  ${OHS_USER}@$OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config >> $LOGDIR/copy_ohs.log 2>&1
+            $SCP -r $LOCAL_WORKDIR/OHS/webgate/aaa*  ${OHS_USER}@$OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/webgate/config/simple >> $LOGDIR/copy_ohs.log 2>&1
          fi
 
          printf "\t\t\tRestarting Oracle HTTP Server $OHS_HOST2 - "
-         ssh $OHS_HOST2 "$OHS_DOMAIN/bin/restartComponent.sh $OHS2_NAME" >> $LOGDIR/copy_ohs.log 2>&1
+         $SSH ${OHS_USER}@$OHS_HOST2 "$OHS_DOMAIN/bin/restartComponent.sh $OHS2_NAME" >> $LOGDIR/copy_ohs.log 2>&1
          print_status $? $LOGDIR/copy_ohs.log
      fi
 
 
-     ET=`date +%s`
+     ET=$(date +%s)
      print_time STEP "Copying OHS config" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Determine where a script stopped to enable continuation
 #
-function get_progress()
+get_progress()
 {
     if [ -f $LOGDIR/progressfile ]
     then
@@ -1373,7 +1438,7 @@ update_kibana_host()
    namespace=$1
    confmap=$2
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Updating Logstash Host"
    kubectl get cm $confmap -n $namespace -o yaml | sed '/kind:/,$d' > $WORKDIR/kibana_cm.yaml
    sed -i "s/hosts.*/hosts => [\"$ELK_HOST\"]/"  $WORKDIR/kibana_cm.yaml
@@ -1382,7 +1447,7 @@ update_kibana_host()
    kubectl patch cm $confmap -n $namespace --patch-file $WORKDIR/kibana_cm.yaml >> $LOGDIR/update_kibana_host.log
    print_status $? $LOGDIR/update_kibana_host.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Update logstash host" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1392,7 +1457,7 @@ create_cert_cm()
 {
    namespace=$1
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Creating Logstash Certificate configmap"
    certfile=$LOCAL_WORKDIR/ELK/ca.crt
 
@@ -1405,7 +1470,7 @@ create_cert_cm()
    kubectl create configmap elk-cert --from-file=$certfile -n $namespace > $LOGDIR/logstash_cert.log 2>&1
    print_status $? $LOGDIR/logstash_cert.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Creating Logstash Certificate Configmap" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1415,7 +1480,7 @@ create_logstash()
 {
    namespace=$1
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Deploy Logstash into $namespace"
 
    cp $TEMPLATE_DIR/logstash.yaml $WORKDIR 
@@ -1447,7 +1512,7 @@ create_logstash()
    kubectl create -f $WORKDIR/logstash.yaml > $LOGDIR/logstash.log 2>&1
    print_status $? $LOGDIR/logstash.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Update logstash host" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1456,7 +1521,7 @@ create_logstash()
 install_elk_operator()
 {
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Deploy Elastic Search Operator"
 
    printf "\n\t\t\tAdd Helm Repository - "
@@ -1474,7 +1539,7 @@ install_elk_operator()
   
    check_running $ELKNS elastic-operator
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Deploy Elastic Search Operator" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1483,7 +1548,7 @@ install_elk_operator()
 deploy_elk()
 {
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Create Elastic Search Cluster "
 
    cp $TEMPLATE_DIR/elk_cluster.yaml $WORKDIR 
@@ -1496,14 +1561,14 @@ deploy_elk()
    kubectl create -f $filename > $LOGDIR/elk.log 2>&1
    print_status $? $LOGDIR/elk.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Elastic Search cluster" $ST $ET >> $LOGDIR/timings.log
 }
 
 deploy_kibana()
 {
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Create Kibana"
 
    cp $TEMPLATE_DIR/kibana.yaml $WORKDIR 
@@ -1515,14 +1580,14 @@ deploy_kibana()
    kubectl create -f $filename > $LOGDIR/kibana.log 2>&1
    print_status $? $LOGDIR/kibana.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Kibana" $ST $ET >> $LOGDIR/timings.log
 }
 
 create_elk_nodeport()
 {
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Create Node Port Services"
 
    printf "\n\t\t\tKibana NodePort Service - "
@@ -1545,14 +1610,14 @@ create_elk_nodeport()
    kubectl create -f $filename > $LOGDIR/elk_nodeport.log 2>&1
    print_status $? $LOGDIR/elk_nodeport.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create NodePort Services" $ST $ET >> $LOGDIR/timings.log
 }
 
 update_elk_password()
 {
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Obtain Elastic Search Password"
 
    ELK_PWD=`kubectl get secret elasticsearch-es-elastic-user -n $ELKNS -o go-template='{{.data.elastic | base64decode}}'`
@@ -1567,20 +1632,20 @@ update_elk_password()
    fi
 
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Obtain ELK Password" $ST $ET >> $LOGDIR/timings.log
 }
 
 get_elk_cert()
 {
 
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Obtain Elastic Search Certificate"
 
    kubectl cp $ELKNS/elasticsearch-es-default-0:/usr/share/elasticsearch/config/http-certs/..data/ca.crt $WORKDIR/ca.crt >  $LOGDIR/elk_cert.log
    print_status $? $LOGDIR/elk_cert.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
 
    print_time STEP "Obtain ELK certificate" $ST $ET >> $LOGDIR/timings.log
 }
@@ -1589,7 +1654,7 @@ create_elk_role()
 {
 
    print_msg "Creating Elastic Search Role"
-   ST=`date +%s`
+   ST=$(date +%s)
 
    ROLE_NAME=logstash_writer
 
@@ -1610,7 +1675,7 @@ create_elk_role()
    grep -q "\"created\":true"  $LOGDIR/elk_role.log
    print_status $? $LOGDIR/elk_role.log 2>&1
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Elastic Search Role" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1618,7 +1683,7 @@ create_elk_user()
 {
 
    print_msg "Creating Elastic Search User"
-   ST=`date +%s`
+   ST=$(date +%s)
 
 
    ADMINURL=https://$K8_WORKER_HOST1:$ELK_K8
@@ -1637,7 +1702,7 @@ create_elk_user()
    grep -q "\"created\":true"  $LOGDIR/elk_user.log
    print_status $? $LOGDIR/elk_user.log 2>&1
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Create Elastic Search User" $ST $ET >> $LOGDIR/timings.log
 }
 
@@ -1647,7 +1712,6 @@ check_ingress()
    INGRESS_NAME=$2
 
    print_msg "Checking Ingress $INGRESS_NAME exists in $NAMESPACE"
-   ST=`date +%s`
 
    kubectl get ingress -n $NAMESPACE > $LOGDIR/ingress_${INGRESS_NAME}.log 2>&1
 
@@ -1660,5 +1724,107 @@ check_ingress()
    else
        echo "Success"
    fi
+
+}
+# Check LDAP System user exists
+#
+check_ldap_sys_ext()
+{
+   LHOST=$1
+   LPORT=$2
+   USER=$3
+   
+
+   print_msg "Checking System $USER exists in LDAP : "
+
+   ldapsearch -h $LHOST -p $LPORT -D $LDAP_ADMIN_USER -w $LDAP_ADMIN_PWD -b cn=$LDAP_SYSTEMIDS,$LDAP_SEARCHBASE  | grep -q $USER 
+   return $?
+
+}
+
+# Check LDAP Object Class exists
+#
+check_ldap_object_ext()
+{
+   LHOST=$1
+   LPORT=$2
+   OBJECT=$3
+   
+
+   print_msg "Checking users have OAM Object Classes : "
+
+   ldapsearch -h $LHOST -p $LPORT -D $LDAP_ADMIN_USER -w $LDAP_ADMIN_PWD -b $LDAP_USER_SEARCHBASE  | grep -q oblixPersonPwdPolicy
+   return $?
+
+}
+
+# Check LDAP user exists
+#
+check_ldap_user_ext()
+{
+   LHOST=$1
+   LPORT=$2
+   USER=$3
+   
+
+   print_msg "Checking $USER exists in LDAP : "
+
+   ldapsearch -h $LHOST -p $LPORT -D $LDAP_ADMIN_USER -w $LDAP_ADMIN_PWD -b $LDAP_USER_SEARCHBASE  | grep -q $USER 
+   return $?
+
+}
+# Check an LDAP User exists
+#
+
+check_ldap_user()
+{
+  userid=$1
+
+  ST=$(date +%s)
+  print_msg "Checking User $userid exists in LDAP"
+
+  LDAP_CMD="/u01/oracle/user_projects/${OUD_POD_PREFIX}-oud-ds-rs-0/OUD/bin/ldapsearch -h ${OUD_POD_PREFIX}-oud-ds-rs-lbr-ldap.${OUDNS}.svc.cluster.local -p 1389 -D"
+  LDAP_CMD="$LDAP_CMD ${LDAP_ADMIN_USER} -w ${LDAP_ADMIN_PWD} -b cn=${LDAP_SYSTEMIDS},${LDAP_SEARCHBASE} uid=${userid} "
+
+  USER=`kubectl exec -n $OUDNS -ti ${OUD_POD_PREFIX}-oud-ds-rs-0 -c oud-ds-rs -- $LDAP_CMD | grep uid`
+
+  if [ "$USER" = "" ]
+  then
+     echo "User Does not exist - Fix LDAP before continuing"
+     exit 1
+  else
+     echo " Exists "
+  fi
+
+   ET=$(date +%s)
+
+  print_time STEP "Start $DOMAIN_NAME Domain" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Check LDAP Group Exists
+#
+check_ldap_group_ext()
+{
+   LHOST=$1
+   LPORT=$2
+   LGRP=$3
+   
+
+   print_msg "Checking $LGRP exists in LDAP : "
+
+   ldapsearch -h $LHOST -p $LPORT -D $LDAP_ADMIN_USER -w $LDAP_ADMIN_PWD -b $LDAP_GROUP_SEARCHBASE  | grep -q $LGRP
+   return $?
+
+}
+
+# Check LDAP search is installed
+#
+check_ldapsearch()
+{
+
+   print_msg "Checking ldapseach Installed : "
+
+   which ldapsearch > /dev/null 2>&1
+   return $?
 
 }

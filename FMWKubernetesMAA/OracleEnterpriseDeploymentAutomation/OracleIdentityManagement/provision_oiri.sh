@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which can be used to deploy Oracle Identity Role Intelligence
@@ -9,18 +9,49 @@
 #               ./templates/oiri
 #               ./responsefile/idm.rsp
 #
-# Usage: provision_oiri.sh
+# Usage: provision_oiri.sh [-r responsefile -p passwordfile]
 #
-. common/functions.sh
-. common/oiri_functions.sh
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
 
 . $RSPFILE
-TEMPLATE_DIR=$SCRIPTDIR/templates/oiri
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
 
-
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/oiri_functions.sh
 
 START_TIME=`date +%s`
 
+TEMPLATE_DIR=$SCRIPTDIR/templates/oiri
 WORKDIR=$LOCAL_WORKDIR/OIRI
 LOGDIR=$WORKDIR/logs
 
@@ -247,18 +278,6 @@ then
        update_progress
     fi
 fi
-# Create NodePort Services
-#
-if [ "$USE_INGRESS" = "false" ] 
-then
-    new_step
-    if [ $STEPNO -gt $PROGRESS ]
-    then
-       create_oiri_nodeport
-       update_progress
-    fi
-fi
-
 
 # Create a container for using ding-cli
 #
@@ -287,14 +306,6 @@ then
    update_progress
 fi
 
-# Get Ding Token
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   get_ding_token
-   update_progress
-fi
 
 # Perform and Initial Data Load from the connected OIG database
 #

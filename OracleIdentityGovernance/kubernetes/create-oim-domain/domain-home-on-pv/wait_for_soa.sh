@@ -8,7 +8,7 @@ ns=$2
 maxtries=$3
 wait=$4
 cnt=1; 
-while [[ $(kubectl -n $ns get pods -l weblogic.serverName=$serverName -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]];
+while [[ $(${KUBERNETES_CLI:-kubectl} -n $ns get pods -l weblogic.serverName=$serverName -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]];
 do 
 	echo "waiting for $serverName Server pod; Try count $((cnt++))/$maxtries" && sleep $wait
 	if [ $cnt -gt $maxtries ]

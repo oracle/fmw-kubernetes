@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which can be used to deploy Oracle Access Manager and wire it to 
@@ -10,25 +10,65 @@
 #               ./templates/oam
 #               ./responsefile/idm.rsp
 #
-# Usage: provision_oam.sh
+# Usage: provision_oam.sh  [-r responsefile -p passwordfile]
 #
-. common/functions.sh
-. common/oam_functions.sh
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
-TEMPLATE_DIR=$SCRIPTDIR/templates/oam
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
 
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
 
+. $SCRIPTDIR/common/functions.sh
+. $SCRIPTDIR/common/oam_functions.sh
 
 START_TIME=`date +%s`
 
+TEMPLATE_DIR=$SCRIPTDIR/templates/oam
 WORKDIR=$LOCAL_WORKDIR/OAM
 LOGDIR=$WORKDIR/logs
 OPER_DIR=OracleAccessManagement
 
 if [ "$USE_INGRESS" = "true" ]
 then
-   INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
-   INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+   if [ "$INGRESS_SERVICE_TYPE" = "NodePort" ]
+   then
+      INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
+      INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+   else
+      INGRESS_HTTP_PORT=$INGRESS_HTTP
+      INGRESS_HTTPS_PORT=$INGRESS_HTTPS
+      INGRESS_HOST=`kubectl get svc -n ingressns | awk '{print $4}' | grep -v EXTERNAL`
+   fi
    if [ "$INGRESS_HTTP_PORT" = "" ]
    then
        echo "Unable to get Ingress Ports - Check Ingress is running"
@@ -45,7 +85,7 @@ fi
 echo
 echo -n "Provisioning OAM on "
 date +"%a %d %b %Y %T"
-echo "------------------------------------------------"
+echo "--------------------------------------------"
 echo
 
 create_local_workdir
@@ -53,7 +93,7 @@ create_logdir
 
 echo -n "Provisioning OAM on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
-echo "-----------------------------------------------" >> $LOGDIR/timings.log
+echo "-------------------------------------------" >> $LOGDIR/timings.log
 
 STEPNO=1
 PROGRESS=$(get_progress)
@@ -112,8 +152,13 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    check_ldap_user $LDAP_OAMLDAP_USER
-    update_progress
+   if [ "$EXTERNAL_LDAP_HOST" = "" ]
+   then
+      check_ldap_user $LDAP_OAMLDAP_USER
+   else
+      check_ldap_user_ext ${EXTERNAL_LDAP_HOST} ${EXTERNAL_LDAP_PORT} $LDAP_OAMLDAP_USER
+   fi
+   update_progress
 fi
 
 new_step
@@ -347,12 +392,6 @@ fi
 
 # Enable DB Fan
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   fix_gridlink
-   update_progress
-fi
 
 # Restart Domain
 #
@@ -373,7 +412,14 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    update_replica_count oam $OAM_SERVER_INITIAL
+    scale_cluster $OAMNS $OAM_DOMAIN_NAME oam-cluster $OAM_SERVER_INITIAL
+    update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    scale_cluster $OAMNS $OAM_DOMAIN_NAME policy-cluster $OAM_SERVER_INITIAL
     update_progress
 fi
 

@@ -3,7 +3,7 @@ Using the `WebLogic Monitoring Exporter` you can scrape runtime information from
 
 ## Prerequisites
 
-- Have Docker and a Kubernetes cluster running and have `kubectl` installed and configured.
+- Have Docker and a Kubernetes cluster running and have `${KUBERNETES_CLI:-kubectl}` installed and configured.
 - Have Helm installed.
 - An OracleAccessManagement domain deployed by `weblogic-operator` is running in the Kubernetes cluster.
 
@@ -31,25 +31,25 @@ Refer to the compatibility matrix of [Kube Prometheus](https://github.com/coreos
 
     ```
     $ cd kube-prometheus
-    $ kubectl create -f manifests/setup
-    $ until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
-    $ kubectl create -f manifests/
+    $ ${KUBERNETES_CLI:-kubectl} create -f manifests/setup
+    $ until ${KUBERNETES_CLI:-kubectl} get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
+    $ ${KUBERNETES_CLI:-kubectl} create -f manifests/
     ```
 
 1. `kube-prometheus` requires all nodes in the Kubernetes cluster to be labeled with `kubernetes.io/os=linux`. If any node is not labeled with this, then you need to label it using the following command:
 
     ```
-    $ kubectl label nodes --all kubernetes.io/os=linux
+    $ ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux
     ```
 
 1. Enter the following commands to provide external access for Grafana, Prometheus, and Alertmanager:
 
     ```
-    $ kubectl patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
+    $ ${KUBERNETES_CLI:-kubectl} patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
 
-    $ kubectl patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
+    $ ${KUBERNETES_CLI:-kubectl} patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
 
-    $ kubectl patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
+    $ ${KUBERNETES_CLI:-kubectl} patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
     ```
 
     Note:
@@ -93,9 +93,9 @@ Follow these steps to copy and deploy the WebLogic Monitoring Exporter WAR files
 
 ```
 $ cd ${WORKDIR}/monitoring-service/scripts
-$ kubectl cp wls-exporter-deploy <namespace>/<admin_pod_name>:/u01/oracle
-$ kubectl cp deploy-weblogic-monitoring-exporter.py <namespace>/<admin_pod_name>:/u01/oracle/wls-exporter-deploy
-$ kubectl exec -it -n <namespace> <admin_pod_name> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
+$ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy <namespace>/<admin_pod_name>:/u01/oracle
+$ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py <namespace>/<admin_pod_name>:/u01/oracle/wls-exporter-deploy
+$ ${KUBERNETES_CLI:-kubectl} exec -it -n <namespace> <admin_pod_name> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
 -domainName <domainUID> -adminServerName <adminServerName> -adminURL <adminURL> \
 -oamClusterName <oamClusterName> -wlsMonitoringExporterTooamCluster <wlsMonitoringExporterTooamCluster> \
 -policyClusterName <policyClusterName> -wlsMonitoringExporterTopolicyCluster <wlsMonitoringExporterTopolicyCluster> \
@@ -106,10 +106,10 @@ For example:
 
 ```
 $ cd ${WORKDIR}/monitoring-service/scripts
-$ kubectl cp wls-exporter-deploy accessns/accessinfra-adminserver:/u01/oracle
-$ kubectl cp deploy-weblogic-monitoring-exporter.py accessns/accessinfra-adminserver:/u01/oracle/wls-exporter-deploy
-$ kubectl exec -it -n accessns accessinfra-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
--domainName accessinfra -adminServerName AdminServer -adminURL accessinfra-adminserver:7001 \
+$ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy oamns/accessdomain-adminserver:/u01/oracle
+$ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py oamns/accessdomain-adminserver:/u01/oracle/wls-exporter-deploy
+$ ${KUBERNETES_CLI:-kubectl} exec -it -n oamns accessdomain-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
+-domainName accessdomain -adminServerName AdminServer -adminURL accessdomain-adminserver:7001 \
 -oamClusterName oam_cluster -wlsMonitoringExporterTooamCluster true \
 -policyClusterName policy_cluster -wlsMonitoringExporterTopolicyCluster true \
 -username weblogic -password Welcome1 
@@ -121,7 +121,7 @@ Prometheus enables you to collect metrics from the WebLogic Monitoring Exporter.
 
 The service monitor deployment YAML configuration file is available at `${WORKDIR}/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml.template`. Copy the file as `wls-exporter-ServiceMonitor.yaml` to update with appropriate values as detailed below.
 
-The exporting of metrics from `wls-exporter` requires `basicAuth`, so a Kubernetes `Secret` is created with the user name and password that are base64 encoded. This `Secret` is used in the `ServiceMonitor` deployment. The `wls-exporter-ServiceMonitor.yaml` has namespace as `accessns` and has `basicAuth` with credentials as `username: %USERNAME%` and `password: %PASSWORD%`. Update `%USERNAME%` and `%PASSWORD% ` in base64 encoded and all occurences of `accessns` based on your environment.  
+The exporting of metrics from `wls-exporter` requires `basicAuth`, so a Kubernetes `Secret` is created with the user name and password that are base64 encoded. This `Secret` is used in the `ServiceMonitor` deployment. The `wls-exporter-ServiceMonitor.yaml` has namespace as `oamns` and has `basicAuth` with credentials as `username: %USERNAME%` and `password: %PASSWORD%`. Update `%USERNAME%` and `%PASSWORD% ` in base64 encoded and all occurences of `oamns` based on your environment.  
 
 Use the following example for base64 encoded:
 
@@ -130,15 +130,15 @@ $ echo -n "Welcome1" | base64
 V2VsY29tZTE=
 ```
 
-You need to add `RoleBinding` and `Role` for the namespace (accessns) under which the WebLogic Servers pods are running in the Kubernetes cluster. These are required for Prometheus to access the endpoints provided by the WebLogic Monitoring Exporters. The YAML configuration files for accessns namespace are provided in "${WORKDIR}/monitoring-service/manifests/".
+You need to add `RoleBinding` and `Role` for the namespace (oamns) under which the WebLogic Servers pods are running in the Kubernetes cluster. These are required for Prometheus to access the endpoints provided by the WebLogic Monitoring Exporters. The YAML configuration files for oamns namespace are provided in "${WORKDIR}/monitoring-service/manifests/".
 
-If you are using namespace other than `accessns`, update the namespace details in `prometheus-roleBinding-domain-namespace.yaml` and `prometheus-roleSpecific-domain-namespace.yaml`.
+If you are using namespace other than `oamns`, update the namespace details in `prometheus-roleBinding-domain-namespace.yaml` and `prometheus-roleSpecific-domain-namespace.yaml`.
 
 Perform the below steps for enabling Prometheus to collect the metrics from the WebLogic Monitoring Exporter:
 
 ```
 $ cd ${WORKDIR}/monitoring-service/manifests
-$ kubectl apply -f .
+$ ${KUBERNETES_CLI:-kubectl} apply -f .
 ```
 
 ### Verify the service discovery of WebLogic Monitoring Exporter
@@ -179,8 +179,8 @@ The following parameters can be provided in the inputs file.
 
 | Parameter | Description | Default |
 | --- | --- | --- |
-| `domainUID` | domainUID of the OracleAccessManagement domain. | `accessinfra` |
-| `domainNamespace` | Kubernetes namespace of the OracleAccessManagement domain. | `accessns` |
+| `domainUID` | domainUID of the OracleAccessManagement domain. | `accessdomain` |
+| `domainNamespace` | Kubernetes namespace of the OracleAccessManagement domain. | `oamns` |
 | `setupKubePrometheusStack` | Boolean value indicating whether kube-prometheus-stack (Prometheus, Grafana and Alertmanager) to be installed | `true` |
 | `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support and Admission webhook support for PrometheusRules resources is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false`|  |
 | `monitoringNamespace` | Kubernetes namespace for monitoring setup. | `monitoring` |
@@ -196,7 +196,7 @@ The following parameters can be provided in the inputs file.
 | `prometheusNodePort` | Port number of the Prometheus outside the Kubernetes cluster. | `32101` |
 | `grafanaNodePort` | Port number of the Grafana outside the Kubernetes cluster. | `32100` |
 | `alertmanagerNodePort` | Port number of the Alertmanager outside the Kubernetes cluster. | `32102` |
-| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server's user name and password. | `accessinfra-domain-credentials` |
+| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server's user name and password. | `accessdomain-domain-credentials` |
 
 Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and deploying WebLogic Monitoring Exporter into the OracleAccessManagement domain. Hence make the domain specific values to be same as that used during domain creation.
 

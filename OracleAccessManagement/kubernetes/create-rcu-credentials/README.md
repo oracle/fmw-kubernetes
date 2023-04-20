@@ -23,25 +23,25 @@ The parameters are as follows:
 
 ```  
   -u username for schema owner (regular user), must be specified.
-  -p password for schema owner (regular user), must be specified.
+   -p password for schema owner (regular user), must be provided using the -p argument or user will be prompted to enter a value.
   -a username for SYSDBA user, must be specified.
-  -q password for SYSDBA user, must be specified.
-  -d domainUID, optional. The default value is accessinfra. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
-  -n namespace, optional. Use the accessns namespace if not specified.
+  -q password for SYSDBA user, must be provided using the -q argument or user will be prompted to enter a value.
+  -d domainUID, optional. The default value is accessdomain. If specified, the secret will be labeled with the domainUID unless the given value is an empty string.
+  -n namespace, optional. Use the oamns namespace if not specified.
   -s secretName, optional. If not specified, the secret name will be determined based on the domainUID value.
 ```
 
 This creates a `generic` secret containing the user name and password as literal values.
 
-You can check the secret with the `kubectl describe secret` command.  An example is shown below,
+You can check the secret with the `${KUBERNETES_CLI:-kubectl} describe secret` command.  An example is shown below,
 including the output:
 
 ```
-$ kubectl -n accessns describe secret accessinfra-rcu-credentials -o yaml
-Name:         accessinfra-rcu-credentials
-Namespace:    accessns
-Labels:       weblogic.domainName=accessinfra
-              weblogic.domainUID=accessinfra
+$ ${KUBERNETES_CLI:-kubectl} -n oamns describe secret accessdomain-rcu-credentials -o yaml
+Name:         accessdomain-rcu-credentials
+Namespace:    oamns
+Labels:       weblogic.domainName=accessdomain
+              weblogic.domainUID=accessdomain
 Annotations:  <none>
 
 Type:  Opaque

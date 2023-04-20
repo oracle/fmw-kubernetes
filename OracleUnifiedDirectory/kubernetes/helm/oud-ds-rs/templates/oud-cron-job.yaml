@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl
@@ -31,7 +31,7 @@ spec:
               command: 
                 - "/bin/bash"
                 - "-c"
-                - "for i in `kubectl get pods -n {{ .Release.Namespace }} | grep oud | grep Terminating | awk '{print $1}'` ;do arr+=($i) ;done ;size=${#arr[@]} ;if [ ${size} -ge 1 ]; then for j in ${arr[@]} ; do `kubectl delete pod ${j##*.} --grace-period=0 --force -n={{ .Release.Namespace }}`; done;fi"
+                - "for i in `kubectl get nodes --no-headers | awk '{if ($2 == \"NotReady\") print $1}'`;do for j in `kubectl get pods -n {{ .Release.Namespace }}  --field-selector spec.nodeName=$i |awk '{if ($3 == \"Terminating\") print $1}'`;do kubectl delete pods -n {{ .Release.Namespace }} $j --force;done;done"
               image: "{{ .Values.cronJob.kubectlImage.repository }}:{{ .Values.cronJob.kubectlImage.tag }}"
               imagePullPolicy: {{ .Values.cronJob.kubectlImage.pullPolicy }}
           restartPolicy: OnFailure

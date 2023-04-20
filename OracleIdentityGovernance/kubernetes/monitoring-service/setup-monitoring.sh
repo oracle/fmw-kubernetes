@@ -130,14 +130,14 @@ rm ${exportValuesFile}
 
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then 
-   if test "$(kubectl get namespace ${monitoringNamespace} --ignore-not-found | wc -l)" = 0; then
+   if test "$(${KUBERNETES_CLI:-kubectl} get namespace ${monitoringNamespace} --ignore-not-found | wc -l)" = 0; then
      echo "The namespace ${monitoringNamespace} for install prometheus-community/kube-prometheus-stack does not exist. Creating the namespace ${monitoringNamespace}"
-     kubectl create namespace ${monitoringNamespace} 
+     ${KUBERNETES_CLI:-kubectl} create namespace ${monitoringNamespace} 
    fi
    echo -e "Monitoring setup in  ${monitoringNamespace} in progress.......\n"
 
    # Create the namespace and CRDs, and then wait for them to be availble before creating the remaining resources
-   kubectl label nodes --all kubernetes.io/os=linux --overwrite=true
+   ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux --overwrite=true
 
    echo "Setup prometheus-community/kube-prometheus-stack started"
    installKubePrometheusStack
@@ -146,8 +146,8 @@ if [ "${setupKubePrometheusStack}" = "true" ]; then
    echo "Setup prometheus-community/kube-prometheus-stack completed"
 fi
 
-export username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
-export password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
+export username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+export password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
 # Setting up the WebLogic Monitoring Exporter
 echo "Deploy WebLogic Monitoring Exporter started"
@@ -167,7 +167,7 @@ sed -i -e "s/namespace:.*/namespace: ${domainNamespace}/g" ${serviceMonitor}
 sed -i -e "s/weblogic.domainName:.*/weblogic.domainName: ${domainUID}/g" ${serviceMonitor}
 sed -i -e "$!N;s/matchNames:\n    -.*/matchNames:\n    - ${domainNamespace}/g;P;D" ${serviceMonitor}
 
-kubectl apply -f ${serviceMonitor}
+${KUBERNETES_CLI:-kubectl} apply -f ${serviceMonitor}
 
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then

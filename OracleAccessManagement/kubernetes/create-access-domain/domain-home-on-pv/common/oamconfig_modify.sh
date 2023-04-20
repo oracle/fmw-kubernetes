@@ -29,7 +29,7 @@ fi
 username=`echo $user | cut -d ":" -f1`
 password=`echo $user | cut -d ":" -f2`
 
-domainUID=`kubectl get domains -n $OAM_NAMESPACE | awk '{ print $1 }'| tr  '\n' ':' | cut -d ":"  -f2`
+domainUID=`${KUBERNETES_CLI:-kubectl} get domains -n $OAM_NAMESPACE | awk '{ print $1 }'| tr  '\n' ':' | cut -d ":"  -f2`
 OAM_SERVER=$domainUID'-oam-server'
 
 echo "LBR_PROTOCOL: $LBR_PROTOCOL"
@@ -41,7 +41,7 @@ echo "INGRESS_NAME: $INGRESS_NAME"
 
 
 if [ $INGRESS == "nginx" ]; then
-	ING_TYPE=`kubectl --namespace $OAM_NAMESPACE get services $INGRESS_NAME-ingress-nginx-controller -o jsonpath="{.spec.type}"`
+	ING_TYPE=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services $INGRESS_NAME-ingress-nginx-controller -o jsonpath="{.spec.type}"`
 else
 	 echo "Error: Invalid INGRESS : $INGRESS"		
  exit 1 
@@ -51,7 +51,7 @@ echo "ING_TYPE : $ING_TYPE "
 
 if [ $ING_TYPE == "NodePort" ]; then
 	if [ $INGRESS == "nginx" ]; then
-	 LBR_PORT=`kubectl --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[1].nodePort}" $INGRESS_NAME-ingress-nginx-controller`
+	 LBR_PORT=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[1].nodePort}" $INGRESS_NAME-ingress-nginx-controller`
 	else
 	 echo "Error: Invalid INGRESS : $INGRESS"	
 	 exit 1 
@@ -65,7 +65,7 @@ fi
 
 if [ $ING_TYPE == "LoadBalancer" ]; then
   if [ $INGRESS == "nginx" ]; then	
-	LBR_HOST=`kubectl --namespace $OAM_NAMESPACE get service $INGRESS_NAME-ingress-nginx-controller | grep controller | awk '{ print $4 }' | tr -d '\n'`
+	LBR_HOST=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get service $INGRESS_NAME-ingress-nginx-controller | grep controller | awk '{ print $4 }' | tr -d '\n'`
   else 
     echo "Error: Invalid INGRESS : $INGRESS"	
 	exit 1 	
@@ -98,8 +98,8 @@ cp $cur_dir/oamoap-service-template.yaml $cur_dir/output/oamoap-service.yaml
 sed -i -e "s:@OAM_NAMESPACE@:$OAM_NAMESPACE:g" $cur_dir/output/oamoap-service.yaml
 sed -i -e "s:@DOMAINID@:$domainUID:g" $cur_dir/output/oamoap-service.yaml
 
-kubectl create -f $cur_dir/output/oamoap-service.yaml
-kubectl get services -n $OAM_NAMESPACE | grep NodePort
+${KUBERNETES_CLI:-kubectl} create -f $cur_dir/output/oamoap-service.yaml
+${KUBERNETES_CLI:-kubectl} get services -n $OAM_NAMESPACE | grep NodePort
 
 
 sed -i -e "s:@CLUSTER_ID@:$new_cluster_id:g" $cur_dir/output/clusterCreate.py
@@ -117,13 +117,13 @@ else
 fi
 
 # Below code is needed if there is a need to modify ClusterId
-kubectl cp $cur_dir/output/clusterCreate.py $OAM_NAMESPACE/$domainUID-adminserver:/tmp/clusterCreate.py
-kubectl exec $domainUID-adminserver -n $OAM_NAMESPACE -- chmod +x /tmp/clusterCreate.py
-kubectl exec $domainUID-adminserver -n $OAM_NAMESPACE -- wlst.sh /tmp/clusterCreate.py
-kubectl exec $domainUID-adminserver -n $OAM_NAMESPACE -- rm -f /tmp/clusterCreate.py
+${KUBERNETES_CLI:-kubectl} cp $cur_dir/output/clusterCreate.py $OAM_NAMESPACE/$domainUID-adminserver:/tmp/clusterCreate.py
+${KUBERNETES_CLI:-kubectl} exec $domainUID-adminserver -n $OAM_NAMESPACE -- chmod +x /tmp/clusterCreate.py
+${KUBERNETES_CLI:-kubectl} exec $domainUID-adminserver -n $OAM_NAMESPACE -- wlst.sh /tmp/clusterCreate.py
+${KUBERNETES_CLI:-kubectl} exec $domainUID-adminserver -n $OAM_NAMESPACE -- rm -f /tmp/clusterCreate.py
 
 echo -e "\nPlease wait for some time for the server to restart"
-kubectl delete pod -l weblogic.clusterName=oam_cluster -n $OAM_NAMESPACE
+${KUBERNETES_CLI:-kubectl} delete pod -l weblogic.clusterName=oam_cluster -n $OAM_NAMESPACE
 
 count_wls_alive=0
 while :
@@ -133,8 +133,8 @@ do
     exit 1
   fi  
 
-  ret1=`kubectl get po -n $OAM_NAMESPACE | grep ${OAM_SERVER}1`
-  ret2=`kubectl get po -n $OAM_NAMESPACE | grep ${OAM_SERVER}2`
+  ret1=`${KUBERNETES_CLI:-kubectl} get po -n $OAM_NAMESPACE | grep ${OAM_SERVER}1`
+  ret2=`${KUBERNETES_CLI:-kubectl} get po -n $OAM_NAMESPACE | grep ${OAM_SERVER}2`
 
   echo $ret1 | grep '1/1'
   rc1=$?

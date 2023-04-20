@@ -1,8 +1,9 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.  
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.  
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a responsefile for IDM Provisioning on Kubernetes
 #
+# Version: 4.0
 
 ############################################################################################
 #                               CONTROL Parameters                                         #
@@ -18,8 +19,8 @@ INSTALL_WLSOPER=true
 INSTALL_OUD=true
 INSTALL_OAM=true
 INSTALL_OIG=true
-INSTALL_OIRI=false
-INSTALL_OAA=false
+INSTALL_OIRI=true
+INSTALL_OAA=true
 INSTALL_ELK=false
 INSTALL_PROM=false
 
@@ -30,7 +31,9 @@ USE_REGISTRY=true
 USE_INGRESS=true
 USE_ELK=false
 USE_PROM=false
+ENABLE_DR=false
 
+ENV_TYPE=OCI
 IMAGE_TYPE=crio
 
 ############################################################################################
@@ -65,19 +68,19 @@ SSL_STATE=California
 # Container Registry
 #
 REGISTRY=iad.ocir.io/mytenancy/idm
-REG_USER=mytenancy/oracleidentitycloudservice/myname@example.com
+REG_USER=mytenancy/oracleidentitycloudservice/myemail@example.com
 CREATE_REGSECRET=true
 
 # GitHub
 #
 GIT_USER=gituser
-#GIT_TOKEN=gittoken
 CREATE_GITSECRET=true
 
 
 # DockerHub
 #
-DH_USER=myuser
+DH_USER=dockeruser
+
 
 ############################################################################################
 #                               IMAGE Parameters                                           #
@@ -96,20 +99,33 @@ OIRI_UI_IMAGE=$REGISTRY/oiri-ui
 OIRI_DING_IMAGE=$REGISTRY/oiri-ding
 OAA_MGT_IMAGE=$REGISTRY/oaa-mgmt
 
+# External Image Repositories
+#
+KUBECTL_REPO=bitnami/kubectl
+BUSYBOX_REPO=docker.io/busybox
+#
 # Image Versions
 # 
-OUD_VER=12.2.1.4-jdk8-ol7-221014
-OUDSM_VER=12.2.1.4-jdk8-ol7-221014
-OAM_VER=12.2.1.4-jdk8-ol7-221014
-OIG_VER=12.2.1.4-jdk8-ol7-221014
-OIRICLI_VER=12.2.1.4.220429
-OIRI_VER=12.2.1.4.220429
-OIRIUI_VER=12.2.1.4.220429
-OIRIDING_VER=12.2.1.4.220429
-OAAMGT_VER=12.2.1.4.1-20220927
-OAA_VER=12.2.1.4.1-20220927
+OUD_VER=12.2.1.4-jdk8-ol7-DATE
+OUDSM_VER=12.2.1.4-jdk8-ol7-DATE
+OAM_VER=12.2.1.4-jdk8-ol7-DATE
+OIG_VER=12.2.1.4-jdk8-ol7-DATE
+OIRICLI_VER=12.2.1.4-jdk8-ol7-DATE
+OIRI_VER=12.2.1.4-jdk8-ol7-DATE
+OIRIUI_VER=12.2.1.4-jdk8-ol7-DATE
+OIRIDING_VER=12.2.1.4-jdk8-ol7-DATE
+OAAMGT_VER=12.2.1.4-jdk8-ol7-DATE
+OAA_VER=12.2.1.4-jdk8-ol7-DATE
 
-OPER_VER=3.4.2
+OPER_VER=4.0.4
+
+############################################################################################
+#                               NFS Parameters                                             #
+############################################################################################
+#
+PVSERVER=mynfsserver.example.com
+IAM_PVS=/exports/IAMPVS
+PV_MOUNT=/u01/oracle/user_projects
 
 
 ############################################################################################
@@ -120,7 +136,7 @@ OPER_VER=3.4.2
 ELKNS=elkns
 ELK_HOST=https://elasticsearch-es-http.$ELKNS.svc:9200
 ELK_VER=8.3.1
-ELK_SHARE=/export/IAMPVS/elk_data
+ELK_SHARE=$IAM_PVS/elk_data
 ELK_STORAGE=nfs-client
 ELK_USER=logstash_internal
 ELK_API=
@@ -147,26 +163,23 @@ INGRESSNS=ingressns
 INGRESS_ENABLE_TCP=true
 INGRESS_NAME=idmedg
 INGRESS_SSL=true
+INGRESS_SERVICE_TYPE=NodePort
 INGRESS_DOMAIN=example.com
 INGRESS_REPLICAS=2
 
 # Ports
 #
+INGRESS_HTTP=80
+INGRESS_HTTPS=443
 INGRESS_HTTP_K8=30777
 INGRESS_HTTPS_K8=30443
-
-############################################################################################
-#                               NFS Parameters                                             #
-############################################################################################
-#
-PVSERVER=nfsserver.example.com
-IAM_PVS=/export/IAMPVS
-PV_MOUNT=/u01/oracle/user_projects
 
 ############################################################################################
 #                               GENERIC LDAP Parameters                                    #
 ############################################################################################
 #
+LDAP_EXTERNAL_HOST=
+LDAP_EXTERNAL_PORT=
 LDAP_ADMIN_USER=cn=oudadmin
 LDAP_SEARCHBASE=dc=example,dc=com
 LDAP_GROUP_SEARCHBASE=cn=Groups,$LDAP_SEARCHBASE
@@ -194,7 +207,7 @@ OUD_LOCAL_SHARE=/nfs_volumes/oudpv
 OUD_POD_PREFIX=edg
 OUD_CREATE_NODEPORT=true
 OUD_PWD_EXPIRY=2024-01-02
-OUD_REGION=example
+OUD_REGION=us
 
 OUD_REPLICAS=2
 
@@ -202,6 +215,7 @@ OUD_HTTP_K8=30080
 OUD_HTTPS_K8=30443
 OUD_LDAP_K8=31389
 OUD_LDAPS_K8=31636
+OUD_ADMIN_K8=31444
 
 
 ############################################################################################
@@ -234,7 +248,7 @@ OAM_SERVER_COUNT=5
 OAM_SERVER_INITIAL=2
 OAM_DB_SCAN=db-scan.example.com
 OAM_DB_LISTENER=1521
-OAM_DB_SERVICE=edgiad.example.com
+OAM_DB_SERVICE=oam_s.example.com
 OAM_RCU_PREFIX=IAD
 OAM_WEBLOGIC_USER=weblogic
 OAM_DOMAIN_NAME=accessdomain
@@ -245,7 +259,7 @@ OAM_ADMIN_LBR_HOST=iadadmin.example.com
 OAM_ADMIN_LBR_PORT=80
 OAM_COOKIE_DOMAIN=.example.com
 
-OAM_OAP_HOST=worker1
+OAM_OAP_HOST=0.0.0.0
 OAM_OIG_INTEG=true
 
 OAM_OAMADMIN_USER=$LDAP_OAMADMIN_USER
@@ -275,7 +289,7 @@ OIG_SERVER_INITIAL=2
 OIG_DOMAIN_NAME=governancedomain
 OIG_DB_SCAN=db-scan.example.com
 OIG_DB_LISTENER=1521
-OIG_DB_SERVICE=edgigd.example.com
+OIG_DB_SERVICE=oig_s.example.com
 OIG_RCU_PREFIX=IGD
 OIG_WEBLOGIC_USER=weblogic
 OIG_ADMIN_LBR_HOST=igdadmin.example.com
@@ -293,10 +307,10 @@ OIG_BI_PORT=443
 OIG_BI_PROTOCOL=https
 OIG_BI_USER=idm_report
 OIG_EMAIL_CREATE=true
-OIG_EMAIL_SERVER=smtp.example.com
+OIG_EMAIL_SERVER=smtp.example.com 
 OIG_EMAIL_PORT=25
 OIG_EMAIL_SECURITY=None
-OIG_EMAIL_ADDRESS=myname@example.com
+OIG_EMAIL_ADDRESS=email@example.com
 OIG_EMAIL_FROM_ADDRESS=fromaddress@example.com
 OIG_EMAIL_REPLY_ADDRESS=noreplies@example.com
 
@@ -320,8 +334,10 @@ OIG_OIM_T3_PORT_K8=30712
 UPDATE_OHS=true
 DEPLOY_WG=true
 COPY_WG_FILES=true
-OHS_HOST1=webhost1.example.com
-OHS_HOST2=webhost2.example.com
+OHS_USER=opc
+OHS_GRP=opc
+OHS_HOST1=ohs1.example.com
+OHS_HOST2=ohs2.example.com
 OHS_INSTALLER=fmw_12.2.1.4.0_ohs_linux64_Disk1_1of1.zip
 NM_ADMIN_USER=admin
 NM_PORT=5556
@@ -351,13 +367,14 @@ OIRI_SHARE_SIZE=10Gi
 OIRI_DING_SHARE=$IAM_PVS/dingpv
 OIRI_DING_LOCAL_SHARE=/nfs_volumes/dingpv
 OIRI_DING_SHARE_SIZE=10Gi
+OIRI_WORK_LOCAL_SHARE=/nfs_volumes/workpv
 OIRI_WORK_SHARE=$IAM_PVS/workpv
 
 # DB Parameters
 #
 OIRI_DB_SCAN=db-scan.example.com
 OIRI_DB_LISTENER=1521
-OIRI_DB_SERVICE=edgoiri.example.com
+OIRI_DB_SERVICE=oiri_s.example.com
 OIRI_RCU_PREFIX=ORI
 
 # Ingress Parameters
@@ -414,9 +431,8 @@ OAA_CREATE_OHS=true
 #
 OAA_DB_SCAN=db-scan.example.com
 OAA_DB_LISTENER=1521
-OAA_DB_SERVICE=edgoaa.example.com
+OAA_DB_SERVICE=oaa_s.example.com
 OAA_RCU_PREFIX=OAA
-OAA_DB_SID=iamdb1
 
 # Users/Groups
 #
@@ -447,7 +463,7 @@ OAA_RUNTIME_HOST=$OAM_LOGIN_LBR_HOST
 #
 OAA_CREATE_TESTUSER=true
 OAA_USER=oaauser
-OAA_USER_EMAIL=myname@example.com
+OAA_USER_EMAIL=email@example.com
 OAA_USER_POSTCODE=oaauser
 
 
@@ -477,9 +493,9 @@ OAA_RISK_REPLICAS=2
 OAA_RISKCC_REPLICAS=2
 
 
-
 ############################################################################################
 #                               INTERNAL  Parameters - DO NOT CHANGE                       #
 ############################################################################################
 #
+DELETE_SAMPLES=true
 SAMPLES_REP="https://github.com/oracle/fmw-kubernetes.git"

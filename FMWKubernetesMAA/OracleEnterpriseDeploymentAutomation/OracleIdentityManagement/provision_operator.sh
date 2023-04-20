@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of deploying the WebLogic Kubernetes Operator
@@ -7,10 +7,45 @@
 # Dependencies: ./common/functions.sh
 #               ./responsefile/idm.rsp
 #
-# Usage: provision_operator.sh
+# Usage: provision_operator.sh [-r responsefile -p passwordfile]
 #
-. common/functions.sh
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while getopts 'r:p:' OPTION
+do
+  case "$OPTION" in
+    r)
+      RSPFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    p)
+      PWDFILE=$SCRIPTDIR/responsefile/$OPTARG
+     ;;
+    ?)
+     echo "script usage: $(basename $0) [-r responsefile -p passwordfile] " >&2
+     exit 1
+     ;;
+   esac
+done
+
+
+RSPFILE=${RSPFILE=$SCRIPTDIR/responsefile/idm.rsp}
+PWDFILE=${PWDFILE=$SCRIPTDIR/responsefile/.idmpwds}
+
 . $RSPFILE
+if [ $? -gt 0 ]
+then
+    echo "Responsefile : $RSPFILE does not exist."
+    exit 1
+fi
+
+. $PWDFILE
+if [ $? -gt 0 ]
+then
+    echo "Passwordfile : $PWDFILE does not exist."
+    exit 1
+fi
+
+. $SCRIPTDIR/common/functions.sh
 
 
 WORKDIR=$LOCAL_WORKDIR/OPER
@@ -32,7 +67,7 @@ fi
 echo
 echo -n "Provisioning WebLogic Kubernetes Operator on "
 date +"%a %d %b %Y %T"
-echo "-----------------------------------------------------"
+echo "---------------------------------------------------------------------"
 echo
 
 START_TIME=`date +%s`
@@ -41,7 +76,7 @@ create_logdir
 
 echo -n "Provisioning WebLogic Kubernetes Operator on " >> $LOGDIR/timings.log
 date >> $LOGDIR/timings.log
-echo "----------------------------------------------------" >> $LOGDIR/timings.log
+echo "--------------------------------------------------------------------" >> $LOGDIR/timings.log
 
 STEPNO=1
 PROGRESS=$(get_progress)
