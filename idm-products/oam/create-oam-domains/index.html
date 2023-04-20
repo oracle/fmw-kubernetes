@@ -12,18 +12,18 @@
     <title>Create OAM domains :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784009"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5423,7 +5423,7 @@ rcuCredentialsSecret: &lt;kubernetes_rcu_secret&gt;
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">domainUID: accessdomain
 domainHome: /u01/oracle/user_projects/domains/accessdomain
-image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-&lt;January<span style="color:#e6db74">`</span>23&gt;
+image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-&lt;April<span style="color:#e6db74">`</span>23&gt;
 imagePullSecretName: orclcred
 weblogicCredentialsSecretName: accessdomain-credentials
 logHome: /u01/oracle/user_projects/domains/logs/accessdomain
@@ -5576,8 +5576,8 @@ rcuCredentialsSecret: accessdomain-rcu-credentials
 </tr>
 <tr>
 <td><code>serverStartPolicy</code></td>
-<td>Determines which WebLogic Server instances will be started. Legal values are <code>NEVER</code>, <code>IF_NEEDED</code>, <code>ADMIN_ONLY</code>.</td>
-<td><code>IF_NEEDED</code></td>
+<td>Determines which WebLogic Server instances will be started. Legal values are <code>Never</code>, <code>IfNeeded</code>, <code>AdminOnly</code>.</td>
+<td><code>IfNeeded</code></td>
 </tr>
 <tr>
 <td><code>t3ChannelPort</code></td>
@@ -5619,6 +5619,11 @@ rcuCredentialsSecret: accessdomain-rcu-credentials
 <td>The Kubernetes secret containing the database credentials.</td>
 <td><code>accessinfra-rcu-credentials</code></td>
 </tr>
+<tr>
+<td><code>datasourceType</code></td>
+<td>Type of JDBC datasource applicable for the OAM domain. Legal values are <code>agl</code> and <code>generic</code>. Choose <code>agl</code> for Active GridLink datasource and <code>generic</code> for Generic datasource. For enterprise deployments, Oracle recommends that you use GridLink data sources to connect to Oracle RAC databases. See the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-existing-database-enterprise-deployment.html#GUID-E3705EFF-AEF2-4F75-B5CE-1A829CDF0A1F">Enterprise Deployment Guide</a> for further details.</td>
+<td><code>generic</code></td>
+</tr>
 </tbody>
 </table>
 <p>Note that the names of the Kubernetes resources in the generated YAML files may be formed with the
@@ -5648,13 +5653,13 @@ export adminServerName=&quot;AdminServer&quot;
 export domainUID=&quot;accessdomain&quot;
 export domainType=&quot;oam&quot;
 export domainHome=&quot;/u01/oracle/user_projects/domains/accessdomain&quot;
-export serverStartPolicy=&quot;IF_NEEDED&quot;
+export serverStartPolicy=&quot;IfNeeded&quot;
 export clusterName=&quot;oam_cluster&quot;
 export configuredManagedServerCount=&quot;5&quot;
 export initialManagedServerReplicas=&quot;2&quot;
 export managedServerNameBase=&quot;oam_server&quot;
 export managedServerPort=&quot;14100&quot;
-export image=&quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-&lt;January`23&gt;&quot;
+export image=&quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-&lt;April`23&gt;&quot;
 export imagePullPolicy=&quot;IfNotPresent&quot;
 export imagePullSecretName=&quot;orclcred&quot;
 export productionModeEnabled=&quot;true&quot;
@@ -5676,7 +5681,9 @@ export createDomainFilesDir=&quot;wlst&quot;
 export rcuSchemaPrefix=&quot;OAMK8S&quot;
 export rcuDatabaseURL=&quot;mydatabasehost.example.com:1521/orcl.example.com&quot;
 export rcuCredentialsSecret=&quot;accessdomain-rcu-credentials&quot;
+export datasourceType=&quot;generic&quot;
 
+validateWlsDomainName called with accessdomain
 createFiles - valuesInputFile is create-domain-inputs.yaml
 createDomainScriptName is create-domain-job.sh
 Generating output/weblogic-domains/accessdomain/create-domain-job.yaml
@@ -5724,52 +5731,41 @@ The following files were generated:
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain
 </code></pre></div></li>
 <li>
-<p>Edit the <code>domain.yaml</code> file and locate the section of the file starting with: <code>- clusterName: oam_cluster</code>. Immediately after the line: <code>topologyKey: &quot;kubernetes.io/hostname&quot;</code>, add the following lines:</p>
-<pre><code>env:
-- name: USER_MEM_ARGS
-  value: &quot;-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m&quot;
+<p>Edit the <code>domain.yaml</code> file and inside <code>name: accessdomain-oam-cluster</code>, add the memory setting as below:</p>
+<pre><code>serverPod:
+  env:
+  - name: USER_MEM_ARGS
+    value: &quot;-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m&quot;
 </code></pre><p>For example:</p>
-<pre><code>  - clusterName: oam_cluster
- serverService:
-   precreateService: true
- serverStartState: &quot;RUNNING&quot;
- serverPod:
-   # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
-   # already members of the same cluster.
-   affinity:
-     podAntiAffinity:
-       preferredDuringSchedulingIgnoredDuringExecution:
-         - weight: 100
-           podAffinityTerm:
-             labelSelector:
-               matchExpressions:
-                 - key: &quot;weblogic.clusterName&quot;
-                   operator: In
-                   values:
-                     - $(CLUSTER_NAME)
-             topologyKey: &quot;kubernetes.io/hostname&quot;
-   env:			
-   - name: USER_MEM_ARGS
-     value: &quot;-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m&quot;
- replicas: 2
+<pre><code>apiVersion: weblogic.oracle/v1
+kind: Cluster
+metadata:
+  name: accessdomain-oam-cluster
+  namespace: oamns
+spec:
+  clusterName: oam_cluster
+  serverService:
+    precreateService: true
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: &quot;-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m&quot;
+  replicas: 2
 </code></pre></li>
 <li>
 <p>In the <code>domain.yaml</code> locate the section of the file starting with <code>adminServer:</code>. Under the <code>env:</code> tag add the following <code>CLASSPATH</code> entries. This is required for running the <code>idmconfigtool</code> from the Administration Server.</p>
 <pre><code>- name: CLASSPATH
   value: &quot;/u01/oracle/wlserver/server/lib/weblogic.jar&quot;
 </code></pre><p>For example:</p>
-<pre><code>  adminServer:
-  # serverStartState legal values are &quot;RUNNING&quot; or &quot;ADMIN&quot;
-  # &quot;RUNNING&quot; means the listed server will be started up to &quot;RUNNING&quot; mode
-  # &quot;ADMIN&quot; means the listed server will be start up to &quot;ADMIN&quot; mode
-  serverStartState: &quot;RUNNING&quot;
-  adminService:
-    channels:
+<pre><code># adminServer is used to configure the desired behavior for starting the administration server.
+adminServer:
+  # adminService:
+  #   channels:
   # The Admin Server's NodePort
-     - channelName: default
-       nodePort: 30701
+  #    - channelName: default
+  #      nodePort: 30701
   # Uncomment to export the T3Channel as a service
-     - channelName: T3Channel
+  #    - channelName: T3Channel
   serverPod:
     # an (optional) list of environment variable to be set on the admin servers
     env:
@@ -5780,7 +5776,7 @@ The following files were generated:
 </code></pre></li>
 <li>
 <p>If required, you can add the optional parameter <code>maxClusterConcurrentStartup</code> to the <code>spec</code> section of the <code>domain.yaml</code>. This parameter specifies the number of managed servers to be started in sequence per cluster. For example if you updated the <code>initialManagedServerReplicas</code> to <code>4</code> in <code>create-domain-inputs.yaml</code> and only had 2 nodes, then setting <code>maxClusterConcurrentStartup: 1</code> will start one managed server at a time on each node, rather than starting them all at once. This can be useful to take the strain off individual nodes at startup. Below is an example with the parameter added:</p>
-<pre><code>apiVersion: &quot;weblogic.oracle/v8&quot;
+<pre><code>apiVersion: &quot;weblogic.oracle/v9&quot;
 kind: Domain
 metadata:
   name: accessdomain
@@ -5795,9 +5791,6 @@ spec:
   # The domain home source type
   # Set to PersistentVolume for domain-in-pv, Image for domain-in-image, or FromModel for model-in-image
   domainHomeSourceType: PersistentVolume
-
-  # The WebLogic Server container image that the Operator uses to start the domain
-  image: &quot;oracle/oam:12.2.1.4.0&quot;
   ....
 </code></pre></li>
 <li>
@@ -5813,6 +5806,8 @@ spec:
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain/domain.yaml
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>domain.weblogic.oracle/accessdomain created
+cluster.weblogic.oracle/accessdomain-oam-cluster created
+cluster.weblogic.oracle/accessdomain-policy-cluster created
 </code></pre></li>
 </ol>
 <h3 id="verify-the-results">Verify the results</h3>
@@ -5853,6 +5848,10 @@ job.batch/accessdomain-create-oam-infra-domain-job   1/1           2m6s       18
 
 NAME                                  AGE
 domain.weblogic.oracle/accessdomain   12m
+   
+NAME                                                  AGE
+cluster.weblogic.oracle/accessdomain-oam-cluster      11m
+cluster.weblogic.oracle/accessdomain-policy-cluster   11m
 </code></pre><p><strong>Note</strong>: It will take several minutes before all the services listed above show. When a pod has a <code>STATUS</code> of <code>0/1</code> the pod is started but the OAM server associated with it is currently starting. While the pods are starting you can check the startup status in the pod logs, by running the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs accessdomain-adminserver -n oamns
 $ kubectl logs accessdomain-oam-policy-mgr1 -n oamns
@@ -5881,26 +5880,27 @@ etc..
 Namespace:    oamns
 Labels:       weblogic.domainUID=accessdomain
 Annotations:  &lt;none&gt;
-API Version:  weblogic.oracle/v8
+API Version:  weblogic.oracle/v9
 Kind:         Domain
 Metadata:
   Creation Timestamp:  &lt;DATE&gt;
   Generation:          1
   Managed Fields:
-    API Version:  weblogic.oracle/v8
+    API Version:  weblogic.oracle/v9
     Fields Type:  FieldsV1
     fieldsV1:
       f:status:
         .:
         f:clusters:
         f:conditions:
-        f:introspectJobFailureCount:
+        f:observedGeneration:
         f:servers:
         f:startTime:
     Manager:      Kubernetes Java Client
     Operation:    Update
+    Subresource:  status
     Time:         &lt;DATE&gt;
-    API Version:  weblogic.oracle/v8
+    API Version:  weblogic.oracle/v9
     Fields Type:  FieldsV1
     fieldsV1:
       f:metadata:
@@ -5910,71 +5910,78 @@ Metadata:
         f:labels:
           .:
           f:weblogic.domainUID:
+      f:spec:
+        .:
+        f:adminServer:
+          .:
+          f:adminChannelPortForwardingEnabled:
+          f:serverPod:
+            .:
+            f:env:
+          f:serverStartPolicy:
+        f:clusters:
+        f:dataHome:
+        f:domainHome:
+        f:domainHomeSourceType:
+        f:failureRetryIntervalSeconds:
+        f:failureRetryLimitMinutes:
+        f:httpAccessLogInLogHome:
+        f:image:
+        f:imagePullPolicy:
+        f:imagePullSecrets:
+        f:includeServerOutInPodLog:
+        f:logHome:
+        f:logHomeEnabled:
+        f:logHomeLayout:
+        f:maxClusterConcurrentShutdown:
+        f:maxClusterConcurrentStartup:
+        f:maxClusterUnavailable:
+        f:replicas:
+        f:serverPod:
+          .:
+          f:env:
+          f:volumeMounts:
+          f:volumes:
+        f:serverStartPolicy:
+        f:webLogicCredentialsSecret:
+          .:
+          f:name:
     Manager:         kubectl-client-side-apply
     Operation:       Update
     Time:            &lt;DATE&gt;
-  Resource Version:  1495179
-  UID:               a90107d5-dbaf-4d86-9439-d5369faabd35
+  Resource Version:  141884
+  UID:               b85571f1-f39d-4188-acfd-9264e5b925b5
 Spec:
   Admin Server:
+    Admin Channel Port Forwarding Enabled:  true
     Server Pod:
       Env:
-        Name:            USER_MEM_ARGS
-        Value:           -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m
-        Name:            CLASSPATH
-        Value:           /u01/oracle/wlserver/server/lib/weblogic.jar
-    Server Start State:  RUNNING
+        Name:             USER_MEM_ARGS
+        Value:            -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m
+        Name:             CLASSPATH
+        Value:            /u01/oracle/wlserver/server/lib/weblogic.jar
+    Server Start Policy:  IfNeeded
   Clusters:
-    Cluster Name:  policy_cluster
-    Replicas:      2
-    Server Pod:
-      Affinity:
-        Pod Anti Affinity:
-          Preferred During Scheduling Ignored During Execution:
-            Pod Affinity Term:
-              Label Selector:
-                 Match Expressions:
-                  Key:       weblogic.clusterName
-                  Operator:  In
-                  Values:
-                    $(CLUSTER_NAME)
-              Topology Key:  kubernetes.io/hostname
-            Weight:          100
-    Server Service:
-      Precreate Service:  true
-    Server Start State:   RUNNING
-    Cluster Name:         oam_cluster
-    Replicas:             2
-    Server Pod:
-      Affinity:
-        Pod Anti Affinity:
-          Preferred During Scheduling Ignored During Execution:
-            Pod Affinity Term:
-              Label Selector:
-                Match Expressions:
-                  Key:       weblogic.clusterName
-                  Operator:  In
-                  Values:
-                    $(CLUSTER_NAME)
-              Topology Key:  kubernetes.io/hostname
-            Weight:          100
-      Env:
-        Name:   USER_MEM_ARGS
-        Value:  -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m
-    Server Service:
-      Precreate Service:          true
-    Server Start State:           RUNNING
+    Name:                          accessdomain-oam-cluster
+    Name:                          accessdomain-policy-cluster
   Data Home:
-  Domain Home:                    /u01/oracle/user_projects/domains/accessdomain
-  Domain Home Source Type:        PersistentVolume
-  Http Access Log In Log Home:    true
-  Image:                          container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-&lt;January`23&gt;
-  Image Pull Policy:              IfNotPresent
+  Domain Home:                     /u01/oracle/user_projects/domains/accessdomain
+  Domain Home Source Type:         PersistentVolume
+  Failure Retry Interval Seconds:  120
+  Failure Retry Limit Minutes:     1440
+  Http Access Log In Log Home:     true
+  Image:                           container-registry.oracle.com/middleware/oam_cpu:&lt;April`23&gt;
+  Image Pull Policy:               IfNotPresent
   Image Pull Secrets:
-    Name:                         orclcred
-  Include Server Out In Pod Log:  true
-  Log Home:                       /u01/oracle/user_projects/domains/logs/accessdomain
-  Log Home Enabled:               true
+    Name:                           orclcred
+  Include Server Out In Pod Log:    true
+  Log Home:                         /u01/oracle/user_projects/domains/logs/accessdomain
+  Log Home Enabled:                 true
+  Log Home Layout:                  ByServers
+  Max Cluster Concurrent Shutdown:  1
+  Max Cluster Concurrent Startup:   0
+  Max Cluster Unavailable:          1
+  Replicas:                         1
   Server Pod:
     Env:
       Name:   JAVA_OPTIONS
@@ -5988,109 +5995,140 @@ Spec:
       Name:  weblogic-domain-storage-volume
       Persistent Volume Claim:
         Claim Name:     accessdomain-domain-pvc
-  Server Start Policy:  IF_NEEDED
+  Server Start Policy:  IfNeeded
   Web Logic Credentials Secret:
     Name:  accessdomain-credentials
 Status:
   Clusters:
-    Cluster Name:      oam_cluster
-    Maximum Replicas:  5
-    Minimum Replicas:  0
-    Ready Replicas:    2
-    Replicas:          2
-    Replicas Goal:     2
-    Cluster Name:      policy_cluster
-    Maximum Replicas:  5
-    Minimum Replicas:  0
-    Ready Replicas:    2
-    Replicas:          2
-    Replicas Goal:     2
+    Cluster Name:  oam_cluster
+    Conditions:
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Available
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Completed
+    Label Selector:          weblogic.domainUID=accessdomain,weblogic.clusterName=oam_cluster
+    Maximum Replicas:        5
+    Minimum Replicas:        0
+    Observed Generation:     1
+    Ready Replicas:          2
+    Replicas:                2
+    Replicas Goal:           2
+    Cluster Name:            policy_cluster
+    Conditions:
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Available
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Completed
+    Label Selector:          weblogic.domainUID=accessdomain,weblogic.clusterName=policy_cluster
+    Maximum Replicas:        5
+    Minimum Replicas:        0
+    Observed Generation:     1
+    Ready Replicas:          2
+    Replicas:                2
+    Replicas Goal:           2
   Conditions:
-    Last Transition Time:        &lt;DATE&gt;
-    Reason:                      ServersReady
-    Status:                      True
-    Type:                        Available
-  Introspect Job Failure Count:  0
+    Last Transition Time:  &lt;DATE&gt;
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  &lt;DATE&gt;
+    Status:                True
+    Type:                  Completed
+  Observed Generation:     1
   Servers:
-    Desired State:  RUNNING
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-     Node Name:      10.250.42.252
-    Server Name:    AdminServer
-    State:          RUNNING
-    Cluster Name:   oam_cluster
-    Desired State:  RUNNING
+    Node Name:     worker-node1
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   AdminServer
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  oam_cluster
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      10.250.42.255
-    Server Name:    oam_server1
-    State:          RUNNING
-    Cluster Name:   oam_cluster
-    Desired State:  RUNNING
+    Node Name:     worker-node2
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   oam_server1
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  oam_cluster
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-     Node Name:      10.250.42.252
-    Server Name:    oam_server2
-    State:          RUNNING
-    Cluster Name:   oam_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oam_server3
-    Cluster Name:   oam_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oam_server4
-    Cluster Name:   oam_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oam_server5
-    Cluster Name:   policy_cluster
-    Desired State:  RUNNING
+    Node Name:     worker-node1
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   oam_server2
+   State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  oam_cluster
+    Server Name:   oam_server3
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  oam_cluster
+    Server Name:   oam_server4
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  oam_cluster
+    Server Name:   oam_server5
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  policy_cluster
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      10.250.42.255
-    Server Name:    oam_policy_mgr1
-    State:          RUNNING
-    Cluster Name:   policy_cluster
-    Desired State:  RUNNING
+    Node Name:     worker-node2
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   oam_policy_mgr1
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  policy_cluster
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      10.250.42.252
-    Server Name:    oam_policy_mgr2
-    State:          RUNNING
-    Cluster Name:   policy_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oam_policy_mgr3
-    Cluster Name:   policy_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oam_policy_mgr4
-    Cluster Name:   policy_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oam_policy_mgr5
-  Start Time:       &lt;DATE&gt;
-Events:
-  Type    Reason                     Age                 From               Message
-  ----    ------                     ----                ----               -------
-  Normal  DomainCreated              13m                 weblogic.operator  Domain resource accessdomain was created
-  Normal  DomainProcessingStarting   5m9s (x2 over 13m)  weblogic.operator  Creating or updating Kubernetes presence for WebLogic Domain with UID accessdomain
-  Normal  DomainProcessingCompleted  114s                weblogic.operator  Successfully completed processing domain resource accessdomain
+     Node Name:     worker-node1
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   oam_policy_mgr2
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  policy_cluster
+    Server Name:   oam_policy_mgr3
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  policy_cluster
+    Server Name:   oam_policy_mgr4
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  policy_cluster
+    Server Name:   oam_policy_mgr5
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+  Start Time:      &lt;DATE&gt;
+Events:            &lt;none&gt;
 </code></pre><p>In the <code>Status</code> section of the output, the available servers and clusters are listed.</p>
 </li>
 </ol>
@@ -9699,19 +9737,19 @@ helper                                           1/1     Running     0          
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784009" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784009"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

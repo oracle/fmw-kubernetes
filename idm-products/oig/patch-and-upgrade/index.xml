@@ -16,11 +16,10 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/idm-products/oig/patch-and-upgrade/upgrade-an-operator-release/</guid>
-      <description>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.
+      <description>These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.x release family as additional versions are released.
   On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
-$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X For example:
-$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-  Run the following helm command to upgrade the operator:</description>
+$ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X For example:
+$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X $ cd /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.</description>
     </item>
     
     <item>
@@ -30,8 +29,9 @@ $ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X $ cd /scratch/OIGK8S/
       
       <guid>/fmw-kubernetes/idm-products/oig/patch-and-upgrade/patch-an-image/</guid>
       <description>Introduction The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image.
+Note: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.0.4.
 The script executes the following steps sequentially:
- Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod. Brings up a new helper pod with the new image. Stops the Administration Server, SOA and OIM managed servers using serverStartPolicy set as NEVER in the domain definition yaml.</description>
+ Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod. Brings up a new helper pod with the new image.</description>
     </item>
     
     <item>

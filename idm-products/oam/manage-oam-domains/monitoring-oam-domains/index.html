@@ -12,18 +12,18 @@
     <title>d. Monitoring an OAM domain :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5437,6 +5437,12 @@ alertmanagerNodePort: 32102
 
 # Name of the Kubernetes secret for the Admin Server's username and password
 weblogicCredentialsSecretName: accessdomain-credentials
+</code></pre><p><strong>Note</strong>: If your cluster does not have access to the internet to pull external images, such as grafana or prometheus, you must load the images in a local container registry. You must then set  <code>additionalParamForKubePrometheusStack</code> to set the location of the image in your local container registry, for example:</p>
+<pre><code># Additional parameters for helm install kube-prometheus-stack
+# Refer https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml for additional parameters
+# Sample :
+# additionalParamForKubePrometheusStack: --set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false
+additionalParamForKubePrometheusStack: --set grafana.image.repository=container-registry.example.com/grafana --set grafana.image.tag=8.3.4
 </code></pre></li>
 <li>
 <p>Run the following command to setup monitoring.</p>
@@ -5457,6 +5463,11 @@ Hang tight while we grab the latest from your chart repositories...
    ...Successfully got an update from the &quot;appscode&quot; chart repository
 Update Complete. ⎈ Happy Helming!⎈ 
 Setup prometheus-community/kube-prometheus-stack in progress
+W0320 &lt;DATE&gt;   19121 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+W0320 &lt;DATE&gt;   19121 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+W0320 &lt;DATE&gt;   19121 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+..
+W0320 &lt;DATE&gt;   19121 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
 NAME: monitoring
 LAST DEPLOYED: &lt;DATE&gt;
 NAMESPACE: monitoring
@@ -5573,7 +5584,8 @@ Grafana is available at NodePort: 32100
 Prometheus is available at NodePort: 32101
 Altermanager is available at NodePort: 32102
 ==============================================================
-</code></pre></li>
+</code></pre><p><strong>Note</strong>: If you see the warning <code>W0320 &lt;DATE&gt;    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+</code> you can ignore this message.</p>
+</li>
 </ol>
 <h4 id="prometheus-service-discovery">Prometheus service discovery</h4>
 <p>After the ServiceMonitor is deployed, the wls-exporter should be discovered by Prometheus and be able to collect metrics.</p>
@@ -5628,8 +5640,13 @@ $ git clone https://github.com/coreos/kube-prometheus.git -b v0.7.0
 </code></pre></div><p><strong>Note</strong>: Please refer the compatibility matrix of <a href="https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix">Kube Prometheus</a>. Please download the <a href="https://github.com/prometheus-operator/kube-prometheus/releases">release</a> of the repository according to the Kubernetes version of your cluster.</p>
 </li>
 <li>
+<p>If your cluster does not have access to the internet to pull external images, such as grafana, you must load the images in a local container registry.</p>
+<p>For grafana, edit the <code>$WORKDIR/kubernetes/monitoring-service/kube-prometheus/manifests/grafana-deployment.yaml</code> and change <code>image: grafana/grafana:7.3.4</code> to your local container registry image location, for example <code>image: container-registry.example.com/grafana/grafana:8.3.4</code>.</p>
+<p>For any other images check the <code>$WORKDIR/kubernetes/monitoring-service/kube-prometheus/manifests/*deployment.yaml</code> files.</p>
+</li>
+<li>
 <p>Run the following command to create the namespace and custom resource definitions:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd kube-prometheus
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/monitoring-service/kube-prometheus
 $ kubectl create -f manifests/setup
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>namespace/monitoring created
@@ -5652,6 +5669,8 @@ serviceaccount/prometheus-operator created
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create -f manifests/
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>alertmanager.monitoring.coreos.com/main created
+networkpolicy.networking.k8s.io/alertmanager-main created
+poddisruptionbudget.policy/alertmanager-main created
 prometheusrule.monitoring.coreos.com/alertmanager-main-rules created
 secret/alertmanager-main created
 service/alertmanager-main created
@@ -5661,6 +5680,7 @@ clusterrole.rbac.authorization.k8s.io/blackbox-exporter created
 clusterrolebinding.rbac.authorization.k8s.io/blackbox-exporter created
 configmap/blackbox-exporter-configuration created
 deployment.apps/blackbox-exporter created
+networkpolicy.networking.k8s.io/blackbox-exporter created
 service/blackbox-exporter created
 serviceaccount/blackbox-exporter created
 servicemonitor.monitoring.coreos.com/blackbox-exporter created
@@ -5670,6 +5690,7 @@ configmap/grafana-dashboard-alertmanager-overview created
 configmap/grafana-dashboard-apiserver created
 configmap/grafana-dashboard-cluster-total created
 configmap/grafana-dashboard-controller-manager created
+configmap/grafana-dashboard-grafana-overview created
 configmap/grafana-dashboard-k8s-resources-cluster created
 configmap/grafana-dashboard-k8s-resources-namespace created
 configmap/grafana-dashboard-k8s-resources-node created
@@ -5681,6 +5702,7 @@ configmap/grafana-dashboard-namespace-by-pod created
 configmap/grafana-dashboard-namespace-by-workload created
 configmap/grafana-dashboard-node-cluster-rsrc-use created
 configmap/grafana-dashboard-node-rsrc-use created
+configmap/grafana-dashboard-nodes-darwin created
 configmap/grafana-dashboard-nodes created
 configmap/grafana-dashboard-persistentvolumesusage created
 configmap/grafana-dashboard-pod-total created
@@ -5691,6 +5713,8 @@ configmap/grafana-dashboard-scheduler created
 configmap/grafana-dashboard-workload-total created
 configmap/grafana-dashboards created
 deployment.apps/grafana created
+networkpolicy.networking.k8s.io/grafana created
+prometheusrule.monitoring.coreos.com/grafana-rules created
 service/grafana created
 serviceaccount/grafana created
 servicemonitor.monitoring.coreos.com/grafana created
@@ -5698,6 +5722,7 @@ prometheusrule.monitoring.coreos.com/kube-prometheus-rules created
 clusterrole.rbac.authorization.k8s.io/kube-state-metrics created
 clusterrolebinding.rbac.authorization.k8s.io/kube-state-metrics created
 deployment.apps/kube-state-metrics created
+networkpolicy.networking.k8s.io/kube-state-metrics created
 prometheusrule.monitoring.coreos.com/kube-state-metrics-rules created
 service/kube-state-metrics created
 serviceaccount/kube-state-metrics created
@@ -5711,26 +5736,15 @@ servicemonitor.monitoring.coreos.com/kubelet created
 clusterrole.rbac.authorization.k8s.io/node-exporter created
 clusterrolebinding.rbac.authorization.k8s.io/node-exporter created
 daemonset.apps/node-exporter created
+networkpolicy.networking.k8s.io/node-exporter created
 prometheusrule.monitoring.coreos.com/node-exporter-rules created
 service/node-exporter created
 serviceaccount/node-exporter created
 servicemonitor.monitoring.coreos.com/node-exporter created
-apiservice.apiregistration.k8s.io/v1beta1.metrics.k8s.io created
-clusterrole.rbac.authorization.k8s.io/prometheus-adapter created
-clusterrole.rbac.authorization.k8s.io/system:aggregated-metrics-reader created
-clusterrolebinding.rbac.authorization.k8s.io/prometheus-adapter created
-clusterrolebinding.rbac.authorization.k8s.io/resource-metrics:system:auth-delegator created
-clusterrole.rbac.authorization.k8s.io/resource-metrics-server-resources created
-configmap/adapter-config created
-deployment.apps/prometheus-adapter created
-rolebinding.rbac.authorization.k8s.io/resource-metrics-auth-reader created
-service/prometheus-adapter created
-serviceaccount/prometheus-adapter created
-servicemonitor.monitoring.coreos.com/prometheus-adapter created
 clusterrole.rbac.authorization.k8s.io/prometheus-k8s created
 clusterrolebinding.rbac.authorization.k8s.io/prometheus-k8s created
-prometheusrule.monitoring.coreos.com/prometheus-operator-rules created
-servicemonitor.monitoring.coreos.com/prometheus-operator created
+networkpolicy.networking.k8s.io/prometheus-k8s created
+poddisruptionbudget.policy/prometheus-k8s created
 prometheus.monitoring.coreos.com/k8s created
 prometheusrule.monitoring.coreos.com/prometheus-k8s-prometheus-rules created
 rolebinding.rbac.authorization.k8s.io/prometheus-k8s-config created
@@ -5744,9 +5758,28 @@ role.rbac.authorization.k8s.io/prometheus-k8s created
 service/prometheus-k8s created
 serviceaccount/prometheus-k8s created
 servicemonitor.monitoring.coreos.com/prometheus-k8s created
-unable to recognize &quot;manifests/alertmanager-podDisruptionBudget.yaml&quot;: no matches for kind &quot;PodDisruptionBudget&quot; in version &quot;policy/v1&quot;
-unable to recognize &quot;manifests/prometheus-adapter-podDisruptionBudget.yaml&quot;: no matches for kind &quot;PodDisruptionBudget&quot; in version &quot;policy/v1&quot;
-unable to recognize &quot;manifests/prometheus-podDisruptionBudget.yaml&quot;: no matches for kind &quot;PodDisruptionBudget&quot; in version &quot;policy/v1&quot;
+apiservice.apiregistration.k8s.io/v1beta1.metrics.k8s.io created
+clusterrole.rbac.authorization.k8s.io/prometheus-adapter created
+clusterrole.rbac.authorization.k8s.io/system:aggregated-metrics-reader created
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-adapter created
+clusterrolebinding.rbac.authorization.k8s.io/resource-metrics:system:auth-delegator created
+clusterrole.rbac.authorization.k8s.io/resource-metrics-server-resources created
+configmap/adapter-config created
+deployment.apps/prometheus-adapter created
+networkpolicy.networking.k8s.io/prometheus-adapter created
+poddisruptionbudget.policy/prometheus-adapter created
+rolebinding.rbac.authorization.k8s.io/resource-metrics-auth-reader created
+service/prometheus-adapter created
+serviceaccount/prometheus-adapter created
+servicemonitor.monitoring.coreos.com/prometheus-adapter created
+clusterrole.rbac.authorization.k8s.io/prometheus-operator created
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-operator created
+deployment.apps/prometheus-operator created
+networkpolicy.networking.k8s.io/prometheus-operator created
+prometheusrule.monitoring.coreos.com/prometheus-operator-rules created
+service/prometheus-operator created
+serviceaccount/prometheus-operator created
+servicemonitor.monitoring.coreos.com/prometheus-operator created
 </code></pre></li>
 <li>
 <p>Provide external access for Grafana, Prometheus, and Alertmanager, by running the following commands:</p>
@@ -5985,7 +6018,7 @@ items:
 kind: RoleList
 </code></pre></li>
 <li>
-<p>Update the <code>$WORKDIR/kubernetes/monitoring-service/manifests/prometheus-roleBinding-domain-namespace.yaml and change the </code>namespace` to match your OAM namespace. For example:</p>
+<p>Update the <code>$WORKDIR/kubernetes/monitoring-service/manifests/prometheus-roleBinding-domain-namespace.yaml</code> and change the <code>namespace</code> to match your OAM namespace. For example:</p>
 <pre><code>apiVersion: rbac.authorization.k8s.io/v1
 items:
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -6005,7 +6038,8 @@ kind: RoleBindingList
 </code></pre></li>
 <li>
 <p>Run the following command to enable Prometheus:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl apply -f .
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/monitoring-service/manifests
+$ kubectl apply -f .
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
 role.rbac.authorization.k8s.io/prometheus-k8s created
@@ -6050,11 +6084,6 @@ $ kubectl exec -it -n &lt;domain_namespace&gt; &lt;domain_uid&gt;-adminserver --
 <p>Delete Prometheus:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/monitoring-service/kube-prometheus
 $ kubectl delete -f manifests
-$ kubectl delete -f manifests/setup
-</code></pre></div></li>
-<li>
-<p>Delete the monitoring namespace:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace monitoring
 </code></pre></div></li>
 </ol>
 
@@ -9645,19 +9674,19 @@ $ kubectl delete -f manifests/setup
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784007" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784007"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

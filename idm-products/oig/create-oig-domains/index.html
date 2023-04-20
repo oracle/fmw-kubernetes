@@ -12,18 +12,18 @@
     <title>Create OIG domains :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784009"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5421,7 +5421,7 @@ frontEndPort: &lt;front_end_port&gt;
 </code></pre><p>For example:</p>
 <pre><code>domainUID: governancedomain
 domainHome: /u01/oracle/user_projects/domains/governancedomain
-image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January'23&gt;
+image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April'23&gt;
 imagePullSecretName: orclcred
 weblogicCredentialsSecretName: oig-domain-credentials
 logHome: /u01/oracle/user_projects/domains/logs/governancedomain
@@ -5572,8 +5572,8 @@ frontEndPort: 14100
 </tr>
 <tr>
 <td><code>serverStartPolicy</code></td>
-<td>Determines which WebLogic Server instances will be started. Legal values are <code>NEVER</code>, <code>IF_NEEDED</code>, <code>ADMIN_ONLY</code>.</td>
-<td><code>IF_NEEDED</code></td>
+<td>Determines which WebLogic Server instances will be started. Legal values are <code>Never</code>, <code>IfNeeded</code>, <code>AdminOnly</code>.</td>
+<td><code>IfNeeded</code></td>
 </tr>
 <tr>
 <td><code>t3ChannelPort</code></td>
@@ -5625,6 +5625,11 @@ frontEndPort: 14100
 <td>The entry point port for the OIM.</td>
 <td>Not set</td>
 </tr>
+<tr>
+<td><code>datasourceType</code></td>
+<td>Type of JDBC datasource applicable for the OIG domain. Legal values are <code>agl</code> and <code>generic</code>. Choose <code>agl</code> for Active GridLink datasource and <code>generic</code> for Generic datasource. For enterprise deployments, Oracle recommends that you use GridLink data sources to connect to Oracle RAC databases. See the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-existing-database-enterprise-deployment.html#GUID-E3705EFF-AEF2-4F75-B5CE-1A829CDF0A1F">Enterprise Deployment Guide</a> for further details.</td>
+<td><code>generic</code></td>
+</tr>
 </tbody>
 </table>
 <p>Note that the names of the Kubernetes resources in the generated YAML files may be formed with the
@@ -5656,13 +5661,13 @@ export adminPort=&quot;7001&quot;
 export adminServerName=&quot;AdminServer&quot;
 export domainUID=&quot;governancedomain&quot;
 export domainHome=&quot;/u01/oracle/user_projects/domains/governancedomain&quot;
-export serverStartPolicy=&quot;IF_NEEDED&quot;
+export serverStartPolicy=&quot;IfNeeded&quot;
 export clusterName=&quot;oim_cluster&quot;
 export configuredManagedServerCount=&quot;5&quot;
 export initialManagedServerReplicas=&quot;1&quot;
 export managedServerNameBase=&quot;oim_server&quot;
 export managedServerPort=&quot;14000&quot;
-export image=&quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January'23&gt;&quot;
+export image=&quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April'23&gt;&quot;
 export imagePullPolicy=&quot;IfNotPresent&quot;
 export imagePullSecretName=&quot;orclcred&quot;
 export productionModeEnabled=&quot;true&quot;
@@ -5685,8 +5690,11 @@ export rcuDatabaseURL=&quot;mydatabasehost.example.com:1521/orcl.example.com&quo
 export rcuCredentialsSecret=&quot;oig-rcu-credentials&quot;
 export frontEndHost=&quot;example.com&quot;
 export frontEndPort=&quot;14100&quot;
+export datasourceType=&quot;generic&quot;
 
-
+validateWlsDomainName called with governancedomain
+createFiles - valuesInputFile is create-domain-inputs.yaml
+createDomainScriptName is create-domain-job.sh
 Generating output/weblogic-domains/governancedomain/create-domain-job.yaml
 Generating output/weblogic-domains/governancedomain/delete-domain-job.yaml
 Generating output/weblogic-domains/governancedomain/domain.yaml
@@ -5744,34 +5752,27 @@ $
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
 </code></pre></div></li>
 <li>
-<p>Edit the <code>domain_oim_soa.yaml</code> and locate the section of the file starting with: <code>- clusterName: oim_cluster</code>. Immediately after the line: <code>topologyKey: &quot;kubernetes.io/hostname&quot;</code>, add the following lines:</p>
-<pre><code>env:
-- name: USER_MEM_ARGS
-  value: &quot;-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m&quot;
+<p>Edit the <code>domain.yaml</code> and locate the section of the file starting with: <code>- clusterName: oim_cluster</code> under <code>governancedomain-oim-cluster</code>. Add the following lines:</p>
+<pre><code>serverPod:
+ env:
+ - name: USER_MEM_ARGS
+   value: &quot;-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m&quot;
 </code></pre><p>The file should looks as follows:</p>
-<pre><code>- clusterName: oim_cluster
+<pre><code>...
+apiVersion: weblogic.oracle/v1
+kind: Cluster
+metadata:
+  name: governancedomain-oim-cluster
+  namespace: oigns
+spec:
+  clusterName: oim_cluster
   serverService:
     precreateService: true
-  serverStartState: &quot;RUNNING&quot;
+  replicas: 0
   serverPod:
-    # Instructs Kubernetes scheduler to prefer nodes for new cluster members where there are not
-    # already members of the same cluster.
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: &quot;weblogic.clusterName&quot;
-                    operator: In
-                    values:
-                      - $(CLUSTER_NAME)
-              topologyKey: &quot;kubernetes.io/hostname&quot;
     env:
     - name: USER_MEM_ARGS
       value: &quot;-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m&quot;
-  replicas: 1
 ...
 </code></pre></li>
 </ol>
@@ -5785,35 +5786,61 @@ $ kubectl apply -f domain.yaml
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
 $ kubectl apply -f domain.yaml
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>domain.weblogic.oracle/governancedomain created
+<pre><code>domain.weblogic.oracle/governancedomain unchanged
+cluster.weblogic.oracle/governancedomain-oim-cluster created
+cluster.weblogic.oracle/governancedomain-soa-cluster created
 </code></pre></li>
 <li>
 <p>Run the following command to view the status of the OIG pods:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oigns
 </code></pre></div><p>The output will initially look similar to the following:</p>
 <pre><code>NAME                                                        READY   STATUS      RESTARTS   AGE
-helper                                                      1/1     Running     0          3h30m
 governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          27m
 governancedomain-introspect-domain-job-p4brt                1/1     Running     0          6s
+helper                                                      1/1     Running     0          3h30m
 </code></pre><p>The <code>introspect-domain-job</code> pod will be displayed first. Run the command again after several minutes and check to see that the Administration Server and SOA Server are both started. When started they should have <code>STATUS</code> = <code>Running</code> and <code>READY</code> = <code>1/1</code>.</p>
 <pre><code>NAME                                                        READY   STATUS      RESTARTS   AGE/
-helper                                                      1/1     Running     0          3h38m
 governancedomain-adminserver                                1/1     Running     0          7m30s
 governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          35m
 governancedomain-soa-server1                                1/1     Running     0          4m
+helper                                                      1/1     Running     0          3h38m
 </code></pre><p><strong>Note</strong>: It will take several minutes before all the pods listed above show. When a pod has a <code>STATUS</code> of <code>0/1</code> the pod is started but the OIG server associated with it is currently starting. While the pods are starting you can check the startup status in the pod logs, by running the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs governancedomain-adminserver -n oigns
 $ kubectl logs governancedomain-soa-server1 -n oigns
 </code></pre></div></li>
 <li>
-<p>Once both pods are running, start the OIM Server using the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain/
-$ kubectl apply -f domain_oim_soa.yaml
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain/
-$ kubectl apply -f domain_oim_soa.yaml
-</code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>domain.weblogic.oracle/governancedomain configured
+<p>Check the clusters using the following command:</p>
+<pre><code>$ kubectl get cluster -n oigns
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME                           AGE
+governancedomain-oim-cluster   9m
+governancedomain-soa-cluster   9m
+</code></pre></li>
+<li>
+<p>Start the OIM server using the following command:</p>
+<pre><code>$ kubectl patch cluster -n &lt;namespace&gt; &lt;OIMClusterName&gt; --type=merge -p '{&quot;spec&quot;:{&quot;replicas&quot;:&lt;initialManagedServerReplicas&gt;}}'
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl patch cluster -n oigns governancedomain-oim-cluster --type=merge -p '{&quot;spec&quot;:{&quot;replicas&quot;:1}}'
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>cluster.weblogic.oracle/governancedomain-oim-cluster patched
+</code></pre></li>
+<li>
+<p>Run the following command to view the status of the OIG pods:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oigns
+</code></pre></div><p>The output will initially look similar to the following:</p>
+<pre><code>NAME                                                        READY   STATUS      RESTARTS   AGE
+governancedomain-adminserver                                1/1     Running     0          7m30s
+governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          35m
+governancedomain-oim-server1                                1/1     Running     0          4m25s
+governancedomain-soa-server1                                1/1     Running     0          4m
+helper                                                      1/1     Running     0          3h38m
+   
+**Note**: It will take several minutes before the `governancedomain-oim-server1` pod has a `STATUS` of `1/1`. While the pod is starting you can check the startup status in the pod log, by running the following command:
+   
+```bash
+$ kubectl logs governancedomain-oim-server1 -n oigns
+   
+
 </code></pre></li>
 </ol>
 <h3 id="verify-the-results">Verify the results</h3>
@@ -5826,34 +5853,36 @@ $ kubectl apply -f domain_oim_soa.yaml
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all,domains -n oigns
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME                                                            READY   STATUS      RESTARTS   AGE
-pod/governancedomain-adminserver                                1/1     Running     0          16m
-pod/governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          36m
-pod/governancedomain-oim-server1                                1/1     Running     0          5m57s
-pod/governancedomain-soa-server1                                1/1     Running     0          13m
-pod/helper                                                      1/1     Running     0          3h40m
+pod/governancedomain-adminserver                                1/1     Running     0          19m30s
+pod/governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          47m
+pod/governancedomain-oim-server1                                1/1     Running     0          16m25s
+pod/governancedomain-soa-server1                                1/1     Running     0          16m
+pod/helper                                                      1/1     Running     0          3h50m
 
-NAME                                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
-service/governancedomain-adminserver           ClusterIP   None             &lt;none&gt;        7001/TCP    16m
-service/governancedomain-cluster-oim-cluster   ClusterIP   10.97.121.159    &lt;none&gt;        14000/TCP   13m
-service/governancedomain-cluster-soa-cluster   ClusterIP   10.111.231.242   &lt;none&gt;        8001/TCP    13m
-service/governancedomain-oim-server1           ClusterIP   None             &lt;none&gt;        14000/TCP   5m57s
-service/governancedomain-oim-server2           ClusterIP   10.108.139.30    &lt;none&gt;        14000/TCP   5m57s
-service/governancedomain-oim-server3           ClusterIP   10.97.170.104    &lt;none&gt;        14000/TCP   5m57s
-service/governancedomain-oim-server4           ClusterIP   10.99.82.214     &lt;none&gt;        14000/TCP   5m57s
-service/governancedomain-oim-server5           ClusterIP   10.98.75.228     &lt;none&gt;        14000/TCP   5m57s
-service/governancedomain-soa-server1           ClusterIP   None             &lt;none&gt;        8001/TCP    13m
-service/governancedomain-soa-server2           ClusterIP   10.107.232.220   &lt;none&gt;        8001/TCP    13m
-service/governancedomain-soa-server3           ClusterIP   10.108.203.6     &lt;none&gt;        8001/TCP    13m
-service/governancedomain-soa-server4           ClusterIP   10.96.178.0      &lt;none&gt;        8001/TCP    13m
-service/governancedomain-soa-server5           ClusterIP   10.107.83.62     &lt;none&gt;        8001/TCP    13m
+NAME                                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)               AGE
+service/governancedomain-adminserver           ClusterIP   None             &lt;none&gt;        7001/TCP              28m
+service/governancedomain-cluster-oim-cluster   ClusterIP   10.106.198.40    &lt;none&gt;        14002/TCP,14000/TCP   25m
+service/governancedomain-cluster-soa-cluster   ClusterIP   10.102.218.11    &lt;none&gt;        8001/TCP              25m
+service/governancedomain-oim-server1           ClusterIP   None             &lt;none&gt;        14002/TCP,14000/TCP   16m24s
+service/governancedomain-oim-server2           ClusterIP   10.97.32.112     &lt;none&gt;        14002/TCP,14000/TCP   25m
+service/governancedomain-oim-server3           ClusterIP   10.100.233.109   &lt;none&gt;        14002/TCP,14000/TCP   25m
+service/governancedomain-oim-server4           ClusterIP   10.96.154.17     &lt;none&gt;        14002/TCP,14000/TCP   25m
+service/governancedomain-oim-server5           ClusterIP   10.103.222.213   &lt;none&gt;        14002/TCP,14000/TCP   25m
+service/governancedomain-soa-server1           ClusterIP   None             &lt;none&gt;        8001/TCP              25m
+service/governancedomain-soa-server2           ClusterIP   10.104.43.118    &lt;none&gt;        8001/TCP              25m
+service/governancedomain-soa-server3           ClusterIP   10.110.180.120   &lt;none&gt;        8001/TCP              25m
+service/governancedomain-soa-server4           ClusterIP   10.99.161.73     &lt;none&gt;        8001/TCP              25m
+service/governancedomain-soa-server5           ClusterIP   10.97.67.196     &lt;none&gt;        8001/TCP              25m
 
 NAME                                                            COMPLETIONS   DURATION   AGE
-job.batch/governancedomain-create-fmw-infra-sample-domain-job   1/1           5m30s      36m
+job.batch/governancedomain-create-fmw-infra-sample-domain-job   1/1           3m6s       125m
 
-NAME                                AGE
-domain.weblogic.oracle/governancedomain   17m
-</code></pre><p><strong>Note</strong>: It will take several minutes before all the services listed above show. While the <code>governancedomain-oim-server1</code> pod has a <code>STATUS</code> of <code>0/1</code> the pod is started but the OIG server associated with it is currently starting. While the pod is starting you can check the startup status in the pod logs, by running the following command:</p>
-<pre><code>$ kubectl logs governancedomain-oim-server1 -n oigns
+NAME                                      AGE
+domain.weblogic.oracle/governancedomain   24m
+
+NAME                                                   AGE
+cluster.weblogic.oracle/governancedomain-oim-cluster   23m
+cluster.weblogic.oracle/governancedomain-soa-cluster   23m
 </code></pre></li>
 </ol>
 <p>The default domain created by the script has the following characteristics:</p>
@@ -5877,13 +5906,13 @@ domain.weblogic.oracle/governancedomain   17m
 Namespace:    oigns
 Labels:       weblogic.domainUID=governancedomain
 Annotations:  &lt;none&gt;
-API Version:  weblogic.oracle/v8
+API Version:  weblogic.oracle/v9
 Kind:         Domain
 Metadata:
   Creation Timestamp:  &lt;DATE&gt;
-  Generation:          2
+  Generation:          1
   Managed Fields:
-    API Version:  weblogic.oracle/v8
+    API Version:  weblogic.oracle/v9
     Fields Type:  FieldsV1
     fieldsV1:
       f:metadata:
@@ -5893,82 +5922,90 @@ Metadata:
         f:labels:
           .:
           f:weblogic.domainUID:
+      f:spec:
+        .:
+        f:adminServer:
+          .:
+          f:adminChannelPortForwardingEnabled:
+          f:serverPod:
+            .:
+            f:env:
+          f:serverStartPolicy:
+        f:clusters:
+        f:dataHome:
+        f:domainHome:
+        f:domainHomeSourceType:
+        f:failureRetryIntervalSeconds:
+        f:failureRetryLimitMinutes:
+        f:httpAccessLogInLogHome:
+        f:image:
+        f:imagePullPolicy:
+        f:imagePullSecrets:
+        f:includeServerOutInPodLog:
+        f:logHome:
+        f:logHomeEnabled:
+        f:logHomeLayout:
+        f:maxClusterConcurrentShutdown:
+        f:maxClusterConcurrentStartup:
+        f:maxClusterUnavailable:
+        f:replicas:
+        f:serverPod:
+          .:
+          f:env:
+          f:volumeMounts:
+          f:volumes:
+        f:serverStartPolicy:
+        f:webLogicCredentialsSecret:
+          .:
+          f:name:
     Manager:      kubectl-client-side-apply
     Operation:    Update
     Time:         &lt;DATE&gt;
-    API Version:  weblogic.oracle/v8
+    API Version:  weblogic.oracle/v9
     Fields Type:  FieldsV1
     fieldsV1:
       f:status:
         .:
         f:clusters:
         f:conditions:
-        f:introspectJobFailureCount:
+        f:observedGeneration:
         f:servers:
         f:startTime:
     Manager:         Kubernetes Java Client
     Operation:       Update
+    Subresource:     status
     Time:            &lt;DATE&gt;
-  Resource Version:  383381
-  UID:               ea95c549-c414-42a6-8de4-beaf1204872e
+  Resource Version:  1247307
+  UID:               4933be73-df97-493f-a20c-bf1e24f6b3f2
 Spec:
   Admin Server:
+    Admin Channel Port Forwarding Enabled:  true
     Server Pod:
       Env:
-        Name:            USER_MEM_ARGS
-        Value:           -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m
-    Server Start State:  RUNNING
+        Name:             USER_MEM_ARGS
+        Value:            -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m
+   Server Start Policy:  IfNeeded
   Clusters:
-    Cluster Name:  soa_cluster
-    Replicas:      1
-    Server Pod:
-      Affinity:
-        Pod Anti Affinity:
-          Preferred During Scheduling Ignored During Execution:
-            Pod Affinity Term:
-              Label Selector:
-                Match Expressions:
-                  Key:       weblogic.clusterName
-                  Operator:  In
-                  Values:
-                    $(CLUSTER_NAME)
-              Topology Key:  kubernetes.io/hostname
-            Weight:          100
-    Server Service:
-      Precreate Service:  true
-    Server Start State:   RUNNING
-    Cluster Name:         oim_cluster
-    Replicas:             1
-    Server Pod:
-      Affinity:
-        Pod Anti Affinity:
-          Preferred During Scheduling Ignored During Execution:
-            Pod Affinity Term:
-              Label Selector:
-                Match Expressions:
-                  Key:       weblogic.clusterName
-                  Operator:  In
-                  Values:
-                    $(CLUSTER_NAME)
-              Topology Key:  kubernetes.io/hostname
-            Weight:          100
-      Env:
-        Name:   USER_MEM_ARGS
-        Value:  -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
-    Server Service:
-      Precreate Service:          true
-    Server Start State:           RUNNING
+    Name:                          governancedomain-oim-cluster
+    Name:                          governancedomain-soa-cluster
   Data Home:
-  Domain Home:                    /u01/oracle/user_projects/domains/governancedomain
-  Domain Home Source Type:        PersistentVolume
-  Http Access Log In Log Home:    true
-  Image:                          container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January'23&gt;
-  Image Pull Policy:              IfNotPresent
+  Domain Home:                     /u01/oracle/user_projects/domains/governancedomain
+  Domain Home Source Type:         PersistentVolume
+  Failure Retry Interval Seconds:  120
+  Failure Retry Limit Minutes:     1440
+  Http Access Log In Log Home:     true
+  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April'23&gt;
+  Image Pull Policy:               IfNotPresent
   Image Pull Secrets:
-    Name:                         orclcred
-  Include Server Out In Pod Log:  true
-  Log Home:                       /u01/oracle/user_projects/domains/logs/governancedomain
-  Log Home Enabled:               true
+    Name:                           orclcred
+  Include Server Out In Pod Log:    true
+  Log Home:                         /u01/oracle/user_projects/domains/logs/governancedomain
+  Log Home Enabled:                 true
+  Log Home Layout:                  ByServers
+  Max Cluster Concurrent Shutdown:  1
+  Max Cluster Concurrent Startup:   0
+  Max Cluster Unavailable:          1
+  Replicas:                         1
   Server Pod:
     Env:
       Name:   JAVA_OPTIONS
@@ -5982,94 +6019,132 @@ Spec:
       Name:  weblogic-domain-storage-volume
       Persistent Volume Claim:
         Claim Name:     governancedomain-domain-pvc
-  Server Start Policy:  IF_NEEDED
+  Server Start Policy:  IfNeeded
   Web Logic Credentials Secret:
     Name:  oig-domain-credentials
 Status:
   Clusters:
-    Cluster Name:      oim_cluster
-    Maximum Replicas:  5
-    Minimum Replicas:  0
-    Ready Replicas:    1
-    Replicas:          1
-    Replicas Goal:     1
-    Cluster Name:      soa_cluster
-    Maximum Replicas:  5
-    Minimum Replicas:  0
-    Ready Replicas:    1
-    Replicas:          1
-    Replicas Goal:     1
+    Cluster Name:  oim_cluster
+    Conditions:
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Available
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Completed
+    Label Selector:          weblogic.domainUID=governancedomain,weblogic.clusterName=oim_cluster
+    Maximum Replicas:        5
+    Minimum Replicas:        0
+    Observed Generation:     2
+    Ready Replicas:          1
+    Replicas:                1
+    Replicas Goal:           1
+    Cluster Name:            soa_cluster
+    Conditions:
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Available
+      Last Transition Time:  &lt;DATE&gt;
+      Status:                True
+      Type:                  Completed
+    Label Selector:          weblogic.domainUID=governancedomain,weblogic.clusterName=soa_cluster
+    Maximum Replicas:        5
+    Minimum Replicas:        0
+    Observed Generation:     1
+    Ready Replicas:          1
+    Replicas:                1
+    Replicas Goal:           1
   Conditions:
-    Last Transition Time:        &lt;DATE&gt;
-    Reason:                      ServersReady
-    Status:                      True
-    Type:                        Available
-  Introspect Job Failure Count:  0
+    Last Transition Time:  &lt;DATE&gt;
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  &lt;DATE&gt;
+    Status:                True
+    Type:                  Completed
+  Observed Generation:     1
   Servers:
-    Desired State:  RUNNING
+   Health:
+      Activation Time:  &lt;DATE&gt;
+      Overall Health:   ok
+      Subsystems:
+        Subsystem Name:  ServerRuntime
+        Symptoms:
+    Node Name:     worker-node2
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   AdminServer
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  oim_cluster
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      10.250.40.59
-    Server Name:    AdminServer
-    State:          RUNNING
-    Cluster Name:   oim_cluster
-    Desired State:  RUNNING
+    Node Name:     worker-node1
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   oim_server1
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  oim_cluster
+    Server Name:   oim_server2
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  oim_cluster
+    Server Name:   oim_server3
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  oim_cluster
+    Server Name:   oim_server4
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  oim_cluster
+    Server Name:   oim_server5
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  soa_cluster
     Health:
       Activation Time:  &lt;DATE&gt;
       Overall Health:   ok
       Subsystems:
         Subsystem Name:  ServerRuntime
         Symptoms:
-    Node Name:      10.250.40.59
-    Server Name:    oim_server1
-    State:          RUNNING
-    Cluster Name:   oim_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oim_server2
-    Cluster Name:   oim_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oim_server3
-    Cluster Name:   oim_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oim_server4
-    Cluster Name:   oim_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    oim_server5
-    Cluster Name:   soa_cluster
-    Desired State:  RUNNING
-    Health:
-      Activation Time:  &lt;DATE&gt;
-      Overall Health:   ok
-      Subsystems:
-        Subsystem Name:  ServerRuntime
-        Symptoms:
-    Node Name:      10.250.40.59
-    Server Name:    soa_server1
-    State:          RUNNING
-    Cluster Name:   soa_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    soa_server2
-    Cluster Name:   soa_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    soa_server3
-    Cluster Name:   soa_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    soa_server4
-    Cluster Name:   soa_cluster
-    Desired State:  SHUTDOWN
-    Server Name:    soa_server5
-  Start Time:       &lt;DATE&gt;
+    Node Name:     worker-node1
+    Pod Phase:     Running
+    Pod Ready:     True
+    Server Name:   soa_server1
+    State:         RUNNING
+    State Goal:    RUNNING
+    Cluster Name:  soa_cluster
+    Server Name:   soa_server2
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  soa_cluster
+    Server Name:   soa_server3
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  soa_cluster
+    Server Name:   soa_server4
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+    Cluster Name:  soa_cluster
+    Server Name:   soa_server5
+    State:         SHUTDOWN
+    State Goal:    SHUTDOWN
+  Start Time:      &lt;DATE&gt;
 Events:
-  Type    Reason                     Age                From               Message
-  ----    ------                     ----               ----               -------
-  Normal  DomainCreated              19m                weblogic.operator  Domain resource governancedomain was created
-  Normal  DomainProcessingCompleted  12m                weblogic.operator  Successfully completed processing domain resource governancedomain
-  Normal  DomainChanged              10m                weblogic.operator  Domain resource governancedomain was changed
-  Normal  DomainProcessingStarting   10m (x2 over 19m)  weblogic.operator  Creating or updating Kubernetes presence for WebLogic Domain with UID governancedomai
+  Type     Reason   Age                   From               Message
+  ----     ------   ----                  ----               -------
+  Normal   Created  35m                   weblogic.operator  Domain governancedomain was created.
+  Normal   Changed  34m (x1127 over 35m)  weblogic.operator  Domain governancedomain was changed.
+  Warning  Failed   34m (x227 over 35m)   weblogic.operator  Domain governancedomain failed due to 'Domain validation error': Cluster resource 'governancedomain-oim-cluster' not found in namespace 'oigns'
+   Cluster resource 'governancedomain-soa-cluster' not found in namespace 'oigns'. Update the domain resource to correct the validation error.
+  Warning  Unavailable  17m                weblogic.operator  Domain governancedomain is unavailable: an insufficient number of its servers that are expected to be running are ready.&quot;;
+  Warning  Incomplete   17m                weblogic.operator  Domain governancedomain is incomplete for one or more of the following reasons: there are failures detected, there are pending server shutdowns, or not all servers expected to be running are ready and at their target image, auxiliary images, restart version, and introspect version.
+  Normal   Completed    13m (x2 over 26m)  weblogic.operator  Domain governancedomain is complete because all of the following are true: there is no failure detected, there are no pending server shutdowns, and all servers expected to be running are ready and at their target image, auxiliary images, restart version, and introspect version.
+  Normal   Available    13m (x2 over 26m)  weblogic.operator  Domain governancedomain is available: a sufficient number of its servers have reached the ready state.
 </code></pre><p>In the <code>Status</code> section of the output, the available servers and clusters are listed.</p>
 </li>
 </ol>
@@ -6081,12 +6156,12 @@ Events:
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oigns -o wide
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME                                                        READY   STATUS      RESTARTS   AGE   IP              NODE           NOMINATED NODE   READINESS GATES
-helper                                                      1/1     Running     0          3h50m   10.244.1.39   worker-node2   &lt;none&gt;           &lt;none&gt;
-governancedomain-adminserver                                1/1     Running     0          27m     10.244.1.42   worker-node2   &lt;none&gt;           &lt;none&gt;
-governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          47m     10.244.1.40   worker-node2   &lt;none&gt;           &lt;none&gt;
-governancedomain-oim-server1                                1/1     Running     0          16m     10.244.1.44   worker-node2   &lt;none&gt;           &lt;none&gt;
-governancedomain-soa-server1                                1/1     Running     0          24m     10.244.1.43   worker-node2   &lt;none&gt;           &lt;none&gt;
+<pre><code>NAME                                                        READY   STATUS      RESTARTS   AGE     IP              NODE           NOMINATED NODE   READINESS GATES
+governancedomain-adminserver                                1/1     Running     0          24m     10.244.1.42   worker-node2   &lt;none&gt;           &lt;none&gt;
+governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          52m     10.244.1.40   worker-node2   &lt;none&gt;           &lt;none&gt;
+governancedomain-oim-server1                                1/1     Running     0          52m     10.244.1.44   worker-node2   &lt;none&gt;           &lt;none&gt;
+governancedomain-soa-server1                                1/1     Running     0          21m     10.244.1.43   worker-node2   &lt;none&gt;           &lt;none&gt;
+helper                                                      1/1     Running     0          3h55m   10.244.1.39   worker-node2   &lt;none&gt;           &lt;none&gt;
 </code></pre><p>You are now ready to configure an Ingress to direct traffic for your OIG domain as per <a href="../configure-ingress">Configure an ingress for an OIG domain</a>.</p>
 </li>
 </ol>
@@ -9676,19 +9751,19 @@ governancedomain-soa-server1                                1/1     Running     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820305"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820305"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784009" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784009"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820305" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820305"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

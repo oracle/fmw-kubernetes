@@ -12,18 +12,18 @@
     <title>b. Patch an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5368,15 +5368,16 @@
 
 <h3 id="introduction">Introduction</h3>
 <p>The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image.</p>
+<p><strong>Note</strong>: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.0.4.</p>
 <p>The script executes the following steps sequentially:</p>
 <ul>
 <li>Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod.</li>
 <li>Brings up a new helper pod with the new image.</li>
-<li>Stops the Administration Server, SOA and OIM managed servers using <code>serverStartPolicy</code> set as <code>NEVER</code> in the domain definition yaml.</li>
+<li>Stops the Administration Server, SOA and OIM managed servers using <code>serverStartPolicy</code> set as <code>Never</code> in the domain definition yaml.</li>
 <li>Waits for all servers to be stopped (default timeout 2000s)</li>
 <li>Introspects database properties including credentials from the job configmap.</li>
 <li>Performs database schema changes from the helper pod</li>
-<li>Starts the Administration Server, SOA and OIM managed servers by setting <code>serverStartPolicy</code> to IF_NEEDED and <code>image</code> to new image tag.</li>
+<li>Starts the Administration Server, SOA and OIM managed servers by setting <code>serverStartPolicy</code> to <code>IfNeeded</code> and <code>image</code> to new image tag.</li>
 <li>Waits for all the servers to be ready (default timeout 2000s)</li>
 </ul>
 <p>The script exits with a failure if a configurable timeout is reached before the target pod count is reached, depending upon the domain configuration. It also exits if there is any failure while patching the database schema and domain.</p>
@@ -5428,7 +5429,7 @@ $ ./patch_oig_domain.sh -i &lt;target_image_tag&gt; -n &lt;oig_namespace&gt;
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/domain-lifecycle
 $ ./patch_oig_domain.sh -h
-$ ./patch_oig_domain.sh -i 12.2.1.4.0-8-ol7-&lt;January<span style="color:#e6db74">`</span>23&gt; -n oigns
+$ ./patch_oig_domain.sh -i 12.2.1.4-jdk8-ol7-&lt;April<span style="color:#e6db74">`</span>23&gt; -n oigns
 </code></pre></div><p>The output will look similar to the following</p>
 <pre><code>[INFO] Found domain name: governancedomain
 [INFO] Image Registry: container-registry.oracle.com/middleware/oig_cpu
@@ -5438,16 +5439,16 @@ current no of pods under governancedomain are 3
 [INFO] Deleting pod helper
 pod &quot;helper&quot; deleted
 [INFO] Fetched Image Pull Secret: orclcred
-[INFO] Creating new helper pod with image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January`23&gt;
+[INFO] Creating new helper pod with image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April`23&gt;
 pod/helper created
 Checking helper  Running
 [INFO] Stopping Admin, SOA and OIM servers in domain governancedomain. This may take some time, monitor log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-&lt;DATE&gt;/stop_servers.log for details
 [INFO] All servers are now stopped successfully. Proceeding with DB Schema changes
 [INFO] Patching OIM schemas...
 [INFO] DB schema update successful. Check log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-&lt;DATE&gt;/patch_oim_wls.log for details
-[INFO] Starting Admin, SOA and OIM servers with new image container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January`23&gt;
+[INFO] Starting Admin, SOA and OIM servers with new image container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April`23&gt;
 [INFO] Waiting for 3 weblogic pods to be ready..This may take several minutes, do not close the window. Check log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-&lt;DATE&gt;/monitor_weblogic_pods.log for progress
-[SUCCESS] All servers under governancedomain are now in ready state with new image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January`23&gt;
+[SUCCESS] All servers under governancedomain are now in ready state with new image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April`23&gt;
 </code></pre><p>The logs are available at <code>$WORKDIR/kubernetes/domain-lifecycle</code> by default. A custom log location can also be provided to the script.</p>
 <p><strong>Note</strong>: If the patch domain script creation fails, refer to the <a href="../../troubleshooting/#patch-domain-failures">Troubleshooting</a> section.</p>
 </li>
@@ -9040,19 +9041,19 @@ Checking helper  Running
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784007" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784007"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

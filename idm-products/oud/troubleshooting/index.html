@@ -12,18 +12,18 @@
     <title>Troubleshooting :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820305" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820305"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784009"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820305"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820305"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820305"></script>
 
     
   </div>
@@ -5373,57 +5373,44 @@
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace oudns get pod,service,secret,pv,pvc,ingress -o wide
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME                                      READY   STATUS    RESTARTS   AGE    IP             NODE                 NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0                           1/1     Running   1          2d2h   10.244.2.129   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1                           1/1     Running   1          2d2h   10.244.2.128   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2                           1/1     Running   1          2d2h   10.244.1.53    &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+<pre><code>NAME                                  READY   STATUS      RESTARTS   AGE     IP             NODE            NOMINATED NODE   READINESS GATES
+pod/oud-ds-rs-0                       1/1     Running     0          14m     10.244.1.180   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-1                       1/1     Running     0          8m26s   10.244.1.181   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-2                       0/1     Running     0          2m24s   10.244.1.182   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-pod-cron-job-27586680-p5d8q   0/1     Completed   0          50s     10.244.1.183   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
 
-NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE    SELECTOR
-service/oud-ds-rs-0                  ClusterIP   10.111.120.232   &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-1                  ClusterIP   10.98.199.92     &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-2                  ClusterIP   10.103.22.27     &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-http-0             ClusterIP   10.100.75.60     &lt;none&gt;        1080/TCP,1081/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-http-1             ClusterIP   10.96.125.29     &lt;none&gt;        1080/TCP,1081/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-http-2             ClusterIP   10.98.147.195    &lt;none&gt;        1080/TCP,1081/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-lbr-admin          ClusterIP   10.105.146.21    &lt;none&gt;        1888/TCP,1444/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-http           ClusterIP   10.101.185.178   &lt;none&gt;        1080/TCP,1081/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-ldap           ClusterIP   10.111.134.94    &lt;none&gt;        1389/TCP,1636/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-ldap-0             ClusterIP   10.102.210.144   &lt;none&gt;        1389/TCP,1636/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-ldap-1             ClusterIP   10.98.75.22      &lt;none&gt;        1389/TCP,1636/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-ldap-2             ClusterIP   10.110.130.119   &lt;none&gt;        1389/TCP,1636/TCP            2d2h   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
+NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                          AGE   SELECTOR
+service/oud-ds-rs             ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1389/TCP,1636/TCP,1080/TCP,1081/TCP,1898/TCP   14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-0           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-1           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-2           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-http-0      ClusterIP   10.104.112.93    &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-http-1      ClusterIP   10.103.105.70    &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-http-2      ClusterIP   10.110.160.107   &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-lbr-admin   ClusterIP   10.99.238.222    &lt;none&gt;        1888/TCP,1444/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-http    ClusterIP   10.101.250.196   &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-ldap    ClusterIP   10.104.149.90    &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-ldap-0      ClusterIP   10.109.255.221   &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-ldap-1      ClusterIP   10.111.135.142   &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-ldap-2      ClusterIP   10.100.8.145     &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
 
-NAME                                     TYPE                                  DATA   AGE
-secret/default-token-n2pmp               kubernetes.io/service-account-token   3      3d1h
-secret/orclcred                          kubernetes.io/dockerconfigjson        1      3d
-secret/oud-ds-rs-creds                   opaque                                8      2d2h
-secret/oud-ds-rs-job-token-p4pz7         kubernetes.io/service-account-token   3      2d2h
-secret/oud-ds-rs-tls-cert                kubernetes.io/tls                     2      2d2h
-secret/oud-ds-rs-token-qzqt2             kubernetes.io/service-account-token   3      2d2h
-secret/sh.helm.release.v1.oud-ds-rs.v1   helm.sh/release.v1                    1      2d2h
-secret/sh.helm.release.v1.oud-ds-rs.v2   helm.sh/release.v1                    1      2d1h
-secret/sh.helm.release.v1.oud-ds-rs.v3   helm.sh/release.v1                    1      2d1h
-secret/sh.helm.release.v1.oud-ds-rs.v4   helm.sh/release.v1                    1      28h
-secret/sh.helm.release.v1.oud-ds-rs.v5   helm.sh/release.v1                    1      25h
-secret/sh.helm.release.v1.oud-ds-rs.v6   helm.sh/release.v1                    1      23h
-secret/sh.helm.release.v1.oud-ds-rs.v7   helm.sh/release.v1                    1      23h
+NAME                                     TYPE                             DATA   AGE
+secret/dockercred                        kubernetes.io/dockerconfigjson   1      4h24m
+secret/orclcred                          kubernetes.io/dockerconfigjson   1      14m
+secret/oud-ds-rs-creds                   opaque                           8      14m
+secret/oud-ds-rs-tls-cert                kubernetes.io/tls                2      14m
+secret/sh.helm.release.v1.oud-ds-rs.v1   helm.sh/release.v1               1      14m
 
-NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS        REASON   AGE    VOLUMEMODE
-persistentvolume/fmwk8s-jenkins-pv   1Gi        RWO,RWX        Delete           Bound    fmwk8s/fmwk8s-jenkins-pvc           fmwk8s-jenkins-pv            35d    Filesystem
-persistentvolume/fmwk8s-pv           1Gi        RWO,RWX        Delete           Bound    fmwk8s/fmwk8s-pvc                   fmwk8s-pv                    35d    Filesystem
-persistentvolume/fmwk8s-root-pv      1Gi        RWO,RWX        Delete           Bound    fmwk8s/fmwk8s-root-pvc              fmwk8s-root-pv               35d    Filesystem
-persistentvolume/oud-ds-rs-espv1     20Gi       RWX            Retain           Bound    oudns/data-oud-ds-rs-es-cluster-0   elk-oud                      23h    Filesystem
-persistentvolume/oud-ds-rs-job-pv    2Gi        RWX            Delete           Bound    oudns/oud-ds-rs-job-pvc             manual                       2d2h   Filesystem
-persistentvolume/oud-ds-rs-pv        20Gi       RWX            Delete           Bound    oudns/oud-ds-rs-pvc                 manual                       2d2h   Filesystem
 
-NAME                                                STATUS   VOLUME             CAPACITY   ACCESS MODES   STORAGECLASS   AGE    VOLUMEMODE
-persistentvolumeclaim/data-oud-ds-rs-es-cluster-0   Bound    oud-ds-rs-espv1    20Gi       RWX            elk-oud        23h    Filesystem
-persistentvolumeclaim/oud-ds-rs-job-pvc             Bound    oud-ds-rs-job-pv   2Gi        RWX            manual         2d2h   Filesystem
-persistentvolumeclaim/oud-ds-rs-pvc                 Bound    oud-ds-rs-pv       20Gi       RWX            manual         2d2h   Filesystem
+NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                       STORAGECLASS        REASON   AGE    VOLUMEMODE
+persistentvolume/oud-ds-rs-pv        20Gi       RWX            Delete           Bound    oudns/oud-ds-rs-pvc         manual                       14m    Filesystem
+
+NAME                                  STATUS   VOLUME         CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/oud-ds-rs-pvc   Bound    oud-ds-rs-pv   20Gi       RWX            manual         14m   Filesystem
 
 NAME                                                      CLASS    HOSTS                                                               ADDRESS   PORTS     AGE
-ingress.networking.k8s.io/oud-ds-rs-admin-ingress-nginx   &lt;none&gt;   oud-ds-rs-admin-0,oud-ds-rs-admin-1,oud-ds-rs-admin-2 + 3 more...             80, 443   2d2h
-ingress.networking.k8s.io/oud-ds-rs-http-ingress-nginx    &lt;none&gt;   oud-ds-rs-http-0,oud-ds-rs-http-1,oud-ds-rs-http-2 + 4 more...                80, 443   2d2h
-
+ingress.networking.k8s.io/oud-ds-rs-admin-ingress-nginx   &lt;none&gt;   oud-ds-rs-admin-0,oud-ds-rs-admin-0,oud-ds-rs-admin-1 + 3 more...             80, 443   14m
+ingress.networking.k8s.io/oud-ds-rs-http-ingress-nginx    &lt;none&gt;   oud-ds-rs-http-0,oud-ds-rs-http-1,oud-ds-rs-http-2 + 3 more...                80, 443   14m
 </code></pre><p>Include/exclude elements (nodes,pod,service,secret,pv,pvc,ingress) as required.</p>
 <h3 id="view-pod-logs">View pod logs</h3>
 <p>To view logs for a pod use the following command:</p>
@@ -5439,57 +5426,101 @@ ingress.networking.k8s.io/oud-ds-rs-http-ingress-nginx    &lt;none&gt;   oud-ds-
 <pre><code>Name:         oud-ds-rs-0
 Namespace:    oudns
 Priority:     0
-Node:         &lt;Worker Node&gt;/100.102.48.84
+Node:         &lt;Worker Node&gt;/100.105.18.114
 Start Time:   &lt;DATE&gt;
 Labels:       app.kubernetes.io/instance=oud-ds-rs
-              app.kubernetes.io/managed-by=Helm
               app.kubernetes.io/name=oud-ds-rs
-              app.kubernetes.io/version=12.2.1.4.0
-              helm.sh/chart=oud-ds-rs-0.1
-              oud/instance=oud-ds-rs-0
-Annotations:  meta.helm.sh/release-name: oud-ds-rs
-              meta.helm.sh/release-namespace: oudns
+              controller-revision-hash=oud-ds-rs-5c8b8f67c9
+              statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+Annotations:  &lt;none&gt;
 Status:       Running
-IP:           10.244.2.129
+IP:           10.244.2.48
 IPs:
-  IP:  10.244.2.129
+  IP:           10.244.2.48
+Controlled By:  StatefulSet/oud-ds-rs
+Init Containers:
+  mount-pv:
+    Container ID:  cri-o://905af11c6f032f2dfa18b1e3956d7936cb7dd04d9d0df0cfcf8ed061e6930b52
+    Image:         &lt;location&gt;/busybox
+    Image ID:      &lt;location&gt;@sha256:2c8ed5408179ff4f53242a4bdd2706110ce000be239fe37a61be9c52f704c437
+    Port:          &lt;none&gt;
+    Host Port:     &lt;none&gt;
+    Command:
+      /bin/sh
+      -c
+    Args:
+      ordinal=${OUD_INSTANCE_NAME##*-}; if [[ ${CLEANUP_BEFORE_START} == &quot;true&quot; ]]; then if [[ &quot;$ordinal&quot; != &quot;0&quot; ]]; then cd /u01/oracle; rm -fr /u01/oracle/user_projects/$(OUD_INSTANCE_NAME)/OUD; fi; fi
+      if [[ ${CONFIGVOLUME_ENABLED} == &quot;true&quot; ]]; then if [[ &quot;$ordinal&quot; == &quot;0&quot; ]]; then cp &quot;/mnt/baseOUD.props&quot; &quot;${CONFIGVOLUME_MOUNTPATH}/config-baseOUD.props&quot;; else cp &quot;/mnt/replOUD.props&quot; &quot;${CONFIGVOLUME_MOUNTPATH}/config-replOUD.props&quot;; fi; fi;
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      &lt;DATE&gt;
+      Finished:     &lt;DATE&gt;
+    Ready:          True
+    Restart Count:  0
+    Environment:
+      OUD_INSTANCE_NAME:       oud-ds-rs-0 (v1:metadata.name)
+      CONFIGVOLUME_ENABLED:    false
+      CONFIGVOLUME_MOUNTPATH:  /u01/oracle/config-input
+      CLEANUP_BEFORE_START:    false
+    Mounts:
+      /u01/oracle/user_projects from oud-ds-rs-pv (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-65skp (ro)
 Containers:
   oud-ds-rs:
-    Container ID:   cri-o://2795176b6af2c17a9426df54214c7e53318db9676bbcf3676d67843174845d68
-    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-&lt;January'23&gt;
-    Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:6ba20e54d17bb41312618011481e9b35a40f36f419834d751277f2ce2f172dca
+    Container ID:   cri-o://d691b090dfbb1ee1b8606952497d80642424a82a2290071b325ea720098817c3
+    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-&lt;April'23&gt;
+    Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:faca16dbbcda1985ff567eefe3f2ca7bae6cbbb7ebcd296fffb040ce61e9396a
     Ports:          1444/TCP, 1888/TCP, 1389/TCP, 1636/TCP, 1080/TCP, 1081/TCP, 1898/TCP
     Host Ports:     0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP
     State:          Running
       Started:      &lt;DATE&gt;
-    Last State:     Terminated
-      Reason:       Error
-      Exit Code:    137
-      Started:      &lt;DATE&gt;
-      Finished:     &lt;DATE&gt;
     Ready:          True
-    Restart Count:  1
-    Liveness:       tcp-socket :ldap delay=900s timeout=15s period=30s #success=1 #failure=1
-    Readiness:      exec [/u01/oracle/container-scripts/checkOUDInstance.sh] delay=180s timeout=30s period=60s #success=1 #failure=10
+    Restart Count:  0
+    Limits:
+      cpu:     1
+      memory:  4Gi
+    Requests:
+      cpu:      500m
+      memory:   4Gi
+    Liveness:   tcp-socket :ldap delay=300s timeout=30s period=60s #success=1 #failure=5
+    Readiness:  exec [/u01/oracle/container-scripts/checkOUDInstance.sh] delay=300s timeout=30s period=60s #success=1 #failure=10
     Environment:
-      instanceType:            Directory
-      sleepBeforeConfig:       3
-      OUD_INSTANCE_NAME:       oud-ds-rs-0
-      hostname:                oud-ds-rs-0
-      baseDN:                  dc=example,dc=com
-      rootUserDN:              &lt;set to the key 'rootUserDN' in secret 'oud-ds-rs-creds'&gt;        Optional: false
-      rootUserPassword:        &lt;set to the key 'rootUserPassword' in secret 'oud-ds-rs-creds'&gt;  Optional: false
-      adminConnectorPort:      1444
-      httpAdminConnectorPort:  1888
-      ldapPort:                1389
-      ldapsPort:               1636
-      httpPort:                1080
-      httpsPort:               1081
-      replicationPort:         1898
-      sampleData:              0
+      instanceType:                   DS2RS_STS
+      OUD_INSTANCE_NAME:              oud-ds-rs-0 (v1:metadata.name)
+      MY_NODE_NAME:                    (v1:spec.nodeName)
+      MY_POD_NAME:                    oud-ds-rs-0 (v1:metadata.name)
+      sleepBeforeConfig:              3
+      sourceHost:                     oud-ds-rs-0
+      baseDN:                         dc=example,dc=com
+      rootUserDN:                     &lt;set to the key 'rootUserDN' in secret 'oud-ds-rs-creds'&gt;        Optional: false
+      rootUserPassword:               &lt;set to the key 'rootUserPassword' in secret 'oud-ds-rs-creds'&gt;  Optional: false
+      adminUID:                       &lt;set to the key 'adminUID' in secret 'oud-ds-rs-creds'&gt;          Optional: false
+      adminPassword:                  &lt;set to the key 'adminPassword' in secret 'oud-ds-rs-creds'&gt;     Optional: false
+      bindDN1:                        &lt;set to the key 'bindDN1' in secret 'oud-ds-rs-creds'&gt;           Optional: false
+      bindPassword1:                  &lt;set to the key 'bindPassword1' in secret 'oud-ds-rs-creds'&gt;     Optional: false
+      bindDN2:                        &lt;set to the key 'bindDN2' in secret 'oud-ds-rs-creds'&gt;           Optional: false
+      bindPassword2:                  &lt;set to the key 'bindPassword2' in secret 'oud-ds-rs-creds'&gt;     Optional: false
+      sourceServerPorts:              oud-ds-rs-0:1444
+      sourceAdminConnectorPort:       1444
+      sourceReplicationPort:          1898
+      sampleData:                     200
+      adminConnectorPort:             1444
+      httpAdminConnectorPort:         1888
+      ldapPort:                       1389
+      ldapsPort:                      1636
+      httpPort:                       1080
+      httpsPort:                      1081
+      replicationPort:                1898
+      dsreplication_1:                verify --hostname ${sourceHost} --port ${sourceAdminConnectorPort} --baseDN ${baseDN} --serverToRemove $(OUD_INSTANCE_NAME):${adminConnectorPort} --connectTimeout 600000 --readTimeout 600000
+      dsreplication_2:                enable --host1 ${sourceHost} --port1 ${sourceAdminConnectorPort} --replicationPort1 ${sourceReplicationPort} --host2 $(OUD_INSTANCE_NAME) --port2 ${adminConnectorPort} --replicationPort2 ${replicationPort} --baseDN ${baseDN} --connectTimeout 600000 --readTimeout 600000
+      dsreplication_3:                initialize --hostSource ${initializeFromHost} --portSource ${sourceAdminConnectorPort} --hostDestination $(OUD_INSTANCE_NAME) --portDestination ${adminConnectorPort} --baseDN ${baseDN} --connectTimeout 600000 --readTimeout 600000
+      dsreplication_4:                verify --hostname $(OUD_INSTANCE_NAME) --port ${adminConnectorPort} --baseDN ${baseDN} --connectTimeout 600000 --readTimeout 600000
+      post_dsreplication_dsconfig_1:  set-replication-domain-prop --domain-name ${baseDN} --set group-id:1
+      post_dsreplication_dsconfig_2:  set-replication-server-prop --set group-id:1
     Mounts:
       /u01/oracle/user_projects from oud-ds-rs-pv (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vr6v8 (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-65skp (ro)
 Conditions:
   Type              Status
   Initialized       True
@@ -5501,17 +5532,18 @@ Volumes:
     Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
     ClaimName:  oud-ds-rs-pvc
     ReadOnly:   false
-  kube-api-access-vr6v8:
+  kube-api-access-65skp:
     Type:                    Projected (a volume that contains injected data from multiple sources)
     TokenExpirationSeconds:  3607
     ConfigMapName:           kube-root-ca.crt
     ConfigMapOptional:       &lt;nil&gt;
     DownwardAPI:             true
-QoS Class:                   BestEffort
+QoS Class:                   Burstable
 Node-Selectors:              &lt;none&gt;
 Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
 Events:                      &lt;none&gt;
+
 </code></pre><h3 id="known-issues">Known issues</h3>
 <h4 id="dsreplication-output-after-scale-updown-shows-pod-in-unknown-state">dsreplication output after scale up/down shows pod in unknown state</h4>
 <p>Sometimes when scaling up or down, it is possible to get incorrect data in the <code>dsreplication</code> output. In the example below the <code>replicaCount</code> was changed from <code>4</code> to <code>3</code>. The <code>oud-ds-rs-3</code> server appears as <code>&lt;Unknown&gt;</code> when it should have disappeared:</p>
@@ -9164,19 +9196,19 @@ Removing server oud-ds-rs-3:1444 from the registration information ..... Done.
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820305"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820305"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784009" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784009"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820305" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820305"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
