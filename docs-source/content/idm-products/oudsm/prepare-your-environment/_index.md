@@ -25,9 +25,9 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unif
 
    ```
    NAME                  STATUS   ROLES                  AGE   VERSION
-   node/worker-node1     Ready    <none>                 17h   v1.20.10
-   node/worker-node2     Ready    <none>                 17h   v1.20.10
-   node/master-node      Ready    control-plane,master   23h   v1.20.10
+   node/worker-node1     Ready    <none>                 17h   v1.24.5+1.el7
+   node/worker-node2     Ready    <none>                 17h   v1.24.5+1.el7
+   node/master-node      Ready    control-plane,master   23h   v1.24.5+1.el7
 
    NAME                                      READY   STATUS    RESTARTS   AGE
    pod/coredns-66bff467f8-slxdq              1/1     Running   1          67d
@@ -54,7 +54,7 @@ The Oracle Unified Directory Services Manager (OUDSM) Kubernetes deployment requ
 #### Prebuilt OUDSM container image
 
 
-The prebuilt OUDSM January 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The prebuilt OUDSM April 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oudsm_cpu` and accept the license agreement.
 
