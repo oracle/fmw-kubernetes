@@ -12,18 +12,18 @@
     <title>Create Oracle Unified Directory Instances :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820305" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820305"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784009"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820305"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820305"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820305"></script>
 
     
   </div>
@@ -5498,7 +5498,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oud_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-&lt;January`<span style="color:#ae81ff">23</span><span style="color:#e6db74">&gt;
+  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-&lt;April`<span style="color:#ae81ff">23</span><span style="color:#e6db74">&gt;
 </span><span style="color:#e6db74">  pullPolicy: IfNotPresent</span>
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
@@ -5513,7 +5513,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
 <span style="color:#66d9ef">cronJob</span>:
   <span style="color:#66d9ef">kubectlImage</span>:
     <span style="color:#66d9ef">repository</span>: bitnami/kubectl
-    <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">1.21.6</span>
+    <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">1.24.5</span>
     <span style="color:#66d9ef">pullPolicy</span>: IfNotPresent
  
   <span style="color:#66d9ef">imagePullSecrets</span>:
@@ -5531,12 +5531,23 @@ of configuration parameters and their default values is shown in <a href="(#appe
   <span style="color:#66d9ef">timeout</span>: <span style="color:#ae81ff">60</span>
 </code></pre></div></li>
 <li>
-<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.21.6</code> set to <code>1.21.6</code>.</p>
+<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.24.5</code> set to <code>1.24.5</code>.</p>
 </li>
 <li>
 <p>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:</p>
 <pre><code>imagePullSecrets:
   - name: orclcred
+</code></pre></li>
+<li>
+<p>If your cluster does not have access to the internet to pull external images, such as bitnami/kubectl or busybox, you must load the images in a local container registry. You must then set the following:</p>
+<pre><code>cronJob:
+  kubectlImage:
+    repository: container-registry.example.com/bitnami/kubectl
+    tag: 1.24.5
+    pullPolicy: IfNotPresent
+	   
+busybox:
+  image: container-registry.example.com/busybox 
 </code></pre></li>
 <li>
 <p>If using NFS for your persistent volume then change the <code>persistence</code> section as follows:</p>
@@ -5580,9 +5591,9 @@ of configuration parameters and their default values is shown in <a href="(#appe
 </span><span style="color:#ae81ff"></span>&lt;release_name&gt; oud-ds-rs
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace oudns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set oudConfig.rootUserPassword<span style="color:#f92672">=</span>&lt;password&gt;,persistence.filesystem.hostPath.path<span style="color:#f92672">=</span>/scratch/shared/oud_user_projects,image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oud_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol7-&lt;January<span style="color:#e6db74">`</span>23&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set oudConfig.rootUserPassword<span style="color:#f92672">=</span>&lt;password&gt;,persistence.filesystem.hostPath.path<span style="color:#f92672">=</span>/scratch/shared/oud_user_projects,image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oud_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol7-&lt;April<span style="color:#e6db74">`</span>23&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set oudConfig.sampleData<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;200&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set cronJob.kubectlImage.repository<span style="color:#f92672">=</span>bitnami/kubectl,cronJob.kubectlImage.tag<span style="color:#f92672">=</span>1.21.6 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set cronJob.kubectlImage.repository<span style="color:#f92672">=</span>bitnami/kubectl,cronJob.kubectlImage.tag<span style="color:#f92672">=</span>1.24.5 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set cronJob.imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;dockercred&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs
@@ -5590,7 +5601,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
 <ul>
 <li>Replace <code>&lt;password&gt;</code> with a the relevant password.</li>
 <li><code>sampleData: &quot;200&quot;</code> will load 200 sample users into the default baseDN <code>dc=example,dc=com</code>. If you do not want sample data, remove this entry. If <code>sampleData</code> is set to <code>1,000,000</code> users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: <code>--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60</code>.</li>
-<li>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.21.6</code> set to <code>1.21.6</code>.</li>
+<li>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.24.5</code> set to <code>1.24.5</code>.</li>
 <li>If using using NFS for your persistent volume then use <code>persistence.networkstorage.nfs.path=&lt;persistent_volume&gt;/oud_user_projects,persistence.networkstorage.nfs.server:&lt;NFS IP address&gt;</code>.</li>
 <li>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following: <code>--set imagePullSecrets[0].name=&quot;orclcred&quot;</code>.</li>
 </ul>
@@ -5661,28 +5672,26 @@ pod/oud-pod-cron-job-27586680-p5d8q   0/1     Completed   0          50s     10.
 
 NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                          AGE   SELECTOR
 service/oud-ds-rs             ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1389/TCP,1636/TCP,1080/TCP,1081/TCP,1898/TCP   14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-0           ClusterIP   10.107.202.164   &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
-service/oud-ds-rs-1           ClusterIP   10.102.101.53    &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
-service/oud-ds-rs-2           ClusterIP   10.110.137.63    &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
-service/oud-ds-rs-http-0      ClusterIP   10.102.148.153   &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
-service/oud-ds-rs-http-1      ClusterIP   10.98.170.188    &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
-service/oud-ds-rs-http-2      ClusterIP   10.101.169.181   &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
-service/oud-ds-rs-lbr-admin   ClusterIP   10.97.137.179    &lt;none&gt;        1888/TCP,1444/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-http    ClusterIP   10.109.82.7      &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-ldap    ClusterIP   10.104.73.92     &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-ldap-0      ClusterIP   10.107.99.240    &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
-service/oud-ds-rs-ldap-1      ClusterIP   10.108.219.79    &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
-service/oud-ds-rs-ldap-2      ClusterIP   10.104.231.98    &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-0           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-1           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-2           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-http-0      ClusterIP   10.104.112.93    &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-http-1      ClusterIP   10.103.105.70    &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-http-2      ClusterIP   10.110.160.107   &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-lbr-admin   ClusterIP   10.99.238.222    &lt;none&gt;        1888/TCP,1444/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-http    ClusterIP   10.101.250.196   &lt;none&gt;        1080/TCP,1081/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-ldap    ClusterIP   10.104.149.90    &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-ldap-0      ClusterIP   10.109.255.221   &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-ldap-1      ClusterIP   10.111.135.142   &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-ldap-2      ClusterIP   10.100.8.145     &lt;none&gt;        1389/TCP,1636/TCP                                                14m   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
 
-NAME                                     TYPE                                  DATA   AGE
-secret/default-token-msmmd               kubernetes.io/service-account-token   3      3d20h
-secret/dockercred                        kubernetes.io/dockerconfigjson        1      3d20h
-secret/orclcred                          kubernetes.io/dockerconfigjson        1      3d20h
-secret/oud-ds-rs-creds                   opaque                                8      14m
-secret/oud-ds-rs-job-token-2xlmj         kubernetes.io/service-account-token   3      14m
-secret/oud-ds-rs-tls-cert                kubernetes.io/tls                     2      14m
-secret/oud-ds-rs-token-2tprv             kubernetes.io/service-account-token   3      14m
-secret/sh.helm.release.v1.oud-ds-rs.v1   helm.sh/release.v1                    1      14m
+NAME                                     TYPE                             DATA   AGE
+secret/dockercred                        kubernetes.io/dockerconfigjson   1      4h24m
+secret/orclcred                          kubernetes.io/dockerconfigjson   1      14m
+secret/oud-ds-rs-creds                   opaque                           8      14m
+secret/oud-ds-rs-tls-cert                kubernetes.io/tls                2      14m
+secret/sh.helm.release.v1.oud-ds-rs.v1   helm.sh/release.v1               1      14m
+
 
 NAME                                 CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                       STORAGECLASS        REASON   AGE    VOLUMEMODE
 persistentvolume/oud-ds-rs-pv        20Gi       RWX            Delete           Bound    oudns/oud-ds-rs-pvc         manual                       14m    Filesystem
@@ -5944,7 +5953,7 @@ oud-pod-cron-job   */30 * * * *   False     <span style="color:#ae81ff">0</span>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get job -n oudns -o wide
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
-oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.21.6   controller-uid<span style="color:#f92672">=</span>700ab9f7-6094-488a-854d-f1b914de5f61
+oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.24.5   controller-uid<span style="color:#f92672">=</span>700ab9f7-6094-488a-854d-f1b914de5f61
 </code></pre></div></li>
 </ol>
 <h4 id="disabling-the-cronjob">Disabling the cronjob</h4>
@@ -6434,13 +6443,13 @@ $ rm -rf *
 </tr>
 <tr>
 <td>oudConfig.cleanupbeforeStart</td>
-<td>Used to remove the individual pod directories during restart. Typical values are true/false</td>
-<td>true</td>
+<td>Used to remove the individual pod directories during restart. Recommended value is false. <strong>Note</strong>: Do not change the default value (false) as it will delete the existing data and clone it from base pod again.</td>
+<td>false</td>
 </tr>
 <tr>
 <td>oudConfig.disablereplicationbeforeStop</td>
-<td>This parameter is used to disable replication when a pod is restarted.</td>
-<td>true</td>
+<td>This parameter is used to disable replication when a pod is restarted. Recommended value is false. <strong>Note</strong> Do not change the default value (false), as changing the value will result in an issue where the pod won&rsquo;t join the replication topology after a restart.</td>
+<td>false</td>
 </tr>
 <tr>
 <td>oudConfig.resources.requests.memory</td>
@@ -6466,6 +6475,41 @@ $ rm -rf *
 <td>replOUD.groupId</td>
 <td>Group ID to be used/configured with each Oracle Unified Directory instance in replicated topology.</td>
 <td>1</td>
+</tr>
+<tr>
+<td>service.lbrtype</td>
+<td>Type of load balancer Service to be created for admin, http,ldap services. Values allowed: ClusterIP/NodePort</td>
+<td>ClusterIP</td>
+</tr>
+<tr>
+<td>oudPorts.nodePorts.adminldaps</td>
+<td>Public port on which the OUD instance in the container should listen for administration communication over LDAPS Protocol. The port number should be between 30000-32767. No duplicate values are  allowed. <strong>Note</strong>: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767.</td>
+<td></td>
+</tr>
+<tr>
+<td>oudPorts.nodePorts.adminhttps</td>
+<td>Public port on which the OUD instance in the container should listen for administration communication over HTTPS Protocol. The port number should be between 30000-32767. No duplicate values are  allowed. <strong>Note</strong>: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767.</td>
+<td></td>
+</tr>
+<tr>
+<td>oudPorts.nodePorts.ldap</td>
+<td>Public port on which the OUD instance in the container should listen for LDAP communication. The port number should be between 30000-32767. No duplicate values are  allowed. <strong>Note</strong>: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767.</td>
+<td></td>
+</tr>
+<tr>
+<td>oudPorts.nodePorts.ldaps</td>
+<td>Public port on which the OUD instance in the container should listen for LDAPS communication. The port number should be between 30000-32767. No duplicate values are  allowed. <strong>Note</strong>: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767.</td>
+<td></td>
+</tr>
+<tr>
+<td>oudPorts.nodePorts.http</td>
+<td>Public port on which the OUD instance in the container should listen for HTTP communication. The port number should be between 30000-32767. No duplicate values are  allowed. <strong>Note</strong>: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767.</td>
+<td></td>
+</tr>
+<tr>
+<td>oudPorts.nodePorts.https</td>
+<td>Public port on which the OUD instance in the container should listen for HTTPS communication. The port number should be between 30000-32767. No duplicate values are  allowed. <strong>Note</strong>: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767.</td>
+<td></td>
 </tr>
 <tr>
 <td>elk.elasticsearch.enabled</td>
@@ -10508,19 +10552,19 @@ $ rm -rf *
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820305"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820305"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784009" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784009"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820305" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820305"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>a. Post Install Tasks :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5389,9 +5389,9 @@ $ kubectl cp setUserOverrides.sh oigns/governancedomain-adminserver:/u01/oracle/
 </li>
 <li>
 <p>Stop the OIG domain using the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n &lt;domain_namespace&gt; patch domains &lt;domain_uid&gt; --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;NEVER&#34; }]&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n &lt;domain_namespace&gt; patch domains &lt;domain_uid&gt; --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;Never&#34; }]&#39;</span>
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n oigns patch domains governancedomain --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;NEVER&#34; }]&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n oigns patch domains governancedomain --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;Never&#34; }]&#39;</span>
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>domain.weblogic.oracle/governancedomain patched
 </code></pre></li>
@@ -5414,9 +5414,9 @@ helper                                               1/1     Running     0      
 </code></pre></li>
 <li>
 <p>Start the domain using the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n &lt;domain_namespace&gt; patch domains &lt;domain_uid&gt; --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;IF_NEEDED&#34; }]&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n &lt;domain_namespace&gt; patch domains &lt;domain_uid&gt; --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;IfNeeded&#34; }]&#39;</span>
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n oigns patch domains governancedomain --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;IF_NEEDED&#34; }]&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n oigns patch domains governancedomain --type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;json&#39;</span> -p<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[{&#34;op&#34;: &#34;replace&#34;, &#34;path&#34;: &#34;/spec/serverStartPolicy&#34;, &#34;value&#34;: &#34;IfNeeded&#34; }]&#39;</span>
 </code></pre></div><p>Run the following kubectl command to view the pods:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n &lt;domain_namespace&gt;
 </code></pre></div><p>For example:</p>
@@ -9044,19 +9044,19 @@ helper                                              1/1     Running     0       
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784008" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784008"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>a. Upgrade an operator release :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5355,33 +5355,33 @@
 
 
 
-<p>These instructions apply to upgrading operators within the 3.x release family as additional versions are released.</p>
+<p>These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.x release family as additional versions are released.</p>
 <ol>
 <li>
 <p>On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir &lt;workdir&gt;/weblogic-kubernetes-operator-3.X.X
-$ cd &lt;workdir&gt;/weblogic-kubernetes-operator-3.X.X
-$ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X 
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir &lt;workdir&gt;/weblogic-kubernetes-operator-4.X.X
+$ cd &lt;workdir&gt;/weblogic-kubernetes-operator-4.X.X
+$ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X 
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X
-$ cd /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X
-$ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v3.X.X  
-</code></pre></div><p>This will create the directory <code>&lt;workdir&gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X
+$ cd /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X
+$ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X  
+</code></pre></div><p>This will create the directory <code>&lt;workdir&gt;/weblogic-kubernetes-operator-4.X.X/weblogic-kubernetes-operator</code></p>
 </li>
 <li>
 <p>Run the following helm command to upgrade the operator:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;workdir&gt;/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X --namespace &lt;sample-kubernetes-operator-ns&gt; --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;workdir&gt;/weblogic-kubernetes-operator-4.X.X/weblogic-kubernetes-operator
+$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.X.X --namespace &lt;sample-kubernetes-operator-ns&gt; --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OIGK8S/weblogic-kubernetes-operator-3.X.X/weblogic-kubernetes-operator
-$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:3.X.X --namespace operator --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X/weblogic-kubernetes-operator
+$ helm upgrade --reuse-values --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.X.X --namespace operator --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>Release &quot;weblogic-kubernetes-operator&quot; has been upgraded. Happy Helming!
 NAME: weblogic-kubernetes-operator
 LAST DEPLOYED: &lt;DATE&gt;
 NAMESPACE: operator
 STATUS: deployed
-REVISION: 3
+REVISION: 2
 TEST SUITE: None
 </code></pre></li>
 <li>
@@ -5390,19 +5390,24 @@ TEST SUITE: None
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all -n opns
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME                                     READY   STATUS    RESTARTS   AGE
-pod/weblogic-operator-69546866bd-h58sk   2/2     Running   0          112s
+<pre><code>NAME                                             READY   STATUS    RESTARTS   AGE
+pod/weblogic-operator-b7d6df78c-mfrc4            1/1     Running   0          40s
+pod/weblogic-operator-webhook-7996b8b58b-frtwp   1/1     Running   0          42s
 
-NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-service/internal-weblogic-operator-svc   ClusterIP   10.106.72.42   &lt;none&gt;        8082/TCP   2d
+NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+service/internal-weblogic-operator-svc   ClusterIP   10.107.3.1     &lt;none&gt;        8082/TCP,8083/TCP   6d
+service/weblogic-operator-webhook-svc    ClusterIP   10.106.51.57   &lt;none&gt;        8083/TCP,8084/TCP   42s
 
-NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/weblogic-operator   1/1     1            1           2d
+NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/weblogic-operator           1/1     1            1           6d
+deployment.apps/weblogic-operator-webhook   1/1     1            1           42s
 
-NAME                                           DESIRED   CURRENT   READY   AGE
-replicaset.apps/weblogic-operator-676d5cc6f4   0         0         0       2d
-replicaset.apps/weblogic-operator-69546866bd   1         1         1       112s
-</code></pre></li>
+NAME                                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/weblogic-operator-5884685f4f           0         0         0       6d
+replicaset.apps/weblogic-operator-b7d6df78c            1         1         1       40s
+replicaset.apps/weblogic-operator-webhook-7996b8b58b   1         1         1       42s
+</code></pre><p><strong>Note</strong>: When you upgrade a 3.x WebLogic Kubernetes Operator to 4.x, the upgrade process creates a WebLogic Domain resource conversion webhook deployment, and associated resources in the same namespace. The webhook automatically and transparently upgrades the existing WebLogic Domains from the 3.x schema to the 4.x schema. For more information, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-operators/conversion-webhook/">Domain Upgrade</a> in the WebLogic Kubernetes Operator documentation.</p>
+</li>
 </ol>
 
 
@@ -8989,19 +8994,19 @@ replicaset.apps/weblogic-operator-69546866bd   1         1         1       112s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784007" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784007"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

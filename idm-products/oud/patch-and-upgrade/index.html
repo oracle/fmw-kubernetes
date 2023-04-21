@@ -12,18 +12,18 @@
     <title>Patch and Upgrade :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5329,11 +5329,9 @@
   <ul>
     <li>
       <ul>
-        <li><a href="#upgrading-to-january-2311-or-later-from-october-22-2241">Upgrading to January (23.1.1) or later from October 22 (22.4.1)</a></li>
-        <li><a href="#verify-the-pods">Verify the pods</a></li>
-        <li><a href="#upgrading-to-january-23-2311-or-later-from-july-22-2231">Upgrading to January 23 (23.1.1) or later from July 22 (22.3.1)</a></li>
-        <li><a href="#verify-the-pods-1">Verify the pods</a></li>
-        <li><a href="#upgrading-to-january-23-2311-or-later-from-releases-prior-to-july-22-2231">Upgrading to January 23 (23.1.1) or later from releases prior to July 22 (22.3.1)</a></li>
+        <li><a href="#upgrading-to-april-23-2321-from-october-22-2241-or-later">Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later</a></li>
+        <li><a href="#upgrading-to-april-23-2321-from-july-22-2231">Upgrading to April 23 (23.2.1) from July 22 (22.3.1)</a></li>
+        <li><a href="#upgrading-to-april-23-2321-from-releases-prior-to-july-22-2231">Upgrading to April 23 (23.2.1) from releases prior to July 22 (22.3.1)</a></li>
         <li><a href="#upgrading-elasticsearch-and-kibana">Upgrading Elasticsearch and Kibana</a></li>
       </ul>
     </li>
@@ -5364,20 +5362,144 @@
 
 <p>In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from.</p>
 <ol>
-<li><a href="#upgrading-to-january-23-2311-or-later-from-october-22-2241">Upgrading to January (23.1.1) or later from October 22 (22.4.1)</a></li>
-<li><a href="#upgrading-to-january-23-2311-or-later-from-july-22-2231">Upgrading to January 23 (23.1.1) or later from July 22 (22.3.1)</a></li>
-<li><a href="#upgrading-to-january-23-2311-or-later-from-releases-prior-to-july-22-2231">Upgrading to January 23 (23.1.1) or later from releases prior to July 22 (22.3.1)</a></li>
+<li><a href="#upgrading-to-april-23-2321-from-october-22-2241-or-later">Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later</a></li>
+<li><a href="#upgrading-to-april-23-2321-from-july-22-2231">Upgrading to April 23 (23.2.1) from July 22 (22.3.1)</a></li>
+<li><a href="#upgrading-to-april-23-2321-from-releases-prior-to-july-22-2231">Upgrading to April 23 (23.2.1) from releases prior to July 22 (22.3.1)</a></li>
 <li><a href="#upgrading-elasticsearch-and-kibana">Upgrading Elasticsearch and Kibana</a></li>
 </ol>
-<h3 id="upgrading-to-january-2311-or-later-from-october-22-2241">Upgrading to January (23.1.1) or later from October 22 (22.4.1)</h3>
-<p>The instructions below are for upgrading from October 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.4.1</a>) to January 23 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.1.1</a>) or later.</p>
+<h3 id="upgrading-to-april-23-2321-from-october-22-2241-or-later">Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later</h3>
+<p>The instructions below are for upgrading from October 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.4.1</a>) or later, to April 23 (<a href="https://github.com/oracle/fmw-kubernetes/releases">23.2.1</a>).</p>
 <p><strong>Note</strong>: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.</p>
-<p>You can update the deployment with a new OUD container image using one of the following methods:</p>
+<h4 id="scale-down-oud">Scale down OUD</h4>
 <ol>
-<li><a href="#using-a-yaml-file">Using a YAML file</a></li>
-<li><a href="#using---set-argument">Using <code>--set</code> argument</a></li>
+<li>
+<p>Make sure the base pod (<code>oud-ds-rs-0</code>) is running and healthy (<code>READY 1/1</code>) by running the following command:</p>
+<pre><code>$ kubectl get pods -n &lt;namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl get pods -n oudns
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME                              READY   STATUS      RESTARTS   AGE
+oud-ds-rs-0                       1/1     Running     0          21h
+oud-ds-rs-1                       1/1     Running     0          20h
+oud-ds-rs-2                       1/1     Running     0          20h
+</code></pre></li>
+<li>
+<p>Ensure dsreplication is healthy by running the following command:</p>
+<pre><code>$ $ kubectl --namespace &lt;namespace&gt; exec -it -c &lt;containername&gt; &lt;podname&gt; -- \
+/u01/oracle/user_projects/&lt;OUD Instance/Pod Name&gt;/OUD/bin/dsreplication status \
+--trustAll --hostname &lt;OUD Instance/Pod Name&gt; --port 1444 --adminUID admin \
+--dataToDisplay compat-view --dataToDisplay rs-connections
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl --namespace oudns exec -it -c oud-ds-rs oud-ds-rs-0 -- \
+/u01/oracle/user_projects/oud-ds-rs-0/OUD/bin/dsreplication status \
+--trustAll --hostname oud-ds-rs-0 --port 1444 --adminUID admin \
+--dataToDisplay compat-view --dataToDisplay rs-connections
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME                              READY   STATUS      RESTARTS   AGE
+   
+&gt;&gt;&gt;&gt; Specify Oracle Unified Directory LDAP connection parameters
+    
+Password for user 'admin':
+    
+Establishing connections and reading configuration ..... Done.
+    
+dc=example,dc=com - Replication Enabled
+=======================================
+    
+Server               : Entries : M.C. [1] : A.O.M.C. [2] : Port [3] : Encryption [4] : Trust [5] : U.C. [6] : Status [7] : ChangeLog [8] : Group ID [9] : Connected To [10]
+---------------------:---------:----------:--------------:----------:----------------:-----------:----------:------------:---------------:--------------:-------------------------------
+oud-ds-rs-0:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-0:1898
+                     :         :          :              :          :                :           :          :            :               :              : (GID=1)
+oud-ds-rs-1:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-1:1898
+                     :         :          :              :          :                :           :          :            :               :              : (GID=1)
+oud-ds-rs-2:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
+                     :         :          :              :          :                :           :          :            :               :              : (GID=1)
+    
+Replication Server [11]        : RS #1 : RS #2 : RS #3
+-------------------------------:-------:-------:------
+oud-ds-rs-0:1898               : --    : Yes   : Yes
+(#1)                           :       :       :
+oud-ds-rs-1:1898               : Yes   : --    : Yes
+(#2)                           :       :       :
+oud-ds-rs-2:1898               : Yes   : Yes   : --
+(#3)                           :       :       :
+    
+etc...
+</code></pre></li>
+<li>
+<p>Scale down OUD by reducing the replicas to <code>1</code>:</p>
+<pre><code>$ cd $WORKDIR/kubernetes/helm
+$ helm upgrade -n oudns --set replicaCount=1 oud-ds-rs oud-ds-rs --reuse-values
+</code></pre><p><strong>Note</strong>: The <code>$WORKDIR</code> is the directory for your existing release, not April 23.</p>
+<p>The output will be similar to the following:</p>
+<pre><code>Release &quot;oud-ds-rs&quot; has been upgraded. Happy Helming!
+NAME: oud-ds-rs
+LAST DEPLOYED: &lt;DATE&gt;
+NAMESPACE: oudns
+STATUS: deployed
+REVISION: 2
+NOTES:
+   
+etc..
+</code></pre><p>Make sure the replica pods are shutdown before proceeding:</p>
+<pre><code>$ kubectl get pods -n oudns
+   
+   
+NAME                              READY   STATUS      RESTARTS   AGE
+oud-ds-rs-0                       1/1     Running     0          21h
+</code></pre><p><strong>Note</strong>: It will take several minutes before the replica pods disappear.</p>
+</li>
 </ol>
-<h4 id="using-a-yaml-file">Using a YAML file</h4>
+<h4 id="backup-oud-data">Backup OUD data</h4>
+<ol>
+<li>
+<p>Take a backup of the OUD data for every pod in the NFS shared volume:</p>
+<pre><code>$ kubectl exec -it -n oudns oud-ds-rs-0 -- bash
+[oracle@oud-ds-rs-0 oracle]$ cd user_projects
+[oracle@oud-ds-rs-0 user_projects]$ mkdir OUD_backup_&lt;DATE&gt;
+[oracle@oud-ds-rs-0 user_projects]$ cp -r oud-ds-rs-* OUD_backup_&lt;DATE&gt;/
+</code></pre></li>
+<li>
+<p>Make sure the backup created successfully:</p>
+<pre><code>[oracle@oud-ds-rs-0 user_projects]$ ls -l OUD_backup_&lt;date&gt;
+total 2
+drwxr-x---. 5 oracle root 3 Mar 28 11:23 oud-ds-rs-0
+drwxr-x---. 5 oracle root 3 Mar 28 11:23 oud-ds-rs-1
+drwxr-x---. 5 oracle root 3 Mar 28 11:23 oud-ds-rs-2
+</code></pre></li>
+<li>
+<p>Remove the non-zero pod directories <code>oud-ds-rs-1</code> and <code>oud-ds-rs-2</code>:</p>
+<pre><code>[oracle@oud-ds-rs-0 user_projects]$ rm -rf oud-ds-rs-1 oud-ds-rs-2
+</code></pre></li>
+<li>
+<p>Exit the <code>oud-ds-rs-0</code> bash session:</p>
+<pre><code>[oracle@oud-ds-rs-0 user_projects]$ exit
+</code></pre></li>
+</ol>
+<h4 id="setup-the-april-23-code-repository-to-deploy-oud">Setup the April 23 code repository to deploy OUD</h4>
+<ol>
+<li>
+<p>Create a working directory on the persistent volume to setup the latest source code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir &lt;persistent_volume&gt;/&lt;workdir&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/shared/OUDK8SApril23
+</code></pre></div></li>
+<li>
+<p>Download the latest OUD deployment scripts from the OUD repository:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;persistent_volume&gt;/&lt;workdir&gt;
+$ git clone https://github.com/oracle/fmw-kubernetes.git
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/shared/OUDK8SApril23
+$ git clone https://github.com/oracle/fmw-kubernetes.git
+</code></pre></div></li>
+<li>
+<p>Set the <code>$WORKDIR</code> environment variable as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>&lt;workdir&gt;/fmw-kubernetes/OracleUnifiedDirectory
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>/scratch/shared/OUDK8SApril23/fmw-kubernetes/OracleUnifiedDirectory
+</code></pre></div></li>
+</ol>
+<h4 id="update-the-oud-container-image">Update the OUD container image</h4>
 <ol>
 <li>
 <p>Navigate to the <code>$WORKDIR/kubernetes/helm</code> directory:</p>
@@ -5387,15 +5509,25 @@
 <p>Create a <code>oud-patch-override.yaml</code> file that contains:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: &lt;image_location<span style="color:#e6db74">&gt;
-</span><span style="color:#e6db74">  tag: &lt;image_tag&gt;</span>
- <span style="color:#66d9ef">imagePullSecrets</span>:
-   - <span style="color:#66d9ef">name</span>: orclcred
+</span><span style="color:#e6db74">  tag:  &lt;image_tag&gt;</span>
+  <span style="color:#66d9ef">pullPolicy</span>: IfNotPresent
+<span style="color:#66d9ef">imagePullSecrets</span>:
+  - <span style="color:#66d9ef">name</span>: orclcred
+<span style="color:#66d9ef">oudConfig</span>:
+  <span style="color:#66d9ef">cleanupbeforeStart</span>: <span style="color:#66d9ef">false</span>
+  <span style="color:#66d9ef">disablereplicationbeforeStop</span>: <span style="color:#66d9ef">false</span>
+<span style="color:#66d9ef">replicaCount</span>: <span style="color:#ae81ff">3</span>
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oud_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-new
+  <span style="color:#66d9ef">tag</span>:  <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-&lt;April&#39;<span style="color:#ae81ff">23</span><span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74">  pullPolicy: IfNotPresent</span>
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
+<span style="color:#66d9ef">oudConfig</span>:
+  <span style="color:#66d9ef">cleanupbeforeStart</span>: <span style="color:#66d9ef">false</span>
+  <span style="color:#66d9ef">disablereplicationbeforeStop</span>: <span style="color:#66d9ef">false</span>
+<span style="color:#66d9ef">replicaCount</span>: <span style="color:#ae81ff">3</span>
 </code></pre></div><p>The following caveats exist:</p>
 <ul>
 <li>
@@ -5407,159 +5539,27 @@
 </li>
 <li>
 <p>Run the following command to upgrade the deployment:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/helm
+$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--values oud-patch-override.yaml <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>&lt;release_name&gt; oud-ds-rs --reuse-values
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace oudns <span style="color:#ae81ff">\
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/helm
+$ helm upgrade --namespace oudns <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--values oud-patch-override.yaml <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs --reuse-values
-</code></pre></div></li>
-</ol>
-<h4 id="using---set-argument">Using <code>--set</code> argument</h4>
-<ol>
-<li>
-<p>Navigate to the <code>$WORKDIR/kubernetes/helm</code> directory:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/helm
-</code></pre></div></li>
-<li>
-<p>Run the following command to update the deployment with a new OUD container image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>&lt;image_location&gt;,image.tag<span style="color:#f92672">=</span>&lt;image_tag&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>&lt;release_name&gt; oud-ds-rs --reuse-values
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace oudns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oud_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol7-new <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs --reuse-values
-</code></pre></div><p>The following caveats exist:</p>
-<ul>
-<li>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following: <code>--set imagePullSecrets[0].name=&quot;orclcred&quot;</code>.</li>
-</ul>
-</li>
-</ol>
-<h3 id="verify-the-pods">Verify the pods</h3>
-<ol>
-<li>
-<p>After updating with the new image the pods will restart. Verify the pods are running:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace &lt;namespace&gt; get pods
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace oudns get pods
-</code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME              READY   STATUS    RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running   0          45m   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1   1/1     Running   0          45m   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2   1/1     Running   0          45m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-</code></pre><p><strong>Note</strong>: It will take several minutes before the pods start. While the oudsm pods have a <code>STATUS</code> of <code>0/1</code> the pods are started but the OUD server associated with it is currently starting.</p>
-</li>
-<li>
-<p>Verify the pods are using the new image by running the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod oud-ds-rs-0 -n oudns
-</code></pre></div><p>The output will look similar to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Name:         oud-ds-rs-0
-Namespace:    oudns
-Priority:     <span style="color:#ae81ff">0</span>
-Node:         &lt;Worker Node&gt;/100.102.48.28
-Start Time:   &lt;DATE&gt;
-Labels:       app.kubernetes.io/instance<span style="color:#f92672">=</span>oud-ds-rs
-              app.kubernetes.io/managed-by<span style="color:#f92672">=</span>Helm
-              app.kubernetes.io/name<span style="color:#f92672">=</span>oud-ds-rs
-              app.kubernetes.io/version<span style="color:#f92672">=</span>12.2.1.4.0
-              helm.sh/chart<span style="color:#f92672">=</span>oud-ds-rs-0.1
-              oud/instance<span style="color:#f92672">=</span>oud-ds-rs-0
-Annotations:  meta.helm.sh/release-name: oud-ds-rs
-              meta.helm.sh/release-namespace: oudns
-Status:       Running
-IP:           10.244.1.44
-
-etc...
-
-Events:
-  Type     Reason     Age                   From     Message
-  ----     ------     ----                  ----     -------
-  Normal   Killing    4m26s                 kubelet  Container oud-ds-rs definition changed, will be restarted
-  Warning  Unhealthy  3m56s                 kubelet  Readiness probe failed:
-  Normal   Pulling    3m56s                 kubelet  Pulling image <span style="color:#e6db74">&#34;container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-new&#34;</span>
-  Warning  Unhealthy  3m27s                 kubelet  Liveness probe failed: dial tcp 10.244.1.44:1389: connect: connection refused
-  Normal   Created    3m22s <span style="color:#f92672">(</span>x2 over 142m<span style="color:#f92672">)</span>  kubelet  Created container oud-ds-rs
-  Normal   Started    3m22s <span style="color:#f92672">(</span>x2 over 142m<span style="color:#f92672">)</span>  kubelet  Started container oud-ds-rs
-  Normal   Pulled     3m22s                 kubelet  Successfully pulled image <span style="color:#e6db74">&#34;container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-new&#34;</span> in 33.477063844s
-</code></pre></div></li>
-</ol>
-<h3 id="upgrading-to-january-23-2311-or-later-from-july-22-2231">Upgrading to January 23 (23.1.1) or later from July 22 (22.3.1)</h3>
-<p>The instructions below are for upgrading from Jul 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.3.1</a>) to January 23 (<a href="https://github.com/oracle/fmw-kubernetes/releases">23.1.1</a>) or later.</p>
-<p><strong>Note</strong>: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.</p>
-<p>You can update the deployment with a new OUD container image using one of the following methods:</p>
-<ol>
-<li><a href="#using-a-yaml-file">Using a YAML file</a></li>
-<li><a href="#using---set-argument">Using <code>--set</code> argument</a></li>
-</ol>
-<h4 id="using-a-yaml-file-1">Using a YAML file</h4>
-<ol>
-<li>
-<p>Navigate to the <code>$WORKDIR/kubernetes/helm</code> directory:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/helm
-</code></pre></div></li>
-<li>
-<p>Create a <code>oud-patch-override.yaml</code> file that contains:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
-  <span style="color:#66d9ef">repository</span>: &lt;image_location<span style="color:#e6db74">&gt;
-</span><span style="color:#e6db74">  tag: &lt;image_tag&gt;</span>
- <span style="color:#66d9ef">imagePullSecrets</span>:
-   - <span style="color:#66d9ef">name</span>: orclcred
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
-  <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oud_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-new
-<span style="color:#66d9ef">imagePullSecrets</span>:
-  - <span style="color:#66d9ef">name</span>: orclcred
-</code></pre></div><p>The following caveats exist:</p>
-<ul>
-<li>
-<p>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:</p>
-<pre><code>imagePullSecrets:
-  - name: orclcred
+</code></pre></div><p>The output should look similar to the following:</p>
+<pre><code>Release &quot;oud-ds-rs&quot; has been upgraded. Happy Helming!
+NAME: oud-ds-rs
+LAST DEPLOYED: &lt;DATE&gt;
+NAMESPACE: oudns
+STATUS: deployed
+REVISION: 3
+NOTES:
+etc..
 </code></pre></li>
-</ul>
-</li>
-<li>
-<p>Run the following command to upgrade the deployment:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--values oud-patch-override.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>&lt;release_name&gt; oud-ds-rs --reuse-values
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace oudns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--values oud-patch-override.yaml <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs --reuse-values
-</code></pre></div></li>
 </ol>
-<h4 id="using---set-argument-1">Using <code>--set</code> argument</h4>
-<ol>
-<li>
-<p>Navigate to the <code>$WORKDIR/kubernetes/helm</code> directory:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/helm
-</code></pre></div></li>
-<li>
-<p>Run the following command to update the deployment with a new OUD container image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>&lt;image_location&gt;,image.tag<span style="color:#f92672">=</span>&lt;image_tag&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>&lt;release_name&gt; oud-ds-rs --reuse-values
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace oudns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oud_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol7-new <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs --reuse-values
-</code></pre></div><p>The following caveats exist:</p>
-<ul>
-<li>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following: <code>--set imagePullSecrets[0].name=&quot;orclcred&quot;</code>.</li>
-</ul>
-</li>
-</ol>
-<h3 id="verify-the-pods-1">Verify the pods</h3>
+<h4 id="verify-the-pods">Verify the pods</h4>
 <ol>
 <li>
 <p>After updating with the new image the pods will restart. Verify the pods are running:</p>
@@ -5567,52 +5567,80 @@ Events:
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace oudns get pods
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME              READY   STATUS    RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running   0          45m   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1   1/1     Running   0          45m   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2   1/1     Running   0          45m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-</code></pre><p><strong>Note</strong>: It will take several minutes before the pods start. While the oudsm pods have a <code>STATUS</code> of <code>0/1</code> the pods are started but the OUD server associated with it is currently starting.</p>
+<pre><code>NAME                              READY   STATUS      RESTARTS   AGE
+oud-ds-rs-0                       1/1     Running     0          11m
+oud-ds-rs-1                       1/1     Running     0          28m
+oud-ds-rs-2                       1/1     Running     0          22m
+...
+</code></pre><p><strong>Note</strong>: It will take several minutes before the pods <code>oud-ds-rs-1</code> and <code>oud-ds-rs-2</code> start, and <code>oud-ds-rs-0</code> restarts. While the OUD pods have a <code>STATUS</code> of <code>0/1</code> the pods are started but the OUD server associated with it is currently starting.</p>
 </li>
 <li>
 <p>Verify the pods are using the new image by running the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod oud-ds-rs-0 -n oudns
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod oud-ds-rs-0 -n oudns | grep Image
 </code></pre></div><p>The output will look similar to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Name:         oud-ds-rs-0
-Namespace:    oudns
-Priority:     <span style="color:#ae81ff">0</span>
-Node:         &lt;Worker Node&gt;/100.102.48.28
-Start Time:   &lt;DATE&gt;
-Labels:       app.kubernetes.io/instance<span style="color:#f92672">=</span>oud-ds-rs
-              app.kubernetes.io/managed-by<span style="color:#f92672">=</span>Helm
-              app.kubernetes.io/name<span style="color:#f92672">=</span>oud-ds-rs
-              app.kubernetes.io/version<span style="color:#f92672">=</span>12.2.1.4.0
-              helm.sh/chart<span style="color:#f92672">=</span>oud-ds-rs-0.1
-              oud/instance<span style="color:#f92672">=</span>oud-ds-rs-0
-Annotations:  meta.helm.sh/release-name: oud-ds-rs
-              meta.helm.sh/release-namespace: oudns
-Status:       Running
-IP:           10.244.1.44
-
-etc...
-
-Events:
-  Type     Reason     Age                   From     Message
-  ----     ------     ----                  ----     -------
-  Normal   Killing    4m26s                 kubelet  Container oud-ds-rs definition changed, will be restarted
-  Warning  Unhealthy  3m56s                 kubelet  Readiness probe failed:
-  Normal   Pulling    3m56s                 kubelet  Pulling image <span style="color:#e6db74">&#34;container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-new&#34;</span>
-  Warning  Unhealthy  3m27s                 kubelet  Liveness probe failed: dial tcp 10.244.1.44:1389: connect: connection refused
-  Normal   Created    3m22s <span style="color:#f92672">(</span>x2 over 142m<span style="color:#f92672">)</span>  kubelet  Created container oud-ds-rs
-  Normal   Started    3m22s <span style="color:#f92672">(</span>x2 over 142m<span style="color:#f92672">)</span>  kubelet  Started container oud-ds-rs
-  Normal   Pulled     3m22s                 kubelet  Successfully pulled image <span style="color:#e6db74">&#34;container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-new&#34;</span> in 33.477063844s
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">...
+Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>23&gt;
+Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:&lt;sha256&gt;
 </code></pre></div></li>
 <li>
-<p>Upgrade Elasticsearch and Kibana by following <a href="#upgrading-elasticsearch-and-kibana">Upgrading Elasticsearch and Kibana</a>.</p>
-</li>
+<p>Ensure dsreplication is healthy by running the following command:</p>
+<pre><code>$ $ kubectl --namespace &lt;namespace&gt; exec -it -c &lt;containername&gt; &lt;podname&gt; -- \
+/u01/oracle/user_projects/&lt;OUD Instance/Pod Name&gt;/OUD/bin/dsreplication status \
+--trustAll --hostname &lt;OUD Instance/Pod Name&gt; --port 1444 --adminUID admin \
+--dataToDisplay compat-view --dataToDisplay rs-connections
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl --namespace oudns exec -it -c oud-ds-rs oud-ds-rs-0 -- \
+/u01/oracle/user_projects/oud-ds-rs-0/OUD/bin/dsreplication status \
+--trustAll --hostname oud-ds-rs-0 --port 1444 --adminUID admin \
+--dataToDisplay compat-view --dataToDisplay rs-connections
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>NAME                              READY   STATUS      RESTARTS   AGE
+   
+&gt;&gt;&gt;&gt; Specify Oracle Unified Directory LDAP connection parameters
+    
+Password for user 'admin':
+    
+Establishing connections and reading configuration ..... Done.
+    
+dc=example,dc=com - Replication Enabled
+=======================================
+    
+Server               : Entries : M.C. [1] : A.O.M.C. [2] : Port [3] : Encryption [4] : Trust [5] : U.C. [6] : Status [7] : ChangeLog [8] : Group ID [9] : Connected To [10]
+---------------------:---------:----------:--------------:----------:----------------:-----------:----------:------------:---------------:--------------:-------------------------------
+oud-ds-rs-0:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-0:1898
+                     :         :          :              :          :                :           :          :            :               :              : (GID=1)
+oud-ds-rs-1:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-1:1898
+                     :         :          :              :          :                :           :          :            :               :              : (GID=1)
+oud-ds-rs-2:1444     : 202     : 0        : 0            : 1898     : Disabled       : Trusted   : --       : Normal     : Enabled       : 1            : oud-ds-rs-2:1898
+                     :         :          :              :          :                :           :          :            :               :              : (GID=1)
+    
+Replication Server [11]        : RS #1 : RS #2 : RS #3
+-------------------------------:-------:-------:------
+oud-ds-rs-0:1898               : --    : Yes   : Yes
+(#1)                           :       :       :
+oud-ds-rs-1:1898               : Yes   : --    : Yes
+(#2)                           :       :       :
+oud-ds-rs-2:1898               : Yes   : Yes   : --
+(#3)                           :       :       :
+    
+etc...
+</code></pre></li>
+<li>
+<p>Once the validation steps are performed and you are confident OUD is working correctly, you can optionally delete the OUD backup data in the NFS shared volume:</p>
+<pre><code>$ kubectl exec -it -n oudns oud-ds-rs-0 -- bash
+[oracle@oud-ds-rs-0 oracle]$ cd user_projects/OUD_backup_&lt;DATE&gt;/
+[oracle@oud-ds-rs-0 OUD_backup_&lt;DATE&gt;]$ rm -rf oud-ds-rs-0  oud-ds-rs-1  oud-ds-rs-2
+</code></pre></li>
 </ol>
-<h3 id="upgrading-to-january-23-2311-or-later-from-releases-prior-to-july-22-2231">Upgrading to January 23 (23.1.1) or later from releases prior to July 22 (22.3.1)</h3>
+<h3 id="upgrading-to-april-23-2321-from-july-22-2231">Upgrading to April 23 (23.2.1) from July 22 (22.3.1)</h3>
+<p>The instructions below are for upgrading from Jul 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.3.1</a>) to April 23 (<a href="https://github.com/oracle/fmw-kubernetes/releases">23.2.1</a>) or later.</p>
+<ol>
+<li>Follow <a href="#upgrading-to-april-23-2321-from-october-22-2241-or-later">Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later</a> to upgrade the image.</li>
+<li>Once the image is upgraded, follow <a href="#upgrading-elasticsearch-and-kibana">Upgrading Elasticsearch and Kibana</a>.</li>
+</ol>
+<h3 id="upgrading-to-april-23-2321-from-releases-prior-to-july-22-2231">Upgrading to April 23 (23.2.1) from releases prior to July 22 (22.3.1)</h3>
 <p>In releases prior to July 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.3.1</a>) OUD used pod based deployment. From July 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.3.1</a>) onwards OUD is deployed using <a href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">StatefulSets</a>.</p>
 <p>If you are upgrading from a release prior to July 22 (<a href="https://github.com/oracle/fmw-kubernetes/releases">22.3.1</a>) you must follow the steps below to deploy a new OUD instance to use your existing OUD data in <code>&lt;persistent_volume&gt;/oud_user_projects</code>.</p>
 <p><strong>Note</strong>: The steps below will incur a small outage.</p>
@@ -5624,8 +5652,8 @@ Events:
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm --namespace oudns list
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME            NAMESPACE       REVISION        UPDATED                                    STATUS          CHART           APP VERSION
-oud-ds-rs       oudns           1               2022-07-11 09:46:17.613632382 +0000 UTC    deployed        oud-ds-rs-0.2   12.2.1.4.0
+<pre><code>NAME            NAMESPACE       REVISION        UPDATED                                   STATUS          CHART           APP VERSION
+oud-ds-rs       oudns           1               &lt;DATE&gt;    deployed        oud-ds-rs-0.2   12.2.1.4.0
 </code></pre></li>
 <li>
 <p>Delete the deployment using the following command:</p>
@@ -5663,21 +5691,21 @@ persistentvolumeclaim/oud-ds-rs-pvc   Terminating   oud-ds-rs-pv   20Gi       RW
 <p>Create a working directory on the persistent volume to setup the latest source code:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir &lt;persistent_volume&gt;/&lt;workdir&gt;
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/shared/OUDK8Slatest
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/shared/OUDK8SApril23
 </code></pre></div></li>
 <li>
 <p>Download the latest OUD deployment scripts from the OUD repository:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;persistent_volume&gt;/&lt;workdir&gt;
 $ git clone https://github.com/oracle/fmw-kubernetes.git
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/shared/OUDLatestSource
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/shared/OUDK8SApril23
 $ git clone https://github.com/oracle/fmw-kubernetes.git
 </code></pre></div></li>
 <li>
 <p>Set the <code>$WORKDIR</code> environment variable as follows:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>&lt;workdir&gt;/fmw-kubernetes/OracleUnifiedDirectory
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>/scratch/shared/OUDK8Slatest/fmw-kubernetes/OracleUnifiedDirectory
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>/scratch/shared/OUDK8SApril23/fmw-kubernetes/OracleUnifiedDirectory
 </code></pre></div></li>
 </ol>
 <h4 id="create-a-new-instance-against-your-existing-persistent-volume">Create a new instance against your existing persistent volume</h4>
@@ -5695,7 +5723,8 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
 <span style="color:#66d9ef">oudConfig</span>:
-  <span style="color:#66d9ef">rootUserPassword</span>: &lt;password&gt;
+  <span style="color:#66d9ef">rootUserPassword</span>: &lt;password<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74">  sampleData: &#34;200&#34;</span>
 <span style="color:#66d9ef">persistence</span>:
   <span style="color:#66d9ef">type</span>: filesystem
   <span style="color:#66d9ef">filesystem</span>:
@@ -5712,12 +5741,13 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oud_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-&lt;jul22<span style="color:#e6db74">&gt;
+  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol7-&lt;April&#39;<span style="color:#ae81ff">23</span><span style="color:#e6db74">&gt;
 </span><span style="color:#e6db74">  pullPolicy: IfNotPresent</span>
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
 <span style="color:#66d9ef">oudConfig</span>:
-  <span style="color:#66d9ef">rootUserPassword</span>: &lt;password&gt;
+  <span style="color:#66d9ef">rootUserPassword</span>: &lt;password<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74">  sampleData: &#34;200&#34;</span>
 <span style="color:#66d9ef">persistence</span>:
   <span style="color:#66d9ef">type</span>: filesystem
   <span style="color:#66d9ef">filesystem</span>:
@@ -5726,7 +5756,7 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
 <span style="color:#66d9ef">cronJob</span>:
   <span style="color:#66d9ef">kubectlImage</span>:
     <span style="color:#66d9ef">repository</span>: bitnami/kubectl
-    <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">1.21.6</span>
+    <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">1.24.5</span>
     <span style="color:#66d9ef">pullPolicy</span>: IfNotPresent
  
   <span style="color:#66d9ef">imagePullSecrets</span>:
@@ -5740,7 +5770,7 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
 <p>Replace <code>&lt;password&gt;</code> with the password used in your previous deployment.</p>
 </li>
 <li>
-<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.21.6</code> set to <code>1.21.6</code>.</p>
+<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.24.5</code> set to <code>1.24.5</code>.</p>
 </li>
 <li>
 <p>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:</p>
@@ -5777,35 +5807,11 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
 </ol>
 <h3 id="upgrading-elasticsearch-and-kibana">Upgrading Elasticsearch and Kibana</h3>
 <p>This section shows how to upgrade Elasticsearch and Kibana. From October 22 (22.4.1) onwards, OUD logs should be stored on a centralized Elasticsearch and Kibana stack.</p>
-<p><em><strong>Note</strong></em>: This section should only be followed if upgrading from July 22 (22.3.1) or earlier to January 23 (23.1.1). If you are upgrading from October 22 to January 23 do not follow this section.</p>
-<h4 id="download-the-latest-code-repository">Download the latest code repository</h4>
-<p>If you haven&rsquo;t already downloaded the latest code repository, do so as follows:</p>
-<ol>
-<li>
-<p>Create a working directory to setup the source code.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir &lt;workdir&gt;
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/shared/OUDK8Slatest
-</code></pre></div></li>
-<li>
-<p>Download the latest OUD deployment scripts from the OUD repository.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;workdir&gt;
-$ git clone https://github.com/oracle/fmw-kubernetes.git
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OUDK8Slatest
-$ git clone https://github.com/oracle/fmw-kubernetes.git
-</code></pre></div></li>
-<li>
-<p>Set the <code>$WORKDIR</code> environment variable as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>&lt;workdir&gt;/fmw-kubernetes/OracleUnifiedDirectory
-</code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>/scratch/shared/OUDK8Slatest/fmw-kubernetes/OracleUnifiedDirectory
-</code></pre></div></li>
-</ol>
+<p><em><strong>Note</strong></em>: This section should only be followed if upgrading from July 22 (22.3.1) or earlier to April 23 (23.2.1). If you are upgrading from October 22 or later to April 23 do not follow this section.</p>
 <h4 id="undeploy-elasticsearch-and-kibana">Undeploy Elasticsearch and Kibana</h4>
 <p>From October 22 (22.4.1) onwards, OUD logs should be stored on a centralized Elasticsearch and Kibana (ELK) stack.</p>
 <p>Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana.</p>
-<p>If you are upgrading from July 22 (22.3.1) or earlier, to January 23 (23.1.1) or later, you must first undeploy Elasticsearch and Kibana using the steps below:</p>
+<p>If you are upgrading from July 22 (22.3.1) or earlier, to April 23 (23.2.1), you must first undeploy Elasticsearch and Kibana using the steps below:</p>
 <ol>
 <li>
 <p>Navigate to the <code>$WORKDIR/kubernetes/helm</code> directory and create a <code>logging-override-values-uninstall.yaml</code> with the following:</p>
@@ -9407,19 +9413,19 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784008" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784008"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

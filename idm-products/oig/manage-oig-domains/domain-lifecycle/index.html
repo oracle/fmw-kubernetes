@@ -12,18 +12,18 @@
     <title>a. Domain life cycle :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5399,48 +5399,40 @@ governancedomain-soa-server1                                1/1     Running     
 <p>The number of OIG Managed Servers running is dependent on the <code>replicas</code> parameter configured for the cluster. To start more OIG Managed Servers perform the following steps:</p>
 <ol>
 <li>
-<p>Run the following kubectl command to edit the domain:</p>
-<pre><code>$ kubectl edit domain &lt;domain_uid&gt; -n &lt;domain_namespace&gt;
-</code></pre><p>For example:</p>
-<pre><code>$ kubectl edit domain governancedomain -n oigns
+<p>Run the following kubectl command to edit the oim_cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster &lt;cluster_name&gt; -n &lt;domain_namespace&gt;
+</code></pre></div><p>For example:</p>
+<pre><code>$ kubectl edit cluster governancedomain-oim-cluster -n oigns
 </code></pre><p><strong>Note</strong>: This opens an edit session for the domain where parameters can be changed using standard <code>vi</code> commands.</p>
 </li>
 <li>
-<p>In the edit session search for <code>clusterName: oim_cluster</code> and look for the <code>replicas</code> parameter. By default the replicas parameter is set to &ldquo;1&rdquo; hence a single OIG Managed Server is started (<code>oim_server1</code>):</p>
-<pre><code>  - clusterName: oim_cluster
-    replicas: 1
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<p>In the edit session, search for <code>spec:</code>, and then look for the <code>replicas</code> parameter under <code>clusterName: oim_cluster</code>. By default the replicas parameter is set to &ldquo;1&rdquo; hence a single OIG Managed Server is started (<code>oim_server1</code>):</p>
+<pre><code>spec:
+  clusterName: oim_cluster
+  replicas: 1
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
+  serverService:
+    precreateService: true
 </code></pre></li>
 <li>
 <p>To start more OIG Managed Servers, increase the <code>replicas</code> value as desired. In the example below, one more Managed Server will be started by setting <code>replicas</code> to &ldquo;2&rdquo;:</p>
-<pre><code>  - clusterName: oim_cluster
-    replicas: 2
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<pre><code>spec:
+  clusterName: oim_cluster
+  replicas: 2
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
+  serverService:
+    precreateService: true
 </code></pre></li>
 <li>
 <p>Save the file and exit (:wq)</p>
 <p>The output will look similar to the following:</p>
-<pre><code>domain.weblogic.oracle/governancedomain edited
+<pre><code>cluster.weblogic.oracle/governancedomain-oim-cluster edited
 </code></pre></li>
 <li>
 <p>Run the following kubectl command to view the pods:</p>
@@ -5471,42 +5463,35 @@ governancedomain-soa-server1                                1/1     Running     
 <p>As mentioned in the previous section, the number of OIG Managed Servers running is dependent on the <code>replicas</code> parameter configured for the cluster. To stop one or more OIG Managed Servers, perform the following:</p>
 <ol>
 <li>
-<p>Run the following kubectl command to edit the domain:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain &lt;domain_uid&gt; -n &lt;domain_namespace&gt;
+<p>Run the following kubectl command to edit the oim_cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster &lt;cluster_name&gt; -n &lt;domain_namespace&gt;
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain governancedomain -n oigns
-</code></pre></div></li>
+<pre><code>$ kubectl edit cluster governancedomain-oim-cluster -n oigns
+</code></pre></li>
 <li>
-<p>In the edit session search for <code>clusterName: oim_cluster</code> and look for the <code>replicas</code> parameter. In the example below <code>replicas</code> is set to &ldquo;2&rdquo; hence two OIG Managed Servers are started (<code>oim_server1</code> and <code>oim_server2</code>):</p>
-<pre><code>  - clusterName: oim_cluster
-    replicas: 2
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<p>In the edit session, search for <code>spec:</code>, and then look for the <code>replicas</code> parameter under <code>clusterName: oim_cluster</code>. In the example below <code>replicas</code> is set to &ldquo;2&rdquo; hence two OIG Managed Servers are started (<code>oim_server1</code> and <code>oim_server2</code>):</p>
+<pre><code>spec:
+  clusterName: oim_cluster
+  replicas: 2
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
+  serverService:
+    precreateService: true
 </code></pre></li>
 <li>
 <p>To stop OIG Managed Servers, decrease the <code>replicas</code> value as desired. In the example below, we will stop one Managed Server by setting replicas to &ldquo;1&rdquo;:</p>
-<pre><code>  - clusterName: oim_cluster
-    replicas: 1
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<pre><code>spec:
+  clusterName: oim_cluster
+  replicas: 1
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
+  serverService:
+    precreateService: true
+
 </code></pre></li>
 <li>
 <p>Save the file and exit (:wq)</p>
@@ -5541,26 +5526,34 @@ governancedomain-soa-server1                                1/1     Running     
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain governancedomain -n oigns
 </code></pre></div></li>
 <li>
-<p>In the edit session search for <code>serverStartPolicy: IF_NEEDED</code>:</p>
-<pre><code>    volumeMounts:
+<p>In the edit session search for <code>serverStartPolicy: IfNeeded</code> under the domain spec:</p>
+<pre><code>...
+    volumeMounts:
     - mountPath: /u01/oracle/user_projects/domains
       name: weblogic-domain-storage-volume
     volumes:
     - name: weblogic-domain-storage-volume
       persistentVolumeClaim:
         claimName: governancedomain-domain-pvc
-  serverStartPolicy: IF_NEEDED
+  serverStartPolicy: IfNeeded
+  webLogicCredentialsSecret:
+    name: oig-domain-credentials
+ ...
 </code></pre></li>
 <li>
-<p>Change <code>serverStartPolicy: IF_NEEDED</code> to <code>NEVER</code> as follows:</p>
-<pre><code>    volumeMounts:
+<p>Change <code>serverStartPolicy: IfNeeded</code> to <code>Never</code> as follows:</p>
+<pre><code> ...
+    volumeMounts:
     - mountPath: /u01/oracle/user_projects/domains
       name: weblogic-domain-storage-volume
     volumes:
     - name: weblogic-domain-storage-volume
       persistentVolumeClaim:
         claimName: governancedomain-domain-pvc
-  serverStartPolicy: NEVER
+  serverStartPolicy: Never
+  webLogicCredentialsSecret:
+    name: oig-domain-credentials
+ ...
 </code></pre></li>
 <li>
 <p>Save the file and exit (:wq).</p>
@@ -5581,15 +5574,19 @@ governancedomain-soa-server1                                1/1     Terminating 
 governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
 </code></pre></li>
 <li>
-<p>To start the Administration Server and Managed Servers up again, repeat the previous steps but change  <code>serverStartPolicy: NEVER</code> to <code>IF_NEEDED</code> as follows:</p>
-<pre><code>    volumeMounts:
+<p>To start the Administration Server and Managed Servers up again, repeat the previous steps but change  <code>serverStartPolicy: Never</code> to <code>IfNeeded</code> as follows:</p>
+<pre><code>  ...
+    volumeMounts:
     - mountPath: /u01/oracle/user_projects/domains
       name: weblogic-domain-storage-volume
     volumes:
     - name: weblogic-domain-storage-volume
       persistentVolumeClaim:
         claimName: governancedomain-domain-pvc
-  serverStartPolicy: IF_NEEDED
+  serverStartPolicy: IfNeeded
+  webLogicCredentialsSecret:
+    name: oig-domain-credentials
+  ...
 </code></pre></li>
 <li>
 <p>Run the following kubectl command to view the pods:</p>
@@ -9197,19 +9194,19 @@ governancedomain-soa-server1                                1/1     Running     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784007" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784007"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

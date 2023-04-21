@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784009" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820305" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820305" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820305"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784009"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820305"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820305"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820305"></script>
 
     
   </div>
@@ -5403,9 +5403,9 @@
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get nodes,pods -n kube-system
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME                  STATUS   ROLES    AGE   VERSION
-node/worker-node1     Ready    &lt;none&gt;   17h   v1.20.10
-node/worker-node2     Ready    &lt;none&gt;   17h   v1.20.10
-node/master-node      Ready    master   23h   v1.20.10
+node/worker-node1     Ready    &lt;none&gt;   17h   v1.24.5+1.el7
+node/worker-node2     Ready    &lt;none&gt;   17h   v1.24.5+1.el7
+node/master-node      Ready    master   23h   v1.24.5+1.el7
 
 NAME                                     READY   STATUS    RESTARTS   AGE
 pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -5429,7 +5429,7 @@ pod/kube-scheduler-master                1/1     Running   0          21$
 <li>Build your own OIG container image using WebLogic Image Tool</li>
 </ul>
 <h4 id="prebuilt-oig-container-image">Prebuilt OIG container image</h4>
-<p>The latest prebuilt OIG January 2023 container image can be downloaded from <a href="https://container-registry.oracle.com">Oracle Container Registry</a>. This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program..</p>
+<p>The latest prebuilt OIG April 2023 container image can be downloaded from <a href="https://container-registry.oracle.com">Oracle Container Registry</a>. This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program..</p>
 <p><strong>Note</strong>: Before using this image you must login to <a href="https://container-registry.oracle.com">Oracle Container Registry</a>, navigate to <code>Middleware</code> &gt; <code>oig_cpu</code> and accept the license agreement.</p>
 <p>You can use this image in the following ways:</p>
 <ul>
@@ -5504,7 +5504,7 @@ customresourcedefinition.apiextensions.k8s.io <span style="color:#e6db74">&#34;d
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR
 $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--namespace &lt;sample-kubernetes-operator-ns&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set serviceAccount<span style="color:#f92672">=</span>&lt;sample-kubernetes-operator-sa&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set “enableClusterRoleBinding<span style="color:#f92672">=</span>true” <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;domainNamespaceSelectionStrategy=LabelSelector&#34;</span> <span style="color:#ae81ff">\
@@ -5514,7 +5514,7 @@ $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR
 $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--namespace opns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set serviceAccount<span style="color:#f92672">=</span>op-sa <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;enableClusterRoleBinding=true&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set <span style="color:#e6db74">&#34;domainNamespaceSelectionStrategy=LabelSelector&#34;</span> <span style="color:#ae81ff">\
@@ -5534,17 +5534,21 @@ TEST SUITE: None
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all -n opns
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>NAME                                     READY   STATUS    RESTARTS   AGE
-pod/weblogic-operator-5f75f48f99-2p86g   1/1     Running   0          23s
+<pre><code>NAME                                             READY   STATUS    RESTARTS   AGE
+pod/weblogic-operator-b7d6df78c-vxnpt            1/1     Running   0          33s
+pod/weblogic-operator-webhook-7996b8b58b-68l8s   1/1     Running   0          33s
 
-NAME                                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-service/internal-weblogic-operator-svc   ClusterIP   10.97.190.110   &lt;none&gt;        8082/TCP   23s
+NAME                                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+service/internal-weblogic-operator-svc   ClusterIP   10.103.112.20    &lt;none&gt;        8082/TCP,8083/TCP   33s
+service/weblogic-operator-webhook-svc    ClusterIP   10.109.163.130   &lt;none&gt;        8083/TCP,8084/TCP   34s
 
-NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/weblogic-operator   1/1     1            1           23s
+NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/weblogic-operator           1/1     1            1           33s
+deployment.apps/weblogic-operator-webhook   1/1     1            1           33s
 
-NAME                                           DESIRED   CURRENT   READY   AGE
-replicaset.apps/weblogic-operator-5f75f48f99   1         1         1       23s
+NAME                                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/weblogic-operator-b7d6df78c            1         1         1       33s
+replicaset.apps/weblogic-operator-webhook-7996b8b58b   1         1         1       33s
 </code></pre></li>
 <li>
 <p>Verify the operator pod&rsquo;s log:</p>
@@ -5552,9 +5556,9 @@ replicaset.apps/weblogic-operator-5f75f48f99   1         1         1       23s
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>{&quot;timestamp&quot;:&quot;&lt;DATE&gt;&quot;,&quot;thread&quot;:23,&quot;fiber&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;&quot;,&quot;domainUID&quot;:&quot;&quot;,&quot;level&quot;:&quot;CONFIG&quot;,&quot;class&quot;:&quot;oracle.kubernetes.operator.TuningParametersImpl&quot;,&quot;method&quot;:&quot;update&quot;,&quot;timeInMillis&quot;:1636650293167,&quot;message&quot;:&quot;Reloading tuning parameters from Operator's config map&quot;,&quot;exception&quot;:&quot;&quot;,&quot;code&quot;:&quot;&quot;,&quot;headers&quot;:{},&quot;body&quot;:&quot;&quot;}
-{&quot;timestamp&quot;:&quot;&lt;DATE&gt;&quot;,&quot;thread&quot;:30,&quot;fiber&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;&quot;,&quot;domainUID&quot;:&quot;&quot;,&quot;level&quot;:&quot;CONFIG&quot;,&quot;class&quot;:&quot;oracle.kubernetes.operator.TuningParametersImpl&quot;,&quot;method&quot;:&quot;update&quot;,&quot;timeInMillis&quot;:1636650303170,&quot;message&quot;:&quot;Reloading tuning parameters from Operator's config map&quot;,&quot;exception&quot;:&quot;&quot;,&quot;code&quot;:&quot;&quot;,&quot;headers&quot;:{},&quot;body&quot;:&quot;&quot;}
-{&quot;timestamp&quot;:&quot;&lt;DATE&gt;&quot;,&quot;thread&quot;:29,&quot;fiber&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;&quot;,&quot;domainUID&quot;:&quot;&quot;,&quot;level&quot;:&quot;CONFIG&quot;,&quot;class&quot;:&quot;oracle.kubernetes.operator.TuningParametersImpl&quot;,&quot;method&quot;:&quot;update&quot;,&quot;timeInMillis&quot;:1636650313172,&quot;message&quot;:&quot;Reloading tuning parameters from Operator's config map&quot;,&quot;exception&quot;:&quot;&quot;,&quot;code&quot;:&quot;&quot;,&quot;headers&quot;:{},&quot;body&quot;:&quot;&quot;}
+<pre><code>{&quot;timestamp&quot;:&quot;2023-03-15T17:44:55.852803077Z&quot;,&quot;thread&quot;:37,&quot;fiber&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;&quot;,&quot;domainUID&quot;:&quot;&quot;,&quot;level&quot;:&quot;FINE&quot;,&quot;class&quot;:&quot;oracle.kubernetes.operator.DeploymentLiveness&quot;,&quot;method&quot;:&quot;run&quot;,&quot;timeInMillis&quot;:1678902295852,&quot;message&quot;:&quot;Liveness file last modified time set&quot;,&quot;exception&quot;:&quot;&quot;,&quot;code&quot;:&quot;&quot;,&quot;headers&quot;:{},&quot;body&quot;:&quot;&quot;}
+{&quot;timestamp&quot;:&quot;2023-03-15T17:45:00.853833985Z&quot;,&quot;thread&quot;:42,&quot;fiber&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;&quot;,&quot;domainUID&quot;:&quot;&quot;,&quot;level&quot;:&quot;FINE&quot;,&quot;class&quot;:&quot;oracle.kubernetes.operator.DeploymentLiveness&quot;,&quot;method&quot;:&quot;run&quot;,&quot;timeInMillis&quot;:1678902300853,&quot;message&quot;:&quot;Liveness file last modified time set&quot;,&quot;exception&quot;:&quot;&quot;,&quot;code&quot;:&quot;&quot;,&quot;headers&quot;:{},&quot;body&quot;:&quot;&quot;}
+{&quot;timestamp&quot;:&quot;2023-03-15T17:45:05.854897954Z&quot;,&quot;thread&quot;:21,&quot;fiber&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;&quot;,&quot;domainUID&quot;:&quot;&quot;,&quot;level&quot;:&quot;FINE&quot;,&quot;class&quot;:&quot;oracle.kubernetes.operator.DeploymentLiveness&quot;,&quot;method&quot;:&quot;run&quot;,&quot;timeInMillis&quot;:1678902305854,&quot;message&quot;:&quot;Liveness file last modified time set&quot;,&quot;exception&quot;:&quot;&quot;,&quot;code&quot;:&quot;&quot;,&quot;headers&quot;:{},&quot;body&quot;:&quot;&quot;}
 </code></pre></li>
 </ol>
 <h3 id="create-a-namespace-for-oracle-identity-governance">Create a namespace for Oracle Identity Governance</h3>
@@ -5628,11 +5632,11 @@ No LimitRange resource.
 <p>If using Oracle Container Registry or your own container registry for your OIG container image, run the following command to create a helper pod to run RCU:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run --image<span style="color:#f92672">=</span>&lt;image_name-from-registry&gt; --image-pull-policy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;apiVersion&#34;: &#34;v1&#34;, &#34;spec&#34;:{&#34;imagePullSecrets&#34;: [{&#34;name&#34;: &#34;orclcred&#34;}]}}&#39;</span> helper -n &lt;domain_namespace&gt; -- sleep infinity
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run --image<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;January<span style="color:#e6db74">`</span>23&gt; --image-pull-policy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;apiVersion&#34;: &#34;v1&#34;,&#34;spec&#34;:{&#34;imagePullSecrets&#34;: [{&#34;name&#34;: &#34;orclcred&#34;}]}}&#39;</span> helper -n oigns -- sleep infinity
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run --image<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;April<span style="color:#e6db74">`</span>23&gt; --image-pull-policy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;apiVersion&#34;: &#34;v1&#34;,&#34;spec&#34;:{&#34;imagePullSecrets&#34;: [{&#34;name&#34;: &#34;orclcred&#34;}]}}&#39;</span> helper -n oigns -- sleep infinity
 </code></pre></div><p>If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run helper --image &lt;image&gt; -n oigns -- sleep infinity
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-&lt;January<span style="color:#e6db74">`</span>23&gt; -n oigns -- sleep infinity
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-&lt;April<span style="color:#e6db74">`</span>23&gt; -n oigns -- sleep infinity
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>pod/helper created
 </code></pre></li>
@@ -5816,14 +5820,13 @@ Repository Creation Utility - Create : Operation Completed
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>oracle@helper oracle<span style="color:#f92672">]</span>$ cat /u01/oracle/idm/server/bin/patch_oim_wls.log
 </code></pre></div><p>The output should look similar to below:</p>
 <pre><code>...
-   [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_bkp.sql
-   [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_fix.sql
-   [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_restore_bkp.sql
-   [sql] 58 of 58 SQL statements executed successfully
-
+[sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_bkp.sql
+[sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_fix.sql
+[sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_restore_bkp.sql
+[sql] 61 of 61 SQL statements executed successfully
 
 BUILD SUCCESSFUL
-Total time: 8 seconds
+Total time: 6 seconds
 </code></pre></li>
 <li>
 <p>Exit the helper bash shell by issuing the command <code>exit</code>.</p>
@@ -9681,19 +9684,19 @@ Events:        &lt;none&gt;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820305"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784009"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784009"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820305"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820305"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784009" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784009"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820305" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820305"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

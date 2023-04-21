@@ -12,18 +12,18 @@
     <title>a) Scaling Up/Down OUD Pods  :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5379,9 +5379,9 @@
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl --namespace oudns get pods -o wide
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME              READY   STATUS    RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running   0          34m   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1   1/1     Running   0          34m   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2   1/1     Running   0          34m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-0   1/1     Running   0          22h   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-1   1/1     Running   0          22h   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-2   1/1     Running   0          22h   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
 </code></pre><h3 id="scaling-up-oud-pods">Scaling up OUD pods</h3>
 <p>In this example, <code>replicaCount</code> is increased to <code>4</code> which creates a new OUD pod <code>oud-ds-rs-3</code> with associated services created.</p>
 <p>You can scale up the number of OUD pods using one of the following methods:</p>
@@ -5397,7 +5397,7 @@ pod/oud-ds-rs-2   1/1     Running   0          34m   10.244.0.193   &lt;Worker N
 </code></pre></div></li>
 <li>
 <p>Create a <code>oud-scaleup-override.yaml</code> file that contains:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">replicaCount</span>: <span style="color:#ae81ff">3</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">replicaCount</span>: <span style="color:#ae81ff">4</span>
 </code></pre></div></li>
 <li>
 <p>Run the following command to scale up the OUD pods:</p>
@@ -5415,11 +5415,11 @@ pod/oud-ds-rs-2   1/1     Running   0          34m   10.244.0.193   &lt;Worker N
 <li>
 <p>Run the following command to scale up the OUD pods:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace &lt;namespace&gt; <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set replicaCount<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set replicaCount<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>&lt;release_name&gt; oud-ds-rs --reuse-values
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace oudns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set replicaCount<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set replicaCount<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs --reuse-values
 </code></pre></div></li>
 </ol>
@@ -5432,27 +5432,28 @@ pod/oud-ds-rs-2   1/1     Running   0          34m   10.244.0.193   &lt;Worker N
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods,service -n oudns
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME              READY   STATUS    RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running   0          45m   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1   1/1     Running   0          45m   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2   1/1     Running   0          45m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-0   1/1     Running   0          22h   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-1   1/1     Running   0          22h   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-2   1/1     Running   0          22h   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
 pod/oud-ds-rs-3   1/1     Running   0          17m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
      
 NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE     SELECTOR
-service/oud-ds-rs-0           ClusterIP   10.99.232.83     &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   37m44s   kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-1           ClusterIP   10.100.186.42    &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-2           ClusterIP   10.104.55.53     &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-3           ClusterIP   10.104.45.52     &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP   8m45s    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-3
-service/oud-ds-rs-http-0      ClusterIP   10.102.116.145   &lt;none&gt;        1080/TCP,1081/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-http-1      ClusterIP   10.111.103.84    &lt;none&gt;        1080/TCP,1081/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-http-2      ClusterIP   10.105.53.24     &lt;none&gt;        1080/TCP,1081/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-http-3      ClusterIP   10.106.51.25     &lt;none&gt;        1080/TCP,1081/TCP            8m45s    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-3
-service/oud-ds-rs-lbr-admin   ClusterIP   10.98.39.206     &lt;none&gt;        1888/TCP,1444/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-http    ClusterIP   10.110.77.132    &lt;none&gt;        1080/TCP,1081/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-lbr-ldap    ClusterIP   10.111.55.122    &lt;none&gt;        1389/TCP,1636/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
-service/oud-ds-rs-ldap-0      ClusterIP   10.108.155.81    &lt;none&gt;        1389/TCP,1636/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-0
-service/oud-ds-rs-ldap-1      ClusterIP   10.104.88.44     &lt;none&gt;        1389/TCP,1636/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-1
-service/oud-ds-rs-ldap-2      ClusterIP   10.105.253.120   &lt;none&gt;        1389/TCP,1636/TCP            37m44s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-2
-service/oud-ds-rs-ldap-3      ClusterIP   10.105.253.55    &lt;none&gt;        1389/TCP,1636/TCP            8m45s    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,oud/instance=oud-ds-rs-3
+service/oud-ds-rs             ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1389/TCP,1636/TCP,1080/TCP,1081/TCP,1898/TCP   22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-0           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-1           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-2           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-3           ClusterIP   None             &lt;none&gt;        1444/TCP,1888/TCP,1898/TCP                                       9m9s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-3
+service/oud-ds-rs-http-0      ClusterIP   10.104.112.93    &lt;none&gt;        1080/TCP,1081/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-http-1      ClusterIP   10.103.105.70    &lt;none&gt;        1080/TCP,1081/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-http-2      ClusterIP   10.110.160.107   &lt;none&gt;        1080/TCP,1081/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-http-3      ClusterIP   10.102.93.179    &lt;none&gt;        1080/TCP,1081/TCP                                                9m9s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-3
+service/oud-ds-rs-lbr-admin   ClusterIP   10.99.238.222    &lt;none&gt;        1888/TCP,1444/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-http    ClusterIP   10.101.250.196   &lt;none&gt;        1080/TCP,1081/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-lbr-ldap    ClusterIP   10.104.149.90    &lt;none&gt;        1389/TCP,1636/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs
+service/oud-ds-rs-ldap-0      ClusterIP   10.109.255.221   &lt;none&gt;        1389/TCP,1636/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-0
+service/oud-ds-rs-ldap-1      ClusterIP   10.111.135.142   &lt;none&gt;        1389/TCP,1636/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-1
+service/oud-ds-rs-ldap-2      ClusterIP   10.100.8.145     &lt;none&gt;        1389/TCP,1636/TCP                                                22h    app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-2
+service/oud-ds-rs-ldap-3      ClusterIP   10.111.177.46    &lt;none&gt;        1389/TCP,1636/TCP                                                9m9s   app.kubernetes.io/instance=oud-ds-rs,app.kubernetes.io/name=oud-ds-rs,statefulset.kubernetes.io/pod-name=oud-ds-rs-3
 </code></pre><p><strong>Note</strong>: It will take several minutes before all the services listed above show. While the <code>oud-ds-rs-3</code> pod has a <code>STATUS</code> of <code>0/1</code> the pod is started but the OUD server associated with it is currently starting. While the pod is starting you can check the startup status in the pod log, by running the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs oud-ds-rs-3 -n oudns
 </code></pre></div></li>
@@ -5463,17 +5464,17 @@ service/oud-ds-rs-ldap-3      ClusterIP   10.105.253.55    &lt;none&gt;        1
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oudns
    
 NAME              READY   STATUS        RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running       <span style="color:#ae81ff">0</span>          49m   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1   1/1     Running       <span style="color:#ae81ff">0</span>          49m   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2   1/1     Running       <span style="color:#ae81ff">0</span>          49m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-0   1/1     Running       <span style="color:#ae81ff">0</span>          22h   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-1   1/1     Running       <span style="color:#ae81ff">0</span>          22h   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-2   1/1     Running       <span style="color:#ae81ff">0</span>          22h   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
 pod/oud-ds-rs-3   1/1     Terminating   <span style="color:#ae81ff">0</span>          21m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
 </code></pre></div><p>The pod will take a minute or two to stop and then will disappear:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oudns
    
 NAME              READY   STATUS        RESTARTS   AGE     IP             NODE          NOMINATED NODE   READINESS GATES
-pod/oud-ds-rs-0   1/1     Running       <span style="color:#ae81ff">0</span>          51m   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-1   1/1     Running       <span style="color:#ae81ff">0</span>          51m   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
-pod/oud-ds-rs-2   1/1     Running       <span style="color:#ae81ff">0</span>          51m   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-0   1/1     Running       <span style="color:#ae81ff">0</span>          22h   10.244.0.195   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-1   1/1     Running       <span style="color:#ae81ff">0</span>          22h   10.244.0.194   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
+pod/oud-ds-rs-2   1/1     Running       <span style="color:#ae81ff">0</span>          22h   10.244.0.193   &lt;Worker Node&gt;   &lt;none&gt;           &lt;none&gt;
 </code></pre></div>
 
 <footer class=" footline" >
@@ -9059,19 +9060,19 @@ pod/oud-ds-rs-2   1/1     Running       <span style="color:#ae81ff">0</span>    
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784008"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784008"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784008" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784008"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

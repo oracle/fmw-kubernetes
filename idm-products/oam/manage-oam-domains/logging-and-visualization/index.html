@@ -12,18 +12,18 @@
     <title>c. Logging and Visualization :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5394,11 +5394,6 @@
 <td>If SSL is enabled for ELK set the value to <code>true</code>, or if NON-SSL set to <code>false</code>. This value must be lowercase.</td>
 </tr>
 <tr>
-<td><code>&lt;ELK_CERT&gt;</code></td>
-<td><code>MIIDVjCCAj6gAwIBAgIRAOqQ3Gy75..etc...P9ovZ/EKPpE6Gq</code></td>
-<td>If <code>ELK_SSL=true</code>, this is the BASE64 version of the certificate between <code>---BEGIN CERTIFICATE---</code> and <code>---END CERTIFICATE---</code>. This is the Certificate Authority (CA) certificate(s), that signed the certificate of the Elasticsearch server. If using a self-signed certificate, this is the self signed certificate of the Elasticsearch server. See <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-C1FC1063-FA76-48AD-AE3D-A39390874C74">Copying the Elasticsearch Certificate</a> for details on how to get the correct certificate.</td>
-</tr>
-<tr>
 <td><code>&lt;ELK_HOSTS&gt;</code></td>
 <td><code>https://elasticsearch.example.com:9200</code></td>
 <td>The URL for sending logs to Elasticsearch. HTTP if NON-SSL is used.</td>
@@ -5425,6 +5420,7 @@
 </tr>
 </tbody>
 </table>
+<p>You will also need the BASE64 version of the Certificate Authority (CA) certificate(s) that signed the certificate of the Elasticsearch server. If using a self-signed certificate, this is the self signed certificate of the Elasticsearch server. See <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-C1FC1063-FA76-48AD-AE3D-A39390874C74">Copying the Elasticsearch Certificate</a> for details on how to get the correct certificate. In the example below the certificate is called <code>elk.crt</code>.</p>
 <h4 id="create-kubernetes-secrets">Create Kubernetes secrets</h4>
 <ol>
 <li>
@@ -5486,7 +5482,18 @@ accessdomain-domain-pv   10Gi       RWX            Retain           Bound   oamn
 <h4 id="create-the-configmap">Create the Configmap</h4>
 <ol>
 <li>
-<p>Navigate to the <code>$WORKDIR/kubernetes/elasticsearch-and-kibana</code> directory and create a <code>logstash_cm.yaml</code> file as follows:</p>
+<p>Copy the <code>elk.crt</code> file to the <code>$WORKDIR/kubernetes/elasticsearch-and-kibana</code> directory.</p>
+</li>
+<li>
+<p>Navigate to the <code>$WORKDIR/kubernetes/elasticsearch-and-kibana</code> directory and run the following:</p>
+<pre><code>kubectl create configmap elk-cert --from-file=elk.crt -n &lt;namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>kubectl create configmap elk-cert --from-file=elk.crt -n oamns
+</code></pre><p>The output will look similar to the following:</p>
+<pre><code>configmap/elk-cert created
+</code></pre></li>
+<li>
+<p>Create a <code>logstash_cm.yaml</code> file in the <code>$WORKDIR/kubernetes/elasticsearch-and-kibana</code> directory as follows:</p>
 <pre><code>apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5495,14 +5502,9 @@ metadata:
 data:
   logstash.yml: |
   #http.host: &quot;0.0.0.0&quot;
- 
-  elk.crt: |
-    -----BEGIN CERTIFICATE-----  
-    &lt;ELK_CERT&gt;
-    -----END CERTIFICATE-----
   logstash-config.conf: |
     input {
-      file {
+     file {
         path =&gt; &quot;/u01/oracle/user_projects/domains/logs/accessdomain/AdminServer*.log&quot;
         tags =&gt; &quot;Adminserver_log&quot;
         start_position =&gt; beginning
@@ -5528,16 +5530,6 @@ data:
         start_position =&gt; beginning
       }
       file {
-        path =&gt; &quot;/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/oam_server*-diagnostic.log&quot;
-        tags =&gt; &quot;Oamserver_diagnostic&quot;
-        start_position =&gt; beginning
-      }
-      file {
-        path =&gt; &quot;/u01/oracle/user_projects/domains/accessdomain/servers/**/logs/access*.log&quot;
-        tags =&gt; &quot;Access_logs&quot;
-        start_position =&gt; beginning
-      }
-      file {
       path =&gt; &quot;/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/auditlogs/OAM/audit.log&quot;
       tags =&gt; &quot;Audit_logs&quot;
       start_position =&gt; beginning
@@ -5558,7 +5550,7 @@ data:
     hosts =&gt; [&quot;&lt;ELK_HOSTS&gt;&quot;]
     cacert =&gt; '/usr/share/logstash/config/certs/elk.crt'
     index =&gt; &quot;oamlogs-000001&quot;
-    ssl =&gt; &lt;ELK_SSL&gt;
+    ssl =&gt; true
     ssl_certificate_verification =&gt; false
     user =&gt; &quot;&lt;ELK_USER&gt;&quot;
     password =&gt; &quot;${ELASTICSEARCH_PASSWORD}&quot;
@@ -5567,9 +5559,7 @@ data:
     }
 </code></pre><p>Change the values in the above file as follows:</p>
 <ul>
-<li>Change the <code>&lt;ELKNS&gt;</code>, <code>&lt;ELK_CERT&gt;</code>, <code>&lt;ELK_HOSTS&gt;</code>. <code>&lt;ELK_SSL&gt;</code> to match the values for your environment.</li>
-<li>If using SSL, make sure the value for <code>&lt;ELK_CERT&gt;</code> is indented correctly. You can use the command: <code>sed 's/^/   /' elk.crt</code> to output the certificate with the correct indentation.</li>
-<li>If not using SSL, delete the <code>&lt;ELK_CERT&gt;</code> line, but leave the &mdash;&ndash;BEGIN CERTIFICATE&mdash;&ndash; and &mdash;&ndash;END CERTIFICATE&mdash;&ndash;.</li>
+<li>Change the <code>&lt;ELKNS&gt;</code>, <code>&lt;ELK_HOSTS&gt;</code>, <code>&lt;ELK_SSL&gt;</code>, and <code>&lt;ELK_USER&gt;</code> to match the values for your environment.</li>
 <li>Change <code>/u01/oracle/user_projects/domains</code> to match the <code>mountPath</code> returned earlier</li>
 <li>If your domainUID is anything other than <code>accessdomain</code>, change each instance of <code>accessdomain</code> to your domainUID.</li>
 <li>If using API KEY for your ELK authentication, delete the <code>user</code> and <code>password</code> lines.</li>
@@ -5585,28 +5575,6 @@ metadata:
 data:
   logstash.yml: |
   #http.host: &quot;0.0.0.0&quot;
-
-  elk.crt: |
-    -----BEGIN CERTIFICATE-----
-    MIIDVjCCAj6gAwIBAgIRAOqQ3Gy75NvPPQUN5kXqNQUwDQYJKoZIhvcNAQELBQAw
-    NTEWMBQGA1UECxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJj
-    aC1odHRwMB4XDTIyMDgyNDA1MTU1OVoXDTIzMDgyNDA1MjU1OVowNTEWMBQGA1UE
-    CxMNZWxhc3RpY3NlYXJjaDEbMBkGA1UEAxMSZWxhc3RpY3NlYXJjaC1odHRwMIIB
-    IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsQOnxUm9uF32+lyc9SA3WcMZ
-    P1X7TbHMDuO/l3UHBUf5F/bt2m3YkGw+enIos9wzuUNpjIwVt8q4WrRCMl80nAQ0
-    yCXrfLSI9zaHxEC8Ht7V0U+7Sgu5uysD4tyZ9T0Q5zjvkWS6oBPxhfri3OQfPvUW
-    gQ6wJaPGDteYZAwiBMvPEkmh0VUTBTXjToHrtrT7pzmz5BBWnUzdf+jv0+nEfedm
-    mMWw/8jqyqid7bu7bo6gKBZ8zk06n2iMaXzmGW34QlYRLBgubThhxyDE7joZ4NTA
-    UFEJecZR2fccmpN8CNkT9Ex4Hq88nh2OP5XKKPNF4kLh2u6F4auF7Uz42jwvIwID
-    AQABo2EwXzAOBgNVHQ8BAf8EBAMCAoQwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsG
-    AQUFBwMCMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLQb/IjHHkSmHgKSPY7r
-    zBIJZMbdMA0GCSqGSIb3DQEBCwUAA4IBBQA01qY0tGIPsKNkn7blxRjEYkTg59Z5
-    vi6MCpGtdoyZeJgH621IpwyB34Hpu1RQfyg1aNgmOtIK9cvQZRl008DHF4AiHYhU
-    6xe3cjI/QxDXwitoBgWl+a0mkwhSmzJt7TuzImq7RMO4ws3M/nGeNUwFjwsQu86+
-    N/Y3RuuUVbK1xy8Jdz3FZADIgHVPN6GQwYKEpWrZNapKBXjunjCZmpBFxqGMRF44
-    fcSKFlFkwjyTq4kgq44NPv18NMfKCYZcK7ttRTiep77vKB7No/TM69Oz5ZHhQ+2Q
-    pSGg3QF+1fOCFCgWXFEOle6lQ5i8a/GihY0FuphrZxP9ovZ/EKPpE6Gq
-    -----END CERTIFICATE-----
   logstash-config.conf: |
     input {
      file {
@@ -5706,7 +5674,7 @@ spec:
         - containerPort: 5044
           name: logstash
         volumeMounts:
-        - mountPath: /u01/oracle/user_projects/domains
+        - mountPath: /u01/oracle/user_projects
           name: weblogic-domain-storage-volume
         - name: shared-logs
           mountPath: /shared-logs
@@ -5723,7 +5691,7 @@ spec:
           items:
           - key: elk.crt
             path: elk.crt
-          name: oam-logstash-configmap
+          name: elk-cert
         name: elk-cert
       - configMap:
           defaultMode: 420
@@ -5748,6 +5716,7 @@ spec:
 <li>Change the <code>&lt;ELKNS&gt;</code>, <code>&lt;ELK_VER&gt;</code> to match the values for your environment.</li>
 <li>Change <code>/u01/oracle/user_projects/domains</code> to match the <code>mountPath</code> returned earlier</li>
 <li>Change the <code>claimName</code> value to match the <code>claimName</code> returned earlier</li>
+<li>If your Kubernetes environment does not allow access to the internet to pull the logstash image, you must load the logstash image in your own container registry and change <code>image: logstash:&lt;ELK_VER&gt;</code> to the location of the image in your container registry e.g: <code>container-registry.example.com/logstash:8.3.1</code></li>
 </ul>
 <p>For example:</p>
 <pre><code>apiVersion: apps/v1
@@ -5783,7 +5752,7 @@ spec:
         - containerPort: 5044
           name: logstash
         volumeMounts:
-        - mountPath: /u01/oracle/user_projects/domains
+        - mountPath: /u01/oracle/user_projects
           name: weblogic-domain-storage-volume
         - name: shared-logs
           mountPath: /shared-logs
@@ -5800,7 +5769,7 @@ spec:
           items:
           - key: elk.crt
             path: elk.crt
-          name: oam-logstash-configmap
+          name: elk-cert
         name: elk-cert
       - configMap:
           defaultMode: 420
@@ -5820,7 +5789,8 @@ spec:
         persistentVolumeClaim:
           claimName: accessdomain-domain-pvc
       - name: shared-logs
-        emptyDir: {}
+        emptyDir: {}   ```   
+
 </code></pre></li>
 <li>
 <p>Deploy the <code>logstash</code> pod by executing the following command:</p>
@@ -9490,19 +9460,19 @@ $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash_cm.yam
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784007" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784007"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

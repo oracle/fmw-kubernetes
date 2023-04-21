@@ -12,18 +12,18 @@
     <title>a. Domain Life Cycle :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1677784007" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1677784007" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1681820304" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1681820304" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1681820304"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1677784007"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1681820304"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1681820304"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1677784007"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1681820304"></script>
 
     
   </div>
@@ -5338,6 +5338,8 @@
         <li><a href="#view-existing-oam-servers">View existing OAM servers</a></li>
         <li><a href="#startingscaling-up-oam-managed-servers">Starting/Scaling up OAM Managed Servers</a></li>
         <li><a href="#stoppingscaling-down-oam-managed-servers">Stopping/Scaling down OAM Managed Servers</a></li>
+        <li><a href="#startingscaling-up-oam-policy-managed-servers">Starting/Scaling up OAM Policy Managed Servers</a></li>
+        <li><a href="#stoppingscaling-down-oam-policy-managed-servers">Stopping/Scaling down OAM Policy Managed Servers</a></li>
         <li><a href="#stopping-and-starting-the-administration-server-and-managed-servers">Stopping and Starting the Administration Server and Managed Servers</a></li>
         <li><a href="#domain-lifecycle-sample-scripts">Domain lifecycle sample scripts</a></li>
       </ul>
@@ -5371,6 +5373,8 @@
 <li><a href="#view-existing-oam-servers">View existing OAM servers</a></li>
 <li><a href="#startingscaling-up-oam-managed-servers">Starting/Scaling up OAM Managed servers</a></li>
 <li><a href="#stoppingscaling-down-oam-managed-servers">Stopping/Scaling down OAM Managed servers</a></li>
+<li><a href="#startingscaling-up-oam-policy-managed-servers">Starting/Scaling up OAM Policy Managed servers</a></li>
+<li><a href="#stoppingscaling-down-oam-policy-managed-servers">Stopping/Scaling down OAM Policy Managed servers</a></li>
 <li><a href="#stopping-and-starting-the-administration-server-and-managed-servers">Stopping and starting the Administration Server and Managed Servers</a></li>
 <li><a href="#domain-lifecycle-sample-scripts">Domain lifecycle sample scripts</a></li>
 </ol>
@@ -5382,7 +5386,7 @@
 </div>
 
 <h3 id="view-existing-oam-servers">View existing OAM servers</h3>
-<p>The default OAM deployment starts the Administration Server (<code>AdminServer</code>), two OAM Managed Servers (<code>oam_server1</code> and <code>oam_server2</code>) and two OAM Policy Manager server (<code>oam_policy_mgr1</code> and <code>oam_policy_mgr2</code> ).</p>
+<p>The default OAM deployment starts the Administration Server (<code>AdminServer</code>), two OAM Managed Servers (<code>oam_server1</code> and <code>oam_server2</code>) and two OAM Policy Manager servers (<code>oam_policy_mgr1</code> and <code>oam_policy_mgr2</code> ).</p>
 <p>The deployment also creates, but doesn&rsquo;t start, three extra OAM Managed Servers (<code>oam-server3</code> to <code>oam-server5</code>) and three more OAM Policy Manager servers (<code>oam_policy_mgr3</code> to <code>oam_policy_mgr5</code>).</p>
 <p>All these servers are visible in the WebLogic Server Console <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console</code> by navigating to <em>Domain Structure</em> &gt; <em>oamcluster</em> &gt; <em>Environment</em> &gt; <em>Servers</em>.</p>
 <p>To view the running servers using kubectl, run the following command:</p>
@@ -5400,53 +5404,45 @@ accessdomain-oam-server2                                 1/1     Running     0  
 helper                                                   1/1     Running     0          3h51m
 nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          55m
 </code></pre><h3 id="startingscaling-up-oam-managed-servers">Starting/Scaling up OAM Managed Servers</h3>
-<p>The number of OAM Managed Servers running is dependent on the <code>replicas</code> parameter configured for the cluster. To start more OAM Managed Servers perform the following steps:</p>
+<p>The number of OAM Managed Servers running is dependent on the <code>replicas</code> parameter configured for the oam-cluster. To start more OAM Managed Servers perform the following steps:</p>
 <ol>
 <li>
-<p>Run the following kubectl command to edit the domain:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain &lt;domain_uid&gt; -n &lt;domain_namespace&gt;
+<p>Run the following kubectl command to edit the oam-cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-oam-cluster -n &lt;domain_namespace&gt;
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain accessdomain -n oamns
-</code></pre></div><p><strong>Note</strong>: This opens an edit session for the domain where parameters can be changed using standard <code>vi</code> commands.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-oam-cluster -n oamns
+</code></pre></div><p><strong>Note</strong>: This opens an edit session for the oam-cluster where parameters can be changed using standard <code>vi</code> commands.</p>
 </li>
 <li>
-<p>In the edit session search for <code>clusterName: oam_cluster</code> and look for the <code>replicas</code> parameter. By default the replicas parameter is set to &ldquo;2&rdquo; hence two OAM Managed Servers are started (<code>oam_server1</code> and <code>oam_server2</code>):</p>
-<pre><code>  clusters:
-  - clusterName: oam_cluster
-    replicas: 2
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<p>In the edit session, search for <code>spec:</code>, and then look for the <code>replicas</code> parameter under <code>clusterName: oam_cluster</code>. By default the replicas parameter is set to &ldquo;2&rdquo; hence two OAM Managed Servers are started (<code>oam_server1</code> and <code>oam_server2</code>):</p>
+<pre><code>...
+spec:
+  clusterName: oam_cluster
+  replicas: 2
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m
+        -Xmx8192m
+...
 </code></pre></li>
 <li>
 <p>To start more OAM Managed Servers, increase the <code>replicas</code> value as desired. In the example below, two more managed servers will be started by setting <code>replicas</code> to &ldquo;4&rdquo;:</p>
-<pre><code>  clusters:
-  - clusterName: oam_cluster
-    replicas: 4
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<pre><code>...
+spec:
+  clusterName: oam_cluster
+  replicas: 4
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m
+        -Xmx8192m
+...
 </code></pre></li>
 <li>
 <p>Save the file and exit (:wq!)</p>
 <p>The output will look similar to the following:</p>
-<pre><code>domain.weblogic.oracle/accessdomain edited
+<pre><code>cluster.weblogic.oracle/accessdomain-oam-cluster edited
 </code></pre></li>
 <li>
 <p>Run the following kubectl command to view the pods:</p>
@@ -5483,79 +5479,40 @@ nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0  
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs accessdomain-oam-server3 -n oamns
 </code></pre></div></li>
-<li>
-<p>To start more OAM Policy Manager servers, repeat the previous commands but change the <code>replicas</code> parameter for the <code>policy_cluster</code>. In the example below <code>replicas</code> has been increased to &ldquo;4&rdquo;:</p>
-<pre><code>  - clusterName: policy_cluster
-    replicas: 2
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
-</code></pre><p>After saving the changes two new pods will be started (<code>accessdomain-oam-policy-mgr3</code> and <code>accessdomain-oam-policy-mgr4</code>). After a few minutes they will have a <code>READY</code> status of <code>1/1</code>. In the example below <code>accessdomain-oam-policy-mgr3</code> and <code>accessdomain-oam-policy-mgr4</code> are started:</p>
-<pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE
-accessdomain-adminserver                                 1/1     Running     0          3h43m
-accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h49m
-accessdomain-oam-policy-mgr1                             1/1     Running     0          3h35m
-accessdomain-oam-policy-mgr2                             1/1     Running     0          3h35m
-accessdomain-oam-policy-mgr3                             1/1     Running     0          4m18s
-accessdomain-oam-policy-mgr4                             1/1     Running     0          4m18s
-accessdomain-oam-server1                                 1/1     Running     0          3h35m
-accessdomain-oam-server2                                 1/1     Running     0          3h35m
-accessdomain-oam-server3                                 1/1     Running     0          9m27s
-accessdomain-oam-server4                                 1/1     Running     0          9m27s
-helper                                                   1/1     Running     0          4h4m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          69m
-</code></pre></li>
 </ol>
 <h3 id="stoppingscaling-down-oam-managed-servers">Stopping/Scaling down OAM Managed Servers</h3>
 <p>As mentioned in the previous section, the number of OAM Managed Servers running is dependent on the <code>replicas</code> parameter configured for the cluster. To stop one or more OAM Managed Servers, perform the following:</p>
 <ol>
 <li>
-<p>Run the following kubectl command to edit the domain:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain &lt;domain_uid&gt; -n &lt;domain_namespace&gt;
+<p>Run the following kubectl command to edit the oam-cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-oam-cluster -n &lt;domain_namespace&gt;
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain accessdomain -n oamns
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-oam-cluster -n oamns
 </code></pre></div></li>
 <li>
-<p>In the edit session search for <code>clusterName: oam_cluster</code> and look for the <code>replicas</code> parameter. In the example below <code>replicas</code> is set to &ldquo;4&rdquo;, hence four OAM Managed Servers are started (<code>access-domain-oam_server1</code> - <code>access-domain-oam_server4</code>):</p>
-<pre><code>  clusters:
-  - clusterName: oam_cluster
-    replicas: 4
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<p>In the edit session, search for <code>spec:</code>, and then look for the <code>replicas</code> parameter under <code>clusterName: oam_cluster</code>. In the example below <code>replicas</code> is set to &ldquo;4&rdquo;, hence four OAM Managed Servers are started (<code>access-domain-oam_server1</code> - <code>access-domain-oam_server4</code>):</p>
+<pre><code>...
+spec:
+  clusterName: oam_cluster
+  replicas: 4
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m
+        -Xmx8192m
+...
 </code></pre></li>
 <li>
 <p>To stop OAM Managed Servers, decrease the <code>replicas</code> value as desired. In the example below, we will stop two managed servers by setting replicas to &ldquo;2&rdquo;:</p>
-<pre><code>  clusters:
-  - clusterName: oam_cluster
-    replicas: 2
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<pre><code>spec:
+  clusterName: oam_cluster
+  replicas: 2
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m
+        -Xmx8192m
+...
 </code></pre></li>
 <li>
 <p>Save the file and exit (:wq!)</p>
@@ -5571,8 +5528,6 @@ accessdomain-adminserver                                 1/1     Running       0
 accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h51m
 accessdomain-oam-policy-mgr1                             1/1     Running       0          3h37m
 accessdomain-oam-policy-mgr2                             1/1     Running       0          3h37m
-accessdomain-oam-policy-mgr3                             1/1     Running       0          6m18s
-accessdomain-oam-policy-mgr4                             1/1     Running       0          6m18s
 accessdomain-oam-server1                                 1/1     Running       0          3h37m
 accessdomain-oam-server2                                 1/1     Running       0          3h37m
 accessdomain-oam-server3                                 1/1     Running       0          11m
@@ -5585,28 +5540,78 @@ accessdomain-adminserver                                 1/1     Running     0  
 accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h54m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h40m
 accessdomain-oam-policy-mgr2                             1/1     Running     0          3h40m
-accessdomain-oam-policy-mgr3                             1/1     Running     0          9m18s
-accessdomain-oam-policy-mgr4                             1/1     Running     0          9m18s
 accessdomain-oam-server1                                 1/1     Running     0          3h40m
 accessdomain-oam-server2                                 1/1     Running     0          3h40m
 helper                                                   1/1     Running     0          4h9m
 nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          74m
 </code></pre></li>
+</ol>
+<h3 id="startingscaling-up-oam-policy-managed-servers">Starting/Scaling up OAM Policy Managed Servers</h3>
+<p>The number of OAM Policy Managed Servers running is dependent on the <code>replicas</code> parameter configured for the policy-cluster. To start more OAM Policy Managed Servers perform the following steps:</p>
+<ol>
 <li>
-<p>To stop OAM Policy Manager servers, repeat the previous commands but change the <code>replicas</code> parameter for the <code>policy_cluster</code>. In the example below <code>replicas</code> has been decreased from &ldquo;4&rdquo; to &ldquo;2&rdquo;:</p>
-<pre><code>  - clusterName: policy_cluster
-    replicas: 1
-    serverPod:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: weblogic.clusterName
-                  operator: In
-                  values:
-                  - $(CLUSTER_NAME)
+<p>Run the following kubectl command to edit the policy-cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-policy-cluster -n &lt;domain_namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-policy-cluster -n oamns
+</code></pre></div><p><strong>Note</strong>: This opens an edit session for the policy-cluster where parameters can be changed using standard <code>vi</code> commands.</p>
+</li>
+<li>
+<p>In the edit session, search for <code>spec:</code>, and then look for the <code>replicas</code> parameter under <code>clusterName: policy_cluster</code>. By default the replicas parameter is set to &ldquo;2&rdquo; hence two OAM Policy Managed Servers are started (<code>oam_policy_mgr1</code> and <code>oam_policy_mgr2</code>):</p>
+<pre><code>...
+spec:
+  clusterName: policy_cluster
+  replicas: 2
+  serverService:
+    precreateService: true
+...
+</code></pre></li>
+<li>
+<p>To start more OAM Policy Managed Servers, increase the <code>replicas</code> value as desired. In the example below, two more managed servers will be started by setting <code>replicas</code> to &ldquo;4&rdquo;:</p>
+<pre><code>...
+spec:
+  clusterName: policy_cluster
+  replicas: 4
+  serverService:
+    precreateService: true
+...
+</code></pre></li>
+<li>
+<p>Save the file and exit (:wq!)</p>
+<p>The output will look similar to the following:</p>
+<pre><code>cluster.weblogic.oracle/accessdomain-policy-cluster edited
+</code></pre><p>After saving the changes two new pods will be started (<code>accessdomain-oam-policy-mgr3</code> and <code>accessdomain-oam-policy-mgr4</code>). After a few minutes they will have a <code>READY</code> status of <code>1/1</code>. In the example below <code>accessdomain-oam-policy-mgr3</code> and <code>accessdomain-oam-policy-mgr4</code> are started:</p>
+<pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE
+accessdomain-adminserver                                 1/1     Running     0          3h43m
+accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h49m
+accessdomain-oam-policy-mgr1                             1/1     Running     0          3h35m
+accessdomain-oam-policy-mgr2                             1/1     Running     0          3h35m
+accessdomain-oam-policy-mgr3                             1/1     Running     0          4m18s
+accessdomain-oam-policy-mgr4                             1/1     Running     0          4m18s
+accessdomain-oam-server1                                 1/1     Running     0          3h35m
+accessdomain-oam-server2                                 1/1     Running     0          3h35m
+helper                                                   1/1     Running     0          4h4m
+nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          69m
+</code></pre></li>
+</ol>
+<h3 id="stoppingscaling-down-oam-policy-managed-servers">Stopping/Scaling down OAM Policy Managed Servers</h3>
+<p>As mentioned in the previous section, the number of OAM Policy Managed Servers running is dependent on the <code>replicas</code> parameter configured for the cluster. To stop one or more OAM Policy Managed Servers, perform the following:</p>
+<ol>
+<li>
+<p>Run the following kubectl command to edit the policy-cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-policy-cluster -n &lt;domain_namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit cluster accessdomain-policy-cluster -n oamns
+</code></pre></div></li>
+<li>
+<p>In the edit session, search for <code>spec:</code>, and then look for the <code>replicas</code> parameter under <code>clusterName: policy_cluster</code>. To stop OAM Policy Managed Servers, decrease the <code>replicas</code> value as desired. In the example below, we will stop two managed servers by setting replicas to &ldquo;2&rdquo;:</p>
+<pre><code>...
+spec:
+  clusterName: policy_cluster
+  replicas: 2
+  serverService:
+    precreateService: true
+...
 </code></pre><p>After saving the changes one pod will move to a <code>STATUS</code> of <code>Terminating</code> (<code>accessdomain-oam-policy-mgr4</code>).</p>
 <pre><code>NAME                                            READY   STATUS        RESTARTS   AGE
 accessdomain-adminserver                                 1/1     Running       0          3h49m
@@ -5641,24 +5646,34 @@ nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0  
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit domain accessdomain -n oamns
 </code></pre></div></li>
 <li>
-<p>In the edit session search for <code>serverStartPolicy: IF_NEEDED</code>:</p>
-<pre><code>    volumes:
-    - name: weblogic-domain-storage-volume
-      persistentVolumeClaim:
-        claimName: accessdomain-domain-pvc
-  serverStartPolicy: IF_NEEDED
-  webLogicCredentialsSecret:
-    name: accessdomain-credentials
+<p>In the edit session, search for <code>serverStartPolicy: IfNeeded</code> under the domain spec:</p>
+<pre><code>...
+   volumeMounts:
+   - mountPath: /u01/oracle/user_projects/domains
+     name: weblogic-domain-storage-volume
+   volumes:
+   - name: weblogic-domain-storage-volume
+     persistentVolumeClaim:
+       claimName: accessdomain-domain-pvc
+ serverStartPolicy: IfNeeded
+ webLogicCredentialsSecret:
+ name: accessdomain-credentials
+...
 </code></pre></li>
 <li>
-<p>Change <code>serverStartPolicy: IF_NEEDED</code> to <code>NEVER</code> as follows:</p>
-<pre><code>    volumes:
-    - name: weblogic-domain-storage-volume
-      persistentVolumeClaim:
-        claimName: accessdomain-domain-pvc
-  serverStartPolicy: NEVER
-  webLogicCredentialsSecret:
-    name: accessdomain-credentials
+<p>Change <code>serverStartPolicy: IfNeeded</code> to <code>Never</code> as follows:</p>
+<pre><code>...
+   volumeMounts:
+   - mountPath: /u01/oracle/user_projects/domains
+     name: weblogic-domain-storage-volume
+   volumes:
+   - name: weblogic-domain-storage-volume
+     persistentVolumeClaim:
+       claimName: accessdomain-domain-pvc
+ serverStartPolicy: Never
+ webLogicCredentialsSecret:
+ name: accessdomain-credentials
+...
 </code></pre></li>
 <li>
 <p>Save the file and exit (:wq!).</p>
@@ -5685,14 +5700,19 @@ helper                                                   1/1     Running     0  
 nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          80m
 </code></pre></li>
 <li>
-<p>To start the Administration Server and Managed Servers up again, repeat the previous steps but change  <code>serverStartPolicy: NEVER</code> to <code>IF_NEEDED</code> as follows:</p>
-<pre><code>    volumes:
-    - name: weblogic-domain-storage-volume
-      persistentVolumeClaim:
-        claimName: accessdomain-domain-pvc
-  serverStartPolicy: IF_NEEDED
-  webLogicCredentialsSecret:
-    name: accessdomain-credentials
+<p>To start the Administration Server and Managed Servers up again, repeat the previous steps but change  <code>serverStartPolicy: Never</code> to <code>IfNeeded</code> as follows:</p>
+<pre><code>...
+   volumeMounts:
+   - mountPath: /u01/oracle/user_projects/domains
+     name: weblogic-domain-storage-volume
+   volumes:
+   - name: weblogic-domain-storage-volume
+     persistentVolumeClaim:
+       claimName: accessdomain-domain-pvc
+ serverStartPolicy: IfNeeded
+ webLogicCredentialsSecret:
+ name: accessdomain-credentials
+...
 </code></pre></li>
 <li>
 <p>Run the following kubectl command to view the pods:</p>
@@ -9306,19 +9326,19 @@ nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0  
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1681820304"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1677784007"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1677784007"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1681820304"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1681820304"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1677784007" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1677784007"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1681820304" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1681820304"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
