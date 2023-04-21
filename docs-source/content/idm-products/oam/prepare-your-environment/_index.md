@@ -38,9 +38,9 @@ Check that all the nodes in the Kubernetes cluster are running.
 
 	```
     NAME                  STATUS   ROLES                  AGE   VERSION
-    node/worker-node1     Ready    <none>                 17h   v1.20.10
-    node/worker-node2     Ready    <none>                 17h   v1.20.10
-    node/master-node      Ready    control-plane,master   23h   v1.20.10
+    node/worker-node1     Ready    <none>                 17h   v1.24.5+1.el7
+    node/worker-node2     Ready    <none>                 17h   v1.24.5+1.el7
+    node/master-node      Ready    control-plane,master   23h   v1.24.5+1.el7
 
     NAME                                     READY   STATUS    RESTARTS   AGE
     pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -67,7 +67,7 @@ The OAM Kubernetes deployment requires access to an OAM container image. The ima
 #### Prebuilt OAM container image
 
 
-The prebuilt OAM January 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OAM April 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
 
@@ -203,7 +203,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -217,7 +217,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:3.4.2 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -252,17 +252,21 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    The output will look similar to the following:
 	
    ```
-   NAME                                     READY   STATUS    RESTARTS   AGE
-   pod/weblogic-operator-676d5cc6f4-wct7b   1/1     Running   0          40s
+   NAME                                             READY   STATUS    RESTARTS   AGE
+   pod/weblogic-operator-676d5cc6f4-wct7b           1/1     Running   0          40s
+   pod/weblogic-operator-webhook-7996b8b58b-9sfhd   1/1     Running   0          40s
 
-   NAME                                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-   service/internal-weblogic-operator-svc   ClusterIP   10.101.1.198   <none>        8082/TCP   40s
+   NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+   service/internal-weblogic-operator-svc   ClusterIP   10.101.1.198   <none>        8082/TCP,8083/TCP   40s
+   service/weblogic-operator-webhook-svc    ClusterIP   10.100.91.237  <none>        8083/TCP,8084/TCP   47s
 
-   NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-   deployment.apps/weblogic-operator   1/1     1            1           40s
+   NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+   deployment.apps/weblogic-operator           1/1     1            1           40s
+   deployment.apps/weblogic-operator-webhook   1/1     1            1           40s
 
-   NAME                                           DESIRED   CURRENT   READY   AGE
-   replicaset.apps/weblogic-operator-676d5cc6f4   1         1         1       40s
+   NAME                                                   DESIRED   CURRENT   READY   AGE
+   replicaset.apps/weblogic-operator-676d5cc6f4           1         1         1       40s
+   replicaset.apps/weblogic-operator-webhook-7996b8b58b   1         1         1       46s
    ```
 
 1. Verify the operator pod's log:
@@ -281,10 +285,10 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
 	
    ```
    ...
-   {"timestamp":"<DATE>","thread":26,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1664440408119,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"<DATE>","thread":19,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1664440418120,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"<DATE>","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1664440428123,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"<DATE>","thread":29,"fiber":"","namespace":"","domainUID":"","level":"CONFIG","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1664440438124,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""
+   {"timestamp":"<DATE>","thread":21,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678183291191,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":37,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678183296193,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":31,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678183301194,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":31,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678183306195,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
    ```
 
 ### Create a namespace for Oracle Access Management
@@ -405,7 +409,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<January`23> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<April`23> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
    ```
    
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -417,7 +421,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol7-<January`23> -n oamns -- sleep infinity
+   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol7-<April`23> -n oamns -- sleep infinity
    ```
    
    The output will look similar to the following:
