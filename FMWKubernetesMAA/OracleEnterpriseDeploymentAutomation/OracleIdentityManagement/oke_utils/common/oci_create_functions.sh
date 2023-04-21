@@ -2392,7 +2392,7 @@ createWebHosts() {
   	 \"tcpOptions\": {\"destinationPortRange\": {\"min\": $PUBLIC_LBR_SSL_PORT, \"max\": $PUBLIC_LBR_SSL_PORT}, 
            \"sourcePortRange\": null}},
   	{\"source\": \"$OKE_NODE_SUBNET_CIDR\", \"protocol\": \"6\", \"isStateless\": false, 
-  	 \"tcpOptions\": {\"destinationPortRange\": {\"min\": $PUBLIC_LBR_NON_SSL_PORT, \"max\": $PUBLIC_LBR_SSL_PORT}, 
+  	 \"tcpOptions\": {\"destinationPortRange\": {\"min\": $PUBLIC_LBR_NON_SSL_PORT, \"max\": $PUBLIC_LBR_NON_SSL_PORT}, 
            \"sourcePortRange\": null}},
   	{\"source\": \"$OKE_NODE_SUBNET_CIDR\", \"protocol\": \"6\", \"isStateless\": false, 
   	 \"tcpOptions\": {\"destinationPortRange\": {\"min\": $OHS_NON_SSL_PORT, \"max\": $OHS_NON_SSL_PORT}, 

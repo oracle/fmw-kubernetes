@@ -176,7 +176,7 @@ then
 
     if [ ! "$ANS" = "" ]
     then
-         replace_value GIT_TOKEN $ANS $RSPFILE
+         replace_value GIT_TOKEN $ANS $PWDFILE
      else
          echo "Leaving value as previously defined"
      fi
