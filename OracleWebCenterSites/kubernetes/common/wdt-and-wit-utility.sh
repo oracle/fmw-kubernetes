@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description:
@@ -67,6 +67,8 @@
 #   WIT_INSTALL_ZIP_URL   URL for downloading WIT install zip
 #                  default:  https://github.com/oracle/weblogic-image-tool/releases/latest/download/$WIT_INSTALL_ZIP_FILE
 #
+#   WLSIMG_BUILDER Image builder binary.
+#                  default:  'docker'
 
 
 # Initialize globals
@@ -85,8 +87,9 @@ WIT_VERSION=${WIT_VERSION:-LATEST}
 
 DOMAIN_TYPE="${DOMAIN_TYPE:-WLS}"
 
-function download {
+download() {
   local fileUrl="${1}"
+  local zipFile="${2}"
 
   local curl_res=1
   max=20
@@ -97,7 +100,7 @@ function download {
     for proxy in "${https_proxy}" "${https_proxy2}"; do
 	  echo @@ "Info:  Downloading $fileUrl with https_proxy=\"$proxy\""
 	  https_proxy="${proxy}" \
-	    curl --silent --show-error --connect-timeout 10 -O -L $fileUrl
+	    curl --silent --show-error --connect-timeout 10 -fL $fileUrl -o $zipFile
 	  curl_res=$?
 	  [ $curl_res -eq 0 ] && break
 	done
@@ -108,7 +111,7 @@ function download {
   fi
 }
 
-function run_wdt {
+run_wdt() {
   #
   # Run WDT using WDT_VAR_FILE, WDT_MODEL_FILE, and ORACLE_HOME.  
   # Output:
@@ -137,7 +140,7 @@ function run_wdt {
   local domain_home_dir="$DOMAIN_HOME_DIR"
   if [ -z "${domain_home_dir}" ]; then
     local domain_dir="/shared/domains"
-    local domain_uid=`egrep 'domainUID' $inputs_orig | awk '{print $2}'`
+    local domain_uid=`grep -E 'domainUID' $inputs_orig | awk '{print $2}'`
     local domain_home_dir=$domain_dir/$domain_uid
   fi 
 
@@ -209,13 +212,16 @@ function run_wdt {
 
   cd $WDT_DIR || return 1
 
+  mkdir ${action}
+
   cmd="
   $wdt_bin_dir/extractDomainResource.sh
      -oracle_home $oracle_home
-     -domain_resource_file domain${action}.yaml
+     -output_dir ./${action}
      -domain_home $domain_home_dir
      -model_file $model_final
      -variable_file $inputs_final
+     -target wko4
   "
   echo @@ "Info: About to run the following WDT command:"
   echo "${cmd}"
@@ -242,28 +248,32 @@ function run_wdt {
   return 0
 }
 
-function setup_wdt_shared_dir {
+setup_wdt_shared_dir() {
   mkdir -p $WDT_DIR || return 1
 }
 
 #
 # Install Weblogic Server Deploy Tooling to ${WDT_DIR}
 #
-function install_wdt {
+install_wdt() {
 
   WDT_INSTALL_ZIP_FILE="${WDT_INSTALL_ZIP_FILE:-weblogic-deploy.zip}"
 
-  if [ "$WDT_VERSION" == "LATEST" ]; then
-    WDT_INSTALL_ZIP_URL=${WDT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-deploy-tooling/releases/latest/download/$WDT_INSTALL_ZIP_FILE"}
-  else
-    WDT_INSTALL_ZIP_URL=${WDT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-deploy-tooling/releases/download/release-$WDT_VERSION/$WDT_INSTALL_ZIP_FILE"}
+  echo @@ " Info: WDT_INSTALL_ZIP_URL is '$WDT_INSTALL_ZIP_URL'"
+  if [ -z ${WDT_INSTALL_ZIP_URL} ]; then
+    echo @@ "WDT_INSTALL_ZIP_URL is not set"
+    if [ "$WDT_VERSION" == "LATEST" ]; then
+      WDT_INSTALL_ZIP_URL=${WDT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-deploy-tooling/releases/latest/download/$WDT_INSTALL_ZIP_FILE"}
+    else
+      WDT_INSTALL_ZIP_URL=${WDT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-deploy-tooling/releases/download/release-$WDT_VERSION/$WDT_INSTALL_ZIP_FILE"}
+    fi
   fi
 
   local save_dir=`pwd`
   cd $WDT_DIR || return 1
 
   echo @@ "Info:  Downloading $WDT_INSTALL_ZIP_URL "
-  download $WDT_INSTALL_ZIP_URL || return 1
+  download $WDT_INSTALL_ZIP_URL  $WDT_INSTALL_ZIP_FILE || return 1
 
   if [ ! -f $WDT_INSTALL_ZIP_FILE ]; then
     cd $save_dir
@@ -298,24 +308,26 @@ function install_wdt {
 # Install WebLogic Image Tool to ${WIT_DIR}. Used by install_wit_if_needed.
 # Do not call this function directory.
 #
-function install_wit {
+install_wit() {
 
   WIT_INSTALL_ZIP_FILE="${WIT_INSTALL_ZIP_FILE:-imagetool.zip}"
 
-  if [ "$WIT_VERSION" == "LATEST" ]; then
-    WIT_INSTALL_ZIP_URL=${WDT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-image-tool/releases/latest/download/$WIT_INSTALL_ZIP_FILE"}
-  else
-    WIT_INSTALL_ZIP_URL=${WIT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-image-tool/releases/download/release-$WIT_VERSION/$WIT_INSTALL_ZIP_FILE"}
+  echo @@ " Info: WIT_INSTALL_ZIP_URL is '$WIT_INSTALL_ZIP_URL'"
+  if [ -z ${WIT_INSTALL_ZIP_URL} ]; then
+    echo @@ "WIT_INSTALL_ZIP_URL is not set"
+    if [ "$WIT_VERSION" == "LATEST" ]; then
+      WIT_INSTALL_ZIP_URL=${WDT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-image-tool/releases/latest/download/$WIT_INSTALL_ZIP_FILE"}
+    else
+      WIT_INSTALL_ZIP_URL=${WIT_INSTALL_ZIP_URL:-"https://github.com/oracle/weblogic-image-tool/releases/download/release-$WIT_VERSION/$WIT_INSTALL_ZIP_FILE"}
+    fi
   fi
-
-
 
   local save_dir=`pwd`
 
   echo @@ "imagetool.sh not found in ${imagetoolBinDir}. Installing imagetool..."
 
   echo @@ "Info:  Downloading $WIT_INSTALL_ZIP_URL "
-  download $WIT_INSTALL_ZIP_URL || return 1
+  download $WIT_INSTALL_ZIP_URL $WIT_INSTALL_ZIP_FILE || return 1
 
   if [ ! -f $WIT_INSTALL_ZIP_FILE ]; then
     cd $save_dir
@@ -346,7 +358,7 @@ function install_wit {
 # Checks whether WebLogic Image Tool is already installed under ${WIT_DIR}, and install
 # it if not.
 #
-function install_wit_if_needed {
+install_wit_if_needed() {
 
   local save_dir=`pwd`
 
@@ -403,7 +415,7 @@ function install_wit_if_needed {
   return 0
 }
 
-function encrypt_model {
+encrypt_model() {
   #
   # run encryptModel.sh from WDT to encrypt model and properties files
   #
@@ -428,7 +440,7 @@ function encrypt_model {
   cat ${domainOutputDirFullPath}/cmd.sh
 
   chmod 766 ${domainOutputDirFullPath}/${domain_properties_file}
-  docker run -it --rm -v ${domainOutputDirFullPath}:/shared -v ${WDT_DIR}/weblogic-deploy:/wdt ${domainHomeImageBase} /bin/bash -c /shared/cmd.sh || return 1
+  ${WLSIMG_BUILDER:-docker} run -it --rm -v ${domainOutputDirFullPath}:/shared -v ${WDT_DIR}/weblogic-deploy:/wdt ${domainHomeImageBase} /bin/bash -c /shared/cmd.sh || return 1
 
   # clean up the generated files
   rm ${domainOutputDirFullPath}/cmd.sh

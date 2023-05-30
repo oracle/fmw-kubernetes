@@ -1,4 +1,4 @@
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
 if [[ ! $(kubectl get serviceaccount weblogic-operator -n ${weblogic_operator_namespace}) ]]; then
@@ -11,7 +11,7 @@ while [[ $(for i in $(kubectl get nodes -o 'jsonpath={..status.conditions[?(@.ty
     echo "waiting for at least 1 node to be ready..." && sleep 1;
 done
 
-CHART_VERSION=3.1.4
+CHART_VERSION=4.0.6
 
 helm repo add weblogic-operator https://oracle.github.io/weblogic-kubernetes-operator/charts --force-update
 

@@ -2,8 +2,8 @@
 title: "Frequently Asked Questions"
 date: 2019-02-22T15:44:42-05:00
 draft: false
-weight: 7
-pre : "<b>7. </b>"
+weight: 8
+pre : "<b>8. </b>"
 description: "This section describes known issues for Oracle WebCenter Sites domains deployment on Kubernetes. Also, provides answers to frequently asked questions."
 ---
 

@@ -20,11 +20,11 @@ $ ./create-pv-pvc.sh \
   -o /path/to/output-directory
 ```
 
-The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `kubectl create -f` command.
+The `create-pv-pvc.sh` script will create a subdirectory `pv-pvcs` under the given `/path/to/output-directory` directory. By default, the script generates two YAML files, namely `weblogic-sample-pv.yaml` and `weblogic-sample-pvc.yaml`, in the `/path/to/output-directory/pv-pvcs`. These two YAML files can be used to create the Kubernetes resources using the `${KUBERNETES_CLI:-kubectl} create -f` command.
 
 ```
-$ kubectl create -f wcsitesinfra-domain-pv.yaml
-$ kubectl create -f wcsitesinfra-domain-pvc.yaml
+$ ${KUBERNETES_CLI:-kubectl} create -f wcsitesinfra-domain-pv.yaml
+$ ${KUBERNETES_CLI:-kubectl} create -f wcsitesinfra-domain-pvc.yaml
 
 ```
 
@@ -171,7 +171,7 @@ You can use this command to verify the persistent volume was created, note that 
 should have the value `Bound`, indicating the that persistent volume has been claimed:
 
 ```
-$ kubectl describe pv wcsitesinfra-domain-pv
+$ ${KUBERNETES_CLI:-kubectl} describe pv wcsitesinfra-domain-pv
 Name:            wcsitesinfra-domain-pv
 Annotations:     pv.kubernetes.io/bound-by-controller=yes
 StorageClass:    wcsitesinfra-domain-storage-class
@@ -192,7 +192,7 @@ Events:            <none>
 You can use this command to verify the persistent volume claim was created:
 
 ```
-$ kubectl describe pvc wcsitesinfra-domain-pvc
+$ ${KUBERNETES_CLI:-kubectl} describe pvc wcsitesinfra-domain-pvc
 Name:          wcsitesinfra-domain-pvc
 Namespace:     default
 StorageClass:  wcsitesinfra-domain-storage-class

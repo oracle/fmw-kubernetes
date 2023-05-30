@@ -13,7 +13,7 @@ If you have access to the My Oracle Support (MOS), and there is a need to build 
     * [Set up the WebLogic Image Tool](#set-up-the-weblogic-image-tool)
     * [Create an image](#create-an-image)
     * [Update an image](#update-an-image)
-* [Create an Oracle WebCenter Sites Docker image using Dockerfile](#create-an-oracle-wcsites-suite-docker-image-using-dockerfile)
+* [Create an Oracle WebCenter Sites Docker image using Dockerfile](#create-an-oracle-webcenter-sites-docker-image-using-dockerfile)
 
 
 ### Create or update an Oracle WebCenter Sites Docker image using the WebLogic Image Tool
@@ -40,7 +40,7 @@ Using the WebLogic Image Tool, you can [create]({{< relref "/wcsites-domains/cre
 
 Verify that your environment meets the following prerequisites:
 
-* Docker client and daemon on the build machine, with minimum Docker version 18.03.1.ce.
+* Docker client and daemon on the build machine, with minimum Docker version 19.03.1.ce.
 * Bash version 4.0 or later, to enable the <tab> command complete feature.
 * JAVA_HOME environment variable set to the appropriate JDK location.
 
@@ -122,21 +122,22 @@ You must download the required Oracle WebCenter Sites installation binaries and 
 
 {{%expand "Click here to see the sample list of installation binaries and patches:" %}}
 * JDK:  
-    * jdk-8u241-linux-x64.tar.gz
+    * jdk-8u291-linux-x64.tar.gz
 
 * Fusion MiddleWare Infrastructure installer:  
     * fmw_12.2.1.4.0_infrastructure.jar
 
 * Fusion MiddleWare Infrastructure patches:  
-    * p28186730_139426_Generic.zip (Opatch)
-    * p33059296_122140_Generic.zip (WLS)
-    * p32973297_122140_Generic.zip (COH)
+    * p28186730_1394212_Generic.zip (Opatch)
+    * p35226999_122140_Generic.zip (WLS)
+    * p35122398_122140_Generic.zip (COH)
+	* p34542329_122140_Generic.zip(EM)
 
 * WCS installers:  
     * fmw_12.2.1.4.0_wcsites.jar
 
 * WCS patches:   
-    * p33381673_122140_Generic.zip (WCS)
+    * p35188131_122140_Generic.zip (WCS)
     
 {{% /expand %}}
 
@@ -167,7 +168,7 @@ The following files available in the code repository location `${WORKDIR}/fmw-ku
 1. Add a JDK package to the WebLogic Image Tool cache:
 
     ``` bash
-    $ imagetool cache addInstaller --type jdk --version 8u241 --path <download location>/jdk-8u241-linux-x64.tar.gz
+    $ imagetool cache addInstaller --type jdk --version 8u291 --path <download location>/jdk-8u291-linux-x64.tar.gz
     ```
 
 1. Add the downloaded installation binaries to the WebLogic Image Tool cache:
@@ -182,14 +183,15 @@ The following files available in the code repository location `${WORKDIR}/fmw-ku
 
     {{%expand "Click here to see the commands to add patches in to the cache:" %}}
     ``` bash
-    $ imagetool cache addEntry --key 28186730_13.9.4.2.6 --value <download location>/p28186730_139426_Generic.zip
-
-    $ imagetool cache addEntry --key 33059296_12.2.1.4.0 --value <download location>/p33059296_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 32973297_12.2.1.4.0 --value <download location>/p32973297_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 33381673_12.2.1.4.0 --value <download location>/p33381673_122140_Generic.zip
-
+    $ imagetool cache addEntry --key 28186730_13.9.4.2.12 --value <download location>/p28186730_1394212_Generic.zip
+	
+	$ imagetool cache addEntry --key 35226999_12.2.1.4.0 --value <download location>/p35226999_122140_Generic.zip
+	
+	$ imagetool cache addEntry --key 35122398_12.2.1.4.0 --value <download location>/p35122398_122140_Generic.zip
+	
+	$ imagetool cache addEntry --key 35188131_12.2.1.4.0 --value <download location>/p35188131_122140_Generic.zip
+	
+	$ imagetool cache addEntry --key 34542329_12.2.1.4.0 --value <download location>/p34542329_122140_Generic.zip
 
     ```
    {{% /expand  %}}
@@ -199,8 +201,8 @@ The following files available in the code repository location `${WORKDIR}/fmw-ku
     To the `create` command in the `buildArgs` file, append the Oracle WebCenter Sites patches list using the `--patches` flag and Opatch patch using the `--opatchBugNumber` flag. Sample options for the list of patches above are:
 
     ```
-    --patches 33059296_12.2.1.4.0,32973297_12.2.1.4.0,p33381673_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.6
+    --patches 35226999_12.2.1.4.0,35122398_12.2.1.4.0,35188131_12.2.1.4.0,34542329_12.2.1.4.0
+	--opatchBugNumber=28186730_13.9.4.2.12
 
     ```
 
@@ -208,23 +210,23 @@ The following files available in the code repository location `${WORKDIR}/fmw-ku
 
     ```
     create
-    --jdkVersion=8u241
+    --jdkVersion=8u291
     --type WCS
     --version=12.2.1.4.0
-    --tag=oracle/wcsites:12.2.1.4-21.1.1
+    --tag=oracle/wcsites:12.2.1.4
     --installerResponseFile %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs.file,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/install.file
     --additionalBuildCommands %path-to-downloaded-docker-repo%/OracleWebCenterSites/imagetool/12.2.1.4.0/addtionalBuildCmds.txt --additionalBuildFiles %path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/sites-container-scripts,%path-to-downloaded-docker-repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs-wls-docker-install
-    --patches 33059296_12.2.1.4.0,32973297_12.2.1.4.0,33381673_12.2.1.4.0
-    --opatchBugNumber=28186730_13.9.4.2.6
+    --patches 35226999_12.2.1.4.0,35122398_12.2.1.4.0,35188131_12.2.1.4.0,34542329_12.2.1.4.0
+	--opatchBugNumber=28186730_13.9.4.2.12
 	
     ```
 
-     Refer to [this page](https://github.com/oracle/weblogic-image-tool/blob/master/site/create-image.md) for the complete list of options available with the WebLogic Image Tool `create` command.
+     Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
 
 1. Create a wcs-wls-docker-install installer jar
 
   ```bash
-  cd %docker_repo%/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install
+  cd %docker_repo%/OracleWebCenterSites/dockerfiles/12.2.1.4.0/wcs-wls-docker-install
   docker run --rm -u root -v ${PWD}:/wcs-wls-docker-install groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
 
   ```
@@ -237,166 +239,168 @@ The following files available in the code repository location `${WORKDIR}/fmw-ku
 
     {{%expand "Click here to see the sample Dockerfile generated with the imagetool command." %}}
 
-      ```bash
-      ########## BEGIN DOCKERFILE ##########
-      #
-      # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
-      #
-      # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-      #
-      #
-      FROM oraclelinux:7-slim as OS_UPDATE
-      LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
-      USER root
+    ```bash
+    ########## BEGIN DOCKERFILE ##########
+	#
+	# Copyright (c) 2021, Oracle and/or its affiliates.
+	#
+	# Licensed under the Universal Permissive License v 1.0 as shown at 
+	# https://oss.oracle.com/licenses/upl
+	#
+	#
+	FROM oraclelinux:7-slim as OS_UPDATE
+	LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
+	USER root
 
-      RUN yum -y --downloaddir= install gzip tar unzip libaio \
-       && yum -y --downloaddir= clean all \
-       && rm -rf /var/cache/yum/* \
-       && rm -rf 
+	RUN yum -y --downloaddir= install gzip tar unzip libaio \
+	 && yum -y --downloaddir= clean all \
+	 && rm -rf /var/cache/yum/* \
+	 && rm -rf 
 
-      ## Create user and group
-      RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
-       && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
-       && mkdir /u01 \
-       && chown oracle:oracle /u01
+	## Create user and group
+	RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
+	 && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
+	 && mkdir /u01 \
+	 && chown oracle:root /u01
 
-      # Install Java
-      FROM OS_UPDATE as JDK_BUILD
-      LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
+	# Install Java
+	FROM OS_UPDATE as JDK_BUILD
+	LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
 
-      ENV JAVA_HOME=/u01/jdk
+	ENV JAVA_HOME=/u01/jdk
 
-      COPY --chown=oracle:oracle jdk-8u251-linux-x64.tar.gz /tmp/imagetool/
+	COPY --chown=oracle:root jdk-8u291-linux-x64.tar.gz /tmp/imagetool/
 
-      USER oracle
-
-
-      RUN tar xzf /tmp/imagetool/jdk-8u251-linux-x64.tar.gz -C /u01 \
-       && mv /u01/jdk* /u01/jdk \
-       && rm -rf /tmp/imagetool
+	USER oracle
 
 
-      # Install Middleware
-      FROM OS_UPDATE as WLS_BUILD
-      LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
-
-      ENV JAVA_HOME=/u01/jdk \
-          ORACLE_HOME=/u01/oracle \
-          OPATCH_NO_FUSER=true
-
-      RUN mkdir -p /u01/oracle \
-       && mkdir -p /u01/oracle/oraInventory \
-       && chown oracle:oracle /u01/oracle/oraInventory \
-       && chown oracle:oracle /u01/oracle
-
-      COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-
-      COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
-      COPY --chown=oracle:oracle fmw_12.2.1.4.0_wcsites.jar wcs.file /tmp/imagetool/
-      COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
-
-          COPY --chown=oracle:oracle p28186730_139422_Generic.zip /tmp/imagetool/opatch/
-
-          COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
-
-      USER oracle
+	RUN tar xzf /tmp/imagetool/jdk-8u291-linux-x64.tar.gz -C /u01 \
+	 && mv /u01/jdk* /u01/jdk \
+	 && rm -rf /tmp/imagetool
 
 
-      RUN  \
-       /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure.jar -silent ORACLE_HOME=/u01/oracle \
-          -responseFile /tmp/imagetool/install.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-      RUN  \
-       /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wcsites.jar -silent ORACLE_HOME=/u01/oracle \
-          -responseFile /tmp/imagetool/wcs.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+	# Install Middleware
+	FROM OS_UPDATE as WLS_BUILD
+	LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
 
-      RUN cd /tmp/imagetool/opatch \
-       && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139422_Generic.zip \
-       && /u01/jdk/bin/java -jar /tmp/imagetool/opatch/6880880/opatch_generic.jar -silent -ignoreSysPrereqs -force -novalidation oracle_home=/u01/oracle
+	ENV JAVA_HOME=/u01/jdk \
+		ORACLE_HOME=/u01/oracle \
+		OPATCH_NO_FUSER=true
 
-      RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
-       && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle
+	RUN mkdir -p /u01/oracle \
+	 && mkdir -p /u01/oracle/oraInventory \
+	 && chown oracle:root /u01/oracle/oraInventory \
+	 && chown oracle:root /u01/oracle
+
+	COPY --from=JDK_BUILD --chown=oracle:root /u01/jdk /u01/jdk/
+
+	COPY --chown=oracle:root fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
+	COPY --chown=oracle:root fmw_12.2.1.4.0_wcsites.jar wcs.file /tmp/imagetool/
+	COPY --chown=oracle:root oraInst.loc /u01/oracle/
+
+		COPY --chown=oracle:root p28186730_139428_Generic.zip /tmp/imagetool/opatch/
+
+		COPY --chown=oracle:root patches/* /tmp/imagetool/patches/
+
+	USER oracle
 
 
+	RUN  \
+	 /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure.jar -silent ORACLE_HOME=/u01/oracle \
+		-responseFile /tmp/imagetool/install.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
+	RUN  \
+	 /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_wcsites.jar -silent ORACLE_HOME=/u01/oracle \
+		-responseFile /tmp/imagetool/wcs.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
 
-      FROM OS_UPDATE as FINAL_BUILD
+	RUN cd /tmp/imagetool/opatch \
+	 && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139428_Generic.zip \
+	 && /u01/jdk/bin/java -jar /tmp/imagetool/opatch/6880880/opatch_generic.jar -silent -ignoreSysPrereqs -force -novalidation oracle_home=/u01/oracle
 
-      ARG ADMIN_NAME
-      ARG ADMIN_HOST
-      ARG ADMIN_PORT
-      ARG MANAGED_SERVER_PORT
-
-      ENV ORACLE_HOME=/u01/oracle \
-          JAVA_HOME=/u01/jdk \
-          LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
-          PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
-
-      LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
-
-          COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-
-      COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
+	RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
+	 && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle
 
 
 
-      USER oracle
-      WORKDIR /u01/oracle
+	FROM OS_UPDATE as FINAL_BUILD
 
-      #ENTRYPOINT /bin/bash
+	ARG ADMIN_NAME
+	ARG ADMIN_HOST
+	ARG ADMIN_PORT
+	ARG MANAGED_SERVER_PORT
 
-          
-          USER root
-          
-          COPY --chown=oracle:oracle files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
-          
-          USER oracle
-            
-          RUN cd /u01/oracle/wcsites/common/templates/wls && \
-            $JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
-            rm /u01/oracle/wcsites/common/templates/wls/startup-plan.xml && \
-            rm /u01/oracle/wcsites/common/templates/wls/file-definition.xml
-          
-          #
-          # Install the required packages
-          # -----------------------------
-          USER root
-          ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
-            SITES_INSTALLER_PKG=wcs-wls-docker-install \
-            DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
-            ADMIN_PORT=7001 \
-            WCSITES_PORT=7002 \
-            ADMIN_SSL_PORT=9001 \
-            WCSITES_SSL_PORT=9002 \
-              PATH=$PATH:/u01/oracle/sites-container-scripts
-            
-          RUN yum install -y hostname && \
-              rm -rf /var/cache/yum
-          
-          RUN mkdir -p ${SITES_CONTAINER_SCRIPTS} && \
-            mkdir -p /u01/wcs-wls-docker-install 
-          COPY --chown=oracle:oracle  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
-          COPY --chown=oracle:oracle  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
-          
-          RUN chown oracle:oracle -R /u01/oracle/sites-container-scripts && \
-            chown oracle:oracle -R /u01/wcs-wls-docker-install && \
-            chmod a+xr /u01/oracle/sites-container-scripts/* && \
-            chmod a+xr /u01/wcs-wls-docker-install/*.sh
-          
-          # Expose all Ports
-          # -------------------------------------------------------------
-          EXPOSE $ADMIN_PORT $ADMIN_SSL_PORT $WCSITES_PORT $WCSITES_SSL_PORT
-          
-          USER oracle
-          WORKDIR ${ORACLE_HOME}
-          # Define default command to start.
-          # -------------------------------------------------------------
-          CMD ["/u01/oracle/sites-container-scripts/createOrStartSitesDomain.sh"]
-          
-          
+	ENV ORACLE_HOME=/u01/oracle \
+		JAVA_HOME=/u01/jdk \
+		LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
+		PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
 
-      ########## END DOCKERFILE ##########
+	LABEL com.oracle.weblogic.imagetool.buildid="3b37c045-11c6-4eb8-b69c-f42256c1e082"
 
-      ```
-      {{% /expand %}}
+		COPY --from=JDK_BUILD --chown=oracle:root /u01/jdk /u01/jdk/
+
+	COPY --from=WLS_BUILD --chown=oracle:root /u01/oracle /u01/oracle/
+
+
+
+	USER oracle
+	WORKDIR /u01/oracle
+
+	#ENTRYPOINT /bin/bash
+
+		
+		USER root
+		
+		COPY --chown=oracle:root files/sites-container-scripts/overrides/oui/ /u01/oracle/wcsites/common/templates/wls/
+		
+		USER oracle
+			
+		RUN cd /u01/oracle/wcsites/common/templates/wls && \
+			$JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
+			rm /u01/oracle/wcsites/common/templates/wls/startup-plan.xml && \
+			rm /u01/oracle/wcsites/common/templates/wls/file-definition.xml
+		
+		#
+		# Install the required packages
+		# -----------------------------
+		USER root
+		ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
+			SITES_INSTALLER_PKG=wcs-wls-docker-install \
+			DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
+			ADMIN_PORT=7001 \
+			WCSITES_PORT=7002 \
+			ADMIN_SSL_PORT=9001 \
+			WCSITES_SSL_PORT=9002 \
+			PATH=$PATH:/u01/oracle/sites-container-scripts
+			
+		RUN yum install -y hostname && \
+			rm -rf /var/cache/yum
+		
+		RUN mkdir -p ${SITES_CONTAINER_SCRIPTS} && \
+			mkdir -p /u01/wcs-wls-docker-install 
+		COPY --chown=oracle:root  files/sites-container-scripts/ ${SITES_CONTAINER_SCRIPTS}/
+		COPY --chown=oracle:root  files/wcs-wls-docker-install/ /u01/wcs-wls-docker-install/
+		
+		RUN chown oracle:root -R /u01/oracle/sites-container-scripts && \
+			chown oracle:root -R /u01/wcs-wls-docker-install && \
+			chmod a+xr /u01/oracle/sites-container-scripts/* && \
+			chmod a+xr /u01/wcs-wls-docker-install/*.sh
+		
+		# Expose all Ports
+		# -------------------------------------------------------------
+		EXPOSE $ADMIN_PORT $ADMIN_SSL_PORT $WCSITES_PORT $WCSITES_SSL_PORT
+		
+		USER oracle
+		WORKDIR ${ORACLE_HOME}
+		# Define default command to start.
+		# -------------------------------------------------------------
+		CMD ["/u01/oracle/sites-container-scripts/createOrStartSitesDomain.sh"]
+		
+		
+
+	########## END DOCKERFILE ##########
+
+
+    ```
+    {{% /expand %}}
 
 1. Check the created image using the `Docker images` command:
 
@@ -412,19 +416,16 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 
     ```bash wrap
     $  cd <imagetool-setup>
-    $ imagetool cache addEntry --key 33381673_12.2.1.4.0 --value < %path-to-downloaded-pathes%/patches
-/p33381673_122140_Generic.zip
-    [INFO   ] Added entry 33381673_12.2.1.4.0=< %path-to-downloaded-pathes%/patches
-/p33381673_122140_Generic.zip
-
+    $ imagetool cache addEntry --key 35188131_12.2.1.4.0 --value < %path-to-downloaded-pathes%/patches/p35188131_122140_Generic.zip
+	[INFO] Added entry 35188131_12.2.1.4.0=< %path-to-downloaded-pathes%/patches/p35188131_122140_Generic.zip
     ```
 1. Provide the following arguments to the WebLogic Image Tool `update` command:
 
-    * `–-fromImage` - Identify the image that needs to be updated. In the example below, the image to be updated is `oracle/wcsites:12.2.1.4-21.1.1`.
+    * `–-fromImage` - Identify the image that needs to be updated. In the example below, the image to be updated is `oracle/wcsites:12.2.1.4`.
     * `–-patches` - Multiple patches can be specified as a comma-separated list.
     * `--tag` - Specify the new tag to be applied for the image being built.
 
-    Refer [here](https://github.com/oracle/weblogic-image-tool/blob/master/site/update-image.md) for the complete list of options available with the WebLogic Image Tool `update` command.
+    Refer [here](https://oracle.github.io/weblogic-image-tool/userguide/tools/update-image/) for the complete list of options available with the WebLogic Image Tool `update` command.
 
     > Note: The WebLogic Image Tool cache should have the latest OPatch zip. The WebLogic Image Tool will update the OPatch if it is not already updated in the image.
 
@@ -433,12 +434,12 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
     {{%expand "Click here to see the example `update` command:" %}}
 
   ```
-  $ imagetool update --fromImage oracle/wcsites:12.2.1.4-21.1.1 --tag=oracle/wcsites:12.2.1.4-21.1.1-29710661 --patches=29710661_12.2.1.4.0
+  $ imagetool update --fromImage oracle/wcsites:12.2.1.4 --chown oracle:root --tag=oracle/wcsites:12.2.1.4-35188131 --patches=35188131_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.12
 
       [INFO   ] Image Tool build ID: 7c268a9a-723f-424e-a06e-cb615c783e6d
       [INFO   ] Temporary directory used for docker build context: %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp8555048225669509
-      [INFO   ] Using patch 28186730_13.9.4.2.4 from cache: %path-to-downloaded-pathes%/patches
-/p28186730_139424_Generic.zip
+      [INFO   ] Using patch 28186730_13.9.4.2.8 from cache: %path-to-downloaded-pathes%/patches
+/p28186730_139428_Generic.zip
       [INFO   ] OPatch will not be updated, fromImage has version 13.9.4.2.4, available version is 13.9.4.2.4
       [WARNING] skipping patch conflict check, no support credentials provided
       [WARNING] No credentials provided, skipping validation of patches
@@ -465,7 +466,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
        ---> Running in e3c85228af4b
       Removing intermediate container e3c85228af4b
        ---> 4401fdb4ebbe
-      Step 6/7 : COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
+      Step 6/7 : COPY --chown=oracle:root patches/* /tmp/imagetool/patches/
        ---> 978a48e1cc95
       Step 7/7 : RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches     && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle     && rm -rf /tmp/imagetool
        ---> Running in 5039320b2f10
@@ -568,18 +569,18 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 
 
   ```bash wrap
-  $ imagetool update --fromImage oracle/wcsites:12.2.1.4-21.1.1 --tag=oracle/wcsites:12.2.1.4-21.1.1-29710661 --patches=29710661_12.2.1.4.0 --dryRun
+  $ imagetool update --fromImage oracle/wcsites:12.2.1.4 --chown oracle:root --tag=oracle/wcsites:12.2.1.4-35188131 --patches=35188131_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.12 --dryRun
 
     [INFO   ] Image Tool build ID: a2fca032-7807-4bfb-b5a4-0ed90a710a56
     [INFO   ] Temporary directory used for docker build context: %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp4743247141639108603
-    [INFO   ] Using patch 28186730_13.9.4.2.4 from cache: %path-to-downloaded-pathes%/patches
-/p28186730_139424_Generic.zip
-    [INFO   ] OPatch will not be updated, fromImage has version 13.9.4.2.4, available version is 13.9.4.2.4
+    [INFO   ] Using patch 28186730_13.9.4.2.8 from cache: %path-to-downloaded-pathes%/patches
+/p28186730_139428_Generic.zip
+    [INFO   ] OPatch will not be updated, fromImage has version 13.9.4.2.8, available version is 13.9.4.2.8
     [WARNING] skipping patch conflict check, no support credentials provided
     [WARNING] No credentials provided, skipping validation of patches
     [INFO   ] Using patch 29710661_12.2.1.4.0 from cache:  %path-to-downloaded-pathes%/patches
 /p29710661_122140_Generic.zip
-    [INFO   ] docker cmd = docker build --no-cache --force-rm --tag oracle/wcsites:12.2.1.4-21.1.1.1 --build-arg http_proxy=http://www-proxy-your-company.com:80 --build-arg https_proxy=http://www-proxy-your-company.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,/var/run/docker.sock %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp4743247141639108603
+    [INFO   ] docker cmd = docker build --no-cache --force-rm --tag oracle/wcsites:12.2.1.4 --build-arg http_proxy=http://www-proxy-your-company.com:80 --build-arg https_proxy=http://www-proxy-your-company.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,/var/run/docker.sock %path-to-temp-directory%/tmpBuild/wlsimgbuilder_temp4743247141639108603
     ########## BEGIN DOCKERFILE ##########
     #
     # Copyright (c) 2019, 2020, Oracle and/or its affiliates.
@@ -588,7 +589,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
     #
     #
 
-    FROM oracle/wcsites:12.2.1.4-21.1.1 as FINAL_BUILD
+    FROM oracle/wcsites:12.2.1.4 as FINAL_BUILD
     USER root
 
     ENV OPATCH_NO_FUSER=true
@@ -599,7 +600,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
     USER oracle
 
 
-        COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
+        COPY --chown=oracle:root patches/* /tmp/imagetool/patches/
 
         RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
         && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle \
@@ -618,8 +619,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/wcsites-domains/create-o
 1. Check the built image using the `Docker images` command:
     ```bash
       $ Docker images | grep wcsites
-      oracle/wcsites   12.2.1.4.0-33381673   2ef2a67a685b        About a minute ago   2.84GB
-      oracle/wcsites   12.2.1.4.0            445b649a3459        4 days ago           3.2GB
+      oracle/wcsites   12.2.1.4.0-35188131   2ef2a67a685b        About a minute ago   2.84GB
 
     ```
 
@@ -655,17 +655,13 @@ Follow these steps to build an Oracle Fusion Middleware Infrastructure image, an
 
    >Note: Copy the installer binaries to the same location as the Dockerfile.
 
-1. To build the Oracle WebCenter Sites image with patches, you must download and drop the patch zip files (for example, `p33381673_122140_Generic.zip`) into the `patches/` folder under the version that is required. For example, for `12.2.1.4` the folder is `12.2.1.4/patches`.
+1. To build the Oracle WebCenter Sites image with patches, you must download and drop the patch zip files (for example, `p35188131_122140_Generic.zip`) into the `patches/` folder under the version that is required. For example, for `12.2.1.4.0` the folder is `12.2.1.4.0/patches`.
 
 1. Create the Oracle WebCenter Sites image by running the provided script:
 
     ```bash
     $ cd docker-images/OracleWebCenterSites/dockerfiles
-    $ ./buildDockerImage.sh -v 12.2.1.4 -s
+    $ ./buildDockerImage.sh -v 12.2.1.4.0 -s
     ```
 
-    The image produced will be named `oracle/wcsites:12.2.1.4`. The samples and instructions assume the Oracle WebCenter Sites image is named `wcsites:12.2.1.4`. You must rename your image to match this name, or update the samples to refer to the image you created.
-
-    ```bash
-    $ docker tag oracle/wcsites:12.2.1.4 oracle/wcsites:12.2.1.4-21.1.1 
-    ```
+    The image produced will be named `oracle/wcsites:12.2.1.4.0`. The samples and instructions assume the Oracle WebCenter Sites image is named `wcsites:12.2.1.4`. You must rename your image to match this name, or update the samples to refer to the image you created.

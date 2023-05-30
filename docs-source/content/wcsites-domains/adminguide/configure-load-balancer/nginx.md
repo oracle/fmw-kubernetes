@@ -43,7 +43,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
 
 	For detailed instructions about ingress, see [this page](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/ingress/).
 
-    For now, you can update the `kubernetes/charts/ingress-per-domain/values.yaml` with appropriate values.
+	For now, you can update the `kubernetes/charts/ingress-per-domain/values.yaml` with appropriate values.
     
 
 
