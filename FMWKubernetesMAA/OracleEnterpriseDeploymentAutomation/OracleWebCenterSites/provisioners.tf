@@ -1,4 +1,4 @@
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
 # Configure the cluster with kube-config
@@ -70,8 +70,11 @@ resource "null_resource" "create_sites_namespace" {
   }
 
   provisioner "local-exec" {
-    command = "kubectl create namespace ${var.sites_kubernetes_namespace}"
+    command = templatefile("./templates/create_namespace.tpl", {
+      namespace             = var.sites_kubernetes_namespace
+    })
   }
+  
   provisioner "local-exec" {
     when       = destroy
     command    = "kubectl delete all -n ${self.triggers.sites_kubernetes_namespace} --force && kubectl delete namespace ${self.triggers.sites_kubernetes_namespace}"

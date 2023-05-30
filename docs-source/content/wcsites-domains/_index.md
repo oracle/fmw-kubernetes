@@ -1,12 +1,11 @@
 ---
 title: "Oracle WebCenter Sites"
 date: 2019-02-23T16:43:45-05:00
-weight: 9
 description: "The WebLogic Kubernetes Operator supports deployment of Oracle WebCenter Sites. Follow the instructions in this guide to set up Oracle WebCenter Sites domains on Kubernetes."
 ---
 
 In this release, Oracle WebCenter Sites domains are supported using the "domain on a persistent volume" 
-[model](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
+[model](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
 
 The operator has several key features to assist you with deploying and managing Oracle WebCenter Sites domains in a Kubernetes environment. You can:
 
@@ -19,7 +18,7 @@ The operator has several key features to assist you with deploying and managing 
 
 #### Current production release
 
-The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is [3.3.0](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v3.3.0)
+The current supported production release of the Oracle WebLogic Server Kubernetes Operator, for Oracle WebCenter Sites domains deployment is [4.0.6](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v4.0.6)
 
 #### Recent changes and known issues
 
@@ -44,6 +43,15 @@ please consult this table of contents:
    * Patching an Oracle WebCenter Sites Docker image.
    * Removing/deleting domains.
    * And much more!
+
+
+#### Documentation for earlier releases
+
+To view documentation for an earlier release, see:
+
+* [Version 22.2.2](https://oracle.github.io/fmw-kubernetes/22.2.2/wcsites-domains/)
+* [Version 21.4.3](https://oracle.github.io/fmw-kubernetes/21.4.3/wcsites-domains/)
+* [Version 21.1.1](https://oracle.github.io/fmw-kubernetes/21.1.1/wcsites-domains/)
 
 
 #### Additional reading

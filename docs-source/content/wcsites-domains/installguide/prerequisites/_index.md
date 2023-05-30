@@ -20,15 +20,15 @@ This document describes the special considerations for deploying and running a W
 Other than those considerations listed here, WebCenter Sites domains work in the same way as Fusion Middleware Infrastructure domains and WebLogic Server domains.
 
 In this release, WebCenter Sites domains are supported using the `domain on a persistent volume`
-[model](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/) only where a WebCenter Sites domain is located in a persistent volume (PV).
+[model](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/) only where a WebCenter Sites domain is located in a persistent volume (PV).
 
 #### System Requirements 
 * Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes) are supported.
-* Kubernetes 1.16.15+, 1.17.13+, 1.18.10+, 1.19.7+, and 1.20.6+ (check with `kubectl version`).
-* Docker 18.09.1ce+, 19.03.1+ (check with `docker version`) or CRI-O 1.14.7 (check with `crictl version | grep RuntimeVersion`).
-* Flannel networking v0.9.1-amd64 or later (check with `Docker images | grep flannel`).
-* Helm 3.2.4+ (check with `helm version --client --short`).
-* Oracle WebLogic Kubernetes Operator 3.3.0 (see [operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
+* Kubernetes 1.21.10+, 1.22.7+, 1.23.4+, 1.24.0+, and 1.25.0+ (check with `kubectl version`).
+* Docker 19.03.11+ (check with `docker version`) or CRI-O 1.20.2+ (check with `crictl version | grep RuntimeVersion`).
+* Flannel networking v0.13.0-amd64 or later (check with `Docker images | grep flannel`).
+* Helm 3.10+ (check with `helm version --client --short`).
+* Oracle WebLogic Kubernetes Operator 4.0.6 (see [operator releases](https://github.com/oracle/weblogic-kubernetes-operator/releases) page).
 * Oracle WebCenterSites 12.2.1.4 Docker image (built either using imagetool or the buildDockerImage script).
 * You must have the `cluster-admin` role to install the operator. The operator does not need the `cluster-admin` role at runtime.
 * We do not currently support running WebCenterSites in non-Linux containers.
@@ -50,7 +50,7 @@ following limitations currently exist for WebCenter Sites domain:
 * `Domain in image` model is not supported in this version of the Operator.
 * Only configured clusters are supported. Dynamic clusters are not supported for WebCenter Sites domains. Note that you can still use all of the scaling features. You just need to define the maximum size of your cluster at domain creation time.
 * We do not currently support running WebCenter Sites in non-Linux containers.
-* Deploying and running a WebCenter Sites domain is supported only in Operator versions 3.3.0 and later.
+* Deploying and running a WebCenter Sites domain is supported only in Operator versions 4.0.6 and later.
 * The [WebLogic Logging Exporter](https://github.com/oracle/weblogic-logging-exporter)
   currently supports WebLogic Server logs only.  Other logs will not be sent to Elasticsearch.  Note, however, that you can use a sidecar with a log handling tool like Logstash or Fluentd to get logs.
 * The [WebLogic Monitoring Exporter](https://github.com/oracle/weblogic-monitoring-exporter)

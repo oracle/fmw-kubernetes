@@ -1,5 +1,5 @@
-# !/bin/sh
-# Copyright (c) 2021, Oracle and/or its affiliates.
+#!/bin/sh
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
@@ -8,7 +8,7 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/helper.sh
 if [ "${debug}" == "true" ]; then set -x; fi;
 
-function usage() {
+usage() {
 
   cat << EOF
 
@@ -47,6 +47,7 @@ domainNamespace="sample-domain1-ns"
 verboseMode=false
 patchJson=""
 replicas=""
+clusterResource=""
 
 while getopts "vc:n:m:d:r:h" opt; do
   case $opt in
@@ -74,7 +75,7 @@ set -eu
 #
 # Function to perform validations, read files and initialize workspace
 #
-function initialize {
+initialize() {
 
   validateErrors=false
 
@@ -108,15 +109,25 @@ if [ "${isValidCluster}" != 'true' ]; then
   exit 1
 fi
 
-isReplicasInAllowedRange "${domainJson}" "${clusterName}" "${replicas}" replicasInAllowedRange range
+# Get the cluster resource name
+getClusterResource "${domainJson}" "${domainNamespace}" "${clusterName}" clusterResource
+
+# Get the cluster in json format
+clusterJson=$(${kubernetesCli} get cluster ${clusterResource} -n ${domainNamespace} -o json --ignore-not-found)
+if [ -z "${clusterJson}" ]; then
+  printError "Unable to get cluster resource for cluster '${clusterName}' in namespace '${domainNamespace}'. Please make sure that a Cluster exists for cluster '${clusterName}' and that this Cluster is referenced by the Domain."
+  exit 1
+fi
+
+isReplicasInAllowedRange "${domainJson}" "${clusterJson}" "${clusterName}" "${replicas}" replicasInAllowedRange range
 if [ "${replicasInAllowedRange}" == 'false' ]; then
   printError "Replicas value is not in the allowed range of ${range}. Exiting."
   exit 1
 fi
 
-printInfo "Patching replicas for cluster '${clusterName}' to '${replicas}'."
-createPatchJsonToUpdateReplicas "${domainJson}" "${clusterName}" "${replicas}" patchJson
+printInfo "Patching replicas for cluster: '${clusterName}' to '${replicas}'."
+createPatchJsonToUpdateReplicas "${replicas}" patchJson
 
-executePatchCommand "${kubernetesCli}" "${domainUid}" "${domainNamespace}" "${patchJson}" "${verboseMode}"
+executeClusterPatchCommand "${kubernetesCli}" "${clusterResource}" "${domainNamespace}" "${patchJson}" "${verboseMode}"
 
 printInfo "Successfully patched replicas for cluster '${clusterName}'!"

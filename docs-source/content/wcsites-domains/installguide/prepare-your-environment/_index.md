@@ -24,7 +24,7 @@ This document describes the steps to set up the environment that includes settin
 
 #### Set Up your Kubernetes Cluster
 
-If you need help in setting up a Kubernetes environment, check our [cheat sheet](https://oracle.github.io/weblogic-kubernetes-operator/userguide/kubernetes/k8s-setup).
+Refer the official Kubernetes set up [documentation](https://kubernetes.io/docs/setup/#production-environment) to set up a production grade Kubernetes cluster.
 
 After creating Kubernetes clusters, you can optionally:
 
@@ -33,34 +33,49 @@ After creating Kubernetes clusters, you can optionally:
 
 #### Build Oracle WebCenter Sites Image
 
-Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4).
+Build Oracle WebCenter Sites 12.2.1.4 Image by following [Create or update an Image](https://oracle.github.io/fmw-kubernetes/wcsites-domains/create-or-update-image).
 
-Alternatively, the Oracle WebCenter Sites Image with latest bundle patch can be obtained from My Oracle Support (MOS).
+#### Obtain the Oracle WebCenter Sites Docker Image
 
-1. Download patch [34223930](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=34223930) from My Oracle Support (MOS).
+The Oracle WebCenter Sites image with the latest bundle patch and required interim patches is prebuilt by Oracle and includes Oracle WebCenter Sites 12.2.1.4.0, the Latest Patch Set Update (PSU), and other fixes released with the Critical Patch Update (CPU) program. This is the only image supported for production deployments. Obtain the Oracle WebCenter Sites image using either of the following methods:
 
-1. Unzip the downloaded zip file.
+1. Download from Oracle Container Registry: 
+    
+    - Log in to `Oracle Container Registry`, navigate to **Middleware** > **webcentersites_cpu** and accept the license agreement if not already done.
 
-	For example:
-    ```bash
-    $ unzip  p34223930_122140_Linux-x86-64.zip
-    ```
+    - Log in to the Oracle Container Registry (container-registry.oracle.com) from your Docker client:
 
-1. Load the image archive using the `docker load` command.
+        ```bash
+        $ docker login container-registry.oracle.com
+        ```
 
-	For example:
-    ```bash
-    $ docker load < wcsites-12214-220419.tar.gz
-    ```
+    - Pull the image:
 
-1. View the image using the `docker images` command.
+        For example:
 
-	For example:
-    ```bash
-    $ docker images | grep wcsites
-	
-	oracle/wcsites     12.2.1.4-220419     ba99807045e0     3 weeks ago     3.88GB
-    ```
+        ```bash
+        $ docker pull container-registry.oracle.com/middleware/webcentersites_cpu:12.2.1.4-<TAG>
+        ```
+
+1. Download from My Oracle Support:
+    - Download patch [35370108](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=35370108) from My Oracle Support (MOS).
+    - Unzip the downloaded patch zip file.
+    - Load the image archive using the `docker load` command.
+
+        For example:
+        ```bash
+        $ docker load < wcsites-230418.tar.gz
+          Loaded image: oracle/wcsites:12.2.1.4-230418
+        $
+        ```
+    - Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `dc4eb0d9-135f-46de-bae6-3c31bc63b5fb`.
+
+        For example:
+        ```bash
+        $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}' oracle/wcsites:12.2.1.4-230418
+            dc4eb0d9-135f-46de-bae6-3c31bc63b5fb
+        $
+        ```
 	
 > Note: The default Oracle WebCenter Sites image name used for Oracle WebCenter Sites domains deployment is `oracle/wcsites:12.2.1.4`. The image obtained must be tagged as `oracle/wcsites:12.2.1.4` using the `docker tag` command. If you want to use a different name for the image, make sure to update the new image tag name in the `create-domain-inputs.yaml` file and also in other instances where the `oracle/wcsites:12.2.1.4` image name is used.
 	
@@ -83,8 +98,8 @@ This step is required once at every node to get access to the Oracle Container R
 
 WebLogic Kubernetes Operator image:
 ```bash
-$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
-$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
+$ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:4.0.6
+$ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:4.0.6 oracle/weblogic-kubernetes-operator:4.0.6
 ```
 
 2. Copy all the above built and pulled images to all the nodes in your cluster or add to a Docker registry that your cluster can access.
@@ -169,7 +184,7 @@ This will be your home directory for runnning all the required scripts.
 	> Helm install weblogic-operator
 
 	```bash
-	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set image=oracle/weblogic-kubernetes-operator:3.3.0 --set serviceAccount=operator-sa --set "domainNamespaces={}" --wait
+	$ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns --set image=oracle/weblogic-kubernetes-operator:4.0.6 --set serviceAccount=operator-sa --wait
  
  
 	NAME: weblogic-kubernetes-operator
@@ -213,7 +228,7 @@ This will be your home directory for runnning all the required scripts.
 		Using VM: OpenJDK 64-Bit Server VM
 	
 	{"timestamp":"03-14-2020T06:49:53.438+0000","thread":1,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.TuningParametersImpl","method":"update","timeInMillis":1584168593438,"message":"Reloading tuning parameters from Operator's config map","exception":"","code":"","headers":{},"body":""}
-	{"timestamp":"03-14-2020T06:49:53.944+0000","thread":1,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"main","timeInMillis":1584168593944,"message":"Oracle WebLogic Server Kubernetes Operator, version: 3.3.0, implementation: master.4d4fe0a, build time: 2019-11-15T21:19:56-0500","exception":"","code":"","headers":{},"body":""}
+	{"timestamp":"03-14-2020T06:49:53.944+0000","thread":1,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"main","timeInMillis":1584168593944,"message":"Oracle WebLogic Server Kubernetes Operator, version: 4.0.6, implementation: master.4d4fe0a, build time: 2019-11-15T21:19:56-0500","exception":"","code":"","headers":{},"body":""}
 	{"timestamp":"03-14-2020T06:49:53.972+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"begin","timeInMillis":1584168593972,"message":"Operator namespace is: operator-ns","exception":"","code":"","headers":{},"body":""}
 	{"timestamp":"03-14-2020T06:49:54.009+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"begin","timeInMillis":1584168594009,"message":"Operator target namespaces are: operator-ns","exception":"","code":"","headers":{},"body":""}
 	{"timestamp":"03-14-2020T06:49:54.013+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.Main","method":"begin","timeInMillis":1584168594013,"message":"Operator service account is: operator-sa","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:54.031+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.HealthCheckHelper","method":"performK8sVersionCheck","timeInMillis":1584168594031,"message":"Verifying Kubernetes minimum version","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:54.286+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.ClientPool","method":"getApiClient","timeInMillis":1584168594286,"message":"The Kuberenetes Master URL is set to https://10.96.0.1:443","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:54.673+0000","thread":11,"fiber":"","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.HealthCheckHelper","method":"createAndValidateKubernetesVersion","timeInMillis":1584168594673,"message":"Kubernetes version is: v1.13.7","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.259+0000","thread":12,"fiber":"engine-operator-thread-2-fiber-1","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.CrdHelper$CrdContext$CreateResponseStep","method":"onSuccess","timeInMillis":1584168595259,"message":"Create Custom Resource Definition: oracle.kubernetes.operator.calls.CallResponse@470b40c","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.356+0000","thread":16,"fiber":"fiber-1-child-2","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.HealthCheckHelper","method":"performSecurityChecks","timeInMillis":1584168595356,"message":"Verifying that operator service account can access required operations on required resources in namespace operator-ns","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.598+0000","thread":18,"fiber":"fiber-1-child-2","domainUID":"","level":"INFO","class":"oracle.kubernetes.operator.helpers.ConfigMapHelper$ScriptConfigMapContext$CreateResponseStep","method":"onSuccess","timeInMillis":1584168595598,"message":"Creating domain config map, operator-ns, for namespace: {1}.","exception":"","code":"","headers":{},"body":""}	{"timestamp":"03-14-2020T06:49:55.937+0000","thread":21,"fiber":"fiber-1","domainUID":"","level":"WARNING","class":"oracle.kubernetes.operator.utils.Certificates","method":"getCertificate","timeInMillis":1584168595937,"message":"Can't read certificate at /operator/external-identity/externalOperatorCert","exception":"\njava.nio.file.NoSuchFileException: /operator/external-identity/externalOperatorCert\n\tat java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)\n\tat java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)\n\tat java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)\n\tat java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:215)\n\tat java.base/java.nio.file.Files.newByteChannel(Files.java:370)\n\tat java.base/java.nio.file.Files.newByteChannel(Files.java:421)\n\tat java.base/java.nio.file.Files.readAllBytes(Files.java:3205)\n\tat oracle.kubernetes.operator.utils.Certificates.getCertificate(Certificates.java:48)\n\tat oracle.kubernetes.operator.utils.Certificates.getOperatorExternalCertificateData(Certificates.java:39)\n\tat oracle.kubernetes.operator.rest.RestConfigImpl.getOperatorExternalCertificateData(RestConfigImpl.java:52)\n\tat oracle.kubernetes.operator.rest.RestServer.isExternalSslConfigured(RestServer.java:383)\n\tat oracle.kubernetes.operator.rest.RestServer.start(RestServer.java:199)\n\tat oracle.kubernetes.operator.Main.startRestServer(Main.java:353)\n\tat oracle.kubernetes.operator.Main.completeBegin(Main.java:198)\n\tat oracle.kubernetes.operator.Main$NullCompletionCallback.onCompletion(Main.java:701)\n\tat oracle.kubernetes.operator.work.Fiber.completionCheck(Fiber.java:475)\n\tat oracle.kubernetes.operator.work.Fiber.run(Fiber.java:448)\n\tat oracle.kubernetes.operator.work.ThreadLocalContainerResolver.lambda$wrapExecutor$0(ThreadLocalContainerResolver.java:87)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n","code":"","headers":{},"body":""}
@@ -252,24 +267,10 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     ```bash
     $ kubectl create namespace wcsites-ns
     namespace/wcsites-ns created
+	$ kubectl label namespace wcsites-ns weblogic-operator=enabled
     ```
-2. To manage domains in this namespace, configure the Operator using helm:
-    
-    > Helm upgrade weblogic-operator
 
-    ```bash
-    helm upgrade --reuse-values --set "domainNamespaces={wcsites-ns}" \
-    --wait weblogic-kubernetes-operator kubernetes/charts/weblogic-operator --namespace operator-ns
-
-    NAME: weblogic-kubernetes-operator
-	LAST DEPLOYED: Tue May 19 04:06:23 2020
-	NAMESPACE: opns
-	STATUS: deployed
-	REVISION: 2
-	TEST SUITE: None
-	```
-
-3. Create Kubernetes secrets:
+1. Create Kubernetes secrets:
 
     a. Using the create-weblogic-credentials script, create a Kubernetes secret that contains the user name and password for the domain in the same Kubernetes namespace as the domain:
     
@@ -323,11 +324,11 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     $ kubectl get secret wcsitesinfra-rcu-credentials -o yaml -n wcsites-ns
     ```
 
-4. Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim):
+1. Create a Kubernetes PV and PVC (Persistent Volume and Persistent Volume Claim):
 
     a. Update the `kubernetes/create-wcsites-domain/utils/create-wcsites-pv-pvc-inputs.yaml`.
 	
-	Replace the token `%NFS_SERVER%` with the host name/IP of NFS Server created in [Configure NFS Server](#configure-nfs-server) section.   
+	Replace the token `%NFS_SERVER%` with the host name/IP of NFS Server created in [Configure NFS Server](#configure-nfs-network-file-system-server) section.   
 	
 	In the NFS Server, create a folder and grant permissions as given below:
     
@@ -385,7 +386,7 @@ Note: Host name or IP address of the NFS Server and NFS Share path which is used
     $ kubectl describe pvc wcsitesinfra-domain-pvc -n wcsites-ns
     ```
     
-5. Label the nodes in the Kubernetes cluster for the targeted scheduling of the servers on particular nodes as needed:
+1. Label the nodes in the Kubernetes cluster for the targeted scheduling of the servers on particular nodes as needed:
 
     ```bash
     kubectl label node <node-name> name=abc

@@ -173,18 +173,18 @@ function createDomainConfigmap {
  
   
   local cmName=${domainUID}-create-fmw-infra-sample-domain-job-cm
-  kubectl delete configmap ${cmName} -n $namespace
+  ${KUBERNETES_CLI:-kubectl} delete configmap ${cmName} -n $namespace
 
   # create the configmap and label it properly
-  kubectl create configmap ${cmName} -n $namespace --from-file $externalFilesTmpDir
+  ${KUBERNETES_CLI:-kubectl} create configmap ${cmName} -n $namespace --from-file $externalFilesTmpDir
 
   echo Checking the configmap $cmName was created
-  local num=`kubectl get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
+  local num=`${KUBERNETES_CLI:-kubectl} get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
   if [ "$num" != "1" ]; then
     fail "The configmap ${cmName} was not created"
   fi
 
-  kubectl label configmap ${cmName} -n $namespace weblogic.resourceVersion=domain-v2 weblogic.domainUID=$domainUID weblogic.domainName=$domainName
+  ${KUBERNETES_CLI:-kubectl} label configmap ${cmName} -n $namespace weblogic.resourceVersion=domain-v2 weblogic.domainUID=$domainUID weblogic.domainName=$domainName
 
   rm -rf $externalFilesTmpDir
 }
@@ -234,17 +234,18 @@ function createDomainHome {
   do
     if (( $i == 1 )) ; then
       MANAGED_SERVERS_CALC="- serverName: ${managedServerNameBase}$i\n\
-    serverStartPolicy: \"IF_NEEDED\"\n\ "
+    serverStartPolicy: \"IfNeeded\"\n\ "
     else
       MANAGED_SERVERS_CALC="${MANAGED_SERVERS_CALC} - serverName: ${managedServerNameBase}$i\n\
-    serverStartPolicy: \"IF_NEEDED\"\n\ "
+    serverStartPolicy: \"IfNeeded\"\n\ "
     fi
   done
   
   export MANAGED_SERVERS="\  \managedServers:"
   export MANAGED_SERVERS_CALC="${MANAGED_SERVERS}\n\  ${MANAGED_SERVERS_CALC}"
   
-  sed -i -e "/spec:/a ${MANAGED_SERVERS_CALC}" ${dcrOutput}
+  #sed -i -e "/spec:/a ${MANAGED_SERVERS_CALC}" ${dcrOutput}
+  sed -i "0,/spec:/s//spec:\n${MANAGED_SERVERS_CALC}/" ${dcrOutput}
   
  #Traefik Session Setting  
   if [ -z "$loadBalancerType" ]
@@ -253,7 +254,7 @@ function createDomainHome {
   else
   	echo "\$loadBalancerType is NOT empty"
   	if [ $loadBalancerType == "traefik" ] ; then
-    export LB_SETTINGS="\    clusterService:\n\
+    export LB_SETTINGS="\  clusterService:\n\
       annotations: \n\
         traefik.ingress.kubernetes.io/affinity: \"true\"\n\
         traefik.ingress.kubernetes.io/session-cookie-name: sticky"
@@ -275,7 +276,7 @@ function createDomainHome {
   sed -i -e "s:%RCU_CREDENTIALS_SECRET_NAME%:${rcuCredentialsSecret}:g" ${deleteJobOutput}
   
   echo Creating the domain by creating the job ${createJobOutput}
-  kubectl create -f ${createJobOutput}
+  ${KUBERNETES_CLI:-kubectl} create -f ${createJobOutput}
 
   echo "Waiting for the job to complete..."
   JOB_STATUS="0"
@@ -284,8 +285,8 @@ function createDomainHome {
   while [ "$JOB_STATUS" != "Completed" -a $count -lt $max ] ; do
     sleep 30
     count=`expr $count + 1`
-    JOBS=`kubectl get pods -n ${namespace} | grep ${JOB_NAME}`
-    JOB_ERRORS=`kubectl logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace} | grep "ERROR:" `
+    JOBS=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME}`
+    JOB_ERRORS=`${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace} | grep "ERROR:" `
     JOB_STATUS=`echo $JOBS | awk ' { print $3; } '`
     JOB_INFO=`echo $JOBS | awk ' { print "pod", $1, "status is", $3; } '`
     echo "status on iteration $count of $max"
@@ -307,17 +308,17 @@ function createDomainHome {
   if [ "$JOB_STATUS" != "Completed" ]; then
     echo "The create domain job is not showing status completed after waiting 300 seconds."
     echo "Check the log output for errors."
-    kubectl logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace}
+    ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace}
     fail "Exiting due to failure - the job status is not Completed!"
   fi
 
   # Check for successful completion in log file
-  JOB_POD=`kubectl get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
-  JOB_STS=`kubectl logs $JOB_POD $CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
+  JOB_POD=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
+  JOB_STS=`${KUBERNETES_CLI:-kubectl} logs $JOB_POD $CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
   if [ "${JOB_STS}" != "Successfully" ]; then
     echo The log file for the create domain job does not contain a successful completion status
     echo Check the log output for errors
-    kubectl logs $JOB_POD $CONTAINER_NAME -n ${namespace}
+    ${KUBERNETES_CLI:-kubectl} logs $JOB_POD $CONTAINER_NAME -n ${namespace}
     fail "Exiting due to failure - the job log file does not contain a successful completion status!"
   fi
 }
