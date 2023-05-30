@@ -107,8 +107,8 @@ echo ${adminpodname}
 
 
 #Starting image upgrade
-#IMG_PATCH_CMD="kubectl patch domain ${domainUID} -n ${namespace} --type merge  -p '{\"spec\":{\"image\":\"${image}\"}}'"
-IMG_PATCH_CMD="kubectl patch domain ${domainUID} -n ${namespace} --type='json' -p='[{\"op\": \"replace\", \"path\": \"/spec/image\", \"value\": \"${image}\" },{\"op\": \"replace\", \"path\": \"/spec/serverPod/initContainers/0/image\", \"value\": \"${image}\" }]'";
+#IMG_PATCH_CMD="${KUBERNETES_CLI:-kubectl} patch domain ${domainUID} -n ${namespace} --type merge  -p '{\"spec\":{\"image\":\"${image}\"}}'"
+IMG_PATCH_CMD="${KUBERNETES_CLI:-kubectl} patch domain ${domainUID} -n ${namespace} --type='json' -p='[{\"op\": \"replace\", \"path\": \"/spec/image\", \"value\": \"${image}\" },{\"op\": \"replace\", \"path\": \"/spec/serverPod/initContainers/0/image\", \"value\": \"${image}\" }]'";
 eval ${IMG_PATCH_CMD}
 
 echo "Binary Upgrade in progress..."
@@ -123,11 +123,11 @@ count=0
  while [ "$POD_STATUS" != "True" -a $count -lt $max ] ; do
     sleep 30
     count=`expr $count + 1`
-    POD_STATUS=`kubectl describe pod ${domainUID}-${adminpodname} -n ${namespace}|grep  ContainersReady| awk ' { print $2; } '`
+    POD_STATUS=`${KUBERNETES_CLI:-kubectl} describe pod ${domainUID}-${adminpodname} -n ${namespace}|grep  ContainersReady| awk ' { print $2; } '`
     echo "  status on iteration $count of $max: ${adminpodname} Ready:$POD_STATUS"
  done
  if [ "$POD_STATUS" != "True" ]; then
-    POD_ERRORS=`kubectl logs ${domainUID}-${adminpodname} -n ${namespace}| grep -i "error"`
+    POD_ERRORS=`${KUBERNETES_CLI:-kubectl} logs ${domainUID}-${adminpodname} -n ${namespace}| grep -i "error"`
     echo "${adminServerName} not started after timeout of 900 secs"
     echo "A failure was detected in the log file for pod ${domainUID}-${adminpodname}"
     echo "$POD_ERRORS"
@@ -148,8 +148,8 @@ while [ $POD_COUNT -ne $managedServerRunning  -a $count -lt $max ] ; do
    count=`expr $count + 1`
    m_count=0
    for (( i=1; i<=$managedServerRunning; i++)); do
-      POD_IMAGE=`kubectl describe pod ${domainUID}-${managedpodname}$i  -n ${namespace}| grep "Image:" | head -1 | awk ' { print $2; }'`
-      POD_STATUS=`kubectl describe pod ${domainUID}-${managedpodname}$i  -n ${namespace}|grep  ContainersReady| awk ' { print $2; } '`
+      POD_IMAGE=`${KUBERNETES_CLI:-kubectl} describe pod ${domainUID}-${managedpodname}$i  -n ${namespace}| grep "Image:" | head -1 | awk ' { print $2; }'`
+      POD_STATUS=`${KUBERNETES_CLI:-kubectl} describe pod ${domainUID}-${managedpodname}$i  -n ${namespace}|grep  ContainersReady| awk ' { print $2; } '`
       echo "  status on iteration $count of $max: ${managedpodname}$i Ready:$POD_STATUS"
       if [[ $POD_IMAGE == ${image} && $POD_STATUS == "True" ]]; then
          m_count=$((m_count+1))
@@ -159,9 +159,9 @@ while [ $POD_COUNT -ne $managedServerRunning  -a $count -lt $max ] ; do
 done
 if [ $POD_COUNT -ne $managedServerRunning ]; then
    for (( i=1; i<=$managedServerRunning; i++)); do
-      POD_STATUS=`kubectl describe pod ${domainUID}-${managedpodname}$i  -n ${namespace}|grep  ContainersReady| awk ' { print $2; } '`
+      POD_STATUS=`${KUBERNETES_CLI:-kubectl} describe pod ${domainUID}-${managedpodname}$i  -n ${namespace}|grep  ContainersReady| awk ' { print $2; } '`
       if [ "$POD_STATUS" != "True" ]; then
-         POD_ERRORS=`kubectl logs ${domainUID}-${managedpodname}$i  -n ${namespace}| grep -i "error"`
+         POD_ERRORS=`${KUBERNETES_CLI:-kubectl} logs ${domainUID}-${managedpodname}$i  -n ${namespace}| grep -i "error"`
          echo "A failure was detected in the log file for pod ${domainUID}-${managedpodname}$i"
          echo "$POD_ERRORS"
          echo "Check the log output for additional information."
@@ -172,9 +172,9 @@ fi
 echo "-----------------------------------------------------"
 echo "                 WCS Pod Status                      "
 echo "-----------------------------------------------------"
-kubectl get pod ${domainUID}-${adminpodname} -n ${namespace}
+${KUBERNETES_CLI:-kubectl} get pod ${domainUID}-${adminpodname} -n ${namespace}
 for (( i=1; i<=$managedServerRunning; i++)); do
-   kubectl get pod ${domainUID}-${managedpodname}$i  -n ${namespace}
+   ${KUBERNETES_CLI:-kubectl} get pod ${domainUID}-${managedpodname}$i  -n ${namespace}
 done
 echo "====================================================="
 echo "   Admin and Managed Servers started successfully    "

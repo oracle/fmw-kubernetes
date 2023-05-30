@@ -15,10 +15,10 @@ else
 	echo " URL_TAIL set to $URL_TAIL"	
 fi
 
-REST_PORT=`kubectl get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
+REST_PORT=`${KUBERNETES_CLI:-kubectl} get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
 REST_ADDR="https://${HOSTNAME}:${REST_PORT}"
-SECRET=`kubectl get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
-ENCODED_TOKEN=`kubectl get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
+SECRET=`${KUBERNETES_CLI:-kubectl} get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
+ENCODED_TOKEN=`${KUBERNETES_CLI:-kubectl} get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
 TOKEN=`echo ${ENCODED_TOKEN} | base64 --decode`
 
 

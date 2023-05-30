@@ -4,11 +4,11 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 
-URL_TAIL=operator/latest/domains/wcsitesinfra/clusters/wcsites_cluster/scale
-REST_PORT=`kubectl get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
+URL_TAIL=operator/latest/domains/wcsitesinfra/clusters/wcsites-cluster/scale
+REST_PORT=`${KUBERNETES_CLI:-kubectl} get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
 REST_ADDR="https://${HOSTNAME}:${REST_PORT}"
-SECRET=`kubectl get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
-ENCODED_TOKEN=`kubectl get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
+SECRET=`${KUBERNETES_CLI:-kubectl} get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
+ENCODED_TOKEN=`${KUBERNETES_CLI:-kubectl} get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
 TOKEN=`echo ${ENCODED_TOKEN} | base64 --decode`
 
 echo "Ready to call operator REST APIs"

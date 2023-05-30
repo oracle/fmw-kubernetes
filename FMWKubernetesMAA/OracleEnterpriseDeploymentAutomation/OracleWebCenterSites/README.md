@@ -25,11 +25,11 @@ This terraform deployment requires the prior installation of the following:
 
 	[tfswitch](https://tfswitch.warrensbox.com/Install/) can be used for flexibility of working with multiple versions of terraform, but it is only available on Linux and Mac OS X, for Windows or if you prefer to install the base software, see [https://learn.hashicorp.com/tutorials/terraform/install-cli](https://learn.hashicorp.com/tutorials/terraform/install-cli) for basic installation instructions.
 
-- **kubectl >= 1.18.10 (the Kubernetes cli)**
+- **kubectl >= 1.24 (the Kubernetes cli)**
 
 	See [https://kubernetes.io/docs/tasks/tools/install-kubectl/](https://kubernetes.io/docs/tasks/tools/install-kubectl/) for installation instructions, although kubectl is usually installed as part of Docker Desktop, so if you use Docker it is likely already installed.
 
-- **helm >= 3.5.4**
+- **helm >= 3.10**
 
 	Helm is a kubernetes deployment package manager. The OCI Service Broker is packaged in a Helm chart, and so is the etcd cluster deployment.
 	See [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/) to install helm locally.
@@ -65,7 +65,7 @@ This terraform deployment requires the prior installation of the following:
 Create a `terraform.tfvars` file from the `terraform.tfvars.template` file and populate the following mandatory information:
 
 ```
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl  
 
 tenancy_ocid     = "ocid1.tenancy.oc1..."
@@ -166,7 +166,7 @@ ssh_authorized_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDtmEF/NbYdBMiF1XjTPg
 # Cluster config
 oke_cluster = {
   name                                                    = "OKE_Cluster"
-  k8s_version                                             = "v1.20.8"
+  k8s_version                                             = "v1.24.1"
   pods_cidr                                               = "10.1.0.0/16"
   services_cidr                                           = "10.2.0.0/16"
   cluster_options_add_ons_is_kubernetes_dashboard_enabled = true
@@ -207,17 +207,17 @@ secrets_encryption_key_ocid = null
 
 - **Push wcsites docker image to OCIR**
 
-	- Download latest sites docker image from [here](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=33579457).
+	- Download latest sites docker image from [here](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=35370108).
 	- Unzip the downloaded zip file.
 
 	```bash
-	$ unzip p33579457_122140_Linux-x86-64.zip
+	$ unzip p35370108_122140_Linux-x86-64.zip
 	```
 
 	Load the image archive using the docker load command.
 
 	```bash
-	$ docker load < wcsites-20210422.tar.gz
+	$ docker load < wcsites-230418.tar.gz
 	```
 
 - **Create an "Auth token" which will be used as docker password to push/pull images from OCIR**	
@@ -385,13 +385,13 @@ Login to OCI console and go to the Load Balancer created be terraform script in 
 To stop Managed Servers:
 	
 	```bash
-	$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/clusters/0/replicas", "value": 0 }]'
+	$ kubectl patch cluster wcsitesinfra-wcsites-cluster -n wcsites-ns --type=merge -p '{"spec":{"replicas":0}}'
 	```
 
 	To start all configured Managed Servers:
 	
 	```bash
-	$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/clusters/0/replicas", "value": 3 }]'
+	$ kubectl patch cluster wcsitesinfra-wcsites-cluster -n wcsites-ns --type=merge -p '{"spec":{"replicas":3}}'
 	```
 
 * You can check running pods with:

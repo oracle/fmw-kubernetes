@@ -46,7 +46,7 @@ Make a copy of the `create-domain-inputs.yaml` file before updating the default 
 The default domain created by the script has the following characteristics:
 
 * An Administration Server named `AdminServer` listening on port `7001`.
-* A configured cluster named `wcsites_cluster` of size `5`.
+* A configured cluster named `wcsites-cluster` of size `5`.
 * Managed Server, named `wcsites_server1`, listening on port `8001`.
 * Log files that are located in `/shared/logs/<domainUID>`.
 
@@ -57,7 +57,7 @@ The following parameters can be provided in the inputs file:
 | --- | --- | --- |
 | `adminPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7001` |
 | `adminServerName` | Name of the Administration Server. | `AdminServer` |
-| `clusterName` | Name of the WebLogic cluster instance to generate for the domain. By default the cluster name is `wcsites_cluster` for the WebCenter Sites domain. | `wcsites_cluster` |
+| `clusterName` | Name of the WebLogic cluster instance to generate for the domain. By default the cluster name is `wcsites-cluster` for the WebCenter Sites domain. | `wcsites-cluster` |
 | `configuredManagedServerCount` | Number of Managed Server instances for the domain. | `3` |
 | `createDomainFilesDir` | Directory on the host machine to locate all the files that you need to create a WebLogic domain, including the script that is specified in the `createDomainScriptName` property. By default, this directory is set to the relative path `wlst`, and the create script will use the built-in WLST offline scripts in the `wlst` directory to create the WebLogic domain. An absolute path is also supported to point to an arbitrary directory in the file system. The built-in scripts can be replaced by the user-provided scripts or model files as long as those files are in the specified directory. Files in this directory are put into a Kubernetes config map, which in turn is mounted to the `createDomainScriptsMountPath`, so that the Kubernetes pod can use the scripts and supporting files to create a domain home. | `wlst` |
 | `createDomainScriptsMountPath` | Mount path where the create domain scripts are located inside a pod. The `create-domain.sh` script creates a Kubernetes job to run the script (specified in the `createDomainScriptName` property) in a Kubernetes pod to create a domain home. Files in the `createDomainFilesDir` directory are mounted to this location in the pod, so that the Kubernetes pod can use the scripts and supporting files to create a domain home. | `/u01/weblogic` |
@@ -79,7 +79,7 @@ The following parameters can be provided in the inputs file:
 | `namespace` | Kubernetes namespace in which to create the domain. | `wcsites-ns` |
 | `persistentVolumeClaimName` | Name of the persistent volume claim created to host the domain home. If not specified, the value is derived from the `domainUID` as `<domainUID>-weblogic-sample-pvc`. | `wcsitesinfra-domain-pvc` |
 | `productionModeEnabled` | Boolean indicating if production mode is enabled for the domain. | `true` |
-| `serverStartPolicy` | Determines which WebLogic Server instances will be started. Legal values are `NEVER`, `IF_NEEDED`, `ADMIN_ONLY`. | `IF_NEEDED` |
+| `serverStartPolicy` | Determines which WebLogic Server instances will be started. Legal values are `Never`, `IfNeeded`, `AdminOnly`. | `IfNeeded` |
 | `t3ChannelPort` | Port for the T3 channel of the NetworkAccessPoint. | `30012` |
 | `t3PublicAddress` | Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <p/>For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes. | If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster. |
 | `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | `wcsites-domain-credentials` |
@@ -148,13 +148,13 @@ to create the domain home for other use cases. You can modify the generated doma
 	export adminServerName="adminserver"
 	export domainUID="wcsitesinfra"
 	export domainHome="/u01/oracle/user_projects/domains/$domainUID"
-	export serverStartPolicy="IF_NEEDED"
-	export clusterName="wcsites_cluster"
+	export serverStartPolicy="IfNeeded"
+	export clusterName="wcsites-cluster"
 	export configuredManagedServerCount="3"
 	export initialManagedServerReplicas="1"
 	export managedServerNameBase="wcsites_server"
 	export managedServerPort="8001"
-	export image="oracle/wcsites:12.2.1.4"
+	export image="oracle/wcsites:12.2.1.4-21.1.1"
 	export imagePullPolicy="IfNotPresent"
 	export productionModeEnabled="true"
 	export weblogicCredentialsSecretName="wcsitesinfra-domain-credentials"
@@ -366,7 +366,7 @@ to create the domain home for other use cases. You can modify the generated doma
 	---------------------------------------------------------
 	
 	The domain will be created using the script /u01/weblogic/create-domain-script.sh
-	wlst.sh -skipWLSModuleScanning /u01/weblogic/createSitesDomain.py -oh /u01/oracle -jh /u01/jdk -parent /u01/oracle/user_projects/domains/wcsitesinfra/.. -name wcsitesinfra -user weblogic -password Welcome1 -rcuDb oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s -rcuPrefix WCS1 -rcuSchemaPwd Welcome1 -adminListenPort 7001 -adminName adminserver -managedNameBase wcsites_server -managedServerPort 8001 -prodMode true -managedServerCount 3 -clusterName wcsites_cluster -exposeAdminT3Channel false -t3ChannelPublicAddress 10.123.152.96 -t3ChannelPort 30012 -domainType wcsites -machineName wcsites_machine
+	wlst.sh -skipWLSModuleScanning /u01/weblogic/createSitesDomain.py -oh /u01/oracle -jh /u01/jdk -parent /u01/oracle/user_projects/domains/wcsitesinfra/.. -name wcsitesinfra -user weblogic -password Welcome1 -rcuDb oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s -rcuPrefix WCS1 -rcuSchemaPwd Welcome1 -adminListenPort 7001 -adminName adminserver -managedNameBase wcsites_server -managedServerPort 8001 -prodMode true -managedServerCount 3 -clusterName wcsites-cluster -exposeAdminT3Channel false -t3ChannelPublicAddress 10.123.152.96 -t3ChannelPort 30012 -domainType wcsites -machineName wcsites_machine
 	
 	Initializing WebLogic Scripting Tool (WLST) ...
 	
@@ -405,8 +405,8 @@ to create the domain home for other use cases. You can modify the generated doma
 	Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcsites_server2
 	Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:wcsites_server3
 	Targeting Cluster ...
-	Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcsites_cluster
-	Set WLS clusters as target of defaultCoherenceCluster:[wcsites_cluster]
+	Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:wcsites-cluster
+	Set WLS clusters as target of defaultCoherenceCluster:[wcsites-cluster]
 	Preparing to update domain...
 	Mar 14, 2020 8:01:52 AM oracle.security.jps.az.internal.runtime.policy.AbstractPolicyImpl initializeReadStore
 	INFO: Property for read store in parallel: oracle.security.jps.az.runtime.readstore.threads = null
@@ -463,6 +463,12 @@ service/wcsitesinfra-wcsites-server1           ClusterIP   None           <none>
 
 NAME                                                        COMPLETIONS   DURATION   AGE
 job.batch/wcsitesinfra-create-fmw-infra-sample-domain-job   1/1           7m40s      22m
+
+NAME                                  AGE
+domain.weblogic.oracle/wcsitesinfra   7m5s
+
+NAME                                                   AGE
+cluster.weblogic.oracle/wcsitesinfra-wcsites-cluster   7m5s
 ```
 
 To see the Admin and Managed Servers logs, you can check the pod logs:
@@ -562,6 +568,8 @@ For Traefik, see [Setting Up Loadbalancer Traefik for the WebCenter Sites Domain
 
 For Nginx, see [Setting Up Loadbalancer Nginx for the WebCenter Sites Domain on K8S]({{< relref "/wcsites-domains/adminguide/configure-load-balancer/nginx.md">}})
 
+For Apache webtier, see [Setting Up Loadbalancer Apache Webtier for the WebCenter Sites Domain on K8S]({{< relref "/wcsites-domains/adminguide/configure-load-balancer/apache.md">}})
+
 #### Configure WebCenter Sites 
 
 1. Configure WebCenter Sites by hitting url `http://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}/sites/sitesconfigsetup`
@@ -573,13 +581,13 @@ For Nginx, see [Setting Up Loadbalancer Nginx for the WebCenter Sites Domain on 
 To stop Managed Servers:
 
 ```bash
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/clusters/0/replicas", "value": 0 }]'
+$ kubectl patch cluster wcsitesinfra-wcsites-cluster -n wcsites-ns --type=merge -p '{"spec":{"replicas":0}}'
 ```
 
 To start all configured Managed Servers:
 
 ```bash
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/clusters/0/replicas", "value": 3 }]' 
+$ kubectl patch cluster wcsitesinfra-wcsites-cluster -n wcsites-ns --type=merge -p '{"spec":{"replicas":3}}' 
 ```
 
 3. Wait till the Managed Server pod is killed and then restart it. Monitor with below command:

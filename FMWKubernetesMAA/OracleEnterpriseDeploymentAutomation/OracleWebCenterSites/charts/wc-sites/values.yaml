@@ -1,4 +1,4 @@
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
 # Default values for wcsites.
@@ -8,7 +8,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-kubernetesVersion: "1.20"
+kubernetesVersion: "1.24"
 
 image:
   repository: "oracle/wcsites"
@@ -74,12 +74,12 @@ domain:
   includeServerOutInPodLog: true
   httpAccessLogInLogHome: true
 
-  # serverStartPolicy legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
+  # serverStartPolicy legal values are "Never", "IfNeeded", or "AdminOnly"
   # This determines which WebLogic Servers the Operator will start up when it discovers this Domain
-  # - "NEVER" will not start any server in the domain
-  # - "ADMIN_ONLY" will start up only the administration server (no managed servers will be started)
-  # - "IF_NEEDED" will start all non-clustered servers, including the administration server and clustered servers up to the replica count
-  serverStartPolicy: IF_NEEDED
+  # - "Never" will not start any server in the domain
+  # - "AdminOnly" will start up only the administration server (no managed servers will be started)
+  # - "IfNeeded" will start all non-clustered servers, including the administration server and clustered servers up to the replica count
+  serverStartPolicy: IfNeeded
   javaOptions: "-Dweblogic.StdoutDebugEnabled=false"
   maxManagedServerCount: 5
 
@@ -91,7 +91,7 @@ domain:
     nodePort: 30701
     
   wcsCluster:
-    name: wcsites_cluster
+    name: wcsites-cluster
     managedServers:
       count: 3
       name: wcsites-server

@@ -31,7 +31,7 @@ Use the values.yaml file in the sample but set `kubernetes.namespaces` specifica
     ```bash
 	$ cd ${WORKDIR}/weblogic-kubernetes-operator
  	$ kubectl create namespace traefik
- 	$ helm repo add traefik https://containous.github.io/traefik-helm-chart
+ 	$ helm repo add traefik https://helm.traefik.io/traefik
     ```
     
     > Update the repo

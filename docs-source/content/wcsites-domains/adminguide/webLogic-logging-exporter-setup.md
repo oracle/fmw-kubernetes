@@ -120,12 +120,12 @@ To restart the servers, stop and then start them using the following commands:
 
 To stop the servers:
 ```
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
+$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "Never" }]'
 ```
 
 To start the servers:
 ```
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]'
+$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IfNeeded" }]'
 ```
 
 After all the servers are restarted, see their server logs to check that the `weblogic-logging-exporter` class is called, as shown below:

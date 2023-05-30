@@ -1,4 +1,4 @@
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
 variable "tenancy_ocid" {}
@@ -10,7 +10,7 @@ variable "provision_cluster" {}
 
 variable "oke_cluster" {
   default = {
-    k8s_version   = "v1.20.8"
+    k8s_version   = "v1.24.1"
     pods_cidr     = "10.1.0.0/16"
     services_cidr = "10.2.0.0/16"
   }
