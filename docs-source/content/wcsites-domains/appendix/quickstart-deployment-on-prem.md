@@ -273,8 +273,8 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
     $ export HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
     $ export HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-    ### install kubernetes 1.18.4-1
-    $ VERSION=1.18.4-1
+    ### install kubernetes
+    $ VERSION=1.23.6-0
     $ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes=kubernetes
 
     ### enable kubelet service so that it auto-restart on reboot
@@ -303,13 +303,13 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
 1. Install Helm v3.x.
 
-   a. Download Helm from https://github.com/helm/helm/releases. Example to download Helm v3.2.4:
+   a. Download Helm from https://github.com/helm/helm/releases. Example to download Helm v3.10.3:
       ```
-      $ wget https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz
+      $ wget https://get.helm.sh/helm-v3.10.3-linux-amd64.tar.gz
       ```
    b. Unpack `tar.gz`:
       ```
-      $ tar -zxvf helm-v3.2.4-linux-amd64.tar.gz
+      $ tar -zxvf helm-v3.10.3-linux-amd64.tar.gz
       ```
    c. Find the Helm binary in the unpacked directory, and move it to its desired destination:
       ```
@@ -319,7 +319,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 1. Run `helm version` to verify its installation:
    ```
    $ helm version
-     version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
+     version.BuildInfo{Version:"v3.10.3", GitCommit:"835b7334cfe2e5e27870ab3ed4135f136eecc704", GitTreeState:"clean", GoVersion:"go1.18.9"}
    ```
 
 ### 2. Set up a single instance Kubernetes cluster
@@ -390,7 +390,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
 
    > Note: If you are using a different cidr block than `10.244.0.0/16`, then download and update `kube-flannel.yml` with the correct cidr address before deploying into the cluster:
    ```
-   $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.12.0/Documentation/kube-flannel.yml
+   $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.13.0/Documentation/kube-flannel.yml
    ```
 
 1. Verify that the master node is in Ready status:
@@ -400,7 +400,7 @@ Any time you see `YOUR_USERID` in a command, you should replace it with your act
    For example:
    ```
    NAME        STATUS   ROLES    AGE     VERSION
-   mymasternode Ready    master   8m26s   v1.18.4
+   mymasternode Ready    master   8m26s   v1.23.6
    ```
    or:
    ```
@@ -451,11 +451,11 @@ Follow [these steps]({{< relref "/wcsites-domains/installguide/prepare-your-envi
     b. Pull the operator image:
 
     ```
-    $ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0
-    $ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:3.3.0 oracle/weblogic-kubernetes-operator:3.3.0
+    $ docker pull container-registry.oracle.com/middleware/weblogic-kubernetes-operator:4.0.6
+    $ docker tag container-registry.oracle.com/middleware/weblogic-kubernetes-operator:4.0.6 oracle/weblogic-kubernetes-operator:4.0.6
     ```
 
-1. Build Oracle WebCenter Sites 12.2.1.4 Image by following steps 4A, 4C, 4D and 5 from this [document](https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites/dockerfiles/12.2.1.4)
+1. Build Oracle WebCenter Sites 12.2.1.4 Image by following [Create or update an Image](https://oracle.github.io/fmw-kubernetes/wcsites-domains/create-or-update-image).
 
 1. Copy all the above built and pulled images to all the nodes in your cluster or add to a Docker registry that your cluster can access.
 
@@ -504,9 +504,8 @@ Use Helm to install and start the operator from the directory you just cloned:
    $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace operator-ns \
-   --set image=oracle/weblogic-kubernetes-operator:3.3.0 \
+   --set image=oracle/weblogic-kubernetes-operator:4.0.6 \
    --set serviceAccount=operator-sa \
-   --set "domainNamespaces={}" \
    --wait
 ```
 #### 4.3 Verify the WebLogic Kubernetes Operator
@@ -521,11 +520,11 @@ Use Helm to install and start the operator from the directory you just cloned:
    $ kubectl logs -n operator-ns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes Operator v3.3.0 has been installed. Continue with the load balancer and Oracle WebCenter Sites domain setup.
+The WebLogic Kubernetes Operator v4.0.6 has been installed. Continue with the load balancer and Oracle WebCenter Sites domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 
-The Oracle WebLogic Server Kubernetes operator supports two load balancers: Traefik, Nginx. Samples are provided in the documentation.
+The Oracle WebLogic Server Kubernetes operator supports three load balancers: Traefik, Nginx, Apache webtier. Samples are provided in the documentation.
 
 This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle WebCenter Sites domain.
 
@@ -536,7 +535,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 
 1. Set up Helm for 3rd party services:
    ```
-   $ helm repo add traefik https://containous.github.io/traefik-helm-chart
+   $ helm repo add traefik https://helm.traefik.io/traefik
    ```
 
 1. Install the Traefik operator in the `traefik` namespace with the provided sample values:
@@ -556,16 +555,7 @@ This Quick Start demonstrates how to install the Traefik ingress controller to p
 1. Create a namespace that can host Oracle WebCenter Sites domains:
    ```
    $ kubectl create namespace wcsites-ns
-   ```
-
-1. Use Helm to configure the operator to manage Oracle WebCenter Sites domains in this namespace:
-   ```
-   $ cd ${WORKDIR}/fmw-kubernetes/OracleWebCenterSites
-   $ helm upgrade weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
-      --reuse-values \
-      --namespace operator-ns \
-      --set "domainNamespaces={wcsites-ns}" \
-      --wait
+   $ kubectl label namespace wcsites-ns weblogic-operator=enabled
    ```
 
 1. Create Kubernetes secrets.

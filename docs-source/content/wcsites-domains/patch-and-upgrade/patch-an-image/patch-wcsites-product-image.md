@@ -44,8 +44,8 @@ managedServerNameBase: wcsites-server
 # Oracle WebCenter Sites Docker image.
 # Refer to build Oracle WebCenter Sites Docker image https://github.com/oracle/docker-images/tree/master/OracleWebCenterSites
 # for details on how to obtain or create the image.
-# tag image to a new tag for example: oracle/wcsites:12.2.1.4-21.1.1-20210122
-image: oracle/wcsites:12.2.1.4-21.1.1-20210122
+# tag image to a new tag for example: oracle/wcsites:12.2.1.4-230418
+image: oracle/wcsites:12.2.1.4-230418
 
 # Image pull policy
 # Legal values are "IfNotPresent", "Always", or "Never"

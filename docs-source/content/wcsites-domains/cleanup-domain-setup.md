@@ -2,8 +2,8 @@
 title: "Uninstall"
 date: 2019-02-22T15:44:42-05:00
 draft: false
-weight: 5
-pre : "<b>5. </b>"
+weight: 6
+pre : "<b>6. </b>"
 description: "Clean up the Oracle WebCenter Sites domain setup."
 ---
 
@@ -11,14 +11,14 @@ Learn how to clean up the Oracle WebCenter Sites domain setup.
 
 #### Stop all Administration and Managed server pods
 
-First stop the all pods related to a domain. This can be done by patching domain "serverStartPolicy" to "NEVER". Here is the sample command for the same.
+First stop the all pods related to a domain. This can be done by patching domain "serverStartPolicy" to "Never". Here is the sample command for the same.
 
 ```bash
-$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
+$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "Never" }]'
 ```
 For example:
 ```bash
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
+$ kubectl patch domain wcsitesinfra -n wcsites-ns --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "Never" }]'
 ```
 
 #### Drop the RCU schemas

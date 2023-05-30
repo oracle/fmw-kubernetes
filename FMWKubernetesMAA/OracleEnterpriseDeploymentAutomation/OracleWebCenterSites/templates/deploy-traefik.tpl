@@ -1,14 +1,14 @@
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 ## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
-CHART_VERSION=2.2.8
+CHART_VERSION=2.6.0
 
 helm repo add traefik https://helm.traefik.io/traefik
 
 helm install traefik \
 traefik/traefik \
 --namespace ${ingress_namespace} \
---set image.tag=2.2.8 \
+--set image.tag=$CHART_VERSION \
 --set ports.traefik.expose=true \
 --set ports.web.exposedPort=30305 \
 --set ports.web.nodePort=30305 \

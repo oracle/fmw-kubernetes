@@ -6,15 +6,15 @@
 
 
 KUBERNETES_SERVER=${KUBERNETES_SERVER_HOSTNAME}
-URL_TAIL=operator/latest/domains/wcsitesinfra/clusters/wcsites_cluster/scale
+URL_TAIL=operator/latest/domains/wcsitesinfra/clusters/wcsites-cluster/scale
 
 
-REST_PORT=`kubectl get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
+REST_PORT=`${KUBERNETES_CLI:-kubectl} get services -n operator-ns -o jsonpath='{.items[?(@.metadata.name == "external-weblogic-operator-svc")].spec.ports[?(@.name == "rest")].nodePort}'`
 REST_ADDR="https://${KUBERNETES_SERVER}:${REST_PORT}"
-SECRET=`kubectl get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
-ENCODED_TOKEN=`kubectl get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
+SECRET=`${KUBERNETES_CLI:-kubectl} get serviceaccount operator-sa -n operator-ns -o jsonpath='{.secrets[0].name}'`
+ENCODED_TOKEN=`${KUBERNETES_CLI:-kubectl} get secret ${SECRET} -n operator-ns -o jsonpath='{.data.token}'`
 TOKEN=`echo ${ENCODED_TOKEN} | base64 --decode`
-OPERATOR_CERT_DATA=`kubectl get secret -n operator-ns weblogic-operator-identity -o jsonpath='{.data.tls\.crt}'`
+OPERATOR_CERT_DATA=`${KUBERNETES_CLI:-kubectl} get secret -n operator-ns weblogic-operator-identity -o jsonpath='{.data.tls\.crt}'`
 OPERATOR_CERT_FILE="/tmp/operator.cert.pem"
 echo ${OPERATOR_CERT_DATA} | base64 --decode > ${OPERATOR_CERT_FILE}
 cat ${OPERATOR_CERT_FILE}
