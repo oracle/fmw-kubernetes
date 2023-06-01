@@ -227,11 +227,17 @@ function createDomainHome {
       sed -i "0,/  clusterName: ${soaClusterName}/s//  clusterName: ${osbClusterName}/" ${dcrOutput}
 
       sed -i -e "/  clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
-    else
+    elif [ "${domainType}" = "soa" ]; then
       sed -i "0,/  name: ${domainUID}-${soaClusterName}/s//  name: ${domainUID}-$(toDNS1123Legal ${soaClusterName})/" ${dcrOutput}
       sed -i "0,/- name: ${domainUID}-${soaClusterName}/s//- name: ${domainUID}-$(toDNS1123Legal ${soaClusterName})/" ${dcrOutput}
       sed -i -e "/  clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
-    fi
+    elif [ "${domainType}" = "osb" ]; then
+      sed -i "0,/  name: ${domainUID}-${osbClusterName}/s//  name: ${domainUID}-$(toDNS1123Legal ${osbClusterName})/" ${dcrOutput}
+      sed -i "0,/- name: ${domainUID}-${osbClusterName}/s//- name: ${domainUID}-$(toDNS1123Legal ${osbClusterName})/" ${dcrOutput}
+      sed -i -e "/  clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
+    else
+	    echo "No Matching ${domainType}"
+    fi   
     # set MemoryMetricEnabled=false for SOA and OSB clusters
     if [ "${domainType}" = "osb" ]; then
       sed -i -e "s/%MemoryMetricEnabled%/-Doracle.sb.tracking.resiliency.MemoryMetricEnabled=false /" ${dcrOutput}
@@ -244,6 +250,8 @@ function createDomainHome {
   else
     echo "domainType not defined. Setting it to soa by default"
     sed -i -e "s:%DOMAIN_TYPE%:soa:g" ${createJobOutput}
+    sed -i "0,/  name: ${domainUID}-${soaClusterName}/s//  name: ${domainUID}-$(toDNS1123Legal ${soaClusterName})/" ${dcrOutput}
+    sed -i "0,/- name: ${domainUID}-${soaClusterName}/s//- name: ${domainUID}-$(toDNS1123Legal ${soaClusterName})/" ${dcrOutput}
     sed -i -e "/  clusterName:/a ${PRECREATE_SERVICE}" ${dcrOutput}
     sed -i -e "s/%MemoryMetricEnabled%/-Doracle.soa.tracking.resiliency.MemoryMetricEnabled=false /" ${dcrOutput}
   fi

@@ -5,6 +5,8 @@ Using the `WebLogic Monitoring Exporter` you can scrape runtime information from
 
 - Have Docker and a Kubernetes cluster running and have `${KUBERNETES_CLI:-kubectl}` installed and configured.
 - Have Helm installed.
+- Before installing kube-prometheus-stack (Prometheus, Grafana and Alertmanager), refer [link](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#uninstall-helm-chart) and cleanup if any older CRDs for monitoring services exists in your Kubernetes cluster.
+  **Note**: Make sure no existing monitoring services is running in the Kubernetes cluster before cleanup. If you do not want to cleanup monitoring services CRDs, refer [link](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart) for upgrading the CRDs.
 - An OracleSOASuite domain deployed by `weblogic-operator` is running in the Kubernetes cluster.
 
 ## Set up monitoring for OracleSOASuite domain 
@@ -182,7 +184,7 @@ The following parameters can be provided in the inputs file.
 | `domainUID` | domainUID of the OracleSOASuite domain. | `soainfra` |
 | `domainNamespace` | Kubernetes namespace of the OracleSOASuite domain. | `soans` |
 | `setupKubePrometheusStack` | Boolean value indicating whether kube-prometheus-stack (Prometheus, Grafana and Alertmanager) to be installed | `true` |
-| `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support and Admission webhook support for PrometheusRules resources is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false`|  |
+| `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support, Admission webhook support for PrometheusRules resources and custom Grafana image repository is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false --set grafana.image.repository=xxxxxxxxx/grafana/grafana`|  |
 | `monitoringNamespace` | Kubernetes namespace for monitoring setup. | `monitoring` |
 | `adminServerName` | Name of the Administration Server. | `AdminServer` |
 | `adminServerPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7001` |
@@ -211,7 +213,7 @@ $ ./setup-monitoring.sh \
 ```
 The script will perform the following steps:
 
-- Helm install `prometheus-community/kube-prometheus-stack` of version "16.5.0" if `setupKubePrometheusStack` is set to `true`.
+- Helm install `prometheus-community/kube-prometheus-stack` if `setupKubePrometheusStack` is set to `true`.
 - Deploys WebLogic Monitoring Exporter to Administration Server.
 - Deploys WebLogic Monitoring Exporter to `soaCluster` if `wlsMonitoringExporterTosoaCluster` is set to `true`.
 - Deploys WebLogic Monitoring Exporter to `osbCluster` if `wlsMonitoringExporterToosbCluster` is set to `true`.
@@ -235,7 +237,7 @@ Sample output:
 ```bash
 $ helm ls -n monitoring
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION
-monitoring      monitoring      1               2021-06-18 12:58:35.177221969 +0000 UTC deployed        kube-prometheus-stack-16.5.0    0.48.0
+monitoring      monitoring      1               2023-03-15 10:31:42.44437202 +0000 UTC  deployed        kube-prometheus-stack-45.7.1    v0.63.0
 $
 ```
 
