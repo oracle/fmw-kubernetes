@@ -18,7 +18,7 @@
       
       <guid>/fmw-kubernetes/wcsites-domains/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle WebCenter Sites on Kubernetes.
-Recent changes    Date Version Introduces backward incompatibilities Change     May 30, 2022 22.2.2 no Supports Oracle WebCenter Sites 12.2.1.4 domains deployment using April 2022 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 3.3.0. Oracle WebCenter Sites 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 34223930).</description>
+Recent changes    Date Version Introduces backward incompatibilities Change     May 10, 2023 23.2.2 no Supports Oracle WebCenter Sites 12.2.1.4 domains deployment using April 2023 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 4.0.6. Oracle WebCenter Sites 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 35370108) and container-registry.</description>
     </item>
     
     <item>
@@ -28,9 +28,9 @@ Recent changes    Date Version Introduces backward incompatibilities Change     
       
       <guid>/fmw-kubernetes/wcsites-domains/cleanup-domain-setup/</guid>
       <description>Learn how to clean up the Oracle WebCenter Sites domain setup.
-Stop all Administration and Managed server pods First stop the all pods related to a domain. This can be done by patching domain &amp;ldquo;serverStartPolicy&amp;rdquo; to &amp;ldquo;NEVER&amp;rdquo;. Here is the sample command for the same.
-$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; For example:
-$ kubectl patch domain wcsitesinfra -n wcsites-ns --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;NEVER&amp;#34; }]&amp;#39; Drop the RCU schemas $ cd work-dir-name/weblogic-kubernetes-operator $ kubectl apply -f kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.</description>
+Stop all Administration and Managed server pods First stop the all pods related to a domain. This can be done by patching domain &amp;ldquo;serverStartPolicy&amp;rdquo; to &amp;ldquo;Never&amp;rdquo;. Here is the sample command for the same.
+$ kubectl patch domain wcsites-domain-name -n wcsites-namespace --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Never&amp;#34; }]&amp;#39; For example:
+$ kubectl patch domain wcsitesinfra -n wcsites-ns --type=&amp;#39;json&amp;#39; -p=&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;replace&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/serverStartPolicy&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Never&amp;#34; }]&amp;#39; Drop the RCU schemas $ cd work-dir-name/weblogic-kubernetes-operator $ kubectl apply -f kubernetes/create-wcsites-domain/output/weblogic-domains/wcsitesinfra/delete-domain-job.</description>
     </item>
     
     <item>
