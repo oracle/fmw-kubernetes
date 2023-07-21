@@ -12,18 +12,18 @@
     <title>c) Monitoring an Oracle Unified Directory Services Manager Instance :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1685598641" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1685598641" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1689938646" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1689938646" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1685598641"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1689938646"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1685598641"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1685598641"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1689938646"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1689938646"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1685598641"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1689938646"></script>
 
     
   </div>
@@ -5449,7 +5449,9 @@ kube-prometheus-stack has been installed. Check its status by running:
   kubectl --namespace monitoring get pods -l <span style="color:#e6db74">&#34;release=monitoring&#34;</span>
 
 Visit https://github.com/prometheus-operator/kube-prometheus <span style="color:#66d9ef">for</span> instructions on how to create &amp; configure Alertmanager and Prometheus instances using the Operator.
-</code></pre></div></li>
+</code></pre></div><p><strong>Note</strong>: If your cluster does not have access to the internet to pull external images, such as prometheus or grafana, you must load the images in a local container registry. You must then set install as follows:</p>
+<pre><code>helm install --set grafana.image.repository==container-registry.example.com/grafana --set grafana.image.tag=8.4.2 monitoring prometheus/kube-prometheus-stack -n monitoring
+</code></pre></li>
 </ol>
 <h4 id="view-prometheus-and-grafana-objects-created">View Prometheus and Grafana Objects created</h4>
 <p>View the objects created for Prometheus and Grafana by issuing the following command:</p>
@@ -9137,19 +9139,19 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1685598641"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1689938646"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1685598641"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1685598641"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1689938646"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1689938646"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1685598641" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1685598641"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1689938646" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1689938646"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
