@@ -53,7 +53,7 @@ From October 22 (22.4.1) onwards, OUDSM logs should be stored on a centralized E
 
 Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana. 
 
-If you are upgrading from July 22 (22.3.1) or earlier, to April 23 (23.2.1), you must first undeploy Elasticsearch and Kibana using the steps below:
+If you are upgrading from July 22 (22.3.1) or earlier, to April 23 (23.1.1), you must first undeploy Elasticsearch and Kibana using the steps below:
 
 1. Navigate to the `$WORKDIR/kubernetes/helm` directory and create a `logging-override-values-uninstall.yaml` with the following:
 
