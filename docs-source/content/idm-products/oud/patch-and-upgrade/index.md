@@ -7,16 +7,75 @@ description=  "This document provides steps to patch or upgrade an OUD image"
 
 In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from. 
 
-1. [Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later](#upgrading-to-april-23-2321-from-october-22-2241-or-later)
-1. [Upgrading to April 23 (23.2.1) from July 22 (22.3.1)](#upgrading-to-april-23-2321-from-july-22-2231)
-1. [Upgrading to April 23 (23.2.1) from releases prior to July 22 (22.3.1)](#upgrading-to-april-23-2321-from-releases-prior-to-july-22-2231)
+1. [Upgrading to July 23 (23.3.1) from April 23 (23.2.1)](#upgrading-to-july-23-2331-from-april-23-2321)
+1. [Upgrading to July 23 (23.3.1) from October 22 (22.4.1) or January 23 (23.1.1)](#upgrading-to-july-23-2331-from-october-22-2241-or-january-23-2311)
+1. [Upgrading to July 23 (23.3.1) from July 22 (22.3.1)](#upgrading-to-july-23-2331-from-july-22-2231)
+1. [Upgrading to July 23 (23.3.1) from releases prior to July 22 (22.3.1)](#upgrading-to-july-23-2331-from-releases-prior-to-july-22-2231)
 1. [Upgrading Elasticsearch and Kibana](#upgrading-elasticsearch-and-kibana)
 
 
+### Upgrading to July 23 (23.3.1) from April 23 (23.2.1)
 
-### Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later
+The instructions below are for upgrading from April 23 ([23.2.1](https://github.com/oracle/fmw-kubernetes/releases)) to July 23 ([23.3.1](https://github.com/oracle/fmw-kubernetes/releases)).
 
-The instructions below are for upgrading from October 22 ([22.4.1](https://github.com/oracle/fmw-kubernetes/releases)) or later, to April 23 ([23.2.1](https://github.com/oracle/fmw-kubernetes/releases)).
+**Note**: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.
+
+1. Navigate to the `$WORKDIR/kubernetes/helm` directory:
+
+   ```bash
+   $ cd $WORKDIR/kubernetes/helm
+   ```
+
+1. Create a `oud-patch-override.yaml` file that contains:
+
+   ```yaml
+   image:
+     repository: <image_location>
+     tag: <image_tag>
+    imagePullSecrets:
+      - name: orclcred
+   ```
+
+   For example:
+
+   ```yaml
+   image:
+     repository: container-registry.oracle.com/middleware/oud_cpu
+     tag: 12.2.1.4-jdk8-ol7-<July'23>
+   imagePullSecrets:
+     - name: orclcred
+   ```
+   
+   The following caveats exist:
+   
+   * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:
+   
+      ```
+      imagePullSecrets:
+        - name: orclcred
+      ```
+
+1. Run the following command to upgrade the deployment:
+
+   ```bash
+   $ helm upgrade --namespace <namespace> \
+   --values oud-patch-override.yaml \
+   <release_name> oud-ds-rs --reuse-values
+   ```
+   
+   For example:
+   
+   ```bash
+   $ helm upgrade --namespace oudns \
+   --values oud-patch-override.yaml \
+   oud-ds-rs oud-ds-rs --reuse-values
+   ```
+
+
+
+### Upgrading to July 23 (23.3.1) from October 22 (22.4.1) or January 23 (23.1.1)
+
+The instructions below are for upgrading from October 22 ([22.4.1](https://github.com/oracle/fmw-kubernetes/releases)) or January 23 ([23.1.1](https://github.com/oracle/fmw-kubernetes/releases)), to July 23 ([23.3.1](https://github.com/oracle/fmw-kubernetes/releases)).
 
 **Note**: If you are not using Oracle Container Registry or your own container registry, then you must first load the new container image on all nodes in your Kubernetes cluster.
 
@@ -103,7 +162,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    $ helm upgrade -n oudns --set replicaCount=1 oud-ds-rs oud-ds-rs --reuse-values
    ```
    
-   **Note**: The `$WORKDIR` is the directory for your existing release, not April 23.
+   **Note**: The `$WORKDIR` is the directory for your existing release, not July 23.
    
    The output will be similar to the following:
    
@@ -147,9 +206,9 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    ```
    [oracle@oud-ds-rs-0 user_projects]$ ls -l OUD_backup_<date>
    total 2
-   drwxr-x---. 5 oracle root 3 Mar 28 11:23 oud-ds-rs-0
-   drwxr-x---. 5 oracle root 3 Mar 28 11:23 oud-ds-rs-1
-   drwxr-x---. 5 oracle root 3 Mar 28 11:23 oud-ds-rs-2
+   drwxr-x---. 5 oracle root 3 <DATE> oud-ds-rs-0
+   drwxr-x---. 5 oracle root 3 <DATE> oud-ds-rs-1
+   drwxr-x---. 5 oracle root 3 <DATE> oud-ds-rs-2
    ```
 
 1. Remove the non-zero pod directories `oud-ds-rs-1` and `oud-ds-rs-2`:
@@ -166,7 +225,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    
    
 
-#### Setup the April 23 code repository to deploy OUD
+#### Setup the July 23 code repository to deploy OUD
 
 1. Create a working directory on the persistent volume to setup the latest source code:
 
@@ -177,7 +236,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    For example:
 
    ```bash
-   $ mkdir /scratch/shared/OUDK8SApril23
+   $ mkdir /scratch/shared/OUDK8SJuly23
    ```
 
 1. Download the latest OUD deployment scripts from the OUD repository:
@@ -190,7 +249,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    For example:
    
    ```bash
-   $ mkdir /scratch/shared/OUDK8SApril23
+   $ mkdir /scratch/shared/OUDK8SJuly23
    $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
 
@@ -203,7 +262,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    For example:
 
    ```bash
-   $ export WORKDIR=/scratch/shared/OUDK8SApril23/fmw-kubernetes/OracleUnifiedDirectory
+   $ export WORKDIR=/scratch/shared/OUDK8SJuly23/fmw-kubernetes/OracleUnifiedDirectory
    ```
   
 #### Update the OUD container image   
@@ -235,7 +294,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag:  12.2.1.4-jdk8-ol7-<April'23>
+     tag:  12.2.1.4-jdk8-ol7-<July'23>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -327,7 +386,7 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
 
    ```bash
    ...
-   Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-<April'23>
+   Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-<July'23>
    Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:<sha256>
    ```
 
@@ -393,15 +452,15 @@ The instructions below are for upgrading from October 22 ([22.4.1](https://githu
    ```
    
 
-### Upgrading to April 23 (23.2.1) from July 22 (22.3.1)
+### Upgrading to July 23 (23.3.1) from July 22 (22.3.1)
 
-The instructions below are for upgrading from Jul 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) to April 23 ([23.2.1](https://github.com/oracle/fmw-kubernetes/releases)) or later.
+The instructions below are for upgrading from July 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) to July 23 ([23.3.1](https://github.com/oracle/fmw-kubernetes/releases)).
 
-1. Follow [Upgrading to April 23 (23.2.1) from October 22 (22.4.1) or later](#upgrading-to-april-23-2321-from-october-22-2241-or-later) to upgrade the image.
+1. Follow [Upgrading to July 23 (23.3.1) from October 22 (22.4.1) or January 23 (23.1.1)](#upgrading-to-july-23-2331-from-october-22-2241-or-january-23-2311) to upgrade the image.
 1. Once the image is upgraded, follow [Upgrading Elasticsearch and Kibana](#upgrading-elasticsearch-and-kibana).
 
 
-### Upgrading to April 23 (23.2.1) from releases prior to July 22 (22.3.1)
+### Upgrading to July 23 (23.3.1) from releases prior to July 22 (22.3.1)
 
 In releases prior to July 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) OUD used pod based deployment. From July 22 ([22.3.1](https://github.com/oracle/fmw-kubernetes/releases)) onwards OUD is deployed using [StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
 
@@ -484,7 +543,7 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
    For example:
 
    ```bash
-   $ mkdir /scratch/shared/OUDK8SApril23
+   $ mkdir /scratch/shared/OUDK8SJuly23
    ```
    
 
@@ -498,7 +557,7 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
    For example:
    
    ```bash
-   $ cd /scratch/shared/OUDK8SApril23
+   $ cd /scratch/shared/OUDK8SJuly23
    $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
 
@@ -511,7 +570,7 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
    For example:
 
    ```bash
-   $ export WORKDIR=/scratch/shared/OUDK8SApril23/fmw-kubernetes/OracleUnifiedDirectory
+   $ export WORKDIR=/scratch/shared/OUDK8SJuly23/fmw-kubernetes/OracleUnifiedDirectory
    ```
 
 
@@ -556,7 +615,7 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol7-<April'23>
+     tag: 12.2.1.4-jdk8-ol7-<July'23>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -630,7 +689,7 @@ If you are upgrading from a release prior to July 22 ([22.3.1](https://github.co
 
 This section shows how to upgrade Elasticsearch and Kibana. From October 22 (22.4.1) onwards, OUD logs should be stored on a centralized Elasticsearch and Kibana stack.
 
-***Note***: This section should only be followed if upgrading from July 22 (22.3.1) or earlier to April 23 (23.2.1). If you are upgrading from October 22 or later to April 23 do not follow this section.
+***Note***: This section should only be followed if upgrading from July 22 (22.3.1) or earlier to July 23 (23.3.1). If you are upgrading from October 22 or later to July 23 do not follow this section.
 
 
 #### Undeploy Elasticsearch and Kibana
@@ -639,7 +698,7 @@ From October 22 (22.4.1) onwards, OUD logs should be stored on a centralized Ela
 
 Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana. 
 
-If you are upgrading from July 22 (22.3.1) or earlier, to April 23 (23.2.1), you must first undeploy Elasticsearch and Kibana using the steps below:
+If you are upgrading from July 22 (22.3.1) or earlier, to July 23 (23.3.1), you must first undeploy Elasticsearch and Kibana using the steps below:
 
 1. Navigate to the `$WORKDIR/kubernetes/helm` directory and create a `logging-override-values-uninstall.yaml` with the following:
 
