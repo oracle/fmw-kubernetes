@@ -12,7 +12,7 @@ Review the latest changes and known issues for Oracle Unified Directory on Kuber
 | --- | --- | --- |
 | July, 2023 | 23.3.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the July 2023 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | To upgrade to July 23 (23.3.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
-| April, 2023 | 23.2.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the April 2023 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| April, 2023 | 23.2.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the April 2023 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | To upgrade to April 23 (23.2.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | January, 2023 | 23.1.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the January 2023 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | October, 2022 | 22.4.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the October 2022 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
