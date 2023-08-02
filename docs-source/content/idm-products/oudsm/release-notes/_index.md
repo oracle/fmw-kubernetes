@@ -17,7 +17,7 @@ Review the latest changes and known issues for Oracle Unified Directory Services
 | | | 1. Patch the OUDSM container image to July 23|
 | | | 2. Upgrade Elasticsearch and Kibana.|
 | | | See [Patch and Upgrade](../patch-and-upgrade) for these instructions.| 
-| April, 2023 | 23.2.1 | Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the April 2023 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| April, 2023 | 23.2.1 | Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the April 2023 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | If upgrading to April 23 (23.2.1) from October 22 (22.4.1), upgrade as follows:|
 | | | 1. Patch the OUDSM container image to April 23|
 | | | If upgrading to April 23 (23.2.1) from July 22 (22.3.1) or earlier, you must upgrade the following in order:|
