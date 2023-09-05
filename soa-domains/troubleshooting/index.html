@@ -12,18 +12,18 @@
     <title>Troubleshooting :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1690795213" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1690795213" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1693904274" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1693904274" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1690795213"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1693904274"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1690795213"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1690795213"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1693904274"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1693904274"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1690795213"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1693904274"></script>
 
     
   </div>
@@ -5476,7 +5476,9 @@ ERROR: /u01/weblogic/create-domain-script.sh failed.
 </ul>
 <p>To resolve these possible causes, check that the schema name and credentials used during the domain creation are the same as when the RCU schema was created.</p>
 <h4 id="server-pods-not-started-after-applying-domain-configuration-file">Server pods not started after applying domain configuration file</h4>
-<p>This issue usually happens when the WebLogic Kubernetes Operator is not configured to manage the domain namespace. You can verify the configuration by running the command <code>helm get values  &lt;operator-release&gt; -n &lt;operator-namespace&gt;</code> and checking the values under the <code>domainNamespaces</code> section.</p>
+<p>When a domain configuration file (YAML) is deployed and no introspector or server pods are initiated, as well as there is no mention of the domain in the operator log, ensure that the domain&rsquo;s namespace has been configured to be managed by WebLogic Kubernetes Operator.</p>
+<p>The <code>domainNamespaceSelectionStrategy</code> configuration in the operator installation Helm chart determines the namespaces managed by operators. The default value of the <code>domainNamespaceSelectionStrategy</code> Helm chart value was altered between versions 3.4 and 4.0. In version 3.4, the default value was <code>List</code> and in version 4.0, the default value is <code>LabelSelector</code>. Therefore, instead of managing the set of namespaces listed in the <code>domainNamespaces</code> Helm chart value, the operator now searches for namespaces with the label specified in the <code>domainNamespaceLabelSelector</code> Helm chart value, which defaults to <code>weblogic-operator=enabled</code>.</p>
+<p>For operator versions 3.4 and lower, you can verify the configuration by running the command <code>helm get values  &lt;operator-release&gt; -n &lt;operator-namespace&gt;</code> and checking the values under the <code>domainNamespaces</code> section.</p>
 <p>For example:</p>
 <pre><code>$ helm get values  weblogic-kubernetes-operator -n opns
 USER-SUPPLIED VALUES:
@@ -5488,6 +5490,10 @@ serviceAccount: op-sa
 $
 </code></pre><p>If you don&rsquo;t see the domain namespace value under the <code>domainNamespaces</code> section, run the <code>helm upgrade</code> command in the operator namespace with appropriate values to configure the operator to manage the domain namespace.</p>
 <pre><code>$ helm upgrade --reuse-values --namespace opns --set &quot;domainNamespaces={soans}&quot; --wait weblogic-kubernetes-operator charts/weblogic-operator
+</code></pre><p>For operator versions 4.0 and higher, verify if the label <code>weblogic-operator=enabled</code> is specified for domain namespace that is to be managed by the operator, by running the following command:</p>
+<pre><code>$ kubectl get ns --selector=&quot;weblogic-operator=enabled&quot;
+</code></pre><p>For example, if your domain namespace is <code>soans</code> and the preceding command did not list the <code>soans</code> namespace, then execute the following command for operator to manage the domain namespace:</p>
+<pre><code>$ kubectl label namespace soans weblogic-operator=enabled
 </code></pre><h4 id="ingress-controller-not-serving-the-domain-urls">Ingress controller not serving the domain URLs</h4>
 <p>To diagnose this issue:</p>
 <ol>
@@ -9162,19 +9168,19 @@ $
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1690795213"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1693904274"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1690795213"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1690795213"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1693904274"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1693904274"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1690795213" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1690795213"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1693904274" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1693904274"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
