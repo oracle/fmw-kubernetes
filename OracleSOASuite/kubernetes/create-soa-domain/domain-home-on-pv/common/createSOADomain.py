@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -140,7 +140,7 @@ class SOA12214Provisioner:
 
     def reConfigureJMSStore(self, domainHome, domainType):
         readDomain(domainHome)
-        print time.asctime(time.localtime(time.time())) + ' : Read Domain: %s' % domainHome
+        print 'INFO : Read Domain: %s' % domainHome
         configUpdated = false
         serverList = []
         # Extend serverList with self.SOA_MANAGED_SERVERS for domainTypes with soa
@@ -154,7 +154,7 @@ class SOA12214Provisioner:
         print serverList
         dataSource = self.getDSMBean('WLSSchemaDataSource')
         if dataSource == None:
-            print time.asctime(time.localtime(time.time())) + ' : WLSSchemaDataSource not exists in this domain, skipping'
+            print 'INFO : WLSSchemaDataSource not exists in this domain, skipping'
             closeDomain()
             return
         schemaPrefix = self.getDSSchemaPrefix ('WLSSchemaDataSource')
@@ -167,44 +167,44 @@ class SOA12214Provisioner:
             if (jmsFlag == true):
                 cd('/JMSServer/'+jmsServerName)
                 jmsServerTargetName = ls('/JMSServer/'+jmsServerName,returnMap='true',returnType='a')['Target']
-                print time.asctime(time.localtime(time.time())) + ' : [JMSServer]: ' + str(jmsServerName)+ ' : [TargetServer]: ' + str(jmsServerTargetName)
+                print 'INFO : [JMSServer]: ' + str(jmsServerName)+ ' : [TargetServer]: ' + str(jmsServerTargetName)
                 if jmsServerTargetName == None or len(jmsServerTargetName) < 1:
-                    print time.asctime(time.localtime(time.time())) + ' WARNING !!! : Not expected but CONTINUE processing ... skipping ['+str(jmsServerName)+\
+                    print ' WARNING !!! : Not expected but CONTINUE processing ... skipping ['+str(jmsServerName)+\
                                 '] as it is not targetted '+str(jmsServerTargetName)
                     continue
                 flag = self.checkServerInCluster(jmsServerTargetName, serverList)
                 if (flag == true):
                     configUpdated = configUpdated | self.configureJMSJDBCStore (jmsServerTargetName, jmsServerName, schemaPrefix, dataSource)
                 else:
-                    print time.asctime(time.localtime(time.time())) + ' WARNING !!! : Not expected but CONTINUE processing, Target '+\
+                    print ' WARNING !!! : Not expected but CONTINUE processing, Target '+\
                                str(jmsServerTargetName)+' is not part of configured Servers ['+\
                                str(serverList)+'] can not be configured to use JDBC Persistent Store'
                     continue
             else:
-                print time.asctime(time.localtime(time.time())) + ' : CONTINUE processing ... ['+jmsServerName+\
+                print 'INFO : CONTINUE processing ... ['+jmsServerName+\
                               '] will not be configured to use JDBC Persistent Store'
                 continue
-        print time.asctime(time.localtime(time.time())) + ' : clean UnUsedSOAStores from Domain : '+ domainHome
+        print 'INFO : clean UnUsedSOAStores from Domain : '+ domainHome
         configUpdated= configUpdated | self.cleanunUsedSOAStores()
         if configUpdated:
-            print time.asctime(time.localtime(time.time())) + ' : Updating Domain : ',domainHome
+            print 'INFO : Updating Domain : ',domainHome
             updateDomain()
         else:
-            print time.asctime(time.localtime(time.time())) + ' : No Updates Closing Domain with out update ',domainHome
+            print 'INFO : No Updates Closing Domain with out update ',domainHome
         closeDomain()
-        print time.asctime(time.localtime(time.time())) + ' : COMPLETED jms jdbc store config '
+        print 'INFO : COMPLETED jms jdbc store config '
 
     def configureJMSJDBCStore(self, jmsServerTargetName, jmsServerName, schemaPrefix, dataSource):
         configUpdated = false
         jmsJdbcStoreName = self.getJMSJDBCStore(jmsServerName,jmsServerTargetName, schemaPrefix, dataSource)
         if(jmsJdbcStoreName == None):
-            print time.asctime(time.localtime(time.time())) + ' : Skipping '+str(jmsServerName)+' already configured .'
+            print 'INFO : Skipping '+str(jmsServerName)+' already configured .'
             return false
         else:
             cmo = cd('/JMSServer/'+jmsServerName)
             oldPersistence = cmo.getPersistentStore().getName()
             jdbcStoreBean = self.getJDBCStore(jmsJdbcStoreName)
-            print time.asctime(time.localtime(time.time())) + ' : oldPersistence '+str(oldPersistence)+' jmsJdbcStoreName '+jmsJdbcStoreName+' jdbcStoreBean name  '+str(jdbcStoreBean.getName())
+            print 'INFO : oldPersistence '+str(oldPersistence)+' jmsJdbcStoreName '+jmsJdbcStoreName+' jdbcStoreBean name  '+str(jdbcStoreBean.getName())
             configUpdated = true
             if(jmsJdbcStoreName != oldPersistence):
                 try:
@@ -212,19 +212,19 @@ class SOA12214Provisioner:
                     configUpdated = true
                 except Exception, detail:
                     dumpStack()
-                    print time.asctime(time.localtime(time.time()))+' : setPersistentStore failed for jmsServerName '+str(jmsServerName), detail , " !!!!!! If the exception above says 'com.oracle.cie.domain.ValidateException: The property value is duplicated'; means you did not apply CIE fix of bug 22175233 "     
+                    print 'INFO : setPersistentStore failed for jmsServerName '+str(jmsServerName), detail , " !!!!!! If the exception above says 'com.oracle.cie.domain.ValidateException: The property value is duplicated'; means you did not apply CIE fix of bug 22175233 "     
                     raise
                 if(self.isDeletableJDBCStore(oldPersistence) == Boolean(true)):
                     delete(oldPersistence,'JDBCStore')
-                    print time.asctime(time.localtime(time.time())) + ' : Deleted JDBCStore '+oldPersistence
+                    print 'INFO : Deleted JDBCStore '+oldPersistence
                 elif(self.isDeletableFileStore(oldPersistence) == Boolean(true)) :
                     delete(oldPersistence,'FileStore')
-                    print time.asctime(time.localtime(time.time())) + ' : Deleted FileStore '+oldPersistence   
+                    print 'INFO : Deleted FileStore '+oldPersistence   
                 else:
-                    print time.asctime(time.localtime(time.time())) + ' : '+ oldPersistence+' not deleted; it may be still in use' 
+                    print 'INFO : '+ oldPersistence+' not deleted; it may be still in use' 
             else:
-                print time.asctime(time.localtime(time.time())) + ' : Skipping '+str(jmsServerName)+' aready configured .'
-        print time.asctime(time.localtime(time.time())) + ' : END Configuring JDBC Persistent Store for ['+jmsServerName+'] configUpdated '+str(Boolean(configUpdated))
+                print 'INFO : Skipping '+str(jmsServerName)+' aready configured .'
+        print 'END Configuring JDBC Persistent Store for ['+jmsServerName+'] configUpdated '+str(Boolean(configUpdated))
         return configUpdated
 
     def getJMSJDBCStore(self, jmsServerName,jmsServerTargetName, schemaPrefix, dataSource):
@@ -234,16 +234,16 @@ class SOA12214Provisioner:
             if (get('PersistentStore') != None):
                 originalStore = get('PersistentStore').getName()
             else:
-                print time.asctime(time.localtime(time.time())) + ' : WARNING!!! No PersistentStore for : ' +str(jmsServerName) +" jmsServerTargetName "+str(jmsServerTargetName)+ ' Skipping '
+                print 'WARNING!!! No PersistentStore for : ' +str(jmsServerName) +" jmsServerTargetName "+str(jmsServerTargetName)+ ' Skipping '
                 return None
-            print time.asctime(time.localtime(time.time())) + ' : Parsing PersistentStore: ' +str(originalStore) +" jmsServerTargetName "+str(jmsServerTargetName)
+            print 'INFO : Parsing PersistentStore: ' +str(originalStore) +" jmsServerTargetName "+str(jmsServerTargetName)
             words = {'File':'JDBC', 'file':'JDBC', 'FILE':'JDBC'}
             jStore = self.replace_all (originalStore, words)
             if 'JDBC' in jStore:
-                print time.asctime(time.localtime(time.time())) + ' : File Store name substituted with JDBC ... '+str(jStore)
+                print 'INFO : File Store name substituted with JDBC ... '+str(jStore)
             else:
                 jStore = jmsServerName.replace ('Server','JDBC')
-                print time.asctime(time.localtime(time.time())) + ' : Server name substituted with JDBC ... '+str(jStore)
+                print 'INFO : Server name substituted with JDBC ... '+str(jStore)
             cd('/')
             store = self.getJDBCStore(jStore)
             if (store == None):
@@ -260,7 +260,7 @@ class SOA12214Provisioner:
                 raise Exception ('Target for JMS Server and store doesnt match storetarget : '+\
                                   str(storetarget) +' jmsServerTargetName '+str(jmsServerTargetName))
         except Exception, detail:
-            print time.asctime(time.localtime(time.time())) + ' : ERROR while processing SOA JMS JDBC Persistent Store for '+str(jmsServerName) , detail
+            print 'ERROR while processing SOA JMS JDBC Persistent Store for '+str(jmsServerName) , detail
             raise
 
         return jStore
@@ -268,18 +268,18 @@ class SOA12214Provisioner:
     def getJDBCStore(self, jStore):
         try: 
             cd('/')       
-            print time.asctime(time.localtime(time.time())) + ' : '+ 'Checking JDBC stores'
+            print 'INFO : Checking JDBC stores'
             jdbcStores = cmo.getJDBCStores()
             for jdbcStore in jdbcStores:
                 if jdbcStore.getName()  == jStore:
                     return jdbcStore
         except:
             raise Exception ('Exception on getting JDBC store for '+str(jStore))
-        print time.asctime(time.localtime(time.time())) + ' : Did not find store for '+str(jStore)
+        print 'INFO : Did not find store for '+str(jStore)
 
     def createJMSJDBCStore(self, jStore, jmsServerName, jmsServerTargetName, schemaPrefix, dataSource):
         ## Create the JDBC Store
-        print time.asctime(time.localtime(time.time())) + ' : Creating JDBC Store: ' + jStore +' for '+jmsServerName
+        print 'INFO : Creating JDBC Store: ' + jStore +' for '+jmsServerName
         jmsTarget = self.getTargetMbean(jmsServerTargetName)
         cd('/')
         create(jStore,'JDBCStore')
@@ -288,13 +288,13 @@ class SOA12214Provisioner:
         prefixName = prefixName.replace('_auto_', '')
         cd('/JDBCStore/'+jStore)
         cmo.setDataSource(dataSource)
-        print time.asctime(time.localtime(time.time())) + ' : Created Store '+jStore+' Using JMS WLStore prefixName :'+schemaPrefix+'.'+prefixName+'_'
+        print 'INFO : Created Store '+jStore+' Using JMS WLStore prefixName :'+schemaPrefix+'.'+prefixName+'_'
         cmo.setPrefixName(schemaPrefix+'.'+prefixName+'_')
         jmsTargets = jarray.array([jmsTarget], Class.forName("weblogic.management.configuration.TargetMBean"))
         cmo.setTargets(jmsTargets)
 
     def targetJMSJDBCStore(self, jStore, jmsServerName, jmsServerTargetName, schemaPrefix, dataSource):
-        print time.asctime(time.localtime(time.time())) + ' : Creating JDBC Store: ' + jStore +' for '+jmsServerName
+        print 'INFO : Creating JDBC Store: ' + jStore +' for '+jmsServerName
         jmsTarget = self.getTargetMbean(jmsServerTargetName)
         cd('/')
         cd('/JDBCStore/'+jStore)
@@ -302,7 +302,7 @@ class SOA12214Provisioner:
         jmsTargets = jarray.array([jmsTarget], Class.forName("weblogic.management.configuration.TargetMBean"))
         print ' current Target ',cmo.getTargets(),' Expected Target ', jmsTarget
         cmo.setTargets(jmsTargets)
-        print time.asctime(time.localtime(time.time())) + ' : JDBC Store '+jStore+' Targetted to  :',jmsTarget
+        print 'INFO : JDBC Store '+jStore+' Targetted to  :',jmsTarget
 
     def isDeletableJDBCStore (self, storeName):
         for item in cmo.getJDBCStores():
@@ -333,7 +333,7 @@ class SOA12214Provisioner:
                 if fileStore.getName().find(soaStore) != -1:
                     if (self.isDeletableFileStore(fileStore.getName()) == Boolean(true)) :
                         delete(fileStore.getName(),'FileStore')
-                        print time.asctime(time.localtime(time.time())) + ' : Deleted FileStore '+fileStore.getName() 
+                        print 'INFO : Deleted FileStore '+fileStore.getName() 
                         configUpdated = true
 
         for jdbcStore in cmo.getJDBCStores():
@@ -341,10 +341,10 @@ class SOA12214Provisioner:
                 if jdbcStore.getName().find(soaStore) != -1:
                     if (self.isDeletableJDBCStore(jdbcStore.getName()) == Boolean(true)) :
                         delete(jdbcStore.getName(),'JDBCStore')
-                        print time.asctime(time.localtime(time.time())) + ' : Deleted JDBCStore '+jdbcStore.getName() 
+                        print 'INFO : Deleted JDBCStore '+jdbcStore.getName() 
                         configUpdated = true
     
-        print time.asctime(time.localtime(time.time())) + ' : END cleanunUsedSOAStores configUpdated '+str(Boolean(configUpdated))
+        print 'END cleanunUsedSOAStores configUpdated '+str(Boolean(configUpdated))
         return configUpdated
 
     def getTargetMbean (self, targetName):
@@ -352,13 +352,13 @@ class SOA12214Provisioner:
         migratableTargets = cmo.getMigratableTargets();
         for item in migratableTargets:
             if item.getName() == targetName:
-                print time.asctime(time.localtime(time.time())) + ' : migratableTarget match for '+targetName+' ' +str(item)
+                print 'INFO : migratableTarget match for '+targetName+' ' +str(item)
                 return item
         for item in cmo.getServers():
             if item.getName() == targetName :
-                print time.asctime(time.localtime(time.time())) + ' : Server match for '+targetName+' ' +str(item)
+                print 'INFO : Server match for '+targetName+' ' +str(item)
                 return item
-        print time.asctime(time.localtime(time.time())) + ' : No Matching target for '+targetName
+        print 'INFO : No Matching target for '+targetName
 
     def replace_all(self, text, words):
         for i,j in words.iteritems():
@@ -367,7 +367,7 @@ class SOA12214Provisioner:
 
     def checkServerInCluster(self, serverName, serverList):
         if serverName == None or len(serverName) < 1:
-            print (Time.asctime(Time.localtime(Time.time())) +' : Server Target not valid. ', str(serverName))
+            print 'INFO : Server Target not valid. ', str(serverName)
             return false
 
         for item in serverList:
@@ -390,18 +390,18 @@ class SOA12214Provisioner:
             cd ('/')
             dSName = jdbcDS
             while (dSName != "") :
-                print time.asctime(time.localtime(time.time())) + ' : dSName =>'+dSName
+                print 'INFO : dSName =>'+dSName
                 cd ('/JDBCSystemResources/'+dSName+'/JdbcResource/'+dSName+'/JDBCDataSourceParams/NO_NAME_0')
                 dSList = get('DataSourceList')
                 if(dSList == None) :
                     cd ('/JDBCSystemResources/'+dSName+'/JdbcResource/'+dSName+'/JDBCDriverParams/NO_NAME_0/Properties/NO_NAME_0/Property/user')
                     schemaPrefix = cmo.getValue ()
-                    print time.asctime(time.localtime(time.time())) + ' : schemaPrefix '+schemaPrefix
+                    print 'INFO : schemaPrefix '+schemaPrefix
                     dSName = ""
                     break;
                 else :
-                    print time.asctime(time.localtime(time.time())) + ' : multi-data source detected ...'
-                    print time.asctime(time.localtime(time.time())) + ' : dSList =>'+dSList
+                    print 'INFO : multi-data source detected ...'
+                    print 'INFO : dSList =>'+dSList
                     dSName = dSList.split(',')[0]
         except:
             raise Exception ('Exception on getting data source Schema info for '+jdbcDS)
