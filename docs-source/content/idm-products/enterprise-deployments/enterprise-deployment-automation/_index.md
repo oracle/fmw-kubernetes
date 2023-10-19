@@ -6,8 +6,11 @@ description: "The Enterprise Deployment Automation scripts deploy the entire Ora
 ### Enterprise Deployment Automation
 
 
-The [Enterprise Deployment Automation scripts](https://github.com/oracle/fmw-kubernetes/tree/master/FMWKubernetesMAA/OracleEnterpriseDeploymentAutomation/OracleIdentityManagement), allow you to automatically deploy the entire Oracle Identity and Access Management suite in a production environment.
+The Enterprise Deployment Automation scripts allow you to deploy the entire Oracle Identity and Access Management suite in a production environment. You can use the scripts to:
 
-For more information about the use of these scripts, see [Automating the Identity and Access Management Enterprise Deployment](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/automating-identity-management-deployment.html).
+
+  + Automate the creation of a Kubernetes cluster on Oracle Cloud Infrastructure (OCI), ready for the deployment of Oracle Identity and Access Management products. See [Automating the OCI Infrastructure Creation for the Identity and Access Management Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/automating-oci-infrastructure-creation-identity-and-access-management-kubernetes-cluster.html).
+  + Automate the deployment of Oracle Identity and Access Management products on any compliant Kubernetes cluster. See [Automating the Identity and Access Management Enterprise Deployment](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/automating-identity-management-deployment.html).
+
 
 

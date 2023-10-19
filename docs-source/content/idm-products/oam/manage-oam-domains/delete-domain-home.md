@@ -1,5 +1,5 @@
 ---
-title: "e. Delete the OAM domain home"
+title: "f. Delete the OAM domain home"
 description: "Learn about the steps to cleanup the OAM domain home."
 ---
 

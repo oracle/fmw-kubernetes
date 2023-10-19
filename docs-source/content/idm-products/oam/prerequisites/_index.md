@@ -7,7 +7,7 @@ description: "System requirements and limitations for deploying and running an O
 
 ### Introduction
 
-This document provides information about the system requirements and limitations for deploying and running OAM domains with the WebLogic Kubernetes Operator 4.0.4.
+This document provides information about the system requirements and limitations for deploying and running OAM domains with the WebLogic Kubernetes Operator 4.1.2.
 
 
 
@@ -26,7 +26,7 @@ This document provides information about the system requirements and limitations
 * A running Oracle Database 12.2.0.1 or later. The database must be a supported version for OAM as outlined in [Oracle Fusion Middleware 12c certifications](https://www.oracle.com/technetwork/middleware/fmw-122140-certmatrix-5763476.xlsx). It must meet the requirements as outlined in [About Database Requirements for an Oracle Fusion Middleware Installation](http://www.oracle.com/pls/topic/lookup?ctx=fmw122140&id=GUID-4D3068C8-6686-490A-9C3C-E6D2A435F20A) and in [RCU Requirements for Oracle Databases](http://www.oracle.com/pls/topic/lookup?ctx=fmw122140&id=GUID-35B584F3-6F42-4CA5-9BBB-116E447DAB83). It is recommended that the database initialization parameters are set as per [Minimum Initialization Parameters](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-existing-database-enterprise-deployment.html#GUID-4597879E-0E9C-4727-8C9F-94DE3EE6BEFB).
 
 **Note**: This documentation does not tell you how to install a Kubernetes cluster, Helm, the container engine, or how to push container images to a container registry. 
-Please refer to your vendor specific documentation for this information.
+Please refer to your vendor specific documentation for this information. Also see [Getting Started](../introduction#getting-started).
 
 
 
@@ -35,7 +35,7 @@ Please refer to your vendor specific documentation for this information.
 Compared to running a WebLogic Server domain in Kubernetes using the operator, the following limitations currently exist for OAM domains:
 
 * In this release, OAM domains are supported using the “domain on a persistent volume” [model](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).The "domain in image" model is not supported.
-* Only configured clusters are supported.  Dynamic clusters are not supported for OAM domains.  Note that you can still use all of the scaling features, you just need to define the maximum size of your cluster at domain creation time.
-* The [WebLogic Monitoring Exporter](https://github.com/oracle/weblogic-monitoring-exporter) currently supports the WebLogic MBean trees only.  Support for JRF MBeans has not been added yet.
+* Only configured clusters are supported. Dynamic clusters are not supported for OAM domains. Note that you can still use all of the scaling features, but you need to define the maximum size of your cluster at domain creation time, using the parameter `configuredManagedServerCount`. For more details on this parameter, see [Prepare the create domain script](../create-oam-domains/#prepare-the-create-domain-script). It is recommended to pre-configure your cluster so it's sized a little larger than the maximum size you plan to expand it to. You must rigorously test at this maximum size to make sure that your system can scale as expected. 
+* The [WebLogic Monitoring Exporter](https://github.com/oracle/weblogic-monitoring-exporter) currently supports the WebLogic MBean trees only. Support for JRF MBeans has not been added yet.
 * We do not currently support running OAM in non-Linux containers.
 

@@ -71,6 +71,12 @@ create_override()
    update_variable "<REPOSITORY>" $OUD_IMAGE $OVERRIDE_FILE
    update_variable "<IMAGE_VER>" $OUD_VER $OVERRIDE_FILE
    update_variable "<USE_INGRESS>" $USE_INGRESS $OVERRIDE_FILE
+   update_variable "<OUD_MAX_MEMORY>" $OUD_MAX_MEMORY $OVERRIDE_FILE
+   update_variable "<OUD_MAX_CPU>" $OUD_MAX_CPU $OVERRIDE_FILE
+   update_variable "<OUD_MEMORY>" $OUD_MEMORY $OVERRIDE_FILE
+   update_variable "<OUD_CPU>" $OUD_CPU $OVERRIDE_FILE
+   update_variable "<OUDSERVER_TUNING_PARAMS>" "$OUDSERVER_TUNING_PARAMS" $OVERRIDE_FILE
+
 
    update_variable "<USE_ELK>" $USE_ELK $OVERRIDE_FILE
    update_variable "<ELK_VER>" $ELK_VER $OVERRIDE_FILE
@@ -496,173 +502,51 @@ create_oudsm_logstash_cm()
    print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
 }
 
-create_dr_pv_files()
+# Create OUD PVs on the Standby Site
+#
+create_dr_source_pv()
 {
    ST=$(date +%s)
-   print_msg "Creating DR Persistent Volume Files"
-   cp $TEMPLATE_DIR/dr_pv.yaml $WORKDIR/dr_primary_pv.yaml
-   update_variable "<OUD_SHARE>" $OUD_PRIMARY_SHARE $WORKDIR/dr_primary_pv.yaml
-   update_variable "<PVSERVER>" $DR_PRIMARY_PVSERVER $WORKDIR/dr_primary_pv.yaml
+   print_msg "Creating OUD Persistent Volume"
 
-   cp $TEMPLATE_DIR/dr_pv.yaml $WORKDIR/dr_dr_pv.yaml
-   update_variable "<OUD_SHARE>" $OUD_SHARE $WORKDIR/dr_dr_pv.yaml
-   update_variable "<PVSERVER>" $OUD_STANDBY_SHARE $WORKDIR/dr_dr_pv.yaml
-   
-   print_status $?
+   cp $TEMPLATE_DIR/dr_oudpv.yaml $WORKDIR/dr_oudpv.yaml
+   update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/dr_oudpv.yaml
+   update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_oudpv.yaml
+   update_variable "<OUD_SHARE>" $OUD_STANDBY_SHARE $WORKDIR/dr_oudpv.yaml
+   update_variable "<OUD_CONFIG_SHARE>" $OUD_STANDBY_CONFIG_SHARE $WORKDIR/dr_oudpv.yaml
+   update_variable "<OUDNS>" $OUDNS $WORKDIR/dr_oudpv.yaml
 
-   ET=$(date +%s)
-   print_time STEP "Create DR Persistent Volume File" $ST $ET >> $LOGDIR/timings.log
-}
-
-create_dr_pvc_files()
-{
-   ST=$(date +%s)
-   print_msg "Creating DR Persistent Volume Claim Files"
-   cp $TEMPLATE_DIR/dr_pvc.yaml $WORKDIR/dr_primary_pvc.yaml
-   update_variable "<OUDNS>" $OUDNS $WORKDIR/dr_primary_pvc.yaml
-
-   cp $WORKDIR/dr_primary_pvc.yaml $WORKDIR/dr_dr_pvc.yaml
-   
-   print_status $?
+   kubectl create -f $WORKDIR/dr_oudpv.yaml > $LOGDIR/dr_oudpv.log 2>&1
+   print_status $? $LOGDIR/dr_oudpv.log
 
    ET=$(date +%s)
-   print_time STEP "Create DR Persistent Volume Claim Files" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Create OUD Persistent Volume" $ST $ET >> $LOGDIR/timings.log
 }
 
+
+# Modify the template to create a cronjob
+#
 create_dr_cronjob_files()
 {
    ST=$(date +%s)
    print_msg "Creating Cron Job Files"
 
    cp $TEMPLATE_DIR/dr_cron.yaml $WORKDIR/dr_cron.yaml
-   update_variable "<OUDNS>" $OUDNS $WORKDIR/dr_cron.yaml
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_cron.yaml
    update_variable "<DR_OUD_MINS>" $DR_OUD_MINS $WORKDIR/dr_cron.yaml
    update_variable "<RSYNC_IMAGE>" $RSYNC_IMAGE $WORKDIR/dr_cron.yaml
    update_variable "<RSYNC_VER>" $RSYNC_VER $WORKDIR/dr_cron.yaml
    update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/dr_cron.yaml
 
-      #cp $TEMPLATE_DIR/dr_cron.yaml $WORKDIR/dr_dr_cron.yaml
-      #update_variable "<OUDNS>" $OUDNS $WORKDIR/dr_dr_cron.yaml
-      #update_variable "<DR_OUD_MINS>" $DR_OUD_MINS $WORKDIR/dr_dr_cron.yaml
-      #update_variable "<RSYNC_IMAGE>" $RSYNC_IMAGE $WORKDIR/dr_dr_cron.yaml
-      #update_variable "<RSYNC_VER>" $RSYNC_VER $WORKDIR/dr_dr_cron.yaml
-      #update_variable "<OUD_POD_PREFIX>" $OUD_POD_PREFIX $WORKDIR/dr_dr_cron.yaml
-  
    print_status $?
 
    ET=$(date +%s)
    print_time STEP "Create DR Cron Job Files" $ST $ET >> $LOGDIR/timings.log
 }
 
-create_dr_pv()
-{
-   ST=$(date +%s)
-   print_msg "Creating DR Persistent Volume"
 
-   kubectl create -f $WORKDIR/dr_dr_pv.yaml > $LOGDIR/create_dr_pv.log 2>&1
-   print_status $? $LOGDIR/create_dr_pv.log
-
-   ET=$(date +%s)
-   print_time STEP "Create DR Persistent Volume " $ST $ET >> $LOGDIR/timings.log
-}
-
-create_dr_pvc()
-{
-   ST=$(date +%s)
-   print_msg "Creating DR Persistent Volume Claim"
-   kubectl create -f $WORKDIR/dr_dr_pvc.yaml > $LOGDIR/create_dr_pvc.log 2>&1
-   print_status $? $LOGDIR/create_dr_pvc.log
-
-   ET=$(date +%s)
-   print_time STEP "Create DR Persistent Volume Claim " $ST $ET >> $LOGDIR/timings.log
-}
-
-copy_dr_script()
-{
-   ST=$(date +%s)
-   print_msg "Creating DR Script Directory"
-   kubectl exec -n $OUDNS -ti $OUD_POD_PREFIX-oud-ds-rs-0 -- mkdir /u01/oracle/user_projects/dr_scripts > $LOGDIR/copy_drscripts.log 2>&1
-   if [ $? -gt 0 ]
-   then
-      grep -q exists $LOGDIR/copy_drscripts.log
-      if [ $? = 0  ]
-      then
-         echo " Already Exists"
-      else
-         echo " Failed - Check logfile $LOGDIR/copy_drscripts.log"
-         exit 1
-      fi
-   else
-     echo "Success"
-   fi
-      
-   printf "\t\t\tCopy DR Script to Container - "
-   cp $TEMPLATE_DIR/oud_dr.sh $WORKDIR
-   update_variable "<ENV_TYPE>" $ENV_TYPE $WORKDIR/oud_dr.sh
-   kubectl cp $WORKDIR/oud_dr.sh $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/user_projects/dr_scripts >>$LOGDIR/copy_drscripts.log 2>&1
-   print_status $? $LOGDIR/copy_drscripts.log
-  
-   printf "\t\t\tSet execute permission - "
-   kubectl exec -n $OUDNS -ti $OUD_POD_PREFIX-oud-ds-rs-0 -- chmod 750 /u01/oracle/user_projects/dr_scripts/oud_dr.sh >> $LOGDIR/copy_drscripts.log 2>&1
-   print_status $? $LOGDIR/copy_drscripts.log
-  
-   printf "\t\t\tSet DR Site Type - "
-   echo $DR_TYPE > $WORKDIR/dr_type
-   kubectl cp $WORKDIR/dr_type $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/user_projects/dr_scripts >>$LOGDIR/copy_drscripts.log 2>&1
-   print_status $? $LOGDIR/copy_drscripts.log
-
-   ET=$(date +%s)
-   print_time STEP "Copy DR Script" $ST $ET >> $LOGDIR/timings.log
-}
-
-create_dr_cronjob()
-{
-   ST=$(date +%s)
-   print_msg "Creating DR Cron Job"
-   kubectl create -f $WORKDIR/dr_cron.yaml  > $LOGDIR/create_dr_cron.log 2>&1
-  
-   print_status $? $LOGDIR/create_dr_cron.log
-
-   ET=$(date +%s)
-   print_time STEP "Create DR Cron Job" $ST $ET >> $LOGDIR/timings.log
-}
-
-suspend_cronjob()
-{
-   ST=$(date +%s)
-   print_msg "Suspending DR Cron Job - "
-   kubectl patch cronjobs rsyncdr -p '{"spec" : {"suspend" : true }}' -n $OUDNS > $LOGDIR/suspend_cron.log 2>&1
-  
-   print_status $? $LOGDIR/suspend_cron.log
-
-   ET=$(date +%s)
-   print_time STEP "Suspend Cron Job" $ST $ET >> $LOGDIR/timings.log
-}
-
-resume_cronjob()
-{
-   ST=$(date +%s)
-   print_msg "Resuming DR Cron Job - "
-   kubectl patch cronjobs rsyncdr -p '{"spec" : {"suspend" : false }}' -n $OUDNS > $LOGDIR/resume_cron.log 2>&1
-  
-   print_status $? resume_cron.log
-
-   ET=$(date +%s)
-}
-
-initialise_dr()
-{
-   ST=$(date +%s)
-   print_msg "Creating Job to Initialise OUD DR - "
-   kubectl create job --from=cronjob.batch/rsyncdr initialise-dr -n $OUDNS > $LOGDIR/oud_initialise.log 2>&1
-   print_status $? $LOGDIR/oud_initialise.log
-   printf "Job - initialise-dr Created in namespace $OUDNS"
-   PODNAME=`kubectl get pod -n $OUDNS | grep cron | tail -1 | awk '{ print $1 }'`
-   printf "Monitor job using the command:  kubectl logs -n $OUDNS $PODNAME"
-  
-   ET=$(date +%s)
-}
-
+# Stop OUD Instance
+#
 stop_oud()
 {
    ST=$(date +%s)
@@ -673,9 +557,26 @@ stop_oud()
    check_stopped $OUDNS ${OUD_POD_PREFIX}-oud-ds-rs-0
 
    ET=$(date +%s)
-   print_time STEP "Create Cron Job Files" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Stop OUD" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Start OUD instance
+#
+start_oud()
+{
+   ST=$(date +%s)
+   print_msg "Starting OUD"
+   echo helm upgrade -n $OUDNS --set replicaCount=$OUD_REPLICAS $OUD_POD_PREFIX $WORKDIR/samples/kubernetes/helm/oud-ds-rs --reuse-values > $LOGDIR/stop_oud.log 
+   helm upgrade -n $OUDNS --set replicaCount=$OUD_REPLICAS $OUD_POD_PREFIX $WORKDIR/samples/kubernetes/helm/oud-ds-rs --reuse-values >> $LOGDIR/stop_oud.log 2>&1
+   print_status $?  $LOGDIR/stop_oud.log
+   check_stopped $OUDNS ${OUD_POD_PREFIX}-oud-ds-rs-0
+
+   ET=$(date +%s)
+   print_time STEP "Start OUD" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Delete the OUD files created by a fresh installation.
+#
 delete_oud_files()
 {
    ST=$(date +%s)

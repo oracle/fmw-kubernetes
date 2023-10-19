@@ -7,6 +7,8 @@ description: "Describes the steps for scaling up/down for OUD pods."
 
 This section describes how to increase or decrease the number of OUD pods in the Kubernetes deployment.
 
+**Note**: The instructions below are for scaling servers up or down manually. If you wish to use autoscaling, see [Kubernetes Horizontal Pod Autoscaler](../hpa). Please note, if you have enabled autoscaling, it is recommended to delete the autoscaler before running the commands below. 
+
 
 ### View existing OUD pods
 

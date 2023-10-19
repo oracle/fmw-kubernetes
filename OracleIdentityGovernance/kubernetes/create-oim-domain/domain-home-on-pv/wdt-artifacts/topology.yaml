@@ -1,0 +1,171 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of how to define the topology section in WDT model for an OIG domain
+# For details regarding how to work with WDT model files and WDT model attributes, please refer below links
+# https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/model-files/
+# https://oracle.github.io/weblogic-deploy-tooling/concepts/model/
+#
+
+topology:
+    Name: '@@ENV:DOMAIN_UID@@'
+    ParallelDeployApplicationModules: true
+    ProductionModeEnabled: true
+    JTA:
+        TimeoutSeconds: 1200
+    Cluster:
+        oim_cluster:
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+        soa_cluster:
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+    Server:
+        AdminServer:
+            ServerLifeCycleTimeoutVal: 30
+            TransactionLogJDBCStore:
+                PrefixName: TLOG_ADMINSERVER
+                Enabled: true
+                DataSource: WLSSchemaDataSource
+            ListenPort: '@@PROP:Server.AdminServer.ListenPort@@'
+        oim_server1:
+            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            Cluster: oim_cluster
+            JTAMigratableTarget:
+                Cluster: oim_cluster
+                UserPreferredServer: oim_server1
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oim_server.ListenAddress@@1'
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+            NetworkAccessPoint:
+                'T3Channel':
+                     PublicPort: '@@PROP:Server.oim_server.T3PublicPort@@'
+                     ListenPort: '@@PROP:Server.oim_server.T3ListenPort@@'
+                     TunnelingEnabled: true
+                     HttpEnabledForThisProtocol: true
+            TransactionLogJDBCStore:
+                PrefixName: TLOG_OIM_SERVER1
+                Enabled: true
+                DataSource: WLSSchemaDataSource
+        oim_server2:
+            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            Cluster: oim_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oim_server.ListenAddress@@2'
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+            JTAMigratableTarget:
+                Cluster: oim_cluster
+                UserPreferredServer: oim_server2
+            NetworkAccessPoint:
+                'T3Channel':
+                    PublicPort: '@@PROP:Server.oim_server.T3PublicPort@@'
+                    ListenPort: '@@PROP:Server.oim_server.T3ListenPort@@'
+                    TunnelingEnabled: true
+                    HttpEnabledForThisProtocol: true
+
+        oim_server3:
+            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            Cluster: oim_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oim_server.ListenAddress@@3'
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+            JTAMigratableTarget:
+                Cluster: oim_cluster
+                UserPreferredServer: oim_server3
+            NetworkAccessPoint:
+                'T3Channel':
+                    PublicPort: '@@PROP:Server.oim_server.T3PublicPort@@'
+                    ListenPort: '@@PROP:Server.oim_server.T3ListenPort@@'
+                    TunnelingEnabled: true
+                    HttpEnabledForThisProtocol: true
+        oim_server4:
+            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            Cluster: oim_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oim_server.ListenAddress@@4'
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+            JTAMigratableTarget:
+                Cluster: oim_cluster
+                UserPreferredServer: oim_server4
+            NetworkAccessPoint:
+                'T3Channel':
+                    PublicPort: '@@PROP:Server.oim_server.T3PublicPort@@'
+                    ListenPort: '@@PROP:Server.oim_server.T3ListenPort@@'
+                    TunnelingEnabled: true
+                    HttpEnabledForThisProtocol: true
+        oim_server5:
+            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            Cluster: oim_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oim_server.ListenAddress@@5'
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+            JTAMigratableTarget:
+                Cluster: oim_cluster
+                UserPreferredServer: oim_server5
+            NetworkAccessPoint:
+                'T3Channel':
+                    PublicPort: '@@PROP:Server.oim_server.T3PublicPort@@'
+                    ListenPort: '@@PROP:Server.oim_server.T3ListenPort@@'
+                    TunnelingEnabled: true
+                    HttpEnabledForThisProtocol: true
+        soa_server1:
+            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
+            Cluster: soa_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.soa_server.ListenAddress@@1'
+            RetryIntervalBeforeMsiMode: 1
+            NumOfRetriesBeforeMsiMode: 0
+            JTAMigratableTarget:
+                Cluster: soa_cluster
+                UserPreferredServer: soa_server1
+            TransactionLogJDBCStore:
+                PrefixName: TLOG_SOA_SERVER1
+                Enabled: true
+                DataSource: WLSSchemaDataSource
+        soa_server2:
+            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
+            Cluster: soa_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.soa_server.ListenAddress@@2'
+            RetryIntervalBeforeMsiMode: 1
+            NumOfRetriesBeforeMsiMode: 0
+            JTAMigratableTarget:
+                Cluster: soa_cluster
+                UserPreferredServer: soa_server2
+        soa_server3:
+            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
+            Cluster: soa_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            RetryIntervalBeforeMsiMode: 1
+            NumOfRetriesBeforeMsiMode: 0
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.soa_server.ListenAddress@@3'
+            JTAMigratableTarget:
+                Cluster: soa_cluster
+                UserPreferredServer: soa_server3
+        soa_server4:
+            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
+            Cluster: soa_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.soa_server.ListenAddress@@4'
+            RetryIntervalBeforeMsiMode: 1
+            NumOfRetriesBeforeMsiMode: 0
+            JTAMigratableTarget:
+                Cluster: soa_cluster
+                UserPreferredServer: soa_server4
+        soa_server5:
+            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
+            Cluster: soa_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            RetryIntervalBeforeMsiMode: 1
+            NumOfRetriesBeforeMsiMode: 0
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.soa_server.ListenAddress@@5'
+            JTAMigratableTarget:
+                Cluster: soa_cluster
+                UserPreferredServer: soa_server5
+    SecurityConfiguration:
+        NodeManagerUsername: '@@SECRET:__weblogic-credentials__:username@@'
+        UseKSSForDemo: true
+        NodeManagerPasswordEncrypted: '@@SECRET:__weblogic-credentials__:password@@'

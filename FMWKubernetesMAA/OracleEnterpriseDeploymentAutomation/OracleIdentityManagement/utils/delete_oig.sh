@@ -49,7 +49,12 @@ fi
 . $SCRIPTDIR/common/functions.sh
 
 export WORKDIR=$LOCAL_WORKDIR/OIG
-LOGDIR=$WORKDIR/logs
+LOGDIR=$LOCAL_WORKDIR/delete_logs/OIG
+if [ ! -e $LOGDIR ]
+then
+  mkdir -p $LOGDIR
+fi
+
 START_TIME=`date +%s`
 
 mkdir $LOCAL_WORKDIR/deleteLogs > /dev/null 2>&1
@@ -113,9 +118,16 @@ check_stopped $OIGNS adminserver
 
 # Drop the OIG schemas
 #
-printf "Drop Schemas - "
 
 ST=`date +%s`
+kubectl get pod -n $OIGNS helper > /dev/null 2>&1
+
+if [ $? -gt 0 ]
+then
+   create_helper_pod $OIGNS $OIG_IMAGE:$OIG_VER
+fi
+
+printf "Drop Schemas - "
 drop_schemas  $OIGNS $OIG_DB_SCAN $OIG_DB_LISTENER $OIG_DB_SERVICE $OIG_RCU_PREFIX OIG $OIG_DB_SYS_PWD $OIG_SCHEMA_PWD >> $LOG 2>&1
 ET=`date +%s`
 
@@ -145,12 +157,21 @@ print_time STEP "Drop Schemas" $ST $ET
 
 
 
+echo "Delete Namespace"
+kubectl delete namespace  $OIGNS  >> $LOG 2>&1
+
+# Remove Persistent Volume and Claim
+#
+echo "Remove Persistent Volumes"
+kubectl delete pv $OIG_DOMAIN_NAME-domain-pv  >> $LOG 2>&1
+
+
 ST=`date +%s`
 echo "Deleting Volumes"
 
 if [ ! "$OIG_LOCAL_SHARE" = "" ]
 then
-  rm -rf  $OIG_LOCAL_SHARE/*  >> $LOG 2>&1
+  rm -rf  $OIG_LOCAL_SHARE/applications $OIG_LOCAL_SHARE/domains $OIG_LOCAL_SHARE/dr_scripts $OIG_LOCAL_SHARE/ConnectorDefaultDirectory $OIG_LOCAL_SHARE/keystores $OIG_LOCAL_SHARE/logs $OIG_LOCAL_SHARE/workdir >> $LOG 2>&1
 else
   echo "Unable to Delete Volumes."
 fi
@@ -167,14 +188,6 @@ fi
 ET=`date +%s`
 print_time STEP "Delete Volume" $ST $ET 
 
-# Remove Persistent Volume and Claim
-#
-echo "Remove Persistent Volumes"
-kubectl delete pvc -n $OIGNS $OIG_DOMAIN_NAME-domain-pvc  >> $LOG 2>&1
-kubectl delete pv $OIG_DOMAIN_NAME-domain-pv  >> $LOG 2>&1
-
-echo "Delete Namespace"
-kubectl delete namespace  $OIGNS  >> $LOG 2>&1
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Delete OIG Domain" $START_TIME $FINISH_TIME 

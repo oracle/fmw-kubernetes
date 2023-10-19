@@ -64,11 +64,13 @@ then
    then
       INGRESS_HTTP_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS http `
       INGRESS_HTTPS_PORT=`get_k8_port $INGRESS_NAME $INGRESSNS https`
+      INGRESS_HOST=""
    else
       INGRESS_HTTP_PORT=$INGRESS_HTTP
       INGRESS_HTTPS_PORT=$INGRESS_HTTPS
-      INGRESS_HOST=`kubectl get svc -n ingressns | awk '{print $4}' | grep -v EXTERNAL`
+      INGRESS_HOST=`kubectl get svc -n $INGRESSNS | awk '{print $4}' | grep -v EXTERNAL`
    fi
+
    if [ "$INGRESS_HTTP_PORT" = "" ]
    then
        echo "Unable to get Ingress Ports - Check Ingress is running"
@@ -90,6 +92,8 @@ echo
 
 create_local_workdir
 create_logdir
+printf "Using Image:"
+printf "\n\t$OAM_IMAGE:$OAM_VER\n\n"
 
 echo -n "Provisioning OAM on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log

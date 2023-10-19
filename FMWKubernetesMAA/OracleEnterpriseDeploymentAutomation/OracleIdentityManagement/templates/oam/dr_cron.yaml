@@ -1,0 +1,42 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to deploy a cron job to replicate the primary OAM PV to the DR OAM PV
+#
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oamrsyncdr
+  namespace: <DRNS>
+spec:
+  schedule: "*/<DR_OAM_MINS> * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: alpine-rsync
+            image: <RSYNC_IMAGE>:<RSYNC_VER>
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: dr-cm
+            volumeMounts:
+              - mountPath: "/u01/primary_oampv"
+                name: oampv
+              - mountPath: "/u01/dr_oampv"
+                name: oampv-dr
+            command:
+            - /bin/sh
+            - -c
+            - /u01/primary_oampv/dr_scripts/oam_dr.sh
+          volumes:
+          - name: oampv
+            persistentVolumeClaim:
+              claimName: primary-oampv-pvc
+          - name: oampv-dr
+            persistentVolumeClaim:
+              claimName: standby-oampv-pvc
+          restartPolicy: OnFailure

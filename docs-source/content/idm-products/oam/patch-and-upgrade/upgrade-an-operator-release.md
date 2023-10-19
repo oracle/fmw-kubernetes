@@ -3,7 +3,7 @@ title: "a. Upgrade an operator release"
 description: "Instructions on how to update the WebLogic Kubernetes Operator version."
 ---
 
-These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.x release family as additional versions are released.
+These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.X release family as additional versions are released.
 
 
 1. On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
@@ -71,7 +71,6 @@ These instructions apply to upgrading operators from 3.X.X to 4.X, or from withi
    pod/weblogic-operator-webhook-7996b8b58b-frtwp   1/1     Running   0          42s
 
    NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
-   service/internal-weblogic-operator-svc   ClusterIP   10.107.3.1     <none>        8082/TCP,8083/TCP   6d
    service/weblogic-operator-webhook-svc    ClusterIP   10.106.51.57   <none>        8083/TCP,8084/TCP   42s
 
    NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE

@@ -17,16 +17,21 @@ As OAM domains use the WebLogic Kubernetes Operator, domain lifecyle operations 
 This document shows the basic operations for starting, stopping and scaling servers in the OAM domain. 
 
 For more detailed information refer to [Domain Life Cycle](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-lifecycle/) in the [WebLogic Kubernetes Operator](https://oracle.github.io/weblogic-kubernetes-operator/) documentation.
- 
+
+
 {{% notice note %}}
 Do not use the WebLogic Server Administration Console or Oracle Enterprise Manager Console to start or stop servers.
 {{% /notice %}}
+
+**Note**: The instructions below are for starting, stopping, or scaling servers manually. If you wish to use autoscaling, see [Kubernetes Horizontal Pod Autoscaler](../hpa). Please note, if you have enabled autoscaling, it is recommended to delete the autoscaler before running the commands below. 
+
+
  
 ### View existing OAM servers
 
-The default OAM deployment starts the Administration Server (`AdminServer`), two OAM Managed Servers (`oam_server1` and `oam_server2`) and two OAM Policy Manager servers (`oam_policy_mgr1` and `oam_policy_mgr2` ).
+The default OAM deployment starts the Administration Server (`AdminServer`), one OAM Managed Server (`oam_server1`) and one OAM Policy Manager server (`oam_policy_mgr1`).
 
-The deployment also creates, but doesn't start, three extra OAM Managed Servers (`oam-server3` to `oam-server5`) and three more OAM Policy Manager servers (`oam_policy_mgr3` to `oam_policy_mgr5`).
+The deployment also creates, but doesn't start, four extra OAM Managed Servers (`oam-server2` to `oam-server5`) and four more OAM Policy Manager servers (`oam_policy_mgr2` to `oam_policy_mgr5`).
 
 All these servers are visible in the WebLogic Server Console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` by navigating to *Domain Structure* > *oamcluster* > *Environment* > *Servers*.
 
@@ -49,9 +54,7 @@ NAME                                                     READY   STATUS      RES
 accessdomain-adminserver                                 1/1     Running     0          3h29m
 accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h36m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h21m
-accessdomain-oam-policy-mgr2                             1/1     Running     0          3h21m
 accessdomain-oam-server1                                 1/1     Running     0          3h21m
-accessdomain-oam-server2                                 1/1     Running     0          3h21m
 helper                                                   1/1     Running     0          3h51m
 nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          55m
 ```
@@ -74,13 +77,13 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
 
    **Note**: This opens an edit session for the oam-cluster where parameters can be changed using standard `vi` commands.
 
-1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: oam_cluster`. By default the replicas parameter is set to "2" hence two OAM Managed Servers are started (`oam_server1` and `oam_server2`):
+1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: oam_cluster`. By default the replicas parameter is set to "1" hence one OAM Managed Server is started (`oam_server1`):
 
    ```
    ...
    spec:
      clusterName: oam_cluster
-     replicas: 2
+     replicas: 1
      serverPod:
        env:
        - name: USER_MEM_ARGS
@@ -89,13 +92,13 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    ...
    ```
    
-1. To start more OAM Managed Servers, increase the `replicas` value as desired. In the example below, two more managed servers will be started by setting `replicas` to "4":
+1. To start more OAM Managed Servers, increase the `replicas` value as desired. In the example below, two more managed servers will be started by setting `replicas` to "3":
 
    ```
    ...
    spec:
      clusterName: oam_cluster
-     replicas: 4
+     replicas: 3
      serverPod:
        env:
        - name: USER_MEM_ARGS
@@ -131,27 +134,23 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    accessdomain-adminserver                                 1/1     Running     0          3h33m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h40m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h25m
-   accessdomain-oam-policy-mgr2                             1/1     Running     0          3h25m
    accessdomain-oam-server1                                 1/1     Running     0          3h25m
-   accessdomain-oam-server2                                 1/1     Running     0          3h25m
-   accessdomain-oam-server3                                 0/1     Running     0          9s
-   accessdomain-oam-server4                                 0/1     Running     0          9s
+   accessdomain-oam-server2                                 0/1     Running     0          3h25m
+   accessdomain-oam-server3                                 0/1     Pending     0          9s
    helper                                                   1/1     Running     0          3h55m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          59m
    ```
    
-   Two new pods (`accessdomain-oam-server3` and `accessdomain-oam-server4`) are started, but currently have a `READY` status of `0/1`. This means `oam_server3` and `oam_server4` are not currently running but are in the process of starting. The servers will take several minutes to start so keep executing the command until `READY` shows `1/1`:
+   Two new pods (`accessdomain-oam-server2` and `accessdomain-oam-server3`) are started, but currently have a `READY` status of `0/1`. This means `oam_server2` and `oam_server3` are not currently running but are in the process of starting. The servers will take several minutes to start so keep executing the command until `READY` shows `1/1`:
    
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h37m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h43m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h29m
-   accessdomain-oam-policy-mgr2                             1/1     Running     0          3h29m
    accessdomain-oam-server1                                 1/1     Running     0          3h29m
    accessdomain-oam-server2                                 1/1     Running     0          3h29m
    accessdomain-oam-server3                                 1/1     Running     0          3m45s
-   accessdomain-oam-server4                                 1/1     Running     0          3m45s
    helper                                                   1/1     Running     0          3h59m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          63m
 
@@ -186,13 +185,13 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    $ kubectl edit cluster accessdomain-oam-cluster -n oamns
    ```
 
-1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: oam_cluster`. In the example below `replicas` is set to "4", hence four OAM Managed Servers are started (`access-domain-oam_server1` - `access-domain-oam_server4`):
+1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: oam_cluster`. In the example below `replicas` is set to "3", hence three OAM Managed Servers are started (`access-domain-oam_server1` - `access-domain-oam_server3`):
 
    ```
    ...
    spec:
      clusterName: oam_cluster
-     replicas: 4
+     replicas: 3
      serverPod:
        env:
        - name: USER_MEM_ARGS
@@ -201,12 +200,12 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    ...
    ```
    
-1. To stop OAM Managed Servers, decrease the `replicas` value as desired. In the example below, we will stop two managed servers by setting replicas to "2":
+1. To stop OAM Managed Servers, decrease the `replicas` value as desired. In the example below, we will stop two managed servers by setting replicas to "1":
 
    ```
    spec:
      clusterName: oam_cluster
-     replicas: 2
+     replicas: 1
      serverPod:
        env:
        - name: USER_MEM_ARGS
@@ -236,25 +235,21 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    accessdomain-adminserver                                 1/1     Running       0          3h45m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h51m
    accessdomain-oam-policy-mgr1                             1/1     Running       0          3h37m
-   accessdomain-oam-policy-mgr2                             1/1     Running       0          3h37m
    accessdomain-oam-server1                                 1/1     Running       0          3h37m
    accessdomain-oam-server2                                 1/1     Running       0          3h37m
-   accessdomain-oam-server3                                 1/1     Running       0          11m
-   accessdomain-oam-server4                                 1/1     Terminating   0          11m
+   accessdomain-oam-server3                                 1/1     Terminating   0          11m
    helper                                                   1/1     Running       0          4h6m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          71m
    ```
    
-   One pod now has a `STATUS` of `Terminating` (`accessdomain-oam-server4`). The server will take a minute or two to stop. Once terminated the other pod (`accessdomain-oam-server3`) will move to `Terminating` and then stop. Keep executing the command until the pods have disappeared:
+   One pod now has a `STATUS` of `Terminating` (`accessdomain-oam-server3`). The server will take a minute or two to stop. Once terminated the other pod (`accessdomain-oam-server2`) will move to `Terminating` and then stop. Keep executing the command until the pods have disappeared:
    
    ```
    NAME                                            READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h48m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h54m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h40m
-   accessdomain-oam-policy-mgr2                             1/1     Running     0          3h40m
    accessdomain-oam-server1                                 1/1     Running     0          3h40m
-   accessdomain-oam-server2                                 1/1     Running     0          3h40m
    helper                                                   1/1     Running     0          4h9m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          74m
    ```
@@ -277,25 +272,25 @@ The number of OAM Policy Managed Servers running is dependent on the `replicas` 
 
    **Note**: This opens an edit session for the policy-cluster where parameters can be changed using standard `vi` commands.
 
-1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: policy_cluster`. By default the replicas parameter is set to "2" hence two OAM Policy Managed Servers are started (`oam_policy_mgr1` and `oam_policy_mgr2`):
+1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: policy_cluster`. By default the replicas parameter is set to "1" hence one OAM Policy Managed Server is started (`oam_policy_mgr1`):
 
    ```
    ...
    spec:
      clusterName: policy_cluster
-     replicas: 2
+     replicas: 1
      serverService:
        precreateService: true
    ...
    ```
    
-1. To start more OAM Policy Managed Servers, increase the `replicas` value as desired. In the example below, two more managed servers will be started by setting `replicas` to "4":
+1. To start more OAM Policy Managed Servers, increase the `replicas` value as desired. In the example below, two more managed servers will be started by setting `replicas` to "3":
 
    ```
    ...
    spec:
      clusterName: policy_cluster
-     replicas: 4
+     replicas: 3
      serverService:
        precreateService: true
    ...
@@ -309,7 +304,7 @@ The number of OAM Policy Managed Servers running is dependent on the `replicas` 
    cluster.weblogic.oracle/accessdomain-policy-cluster edited
    ```
 
-   After saving the changes two new pods will be started (`accessdomain-oam-policy-mgr3` and `accessdomain-oam-policy-mgr4`). After a few minutes they will have a `READY` status of `1/1`. In the example below `accessdomain-oam-policy-mgr3` and `accessdomain-oam-policy-mgr4` are started:
+   After saving the changes two new pods will be started (`accessdomain-oam-policy-mgr2` and `accessdomain-oam-policy-mgr3`). After a few minutes they will have a `READY` status of `1/1`. In the example below `accessdomain-oam-policy-mgr2` and `accessdomain-oam-policy-mgr3` are started:
    
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
@@ -318,9 +313,7 @@ The number of OAM Policy Managed Servers running is dependent on the `replicas` 
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h35m
    accessdomain-oam-policy-mgr2                             1/1     Running     0          3h35m
    accessdomain-oam-policy-mgr3                             1/1     Running     0          4m18s
-   accessdomain-oam-policy-mgr4                             1/1     Running     0          4m18s
    accessdomain-oam-server1                                 1/1     Running     0          3h35m
-   accessdomain-oam-server2                                 1/1     Running     0          3h35m
    helper                                                   1/1     Running     0          4h4m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          69m
    ```
@@ -343,19 +336,19 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    $ kubectl edit cluster accessdomain-policy-cluster -n oamns
    ```
 
-1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: policy_cluster`. To stop OAM Policy Managed Servers, decrease the `replicas` value as desired. In the example below, we will stop two managed servers by setting replicas to "2":
+1. In the edit session, search for `spec:`, and then look for the `replicas` parameter under `clusterName: policy_cluster`. To stop OAM Policy Managed Servers, decrease the `replicas` value as desired. In the example below, we will stop two managed servers by setting replicas to "1":
 
    ```
    ...
    spec:
      clusterName: policy_cluster
-     replicas: 2
+     replicas: 1
      serverService:
        precreateService: true
    ...
    ```
 
-   After saving the changes one pod will move to a `STATUS` of `Terminating` (`accessdomain-oam-policy-mgr4`). 
+   After saving the changes one pod will move to a `STATUS` of `Terminating` (`accessdomain-oam-policy-mgr3`). 
    
    ```
    NAME                                            READY   STATUS        RESTARTS   AGE
@@ -363,10 +356,8 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h55m
    accessdomain-oam-policy-mgr1                             1/1     Running       0          3h41m
    accessdomain-oam-policy-mgr2                             1/1     Running       0          3h41m
-   accessdomain-oam-policy-mgr3                             1/1     Running       0          10m
-   accessdomain-oam-policy-mgr4                             1/1     Terminating   0          10m
+   accessdomain-oam-policy-mgr3                             1/1     Terminating   0          10m
    accessdomain-oam-server1                                 1/1     Running       0          3h41m
-   accessdomain-oam-server2                                 1/1     Running       0          3h41m
    helper                                                   1/1     Running       0          4h11m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          75m
    ```
@@ -378,9 +369,7 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    accessdomain-adminserver                                 1/1     Running     0          3h50m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h57m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h42m
-   accessdomain-oam-policy-mgr2                             1/1     Running     0          3h42m
    accessdomain-oam-server1                                 1/1     Running     0          3h42m
-   accessdomain-oam-server2                                 1/1     Running     0          3h42m
    helper                                                   1/1     Running     0          4h12m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          76m
    ```
@@ -459,9 +448,7 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    accessdomain-adminserver                                 1/1     Terminating   0          3h52m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h59m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          3h44m
-   accessdomain-oam-policy-mgr2                             1/1     Terminating   0          3h44m
    accessdomain-oam-server1                                 1/1     Terminating   0          3h44m
-   accessdomain-oam-server2                                 1/1     Terminating   0          3h44m
    helper                                                   1/1     Running       0          4h14m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          78m
    ```
@@ -520,9 +507,7 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    accessdomain-adminserver                                 1/1     Running     0          10m
    accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h12m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          7m35s
-   accessdomain-oam-policy-mgr2                             1/1     Running     0          7m35s
    accessdomain-oam-server1                                 1/1     Running     0          7m35s
-   accessdomain-oam-server2                                 1/1     Running     0          7m35s
    helper                                                   1/1     Running     0          4h28m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          92m
    ```

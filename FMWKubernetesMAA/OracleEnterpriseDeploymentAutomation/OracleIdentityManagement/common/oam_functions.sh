@@ -81,6 +81,10 @@ update_java_parameters()
      printf "\t\t\tUpdating Java Parameters - "
      cp $TEMPLATE_DIR/oamDomain.sedfile $WORKDIR
      update_variable "<OAMSERVER_JAVA_PARAMS>" "$OAMSERVER_JAVA_PARAMS" $WORKDIR/oamDomain.sedfile
+     update_variable "<OAM_MEMORY>" "$OAM_MEMORY" $WORKDIR/oamDomain.sedfile
+     update_variable "<OAM_MAX_MEMORY>" "$OAM_MAX_MEMORY" $WORKDIR/oamDomain.sedfile
+     update_variable "<OAM_MAX_CPU>" "$OAM_MAX_CPU" $WORKDIR/oamDomain.sedfile
+     update_variable "<OAM_CPU>" "$OAM_CPU" $WORKDIR/oamDomain.sedfile
      cd $WORKDIR/samples/create-access-domain/domain-home-on-pv
      
      sed -i -f $WORKDIR/oamDomain.sedfile output/weblogic-domains/$OAM_DOMAIN_NAME/domain.yaml
@@ -733,21 +737,26 @@ create_oam_ohs_config()
 
    if [ ! "$OHS_HOST1" = "" ]
    then
+      if [ ! "$INGRESS_HOST" = "" ]
+      then
+         K8_WORKER_HOST1=$INGRESS_HOST
+         K8_WORKER_HOST2=$INGRESS_HOST
+      fi
       cp $TEMPLATE_DIR/iadadmin_vh.conf $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       cp $TEMPLATE_DIR/login_vh.conf $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OAM_ADMIN_LBR_HOST>" $OAM_ADMIN_LBR_HOST $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OAM_ADMIN_LBR_PORT>" $OAM_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
-      update_variable "<K8_WORKER_HOST1>" ${INGRESS_HOST:=$K8_WORKER_HOST1} $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
-      update_variable "<K8_WORKER_HOST2>" ${INGRESS_HOST:=$K8_WORKER_HOST2} $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
+      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
+      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/iadadmin_vh.conf
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OAM_LOGIN_LBR_PROTOCOL>" $OAM_LOGIN_LBR_PROTOCOL $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OAM_LOGIN_LBR_HOST>" $OAM_LOGIN_LBR_HOST $OHS_PATH/$OHS_HOST1/login_vh.conf
       update_variable "<OAM_LOGIN_LBR_PORT>" $OAM_LOGIN_LBR_PORT $OHS_PATH/$OHS_HOST1/login_vh.conf
-      update_variable "<K8_WORKER_HOST1>" ${INGRESS_HOST:=$K8_WORKER_HOST1} $OHS_PATH/$OHS_HOST1/login_vh.conf
-      update_variable "<K8_WORKER_HOST2>" ${INGRESS_HOST:=$K8_WORKER_HOST2} $OHS_PATH/$OHS_HOST1/login_vh.conf
+      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/login_vh.conf
+      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/login_vh.conf
 
       if [ "$USE_INGRESS" = "true" ]
       then
@@ -772,6 +781,7 @@ create_oam_ohs_config()
   fi
 
    print_status $?
+
 
    ET=`date +%s`
    print_time STEP "Creating OHS config" $ST $ET >> $LOGDIR/timings.log
@@ -874,7 +884,7 @@ deploy_wls_monitor()
 
 enable_monitor()
 {
-   ST=`date +%s`
+   ST=$(date +%s)
    print_msg "Configuring Prometheus Operator"
 
    ENC_WEBLOGIC_USER=`encode_pwd $OAM_WEBLOGIC_USER`
@@ -894,7 +904,87 @@ enable_monitor()
    kubectl apply -f $WORKDIR/samples/monitoring-service/manifests/ > $LOGDIR/enable_monitor.log
    print_status $? $LOGDIR/enable_monitor.log
 
-   ET=`date +%s`
+   ET=$(date +%s)
    print_time STEP "Configure Prometheus Operator" $ST $ET >> $LOGDIR/timings.log
 
 }
+
+create_dr_cronjob_files()
+{
+   ST=$(date +%s)
+   print_msg "Creating Cron Job Files"
+
+   cp $TEMPLATE_DIR/dr_cron.yaml $WORKDIR/dr_cron.yaml
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_cron.yaml
+   update_variable "<DR_OAM_MINS>" $DR_OAM_MINS $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_IMAGE>" $RSYNC_IMAGE $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_VER>" $RSYNC_VER $WORKDIR/dr_cron.yaml
+   update_variable "<OAM_DOMAIN_NAME>" $OAM_DOMAIN_NAME $WORKDIR/dr_cron.yaml
+
+   print_status $?
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Cron Job Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+
+create_dr_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume"
+
+   kubectl create -f $WORKDIR/dr_dr_pv.yaml > $LOGDIR/create_dr_pv.log 2>&1
+   print_status $? $LOGDIR/create_dr_pv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume " $ST $ET >> $LOGDIR/timings.log
+}
+
+create_dr_pvc()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume Claim"
+   kubectl create -f $WORKDIR/dr_dr_pvc.yaml > $LOGDIR/create_dr_pvc.log 2>&1
+   print_status $? $LOGDIR/create_dr_pvc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume Claim " $ST $ET >> $LOGDIR/timings.log
+}
+
+
+delete_oam_files()
+{
+   ST=$(date +%s)
+   print_msg "Delete OAM Domain Files"
+
+   if [ -e $OAM_LOCAL_SHARE ] && [ ! "$OAM_LOCAL_SHARE" = "" ]
+   then
+     echo rm -rf $OAM_LOCAL_SHARE/domains $OAM_LOCAL_SHARE/applications $OAM_LOCAL_SHARE/stores $OAM_LOCAL_SHARE/keystores  > $LOGDIR/delete_oam_domain.log 2>&1
+     rm -rf $OAM_LOCAL_SHARE/domains $OAM_LOCAL_SHARE/applications $OAM_LOCAL_SHARE/stores $OAM_LOCAL_SHARE/keystores >> $LOGDIR/delete_oam_domain.log 2>&1
+   else
+     echo "Share does not exist, or OAM_LOCAL_SHARE is not defined."
+   fi
+
+   print_status $?  $LOGDIR/delete_oam_domain.log
+
+   ET=$(date +%s)
+   print_time STEP "Delete OAM Domain Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_dr_source_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating OAM Persistent Volume"
+
+   cp $TEMPLATE_DIR/dr_oampv.yaml $WORKDIR/dr_oampv.yaml
+   update_variable "<OAM_DOMAIN_NAME>" $OAM_DOMAIN_NAME $WORKDIR/dr_oampv.yaml
+   update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_oampv.yaml
+   update_variable "<OAM_SHARE>" $OAM_STANDBY_SHARE $WORKDIR/dr_oampv.yaml
+
+   kubectl create -f $WORKDIR/dr_oampv.yaml > $LOGDIR/dr_oampv.log 2>&1
+   print_status $? $LOGDIR/dr_oampv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create OAM Persistent Volume" $ST $ET >> $LOGDIR/timings.log
+}
+

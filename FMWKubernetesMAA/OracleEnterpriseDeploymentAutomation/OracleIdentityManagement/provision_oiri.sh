@@ -80,10 +80,21 @@ echo
 
 create_local_workdir
 create_logdir
+printf "Using Images:"
+printf "\n\t$OIRI_CLI_IMAGE:$OIRICLI_VER"
+printf "\n\t$OIRI_IMAGE:$OIRI_VER"
+printf "\n\t$OIRI_UI_IMAGE:$OIRIUI_VER"
+printf "\n\t$OIRI_DING_IMAGE:$OIRIDING_VER\n\n"
 
 echo -n "Provisioning Oracle Identity Role Intelligence on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
 echo "---------------------------------------------------------------------------" >> $LOGDIR/timings.log
+echo ""
+printf "Using Images:" >> $LOGDIR/timings.log
+printf "\n\t$OIRI_CLI_IMAGE:$OIRICLI_VER" >> $LOGDIR/timings.log
+printf "\n\t$OIRI_IMAGE:$OIRI_VER" >> $LOGDIR/timings.log
+printf "\n\t$OIRI_UI_IMAGE:$OIRIUI_VER" >> $LOGDIR/timings.log
+printf "\n\t$OIRI_DING_IMAGE:$OIRIDING_VER\n\n" >> $LOGDIR/timings.log
 
 STEPNO=1
 PROGRESS=$(get_progress)

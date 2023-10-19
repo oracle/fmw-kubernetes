@@ -71,7 +71,7 @@ create_ding_helper()
 
    kubectl create -f $filename > $LOGDIR/create_helper.log
    print_status $? $LOGDIR/create_helper.log
-   check_running $OIRINS oiri-cli 15
+   check_running $DINGNS oiri-ding-cli 15
    ET=`date +%s`
    print_time STEP "Create DING Helper container" $ST $ET >> $LOGDIR/timings.log
 }
@@ -128,7 +128,7 @@ create_rbac()
      TOKENNAME=`kubectl -n $OIRINS get serviceaccount/oiri-service-account -o jsonpath='{.secrets[0].name}'`
    fi
  
-   TOKEN=`kubectl -n $OIRINS get secret $TOKENNAME -o jsonpath='{.data.token}'| base64 --decode`
+   TOKEN=$(kubectl -n $OIRINS get secret $TOKENNAME -o jsonpath='{.data.token}'| base64 --decode)
  
    k8url=`grep server: $KUBECONFIG | sed 's/server://;s/ //g'`
 
@@ -714,4 +714,125 @@ create_logstash_cm()
    fi
    ET=`date +%s`
    print_time STEP "Create Logstash Config Map" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Modify the template to create a cronjob
+#
+create_dr_cronjob_files()
+{
+   ST=$(date +%s)
+   print_msg "Creating Cron Job Files"
+
+   cp $TEMPLATE_DIR/dr_cron.yaml $WORKDIR/dr_cron.yaml
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_cron.yaml
+   update_variable "<DR_OIRI_MINS>" $DR_OIRI_MINS $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_IMAGE>" $RSYNC_IMAGE $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_VER>" $RSYNC_VER $WORKDIR/dr_cron.yaml
+
+   print_status $?
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Cron Job Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Persistent Volumes used by DR Job.
+#
+create_dr_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume"
+
+   kubectl create -f $WORKDIR/dr_dr_pv.yaml > $LOGDIR/create_dr_pv.log 2>&1
+   print_status $? $LOGDIR/create_dr_pv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Persistent Volume Claims used by DR Job.
+#
+create_dr_pvc()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume Claim"
+   kubectl create -f $WORKDIR/dr_dr_pvc.yaml > $LOGDIR/create_dr_pvc.log 2>&1
+   print_status $? $LOGDIR/create_dr_pvc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume Claim " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Delete the OIRI files created by a fresh installation.
+#
+delete_oiri_files()
+{
+   ST=$(date +%s)
+   print_msg "Delete OIRI Files"
+
+   if [ -e $OIRI_LOCAL_SHARE ] && [ ! "$OIRI_LOCAL_SHARE" = "" ]
+   then
+     echo rm -rf $OIRI_LOCAL_SHARE/domains $OIRI_LOCAL_SHARE/applications $OIRI_LOCAL_SHARE/stores $OIRI_LOCAL_SHARE/keystores  > $LOGDIR/delete_oiri.log 2>&1
+     rm -rf $OIRI_LOCAL_SHARE/domains $OIRI_LOCAL_SHARE/applications $OIRI_LOCAL_SHARE/stores $OIRI_LOCAL_SHARE/keystores >> $LOGDIR/delete_oiri.log 2>&1
+   else
+     echo "Share does not exist, or OIRI_LOCAL_SHARE is not defined."
+   fi
+
+   if [ -e $OIRI_DING_LOCAL_SHARE ] && [ ! "$OIRI_DING_LOCAL_SHARE" = "" ]
+   then
+     echo rm -rf $OIRI_DING_LOCAL_SHARE/domains $OIRI_DING_LOCAL_SHARE/applications $OIRI_DING_LOCAL_SHARE/stores $OIRI_DING_LOCAL_SHARE/keystores  > $LOGDIR/delete_oiri.log 2>&1
+     rm -rf $OIRI_DING_LOCAL_SHARE/domains $OIRI_DING_LOCAL_SHARE/applications $OIRI_DING_LOCAL_SHARE/stores $OIRI_DING_LOCAL_SHARE/keystores >> $LOGDIR/delete_oiri.log 2>&1
+   else
+     echo "Share does not exist, or OIRI_DING_LOCAL_SHARE is not defined."
+   fi
+   print_status $?  $LOGDIR/delete_oiri.log
+
+   ET=$(date +%s)
+   print_time STEP "Delete OIRI Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create OIRI PVs on the Standby Site
+#
+create_dr_source_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating OIRI Persistent Volume"
+
+   cp $TEMPLATE_DIR/dr_oiripv.yaml $WORKDIR/dr_oiripv.yaml
+   update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_oiripv.yaml
+   update_variable "<OIRI_SHARE>" $OIRI_STANDBY_SHARE $WORKDIR/dr_oiripv.yaml
+   update_variable "<OIRI_DING_SHARE>" $OIRI_DING_STANDBY_SHARE $WORKDIR/dr_oiripv.yaml
+
+   kubectl create -f $WORKDIR/dr_oiripv.yaml > $LOGDIR/dr_oiripv.log 2>&1
+   print_status $? $LOGDIR/dr_oiripv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create OIRI Persistent Volumes" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Take a backup of the Kuberenetes Configuration files
+#
+backup_k8_files()
+{
+   ST=$(date +%s)
+   print_msg "Backing up local Kubernetes config files "
+
+   if [ ! "$OIRI_PRIMARY_K8CA" = "" ]
+   then
+      printf "\n\t\t\tBacking up DING ca.crt - "
+      cp $OIRI_DING_LOCAL_SHARE/ca.crt $OIRI_DING_LOCAL_SHARE/$OIRI_PRIMARY_K8CA
+      print_status $?
+      printf "\t\t\tBacking up WORK ca.crt - "
+      cp $OIRI_WORK_LOCAL_SHARE/ca.crt $OIRI_WORK_LOCAL_SHARE/$OIRI_PRIMARY_K8CA
+      print_status $?
+   fi
+
+   if [ ! "$OIRI_PRIMARY_K8CONFIG" = "" ]
+   then
+      printf "\t\t\tBacking up DING config - "
+      cp $OIRI_WORK_LOCAL_SHARE/config $OIRI_WORK_LOCAL_SHARE/$OIRI_PRIMARY_K8CONFIG
+      print_status $?
+   fi
+
+   ET=$(date +%s)
+   print_time STEP "Backup local Kubernetes configuration " $ST $ET >> $LOGDIR/timings.log
 }

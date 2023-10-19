@@ -266,6 +266,13 @@ class OAM12214Provisioner:
         self.targetCluster(self.ADDL_CLUSTER);
         cd('/')
 
+        # Assign servers to clusters
+        for managedName in self.MANAGED_SERVERS:
+            assign('Server', managedName, 'Cluster', clusterName)
+
+        for managedName in self.ADDL_MANAGED_SERVERS:
+            assign('Server', managedName, 'Cluster', self.ADDL_CLUSTER)
+
         #configure Active Gridlink datasource based on inputs
         print('Using datasource type: ' + dstype)
 

@@ -44,7 +44,7 @@ rcuType="${rcuType}"
 namespace="default"
 createPodArgs=""
 
-while getopts ":s:t:d:n:c:p:i:u:o:v:h:" opt; do
+while getopts ":s:t:d:n:c:p:i:u:o:r:h:" opt; do
   case $opt in
     s) schemaPrefix="${OPTARG}"
     ;;
@@ -56,7 +56,7 @@ while getopts ":s:t:d:n:c:p:i:u:o:v:h:" opt; do
     ;;
     c|p|i|u|o) createPodArgs+=" -${opt} ${OPTARG}"
     ;;
-    v) customVariables="${OPTARG}"
+    r) customVariables="${OPTARG}"
     ;;
     h) usage 0
     ;;

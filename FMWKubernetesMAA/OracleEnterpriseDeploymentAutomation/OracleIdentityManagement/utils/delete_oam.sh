@@ -50,7 +50,11 @@ fi
 . $SCRIPTDIR/common/functions.sh
 
 WORKDIR=$LOCAL_WORKDIR/OAM
-LOGDIR=$WORKDIR/logs
+LOGDIR=$LOCAL_WORKDIR/delete_logs/OAM
+if [ ! -e $LOGDIR ]
+then
+  mkdir -p $LOGDIR
+fi
 
 mkdir $LOCAL_WORKDIR/deleteLogs > /dev/null 2>&1
 
@@ -104,6 +108,13 @@ check_stopped $OAMNS adminserver
 #
 ST=`date +%s`
 printf "Dropping Schemas - "
+kubectl get pod -n $OAMNS helper > /dev/null 2>&1
+
+if [ $? -gt 0 ]
+then
+   create_helper_pod $OAMNS $OAM_IMAGE:$OAM_VER
+fi 
+
 drop_schemas  $OAMNS $OAM_DB_SCAN $OAM_DB_LISTENER $OAM_DB_SERVICE $OAM_RCU_PREFIX OAM $OAM_DB_SYS_PWD $OAM_SCHEMA_PWD >> $LOG 2>&1
 ET=`date +%s`
 
@@ -129,15 +140,22 @@ else
      fi
 fi
 
+echo "Deleting Namespace $OAMNS"
+kubectl delete namespace $OAMNS  >> $LOG 2>&1
 
 # Delete All contents in the Persistent Volumes
 # Requires that the PV is mounted locally
+
+# Remove Persistent Volume & Claim from Kubernetes
+#
+echo "Removing Persistent Volumes"
+kubectl delete pv $OAM_DOMAIN_NAME-domain-pv  >> $LOG 2>&1
 
 echo "Deleting Volumes"
 
 if [ ! "$OAM_LOCAL_SHARE" = "" ]
 then
-  rm -rf $OAM_LOCAL_SHARE/>> $LOG 2>&1
+  rm -rf  $OAM_LOCAL_SHARE/applications $OAM_LOCAL_SHARE/domains $OAM_LOCAL_SHARE/dr_scripts $OAM_LOCAL_SHARE/keystores $OAM_LOCAL_SHARE/logs $OAM_LOCAL_SHARE/workdir >> $LOG 2>&1
 fi
 
 
@@ -149,15 +167,6 @@ else
   echo "Unable to delete volumes."
 fi
 
-# Remove Persistent Volume & Claim from Kubernetes
-#
-echo "Removing Persistent Volumes"
-kubectl delete pvc -n $OAMNS $OAM_DOMAIN_NAME-domain-pvc  >> $LOG 2>&1
-kubectl delete pv $OAM_DOMAIN_NAME-domain-pv  >> $LOG 2>&1
-
-
-echo "Deleting Namespace $OAMNS"
-kubectl delete namespace $OAMNS  >> $LOG 2>&1
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Delete OAM " $START_TIME $FINISH_TIME 

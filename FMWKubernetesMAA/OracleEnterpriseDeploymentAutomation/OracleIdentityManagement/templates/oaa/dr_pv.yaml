@@ -1,0 +1,69 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to setup a Persistent Volume for OAA DR
+#
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-oaa-config-pv
+  labels:
+    type: <ROLE>-oaa-config-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <CONFIG_SHARE_PATH>
+    server: <PVSERVER>
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-oaa-vault-pv
+  labels:
+    type: <ROLE>-oaa-vault-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <VAULT_SHARE_PATH>
+    server: <PVSERVER>
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-oaa-cred-pv
+  labels:
+    type: <ROLE>-oaa-cred-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <CRED_SHARE_PATH>
+    server: <PVSERVER>
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-oaa-log-pv
+  labels:
+    type: <ROLE>-oaa-log-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <LOG_SHARE_PATH>
+    server: <PVSERVER>

@@ -34,9 +34,9 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains
 	
    ```
    NAME                  STATUS   ROLES    AGE   VERSION
-   node/worker-node1     Ready    <none>   17h   v1.24.5+1.el7
-   node/worker-node2     Ready    <none>   17h   v1.24.5+1.el7
-   node/master-node      Ready    master   23h   v1.24.5+1.el7
+   node/worker-node1     Ready    <none>   17h   v1.26.6+1.el8
+   node/worker-node2     Ready    <none>   17h   v1.26.6+1.el8
+   node/master-node      Ready    master   23h   v1.26.6+1.el8
 
    NAME                                     READY   STATUS    RESTARTS   AGE
    pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -50,7 +50,7 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains
    pod/kube-proxy-2kxv2                     1/1     Running   0          17h
    pod/kube-proxy-82vvj                     1/1     Running   0          17h
    pod/kube-proxy-nrgw9                     1/1     Running   0          23h
-   pod/kube-scheduler-master                1/1     Running   0          21$
+   pod/kube-scheduler-master                1/1     Running   0          21h
    ```
 
 ### Obtain the OIG container image
@@ -64,7 +64,7 @@ The OIG Kubernetes deployment requires access to an OIG container image. The ima
 #### Prebuilt OIG container image
 
 
-The latest prebuilt OIG April 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The latest prebuilt OIG October 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
 
@@ -141,19 +141,20 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    No resources found in default namespace.
    ```
    
-   If you see the following:
+   If you see any of the following:
 	
    ```
-   NAME                    AGE
-   domains.weblogic.oracle 5d
+   NAME                      AGE
+   clusters.weblogic.oracle  5d
+   domains.weblogic.oracle   5d
    ```
 
-   then run the following command to delete the existing crd:
+   then run the following command to delete the existing crd's:
 	
    ```bash
+   $ kubectl delete crd clusters.weblogic.oracle
    $ kubectl delete crd domains.weblogic.oracle
-   customresourcedefinition.apiextensions.k8s.io "domains.weblogic.oracle" deleted
-   ```
+      ```
 
 ### Install the WebLogic Kubernetes Operator
 
@@ -199,7 +200,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.2 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -213,7 +214,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.0.4 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.2 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -252,7 +253,6 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    pod/weblogic-operator-webhook-7996b8b58b-68l8s   1/1     Running   0          33s
 
    NAME                                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
-   service/internal-weblogic-operator-svc   ClusterIP   10.103.112.20    <none>        8082/TCP,8083/TCP   33s
    service/weblogic-operator-webhook-svc    ClusterIP   10.109.163.130   <none>        8083/TCP,8084/TCP   34s
 
    NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
@@ -279,9 +279,9 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    The output will look similar to the following:
 	
    ```
-   {"timestamp":"2023-03-15T17:44:55.852803077Z","thread":37,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678902295852,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2023-03-15T17:45:00.853833985Z","thread":42,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678902300853,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
-   {"timestamp":"2023-03-15T17:45:05.854897954Z","thread":21,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678902305854,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":37,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678902295852,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":42,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678902300853,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
+   {"timestamp":"<DATE>","thread":21,"fiber":"","namespace":"","domainUID":"","level":"FINE","class":"oracle.kubernetes.operator.DeploymentLiveness","method":"run","timeInMillis":1678902305854,"message":"Liveness file last modified time set","exception":"","code":"","headers":{},"body":""}
    ```
 
 ### Create a namespace for Oracle Identity Governance
@@ -401,7 +401,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<April`23> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October`23> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -413,7 +413,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-<April`23> -n oigns -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-<October`23> -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:
@@ -660,7 +660,8 @@ Before following the steps in this section, make sure that the database and list
    [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_bkp.sql
    [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_fix.sql
    [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_restore_bkp.sql
-   [sql] 61 of 61 SQL statements executed successfully
+   [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_ddl_alter_pwr_add_column.sql
+   [sql] 67 of 67 SQL statements executed successfully
 
    BUILD SUCCESSFUL
    Total time: 6 seconds
@@ -746,7 +747,7 @@ In this section you prepare the environment for the OIG domain creation. This in
    type: Opaque
    ```
 
-1. Create a Kubernetes secret for RCU in the same Kubernetes namespace as the domain, using the `create-weblogic-credentials.sh` script:
+1. Create a Kubernetes secret for RCU in the same Kubernetes namespace as the domain, using the `create-rcu-credentials.sh` script:
 
    ```bash
    $ cd $WORKDIR/kubernetes/create-rcu-credentials

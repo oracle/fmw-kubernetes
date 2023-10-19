@@ -327,8 +327,8 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    The output will look similar to the following:
    
    ```
-   NAME             CLASS    HOSTS   ADDRESS          PORTS   AGE
-   access-ingress   <none>   *       10.101.132.251   80      2m53s
+   NAME                 CLASS    HOSTS   ADDRESS          PORTS   AGE
+   accessdomain-nginx   <none>   *                        80      5s
    ```
    
 1. Find the node port of NGINX using the following command:
@@ -367,6 +367,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    Name:             accessdomain-nginx
    Namespace:        oamns
    Address:          10.106.70.55
+   Ingress Class:    <none>
    Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
    Rules:
      Host        Path  Backends

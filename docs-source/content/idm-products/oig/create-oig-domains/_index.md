@@ -73,7 +73,7 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    ```
    domainUID: governancedomain
    domainHome: /u01/oracle/user_projects/domains/governancedomain
-   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<April'23>
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'23>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: oig-domain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/governancedomain
@@ -177,7 +177,7 @@ generated artifacts:
    export initialManagedServerReplicas="1"
    export managedServerNameBase="oim_server"
    export managedServerPort="14000"
-   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<April'23>"
+   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'23>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -274,7 +274,14 @@ generated artifacts:
    serverPod:
     env:
     - name: USER_MEM_ARGS
-      value: "-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m"
+      value: "-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
+    resources:
+      limits:
+        cpu: "2"
+        memory: "8Gi"
+      requests:
+        cpu: "1000m"
+        memory: "4Gi"	  
    ```
    
    The file should looks as follows:
@@ -294,9 +301,24 @@ generated artifacts:
      serverPod:
        env:
        - name: USER_MEM_ARGS
-         value: "-Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m"
+         value: "-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m"
+       resources:
+         limits:
+           cpu: "2"
+           memory: "8Gi"
+         requests:
+           cpu: "1000m"
+           memory: "4Gi"
    ...
    ```
+   
+   **Note**: The above CPU and memory values are for development environments only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE).
+
+   **Note**: Limits and requests for CPU resources are measured in CPU units. One CPU in Kubernetes is equivalent to 1 vCPU/Core for cloud providers, and 1 hyperthread on bare-metal Intel processors. An "`m`" suffix in a CPU attribute indicates ‘milli-CPU’, so 500m is 50% of a CPU. Memory can be expressed in various units, where one Mi is one IEC unit mega-byte (1024^2), and one Gi is one IEC unit giga-byte (1024^3). For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/), [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/), and [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/).
+   
+   **Note**: The parameters above are also utilized by the Kubernetes Horizontal Pod Autoscaler (HPA). For more details on HPA, see [Kubernetes Horizontal Pod Autoscaler](../manage-oig-domains/hpa).
+
+   **Note**: If required you can also set the same resources and limits for the `governancedomain-soa-cluster`.
 
     
 #### Run the create domain scripts
@@ -402,12 +424,13 @@ generated artifacts:
    governancedomain-oim-server1                                1/1     Running     0          4m25s
    governancedomain-soa-server1                                1/1     Running     0          4m
    helper                                                      1/1     Running     0          3h38m
+   ```
    
    **Note**: It will take several minutes before the `governancedomain-oim-server1` pod has a `STATUS` of `1/1`. While the pod is starting you can check the startup status in the pod log, by running the following command:
    
    ```bash
    $ kubectl logs governancedomain-oim-server1 -n oigns
-   
+   ```
 
 ### Verify the results
 
@@ -581,7 +604,7 @@ The default domain created by the script has the following characteristics:
      Failure Retry Interval Seconds:  120
      Failure Retry Limit Minutes:     1440
      Http Access Log In Log Home:     true
-     Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<April'23>
+     Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'23>
      Image Pull Policy:               IfNotPresent
      Image Pull Secrets:
        Name:                           orclcred

@@ -105,7 +105,7 @@ IPs:
 Containers:
   oudsm:
     Container ID:   cri-o://37dbe00257095adc0a424b8841db40b70bbb65645451e0bc53718a0fd7ce22e4
-    Image:          container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol7-<April'23>
+    Image:          container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol7-<October'23>
     Image ID:       container-registry.oracle.com/middleware/oudsm_cpu@sha256:47960d36d502d699bfd8f9b1be4c9216e302db95317c288f335f9c8a32974f2c
     Ports:          7001/TCP, 7002/TCP
     Host Ports:     0/TCP, 0/TCP
@@ -151,7 +151,7 @@ Events:
   ----     ------            ----  ----               -------
   Warning  FailedScheduling  39m   default-scheduler  0/3 nodes are available: 3 pod has unbound immediate PersistentVolumeClaims.
   Normal   Scheduled         39m   default-scheduler  Successfully assigned oudsmns/oudsm-1 to <worker-node>
-  Normal   Pulled            39m   kubelet            Container image "container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol7-<April'23>" already present on machine
+  Normal   Pulled            39m   kubelet            Container image "container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol7-<October'23>" already present on machine
   Normal   Created           39m   kubelet            Created container oudsm
   Normal   Started           39m   kubelet            Started container oudsm
 

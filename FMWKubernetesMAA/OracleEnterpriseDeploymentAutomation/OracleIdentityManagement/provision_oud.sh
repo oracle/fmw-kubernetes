@@ -72,10 +72,14 @@ echo
 
 create_local_workdir
 create_logdir
-
+printf "Using Image:"
+printf "\n\t$OUD_IMAGE:$OUD_VER\n\n"
 echo -n "Provisioning OUD on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
 echo "------------------------------------------------" >> $LOGDIR/timings.log
+echo >> $LOGDIR/timings.log
+printf "Using Image:">> $LOGDIR/timings.log
+printf "\n\t$OUD_IMAGE:$OUD_VER">> $LOGDIR/timings.log
 
 STEPNO=1
 PROGRESS=$(get_progress)
