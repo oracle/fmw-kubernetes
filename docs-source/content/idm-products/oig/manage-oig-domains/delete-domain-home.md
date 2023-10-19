@@ -1,5 +1,5 @@
 ---
-title: "f. Delete the OIG domain home"
+title: "g. Delete the OIG domain home"
 description: "Learn about the steps to cleanup the OIG domain home."
 ---
 

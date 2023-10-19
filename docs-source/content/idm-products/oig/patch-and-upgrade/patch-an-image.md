@@ -8,7 +8,7 @@ description: "Instructions on how to update your OIG Kubernetes cluster with a n
 
 The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image. 
 
-**Note**: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.0.4.
+**Note**: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.1.2.
 
 The script executes the following steps sequentially:
 
@@ -91,7 +91,7 @@ Download the latest code repository as follows:
    ```bash
    $ cd $WORKDIR/kubernetes/domain-lifecycle
    $ ./patch_oig_domain.sh -h
-   $ ./patch_oig_domain.sh -i 12.2.1.4-jdk8-ol7-<July`23> -n oigns
+   $ ./patch_oig_domain.sh -i 12.2.1.4-jdk8-ol7-<October`23> -n oigns
    ```
 
    The output will look similar to the following
@@ -105,16 +105,16 @@ Download the latest code repository as follows:
    [INFO] Deleting pod helper
    pod "helper" deleted
    [INFO] Fetched Image Pull Secret: orclcred
-   [INFO] Creating new helper pod with image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<July`23>
+   [INFO] Creating new helper pod with image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October`23>
    pod/helper created
    Checking helper  Running
    [INFO] Stopping Admin, SOA and OIM servers in domain governancedomain. This may take some time, monitor log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-<DATE>/stop_servers.log for details
    [INFO] All servers are now stopped successfully. Proceeding with DB Schema changes
    [INFO] Patching OIM schemas...
    [INFO] DB schema update successful. Check log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-<DATE>/patch_oim_wls.log for details
-   [INFO] Starting Admin, SOA and OIM servers with new image container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<July`23>
+   [INFO] Starting Admin, SOA and OIM servers with new image container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October`23>
    [INFO] Waiting for 3 weblogic pods to be ready..This may take several minutes, do not close the window. Check log /scratch/OIGK8Slatest/fmw-kubernetes/OracleIdentityGovernance/kubernetes/domain-lifecycle/log/oim_patch_log-<DATE>/monitor_weblogic_pods.log for progress
-   [SUCCESS] All servers under governancedomain are now in ready state with new image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<July`23>
+   [SUCCESS] All servers under governancedomain are now in ready state with new image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October`23>
    ```
 
    The logs are available at `$WORKDIR/kubernetes/domain-lifecycle` by default. A custom log location can also be provided to the script.

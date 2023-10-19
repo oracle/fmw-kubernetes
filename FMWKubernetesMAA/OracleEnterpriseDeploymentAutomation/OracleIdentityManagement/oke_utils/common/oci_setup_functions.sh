@@ -592,7 +592,7 @@ createService() {
   if [[ $STEPNO -gt $PROGRESS ]]; then
     if [[ ! "$DBSERVICES" =~ "$2" ]]; then
       print_msg begin "Creating the srvctl Service for the '$1' Pluggable Database..."    
-      cmd="ssh -q -i $SSH_ID_KEYFILE -t -o 'StrictHostKeyChecking no' -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' oracle@$DBIP 'srvctl add service -db ${DB_NAME}_${DB_SUFFIX} -service $2 -pdb $1 -preferred $DBINSTANCES'"
+      cmd="ssh -q -i $SSH_ID_KEYFILE -t -o 'StrictHostKeyChecking no' -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' oracle@$DBIP 'srvctl add service -db ${DB_NAME}_${DB_SUFFIX} -service $2 -pdb $1 -role PRIMARY,SNAPSHOT_STANDBY -preferred $DBINSTANCES'"
       execute "$cmd"
       print_msg end
     else

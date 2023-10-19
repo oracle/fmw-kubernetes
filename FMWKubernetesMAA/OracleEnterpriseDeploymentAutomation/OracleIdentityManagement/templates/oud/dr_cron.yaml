@@ -1,0 +1,42 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to create a DR Cron Job
+#
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oudrsyncdr
+  namespace: <DRNS>
+spec:
+  schedule: "*/<DR_OUD_MINS> * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: alpine-rsync
+            image: <RSYNC_IMAGE>:<RSYNC_VER>
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: dr-cm
+            volumeMounts:
+              - mountPath: "/u01/primary_oudpv"
+                name: oudpv
+              - mountPath: "/u01/dr_oudpv"
+                name: oudpv-dr
+            command:
+            - /bin/sh
+            - -c
+            - /u01/primary_oudpv/dr_scripts/oud_dr.sh
+          volumes:
+          - name: oudpv
+            persistentVolumeClaim:
+              claimName: primary-oudpv-pvc
+          - name: oudpv-dr
+            persistentVolumeClaim:
+              claimName: standby-oudpv-pvc
+          restartPolicy: OnFailure

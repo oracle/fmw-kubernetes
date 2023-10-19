@@ -19,4 +19,4 @@ This document provides information about the system requirements for deploying a
 	* The nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system.
 	
 **Note**: This documentation does not tell you how to install a Kubernetes cluster, Helm, the container engine, or how to push container images to a container registry. 
-Please refer to your vendor specific documentation for this information.
+Please refer to your vendor specific documentation for this information. Also see [Getting Started](../introduction#getting-started).

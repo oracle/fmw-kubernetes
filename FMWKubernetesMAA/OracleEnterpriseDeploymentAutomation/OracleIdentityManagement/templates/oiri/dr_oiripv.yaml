@@ -1,0 +1,44 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    meta.helm.sh/release-name: oiri
+    meta.helm.sh/release-namespace: oirins
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    type: nfs
+  name: oiri-pv
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    path: <OIRI_SHARE>
+    server: <PVSERVER>
+  storageClassName: oiri-storage-class
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    meta.helm.sh/release-name: oiri
+    meta.helm.sh/release-namespace: oirins
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    type: nfs
+  name: ding-pv
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    path: <OIRI_DING_SHARE>
+    server: <PVSERVER>
+  storageClassName: ding-storage-class
+  volumeMode: Filesystem

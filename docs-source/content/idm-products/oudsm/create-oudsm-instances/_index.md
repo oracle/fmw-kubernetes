@@ -198,7 +198,7 @@ You can create OUDSM instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oudsm_cpu
-     tag: 12.2.1.4-jdk8-ol7-<April'23>
+     tag: 12.2.1.4-jdk8-ol7-<October'23>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -272,7 +272,7 @@ You can create OUDSM instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudsmns \
-   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol7-<April'23> \
+   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol7-<October'23> \
    --set imagePullSecrets[0].name="orclcred" \
    oudsm oudsm
    ```
@@ -344,7 +344,7 @@ ingress.extensions/oudsm-ingress-nginx   oudsm-1,oudsm-2,oudsm + 1 more...   100
 $ kubectl logs oudsm-1 -n oudsmns
 ```
 
-**Note** : If the OUD deployment fails additionally refer to [Troubleshooting](../troubleshooting) for instructions on how describe the failing pod(s).
+**Note** : If the OUDSM deployment fails additionally refer to [Troubleshooting](../troubleshooting) for instructions on how describe the failing pod(s).
 Once the problem is identified follow [Undeploy an OUDSM deployment](#undeploy-an-oudsm-deployment) to clean down the deployment before deploying again.
 
 
@@ -470,47 +470,12 @@ The following table lists the configurable parameters of the 'oudsm' chart and t
 | oudsm.adminUser | Weblogic Administration User | weblogic |
 | oudsm.adminPass | Password for Weblogic Administration User |  |
 | oudsm.startupTime | Expected startup time. After specified seconds readinessProbe would start | 900 |
-| oudsm.livenessProbeInitialDelay | Paramter to decide livenessProbe initialDelaySeconds | 1200
-| elk.elasticsearch.enabled | If enabled it will create the elastic search statefulset deployment | false |
-| elk.elasticsearch.image.repository | Elastic Search Image name/Registry/Repository . Based on this elastic search instances will be created | docker.elastic.co/elasticsearch/elasticsearch |
-| elk.elasticsearch.image.tag | Elastic Search Image tag .Based on this, image parameter would be configured for Elastic Search pods/instances | 6.4.3 |
-| elk.elasticsearch.image.pullPolicy | policy to pull the image | IfnotPresent |
-| elk.elasticsearch.esreplicas | Number of Elastic search Instances will be created | 3 |
-| elk.elasticsearch.minimumMasterNodes | The value for discovery.zen.minimum_master_nodes. Should be set to (esreplicas / 2) + 1. | 2 |
-| elk.elasticsearch.esJAVAOpts | Java options for Elasticsearch. This is where you should configure the jvm heap size | -Xms512m -Xmx512m |
-| elk.elasticsearch.sysctlVmMaxMapCount | Sets the sysctl vm.max_map_count needed for Elasticsearch | 262144 |
-| elk.elasticsearch.resources.requests.cpu | cpu resources requested for the elastic search | 100m |
-| elk.elasticsearch.resources.limits.cpu | total cpu limits that are configures for the elastic search | 1000m |
-| elk.elasticsearch.esService.type | Type of Service to be created for elastic search | ClusterIP |
-| elk.elasticsearch.esService.lbrtype | Type of load balancer Service to be created for elastic search | ClusterIP |
-| elk.kibana.enabled | If enabled it will create a kibana deployment | false |
-| elk.kibana.image.repository | Kibana Image Registry/Repository and name. Based on this Kibana instance will be created  | docker.elastic.co/kibana/kibana |
-| elk.kibana.image.tag | Kibana Image tag. Based on this, Image parameter would be configured. | 6.4.3 |
-| elk.kibana.image.pullPolicy | policy to pull the image | IfnotPresent |
-| elk.kibana.kibanaReplicas | Number of Kibana instances will be created | 1 |
-| elk.kibana.service.tye | Type of service to be created | NodePort |
-| elk.kibana.service.targetPort | Port on which the kibana will be accessed | 5601 |
-| elk.kibana.service.nodePort | nodePort is the port on which kibana service will be accessed from outside | 31119 |
-| elk.logstash.enabled | If enabled it will create a logstash deployment | false |
-| elk.logstash.image.repository | logstash Image Registry/Repository and name. Based on this logstash instance will be created  | logstash |
-| elk.logstash.image.tag | logstash Image tag. Based on this, Image parameter would be configured. | 6.6.0 |
-| elk.logstash.image.pullPolicy | policy to pull the image | IfnotPresent |
-| elk.logstash.containerPort | Port on which the logstash container will be running  | 5044 |
-| elk.logstash.service.tye | Type of service to be created | NodePort |
-| elk.logstash.service.targetPort | Port on which the logstash will be accessed | 9600 |
-| elk.logstash.service.nodePort | nodePort is the port on which logstash service will be accessed from outside | 32222 |
-| elk.logstash.logstashConfigMap | Provide the configmap name which is already created with the logstash conf. if empty default logstash configmap will be created and used | |
-| elk.elkPorts.rest | Port for REST | 9200 |
-| elk.elkPorts.internode | port used for communication between the nodes | 9300 |
-| elk.busybox.image | busy box image name. Used for initcontianers | busybox |
-| elk.elkVolume.enabled | If enabled, it will use the persistent volume. if value is false, PV and pods would be using the default emptyDir mount volume. | true |
-| elk.elkVolume.pvname | pvname to use an already created Persistent Volume , If blank will use the default name | oudsm-< fullname >-espv |
-| elk.elkVolume.type | supported values: either filesystem or networkstorage or custom | filesystem |
-| elk.elkVolume.filesystem.hostPath.path | The path location mentioned should be created and accessible from the local host provided with necessary privileges for the user. | /scratch/shared/oud_elk/data |
-| elk.elkVolume.networkstorage.nfs.path | Path of NFS Share location  | /scratch/shared/oudsm_elk/data |
-| elk.elkVolume.networkstorage.nfs.server | IP or hostname of NFS Server  | 0.0.0.0 |
-| elk.elkVolume.custom.* | Based on values/data, YAML content would be included in PersistenceVolume Object |  |
-| elk.elkVolume.accessMode | Specifies the access mode of the location provided | ReadWriteMany |
-| elk.elkVolume.size  | Specifies the size of the storage | 20Gi |
-| elk.elkVolume.storageClass | Specifies the storageclass of the persistence volume. | elk |
-| elk.elkVolume.annotations | specifies any annotations that will be used| { } |
+| oudsm.livenessProbeInitialDelay | Paramter to decide livenessProbe initialDelaySeconds | 1200 |
+| elk.logStashImage | The version of logstash you want to install |	logstash:8.3.1 |
+| elk.sslenabled | If SSL is enabled for ELK set the value to true, or if NON-SSL set to false. This value must be lowercase | TRUE |
+| elk.eshosts |	The URL for sending logs to Elasticsearch. HTTP if NON-SSL is used | https://elasticsearch.example.com:9200 |
+| elk.esuser | The name of the user for logstash to access Elasticsearch | logstash_internal |
+| elk.espassword | The password for ELK_USER | password |
+| elk.esapikey | The API key details | apikey |
+| elk.esindex |	The log name  | oudsmlogs-00001 |
+| elk.imagePullSecrets | secret to be used for pulling logstash image |	dockercred |

@@ -1,0 +1,63 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to deploy a cron job to replicate the primary OIRI PV to the DR OIRI PV
+#
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oirirsyncdr
+  namespace: <DRNS>
+spec:
+  schedule: "*/<DR_OIRI_MINS> * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: alpine-rsync
+            image: <RSYNC_IMAGE>:<RSYNC_VER>
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: dr-cm
+            volumeMounts:
+              - mountPath: "/u01/primary_oiripv"
+                name: oiripv
+              - mountPath: "/u01/dr_oiripv"
+                name: oiripv-dr
+              - mountPath: "/u01/primary_dingpv"
+                name: dingpv
+              - mountPath: "/u01/primary_workpv"
+                name: workpv
+              - mountPath: "/u01/dr_dingpv"
+                name: dingpv-dr
+              - mountPath: "/u01/dr_workpv"
+                name: workpv-dr
+            command:
+            - /bin/sh
+            - -c
+            - /u01/primary_oiripv/dr_scripts/oiri_dr.sh
+          restartPolicy: Never
+          volumes:
+          - name: oiripv
+            persistentVolumeClaim:
+              claimName: primary-oiripv-pvc
+          - name: oiripv-dr
+            persistentVolumeClaim:
+              claimName: standby-oiripv-pvc
+          - name: dingpv
+            persistentVolumeClaim:
+              claimName: primary-dingpv-pvc
+          - name: dingpv-dr
+            persistentVolumeClaim:
+              claimName: standby-dingpv-pvc
+          - name: workpv
+            persistentVolumeClaim:
+              claimName: primary-workpv-pvc
+          - name: workpv-dr
+            persistentVolumeClaim:
+              claimName: standby-workpv-pvc

@@ -1,0 +1,77 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a helm override file to deploy OUD
+# It will also seed users and groups and create ACIs for integration with other Oracle Identity Products.
+#
+# Dependencies: ./templates/oud/base.ldif
+#               ./templates/oud/99-user.ldif
+#
+# Usage: Used and Input to Helm command
+#
+
+image:
+  repository: <REPOSITORY>
+  tag: <IMAGE_VER>
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
+
+oudConfig:
+  baseDN: <LDAP_SEARCHBASE>
+  rootUserDN: <LDAP_ADMIN_USER>
+  rootUserPassword: <LDAP_ADMIN_PWD>
+  sleepBeforeConfig: 300
+
+persistence:
+  type: networkstorage
+  networkstorage:
+    nfs:
+      server: <PVSERVER>
+      path: <OUD_SHARE>
+  size: 30Gi
+
+configVolume:
+  enabled: true
+  type: networkstorage
+  networkstorage:
+    nfs:
+      server: <PVSERVER>
+      path: <OUD_CONFIG_SHARE>
+  mountPath: /u01/oracle/config-input
+
+replicaCount: <OUD_REPLICAS>
+
+ingress:
+  enabled: false
+  type: nginx
+  tlsEnabled: false
+
+elk:
+  enabled: false
+  imagePullSecrets:
+    - name: dockercred
+
+
+
+cronJob:
+  kubectlImage:
+    repository: bitnami/kubectl
+    tag: <KUBERNETES_VER>
+    pullPolicy: IfNotPresent
+
+    imagePullSecrets:
+    - name: dockercred
+
+baseOUD:
+  envVars:
+    - name: schemaConfigFile_1
+      value: /u01/oracle/config-input/99-user.ldif
+    - name: restartAfterSchemaConfig
+      value: "true"
+
+replOUD:
+  envVars:
+    - name: dsconfig_1
+      value: set-global-configuration-prop --set lookthrough-limit:75000

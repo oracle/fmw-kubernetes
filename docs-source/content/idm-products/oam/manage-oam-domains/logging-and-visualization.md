@@ -453,7 +453,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            - containerPort: 5044
              name: logstash
            volumeMounts:
-           - mountPath: /u01/oracle/user_projects
+           - mountPath: /u01/oracle/user_projects/domains
              name: weblogic-domain-storage-volume
            - name: shared-logs
              mountPath: /shared-logs
@@ -490,7 +490,8 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            persistentVolumeClaim:
              claimName: accessdomain-domain-pvc
          - name: shared-logs
-           emptyDir: {}   ```   
+           emptyDir: {}
+   ```   
 
 1. Deploy the `logstash` pod by executing the following command:
    

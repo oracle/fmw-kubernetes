@@ -18,6 +18,8 @@ For more detailed information refer to [Domain Life Cycle](https://oracle.github
 {{% notice note %}}
 Do not use the WebLogic Server Administration Console or Oracle Enterprise Manager Console to start or stop servers.
 {{% /notice %}}
+
+**Note**: The instructions below are for starting, stopping, or scaling servers manually. If you wish to use autoscaling, see [Kubernetes Horizontal Pod Autoscaler](../hpa). Please note, if you have enabled autoscaling, it is recommended to delete the autoscaler before running the commands below. 
  
 ### View existing OIG Servers
 
@@ -76,9 +78,8 @@ The number of OIG Managed Servers running is dependent on the `replicas` paramet
      serverPod:
        env:
        - name: USER_MEM_ARGS
-         value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
-     serverService:
-       precreateService: true
+         value: -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m
+   ...
    ```
    
 1. To start more OIG Managed Servers, increase the `replicas` value as desired. In the example below, one more Managed Server will be started by setting `replicas` to "2":
@@ -90,9 +91,8 @@ The number of OIG Managed Servers running is dependent on the `replicas` paramet
      serverPod:
        env:
        - name: USER_MEM_ARGS
-         value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
-     serverService:
-       precreateService: true
+         value: -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m
+   ...
    ```
    
 1. Save the file and exit (:wq)
@@ -174,9 +174,8 @@ As mentioned in the previous section, the number of OIG Managed Servers running 
      serverPod:
        env:
        - name: USER_MEM_ARGS
-         value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
-     serverService:
-       precreateService: true
+         value: -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m
+   ...
    ```
    
 1. To stop OIG Managed Servers, decrease the `replicas` value as desired. In the example below, we will stop one Managed Server by setting replicas to "1":
@@ -188,10 +187,8 @@ As mentioned in the previous section, the number of OIG Managed Servers running 
      serverPod:
        env:
        - name: USER_MEM_ARGS
-         value: -Djava.security.egd=file:/dev/./urandom -Xms2408m -Xmx8192m
-     serverService:
-       precreateService: true
-
+         value: -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m
+   ... 
    ```
    
 1. Save the file and exit (:wq)

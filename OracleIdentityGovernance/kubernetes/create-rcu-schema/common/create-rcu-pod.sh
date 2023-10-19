@@ -17,11 +17,11 @@ usage() {
   echo "       Must contain SYSDBA username at key 'sys_username',"
   echo "       SYSDBA password at key 'sys_password',"
   echo "       and RCU schema owner password at key 'password'."
-  echo "  -p FMW Infrastructure ImagePullSecret (optional) "
+  echo "  -p OracleIdentityGovernance ImagePullSecret (optional) "
   echo "      (default: none) "
-  echo "  -i FMW Infrastructure Image (optional) "
-  echo "      (default: container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4) "
-  echo "  -u FMW Infrastructure ImagePullPolicy (optional) "
+  echo "  -i OracleIdentityGovernance Image (optional) "
+  echo "      (default: oracle/oig:12.2.1.4.0) "
+  echo "  -u OracleIdentityGovernance ImagePullPolicy (optional) "
   echo "      (default: IfNotPresent) "
   echo "  -o Output directory for the generated YAML file. (optional)"
   echo "      (default: rcuoutput)"
@@ -34,7 +34,7 @@ usage() {
 
 namespace="default"
 credSecret="oracle-rcu-secret"
-fmwimage="container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4"
+fmwimage="oracle/oig:12.2.1.4.0"
 imagePullPolicy="IfNotPresent"
 rcuOutputDir="rcuoutput"
 
@@ -101,3 +101,4 @@ ${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- bash -c 'cat > /u01/orac
 ${KUBERNETES_CLI:-kubectl} get po/rcu -n $namespace
 
 echo "[INFO] Pod 'rcu' is running in namespace '$namespace'"
+

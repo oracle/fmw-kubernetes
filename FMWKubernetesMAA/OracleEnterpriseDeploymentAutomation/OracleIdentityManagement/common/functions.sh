@@ -161,6 +161,18 @@ check_oper_exists()
    fi
 }
 
+check_oper_running()
+{
+   print_msg "Check Operator is Running"
+   kubectl get pods -ALL | grep operator | head -1 > /dev/null 2>&1
+   if [ $? = 0 ]
+   then
+       echo "Success"
+   else
+       echo "Failed Start WebLogic Kubernetes Operator before continuing."
+       exit 1
+   fi
+}
 # Helm Functions
 #
 install_operator()
@@ -526,6 +538,27 @@ copy_samples()
    
 }
 
+# Download MAA Samples to Directory
+#
+download_maa_samples()
+{
+    ST=$(date +%s)
+    print_msg "Downloading Oracle MAA Samples "
+    cd $LOCAL_WORKDIR
+
+    if [ -d maa ]
+    then
+        echo "Already Exists - Skipping"
+    else
+        git clone -q $MAA_SAMPLES_REP > $LOCAL_WORKDIR/maa_sample_download.log 2>&1
+        print_status $? $LOCAL_WORKDIR/maa_sample_download.log
+        chmod 700 $LOCAL_WORKDIR/maa/kubernetes-maa/*.sh >> $LOCAL_WORKDIR/maa_sample_download.log 2>&1
+    fi
+    ET=$(date +%s)
+
+    print_time STEP "Download MAA Samples" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Create helper pod
 #
 create_helper_pod ()
@@ -634,6 +667,8 @@ scale_cluster()
         echo Error
         ;;
    esac
+
+   sleep 60
 
    if [ $REPLICAS = $CURRENT ]
    then
@@ -1095,7 +1130,7 @@ check_running()
 
     X=0
     RETRIES=1
-    MAX_RETRIES=50
+    MAX_RETRIES=30
     POD_RUNNING=false
     while [ $X  -lt $MAX_RETRIES ]
     do
@@ -1288,7 +1323,7 @@ print_msg()
    msg=$1
    if [ "$STEPNO" = "" ]
    then
-       printf "$msg"
+       printf "$msg - "
    else
        printf "Executing Step $STEPNO:\t$msg - " 
    fi
@@ -1827,4 +1862,461 @@ check_ldapsearch()
    which ldapsearch > /dev/null 2>&1
    return $?
 
+}
+
+# Suspend DR cronjob
+#
+suspend_cronjob()
+{
+   NAMESPACE=$1
+   JOBNAME=$2
+
+   ST=$(date +%s)
+   print_msg "Suspending DR Cron Job"
+   kubectl patch cronjobs $JOBNAME -p '{"spec" : {"suspend" : true }}' -n $NAMESPACE > $LOGDIR/suspend_cron.log 2>&1
+
+   print_status $? $LOGDIR/suspend_cron.log
+
+   ET=$(date +%s)
+   print_time STEP "Suspend Cron Job" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Restart DR Cronjob
+#
+resume_cronjob()
+{
+   NAMESPACE=$1
+   JOBNAME=$2
+
+   ST=$(date +%s)
+   print_msg "Resuming DR Cron Job"
+   kubectl patch cronjobs $JOBNAME -p '{"spec" : {"suspend" : false }}' -n $NAMESPACE > $LOGDIR/resume_cron.log 2>&1
+
+   print_status $? resume_cron.log
+
+   ET=$(date +%s)
+}
+
+# If creating a backup job create persistent volumes pointing to the file systems on both the primary and standby sites.
+#
+create_dr_pvs()
+{
+   PRODUCT=$1
+
+   PRIMARY_SHARE_VAR=${PRODUCT}_PRIMARY_SHARE
+   STANDBY_SHARE_VAR=${PRODUCT}_STANDBY_SHARE
+   ST=$(date +%s)
+
+
+   print_msg "Creating DR Persistent Volume Files"
+   cp $TEMPLATE_DIR/dr_pv.yaml $WORKDIR/dr_primary_pv.yaml
+   cp $TEMPLATE_DIR/dr_pv.yaml $WORKDIR/dr_dr_pv.yaml
+   if [ "$DR_TYPE" = "PRIMARY" ]
+   then
+      update_variable "<PVSERVER>" $DR_PRIMARY_PVSERVER $WORKDIR/dr_primary_pv.yaml
+      update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_dr_pv.yaml
+      if [ ! "$PRODUCT" = "OAA" ]
+      then
+        update_variable "<${PRODUCT}_SHARE_PATH>" ${!PRIMARY_SHARE_VAR} $WORKDIR/dr_primary_pv.yaml
+        update_variable "<${PRODUCT}_SHARE_PATH>" ${!STANDBY_SHARE_VAR} $WORKDIR/dr_dr_pv.yaml
+      else
+        update_variable "<CONFIG_SHARE_PATH>" $OAA_PRIMARY_CONFIG_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<CONFIG_SHARE_PATH>" $OAA_STANDBY_CONFIG_SHARE $WORKDIR/dr_dr_pv.yaml
+        update_variable "<VAULT_SHARE_PATH>" $OAA_PRIMARY_VAULT_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<VAULT_SHARE_PATH>" $OAA_STANDBY_VAULT_SHARE $WORKDIR/dr_dr_pv.yaml
+        update_variable "<CRED_SHARE_PATH>" $OAA_PRIMARY_CRED_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<CRED_SHARE_PATH>" $OAA_STANDBY_CRED_SHARE $WORKDIR/dr_dr_pv.yaml
+        update_variable "<LOG_SHARE_PATH>" $OAA_PRIMARY_LOG_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<LOG_SHARE_PATH>" $OAA_STANDBY_LOG_SHARE $WORKDIR/dr_dr_pv.yaml
+      fi
+
+      if [ "$PRODUCT" = "OIRI" ]
+      then
+        update_variable "<DING_SHARE_PATH>" ${OIRI_DING_PRIMARY_SHARE} $WORKDIR/dr_primary_pv.yaml
+        update_variable "<WORK_SHARE_PATH>" ${OIRI_WORK_PRIMARY_SHARE} $WORKDIR/dr_primary_pv.yaml
+        update_variable "<DING_SHARE_PATH>" ${OIRI_DING_STANDBY_SHARE} $WORKDIR/dr_dr_pv.yaml
+        update_variable "<WORK_SHARE_PATH>" ${OIRI_WORK_STANDBY_SHARE} $WORKDIR/dr_dr_pv.yaml
+        update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_dr_pv.yaml
+      fi
+   else
+      update_variable "<PVSERVER>" $DR_PRIMARY_PVSERVER $WORKDIR/dr_dr_pv.yaml
+      update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_primary_pv.yaml
+
+      if [ ! "$PRODUCT" = "OAA" ]
+      then
+        update_variable "<${PRODUCT}_SHARE_PATH>" ${!STANDBY_SHARE_VAR} $WORKDIR/dr_primary_pv.yaml
+        update_variable "<${PRODUCT}_SHARE_PATH>" ${!PRIMARY_SHARE_VAR} $WORKDIR/dr_dr_pv.yaml
+      else
+        update_variable "<CONFIG_SHARE_PATH>" $OAA_STANDBY_CONFIG_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<CONFIG_SHARE_PATH>" $OAA_PRIMARY_CONFIG_SHARE $WORKDIR/dr_dr_pv.yaml
+        update_variable "<VAULT_SHARE_PATH>" $OAA_STANDBY_VAULT_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<VAULT_SHARE_PATH>" $OAA_PRIMARY_VAULT_SHARE $WORKDIR/dr_dr_pv.yaml
+        update_variable "<CRED_SHARE_PATH>" $OAA_STANDBY_CRED_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<CRED_SHARE_PATH>" $OAA_PRIMARY_CRED_SHARE $WORKDIR/dr_dr_pv.yaml
+        update_variable "<LOG_SHARE_PATH>" $OAA_STANDBY_LOG_SHARE $WORKDIR/dr_primary_pv.yaml
+        update_variable "<LOG_SHARE_PATH>" $OAA_PRIMARY_LOG_SHARE $WORKDIR/dr_dr_pv.yaml
+      fi
+      if [ "$PRODUCT" = "OIRI" ]
+      then
+        update_variable "<DING_SHARE_PATH>" ${OIRI_DING_STANDBY_SHARE} $WORKDIR/dr_primary_pv.yaml
+        update_variable "<WORK_SHARE_PATH>" ${OIRI_WORK_STANDBY_SHARE} $WORKDIR/dr_primary_pv.yaml
+        update_variable "<DING_SHARE_PATH>" ${OIRI_DING_PRIMARY_SHARE} $WORKDIR/dr_dr_pv.yaml
+        update_variable "<WORK_SHARE_PATH>" ${OIRI_WORK_PRIMARY_SHARE} $WORKDIR/dr_dr_pv.yaml
+      fi
+   fi
+   update_variable "<ROLE>" primary $WORKDIR/dr_primary_pv.yaml
+   update_variable "<ROLE>" standby $WORKDIR/dr_dr_pv.yaml
+
+   print_status $?
+
+   printf "\t\t\tCreating DR Primary PV - "
+   kubectl create -f $WORKDIR/dr_primary_pv.yaml > $LOGDIR/create_pv.log 2>&1
+   print_status $? $LOGDIR/create_pv.log
+   printf "\t\t\tCreating DR Standby PV - "
+   kubectl create -f $WORKDIR/dr_dr_pv.yaml >> $LOGDIR/create_pv.log 2>&1
+   print_status $? $LOGDIR/create_pv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volumes" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create persistent volumes used by DR Cron job.
+#
+create_dr_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume"
+
+   kubectl create -f $WORKDIR/dr_dr_pv.yaml > $LOGDIR/create_dr_pv.log 2>&1
+   print_status $? $LOGDIR/create_dr_pv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create persistent volume claims used by DR Cron job.
+#
+create_dr_pvcs()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume Claim Files"
+   cp $TEMPLATE_DIR/dr_pvc.yaml $WORKDIR/dr_primary_pvc.yaml
+   cp $TEMPLATE_DIR/dr_pvc.yaml $WORKDIR/dr_dr_pvc.yaml
+
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_primary_pvc.yaml
+   update_variable "<ROLE>" primary $WORKDIR/dr_primary_pvc.yaml
+
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_dr_pvc.yaml
+   update_variable "<ROLE>" standby $WORKDIR/dr_dr_pvc.yaml
+
+   print_status $?
+ 
+   printf "\t\t\tCreating Primary Persistent Volume Claim - "
+   kubectl create -f $WORKDIR/dr_primary_pvc.yaml > $LOGDIR/create_pvc.log 2>&1
+   print_status $? $LOGDIR/create_pvc.log
+
+   printf "\t\t\tCreating Standby Persistent Volume Claim - "
+   kubectl create -f $WORKDIR/dr_dr_pvc.yaml >> $LOGDIR/create_pvc.log 2>&1
+   print_status $? $LOGDIR/create_pvc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume Claim Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_dr_pvc()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume Claim"
+   kubectl create -f $WORKDIR/dr_dr_pvc.yaml > $LOGDIR/create_dr_pvc.log 2>&1
+   print_status $? $LOGDIR/create_dr_pvc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume Claim " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create a DR Config Map to control how DR Cronjobs work.
+#
+create_dr_configmap()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Config Map"
+   cp $TEMPLATE_DIR/../general/dr_cm.yaml $WORKDIR/dr_cm.yaml
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_cm.yaml
+   update_variable "<ENV_TYPE>" $ENV_TYPE $WORKDIR/dr_cm.yaml
+   update_variable "<DR_TYPE>" $DR_TYPE $WORKDIR/dr_cm.yaml
+   update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/dr_cm.yaml
+   update_variable "<OAM_DOMAIN_NAME>" $OAM_DOMAIN_NAME $WORKDIR/dr_cm.yaml
+
+   if [ "$DR_TYPE" = "PRIMARY" ]
+   then
+        update_variable "<OAM_LOCAL_SCAN>" $OAM_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAM_REMOTE_SCAN>" $OAM_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_LOCAL_SCAN>" $OIG_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_REMOTE_SCAN>" $OIG_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_SCAN>" $OIRI_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_SCAN>" $OIRI_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_LOCAL_SCAN>" $OAA_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_REMOTE_SCAN>" $OAA_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAM_LOCAL_SERVICE>" $OAM_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OAM_REMOTE_SERVICE>" $OAM_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_LOCAL_SERVICE>" $OIG_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_REMOTE_SERVICE>" $OIG_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_SERVICE>" $OIRI_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_SERVICE>" $OIRI_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_K8CONFIG>" $OIRI_PRIMARY_K8CONFIG $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8CONFIG>" $OIRI_STANDBY_K8CONFIG $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_K8CA>" $OIRI_PRIMARY_K8CA $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8CA>" $OIRI_STANDBY_K8CA $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8>" $OIRI_STANDBY_K8 $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_K8>" $OIRI_PRIMARY_K8 $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8>" $OIRI_STANDBY_K8 $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_LOCAL_SERVICE>" $OAA_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_REMOTE_SERVICE>" $OAA_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+   else
+        update_variable "<OAM_LOCAL_SCAN>" $OAM_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAM_REMOTE_SCAN>" $OAM_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_LOCAL_SCAN>" $OIG_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_REMOTE_SCAN>" $OIG_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_LOCAL_SCAN>" $OAA_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_REMOTE_SCAN>" $OAA_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OAM_LOCAL_SERVICE>" $OAM_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OAM_REMOTE_SERVICE>" $OAM_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_LOCAL_SERVICE>" $OIG_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIG_REMOTE_SERVICE>" $OIG_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_SERVICE>" $OIRI_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_SERVICE>" $OIRI_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_SCAN>" $OIRI_STANDBY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_SCAN>" $OIRI_PRIMARY_DB_SCAN $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_K8CONFIG>" $OIRI_STANDBY_K8CONFIG $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8CONFIG>" $OIRI_PRIMARY_K8CONFIG $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_K8CA>" $OIRI_STANDBY_K8CA $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8CA>" $OIRI_PRIMARY_K8CA $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_REMOTE_K8>" $OIRI_PRIMARY_K8 $WORKDIR/dr_cm.yaml
+        update_variable "<OIRI_LOCAL_K8>" $OIRI_STANDBY_K8 $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_LOCAL_SERVICE>" $OAA_STANDBY_DB_SERVICE $WORKDIR/dr_cm.yaml
+        update_variable "<OAA_REMOTE_SERVICE>" $OAA_PRIMARY_DB_SERVICE $WORKDIR/dr_cm.yaml
+   fi
+
+   kubectl apply -f $WORKDIR/dr_cm.yaml > $LOGDIR/dr_cm.log 2>&1
+   if [ $? = 0 ]
+   then
+     echo "Success"
+   else
+       grep -q Exists $LOGDIR/dr_cm.log
+       if [ $? = 0 ]
+       then
+          echo "Already Exists"
+       else
+          echo "Failed - See $LOGDIR/dr_cm.log."
+          exit 1
+       fi
+   fi
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Config Map" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Copy the script that the DR CronJob uses to the product PV
+#
+copy_dr_script()
+{ 
+   ST=$(date +%s)
+   
+   PV_MOUNT_VAR=${PRODUCT}_LOCAL_SHARE
+
+   print_msg "Copy $PRODUCT DR Script to PV"
+   printf "\n\t\t\tChecking ${!PV_MOUNT_VAR} is mounted locally - "
+
+   LOCAL_SHARE=${!PV_MOUNT_VAR}
+   df $LOCAL_SHARE > /dev/null 2>&1
+   print_status $?
+
+   printf "\t\t\tCreating DR Script Directory - "
+   if [ -e $LOCAL_SHARE/dr_scripts ]
+   then
+     echo " Already Exists"
+   else
+     mkdir $LOCAL_SHARE/dr_scripts > $LOGDIR/copy_drscripts.log 2>&1
+     print_status $? $LOGDIR/copy_drscripts.log
+   fi
+
+   printf "\t\t\tCopy DR Script to Container - "
+   cp $TEMPLATE_DIR/${product_type}_dr.sh $LOCAL_SHARE/dr_scripts
+   print_status $? $LOGDIR/copy_drscripts.log
+
+   printf "\t\t\tSet execute permission - "
+   chmod 700 $LOCAL_SHARE/dr_scripts/${product_type}_dr.sh
+   print_status $? $LOGDIR/copy_drscripts.log
+
+   ET=$(date +%s)
+   print_time STEP "Copy DR Script" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create a cronjob to Rsync PVs to the standby site, and update DB connections 
+#
+create_dr_cronjob()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Cron Job"
+   kubectl create -f $WORKDIR/dr_cron.yaml  > $LOGDIR/create_dr_cron.log 2>&1
+
+   print_status $? $LOGDIR/create_dr_cron.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Cron Job" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create a one-of job to initialise the PVs, based on the cronjob
+#
+initialise_dr()
+{
+   ST=$(date +%s)
+   print_msg "Creating Job to Initialise $PRODUCT DR "
+   kubectl create job --from=cronjob.batch/${product_type}rsyncdr ${product_type}-initialise-$ST -n $DRNS > $LOGDIR/initialise_dr-$ST.log 2>&1
+   print_status $? $LOGDIR/initialise_dr-$ST.log
+   printf "\t\t\tJob - ${product_type}-initialise-$ST Created in namespace $DRNS - "
+   sleep 10
+   PODNAME=`kubectl get pod -n $DRNS | grep ${product_type}-initialise-$ST | tail -1 | awk '{ print $1 }'`
+   if [ "$PODNAME" = "" ]
+   then
+     echo "Failed to create job."
+     exit 1
+   else
+     echo "Success"
+   fi
+   printf "\n\n\t\t\tMonitor job using the command:  kubectl logs -n $DRNS $PODNAME\n\n"
+
+   ET=$(date +%s)
+}
+
+# Switch a sites Role from Primary to Standby and visa versa.
+#
+switch_dr_mode()
+{
+   current_mode=$(kubectl get cm -n $DRNS dr-cm -o yaml | grep DR_TYPE | cut -f2 -d: | tr -d ' ')
+
+   if [ "$current_mode" = "PRIMARY" ]
+   then
+      new_mode="STANDBY"
+   else
+      new_mode="PRIMARY"
+   fi
+   
+   echo -n "You are requesting to switch this sites DR mode from $current_mode to $new_mode.  Is this correct (y/n) ?"
+   read ANS
+
+   if [ "$ANS" = "y" ]
+   then
+      CMD="kubectl patch configmap -n $DRNS dr-cm -p '{\"data\":{\"DR_TYPE\":\"$new_mode\"}}'"
+      eval $CMD
+      if [ $? -eq 0 ]
+      then
+         echo "Mode changed successfully."
+      else
+         echo "Unable to change the mode."
+      fi
+   fi
+}
+
+# Stop all deployments running in a namespace.
+#
+stop_deployment()
+{
+   DEPLOYNS=$1
+   ST=$(date +%s)
+   print_msg "Stop Deployments in namespace $DEPLOYNS"
+   deployments=$(kubectl get deployment -n $DEPLOYNS | grep -v NAME | awk '{print $1}')
+   for deployment in $deployments
+   do
+      echo Stopping Deployment : $deployment
+       kubectl patch deployment -p '{"spec" : {"replicas" : 0 }}' -n $DEPLOYNS $deployment
+   done
+   ET=$(date +%s)
+   print_time STEP "Stop Deployments in $DEPLOYNS" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Start all deployments in a namespace
+#
+start_deployment()
+{
+   DEPLOYNS=$1
+   REPLICAS=$2
+   ST=$(date +%s)
+   print_msg "Start Deployments in namespace $DEPLOYNS"
+   deployments=$(kubectl get deployment -n $DEPLOYNS | grep -v NAME | awk '{print $1}')
+   for deployment in $deployments
+   do
+      echo Starting Deployment : $deployment
+      kubectl patch deployment -p "{\"spec\" : {\"replicas\" : $REPLICAS }}" -n $DEPLOYNS $deployment
+   done
+   ET=$(date +%s)
+   print_time STEP "Start Deployments in $DEPLOYNS" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Backup the Priamry OHS config.
+#
+get_ohs_config()
+{
+   OHS_SERVERS=$1
+
+   ST=$(date +%s)
+   print_msg "Copying OHS configuration Files to $LOCAL_WORKDIR/OHS"
+
+   $SCP  $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/*vh.conf $WORKDIR > $LOGDIR/copy_ohs.log 2>&1
+   print_status $? $LOGDIR/copy_ohs.log
+
+   ET=$(date +%s)
+   print_time STEP "Copy OHS Configuration " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create a tar file of the OHS config
+#
+tar_ohs_config()
+{
+
+   ST=$(date +%s)
+   print_msg "Tarring OHS configuration Files "
+
+   cd $WORKDIR
+   tar cvfz ohs_config.tar.gz *vh.conf > $LOGDIR/ohs_tar.log 2>&1
+   print_status $? $LOGDIR/ohs_tar.log
+
+   ET=$(date +%s)
+   print_time STEP "Tarring OHS Configuration " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Untar the OHS config on the DR site.
+#
+untar_ohs_config()
+{
+
+   ST=$(date +%s)
+   print_msg "Untarring OHS configuration Files "
+
+   cd $WORKDIR
+   tar xvfz $WORKDIR/ohs_config.tar.gz *vh.conf > $LOGDIR/ohs_tar.log 2>&1
+   print_status $? $LOGDIR/ohs_tar.log
+
+   ET=$(date +%s)
+   print_time STEP "Untarring OHS Configuration " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Copy files to the DR Host
+#
+copy_files_to_dr()
+{
+
+   FILE=$1
+   ST=$(date +%s)
+   print_msg "Copying $FILE to DR System"
+
+   DIR=$(dirname $FILE)
+   printf "\n\t\t\tCreate Directory $DIR on $DR_HOST - "
+   $SSH -o ConnectTimeout=4 $DR_USER@$DR_HOST "mkdir -p $DIR" > $LOGDIR/copy_file_to_dr.log 2>&1
+   print_status $? $LOGDIR/copy_file_to_dr.log
+   printf "\t\t\tCopying file $FILE to $DR_HOST - "
+   $SCP $FILE $DR_USER@$DR_HOST:$FILE >> $LOGDIR/copy_file_to_dr.log 2>&1
+   print_status $? $LOGDIR/copy_file_to_dr.log
+   ET=$(date +%s)
+   print_time STEP "Copying OHS Configuration to $DR_HOST" $ST $ET >> $LOGDIR/timings.log
 }

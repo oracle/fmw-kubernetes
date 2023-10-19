@@ -1,0 +1,53 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to setup a Persistent Volume for OIRI DR
+#
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-oiri-pv
+  labels:
+    type: <ROLE>-oiri-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <OIRI_SHARE_PATH>
+    server: <PVSERVER>
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-ding-pv
+  labels:
+    type: <ROLE>-ding-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <DING_SHARE_PATH>
+    server: <PVSERVER>
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <ROLE>-work-pv
+  labels:
+    type: <ROLE>-work-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: <WORK_SHARE_PATH>
+    server: <PVSERVER>

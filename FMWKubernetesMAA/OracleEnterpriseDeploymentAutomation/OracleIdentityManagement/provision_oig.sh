@@ -84,11 +84,15 @@ echo
 
 create_local_workdir
 create_logdir
+printf "Using Image:"
+printf "\n\t$OIG_IMAGE:$OIG_VER\n\n"
 
 echo -n "Provisioning OIG on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
 echo "-----------------------------------------------" >> $LOGDIR/timings.log
-
+echo >> $LOGDIR/timings.log
+printf "Using Image:">> $LOGDIR/timings.log
+printf "\n\t$OIG_IMAGE:$OIG_VER">> $LOGDIR/timings.log
 STEPNO=1
 PROGRESS=$(get_progress)
 
@@ -229,6 +233,15 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
     update_java_parameters
+    update_progress
+fi
+
+# Increase Timeouts
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    increase_to
     update_progress
 fi
 

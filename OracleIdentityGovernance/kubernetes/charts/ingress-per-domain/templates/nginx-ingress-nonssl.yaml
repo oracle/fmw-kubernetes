@@ -86,6 +86,13 @@ spec:
             name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
             port:
               number: {{ .Values.wlsDomain.oimManagedServerPort }}
+      - path: /dms
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
       - path: /oim
         pathType: ImplementationSpecific
         backend:

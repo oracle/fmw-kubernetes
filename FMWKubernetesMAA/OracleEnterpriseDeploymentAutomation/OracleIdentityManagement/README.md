@@ -6,9 +6,13 @@ You must ensure that you are using the April 2023 or later release of Identity a
 
 The scripts can be run from any host which has access to your Kubernetes cluster. 
 
-If you wish the scripts to automatically copy files to your Oracle HTTP Servers then you must have passwordless ssh set up from the deployment host to each of your webhosts.
+If you wish the scripts to automatically copy files to your Oracle HTTP Servers then you must have passwordless ssh set up from the deployment host to each of your web hosts.
 
 These scripts are provided as examples and can be customized as desired.
+
+Scripts have also been provided to enable Disaster Recovery, instructions for their use can be found in [README_DR.md](README_DR.md)
+
+Scripts have also been provided to provision and OCI Kubernetes environment prior to running these automation scripts, instructions for their use can be found in [README.md](oke_utils/README.md)
 
 ## Obtaining the Scripts
 
@@ -39,7 +43,7 @@ This section lists the actions that the scripts perform as part of the deploymen
 
 ### What the Scripts Will do
 
-The scripts will deploy Oracle Unified Directory (OUD), Oracle Access Manager (OAM), and Oracle Identity Governance (OIG). They will integrate each of the products. You can choose to integrate one or more products.
+The scripts will deploy Oracle Unified Directory (OUD), Oracle Access Manager (OAM), and Oracle Identity Governance (OIG), Oracle Identity Role Intelligence (OIRI) and Oracle Advanced Authentication (OAA). They will integrate each of the products. You can choose to integrate one or more products.
 
 The scripts perform the following actions:
 
@@ -115,7 +119,7 @@ While the scripts perform the majority of the deployment, they do not perform th
 * Configure Oracle HTTP Server to send log files and monitoring data to Elastic Search and Prometheus.
 * Configure Oracle Database Server to send log files and monitoring data to Elastic Search and Prometheus.
 * Send Oracle HTTP Monitoring data to Prometheus.
-* Send Oracle Database Monitioring data to Prometheus.
+* Send Oracle Database Monitoring data to Prometheus.
 
 ## Key Concepts of the Scripts
 
@@ -124,7 +128,7 @@ To make things simple and easy to manage the scripts are based around two concep
 * A response file with details of your environment.
 * Template files you can easily modify or add to as required.
 
-> Note: Provisioning scripts are re-enterant, if something fails it can be restarted at the point at which it failed.
+> Note: Provisioning scripts are reentrant, if something fails it can be restarted at the point at which it failed.
 
 
 ## Getting Started
@@ -133,11 +137,11 @@ If you are provisioning Oracle Identity Governance, you must also download the O
 
 If you are provisioning the Oracle HTTP Server, you must download the Oracle HTTP installer and place it in the location `$SCRIPTDIR/templates/ohs/installer` the installer MUST be the ZIP file for example, fmw\_12.2.1.4.0\_ohs\_linux64\_Disk1\_1of1.zip.
 
-If you wish to Install the Oracle HTTP Server or copy files to it, you must setup passwordless SSH from the deployment host, during the provisioning.
+If you wish to Install the Oracle HTTP Server or copy files to it, you must setup password-less SSH from the deployment host, during the provisioning.
 
 ## Creating a Response File
 
-Sample response and password files are created for you in the `responsefile` directory. You can edit these files or create your own file in the same directory using these files as templates.  The files can be editied directly or by running the shell script `start_here.sh` in the script's home directory.
+Sample response and password files are created for you in the `responsefile` directory. You can edit these files or create your own file in the same directory using these files as templates.  The files can be edited directly or by running the shell script `start_here.sh` in the script's home directory.
 
 For example
 
@@ -147,7 +151,9 @@ For example
 
 You can run the above script as many times as you want on the same file. Pressing the Enter key on any response retains the existing value.
 
-Values are stored in the files `idm.rsp` and `.idmpwds` files unless the command is started with the -r and -p options in which case the files updated will be those specified..
+Values are stored in the files `idm.rsp` and `.idmpwds` files unless the command is started with the -r and -p options in which case the files updated will be those specified.
+
+> Note: The reference sections below detail all parameters.  Parameters associated with passwords are stored in a hidden file in the same directory.  This is an added security measure.
 
 > Note: 
 > * The file consists of key/value pairs. There should be no spaces between the name of the key and its value. For example:
@@ -222,7 +228,7 @@ You should also keep any override files that are generated.
 ## After Installation/Configuration
 As part of running the scripts, a number of working files are created in the `WORKDIR` directory prior to copying to the persistent volume in `/u01/user_projects/workdir`. Many of these files contain passwords required for the setup. You should archive these files after completing the deployment. 
 
-The responsfile uses a hidden file in the responsefile directory to store passwords.
+The responsefile uses a hidden file in the responsefile directory to store passwords.
 
 ## Oracle HTTP Server Configuration Files
 
@@ -263,17 +269,24 @@ These parameters are used to specify the type of Kubernetes deployment and the n
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
-|**USE\_REGISTRY** | `false` | Set to `true` to configure OAA.|
+|**USE\_REGISTRY** | `false` | Set to `true` to obtain images from a Container Registry.|
+| **USE\_INGESS** | `true` | Set to true if using and ingress controller|
 |**IMAGE\_TYPE** | `crio` | Set to `crio` or `docker` depending on your container engine.|
+
+
+### Generic Parameters
+These parameters are used to specify Generic properties.
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
 |**IMAGE\_DIR** | `/container/images` | The location where you have downloaded the container images. Used by the `load_images.sh` script.|
 | **LOCAL\_WORKDIR** | `/workdir` | The location where you want to create the working directory.|
 | **K8\_WORKDIR** | `/u01/oracle/user_projects/workdir` | The location inside the Kubernetes containers to which working files are copied.|
 | **K8\_WORKER\_HOST1** | `k8worker1.example.com` | The name of a Kubernetes worker node used in generating the OHS sample files.|
 | **K8\_WORKER\_HOST2** | `k8worker2.example.com` | The name of a Kubernetes worker node used in generating the OHS sample files.|
 
-
-### Registry Parameters
-These parameters are used to determine whether or not you are using a container registry. If you are, then it allows you to store the login credentials to the repository so that you are able to store the credentials as registry secrets in the individual product namespaces.
+### Container Registry Parameters
+These parameters are used to determine whether or not you are using a container registry. If you are, then it allows you to store the login credentials as registry secrets in the individual product namespaces.
 
 If you are pulling images from GitHub or Docker hub, then you can also specify the login parameters here so that you can create the appropriate Kubernetes secrets.
 
@@ -281,13 +294,14 @@ If you are pulling images from GitHub or Docker hub, then you can also specify t
 | --- | --- | --- |
 |**REGISTRY** | `iad.ocir.io/mytenancy` | Set to the location of your container registry.|
 |**REG\_USER** | `mytenancy/oracleidentitycloudservice/email@example.com` | Set to your registry user name.|
-|**REG\_PWD** | *`<password>`* | Set to your registry password.|
+|**REG\_PWD** | *`<password>`* | Set to your registry password. Stored in password file.|
 |**CREATE\_REGSECRET** | `false` | Set to `true` to create a registry secret for automatically pulling images.|
 |**CREATE\_GITSECRET** | `true` | Specify whether to create a secret for GitHub. This parameter ensures that you do not see errors relating to GitHub not allowing anonymous downloads.|
 |**GIT\_USER** | `gituser` | The GitHub user's name.|
-|**GIT\_TOKEN** | `ghp_aO8fqRNVdfsfshOxsWk40uNMS` | The GitHub token.|
+|**GIT\_TOKEN** | `ghp_aO8fqRNVdfsfshOxsWk40uNMS` | The GitHub token. Stored in password file|
 |**DH\_USER** | *`username`* | The Docker user name for `hub.docker.com`. Used for CronJob images.|
-|**DH\_PWD** | *`mypassword`* | The Docker password for `hub.docker.com`. Used for CronJob images.|
+|**DH\_PWD** | *`mypassword`* | The Docker password for `hub.docker.com`. Used for CronJob images. Stored in password file|
+
 
 
 ### Image Parameters
@@ -306,7 +320,7 @@ These can include registry prefixes if you use a registry. Use the `local/` pref
 |**OIRI\_IMAGE** | `$REGISTRY/oiri` | The OIRI image name.|
 |**OIRI\_UI\_IMAGE** | `$REGISTRY/oiri-ui` | The OIRI UI image name.|
 |**OIRI\_DING\_IMAGE** | `$REGISTRY/oiri-ding` | The OIRI DING image name.|
-|**OAA\_MGT\_IMAGE** | `$REGISTRY/oracle/shared/oaa-mgmt` | The OAA Management container image.|
+|**OAA\_MGT\_IMAGE** | `$REGISTRY/oracle/oaa-mgmt` | The OAA Management container image.|
 |**KUBECTL\_REPO** | `bitnami/kubectl` | The kubectl image used by OUD.|
 |**BUSYBOX\_REPO** | `docker.io/busybox` | The busybox image used by OUD.|
 |**OPER\_VER** | `4.0.4` | The version of the WebLogic Kubernetes Operator.|
@@ -322,8 +336,8 @@ These can include registry prefixes if you use a registry. Use the `local/` pref
 |**OAA\_VER** | `oaa_122140-20210721` | The OAA version.|
 
 
-### Generic Parameters
-These generic parameters apply to all deployments.
+### NFS Parameters
+These parameters specify the NFS filesystem locations.
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
@@ -331,18 +345,6 @@ These generic parameters apply to all deployments.
 |**IAM\_PVS** | `/export/IAMPVS` | The export path on the NFS where persistent volumes are located.|
 |**PV\_MOUNT** | `/u01/oracle/user_projects` | The path to mount the PV inside the Kubernetes container. Oracle recommends you to not change this value.|
 
-### Ingress Parameters
-These parameters determine how the Ingress controller is deployed.
-
-| **Parameter** | **Sample Value** | **Comments** |
-| --- | --- | --- |
-|**INGRESSNS** |`ingressns`| The Kubernetes namespace used to hold the Ingress objects.|
-|**INGRESS\_TYPE** |`nginx`| The type of Ingress controller you wan to deploy. At this time, the script supports only `nginx`.|
-|**INGRESS\_ENABLE\_TCP** |`true`| Set to `true` if you want the controller to forward LDAP requests.|
-|**INGRESS\_NAME** |`idmedg`| The name of the Ingress controller used to create an Nginx Class.|
-|**INGRESS\_SSL** |`false`| Set to `true` if you want to configure the Ingress controller for SSL.|
-|**INGRESS\_DOMAIN** |`example.com`| Used when creating self-signed certificates for the Ingress controller.|
-|**INGRESS\_REPLICAS** |`2`| The number of Ingress controller replicas to start with. This value should be a minimum of two for high availability.|
 
 ### Elastic Search Parameters
 These parameters determine how to send log files to Elastic Search.
@@ -362,8 +364,21 @@ These parameters determine how to send monitoring information to Prometheus.
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
 |**USE\_PROM** |`false`| Set to `true` if you send monitoring data to Prometheus|
-|**PROMNS** |`monitoring`| The Kubernetes namespace used to hold the Prometheus Deployement.|
+|**PROMNS** |`monitoring`| The Kubernetes namespace used to hold the Prometheus Deployment.|
 
+
+### Ingress Parameters
+These parameters determine how the Ingress controller is deployed.
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**INGRESSNS** |`ingressns`| The Kubernetes namespace used to hold the Ingress objects.|
+|**INGRESS\_TYPE** |`nginx`| The type of Ingress controller you wan to deploy. At this time, the script supports only `nginx`.|
+|**INGRESS\_ENABLE\_TCP** |`true`| Set to `true` if you want the controller to forward LDAP requests.|
+|**INGRESS\_NAME** |`idmedg`| The name of the Ingress controller used to create an Nginx Class.|
+|**INGRESS\_SSL** |`false`| Set to `true` if you want to configure the Ingress controller for SSL.|
+|**INGRESS\_DOMAIN** |`example.com`| Used when creating self-signed certificates for the Ingress controller.|
+|**INGRESS\_REPLICAS** |`2`| The number of Ingress controller replicas to start with. This value should be a minimum of two for high availability.|
 
 ### Oracle HTTP Server Parameters
 These parameters are specific to OHS.  These parameters are used to construct the Oracle HTTP Server configuration files and Install the Oracle HTTP Server if requested. 
@@ -377,10 +392,12 @@ These parameters are specific to OHS.  These parameters are used to construct th
 |**DEPLOY\_WG** |`true`| Deploy WebGate in the `OHS_ORACLE_HOME`.|
 |**COPY\_WG\_FILES** |`true`| Set this to true if you wish the scripts to automatically copy the generated Webgate Artifacts to your OHS Server.  Note: You must first have deployed your Webgate.|
 |**OHS\_BASE** |`/u02/private`| The location of your OHSbase directory.  Binaries and Configuration files are below this location.  The OracleInventory is also placed into this location when installing the Oracle HTTP Server|
-|**OHS\_ORACLE\_HOME** |`$OHS_BASE/oracle/products/ohs`| The location of your OHS binaries|
+|**OHS\_ORACLE\_HOME** |`$OHS_BASE/oracle/products/ohs`| The location of your OHS binaries.|
+|**OHS\_USER** |`opc`| The Oracle HTTP Server account user.|
+|**OHS\_GRP** |`opc`| The Oracle HTTP Server account group.|
 |**OHS\_DOMAIN** |`$OHS_BASE/oracle/config/domains/ohsDomain`| The location of your OHS domain|
 |**OHS1\_NAME** |`ohs1`| The component name of your first OHS instance|
-|**OHS2\_NAME** |`ohs1`| The component name of your second OHS instance|
+|**OHS2\_NAME** |`ohs2`| The component name of your second OHS instance|
 |**NM\_ADMIN\_USER** |`admin`| The name of the admin user you wish to assign to Node Manager if Installing the Oracle HTTP Server.|
 |**NM\_ADMIN\_PWD** |`password`| The password of the admin user you wish to assign to Node Manager if Installing the Oracle HTTP Server.|
 |**OHS\_PORT** |`7777`| The port your Oracle HTTP Servers listen on.|
@@ -397,7 +414,7 @@ These parameters are specific to OUD. When deploying OUD, you also require the g
 |**OUD\_LOCAL\_SHARE** | `/nfs_volumes/oudconfigpv` | The local directory where **OUD\_CONFIG\_SHARE** is mounted. Used to hold seed files.|
 |**OUD\_LOCAL\_PVSHARE** | `/nfs_volumes/oudpv`| The local directory where **OUD_SHARE** is mounted. Used for deletion.|
 |**OUD\_POD\_PREFIX** | `edg`| The prefix used for the OUD pods.|
-|**OUD\_REPLICAS** | `1`| The number of OUD replicas to create. If you require two OUD instances, set this to 1. This value is in addition to the primary instance.|
+|**OUD\_REPLICAS** | `2`| The number of OUD replicas to create. |
 |**OUD\_REGION** | `us`| The OUD region to use should be the first part of the searchbase without the `dc=`.|
 |**LDAP\_USER\_PWD** | *`<password1>`* | The password to assign to all users being created in LDAP. **Note**: This value should have at least one capital letter, one number, and should be at least eight characters long.
 |**OUD\_PWD\_EXPIRY** | `2024-01-02`| The date when the user passwords you are creating expires.|
@@ -464,7 +481,6 @@ These parameters determine how OAM is deployed and configured.
 | --- | --- | --- |
 |**OAMNS** | `oamns` | The Kubernetes namespace used to hold the OAM objects.|
 |**OAM\_SHARE** | `$IAM_PVS/oampv` | The mount point on NFS where OAM persistent volume is exported.|
-|**OAMNS** | `oamns` | The Kubernetes namespace used to hold the OAM objects.|
 |**OAM\_LOCAL\_SHARE** | `/nfs_volumes/oampv` | The local directory where **OAM_SHARE** is mounted. It is used by the deletion procedure.|
 |**OAM\_SERVER\_COUNT** | `5` | The number of OAM servers to configure. This value should be more than you expect to use.|
 |**OAM\_SERVER\_INITIAL** | `2` | The number of OAM Managed Servers you want to start for normal running. You will need at least two servers for high availability.|
@@ -487,6 +503,7 @@ These parameters determine how OAM is deployed and configured.
 |**OAM\_OAP\_HOST** | `k8worker1.example.com` | The name of one of the Kubernetes worker nodes used for OAP calls.|
 |**OAM\_OAP\_PORT** | `5575` | The internal Kubernetes port used for OAM requests.|
 |**OAMSERVER\_JAVA\_PARAMS** | "`-Xms2048m -Xmx8192m`" | The internal Kubernetes port used for OAM requests.|
+|**COPY\_WG\_FILES** | "`true`" | Set to true if you wish the deployment to copy the Webate Artifacts to your Oracle HTTP Server(s)|
 
 ### OIG Parameters
 These parameters determine how OIG is provisioned and configured.
@@ -577,14 +594,13 @@ These parameters determine how OAA is provisioned and configured.
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
 |**OAANS** |`oaans`| The Kubernetes namespace used to hold the OAA objects.|
-|**OAACONS** |`cons`| The Kubernetes namespace used to hold the Coherence objects.|
 |**OAA\_DEPLOYMENT** |`edg`| A name for your OAA deployment. Do not use the name `oaa` because this is reserved for internal use.|
 |**OAA\_DOMAIN** |`OAADomain`| The name of the OAM OAuth domain you want to create.|
 |**OAA\_VAULT\_TYPE** |`file|oci`| The type of vault to use: file system or OCI.|
 |**OAA\_CREATE\_OHS** |`true`| Set to `false` if you are installing OAA standalone front ended by Ingress. |
-|**OAA\_CONFIG\_SHARE** |`$IAM_PVS/oaaconfigpv`| The mount point on NFS where OAA config persistent volume is exported..|
-|**OAA\_CRED\_SHARE** |`$IAM_PVS/oaacredpv`| The mount point on NFS where OAA credentials persistent volume is exported..|
-|**OAA\_LOG\_SHARE** |`$IAM_PVS/oaalogpv`| The mount point on NFS where OAA logfiles persistent volume is exported..|
+|**OAA\_CONFIG\_SHARE** |`$IAM_PVS/oaaconfigpv`| The mount point on NFS where OAA config persistent volume is exported.|
+|**OAA\_CRED\_SHARE** |`$IAM_PVS/oaacredpv`| The mount point on NFS where OAA credentials persistent volume is exported.|
+|**OAA\_LOG\_SHARE** |`$IAM_PVS/oaalogpv`| The mount point on NFS where OAA logfiles persistent volume is exported.|
 |**OAA\_LOCAL\_CONFIG\_SHARE** |`/nfs_volumes/oaaconfigpv`| The local directory where **OAA\_CONFIG\_SHARE** is mounted. It is used by the deletion procedure. |
 |**OAA\_LOCAL\_CRED\_SHARE** |`/nfs_volumes/oaacredpv`| The local directory where **OAA\_CRED\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OAA\_LOCAL\_LOG_SHARE** |`/nfs_volumes/oaalogpv`| The local directory where **OAA\_LOG\_SHARE** is mounted. It is used by the deletion procedure. |
@@ -789,7 +805,7 @@ For reference purposes this section includes the name and function of all the ob
 | **oamoig.sedfile** | templates/oig | The Sedfile to create OIGOAMIntegration property files. |
 | **autn.sedfile** | templates/oig | The supplementary Sedfile to create OIGOAMIntegration property files. |
 | **create\_oigoam\_files.sh** | templates/oig | The template script to generate OIGOAMIntegration property files. |
-| **fix\_gridlink.sh** | templates/oig | The template to enable gridlink on data sources. |
+| **fix\_gridlink.sh** | templates/oig | The template to enable grid link on data sources. |
 | **update\_match\_attr.sh** | templates/oig | The template script to update Match Attribute. |
 | **oigDomain.sedfile** | templates/oig | The template script to update domain\_soa\_oim.yaml. |
 | **update\_mds.py** | templates/oig | The template file to update MDS datasource. |
@@ -843,3 +859,6 @@ For reference purposes this section includes the name and function of all the ob
 | **delete\_oaa.sh** | utils | Deletes the OAA deployment. |
 | **delete\_ingress.sh** | utils | Deletes the Ingress controller. |
 | **load\_images.sh** | utils | Loads the container image onto each Kubernetes worker host. | 
+| **enable\_dr.sh** | utils | Enables Disaster Recovery - see [Disaster Recovery](README_DR.md). | 
+| **idmdrctl.sh** | utils | Disaster Recovery lifecycle operations - see [Disaster Recovery](README_DR.md). | 
+

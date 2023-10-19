@@ -50,12 +50,19 @@ create_helper()
        print_status $? $LOGDIR/create_mgmt.log
        check_running $OAANS oaa-mgmt
 
-       printf "\t\t\tCopying Settings file - "
-
-       kubectl exec -it -n $OAANS oaa-mgmt -- cp /u01/oracle/installsettings/installOAA.properties /u01/oracle/scripts/settings/ >> $LOGDIR/create_mgmt.log
-       print_status $? $LOGDIR/create_mgmt.log
    fi
 
+   ET=$(date +%s)
+   print_time STEP "Create OAA Management container" $ST $ET >> $LOGDIR/timings.log
+}
+
+copy_settings_file()
+{
+   print_msg "Copying Template OAA Propery file"
+   ST=$(date +%s)
+
+   kubectl exec -it -n $OAANS oaa-mgmt -- cp /u01/oracle/installsettings/installOAA.properties /u01/oracle/scripts/settings/ >> $LOGDIR/create_mgmt.log
+   print_status $? $LOGDIR/create_mgmt.log
    ET=$(date +%s)
    print_time STEP "Create OAA Management container" $ST $ET >> $LOGDIR/timings.log
 }
@@ -242,6 +249,23 @@ prepare_property_file()
    sed -i "/sms:/{n;s/replicaCount.*/replicaCount: $OAA_SMS_REPLICAS/}"  $override
    sed -i "/oaa-policy:/{n;s/replicaCount.*/replicaCount: $OAA_POLICY_REPLICAS/}"  $override
    sed -i "/push:/{n;s/replicaCount.*/replicaCount: $OAA_PUSH_REPLICAS/}"  $override
+   echo "resources:" >> $override
+   echo "  requests:"  >> $override
+   echo "    cpu: $OAA_OAA_CPU"  >> $override
+   echo "    memory: \"$OAA_OAA_MEMORY\""  >> $override
+   sed -i "/spui:/a\  resources:\n    requests:\n      cpu: $OAA_SPUI_CPU\n      memory: \"$OAA_SPUI_MEMORY\""   $override
+   sed -i "/totp:/a\  resources:\n    requests:\n      cpu: $OAA_TOTP_CPU\n      memory: \"$OAA_TOTP_MEMORY\""   $override
+   sed -i "/yotp:/a\  resources:\n    requests:\n      cpu: $OAA_YOTP_CPU\n      memory: \"$OAA_YOTP_MEMORY\""   $override
+   sed -i "/fido:/a\  resources:\n    requests:\n      cpu: $OAA_FIDO_CPU\n      memory: \"$OAA_FIDO_MEMORY\""   $override
+   sed -i "/email:/a\  resources:\n    requests:\n      cpu: $OAA_EMAIL_CPU\n      memory: \"$OAA_EMAIL_MEMORY\""   $override
+   sed -i "/push:/a\  resources:\n    requests:\n      cpu: $OAA_PUSH_CPU\n      memory: \"$OAA_PUSH_MEMORY\""   $override
+   sed -i "/sms:/a\  resources:\n    requests:\n      cpu: $OAA_SMS_CPU\n      memory: \"$OAA_SMS_MEMORY\""   $override
+   sed -i "/oaa-kba:/a\  resources:\n    requests:\n      cpu: $OAA_KBA_CPU\n      memory: \"$OAA_KBA_MEMORY\""   $override
+   sed -i "/oaa-policy:/a\  resources:\n    requests:\n      cpu: $OAA_POLICY_CPU\n      memory: \"$OAA_POLICY_MEMORY\""   $override
+   sed -i "/customfactor:/a\  resources:\n    requests:\n      cpu: $OAA_CUSTOM_CPU\n      memory: \"$OAA_CUSTOM_MEMORY\""   $override
+   sed -i "/risk:/a\  resources:\n    requests:\n      cpu: $OAA_RISK_CPU\n      memory: \"$OAA_RISK_MEMORY\""   $override
+   sed -i "/^riskcc:/a\  resources:\n    requests:\n      cpu: $OAA_RISKCC_CPU\n      memory: \"$OAA_RISKCC_MEMORY\""   $override
+   sed -i "/oaa-admin-ui:/a\  resources:\n    requests:\n      cpu: $OAA_ADMIN_CPU\n      memory: \"$OAA_ADMIN_MEMORY\""   $override
 
 
    copy_to_oaa $propfile /u01/oracle/scripts/settings/installOAA.properties $OAANS oaa-mgmt  >> $LOGDIR/create_property.log 2>&1
@@ -250,6 +274,7 @@ prepare_property_file()
 
    ET=$(date +%s)
    print_time STEP "Create property_file" $ST $ET >> $LOGDIR/timings.log
+
 }
 
 
@@ -772,6 +797,33 @@ deploy_oaa()
    print_time STEP "Deploy OAA" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Deploy OAA on DR
+#
+deploy_oaa_dr()
+{
+
+   print_msg "Deploy OAA"
+   ST=$(date +%s)
+
+   oaa_mgmt "/u01/oracle/OAA.sh -f installOAA.properties" > $LOGDIR/deploy_oaa.log 2>&1
+   if [ $? -gt 0 ]
+   then
+      grep -q "OAUTH validation failed" $LOGDIR/deploy_oaa.log
+      if [ $? = 0 ]
+
+      then
+         echo "Executing command /u01/oracle/scripts/validateOauthForOAA.sh -f /u01/oracle/scripts/settings/installOAA.properties -d true to get more information." >> $LOGDIR/deploy_oaa.log
+         oaa_mgmt "/u01/oracle/scripts/validateOauthForOAA.sh -f /u01/oracle/scripts/settings/installOAA.properties -d true" >> $LOGDIR/deploy_oaa.log 2>&1
+      fi
+      echo "Failed - See Logfile $LOGDIR/deploy_oaa.log"
+      exit 1
+   else
+      echo "Success."
+   fi
+
+   ET=$(date +%s)
+   print_time STEP "Deploy OAA" $ST $ET >> $LOGDIR/timings.log
+}
 # Deploy OAA Snapshot
 #
 import_snapshot()
@@ -1306,3 +1358,79 @@ create_test_user()
    ET=$(date +%s)
    print_time STEP "Create Test User $OAA_USER in LDAP" $ST $ET >> $LOGDIR/timings.log
 }
+
+# Modify the template to create a cronjob
+#
+create_dr_cronjob_files()
+{
+   ST=$(date +%s)
+   print_msg "Creating Cron Job Files"
+
+   cp $TEMPLATE_DIR/dr_cron.yaml $WORKDIR/dr_cron.yaml
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_cron.yaml
+   update_variable "<DR_OAA_MINS>" $DR_OAA_MINS $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_IMAGE>" $RSYNC_IMAGE $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_VER>" $RSYNC_VER $WORKDIR/dr_cron.yaml
+
+   print_status $?
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Cron Job Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Persistent Volumes used by DR Job.
+#
+create_dr_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume"
+
+   kubectl create -f $WORKDIR/dr_dr_pv.yaml > $LOGDIR/create_dr_pv.log 2>&1
+   print_status $? $LOGDIR/create_dr_pv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Persistent Volume Claims used by DR Job.
+#
+create_dr_pvc()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume Claim"
+   kubectl create -f $WORKDIR/dr_dr_pvc.yaml > $LOGDIR/create_dr_pvc.log 2>&1
+   print_status $? $LOGDIR/create_dr_pvc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume Claim " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Delete the OAA files created by a fresh installation.
+#
+delete_oaa_files()
+{
+   ST=$(date +%s)
+   print_msg "Delete OAA Files"
+
+   if [ -e $OAA_LOCAL_CONFIG_SHARE ] && [ ! "$OAA_LOCAL_CONFIG_SHARE" = "" ]
+   then
+     echo rm -rf $OAA_LOCAL_CONFIG_SHARE/helm $OAA_LOCAL_CONFIG_SHARE/installOAA.properties $OAA_LOCAL_CONFIG_SHARE/oaaoverride.yaml   > $LOGDIR/delete_oaa.log 2>&1
+     rm -rf $OAA_LOCAL_CONFIG_SHARE/helm $OAA_LOCAL_CONFIG_SHARE/installOAA.properties $OAA_LOCAL_CONFIG_SHARE/oaaoverride.yaml   >> $LOGDIR/delete_oaa.log 2>&1
+   else
+     echo "Share does not exist, or OAA_LOCAL_CONFIG_SHARE is not defined."
+   fi
+
+   if [ -e $OAA_LOCAL_VAULT_SHARE ] && [ ! "$OAA_LOCAL_VAULT_SHARE" = "" ]
+   then
+     echo rm -rf $OAA_LOCAL_VAULT_SHARE/.accessstore.pkcs12 > $LOGDIR/delete_oaa.log 2>&1
+     rm -rf $OAA_LOCAL_VAULT_SHARE/.accessstore.pkcs12 >> $LOGDIR/delete_oaa.log 2>&1
+   else
+     echo "Share does not exist, or OAA_LOCAL_VAULT_SHARE is not defined."
+   fi
+   print_status $?  $LOGDIR/delete_oaa.log
+
+   ET=$(date +%s)
+   print_time STEP "Delete OAA Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+

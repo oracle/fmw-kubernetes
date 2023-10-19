@@ -1,16 +1,19 @@
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl
 #
 #
 {{- if .Values.persistence.enabled }}
+{{ if .Values.persistence.storageClassCreate }}
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
     name: {{ .Values.persistence.storageClass }}
     annotations:
-      storageclass.beta.kubernetes.io/is-default-class: "true"
-provisioner: kubernetes.io/is-default-class
+      storageclass.kubernetes.io/is-default-class: {{ .Values.persistence.storageClassDefault | quote }}
+provisioner: {{ .Values.persistence.provisioner }}
+{{ end }}
 {{- end }}
+

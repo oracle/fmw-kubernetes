@@ -25,23 +25,23 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unif
 
    ```
    NAME                  STATUS   ROLES                  AGE   VERSION
-   node/worker-node1     Ready    <none>                 17h   v1.24.5+1.el7
-   node/worker-node2     Ready    <none>                 17h   v1.24.5+1.el7
-   node/master-node      Ready    control-plane,master   23h   v1.24.5+1.el7
+   node/worker-node1     Ready    <none>                 17h   v1.26.6+1.el8
+   node/worker-node2     Ready    <none>                 17h   v1.26.6+1.el8
+   node/master-node      Ready    control-plane,master   23h   v1.26.6+1.el8
 
-   NAME                                      READY   STATUS    RESTARTS   AGE
-   pod/coredns-66bff467f8-slxdq              1/1     Running   1          67d
-   pod/coredns-66bff467f8-v77qt              1/1     Running   1          67d
-   pod/etcd-10.89.73.42                      1/1     Running   1          67d
-   pod/kube-apiserver-10.89.73.42            1/1     Running   1          67d
-   pod/kube-controller-manager-10.89.73.42   1/1     Running   27         67d
-   pod/kube-flannel-ds-amd64-r2m8r           1/1     Running   2          48d
-   pod/kube-flannel-ds-amd64-rdhrf           1/1     Running   2          6d1h
-   pod/kube-flannel-ds-amd64-vpcbj           1/1     Running   3          66d
-   pod/kube-proxy-jtcxm                      1/1     Running   1          67d
-   pod/kube-proxy-swfmm                      1/1     Running   1          66d
-   pod/kube-proxy-w6x6t                      1/1     Running   1          66d
-   pod/kube-scheduler-10.89.73.42            1/1     Running   29         67d
+   NAME                                     READY   STATUS    RESTARTS   AGE
+   pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
+   pod/coredns-66bff467f8-xtc8k             1/1     Running   0          23h
+   pod/etcd-master                          1/1     Running   0          21h
+   pod/kube-apiserver-master-node           1/1     Running   0          21h
+   pod/kube-controller-manager-master-node  1/1     Running   0          21h
+   pod/kube-flannel-ds-amd64-lxsfw          1/1     Running   0          17h
+   pod/kube-flannel-ds-amd64-pqrqr          1/1     Running   0          17h
+   pod/kube-flannel-ds-amd64-wj5nh          1/1     Running   0          17h
+   pod/kube-proxy-2kxv2                     1/1     Running   0          17h
+   pod/kube-proxy-82vvj                     1/1     Running   0          17h
+   pod/kube-proxy-nrgw9                     1/1     Running   0          23h
+   pod/kube-scheduler-master                1/1     Running   0          21h
    ```
 
 ### Obtain the OUD container image
@@ -54,7 +54,7 @@ The OUD Kubernetes deployment requires access to an OUD container image. The ima
 #### Prebuilt OUD container image
 
 
-The prebuilt OUD April 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The prebuilt OUD October 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oud_cpu` and accept the license agreement.
 
@@ -77,6 +77,8 @@ You can use an image built with WebLogic Image Tool in the following ways:
 
 
 ### Create a persistent volume directory
+
+**Note**: This section should not be followed if using block storage.
 
 As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system. 
 
@@ -127,12 +129,12 @@ In this example `/scratch/shared/` is a shared directory accessible from all nod
 
 ### Setup the code repository to deploy OUD
 
-Oracle Unified Directory deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory containers using the Helm charts provided.  To deploy Oracle Unified Directory on Kubernetes you should set up the deployment scripts on the persistent volume as below:
+Oracle Unified Directory deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory containers using the Helm charts provided.  To deploy Oracle Unified Directory on Kubernetes you should set up the deployment scripts as below:
 
-1. Create a working directory on the persistent volume to setup the source code.
+1. Create a working directory to setup the source code.
 
    ```bash
-   $ mkdir <persistent_volume>/<workdir>
+   $ mkdir <workdir>
    ```
 
    For example:
@@ -144,7 +146,7 @@ Oracle Unified Directory deployment on Kubernetes leverages deployment scripts p
 1. Download the latest OUD deployment scripts from the OUD repository:
 
    ```bash
-   $ cd <persistent_volume>/<workdir>
+   $ cd <workdir>
    $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
    

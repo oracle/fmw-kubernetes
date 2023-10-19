@@ -10,7 +10,14 @@
 /replicas:/a\  serverPod:\
 \    env: \
 \    - name: USER_MEM_ARGS \
-\      value: "-Djava.security.egd=file:/dev/./urandom <OAMSERVER_JAVA_PARAMS> "
+\      value: "-Djava.security.egd=file:/dev/./urandom <OAMSERVER_JAVA_PARAMS> " \
+\    resources: \
+\      limits: \
+\        cpu: "<OAM_MAX_CPU>" \
+\        memory: <OAM_MAX_MEMORY> \
+\      requests: \
+\        cpu: <OAM_CPU> \
+\        memory: <OAM_MEMORY> 
 }
 
 

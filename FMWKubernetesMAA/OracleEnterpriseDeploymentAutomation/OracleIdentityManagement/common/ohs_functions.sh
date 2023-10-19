@@ -408,3 +408,72 @@ copy_lbr_cert()
    ET=$(date +%s)
    print_time STEP "Copy $OAM_LOGIN_LBR_HOST Certificate to WebGate on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 }
+
+update_ohs_route()
+{
+   print_msg "Change OHS Routing"
+
+   ST=$(date +%s)
+   
+   OLD_HOST1=$(grep WebLogicCluster $WORKDIR/*_vh.conf | sed "s/WebLogicCluster//" | tr -d ' ' | sed 's/,/:/' | cut -f2,4 -d: | tr ":" "\n" |sort | uniq  | head -1 )
+   OLD_HOST2=$(grep WebLogicCluster $WORKDIR/*_vh.conf | sed "s/WebLogicCluster//" | tr -d ' ' | sed 's/,/:/' | cut -f2,4 -d: | tr ":" "\n" |sort | uniq  | tail -1 )
+   NEW_HOST1=$(kubectl get nodes | cut -f1 -d " "  | sed "/NAME/d" | head -1)
+   NEW_HOST2=$(kubectl get nodes | cut -f1 -d " "  | sed "/NAME/d" | tail -1)
+
+   printf "\n\t\t\tChanging $OLD_HOST1 to $NEW_HOST1 - "
+   sed -i "s/$OLD_HOST1/$NEW_HOST1/g" $WORKDIR/*_vh.conf  > $LOGDIR/update_ohs_route.log 2>&1
+   print_status $?  $LOGDIR/update_ohs_route.log
+   printf "\n\t\t\tChanging $OLD_HOST2 to $NEW_HOST2 - "
+   sed -i "s/$OLD_HOST2/$NEW_HOST2/g" $WORKDIR/*_vh.conf  >> $LOGDIR/update_ohs_route.log 2>&1
+   print_status $?  $LOGDIR/update_ohs_route.log
+
+   ET=$(date +%s)
+   print_time STEP "Change OHS Routing" $ST $ET >> $LOGDIR/timings.log
+}
+
+
+update_ohs_hostname()
+{
+   print_msg "Change OHS Virtual Host Name "
+   ST=$(date +%s)
+   OLD_HOSTNAME=$( grep "<VirtualHost" $WORKDIR/*.conf | cut -f2 -d: | awk '{ print $2 }' | head -1 )
+   mkdir $WORKDIR/$OHS_HOST1  2>/dev/null
+   cp $WORKDIR/*.conf $WORKDIR/$OHS_HOST1
+   if [ ! "$OLD_HOSTNAME" = "$OHS_HOST1" ]
+   then
+      printf "\n\t\t\tChanging $OLD_HOSTNAME to $OHS_HOST1 - "
+      sed -i "s/$OLD_HOSTNAME/$OHS_HOST1/" $WORKDIR/$OHS_HOST1/*.conf > $LOGDIR/update_vh.log 2>&1
+      print_status $? $LOGDIR/update_vh.log
+   fi
+
+   if [ ! "$OHS_HOST2" = "" ]
+   then
+      mkdir $WORKDIR/$OHS_HOST2  2>/dev/null
+      cp $WORKDIR/*.conf $WORKDIR/$OHS_HOST2
+      printf "\n\t\t\tChanging $OLD_HOSTNAME to $OHS_HOST2 - "
+      sed -i "s/$OLD_HOSTNAME/$OHS_HOST2/" $WORKDIR/$OHS_HOST2/*.conf >> $LOGDIR/update_vh.log 2>&1
+      print_status $? $LOGDIR/update_vh.log
+   fi
+   ET=$(date +%s)
+   print_time STEP "Change OHS Virtual HostName" $ST $ET >> $LOGDIR/timings.log
+}
+
+  
+copy_ohs_dr_config()
+{
+   print_msg "Copy OHS Config"
+   ST=$(date +%s)
+   
+   printf "\t\t\tCopy OHS Config to $OHS_HOST1 - "
+   $SCP $WORKDIR/$OHS_HOST1/*vh.conf $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs_config.log 2>&1
+   print_status $? $LOGDIR/copy_ohs_config.log
+
+   if [ ! "$OHS_HOST2" = "" ]
+   then
+      printf "\t\t\tCopy OHS Config to $OHS_HOST2 - "
+      $SCP $WORKDIR/$OHS_HOST2/*vh.conf $OHS_HOST2:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS2_NAME/moduleconf/ > $LOGDIR/copy_ohs_config.log 2>&1
+      print_status $? $LOGDIR/copy_ohs_config.log
+   fi
+   ET=$(date +%s)
+   print_time STEP "Change OHS Routing" $ST $ET >> $LOGDIR/timings.log
+}

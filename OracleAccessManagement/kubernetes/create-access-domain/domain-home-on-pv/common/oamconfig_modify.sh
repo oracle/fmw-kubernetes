@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 cur_dir=`dirname $(readlink -f "$0")`
@@ -134,14 +134,11 @@ do
   fi  
 
   ret1=`${KUBERNETES_CLI:-kubectl} get po -n $OAM_NAMESPACE | grep ${OAM_SERVER}1`
-  ret2=`${KUBERNETES_CLI:-kubectl} get po -n $OAM_NAMESPACE | grep ${OAM_SERVER}2`
 
   echo $ret1 | grep '1/1'
   rc1=$?
-  echo $ret2 | grep '1/1'
-  rc2=$?
 
-  if [[ ($rc1 -eq 0) && ($rc2 -eq 0) ]]; then
+  if [ $rc1 -eq 0 ]; then
     echo "OAM servers started successfully"
     break
   else

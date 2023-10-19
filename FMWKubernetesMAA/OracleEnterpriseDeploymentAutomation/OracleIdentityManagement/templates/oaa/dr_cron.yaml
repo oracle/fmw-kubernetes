@@ -1,0 +1,73 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to deploy a cron job to replicate the primary OAA PV to the DR OAM PV
+#
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oaarsyncdr
+  namespace: <DRNS>
+spec:
+  schedule: "*/<DR_OAA_MINS> * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: alpine-rsync
+            image: <RSYNC_IMAGE>:<RSYNC_VER>
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: dr-cm
+            volumeMounts:
+              - mountPath: "/u01/primary_oaaconfigpv"
+                name: oaaconfigpv
+              - mountPath: "/u01/dr_oaaconfigpv"
+                name: oaaconfigpv-dr
+              - mountPath: "/u01/primary_oaavaultpv"
+                name: oaavaultpv
+              - mountPath: "/u01/dr_oaavaultpv"
+                name: oaavaultpv-dr
+              - mountPath: "/u01/primary_oaacredpv"
+                name: oaacredpv
+              - mountPath: "/u01/dr_oaacredpv"
+                name: oaacredpv-dr
+              - mountPath: "/u01/primary_oaalogpv"
+                name: oaalogpv
+              - mountPath: "/u01/dr_oaalogpv"
+                name: oaalogpv-dr
+            command:
+            - /bin/sh
+            - -c
+            - /u01/primary_oaaconfigpv/dr_scripts/oaa_dr.sh
+          restartPolicy: Never
+          volumes:
+          - name: oaaconfigpv
+            persistentVolumeClaim:
+              claimName: primary-oaa-config-pvc
+          - name: oaaconfigpv-dr
+            persistentVolumeClaim:
+              claimName: standby-oaa-config-pvc
+          - name: oaavaultpv
+            persistentVolumeClaim:
+              claimName: primary-oaa-vault-pvc
+          - name: oaavaultpv-dr
+            persistentVolumeClaim:
+              claimName: standby-oaa-vault-pvc
+          - name: oaacredpv
+            persistentVolumeClaim:
+              claimName: primary-oaa-cred-pvc
+          - name: oaacredpv-dr
+            persistentVolumeClaim:
+              claimName: standby-oaa-cred-pvc
+          - name: oaalogpv
+            persistentVolumeClaim:
+              claimName: primary-oaa-log-pvc
+          - name: oaalogpv-dr
+            persistentVolumeClaim:
+              claimName: standby-oaa-log-pvc

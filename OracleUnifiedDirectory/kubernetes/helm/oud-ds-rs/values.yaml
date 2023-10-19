@@ -51,6 +51,9 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# pv/datadir owner:group permissions, change as per user chosen
+usergroup: "1000:0"
+
 service:
   # Type of Service to be created for OUD Interfaces (like LDAP, HTTP, Admin)
   type: ClusterIP
@@ -154,11 +157,18 @@ persistence:
   pvname: 
   # provide the pvname to use an already created Persistent Volume Claim. If blank, will use default name from Chart
   pvcname: 
+  # Specify Accessmode ReadWriteMany for NFS and for block ReadWriteOnce 
   accessMode: ReadWriteMany
   size: 20Gi
+  # if enabled, it will create the storageclass. if value is false, please provide existing storage class to be used.
+  storageClassCreate: true
+  # Storageclass name to be used.
   storageClass: manual
+  # if enabled, it will mark the created storageclass as default.
+  storageClassDefault: true
+  provisioner: kubernetes.io/is-default-class
   reclaimPolicy: "Delete"
-# default supported values: either filesystem or networkstorage or custom
+# default supported values: either filesystem or networkstorage or custom or blockstorage
   type: filesystem
   networkstorage:
     nfs:
@@ -186,7 +196,12 @@ configVolume:
   pvcname: 
   accessMode: ReadWriteMany
   size: 10Gi
-  storageClass: manual
+  storageClassCreate: true
+  # Storageclass name to be used.
+  storageClass: manual-config
+  # if enabled, it will mark the created storageclass as default.
+  storageClassDefault: true
+  provisioner: kubernetes.io/is-default-class
   reclaimPolicy: "Retain"
 # default supported values: either filesystem or networkstorage or custom
   type: networkstorage
@@ -292,15 +307,16 @@ oudConfig:
   cleanupbeforeStart: false
   # This parameter is used to disable replication when a pod is restarted. 
   disablereplicationbeforeStop: false
-  
+  # possible values are no-integration | basic | generic | eus
+  integration: no-integration  
   # memory, cpu parameters for both requests and limits for oud instances
   resources:
     requests:
       memory: "4Gi"
-      cpu: ".5"
+      cpu: "500m"
     limits:
-      memory: "4Gi"
-      cpu: "1"
+      memory: "8Gi"
+      cpu: "2"
 
 # Configuration for Base OUD instance (oud-ds-rs-0)
 baseOUD:
@@ -331,10 +347,9 @@ replOUD:
 
 # Configuration for Logstash deployment
 elk:
-  # Enabled flag to enable the integrated ELK stack for OUD
-  enabled: false
   imagePullSecrets:
     - name: dockercred
+  # IntegrationEnabled flag to enable Logstash deployment for OUD
   IntegrationEnabled: false
   logStashImage: logstash:8.3.1
   logstashConfigMap:

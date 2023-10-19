@@ -23,7 +23,7 @@ For usage details execute `./setup-monitoring.sh -h`.
 1. Edit the `$WORKDIR/kubernetes/monitoring-service/monitoring-inputs.yaml` and change the `domainUID`, `domainNamespace`, and `weblogicCredentialsSecretName` to correspond to your deployment.  Also change `wlsMonitoringExporterTosoaCluster`, `wlsMonitoringExporterTooimCluster`, `exposeMonitoringNodePort` to `true`. For example:
 
    ```
-   version: create-oimcluster-monitoring-inputs-v1
+   version: create-governancedomain-monitoring-inputs-v1
 
    # Unique ID identifying your domain.
    # This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster.
@@ -110,11 +110,6 @@ For usage details execute `./setup-monitoring.sh -h`.
    node/worker-node1 not labeled
    node/worker-node2 not labeled
    node/master-node not labeled
-   W0320 <DATE>    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
-   W0320 <DATE>    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
-   W0320 <DATE>    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
-   ...
-   W0320 <DATE>    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
    Setup prometheus-community/kube-prometheus-stack started
    "prometheus-community" already exists with the same configuration, skipping
    Hang tight while we grab the latest from your chart repositories...
@@ -235,8 +230,6 @@ For usage details execute `./setup-monitoring.sh -h`.
    Altermanager is available at NodePort: 32102
    ==============================================================
    ```
-   
-   **Note**: If you see the warning `W0320 <DATE>    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+` you can ignore this message.
    
 #### Prometheus service discovery
 

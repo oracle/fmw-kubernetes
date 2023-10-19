@@ -141,6 +141,14 @@ update_java_parameters()
      fi
      update_variable "<OIMSERVER_JAVA_PARAMS>" "$OIMSERVER_JAVA_PARAMS" $WORKDIR/oigDomain.sedfile
      update_variable "<SOASERVER_JAVA_PARAMS>" "$SOASERVER_JAVA_PARAMS" $WORKDIR/oigDomain.sedfile
+     update_variable "<OIM_MEMORY>" "$OIM_MEMORY" $WORKDIR/oigDomain.sedfile
+     update_variable "<OIM_MAX_MEMORY>" "$OIM_MAX_MEMORY" $WORKDIR/oigDomain.sedfile
+     update_variable "<OIM_MAX_CPU>" "$OIM_MAX_CPU" $WORKDIR/oigDomain.sedfile
+     update_variable "<OIM_CPU>" "$OIM_CPU" $WORKDIR/oigDomain.sedfile
+     update_variable "<SOA_MEMORY>" "$SOA_MEMORY" $WORKDIR/oigDomain.sedfile
+     update_variable "<SOA_MAX_MEMORY>" "$SOA_MAX_MEMORY" $WORKDIR/oigDomain.sedfile
+     update_variable "<SOA_MAX_CPU>" "$SOA_MAX_CPU" $WORKDIR/oigDomain.sedfile
+     update_variable "<SOA_CPU>" "$SOA_CPU" $WORKDIR/oigDomain.sedfile
 
      OUTPUT_DIR=$WORKDIR/samples/create-oim-domain/domain-home-on-pv/output/weblogic-domains/$OIG_DOMAIN_NAME
      cp output/weblogic-domains/$OIG_DOMAIN_NAME/domain.yaml $OUTPUT_DIR/domain.orig
@@ -394,6 +402,21 @@ update_mds()
      print_time STEP "Update MDS Datasource" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Update the OIM Datasources to increase timeout for bootstrap
+#
+increase_to()
+{
+     ST=$(date +%s)
+     print_msg "Increasing Datasource Timeout"
+
+     sed -i "s/<inactive-connection-timeout-seconds>300/<inactive-connection-timeout-seconds>600/" $OIG_LOCAL_SHARE/domains/$OIG_DOMAIN_NAME/config/jdbc/oimJMSStoreDS-0269-jdbc.xml > $LOGDIR/timeouts.log 2>&1
+     sed -i "s/<inactive-connection-timeout-seconds>300/<inactive-connection-timeout-seconds>600/" $OIG_LOCAL_SHARE/domains/$OIG_DOMAIN_NAME/config/jdbc/oimOperationsDB-0237-jdbc.xml > $LOGDIR/timeouts.log 2>&1
+
+     print_status $? $LOGDIR/timeouts.log
+
+     ET=$(date +%s)
+     print_time STEP "Increase Datasource Timeout" $ST $ET >> $LOGDIR/timings.log
+}
 # Fix Gridlink Datasoureces
 #
 fix_gridlink()
@@ -1076,4 +1099,93 @@ enable_monitor()
    ET=$(date +%s)
    print_time STEP "Configure Prometheus Operator" $ST $ET >> $LOGDIR/timings.log
 
+}
+
+
+# Modify the template to create a cronjob
+#
+create_dr_cronjob_files()
+{
+   ST=$(date +%s)
+   print_msg "Creating Cron Job Files"
+
+   cp $TEMPLATE_DIR/dr_cron.yaml $WORKDIR/dr_cron.yaml
+   update_variable "<DRNS>" $DRNS $WORKDIR/dr_cron.yaml
+   update_variable "<DR_OIG_MINS>" $DR_OIG_MINS $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_IMAGE>" $RSYNC_IMAGE $WORKDIR/dr_cron.yaml
+   update_variable "<RSYNC_VER>" $RSYNC_VER $WORKDIR/dr_cron.yaml
+   update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/dr_cron.yaml
+
+   print_status $?
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Cron Job Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Persistent Volumes used by DR Job.
+#
+create_dr_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume"
+
+   kubectl create -f $WORKDIR/dr_dr_pv.yaml > $LOGDIR/create_dr_pv.log 2>&1
+   print_status $? $LOGDIR/create_dr_pv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Create Persistent Volume Claims used by DR Job.
+#
+create_dr_pvc()
+{
+   ST=$(date +%s)
+   print_msg "Creating DR Persistent Volume Claim"
+   kubectl create -f $WORKDIR/dr_dr_pvc.yaml > $LOGDIR/create_dr_pvc.log 2>&1
+   print_status $? $LOGDIR/create_dr_pvc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create DR Persistent Volume Claim " $ST $ET >> $LOGDIR/timings.log
+}
+
+# Delete the OIG files created by a fresh installation.
+#
+delete_oig_files()
+{
+   ST=$(date +%s)
+   print_msg "Delete OIG Domain Files"
+
+   if [ -e $OIG_LOCAL_SHARE ] && [ ! "$OIG_LOCAL_SHARE" = "" ]
+   then
+     echo rm -rf $OIG_LOCAL_SHARE/domains $OIG_LOCAL_SHARE/applications $OIG_LOCAL_SHARE/stores $OIG_LOCAL_SHARE/keystores  > $LOGDIR/delete_oig_domain.log 2>&1
+     rm -rf $OIG_LOCAL_SHARE/domains $OIG_LOCAL_SHARE/applications $OIG_LOCAL_SHARE/stores $OIG_LOCAL_SHARE/keystores >> $LOGDIR/delete_oig_domain.log 2>&1
+   else
+     echo "Share does not exist, or OIG_LOCAL_SHARE is not defined."
+   fi
+
+   print_status $?  $LOGDIR/delete_oig_domain.log
+
+   ET=$(date +%s)
+   print_time STEP "Delete OIG Domain Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+
+# Create OAM PVs on the Standby Site
+#
+create_dr_source_pv()
+{
+   ST=$(date +%s)
+   print_msg "Creating OIG Persistent Volume"
+
+   cp $TEMPLATE_DIR/dr_oigpv.yaml $WORKDIR/dr_oigpv.yaml
+   update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $WORKDIR/dr_oigpv.yaml
+   update_variable "<PVSERVER>" $DR_STANDBY_PVSERVER $WORKDIR/dr_oigpv.yaml
+   update_variable "<OIG_SHARE>" $OIG_STANDBY_SHARE $WORKDIR/dr_oigpv.yaml
+
+   kubectl create -f $WORKDIR/dr_oigpv.yaml > $LOGDIR/dr_oigpv.log 2>&1
+   print_status $? $LOGDIR/dr_oigpv.log
+
+   ET=$(date +%s)
+   print_time STEP "Create OIG Persistent Volume" $ST $ET >> $LOGDIR/timings.log
 }

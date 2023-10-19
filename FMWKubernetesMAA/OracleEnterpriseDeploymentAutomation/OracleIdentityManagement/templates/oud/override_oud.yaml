@@ -24,6 +24,15 @@ oudConfig:
   rootUserPassword: <LDAP_ADMIN_PWD>
   sleepBeforeConfig: 300
 
+  # memory, cpu parameters for both requests and limits for oud instances
+  resources:
+    limits:
+     memory: "<OUD_MAX_MEMORY>"
+     cpu: "<OUD_MAX_CPU>"
+    requests:
+     memory: "<OUD_MEMORY>"
+     cpu: "<OUD_CPU>"
+
 persistence:
   type: networkstorage
   networkstorage:
@@ -62,6 +71,7 @@ cronJob:
     imagePullSecrets:
     - name: dockercred
 
+
 busybox:
  image: <BUSYBOX_REPO>
 
@@ -74,7 +84,7 @@ baseOUD:
     - name: importLdif_1
       value: --append --replaceExisting --includeBranch ${baseDN} --backendID userRoot --ldifFile /u01/oracle/config-input/base.ldif --rejectFile /u01/oracle/config-input/rejects.ldif --skipFile /u01/oracle/config-input/skip.ldif
     - name: serverTuning
-      value: -Xms1024m -Xmx2048m -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
+      value: <OUDSERVER_TUNING_PARAMS> -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
     - name: dsconfig_1
       value: set-global-configuration-prop --set lookthrough-limit:75000
     - name: dsconfig_2
@@ -144,6 +154,8 @@ baseOUD:
 
 replOUD:
   envVars:
+    - name: serverTuning
+      value: <OUDSERVER_TUNING_PARAMS> -d64 -XX:+UseCompressedOops -server -Xmn1g -XX:MaxTenuringThreshold=1 -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=60
     - name: dsconfig_1
       value: set-global-configuration-prop --set lookthrough-limit:75000
     - name: dsconfig_2

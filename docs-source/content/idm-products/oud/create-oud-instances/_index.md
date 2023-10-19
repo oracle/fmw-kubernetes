@@ -168,6 +168,14 @@ You can create OUD instances using one of the following methods:
    imagePullSecrets:
      - name: orclcred
    oudConfig:
+    # memory, cpu parameters for both requests and limits for oud instances
+     resources:
+       limits:
+         cpu: "1"
+         memory: "4Gi"
+       requests:
+         cpu: "500m" 
+         memory: "4Gi"
      rootUserPassword: <password>
      sampleData: "200"
    persistence:
@@ -190,11 +198,19 @@ You can create OUD instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol7-<April`23>
+     tag: 12.2.1.4-jdk8-ol7-<October`23>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
    oudConfig:
+    # memory, cpu parameters for both requests and limits for oud instances
+     resources:
+       limits:
+         cpu: "1"
+         memory: "8Gi"
+       requests:
+         cpu: "500m" 
+         memory: "4Gi"
      rootUserPassword: <password>
      sampleData: "200"
    persistence:
@@ -205,7 +221,7 @@ You can create OUD instances using one of the following methods:
    cronJob:
      kubectlImage:
        repository: bitnami/kubectl
-       tag: 1.24.5
+       tag: 1.26.6
        pullPolicy: IfNotPresent
  
      imagePullSecrets:
@@ -228,7 +244,7 @@ You can create OUD instances using one of the following methods:
       ```
   
    
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.24.5` set to `1.24.5`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.26.6` set to `1.26.6`.
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:
    
       ```
@@ -242,7 +258,7 @@ You can create OUD instances using one of the following methods:
 	  cronJob:
 	    kubectlImage:
           repository: container-registry.example.com/bitnami/kubectl
-          tag: 1.24.5
+          tag: 1.26.6
 	      pullPolicy: IfNotPresent
 	   
 	  busybox:
@@ -250,6 +266,10 @@ You can create OUD instances using one of the following methods:
       ```	   
   
    * If using NFS for your persistent volume then change the `persistence` section as follows:
+   
+      **Note**: If you want to use NFS you should ensure that you have a default Kubernetes storage class defined for your environment that allows network storage.
+	  
+	  For more information on storage classes, see [Storage Classes](https://kubernetes.io/docs/concepts/storage/storage-classes/). 
   
       ```yaml
       persistence:
@@ -258,9 +278,70 @@ You can create OUD instances using one of the following methods:
           nfs: 
             path: <persistent_volume>/oud_user_projects
             server: <NFS IP address>
+		# if true, it will create the storageclass. if value is false, please provide existing storage class (storageClass) to be used.
+        storageClassCreate: true
+        storageClass: oud-sc
+        # if storageClassCreate is true, please provide the custom provisioner if any to use. If you do not have a custom provisioner, delete this line, and it will use the default class kubernetes.io/is-default-class.
+        provisioner:  kubernetes.io/is-default-class
       ```
+	  
+	  The following caveats exist:
+   
+      * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
+	  * If you have an existing storageClass that supports network storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl  get storageclass`". The `provisioner` can be ignored.
+	  
+	  
+   * If using Block Device storage for your persistent volume then change the `persistence` section as follows:
+   
+      **Note**: If you want to use block devices you should ensure that you have a default Kubernetes storage class defined for your environment that allows dynamic storage. Each vendor has its own storage provider but it may not be configured to provide dynamic storage allocation.
+	  
+      For more information on storage classes, see [Storage Classes](https://kubernetes.io/docs/concepts/storage/storage-classes/).
+  
+      ```yaml
+      persistence:
+        type: blockstorage
+        # Specify Accessmode ReadWriteMany for NFS and for block ReadWriteOnce
+        accessMode: ReadWriteOnce
+        # if true, it will create the storageclass. if value is false, please provide existing storage class (storageClass) to be used.
+        storageClassCreate: true
+        storageClass: oud-sc
+        # if storageClassCreate is true, please provide the custom provisioner if any to use or else it will use default.
+        provisioner:  oracle.com/oci
+      ```  
+     
+	  The following caveats exist:
+   
+      * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
+	  * If you have an existing storageClass that supports dynamic storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl get storageclass`". The `provisioner` can be ignored.
+	  
+   * For `resources`, `limits` and `requests`, the example CPU and memory values shown are for development environments only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE).
 
+      **Note**: Limits and requests for CPU resources are measured in CPU units. One CPU in Kubernetes is equivalent to 1 vCPU/Core for cloud providers, and 1 hyperthread on bare-metal Intel processors. An "`m`" suffix in a CPU attribute indicates ‘milli-CPU’, so 500m is 50% of a CPU. Memory can be expressed in various units, where one Mi is one IEC unit mega-byte (1024^2), and one Gi is one IEC unit giga-byte (1024^3). For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/), [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/), and [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/).
+   
+      **Note**: The parameters above are also utilized by the Kubernetes Horizontal Pod Autoscaler (HPA). For more details on HPA, see [Kubernetes Horizontal Pod Autoscaler](../manage-oud-containers/hpa).
 
+   * If you plan on integrating OUD with other Oracle components then you must specify the following under the `oudConfig:` section:
+   
+        ```
+          integration: <Integration option>
+		```
+		
+		For example:
+		```
+		oudConfig:
+		  etc...
+          integration: <Integration option>
+		```
+
+        It is recommended to choose the option covering your minimal requirements. Allowed values include: `no-integration` (no integration), `basic` (Directory Integration Platform), `generic` (Directory Integration Platform, Database Net Services and E-Business Suite integration), `eus` (Directory Integration  Platform, Database Net Services, E-Business Suite and Enterprise User Security integration). The default value is `no-integration`
+        
+		
+		**Note**: This will enable the integration type only. To integrate OUD with the Oracle component referenced, refer to the relevant product component documentation.
+   
+   * If you want to enable Assured Replication, see [Enabling Assured Replication (Optional)](#enabling-assured-replication-optional).
+   
+   
+   
 1. Run the following command to deploy OUD:
 
    ```bash
@@ -291,8 +372,11 @@ You can create OUD instances using one of the following methods:
 
    ```bash
    $ helm install --namespace <namespace> \
-   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=<persistent_volume>/oud_user_projects,image.repository=<image_location>,image.tag=<image_tag> \
+   --set oudConfig.rootUserPassword=<password> \
+   --set persistence.filesystem.hostPath.path=<persistent_volume>/oud_user_projects \
+   --set image.repository=<image_location>,image.tag=<image_tag> \
    --set oudConfig.sampleData="200" \
+   --set oudConfig.resources.limits.cpu="1",oudConfig.resources.limits.memory="8Gi",oudConfig.resources.requests.cpu="500m",oudConfig.resources.requests.memory="4Gi" \
    --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=<version> \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
    --set imagePullSecrets[0].name="orclcred" \
@@ -303,9 +387,12 @@ You can create OUD instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudns \
-   --set oudConfig.rootUserPassword=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects,image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol7-<April`23> \
+   --set oudConfig.rootUserPassword=<password> \
+   --set persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects \
+   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol7-<October`23> \
    --set oudConfig.sampleData="200" \
-   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.24.5 \
+   --set oudConfig.resources.limits.cpu="1",oudConfig.resources.limits.memory="8Gi",oudConfig.resources.requests.cpu="500m",oudConfig.resources.requests.memory="4Gi" \
+   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.26.6 \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
    --set imagePullSecrets[0].name="orclcred" \
    oud-ds-rs oud-ds-rs
@@ -315,11 +402,102 @@ You can create OUD instances using one of the following methods:
 
    * Replace `<password>` with a the relevant password.
    * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry. If `sampleData` is set to `1,000,000` users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: `--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60`.
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.24.5` set to `1.24.5`.
-   * If using using NFS for your persistent volume then use `persistence.networkstorage.nfs.path=<persistent_volume>/oud_user_projects,persistence.networkstorage.nfs.server:<NFS IP address>`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.26.6` set to `1.26.6`.
+   * If using using NFS for your persistent volume then use:
+   
+        ```
+		--set persistence.networkstorage.nfs.path=<persistent_volume>/oud_user_projects,persistence.networkstorage.nfs.server:<NFS IP address>` \
+		--set persistence.storageClassCreate="true",persistence.storageClass="oud-sc",persistence.provisioner="kubernetes.io/is-default-class" \
+		```
+      * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
+	  * If you have an existing storageClass that supports dynamic storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl get storageclass`". The `provisioner` can be ignored. 
+	  
+   * If using using block storage for your persistent volume then use:
+   
+        ```
+		--set persistence.type="blockstorage",persistence.accessMode="ReadWriteOnce" \
+		--set persistence.storageClassCreate="true",persistence.storageClass="oud-sc",persistence.provisioner="oracle.com/oci" \
+		```
+      * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
+	  * If you have an existing storageClass that supports dynamic storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl get storageclass`". The `provisioner` can be ignored. 	  
+	  
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following: `--set imagePullSecrets[0].name="orclcred"`.
+   * For `resources`, `limits` and `requests1, the example CPU and memory values shown are for development environments only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE).
+
+      **Note**: Limits and requests for CPU resources are measured in CPU units. One CPU in Kubernetes is equivalent to 1 vCPU/Core for cloud providers, and 1 hyperthread on bare-metal Intel processors. An "`m`" suffix in a CPU attribute indicates ‘milli-CPU’, so 500m is 50% of a CPU. Memory can be expressed in various units, where one Mi is one IEC unit mega-byte (1024^2), and one Gi is one IEC unit giga-byte (1024^3). For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/), [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/), and [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/).
+   
+      **Note**: The parameters above are also utilized by the Kubernetes Horizontal Pod Autoscaler (HPA). For more details on HPA, see [Kubernetes Horizontal Pod Autoscaler](../manage-oud-domains/hpa).
+	  
+   * If you plan on integrating OUD with other Oracle components then you must specify the following:
+   
+        ```
+		--set oudConfig.integration=<Integration option>
+		```
+
+        It is recommended to choose the option covering your minimal requirements. Allowed values include: `no-integration` (no integration), `basic` (Directory Integration Platform), `generic` (Directory Integration Platform, Database Net Services and E-Business Suite integration), `eus` (Directory Integration  Platform, Database Net Services, E-Business Suite and Enterprise User Security integration). The default value is `no-integration`
+        
+		**Note**: This will enable the integration type only. To integrate OUD with the Oracle component referenced, refer to the relevant product component documentation.
+   
+   * If you want to enable Assured Replication, see [Enabling Assured Replication (Optional)](#enabling-assured-replication-optional).
 
 1. Check the OUD deployment as per [Verify the OUD deployment](#verify-the-oud-deployment) and [Verify the OUD replication](#verify-the-oud-replication).
+
+
+### Enabling Assured Replication (Optional)
+
+If you want to enable assured replication, perform the following steps:
+
+1. Create a directory on the persistent volume as follows:
+
+   ```
+   $ cd <persistent_volume>
+   $ mkdir oud-repl-config  
+   $ sudo chown -R 1000:0 oud-repl-config
+   ```
+   
+   For example:
+   
+   ```
+   $ cd /scratch/shared
+   $ mkdir oud-repl-config   
+   $ sudo chown -R 1000:0 oud-repl-config
+   ```
+ 
+   
+1. Add the following section in the `oud-ds-rs-values-override.yaml`:
+
+   ```
+   replOUD:
+     envVars:
+       - name: post_dsreplication_dsconfig_3
+         value: set-replication-domain-prop --domain-name ${baseDN} --advanced --set assured-type:safe-read --set assured-sd-level:2 --set assured-timeout:5s
+       - name: execCmd_1
+         value: /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/OUD/bin/dsconfig --no-prompt --hostname ${sourceHost} --port ${adminConnectorPort} --bindDN "${rootUserDN}" --bindPasswordFile /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/admin/rootPwdFile.txt  --trustAll set-replication-domain-prop --domain-name ${baseDN} --advanced --set assured-type:safe-read --set assured-sd-level:2 --set assured-timeout:5s --provider-name "Multimaster Synchronization"
+   configVolume:
+     enabled: true
+     type: networkstorage
+     storageClassCreate: true
+     storageClass: oud-config
+     provisioner: kubernetes.io/is-default-class
+     networkstorage:
+       nfs:
+         server: <IP_address>
+         path: <persistent_volume>/oud-repl-config
+     mountPath: /u01/oracle/config-input
+   ```
+
+   For more information on OUD Assured Replication, and other options and levels, see, [Understanding the Oracle Unified Directory Replication Model](https://docs.oracle.com/en/middleware/idm/unified-directory/12.2.1.4/oudag/understanding-oracle-unified-directory-replication-model.html#GUID-A2438E61-D4DB-4B3B-8E2D-AE5921C3CF8C).
+
+   The following caveats exist:
+
+      * `post_dsreplication_dsconfig_N` and `execCmd_N` should be a unique key - change the suffix accordingly. For more information on the environment variable and respective keys, see, [Appendix B: Environment Variables](#appendix-b-environment-variables).
+
+      * For configVolume the storage can be networkstorage(nfs) or filesystem(hostPath) as the config volume path has to be accessible from all the Kuberenetes nodes. Please note that block storage is not supported for configVolume.
+   
+      * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
+	  
+	  * If you have an existing storageClass that supports network storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl  get storageclass`". Please note that the storage-class should not be the one you used for the persistent volume earlier. The `provisioner` can be ignored.
+
 
 ### Helm command output
 
@@ -430,6 +608,20 @@ NAME                                                      CLASS    HOSTS        
 ingress.networking.k8s.io/oud-ds-rs-admin-ingress-nginx   <none>   oud-ds-rs-admin-0,oud-ds-rs-admin-0,oud-ds-rs-admin-1 + 3 more...             80, 443   14m
 ingress.networking.k8s.io/oud-ds-rs-http-ingress-nginx    <none>   oud-ds-rs-http-0,oud-ds-rs-http-1,oud-ds-rs-http-2 + 3 more...                80, 443   14m
 
+```
+
+**Note**: If you are using block storage you will see slightly different entries for PV and PVC, for example:
+
+```
+NAME                                                  CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS        CLAIM                            STORAGECLASS                        REASON   AGE   VOLUMEMODE
+persistentvolume/ocid1.volume.oc1.iad.<unique_ID>     50Gi       RWO            Delete           Bound         oudns/oud-ds-rs-pv-oud-ds-rs-2   oud-sc                                       60m   Filesystem
+persistentvolume/ocid1.volume.oc1.iad.<unique_ID>     50Gi       RWO            Delete           Bound         oudns/oud-ds-rs-pv-oud-ds-rs-1   oud-sc                                       67m   Filesystem
+persistentvolume/ocid1.volume.oc1.iad.<unique_ID>     50Gi       RWO            Delete           Bound         oudns/oud-ds-rs-pv-oud-ds-rs-3   oud-sc                                       45m   Filesystem
+
+NAME                                             STATUS   VOLUME                             CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/oud-ds-rs-pv-oud-ds-rs-1   Bound    ocid1.volume.oc1.iad.<unique_ID>   50Gi       RWO            oud-sc         67m   Filesystem
+persistentvolumeclaim/oud-ds-rs-pv-oud-ds-rs-2   Bound    ocid1.volume.oc1.iad.<unique_ID>   50Gi       RWO            oud-sc         60m   Filesystem
+persistentvolumeclaim/oud-ds-rs-pv-oud-ds-rs-3   Bound    ocid1.volume.oc1.iad.<unique_ID>   50Gi       RWO            oud-sc         45m   Filesystem
 ```
 
 **Note**: Initially `pod/oud-ds-rs-0` will appear with a `STATUS` of `0/1` and it will take approximately 5 minutes before OUD is started (`1/1`). Once `pod/oud-ds-rs-0` has a `STATUS` of `1/1`, `pod/oud-ds-rs-1` will appear with a `STATUS` of `0/1`. Once `pod/oud-ds-rs-1` is started (`1/1`),  `pod/oud-ds-rs-2` will appear. It will take around 15 minutes for all the pods to fully started.
@@ -603,6 +795,44 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    
    The output will be the same as per [Run dresplication inside the pod](#run-dresplication-inside-the-pod).
 
+#### Verify OUD assured replication status
+
+**Note**: This section only needs to be followed if you enabled assured replication as per [Enabling Assured Replication (Optional)](#enabling-assured-replication-optional).
+
+1. Run the following command to create a bash shell in the pod:
+
+   ```bash
+   $ kubectl --namespace <namespace> exec -it -c <containername> <podname> -- bash
+   ```
+
+   For example: 
+
+   ```bash
+   $ kubectl --namespace oudns exec -it -c oud-ds-rs oud-ds-rs-0 -- bash
+   ```
+   
+   This will take you into the pod:
+   
+   ```bash
+   [oracle@oud-ds-rs-0 oracle]$
+   ```
+   
+1. At the prompt, enter the following commands:
+
+   ```bash
+   $ echo $bindPassword1 > /tmp/pwd.txt
+   $ /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/OUD/bin/dsconfig --no-prompt --hostname ${OUD_INSTANCE_NAME} --port ${adminConnectorPort} --bindDN "${rootUserDN}" --bindPasswordFile /tmp/pwd.txt  --trustAll get-replication-domain-prop --domain-name ${baseDN} --advanced --property assured-type --property assured-sd-level --property assured-timeout --provider-name "Multimaster Synchronization"
+   ```
+
+   The output will look similar to the following:
+   
+   ```
+   Property         : Value(s)
+   -----------------:----------
+   assured-sd-level : 2
+   assured-timeout  : 5 s
+   assured-type     : safe-read
+   ```
 
 ### Verify the cronjob
 
@@ -641,7 +871,7 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    
    ```bash
    NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
-   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.24.5   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
+   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.26.6   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
    ```
    
 
@@ -739,7 +969,7 @@ With an OUD instance now deployed you are now ready to configure an ingress cont
    release "oud-ds-rs" uninstalled
    ```
    
-1. Run  the following command to view the status:
+1. Run the following command to view the status:
 
    ```bash
    $ kubectl --namespace oudns get pod,service,secret,pv,pvc,ingress -o wide
@@ -768,7 +998,20 @@ With an OUD instance now deployed you are now ready to configure an ingress cont
    
    Run the command again until the pods, PV and PVC disappear.
    
+1. If the PV or PVC's don't delete, remove them manually:
+
+   ```
+   $ kubectl delete pvc oud-ds-rs-pvc -n oudns
+   $ kubectl delete pv oud-ds-rs-pv -n oudns
+   ```
+   
+   **Note**: If using blockstorage, you will see a PV and PVC for each pod. Delete all of the PVC's and PV's using the above commands. 
+   
+   
+   
 #### Delete the persistent volume contents
+
+**Note**: The steps below are not relevant for block storage.
 
 1. Delete the contents of the `oud_user_projects` directory in the persistent volume:
 
@@ -824,14 +1067,16 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | persistence.enabled | If enabled, it will use the persistent volume. if value is false, PV and PVC would not be used and pods would be using the default emptyDir mount volume. | true |
 | persistence.pvname | pvname to use an already created Persistent Volume , If blank will use the default name | oud-ds-rs-< fullname >-pv |
 | persistence.pvcname | pvcname to use an already created Persistent Volume Claim , If blank will use default name  |oud-ds-rs-< fullname >-pvc |
-| persistence.type | supported values: either filesystem or networkstorage or custom | filesystem |
+| persistence.type | supported values: either filesystem or networkstorage or blockstorage or custom | filesystem |
 | persistence.filesystem.hostPath.path | The path location mentioned should be created and accessible from the local host provided with necessary privileges for the user. | /scratch/shared/oud_user_projects |
 | persistence.networkstorage.nfs.path | Path of NFS Share location  | /scratch/shared/oud_user_projects |
 | persistence.networkstorage.nfs.server | IP or hostname of NFS Server  | 0.0.0.0 |
 | persistence.custom.* | Based on values/data, YAML content would be included in PersistenceVolume Object |  |
-| persistence.accessMode | Specifies the access mode of the location provided | ReadWriteMany |
+| persistence.accessMode | Specifies the access mode of the location provided. ReadWriteMany for Filesystem/NFS, ReadWriteOnce for block storage. | ReadWriteMany |
 | persistence.size  | Specifies the size of the storage | 10Gi |
+| persistence.storageClassCreate | if true, it will create the storageclass. if value is false, please provide existing storage class (storageClass) to be used. | empty |
 | persistence.storageClass | Specifies the storageclass of the persistence volume. | empty |
+| persistence.provisioner | If storageClassCreate is true, provide the custom provisioner if any . | kubernetes.io/is-default-class |
 | persistence.annotations | specifies any annotations that will be used| { } |
 | configVolume.enabled | If enabled, it will use the persistent volume. If value is false, PV and PVC would not be used and pods would be using the default emptyDir mount volume. | true |
 | configVolume.mountPath | If enabled, it will use the persistent volume. If value is false, PV and PVC would not be used and there would not be any mount point available for config | false |
@@ -845,7 +1090,9 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | configVolume.accessMode | Specifies the access mode of the location provided | ReadWriteMany |
 | configVolume.size  | Specifies the size of the storage | 10Gi |
 | configVolume.storageClass | Specifies the storageclass of the persistence volume. | empty |
-| configVolume.annotations | specifies any annotations that will be used| { } |
+| configVolume.annotations | Specifies any annotations that will be used| { } |
+| configVolume.storageClassCreate |  If true, it will create the storageclass. if value is false, provide existing storage class (storageClass) to be used. | true |
+| configVolume.provisioner |  If configVolume.storageClassCreate is true, please provide the custom provisioner if any. | kubernetes.io/is-default-class |
 | oudPorts.adminldaps | Port on which Oracle Unified Directory Instance in the container should listen for Administration Communication over LDAPS Protocol | 1444 |
 | oudPorts.adminhttps | Port on which Oracle Unified Directory Instance in the container should listen for Administration Communication over HTTPS Protocol. | 1888 |
 | oudPorts.ldap | Port on which Oracle Unified Directory Instance in the container should listen for LDAP Communication. | 1389 |
@@ -881,49 +1128,15 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | oudPorts.nodePorts.ldaps | Public port on which the OUD instance in the container should listen for LDAPS communication. The port number should be between 30000-32767. No duplicate values are  allowed. **Note**: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767. | |
 | oudPorts.nodePorts.http | Public port on which the OUD instance in the container should listen for HTTP communication. The port number should be between 30000-32767. No duplicate values are  allowed. **Note**: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767. | |
 | oudPorts.nodePorts.https | Public port on which the OUD instance in the container should listen for HTTPS communication. The port number should be between 30000-32767. No duplicate values are  allowed. **Note**: Set only if service.lbrtype is set as NodePort. If left blank then k8s will assign random ports in between 30000 and 32767. | |
-| elk.elasticsearch.enabled | If enabled it will create the elastic search statefulset deployment | false |
-| elk.elasticsearch.image.repository | Elastic Search Image name/Registry/Repository . Based on this elastic search instances will be created | docker.elastic.co/elasticsearch/elasticsearch |
-| elk.elasticsearch.image.tag | Elastic Search Image tag .Based on this, image parameter would be configured for Elastic Search pods/instances | 6.4.3 |
-| elk.elasticsearch.image.pullPolicy | policy to pull the image | IfnotPresent |
-| elk.elasticsearch.esreplicas | Number of Elastic search Instances will be created | 3 |
-| elk.elasticsearch.minimumMasterNodes | The value for discovery.zen.minimum_master_nodes. Should be set to (esreplicas / 2) + 1. | 2 |
-| elk.elasticsearch.esJAVAOpts | Java options for Elasticsearch. This is where you should configure the jvm heap size | -Xms512m -Xmx512m |
-| elk.elasticsearch.sysctlVmMaxMapCount | Sets the sysctl vm.max_map_count needed for Elasticsearch | 262144 |
-| elk.elasticsearch.resources.requests.cpu | cpu resources requested for the elastic search | 100m |
-| elk.elasticsearch.resources.limits.cpu | total cpu limits that are configures for the elastic search | 1000m |
-| elk.elasticsearch.esService.type | Type of Service to be created for elastic search | ClusterIP |
-| elk.elasticsearch.esService.lbrtype | Type of load balancer Service to be created for elastic search | ClusterIP |
-| elk.kibana.enabled | If enabled it will create a kibana deployment | false |
-| elk.kibana.image.repository | Kibana Image Registry/Repository and name. Based on this Kibana instance will be created  | docker.elastic.co/kibana/kibana |
-| elk.kibana.image.tag | Kibana Image tag. Based on this, Image parameter would be configured. | 6.4.3 |
-| elk.kibana.image.pullPolicy | policy to pull the image | IfnotPresent |
-| elk.kibana.kibanaReplicas | Number of Kibana instances will be created | 1 |
-| elk.kibana.service.tye | Type of service to be created | NodePort |
-| elk.kibana.service.targetPort | Port on which the kibana will be accessed | 5601 |
-| elk.kibana.service.nodePort | nodePort is the port on which kibana service will be accessed from outside | 31119 |
-| elk.logstash.enabled | If enabled it will create a logstash deployment | false |
-| elk.logstash.image.repository | logstash Image Registry/Repository and name. Based on this logstash instance will be created  | logstash |
-| elk.logstash.image.tag | logstash Image tag. Based on this, Image parameter would be configured. | 6.6.0 |
-| elk.logstash.image.pullPolicy | policy to pull the image | IfnotPresent |
-| elk.logstash.containerPort | Port on which the logstash container will be running  | 5044 |
-| elk.logstash.service.tye | Type of service to be created | NodePort |
-| elk.logstash.service.targetPort | Port on which the logstash will be accessed | 9600 |
-| elk.logstash.service.nodePort | nodePort is the port on which logstash service will be accessed from outside | 32222 |
-| elk.logstash.logstashConfigMap | Provide the configmap name which is already created with the logstash conf. if empty default logstash configmap will be created and used | |
-| elk.elkPorts.rest | Port for REST | 9200 |
-| elk.elkPorts.internode | port used for communication between the nodes | 9300 |
-| elk.busybox.image | busy box image name. Used for initcontianers | busybox |
-| elk.elkVolume.enabled | If enabled, it will use the persistent volume. if value is false, PV and pods would be using the default emptyDir mount volume. | true |
-| elk.elkVolume.pvname | pvname to use an already created Persistent Volume , If blank will use the default name | oud-ds-rs-< fullname >-espv |
-| elk.elkVolume.type | supported values: either filesystem or networkstorage or custom | filesystem |
-| elk.elkVolume.filesystem.hostPath.path | The path location mentioned should be created and accessible from the local host provided with necessary privileges for the user. | /scratch/shared/oud_elk/data |
-| elk.elkVolume.networkstorage.nfs.path | Path of NFS Share location  | /scratch/shared/oud_elk/data |
-| elk.elkVolume.networkstorage.nfs.server | IP or hostname of NFS Server  | 0.0.0.0 |
-| elk.elkVolume.custom.* | Based on values/data, YAML content would be included in PersistenceVolume Object |  |
-| elk.elkVolume.accessMode | Specifies the access mode of the location provided | ReadWriteMany |
-| elk.elkVolume.size  | Specifies the size of the storage | 20Gi |
-| elk.elkVolume.storageClass | Specifies the storageclass of the persistence volume. | elk |
-| elk.elkVolume.annotations | specifies any annotations that will be used| { } |
+| oudConfig.integration | Specifies which Oracle components the server can be integrated with. It is recommended to choose the option covering your minimal requirements. Allowed values: no-integration (no integration), basic (Directory Integration Platform), generic (Directory Integration Platform, Database Net Services and E-Business Suite integration), eus (Directory Integration  Platform, Database Net Services, E-Business Suite and Enterprise User Security integration)| no-integration |
+| elk.logStashImage | The version of logstash you want to install |	logstash:8.3.1 |
+| elk.sslenabled | If SSL is enabled for ELK set the value to true, or if NON-SSL set to false. This value must be lowercase | TRUE |
+| elk.eshosts |	The URL for sending logs to Elasticsearch. HTTP if NON-SSL is used | https://elasticsearch.example.com:9200 |
+| elk.esuser | The name of the user for logstash to access Elasticsearch | logstash_internal |
+| elk.espassword | The password for ELK_USER | password |
+| elk.esapikey | The API key details | apikey |
+| elk.esindex |	The log name  | oudlogs-00001 |
+| elk.imagePullSecrets | secret to be used for pulling logstash image |	dockercred |
 
 
 ### Appendix B: Environment Variables

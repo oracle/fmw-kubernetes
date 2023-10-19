@@ -1,0 +1,42 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to deploy a cron job to replicate the primary OIG PV to the DR OIG PV
+#
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oigrsyncdr
+  namespace: <DRNS>
+spec:
+  schedule: "*/<DR_OIG_MINS> * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: alpine-rsync
+            image: <RSYNC_IMAGE>:<RSYNC_VER>
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: dr-cm
+            volumeMounts:
+              - mountPath: "/u01/primary_oigpv"
+                name: oigpv
+              - mountPath: "/u01/dr_oigpv"
+                name: oigpv-dr
+            command:
+            - /bin/sh
+            - -c
+            - /u01/primary_oigpv/dr_scripts/oig_dr.sh
+          volumes:
+          - name: oigpv
+            persistentVolumeClaim:
+              claimName: primary-oigpv-pvc
+          - name: oigpv-dr
+            persistentVolumeClaim:
+              claimName: standby-oigpv-pvc
+          restartPolicy: OnFailure

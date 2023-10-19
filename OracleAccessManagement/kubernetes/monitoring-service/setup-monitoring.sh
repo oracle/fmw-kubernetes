@@ -82,14 +82,12 @@ function installKubePrometheusStack {
        --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
        --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
        --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
-       --version "16.5.0" --values ${scriptDir}/values.yaml \
-       --atomic --wait
+       --wait
   else
      helm install ${monitoringNamespace}  prometheus-community/kube-prometheus-stack \
        --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set grafana.adminPassword=admin \
-       --version "16.5.0" --values ${scriptDir}/values.yaml \
-       --atomic --wait
+       --wait
   fi
   exitIfError $? "ERROR: prometheus-community/kube-prometheus-stack install failed."
 }

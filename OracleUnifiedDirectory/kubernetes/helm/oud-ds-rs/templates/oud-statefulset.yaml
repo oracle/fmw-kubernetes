@@ -1,10 +1,11 @@
 #
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
 #
+{{- if (ne "blockstorage" .Values.persistence.type) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -185,6 +186,8 @@ spec:
             value: {{ include "oud-ds-rs.fullname" . }}-0
           - name: baseDN
             value: {{ .Values.oudConfig.baseDN }}
+          - name: integration
+            value: {{ .Values.oudConfig.integration }}
           {{- if .Values.secret.enabled }}
           - name: rootUserDN
             valueFrom:
@@ -445,4 +448,4 @@ spec:
             claimName: {{ include "oud-ds-rs.fullname" . }}-pvc-config
         {{- end }}
       {{- end }}
-
+{{- end }}

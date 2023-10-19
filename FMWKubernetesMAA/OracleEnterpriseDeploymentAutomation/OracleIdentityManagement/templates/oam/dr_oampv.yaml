@@ -1,0 +1,20 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <OAM_DOMAIN_NAME>-domain-pv
+  labels:
+    weblogic.domainUID: <OAM_DOMAIN_NAME>
+spec:
+  storageClassName: <OAM_DOMAIN_NAME>-domain-storage-class
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: <PVSERVER>
+    path: <OAM_SHARE>

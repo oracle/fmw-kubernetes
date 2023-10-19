@@ -239,7 +239,6 @@ For usage details execute `./setup-monitoring.sh -h`.
    ==============================================================
    ```
    
-   **Note**: If you see the warning `W0320 <DATE>    9968 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+` you can ignore this message.
    
 #### Prometheus service discovery
 

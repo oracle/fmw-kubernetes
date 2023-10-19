@@ -24,24 +24,24 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unif
    The output will look similar to the following:
 
    ```
-   NAME                  STATUS   ROLES                  AGE   VERSION
-   node/worker-node1     Ready    <none>                 17h   v1.24.5+1.el7
-   node/worker-node2     Ready    <none>                 17h   v1.24.5+1.el7
-   node/master-node      Ready    control-plane,master   23h   v1.24.5+1.el7
+   NAME                  STATUS   ROLES    AGE   VERSION
+   node/worker-node1     Ready    <none>   17h   v1.26.6+1.el8
+   node/worker-node2     Ready    <none>   17h   v1.26.6+1.el8
+   node/master-node      Ready    master   23h   v1.26.6+1.el8
 
-   NAME                                      READY   STATUS    RESTARTS   AGE
-   pod/coredns-66bff467f8-slxdq              1/1     Running   1          67d
-   pod/coredns-66bff467f8-v77qt              1/1     Running   1          67d
-   pod/etcd-10.89.73.42                      1/1     Running   1          67d
-   pod/kube-apiserver-10.89.73.42            1/1     Running   1          67d
-   pod/kube-controller-manager-10.89.73.42   1/1     Running   27         67d
-   pod/kube-flannel-ds-amd64-r2m8r           1/1     Running   2          48d
-   pod/kube-flannel-ds-amd64-rdhrf           1/1     Running   2          6d1h
-   pod/kube-flannel-ds-amd64-vpcbj           1/1     Running   3          66d
-   pod/kube-proxy-jtcxm                      1/1     Running   1          67d
-   pod/kube-proxy-swfmm                      1/1     Running   1          66d
-   pod/kube-proxy-w6x6t                      1/1     Running   1          66d
-   pod/kube-scheduler-10.89.73.42            1/1     Running   29         67d
+   NAME                                     READY   STATUS    RESTARTS   AGE
+   pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
+   pod/coredns-66bff467f8-xtc8k             1/1     Running   0          23h
+   pod/etcd-master                          1/1     Running   0          21h
+   pod/kube-apiserver-master-node           1/1     Running   0          21h
+   pod/kube-controller-manager-master-node  1/1     Running   0          21h
+   pod/kube-flannel-ds-amd64-lxsfw          1/1     Running   0          17h
+   pod/kube-flannel-ds-amd64-pqrqr          1/1     Running   0          17h
+   pod/kube-flannel-ds-amd64-wj5nh          1/1     Running   0          17h
+   pod/kube-proxy-2kxv2                     1/1     Running   0          17h
+   pod/kube-proxy-82vvj                     1/1     Running   0          17h
+   pod/kube-proxy-nrgw9                     1/1     Running   0          23h
+   pod/kube-scheduler-master                1/1     Running   0          21$
    ```
 
 ### Obtain the OUDSM container image

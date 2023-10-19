@@ -1,0 +1,54 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    meta.helm.sh/release-name: <OUD_POD_PREFIX>
+    meta.helm.sh/release-namespace: <OUDNS>
+  labels:
+    app.kubernetes.io/instance: <OUD_POD_PREFIX>
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: oud-ds-rs
+    app.kubernetes.io/version: 12.2.1.4.0
+    type: <OUD_POD_PREFIX>-oud-ds-rs-pv
+  name: <OUD_POD_PREFIX>-oud-ds-rs-pv
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 30Gi
+  nfs:
+    path: <OUD_SHARE>
+    server: <PVSERVER>
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: manual
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    meta.helm.sh/release-name: <OUD_POD_PREFIX>
+    meta.helm.sh/release-namespace: <OUDNS>
+  labels:
+    app.kubernetes.io/instance: <OUD_POD_PREFIX>
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: oud-ds-rs
+    app.kubernetes.io/version: 12.2.1.4.0
+    helm.sh/chart: oud-ds-rs-0.2
+    type: <OUD_POD_PREFIX>-oud-ds-rs-pv-config
+  name: <OUD_POD_PREFIX>-oud-ds-rs-pv-config
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  nfs:
+    path: <OUD_CONFIG_SHARE>
+    server: <PVSERVER>
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  volumeMode: Filesystem

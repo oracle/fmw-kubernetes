@@ -1,0 +1,45 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of how to define the resource section in WDT Model for an OIG Domain
+# For details regarding how to work with WDT model files and WDT model attributes, please refer below links
+# https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/model-files/
+# https://oracle.github.io/weblogic-deploy-tooling/concepts/model/
+#
+
+resources:
+    WebAppContainer:
+        WeblogicPluginEnabled: true
+        JaxRsMonitoringDefaultBehavior: false
+    ForeignJNDIProvider:
+        ForeignJNDIProvider-SOA:
+            PasswordEncrypted: '@@SECRET:__weblogic-credentials__:password@@'
+            InitialContextFactory: weblogic.jndi.WLInitialContextFactory
+            ProviderUrl: 'cluster:t3://soa_cluster'
+            User: '@@SECRET:__weblogic-credentials__:username@@'
+            Target: oim_cluster
+            ForeignJNDILink:
+                /ejb/bpel/services/workflow/TaskServiceGlobalTransactionBean:
+                    RemoteJNDIName: /ejb/bpel/services/workflow/TaskServiceGlobalTransactionBean
+                    LocalJNDIName: /ejb/bpel/services/workflow/TaskServiceGlobalTransactionBean
+                RuntimeConfigService:
+                    RemoteJNDIName: RuntimeConfigService
+                    LocalJNDIName: RuntimeConfigService
+                TaskEvidenceServiceBean:
+                    RemoteJNDIName: TaskEvidenceServiceBean
+                    LocalJNDIName: TaskEvidenceServiceBean
+                TaskQueryService:
+                    RemoteJNDIName: TaskQueryService
+                    LocalJNDIName: TaskQueryService
+                TaskReportServiceBean:
+                    RemoteJNDIName: TaskReportServiceBean
+                    LocalJNDIName: TaskReportServiceBean
+                UserMetadataService:
+                    RemoteJNDIName: UserMetadataService
+                    LocalJNDIName: UserMetadataService
+                ejb/bpel/services/workflow/TaskMetadataServiceBean:
+                    RemoteJNDIName: ejb/bpel/services/workflow/TaskMetadataServiceBean
+                    LocalJNDIName: ejb/bpel/services/workflow/TaskMetadataServiceBean
+                ejb/bpel/services/workflow/TaskServiceBean:
+                    RemoteJNDIName: ejb/bpel/services/workflow/TaskServiceBean
+                    LocalJNDIName: ejb/bpel/services/workflow/TaskServiceBean

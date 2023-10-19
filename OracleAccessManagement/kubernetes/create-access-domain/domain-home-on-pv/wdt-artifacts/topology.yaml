@@ -1,0 +1,90 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# This is an example of how to define the topology section in WDT model for an OAM domain
+# For details regarding how to work with WDT model files and WDT model attributes, please refer below links
+# https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/model-files/
+# https://oracle.github.io/weblogic-deploy-tooling/concepts/model/
+#
+
+topology:
+    Name: '@@ENV:DOMAIN_UID@@'
+    ProductionModeEnabled: true
+    Cluster:
+        oam_cluster:
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+        policy_cluster:
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+    Server:
+        AdminServer:
+            ListenPort: '@@PROP:Server.AdminServer.ListenPort@@'
+        oam_policy_mgr1:
+            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
+            Cluster: policy_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_policy_mgr.ListenAddress@@1'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_policy_mgr2:
+            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
+            Cluster: policy_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_policy_mgr.ListenAddress@@2'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_policy_mgr3:
+            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
+            Cluster: policy_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_policy_mgr.ListenAddress@@3'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_policy_mgr4:
+            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
+            Cluster: policy_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_policy_mgr.ListenAddress@@4'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_policy_mgr5:
+            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
+            Cluster: policy_cluster
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_policy_mgr.ListenAddress@@5'
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+
+        oam_server1:
+            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_server.ListenAddress@@1'
+            Cluster: oam_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_server2:
+            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_server.ListenAddress@@2'
+            Cluster: oam_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_server3:
+            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_server.ListenAddress@@3'
+            Cluster: oam_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_server4:
+            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_server.ListenAddress@@4'
+            Cluster: oam_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1
+        oam_server5:
+            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
+            ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_server.ListenAddress@@5'
+            Cluster: oam_cluster
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+            NumOfRetriesBeforeMsiMode: 0
+            RetryIntervalBeforeMsiMode: 1

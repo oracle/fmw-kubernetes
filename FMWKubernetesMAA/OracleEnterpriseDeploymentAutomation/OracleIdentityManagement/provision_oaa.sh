@@ -81,6 +81,8 @@ echo
 
 create_local_workdir
 create_logdir
+printf "Using Image:"
+printf "\n\t$OAA_MGT_IMAGE:$OAAMGT_VER\n\n"
 
 echo -n "Provisioning Oracle Advanced Authentication on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
@@ -155,6 +157,12 @@ then
    update_progress
 fi
 
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   copy_settings_file
+   update_progress
+fi
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
@@ -225,42 +233,46 @@ then
    update_progress
 fi
 
-# Create OHS rewrite Rules
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$OAA_CREATE_OHS" = "true" ]
 then
-    if [ "$UPDATE_OHS" = "true" ]
-    then
-       add_ohs_rewrite_rules
-       update_progress
-    fi
-fi
+
+   # Create OHS rewrite Rules
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       if [ "$UPDATE_OHS" = "true" ]
+       then
+          add_ohs_rewrite_rules
+          update_progress
+       fi
+   fi
 
 
 
-# Add OHS entries for OAA to OAM ohs config files if Ingress is being used
-#
-if [ "$USE_INGRESS" = "true" ] && [ "$OAA_CREATE_OHS" = "true" ]
-then
-  new_step
-  if [ $STEPNO -gt $PROGRESS ]
-  then
-     create_ohs_entries
-     update_progress
-  fi
-fi
+   # Add OHS entries for OAA to OAM ohs config files if Ingress is being used
+   #
+   if [ "$USE_INGRESS" = "true" ] 
+   then
+     new_step
+     if [ $STEPNO -gt $PROGRESS ]
+     then
+        create_ohs_entries
+        update_progress
+     fi
+   fi
 
-# Copy OHS config to OHS servers if required
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    if [ "$UPDATE_OHS" = "true" ] && [ "$OAA_CREATE_OHS" = "true" ]
-    then
-       copy_ohs_config
-       update_progress
-    fi
+   # Copy OHS config to OHS servers if required
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       if [ "$UPDATE_OHS" = "true" ] && [ "$OAA_CREATE_OHS" = "true" ]
+       then
+          copy_ohs_config
+          update_progress
+       fi
+   fi
 fi
 
 

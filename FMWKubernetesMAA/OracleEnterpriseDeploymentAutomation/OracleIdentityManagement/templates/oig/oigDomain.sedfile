@@ -10,13 +10,27 @@
 /replicas:/a\  serverPod:\
 \    env: \
 \    - name: USER_MEM_ARGS \
-\      value: "-Djava.security.egd=file:/dev/./urandom <OIMSERVER_JAVA_PARAMS> "
+\      value: "-Djava.security.egd=file:/dev/./urandom <OIMSERVER_JAVA_PARAMS> " \
+\    resources: \
+\      limits: \
+\        cpu: "<OIM_MAX_CPU>" \
+\        memory: <OIM_MAX_MEMORY> \
+\      requests: \
+\        cpu: <OIM_CPU> \
+\        memory: <OIM_MEMORY>
 }
 /soa_cluster/,/replicas/{
 /replicas/a\  serverPod:\
 \    env: \
 \    - name: USER_MEM_ARGS \
-\      value: "<SOASERVER_JAVA_PARAMS>"
+\      value: "<SOASERVER_JAVA_PARAMS>" \
+\    resources: \
+\      limits: \
+\        cpu: "<SOA_MAX_CPU>2" \
+\        memory: <SOA_MAX_MEMORY> \
+\      requests: \
+\        cpu: <SOA_CPU> \
+\        memory: <SOA_MEMORY>
 }
 
 

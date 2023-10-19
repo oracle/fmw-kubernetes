@@ -71,7 +71,6 @@ These instructions apply to upgrading operators from 3.X.X to 4.X, or from withi
    pod/weblogic-operator-webhook-7996b8b58b-frtwp   1/1     Running   0          42s
 
    NAME                                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
-   service/internal-weblogic-operator-svc   ClusterIP   10.107.3.1     <none>        8082/TCP,8083/TCP   6d
    service/weblogic-operator-webhook-svc    ClusterIP   10.106.51.57   <none>        8083/TCP,8084/TCP   42s
 
    NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE

@@ -1,0 +1,225 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.  
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a responsefile for IDM Provisioning on Kubernetes
+#
+
+############################################################################################
+#                               CONTROL Parameters                                         #
+############################################################################################
+#
+
+# Products to Deploy
+#
+DR_OUD=true
+DR_OAM=true
+DR_OIG=true
+DR_OIRI=true
+DR_OAA=true
+DR_OHS=true
+
+# Control Parameters
+#
+USE_REGISTRY=true
+USE_INGRESS=true
+COPY_FILES_TO_DR=true
+
+DR_HOST=drhost
+DR_USER=opc
+
+ENV_TYPE=OTHER
+USE_MAA_SCRIPTS=true
+
+############################################################################################
+#                               GENERIC Parameters                                         #
+############################################################################################
+#
+
+# Local Work Directories
+
+LOCAL_WORKDIR=/home/opc/workdir
+K8_DRDIR=/u01/oracle/user_projects/dr_scripts
+
+
+############################################################################################
+#                               Container Registry Parameters                              #
+############################################################################################
+#
+REGISTRY=iad.ocir.io/mytenancy/idm
+REG_USER=mytenancy/oracleidentitycloudservice/myemail@example.com
+CREATE_REGSECRET=true
+
+############################################################################################
+#                               IMAGE Parameters                                           #
+############################################################################################
+#
+# Images
+# 
+
+# Image Versions
+# 
+RSYNC_VER=latest
+
+
+############################################################################################
+#                               DR Parameters                                              #
+############################################################################################
+DR_TYPE=STANDBY
+DRNS=drns
+
+############################################################################################
+#                               NFS Parameters                                             #
+############################################################################################
+#
+DR_PRIMARY_NFS_EXPORT=/export/IAMPVS
+DR_PRIMARY_PVSERVER=site1pvserver.example.com
+
+DR_STANDBY_PVSERVER=site2pvserver.example.com
+DR_STANDBY_NFS_EXPORT=/export/IAMPVS
+
+############################################################################################
+#                               OUD Parameters                                             #
+############################################################################################
+#
+OUDNS=oudns
+OUD_POD_PREFIX=edg
+OUD_REPLICAS=2
+
+OUD_PRIMARY_SHARE=$DR_PRIMARY_NFS_EXPORT/oudpv
+OUD_PRIMARY_CONFIG_SHARE=$DR_PRIMARY_NFS_EXPORT/oudconfigpv
+OUD_STANDBY_SHARE=$DR_STANDBY_NFS_EXPORT/oudpv
+OUD_STANDBY_CONFIG_SHARE=$DR_STANDBY_NFS_EXPORT/oudconfigpv
+
+OUD_LOCAL_CONFIG_SHARE=/nfs_volumes/oudconfigpv
+OUD_LOCAL_SHARE=/nfs_volumes/oudpv
+
+DR_OUD_MINS=5
+DR_CREATE_OUD_JOB=true
+
+############################################################################################
+#                               OHS Parameters                                             #
+############################################################################################
+#
+
+
+OHS_BASE=/u02/private
+OHS_ORACLE_HOME=$OHS_BASE/oracle/products/ohs
+
+OHS_USER=opc
+OHS_HOST1=webhost1.example.com
+OHS1_NAME=ohs1
+OHS_HOST2=webhost2.example.com
+OHS2_NAME=ohs2
+
+OHS_DOMAIN=/u02/private/oracle/config/domains/ohsDomain
+
+############################################################################################
+#                               OAM Parameters                                             #
+############################################################################################
+#
+OAMNS=oamns
+OAM_DOMAIN_NAME=accessdomain
+OAM_PRIMARY_SHARE=$DR_PRIMARY_NFS_EXPORT/oampv
+OAM_STANDBY_SHARE=$DR_STANDBY_NFS_EXPORT/oampv
+OAM_LOCAL_SHARE=/nfs_volumes/oampv
+OAM_SERVER_INITIAL=2
+OAM_PRIMARY_DB_SCAN=site1-scan.example.com
+OAM_PRIMARY_DB_SERVICE=oamsvc.example.com
+OAM_STANDBY_DB_SCAN=site2-scan.example.com
+OAM_STANDBY_DB_SERVICE=oamsvc.example.com
+OAM_DB_LISTENER=1521
+
+COPY_WG_FILES=true
+DR_OAM_MINS=720
+DR_CREATE_OAM_JOB=true
+############################################################################################
+#                               OIG Parameters                                             #
+############################################################################################
+#
+OIGNS=oigns
+OIG_DOMAIN_NAME=governancedomain
+OIG_PRIMARY_SHARE=$DR_PRIMARY_NFS_EXPORT/oigpv
+OIG_STANDBY_SHARE=$DR_STANDBY_NFS_EXPORT/oigpv
+OIG_LOCAL_SHARE=/nfs_volumes/oigpv
+OIG_SERVER_INITIAL=2
+OIG_PRIMARY_DB_SCAN=site1-scan.example.com
+OIG_PRIMARY_DB_SERVICE=oigsvc.example.com
+OIG_STANDBY_DB_SCAN=site2-scan.example.com
+OIG_STANDBY_DB_SERVICE=oigsvc.example.com
+
+
+DR_OIG_MINS=720
+DR_CREATE_OIG_JOB=true
+
+############################################################################################
+#                               OIRI Parameters                                            #
+############################################################################################
+# 
+OIRINS=oirins
+DINGNS=dingns
+
+# NFS Parameters
+#
+OIRI_PRIMARY_SHARE=$DR_PRIMARY_NFS_EXPORT/oiripv
+OIRI_STANDBY_SHARE=$DR_STANDBY_NFS_EXPORT/oiripv
+OIRI_DING_PRIMARY_SHARE=$DR_PRIMARY_NFS_EXPORT/dingpv
+OIRI_DING_STANDBY_SHARE=$DR_STANDBY_NFS_EXPORT/dingpv
+OIRI_WORK_PRIMARY_SHARE=$DR_PRIMARY_NFS_EXPORT/workpv
+OIRI_WORK_STANDBY_SHARE=$DR_STANDBY_NFS_EXPORT/workpv
+OIRI_LOCAL_SHARE=/nfs_volumes/oiripv
+OIRI_DING_LOCAL_SHARE=/nfs_volumes/dingpv
+OIRI_WORK_LOCAL_SHARE=/nfs_volumes/workpv
+OIRI_PRIMARY_DB_SCAN=site1-scan.example.com
+OIRI_STANDBY_DB_SCAN=site2-scan.example.com
+OIRI_PRIMARY_DB_SERVICE=oirisvc.example.com
+OIRI_STANDBY_DB_SERVICE=oirisvc.example.com
+
+OIRI_PRIMARY_K8CONFIG=primary_k8config
+OIRI_STANDBY_K8CONFIG=standby_k8config
+OIRI_PRIMARY_K8CA=primary_ca.crt
+OIRI_STANDBY_K8CA=standby_ca.crt
+OIRI_PRIMARY_K8=10.0.0.5:6443
+OIRI_STANDBY_K8=10.1.0.10:6443
+
+DR_OIRI_MINS=720
+DR_CREATE_OIRI_JOB=true
+
+############################################################################################
+#                               OAA Parameters                                             #
+############################################################################################
+#
+OAANS=oaans
+OAA_MGT_IMAGE=$REGISTRY/oaa-mgmt
+OAAMGT_VER=12.2.1.4-jdk8-ol7-DATE
+
+# NFS Parameters
+#
+OAA_PRIMARY_CONFIG_SHARE=$DR_PRIMARY_NFS_EXPORT/oaaconfigpv
+OAA_STANDBY_CONFIG_SHARE=$DR_STANDBY_NFS_EXPORT/oaaconfigpv
+OAA_PRIMARY_CRED_SHARE=$DR_PRIMARY_NFS_EXPORT/oaacredpv
+OAA_STANDBY_CRED_SHARE=$DR_STANDBY_NFS_EXPORT/oaacredpv
+OAA_PRIMARY_LOG_SHARE=$DR_PRIMARY_NFS_EXPORT/oaalogpv
+OAA_STANDBY_LOG_SHARE=$DR_STANDBY_NFS_EXPORT/oaalogpv
+OAA_PRIMARY_VAULT_SHARE=$DR_PRIMARY_NFS_EXPORT/oaavaultpv
+OAA_STANDBY_VAULT_SHARE=$DR_STANDBY_NFS_EXPORT/oaavaultpv
+OAA_LOCAL_CONFIG_SHARE=/nfs_volumes/oaaconfigpv
+OAA_LOCAL_CRED_SHARE=/nfs_volumes/oaacredpv
+OAA_LOCAL_LOG_SHARE=/nfs_volumes/oaalogpv
+OAA_LOCAL_VAULT_SHARE=/nfs_volumes/oaavaultpv
+OAA_LOCAL_SHARE=$OAA_LOCAL_CONFIG_SHARE
+
+OAA_VAULT_TYPE=file
+OAA_REPLICAS=2
+
+
+# DB Parameters
+#
+OAA_PRIMARY_DB_SCAN=site1-scan.example.com
+OAA_STANDBY_DB_SCAN=site2-scan.example.com
+OAA_PRIMARY_DB_SERVICE=oaasvc.example.com
+OAA_STANDBY_DB_SERVICE=oaasvc.example.com
+
+DR_OAA_MINS=720
+DR_CREATE_OAA_JOB=true
+SAMPLES_REP="https://github.com/oracle/fmw-kubernetes.git"
+MAA_SAMPLES_REP="https://github.com/oracle-samples/maa"

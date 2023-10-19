@@ -10,6 +10,13 @@ Review the latest changes and known issues for Oracle Unified Directory on Kuber
 
 | Date | Version | Change |
 | --- | --- | --- |
+| October, 2023 | 23.4.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the October 2023 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | + Support for Block Device Storage. See, [Create OUD Instances](../create-oud-instances#using-a-yaml-file).|
+| | | + Ability to set resource requests and limits for CPU and memory on an OUD instance. See, [Create OUD Instances](../create-oud-instances#using-a-yaml-file). |
+| | | + Support for Assured Replication. See, [Create OUD Instances](../create-oud-instances#using-a-yaml-file).|
+| | | + Support for the Kubernetes Horizontal Pod Autoscaler (HPA). See, [Kubernetes Horizontal Pod Autoscaler](../manage-oud-containers/hpa).|
+| | | + Supports integration options such as Enterprise User Security (EUS), EBusiness Suite (EBS), and Directory Integration Platform (DIP).
+| | | To upgrade to October 23 (23.4.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | July, 2023 | 23.3.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the July 2023 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | To upgrade to July 23 (23.3.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | April, 2023 | 23.2.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the April 2023 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|

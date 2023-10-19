@@ -1,0 +1,58 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to setup a Persistent Volume Claim for OIRI DR
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <ROLE>-oiripv-pvc
+  namespace: <DRNS>
+  labels:
+    type: <ROLE>-oiripv-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 30Gi
+  selector:
+    matchLabels:
+      type: <ROLE>-oiri-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <ROLE>-dingpv-pvc
+  namespace: <DRNS>
+  labels:
+    type: <ROLE>-dingpv-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 30Gi
+  selector:
+    matchLabels:
+      type: <ROLE>-ding-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <ROLE>-workpv-pvc
+  namespace: <DRNS>
+  labels:
+    type: <ROLE>-workpv-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany
+  resources:
+     requests:
+       storage: 30Gi
+  selector:
+    matchLabels:
+      type: <ROLE>-work-pv
