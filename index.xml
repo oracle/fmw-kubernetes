@@ -96,7 +96,7 @@ Recent changes    Date Version Change     August 31, 2023 23.3.2 Supports Oracle
       
       <guid>/fmw-kubernetes/wcsites-domains/release-notes/</guid>
       <description>Review the latest changes and known issues for Oracle WebCenter Sites on Kubernetes.
-Recent changes    Date Version Introduces backward incompatibilities Change     May 10, 2023 23.2.2 no Supports Oracle WebCenter Sites 12.2.1.4 domains deployment using April 2023 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 4.0.6. Oracle WebCenter Sites 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 35370108) and container-registry. Terraform scripts for Deploying Oracle WebCenter Sites 12.2.1.4 on Oracle Cloud Infrastructure Container Engine for Kubernetes (OKE). Terraform Scripts can be downloaded from [GitHub repository].</description>
+Recent changes    Date Version Introduces backward incompatibilities Change     May 10, 2023 23.2.2 no Supports Oracle WebCenter Sites 12.2.1.4 domains deployment using April 2023 PSU and known bug fixes - certified for Oracle WebLogic Kubernetes Operator version 4.0.6. Oracle WebCenter Sites 12.2.1.4 container image for this release can be downloaded from My Oracle Support (MOS patch 35370108) and container-registry.</description>
     </item>
     
     <item>
@@ -823,7 +823,7 @@ If you do not want to expose additional ports and perform WLST administration op
       
       <guid>/fmw-kubernetes/idm-products/oud/patch-and-upgrade/</guid>
       <description>In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from.
- Upgrading to July 23 (23.3.1) from April 23 (23.2.1) Upgrading to July 23 (23.3.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to July 23 (23.3.1) from July 22 (22.3.1) Upgrading to July 23 (23.3.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Upgrading to July 23 (23.</description>
+ Upgrading to October 23 (23.4.1) from April 23 (23.2.1) or later Upgrading to October 23 (23.4.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to October 23 (23.4.1) from July 22 (22.3.1) Upgrading to October 23 (23.4.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
     </item>
     
     <item>
@@ -833,9 +833,8 @@ If you do not want to expose additional ports and perform WLST administration op
       
       <guid>/fmw-kubernetes/idm-products/oud/manage-oud-containers/scaling-up-down/</guid>
       <description>Introduction This section describes how to increase or decrease the number of OUD pods in the Kubernetes deployment.
-View existing OUD pods By default the oud-ds-rs helm chart deployment starts three pods: oud-ds-rs-0 and two replica pods oud-ds-rs-1 and oud-ds-rs-2.
-The number of pods started is determined by the replicaCount, which is set to 3 by default. A value of 3 starts the three pods above.
-To scale up or down the number of OUD pods, set replicaCount accordingly.</description>
+Note: The instructions below are for scaling servers up or down manually. If you wish to use autoscaling, see Kubernetes Horizontal Pod Autoscaler. Please note, if you have enabled autoscaling, it is recommended to delete the autoscaler before running the commands below.
+View existing OUD pods By default the oud-ds-rs helm chart deployment starts three pods: oud-ds-rs-0 and two replica pods oud-ds-rs-1 and oud-ds-rs-2.</description>
     </item>
     
     <item>
@@ -902,7 +901,7 @@ $ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.sh oigns/governanc
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/idm-products/oam/patch-and-upgrade/upgrade-an-operator-release/</guid>
-      <description>These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.x release family as additional versions are released.
+      <description>These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.X release family as additional versions are released.
   On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
 $ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X For example:
 $ mkdir /scratch/OAMK8S/weblogic-kubernetes-operator-4.X.X $ cd /scratch/OAMK8S/weblogic-kubernetes-operator-4.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.</description>
@@ -987,7 +986,7 @@ Note: If you are not using Oracle Container Registry or your own container regis
       
       <guid>/fmw-kubernetes/idm-products/oig/patch-and-upgrade/patch-an-image/</guid>
       <description>Introduction The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image.
-Note: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.0.4.
+Note: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.1.2.
 The script executes the following steps sequentially:
  Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod. Brings up a new helper pod with the new image.</description>
     </item>
@@ -1003,7 +1002,7 @@ To determine if this step is required for the version you are upgrading from, re
 Download the latest code repository Download the latest code repository as follows:
   Create a working directory to setup the source code.
 $ mkdir &amp;lt;workdir&amp;gt; For example:
-$ mkdir /scratch/OUDSMK8SApril23   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
+$ mkdir /scratch/OUDSMK8SOctober23   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
     </item>
     
     <item>
@@ -1122,6 +1121,17 @@ NAME NAMESPACE REVISION UPDATED STATUS CHART APP VERSION governancedomain-nginx 
     </item>
     
     <item>
+      <title>d. Kubernetes Horizontal Pod Autoscaler</title>
+      <link>/fmw-kubernetes/idm-products/oud/manage-oud-containers/hpa/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oud/manage-oud-containers/hpa/</guid>
+      <description>Prerequisite configuration Deploy the Kubernetes Metrics Server  Troubleshooting   Deploy HPA Testing HPA Delete the HPA Other considerations  Kubernetes Horizontal Pod Autoscaler (HPA) allows automatic scaling (up and down) of the OUD servers. If load increases then extra OUD servers will be started as required. Similarly, if load decreases, OUD servers will be automatically shutdown.
+For more information on HPA, see Horizontal Pod Autoscaling.
+The instructions below show you how to configure and run an HPA to scale OUD servers, based on CPU utilization or memory resource metrics.</description>
+    </item>
+    
+    <item>
       <title>d. Logging and visualization</title>
       <link>/fmw-kubernetes/idm-products/oig/manage-oig-domains/logging-and-visualization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1168,16 +1178,13 @@ Download the latest code repository  Make sure you have downloaded the latest co
     </item>
     
     <item>
-      <title>e. Delete the OAM domain home</title>
-      <link>/fmw-kubernetes/idm-products/oam/manage-oam-domains/delete-domain-home/</link>
+      <title>e. Kubernetes Horizontal Pod Autoscaler</title>
+      <link>/fmw-kubernetes/idm-products/oam/manage-oam-domains/hpa/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/fmw-kubernetes/idm-products/oam/manage-oam-domains/delete-domain-home/</guid>
-      <description>Sometimes in production, but most likely in testing environments, you might want to remove the domain home that is generated using the create-domain.sh script.
-  Run the following command to delete the domain:
-$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d &amp;lt;domain_uid&amp;gt; For example:
-$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d accessdomain   Drop the RCU schemas as follows:
-$ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash [oracle@helper ~]$ [oracle@helper ~]$ export CONNECTION_STRING=&amp;lt;db_host.</description>
+      <guid>/fmw-kubernetes/idm-products/oam/manage-oam-domains/hpa/</guid>
+      <description>Prerequisite configuration Deploy the Kubernetes Metrics Server  Troubleshooting   Deploy HPA Testing HPA Delete the HPA Other considerations  Kubernetes Horizontal Pod Autoscaler (HPA) is supported from Weblogic Kubernetes Operator 4.0.X and later.
+HPA allows automatic scaling (up and down) of the OAM Managed Servers. If load increases then extra OAM Managed Servers will be started as required, up to the value configuredManagedServerCount defined when the domain was created (see Prepare the create domain script).</description>
     </item>
     
     <item>
@@ -1192,7 +1199,30 @@ There are two ways to setup monitoring and you should choose one method or the o
     </item>
     
     <item>
-      <title>f. Delete the OIG domain home</title>
+      <title>f. Delete the OAM domain home</title>
+      <link>/fmw-kubernetes/idm-products/oam/manage-oam-domains/delete-domain-home/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oam/manage-oam-domains/delete-domain-home/</guid>
+      <description>Sometimes in production, but most likely in testing environments, you might want to remove the domain home that is generated using the create-domain.sh script.
+  Run the following command to delete the domain:
+$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d &amp;lt;domain_uid&amp;gt; For example:
+$ cd $WORKDIR/kubernetes/delete-domain $ ./delete-weblogic-domain-resources.sh -d accessdomain   Drop the RCU schemas as follows:
+$ kubectl exec -it helper -n &amp;lt;domain_namespace&amp;gt; -- /bin/bash [oracle@helper ~]$ [oracle@helper ~]$ export CONNECTION_STRING=&amp;lt;db_host.</description>
+    </item>
+    
+    <item>
+      <title>f. Kubernetes Horizontal Pod Autoscaler</title>
+      <link>/fmw-kubernetes/idm-products/oig/manage-oig-domains/hpa/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oig/manage-oig-domains/hpa/</guid>
+      <description>Prerequisite configuration Deploy the Kubernetes Metrics Server  Troubleshooting   Deploy HPA Testing HPA Delete the HPA Other considerations  Kubernetes Horizontal Pod Autoscaler (HPA) is supported from Weblogic Kubernetes Operator 4.0.X and later.
+HPA allows automatic scaling (up and down) of the OIG Managed Servers. If load increases then extra OIG Managed Servers will be started as required, up to the value configuredManagedServerCount defined when the domain was created (see Prepare the create domain script).</description>
+    </item>
+    
+    <item>
+      <title>g. Delete the OIG domain home</title>
       <link>/fmw-kubernetes/idm-products/oig/manage-oig-domains/delete-domain-home/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
