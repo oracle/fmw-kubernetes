@@ -323,6 +323,7 @@ These can include registry prefixes if you use a registry. Use the `local/` pref
 |**OAA\_MGT\_IMAGE** | `$REGISTRY/oracle/oaa-mgmt` | The OAA Management container image.|
 |**KUBECTL\_REPO** | `bitnami/kubectl` | The kubectl image used by OUD.|
 |**BUSYBOX\_REPO** | `docker.io/busybox` | The busybox image used by OUD.|
+|**PROM\_REPO** |  | If you are using your own container registry and have staged the Prometheus and Grafana images in this registry then set this variable to the location of your registry.  Leave blank if you wish to obtain the images from the public repositories.|
 |**OPER\_VER** | `4.0.4` | The version of the WebLogic Kubernetes Operator.|
 |**OUD\_VER** | `12.2.1.4.0-8-ol7-210715.1921` | The OUD version.|
 |**OUDSM\_VER** | `12.2.1.4.0-8-ol7-210721.0755` | The OUDSM version.|
@@ -503,7 +504,7 @@ These parameters determine how OAM is deployed and configured.
 |**OAM\_OAP\_HOST** | `k8worker1.example.com` | The name of one of the Kubernetes worker nodes used for OAP calls.|
 |**OAM\_OAP\_PORT** | `5575` | The internal Kubernetes port used for OAM requests.|
 |**OAMSERVER\_JAVA\_PARAMS** | "`-Xms2048m -Xmx8192m`" | The internal Kubernetes port used for OAM requests.|
-|**COPY\_WG\_FILES** | "`true`" | Set to true if you wish the deployment to copy the Webate Artifacts to your Oracle HTTP Server(s)|
+|**COPY\_WG\_FILES** | `true` | Set to true if you wish the deployment to copy the WebGate Artifacts to your Oracle HTTP Server(s)|
 
 ### OIG Parameters
 These parameters determine how OIG is provisioned and configured.
@@ -596,7 +597,7 @@ These parameters determine how OAA is provisioned and configured.
 |**OAANS** |`oaans`| The Kubernetes namespace used to hold the OAA objects.|
 |**OAA\_DEPLOYMENT** |`edg`| A name for your OAA deployment. Do not use the name `oaa` because this is reserved for internal use.|
 |**OAA\_DOMAIN** |`OAADomain`| The name of the OAM OAuth domain you want to create.|
-|**OAA\_VAULT\_TYPE** |`file|oci`| The type of vault to use: file system or OCI.|
+|**OAA\_VAULT\_TYPE** |`file or oci`| The type of vault to use: file system or OCI.|
 |**OAA\_CREATE\_OHS** |`true`| Set to `false` if you are installing OAA standalone front ended by Ingress. |
 |**OAA\_CONFIG\_SHARE** |`$IAM_PVS/oaaconfigpv`| The mount point on NFS where OAA config persistent volume is exported.|
 |**OAA\_CRED\_SHARE** |`$IAM_PVS/oaacredpv`| The mount point on NFS where OAA credentials persistent volume is exported.|
