@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of Prometheus functions and procedures used by the provisioning and deletion scripts
@@ -47,12 +47,15 @@ create_override()
    update_variable "<PROM_K8>" $PROM_K8 $filename
    update_variable "<PROM_GRAF_K8>" $PROM_GRAF_K8 $filename
    update_variable "<OHS_HOST1>" $OHS_HOST1 $filename
+   if [ ! "$PROM_REPO" = "" ]
+   then
+     sed -i "/^alert/i global:\n  imageRegistry: $PROM_REPO\n  imagePullSecrets:\n    - name: regcred\n" $filename
+   fi
    if [ ! "$OHS_HOST2" = "" ]
    then
       update_variable "<OHS_HOST2>" $OHS_HOST2 $filename
    fi
    update_variable "<PROM_ADMIN_PWD>" $PROM_ADMIN_PWD $filename
-
    print_status $?
 
    ET=`date +%s`
@@ -68,7 +71,12 @@ deploy_prometheus()
    print_msg "Deploying Prometheus"
 
    cd $WORKDIR
-   helm install -n $PROMNS kube-prometheus  prometheus-community/kube-prometheus-stack -f $WORKDIR/override_prom.yaml > $LOGDIR/deploy.log 2>&1
+   if [ "$PROM_REPO" = "" ]
+   then
+      helm install -n $PROMNS  kube-prometheus  prometheus-community/kube-prometheus-stack -f $WORKDIR/override_prom.yaml > $LOGDIR/deploy.log 2>&1
+   else
+      helm install -n $PROMNS --set grafana.image.repository=$PROM_REPO/grafana/grafana kube-prometheus  prometheus-community/kube-prometheus-stack -f $WORKDIR/override_prom.yaml > $LOGDIR/deploy.log 2>&1
+   fi
    print_status $? $LOGDIR/deploy.log
 
    ET=`date +%s`

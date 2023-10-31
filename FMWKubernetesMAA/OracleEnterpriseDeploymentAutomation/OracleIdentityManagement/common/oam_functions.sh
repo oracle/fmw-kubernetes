@@ -891,6 +891,10 @@ enable_monitor()
    ENC_WEBLOGIC_PWD=`encode_pwd $OAM_WEBLOGIC_PWD`
    
 
+   PROM_REL=$(kubectl get prometheuses.monitoring.coreos.com --all-namespaces -o jsonpath="{.items[*].spec.serviceMonitorSelector}" | tr '"{}' ' ' | cut -f3 -d: | sed 's/ //g ')
+
+   cp $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml.template $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
+   replace_value2 release $PROM_REL $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
    replace_value2 domainName $OAM_DOMAIN_NAME $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
    replace_value2 namespace $OAMNS $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml
    sed -i  "/namespaceSelector/,/-/{s/-.*/- $OAMNS/}" $WORKDIR/samples/monitoring-service/manifests/wls-exporter-ServiceMonitor.yaml

@@ -134,7 +134,7 @@ print_msg screen "\n\nCreation of the OCI resources defined in chapter 9 of the 
 print_msg screen "in $total_time."
 print_msg screen "\nReview the log file at $LOGDIR/$LOGFILE for full details."
 
-id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME | cut -d: -f2)
+id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME: | cut -d: -f2)
 ip=$(oci compute instance list-vnics --compartment-id $COMPARTMENT_ID --instance-id $id \
        --query 'data[0]."public-ip"' --raw-output) 
 print_msg screen "Use the following command to connect to the bastion host:"

@@ -192,7 +192,7 @@ createBastion() {
   if [[ $STEPNO -gt $PROGRESS ]]; then
     ST=`date +%s`
     print_msg begin "Copying the ssh keyfile '$SSH_ID_KEYFILE' to the Bastion Node..."
-    id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME | cut -d: -f2)
+    id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME: | cut -d: -f2)
     ip=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $id \
            --query 'data[0]."public-ip"' --raw-output)
     cmd="scp -q -o \"StrictHostKeyChecking no\" -i $SSH_ID_KEYFILE $SSH_ID_KEYFILE opc@$ip:~/.ssh/id_rsa"

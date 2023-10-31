@@ -94,13 +94,6 @@ echo "Check Instances Stopped"
 check_stopped $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0
 check_stopped $OUDNS $OUD_POD_PREFIX-oud-ds-rs-1
 
-echo "Deleting DR Cron Job"
-kubectl delete cronjob -n $OUDNS rsyncdr >> $LOG 2>&1
-echo "Deleting DR Persistent Volume Claim "
-kubectl delete pvc -n oudns ouddr-pvc >> $LOG 2>&1
-echo "Deleting Persistent Volume"
-kubectl delete pv oudpv-dr >> $LOG 2>&1
-
 echo "Delete Namespace $OUDNS"
 kubectl delete namespace $OUDNS
 

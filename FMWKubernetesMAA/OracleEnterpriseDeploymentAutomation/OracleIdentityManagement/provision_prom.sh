@@ -92,6 +92,21 @@ then
     update_progress
 fi
 
+# Create a Container Registry Secret if requested
+#
+if [ ! "$PROM_REPO" = "" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     if [ "$CREATE_REGSECRET" = "true" ]
+     then
+        create_registry_secret $REGISTRY $REG_USER $REG_PWD $PROMNS
+     fi
+     update_progress
+  fi
+fi
+
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then

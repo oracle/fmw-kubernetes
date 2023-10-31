@@ -209,7 +209,7 @@ formatShapeConfig() {
 
 # Retrieve the IP address of the bastion host given its ocid
 get_bastion_ip() {
-  id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME | cut -d: -f2)
+  id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME: | cut -d: -f2)
   BASTIONIP=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $id \
           --query 'data[0]."public-ip"' --raw-output)
   if [[ "$?" != "0" ]]; then

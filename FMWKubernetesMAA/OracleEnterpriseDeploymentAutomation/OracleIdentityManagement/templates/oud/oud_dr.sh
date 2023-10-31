@@ -8,7 +8,7 @@
 #
 
 COPIES=3
-EXCLUDE_LIST="--exclude=\".snapshot\" "
+EXCLUDE_LIST="--exclude=\".snapshot\" --exclude=\"backups\" --exclude=\"backup_running\" --exclude=\"dr_scripts\" "
 
 
 create_oci_snapshot()
