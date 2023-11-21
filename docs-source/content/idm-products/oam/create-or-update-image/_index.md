@@ -7,7 +7,6 @@ description=  "Create or update an Oracle Access Management (OAM) container imag
 
 As described in [Prepare Your Environment](../prepare-your-environment) you can create your own OAM container image. If you have access to the My Oracle Support (MOS), and there is a need to build a new image with an interim or one off patch, it is recommended to use the WebLogic Image Tool to build an Oracle Access Management image for production deployments.
 
-
 ### Create or update an Oracle Access Management image using the WebLogic Image Tool
 
 Using the WebLogic Image Tool, you can [create](../create-or-update-image/#create-an-image) a new Oracle Access Management image with PSU's and interim patches or [update](../create-or-update-image/#update-an-image) an existing image with one or more interim patches.

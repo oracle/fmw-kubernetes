@@ -10,6 +10,19 @@ Review the latest changes and known issues for Oracle Identity Governance on Kub
 
 | Date | Version | Change |
 | --- | --- | --- |
+| November, 2023 | 23.4.2 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the October 2023 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | This release contains the following changes:
+| | | +  Support for creation of OIG domains using Weblogic Deploy Tooling (WDT) Models. See [Create OIG domains Using WDT Models](../create-oig-domains/create-oig-domains-wdt).|
+| | | If currently on October 23 (23.4.1) there is no need to upgrade as the November 23 (23.4.2) release only adds the ability to create new OIG domains using WDT.
+| | | If upgrading to November 23 (23.4.2) from October 22 (22.4.1) or later, you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.1.2|
+| | | 2. Patch the OIG container image to October 23|
+| | | If upgrading to November 23 (23.4.2) from a release prior to October 22 (22.4.1), you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.1.2|
+| | | 2. Patch the OIG container image to October 23|
+| | | 3. Upgrade the Ingress|
+| | | 4. Upgrade Elasticsearch and Kibana|
+| | | See [Patch and Upgrade](../patch-and-upgrade) for these instructions.| 
 | October, 2023 | 23.4.1 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the October 2023 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | This release contains the following changes:
 | | | + Support for WebLogic Kubernetes Operator 4.1.2.|

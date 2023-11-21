@@ -82,6 +82,9 @@ For usage details execute `./setup-monitoring.sh -h`.
    # Name of the Kubernetes secret for the Admin Server's username and password
    weblogicCredentialsSecretName: accessdomain-credentials
    ```
+	
+	**Note**: For WDT domains, `weblogicCredentialsSecretName` should be set to `accessdomain-weblogic-credentials`.
+	
    **Note**: If your cluster does not have access to the internet to pull external images, such as grafana or prometheus, you must load the images in a local container registry. You must then set  `additionalParamForKubePrometheusStack` to set the location of the image in your local container registry, for example:
    
    ```

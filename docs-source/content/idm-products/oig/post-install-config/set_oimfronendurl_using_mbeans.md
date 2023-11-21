@@ -16,6 +16,12 @@ Follow these post install configuration steps.
    ```bash
    cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain
    ```
+	
+	For OIG domains created with WDT:
+
+   ```bash
+	$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/
+	```
    
 1. Create a `setUserOverrides.sh` with the following contents:
 
@@ -74,7 +80,10 @@ Follow these post install configuration steps.
    governancedomain-soa-server1                         1/1     Terminating    0          18h
    helper                                               1/1     Running        0          41h
    ```
-
+   
+   **Note**: governancedomain-create-fmw-infra-domain-job pod will not show for domains created with WDT models.
+   
+  
    The Administration Server pods and Managed Server pods will move to a STATUS of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
    
    ```

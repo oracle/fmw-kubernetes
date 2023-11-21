@@ -18,8 +18,16 @@ Follow these post install configuration steps.
 
 1. Navigate to the following directory:
 
+   For OAM domains created with WLST:
+   
    ```bash
    $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain
+   ```
+   
+   For OAM domains created with WDT:
+   
+   ```bash
+   $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/
    ```
    
 1. Create a `setUserOverrides.sh` with the following contents:

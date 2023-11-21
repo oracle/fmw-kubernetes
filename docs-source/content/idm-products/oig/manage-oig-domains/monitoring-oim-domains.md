@@ -85,6 +85,8 @@ For usage details execute `./setup-monitoring.sh -h`.
    weblogicCredentialsSecretName: oig-domain-credentials
    ```
    
+	**Note**: For WDT domains, `weblogicCredentialsSecretName` should be set to `governancedomain-weblogic-credentials`.
+	
    **Note**: If your cluster does not have access to the internet to pull external images, such as grafana or prometheus, you must load the images in a local container registry. You must then set  `additionalParamForKubePrometheusStack` to set the location of the image in your local container registry, for example:
    
    ```
