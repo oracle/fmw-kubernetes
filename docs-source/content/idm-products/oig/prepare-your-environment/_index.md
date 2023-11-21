@@ -672,6 +672,8 @@ Before following the steps in this section, make sure that the database and list
 
 ### Preparing the environment for domain creation
 
+**Note**: If you want to create an OIG domain using WDT models, skip the steps below and continue from [Create OIG Domains Using WDT Models](../create-oig-domains/create-oig-domains-wdt).
+
 In this section you prepare the environment for the OIG domain creation. This involves the following steps:
 
    a. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)

@@ -609,7 +609,9 @@ Before following the steps in this section, make sure that the database and list
 	
 ### Preparing the environment for domain creation
 
-In this section you prepare the environment for the OAM domain creation. This involves the following steps:
+**Note**: If you want to create an OAM domain using WDT models, skip the steps below and continue from [Create OAM Domains Using WDT Models](../create-oam-domains/create-oam-domains-using-wdt-models).
+
+In this section you prepare the environment for the OAM domain creation using WLST scripts. This involves the following steps:
 
    a. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
     

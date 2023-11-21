@@ -11,6 +11,7 @@ description=  "This document provides details of the oud-ds-rs Helm chart."
 1. [Create a Kubernetes secret for cronjob images](#create-a-kubernetes-secret-for-cronjob-images)
 1. [The oud-ds-rs Helm chart](#the-oud-ds-rs-helm-chart)
 1. [Create OUD instances](#create-oud-instances)
+1. [Enabling Assured Replication (Optional)](#enabling-assured-replication-optional)
 1. [Helm command output](#helm-command-output)
 1. [Verify the OUD deployment](#verify-the-oud-deployment)
 1. [Verify the OUD replication](#verify-the-oud-replication)
@@ -470,9 +471,9 @@ If you want to enable assured replication, perform the following steps:
    replOUD:
      envVars:
        - name: post_dsreplication_dsconfig_3
-         value: set-replication-domain-prop --domain-name ${baseDN} --advanced --set assured-type:safe-read --set assured-sd-level:2 --set assured-timeout:5s
+         value: set-replication-domain-prop --domain-name ${baseDN} --advanced --set assured-type:safe-data --set assured-sd-level:2 --set assured-timeout:5s
        - name: execCmd_1
-         value: /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/OUD/bin/dsconfig --no-prompt --hostname ${sourceHost} --port ${adminConnectorPort} --bindDN "${rootUserDN}" --bindPasswordFile /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/admin/rootPwdFile.txt  --trustAll set-replication-domain-prop --domain-name ${baseDN} --advanced --set assured-type:safe-read --set assured-sd-level:2 --set assured-timeout:5s --provider-name "Multimaster Synchronization"
+         value: /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/OUD/bin/dsconfig --no-prompt --hostname ${sourceHost} --port ${adminConnectorPort} --bindDN "${rootUserDN}" --bindPasswordFile /u01/oracle/user_projects/${OUD_INSTANCE_NAME}/admin/rootPwdFile.txt  --trustAll set-replication-domain-prop --domain-name ${baseDN} --advanced --set assured-type:safe-data --set assured-sd-level:2 --set assured-timeout:5s --provider-name "Multimaster Synchronization"
    configVolume:
      enabled: true
      type: networkstorage
@@ -485,7 +486,11 @@ If you want to enable assured replication, perform the following steps:
          path: <persistent_volume>/oud-repl-config
      mountPath: /u01/oracle/config-input
    ```
-
+   
+	The above will enable assured replication with assured type `safe-data` and `assured-sd-level: 2`.
+	
+	**Note**: If you prefer `assured-type` to be  set to `safe-read`, then change to `--set assured-type:safe-read` and remove `--set assured-sd-level:2`.
+	
    For more information on OUD Assured Replication, and other options and levels, see, [Understanding the Oracle Unified Directory Replication Model](https://docs.oracle.com/en/middleware/idm/unified-directory/12.2.1.4/oudag/understanding-oracle-unified-directory-replication-model.html#GUID-A2438E61-D4DB-4B3B-8E2D-AE5921C3CF8C).
 
    The following caveats exist:
@@ -496,7 +501,7 @@ If you want to enable assured replication, perform the following steps:
    
       * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
 	  
-	  * If you have an existing storageClass that supports network storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl  get storageclass`". Please note that the storage-class should not be the one you used for the persistent volume earlier. The `provisioner` can be ignored.
+	   * If you have an existing storageClass that supports network storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl  get storageclass`". Please note that the storage-class should not be the one you used for the persistent volume earlier. The `provisioner` can be ignored.
 
 
 ### Helm command output
@@ -831,7 +836,7 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    -----------------:----------
    assured-sd-level : 2
    assured-timeout  : 5 s
-   assured-type     : safe-read
+   assured-type     : safe-data
    ```
 
 ### Verify the cronjob

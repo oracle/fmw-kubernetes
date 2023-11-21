@@ -5,7 +5,7 @@ pre = "<b>13. </b>"
 description = "Sample for creating an OIG domain home on an existing PV or PVC, and the domain resource YAML file for deploying the generated OIG domain."
 +++
 
-#### Domain creation failure
+#### Domain creation failure with WLST scripts
 
 If the OIG domain creation fails when running `create-domain.sh`, run the following to diagnose the issue:
 
@@ -62,7 +62,7 @@ If the OIG domain creation fails when running `create-domain.sh`, run the follow
    weblogicDomainStoragePath: /scratch/shared/governancedomainpv/
    ```
    
-   Clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home](../manage-oig-domains/delete-domain-home). Then follow [RCU schema creation](../prepare-your-environment/#rcu-schema-creation) onwards to recreate the RCU schema, kubernetes secrets for domain and RCU, the persistent volume and the persistent volume claim. Then execute the [OIG domain creation](../create-oig-domains) steps again.
+   Clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home](../manage-oig-domains/delete-domain-home). Then follow [RCU schema creation](../prepare-your-environment/#rcu-schema-creation) onwards to recreate the RCU schema, kubernetes secrets for domain and RCU, the persistent volume and the persistent volume claim. Then execute the [OIG domain creation](../create-oig-domains/create-oig-domains-using-wlst) steps again.
    
    
    
@@ -120,4 +120,51 @@ The instructions in this section relate to problems patching a deployment with a
    
    Once any issue is resolved the pods will come up automatically without the need to rerun the script.
 
-    
+   
+   
+#### Domain creation failure with WDT models
+
+The instructions in this section relate to problems creating OIG domains using WDT models [Create OIG domain using WDT Models](../create-oig-domains/create-oig-domains-wdt).
+
+If the domain creation fails while creation domain resources using the `domain.yaml` file, run the following steps to diagnose the issue:
+
+
+
+1. Check the domain events, by running the following command:
+
+   ```
+   kubectl describe domain <domain name> -n <domain_namespace>
+   ```
+   
+   For example:
+
+   ```
+   kubectl describe domain governancedomain -n oigns
+   ```
+
+   Using the output, you should be able to diagnose the problem and resolve the issue.
+
+1. If the instrospector job fails due to validation errors, then you can recreate the domain resources using the commands:
+
+   ```
+   kubectl delete -f domain.yaml
+   kubectl create -f domain.yaml
+   ```
+
+1. If the domain creation fails because of database issues, clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home](../manage-oig-domains/delete-domain-home). Then follow [RCU schema creation](../prepare-your-environment/#rcu-schema-creation) recreate the RCU schema. Then execute the steps in [Create OIG domain using WDT Models](../create-oig-domains/create-oig-domains-wdt) again.
+
+   **Note** You might need to recreate the domain creation image depending upon the errors. Domain creation logs are stored in `<persistent_volume>/domains/wdt-logs`.
+
+1. If there is any issues while bringing up AdminServer, SOA Server or OIM Server, you can run the following to check the logs:
+
+   ```
+   $ kubectl logs <pod> -n oigns
+   ```
+   
+   If the above does not give any information you can also run:
+
+   ```
+   $ kubectl describe pod <pod> -n oigns
+   ```
+
+   For more details related to debugging issues, refer to [Domain Debugging](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/debugging/).

@@ -119,12 +119,40 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    $ kubectl describe domains governancedomain -n oigns | grep "Mount Path"
    ```
    
-   The output will look similar to the following:
+   If you deployed OIG using WLST, the output will look similar to the following:
    
    ```
    Mount Path:  /u01/oracle/user_projects/domains
    ```
    
+   If you deployed OIG using WDT, the output will look similar to the following:
+   
+   ```
+   Mount Path:  /u01/oracle/user_projects
+   ```
+
+#### Find the Domain Home and Log Home details
+
+1. Run the following command to get the `Domain Home` and `Log Home` of your domain:
+
+   ```bash
+	$ kubectl describe domains <domain_uid> -n <domain_namespace> | egrep "Domain Home: | Log Home:"
+	```
+	
+	For example:
+	
+	```bash
+	$ kubectl describe domains governancedomain -n oigns  | egrep "Domain Home: | Log Home:"
+	```
+	
+	The output will look similar to the following:
+	
+	```
+	Domain Home:                     /u01/oracle/user_projects/domains/governancedomain
+   Http Access Log In Log Home:     true
+   Log Home:                           /u01/oracle/user_projects/domains/logs/governancedomain
+   ```
+	
 #### Find the persistentVolumeClaim details
 
 1. Run the following command to get the OIG domain persistence volume details:
@@ -146,7 +174,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    governancedomain-domain-pv   10Gi       RWX            Retain           Bound    oigns/governancedomain-domain-pvc   governancedomain-oim-storage-class            28h
    ```
    
-   Make note of the CLAIM value, for example in this case `governancedomain-oim-pvc`.   
+   Make note of the CLAIM value, for example in this case `governancedomain-domain-pvc`.   
 
 #### Create the Configmap
 
@@ -184,37 +212,37 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
      logstash-config.conf: |
        input {
          file {
-           path => "/u01/oracle/user_projects/domains/logs/governancedomain/AdminServer*.log"
+           path => "<Log Home>/servers/AdminServer/logs/AdminServer*.log*"
            tags => "Adminserver_log"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/logs/governancedomain/soa_server*.log"
+           path => "<Log Home>/**/logs/soa_server*.log*"
            tags => "soaserver_log"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/logs/governancedomain/oim_server*.log"
+           path => "<Log Home>/**/logs/oim_server*.log*"
            tags => "Oimserver_log"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
+           path => "<Domain Home>/servers/AdminServer/logs/AdminServer-diagnostic.log*"
            tags => "Adminserver_diagnostic"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/soa_server*-diagnostic.log"
+           path => "<Domain Home>/servers/**/logs/soa_server*-diagnostic.log*"
            tags => "Soa_diagnostic"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/oim_server*-diagnostic.log"
+           path => "<Domain Home>/servers/**/logs/oim_server*-diagnostic.log*"
            tags => "Oimserver_diagnostic"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/access*.log"
+           path => "<Domain Home>/servers/**/logs/access*.log*"
            tags => "Access_logs"
            start_position => beginning
          }
@@ -246,7 +274,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    Change the values in the above file as follows:
    
    + Change the `<ELKNS>`, `<ELK_HOSTS>`, `<ELK_SSL>`, and `<ELK_USER>` to match the values for your environment.
-   + Change `/u01/oracle/user_projects/domains` to match the `mountPath` returned earlier.
+	+ Change `<Log Home>` and `<Domain Home>` to match the Log Home and Domain Home returned earlier.
    + If your domainUID is anything other than `governancedomain`, change each instance of `governancedomain` to your domainUID.
    + If using API KEY for your ELK authentication, delete the `user` and `password` lines.
    + If using a password for ELK authentication, delete the `api_key` line.
@@ -266,37 +294,37 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
      logstash-config.conf: |
        input {
          file {
-           path => "/u01/oracle/user_projects/domains/logs/governancedomain/AdminServer*.log"
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/servers/AdminServer/logs/AdminServer*.log*"
            tags => "Adminserver_log"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/logs/governancedomain/soa_server*.log"
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/**/logs/soa_server*.log*"
            tags => "soaserver_log"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/logs/governancedomain/oim_server*.log"
+           path => "/u01/oracle/user_projects/domains/logs/governancedomain/**/logs/oim_server*.log*"
            tags => "Oimserver_log"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/AdminServer/logs/AdminServer-diagnostic.log*"
            tags => "Adminserver_diagnostic"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/soa_server*-diagnostic.log"
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/soa_server*-diagnostic.log*"
            tags => "Soa_diagnostic"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/oim_server*-diagnostic.log"
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/oim_server*-diagnostic.log*"
            tags => "Oimserver_diagnostic"
            start_position => beginning
          }
          file {
-           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/access*.log"
+           path => "/u01/oracle/user_projects/domains/governancedomain/servers/**/logs/access*.log*"
            tags => "Access_logs"
            start_position => beginning
          }
@@ -376,7 +404,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            - containerPort: 5044
              name: logstash
            volumeMounts:
-           - mountPath: /u01/oracle/user_projects/domains
+           - mountPath: <mountPath>
              name: weblogic-domain-storage-volume
            - name: shared-logs
              mountPath: /shared-logs
@@ -416,8 +444,8 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            emptyDir: {}
    ```
    
-   + Change the `<ELKNS>`, and `<ELK_VER>` to match the values for your environment.
-   + Change `/u01/oracle/user_projects/domains` to match the `mountPath` returned earlier
+   + Change the `<ELKNS>`, and `<ELK_VER>` to match the values for your environment
+   + Change `<mountPath>` to match the `mountPath` returned earlier
    + Change the `claimName` value to match the `claimName` returned earlier
    + If your Kubernetes environment does not allow access to the internet to pull the logstash image, you must load the logstash image in your own container registry and change `image: logstash:<ELK_VER>` to the location of the image in your container registry e.g: `container-registry.example.com/logstash:8.3.1`
    
@@ -476,8 +504,6 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
              - key: elk.crt
                path: elk.crt
              name: elk-cert
-           name: elk-cert
-             name: oig-logstash-configmap
            name: elk-cert
          - configMap:
              defaultMode: 420

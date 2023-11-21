@@ -510,4 +510,4 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 
 #### Verify that you can access the domain URL
 
-After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 32033) as per [Validate Domain URLs ](../validate-domain-urls)
+After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 32033) as per [Validate Domain URLs ](../../validate-domain-urls)

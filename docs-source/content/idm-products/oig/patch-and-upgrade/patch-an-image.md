@@ -8,7 +8,11 @@ description: "Instructions on how to update your OIG Kubernetes cluster with a n
 
 The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image. 
 
-**Note**: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.1.2.
+**Note**: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.X.X.
+
+**Important**: DO NOT USE THIS SCRIPT IF YOU HAVE CREATED AN OIG DOMAIN USING WDT MODELS, which is released as part of Nov'23 content (23.4.2).
+If you need to patch an image you can use the manual way of patching an OIG domain as per [22.3.1]( https://oracle.github.io/fmw-kubernetes/22.3.1/oig/patch-and-upgrade/patch_an_image/). The patch automation script is being updated to support patching of domains created using WDT models, and will be available in a future release.
+
 
 The script executes the following steps sequentially:
 
