@@ -18,9 +18,11 @@
       <guid>/fmw-kubernetes/idm-products/oig/post-install-config/set_oimfronendurl_using_mbeans/</guid>
       <description>Follow these post install configuration steps.
  Create a Server Overrides File Set OIMFrontendURL using MBeans  Create a Server Overrides File   Navigate to the following directory:
-cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain   Create a setUserOverrides.sh with the following contents:
+cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain For OIG domains created with WDT:
+$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/ ``
+  Create a setUserOverrides.sh with the following contents:
 DERBY_FLAG=false JAVA_OPTIONS=&amp;quot;${JAVA_OPTIONS} -Djava.net.preferIPv4Stack=true&amp;quot; MEM_ARGS=&amp;quot;-Xms8192m -Xmx8192m&amp;quot;   Copy the setUserOverrides.sh file to the Administration Server pod:
-$ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.sh oigns/governancedomain-adminserver:/u01/oracle/user_projects/domains/governancedomain/bin/setUserOverrides.sh Where oigns is the OIG namespace and governancedomain is the domain_UID.</description>
+$ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.</description>
     </item>
     
     <item>

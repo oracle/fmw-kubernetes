@@ -850,6 +850,45 @@ To scale up or down the number of OUDSM pods, set replicaCount accordingly.</des
     </item>
     
     <item>
+      <title>a. Create OAM domains using WLST scripts</title>
+      <link>/fmw-kubernetes/idm-products/oam/create-oam-domains/create-oam-domains-using-wlst/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oam/create-oam-domains/create-oam-domains-using-wlst/</guid>
+      <description>Introduction
+  Prerequisites
+  Prepare the create domain script
+  Run the create domain script
+  Set the OAM server memory parameters
+  Initializing the domain
+  Verify the results
+a. Verify the domain, pods and services
+b. Verify the domain
+c. Verify the pods
+  Introduction The OAM deployment scripts demonstrate the creation of an OAM domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC).</description>
+    </item>
+    
+    <item>
+      <title>a. Create OIG domains using WLST scripts</title>
+      <link>/fmw-kubernetes/idm-products/oig/create-oig-domains/create-oig-domains-using-wlst/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oig/create-oig-domains/create-oig-domains-using-wlst/</guid>
+      <description>Introduction
+  Prerequisites
+  Prepare the create domain script
+  Run the create domain script
+a. Generate the create domain script
+b. Setting the OIM server memory parameters
+c. Run the create domain scripts
+  Verify the results
+a. Verify the domain, pods and services
+b. Verify the domain
+c. Verify the pods
+  Introduction The OIG deployment scripts demonstrate the creation of an OIG domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC).</description>
+    </item>
+    
+    <item>
       <title>a. Domain Life Cycle</title>
       <link>/fmw-kubernetes/idm-products/oam/manage-oam-domains/domain-lifecycle/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -890,9 +929,11 @@ You can update the deployment with a new OUDSM container image using one of the 
       <guid>/fmw-kubernetes/idm-products/oig/post-install-config/set_oimfronendurl_using_mbeans/</guid>
       <description>Follow these post install configuration steps.
  Create a Server Overrides File Set OIMFrontendURL using MBeans  Create a Server Overrides File   Navigate to the following directory:
-cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain   Create a setUserOverrides.sh with the following contents:
+cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain For OIG domains created with WDT:
+$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/ ``
+  Create a setUserOverrides.sh with the following contents:
 DERBY_FLAG=false JAVA_OPTIONS=&amp;quot;${JAVA_OPTIONS} -Djava.net.preferIPv4Stack=true&amp;quot; MEM_ARGS=&amp;quot;-Xms8192m -Xmx8192m&amp;quot;   Copy the setUserOverrides.sh file to the Administration Server pod:
-$ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.sh oigns/governancedomain-adminserver:/u01/oracle/user_projects/domains/governancedomain/bin/setUserOverrides.sh Where oigns is the OIG namespace and governancedomain is the domain_UID.</description>
+$ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.</description>
     </item>
     
     <item>
@@ -957,6 +998,45 @@ The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK you can
     </item>
     
     <item>
+      <title>b. Create OAM domains using WDT models</title>
+      <link>/fmw-kubernetes/idm-products/oam/create-oam-domains/create-oam-domains-using-wdt-models/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oam/create-oam-domains/create-oam-domains-using-wdt-models/</guid>
+      <description>Introduction
+  Prerequisites
+  Working with WDT Model Files
+  Preparing the environment for domain creation
+  Create Domain Creation Image
+  Customize sample WDT models (Optional)
+  Create the OAM domain
+  Verify the results
+a. Verify the domain, pods and services
+b. Verify the domain
+c. Verify the pods
+  Introduction This section demonstrates the creation of an OAM domain home using sample Weblogic Deploy Tooling (WDT) model files.</description>
+    </item>
+    
+    <item>
+      <title>b. Create OIG domains using WDT Models</title>
+      <link>/fmw-kubernetes/idm-products/oig/create-oig-domains/create-oig-domains-wdt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/idm-products/oig/create-oig-domains/create-oig-domains-wdt/</guid>
+      <description>Introduction
+  Prerequisites
+  Working with WDT Model files
+  Preparing the environment for domain creation
+  Create Domain Creation Image
+  Create the OIG Domain
+  Verify the results
+a. Verify the domain, pods and services
+b. Verify the domain
+c. Verify the pods
+  Introduction This section demonstrates the creation of an OIG domain home using sample WebLogic Deploy Tooling (WDT) model files.</description>
+    </item>
+    
+    <item>
       <title>b. Install and configure connectors</title>
       <link>/fmw-kubernetes/idm-products/oig/post-install-config/install_and_configure_connectors/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -986,9 +1066,8 @@ Note: If you are not using Oracle Container Registry or your own container regis
       
       <guid>/fmw-kubernetes/idm-products/oig/patch-and-upgrade/patch-an-image/</guid>
       <description>Introduction The OIG domain patching script automatically performs the update of your OIG Kubernetes cluster with a new OIG container image.
-Note: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.1.2.
-The script executes the following steps sequentially:
- Checks if the helper pod exists in the given namespace. If yes, then it deletes the helper pod. Brings up a new helper pod with the new image.</description>
+Note: Before following the steps below, you must have upgraded to WebLogic Kubernetes Operator 4.X.X.
+Important: DO NOT USE THIS SCRIPT IF YOU HAVE CREATED AN OIG DOMAIN USING WDT MODELS, which is released as part of Nov&#39;23 content (23.4.2). If you need to patch an image you can use the manual way of patching an OIG domain as per 22.</description>
     </item>
     
     <item>
