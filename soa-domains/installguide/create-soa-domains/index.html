@@ -12,18 +12,18 @@
     <title>Create Oracle SOA Suite domains :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1700632044" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1700632044" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1701680379" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1701680379" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1700632044"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1701680379"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1700632044"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1700632044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1701680379"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1701680379"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1700632044"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1701680379"></script>
 
     
   </div>
@@ -5668,7 +5668,7 @@ provide in this file.</p>
 <tr>
 <td><code>initialManagedServerReplicas</code></td>
 <td>Number of Managed Servers to initially start for the domain.</td>
-<td><code>2</code></td>
+<td><code>1</code></td>
 </tr>
 <tr>
 <td><code>javaOptions</code></td>
@@ -5793,34 +5793,140 @@ generated artifacts:</p>
   -o &lt;path to output-directory&gt;
 </code></pre><p>The script will perform the following steps:</p>
 <ul>
-<li>
-<p>Create a directory for the generated Kubernetes YAML files for this domain if it does not
+<li>Create a directory for the generated Kubernetes YAML files for this domain if it does not
 already exist. The path name is <code>&lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;</code>.
-If the directory already exists, its contents must be removed before using this script.</p>
-</li>
+If the directory already exists, its contents must be removed before using this script.</li>
+<li>Create a Kubernetes job that will start up a utility Oracle SOA Suite container and run
+offline WLST scripts to create the domain on the shared storage.</li>
+<li>Run and wait for the job to finish.</li>
+<li>Create a Kubernetes domain YAML file, <code>domain.yaml</code>, in the &ldquo;output&rdquo; directory that was created above.</li>
+<li>Create a convenient utility script, <code>delete-domain-job.yaml</code>, to clean up the domain home
+created by the create script.</li>
+</ul>
+<h4 id="post-install-tasks">Post install tasks</h4>
+<p>Review the Read Me file of each patch listed in the following MOS notes, depending on your Oracle Linux version.</p>
+<ul>
+<li>For Oracle Linux 7, see <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=35908803">35908803</a></li>
+<li>For Oracle Linux 8, see <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=35915091">35915091</a></li>
+</ul>
+<p>Also, for SOA bundle 12.2.1.4.230827 patch post install tasks, see <a href="https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=35748499">35748499</a>. Refer <strong>Section 6: Post-Installation Instructions</strong> in the Read Me file for instructions related to purge and maven plugin.</p>
+<p>You can ignore the instructions to clean PS3 maven plugin files, since it will be automated as part of container image creation.</p>
+<p>Perform the following steps to purge.</p>
+<ol>
 <li>
-<p>Create a Kubernetes job that will start up a utility Oracle SOA Suite container and run
-offline WLST scripts to create the domain on the shared storage.</p>
-</li>
-<li>
-<p>Run and wait for the job to finish.</p>
-</li>
-<li>
-<p>Create a Kubernetes domain YAML file, <code>domain.yaml</code>, in the &ldquo;output&rdquo; directory that was created above.
-This YAML file can be used to create the Kubernetes resource using the <code>kubectl create -f</code>
-or <code>kubectl apply -f</code> command:</p>
-<pre><code>$ kubectl apply -f &lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;/domain.yaml
+<p>Create a YAML file named <code>soapostinstall.yaml</code> with the following sample. The necessary SQL scripts are mounted inside pod at &ldquo;/soa_purge&rdquo;.</p>
+<blockquote>
+<p>Note: Replace the domain namespace <code>soans</code> and SOA Suite image <code>soasuite:12.2.1.4</code> with the details specific to your environment in the following sample YAML.</p>
+</blockquote>
+<pre><code> apiVersion: v1
+ kind: Pod
+ metadata:
+   name: soapostinstall
+   namespace: soans
+   labels:
+     app.kubernetes.io/name: dbclient
+ spec:
+   containers:
+   - name: dbclient-container
+         image: ghcr.io/oracle/oraclelinux8-instantclient:21
+     command: ['sh', '-c', 'echo The dbclient pod is running! &amp;&amp; sleep 3600']
+     volumeMounts:
+     - mountPath: &quot;/soa_purge&quot;
+       name: soa-shared-volume
+   initContainers:
+   - name: soa-oh
+     image: soasuite:12.2.1.4
+     command: ['sh', '-c', &quot;cp -rf /u01/oracle/soa/common/sql/soainfra/sql/oracle/122140/ /soa_purge&quot;]
+     volumeMounts:
+     - mountPath: &quot;/soa_purge&quot;
+       name: soa-shared-volume
+   volumes:
+     - name: soa-shared-volume
 </code></pre></li>
 <li>
-<p>Create a convenient utility script, <code>delete-domain-job.yaml</code>, to clean up the domain home
-created by the create script.</p>
-</li>
+<p>Apply the YAML to create a Kubernetes pod named <code>soapostinstall</code> in the <code>soans</code> namespace.</p>
+<pre><code>$ kubectl apply -f soapostinstall.yaml
+</code></pre></li>
+<li>
+<p>Start a bash shell in the <code>soapostinstall</code> pod.</p>
+<pre><code>$ kubectl exec -it -n soans soapostinstall -- bash
+</code></pre></li>
+<li>
+<p>A bash shell opens in the <code>soapostinstall</code> pod.</p>
+<pre><code>[root@soapostinstall /]#
+</code></pre></li>
+<li>
+<p>Reload the SOA purge scripts as a SOAINFRA user.</p>
+<ul>
+<li>
+<p>Change the directory to the location where the scripts for post installation steps are stored.</p>
+<pre><code>[root@soapostinstall /]# cd /soa_purge/122140/soa_purge12/
+</code></pre></li>
+<li>
+<p>Connect to the database as a SOAINFRA user.</p>
+<pre><code>[root@soapostinstall /]# sqlplus &lt;SOAINFRA_USER&gt;/&lt;PASSWORD&gt;@&lt;DATABASE_SERVICE&gt;
+</code></pre><p>For example, if the schema prefix is <code>SOA1</code>, schema password is <code>Oradoc_db1</code> and connection string to   database is <code>oracle-db.default.svc.cluster.local:1521/devpdb.k8s</code>, you can connect to database as SOAINFRA user using the following command.</p>
+<pre><code>[root@soapostinstall /]# sqlplus SOA1_SOAINFRA/Oradoc_db1@oracle-db.default.svc.cluster.local:1521/devpdb.k8s
+</code></pre></li>
+<li>
+<p>Execute the following script.</p>
+<pre><code>SQL&gt; @soa_purge_scripts.sql
+
+SQL&gt; show errors
+</code></pre></li>
 </ul>
+</li>
+<li>
+<p>Verify the SOA purge scripts.</p>
+<ul>
+<li>
+<p>Change the directory to location where the SOA purge scripts are stored.</p>
+<pre><code>[root@soapostinstall /]# cd /soa_purge/122140/verify12/
+</code></pre></li>
+<li>
+<p>Connect to the database as a SOAINFRA user.</p>
+<pre><code>[root@soapostinstall /]# sqlplus SOA1_SOAINFRA/Oradoc_db1@oracle-db.default.svc.cluster.local:1521/devpdb.k8s
+</code></pre></li>
+<li>
+<p>Execute the following script.</p>
+<pre><code>SQL&gt; @soa_verify_scripts.sql
+
+SQL&gt; show errors
+</code></pre></li>
+</ul>
+</li>
+<li>
+<p>Recreate the auto purge jobs with new jobs added in 12.2.1.4.201210SOABP.</p>
+<ul>
+<li>
+<p>Change the directory to location where scripts are stored.</p>
+<pre><code>[root@soapostinstall /]# cd /soa_purge/122140/soa_purge12/soa
+</code></pre></li>
+<li>
+<p>Connect to the database as a SOAINFRA user.</p>
+<pre><code>[root@soapostinstall /]# sqlplus SOA1_SOAINFRA/Oradoc_db1@oracle-db.default.svc.cluster.local:1521/devpdb.k8s
+</code></pre></li>
+<li>
+<p>Execute the following script.</p>
+<pre><code>SQL&gt; @loadcompbasedpurgeprogram.sql
+
+SQL&gt; show errors
+</code></pre></li>
+</ul>
+</li>
+</ol>
+<h4 id="start-the-domain">Start the domain</h4>
+<p>The <code>domain.yaml</code> created by <code>create-domain.sh</code> script above has details about the Oracle SOA Suite Domain and Cluster Kubernetes resources. You can create Oracle SOA Suite Domain using the <code>kubectl create -f</code>
+or <code>kubectl apply -f</code> command:</p>
+<pre><code>```
+$ kubectl apply -f &lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;/domain.yaml
+```
+</code></pre>
 <p>The default domain created by the script has the following characteristics:</p>
 <ul>
 <li>An Administration Server named <code>AdminServer</code> listening on port <code>7001</code>.</li>
 <li>A configured cluster named <code>soa_cluster</code> of size 5.</li>
-<li>Two Managed Servers, named <code>soa_server1</code> and <code>soa_server2</code>, listening on port <code>8001</code>.</li>
+<li>Managed Server, named <code>soa_server1</code> listening on port <code>8001</code>.</li>
 <li>Log files that are located in <code>/shared/logs/&lt;domainUID&gt;</code>.</li>
 <li>SOA Infra, SOA Composer, and WorklistApp applications deployed.</li>
 </ul>
@@ -6232,15 +6338,12 @@ before starting the Managed Servers.</p>
 <h4 id="verify-the-pods">Verify the pods</h4>
 <p>Enter the following command to see the pods running the servers:</p>
 <pre><code>$ kubectl get pods -n NAMESPACE
-</code></pre><p>Here is an example of the output of this command. You can verify that an Administration Server and two Managed Servers for each cluster (SOA and Oracle Service Bus) are running for <code>soaosb</code> domain type.</p>
+</code></pre><p>Here is an example of the output of this command. You can verify that an Administration Server and a Managed Server for each cluster (SOA and Oracle Service Bus) are running for <code>soaosb</code> domain type.</p>
 <pre><code>$ kubectl get pods -n soans
 NAME                                                READY   STATUS      RESTARTS   AGE
 soainfra-adminserver                         1/1     Running     0          53m
 soainfra-osb-server1                         1/1     Running     0          50m
-soainfra-osb-server2                         1/1     Running     0          50m
 soainfra-soa-server1                         1/1     Running     0          50m
-soainfra-soa-server2                         1/1     Running     0          50m
-
 </code></pre><h4 id="verify-the-services">Verify the services</h4>
 <p>Enter the following command to see the services for the domain:</p>
 <pre><code>$ kubectl get services -n NAMESPACE
@@ -6263,12 +6366,12 @@ soainfra-adminserver            ClusterIP      None             &lt;none&gt;    
 soainfra-cluster-osb-cluster    ClusterIP      10.100.138.57    &lt;none&gt;        9001/TCP,9002/TCP             51m
 soainfra-cluster-soa-cluster    ClusterIP      10.99.117.240    &lt;none&gt;        8001/TCP,8002/TCP             51m
 soainfra-osb-server1            ClusterIP      None             &lt;none&gt;        9001/TCP,9002/TCP             51m
-soainfra-osb-server2            ClusterIP      None             &lt;none&gt;        9001/TCP,9002/TCP             51m
+soainfra-osb-server2            ClusterIP      10.108.50.145    &lt;none&gt;        9001/TCP,9002/TCP             51m
 soainfra-osb-server3            ClusterIP      10.108.71.8      &lt;none&gt;        9001/TCP,9002/TCP             51m
 soainfra-osb-server4            ClusterIP      10.100.1.144     &lt;none&gt;        9001/TCP,9002/TCP             51m
 soainfra-osb-server5            ClusterIP      10.108.57.147    &lt;none&gt;        9001/TCP,9002/TCP             51m
 soainfra-soa-server1            ClusterIP      None             &lt;none&gt;        8001/TCP,8002/TCP             51m
-soainfra-soa-server2            ClusterIP      None             &lt;none&gt;        8001/TCP,8002/TCP             51m
+soainfra-soa-server2            ClusterIP      10.97.165.179    &lt;none&gt;        8001/TCP,8002/TCP             51m
 soainfra-soa-server3            ClusterIP      10.98.160.126    &lt;none&gt;        8001/TCP,8002/TCP             51m
 soainfra-soa-server4            ClusterIP      10.105.164.133   &lt;none&gt;        8001/TCP,8002/TCP             51m
 soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;        8001/TCP,8002/TCP             51m
@@ -9986,19 +10089,19 @@ soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;    
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1700632044"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1701680379"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1700632044"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1700632044"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1701680379"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1701680379"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1700632044" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1700632044"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1701680379" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1701680379"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
