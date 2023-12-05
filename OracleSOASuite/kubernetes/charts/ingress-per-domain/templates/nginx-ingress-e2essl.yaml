@@ -43,7 +43,7 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-ssl'
             port:
               number: {{ .Values.wlsDomain.adminServerSSLPort }}
 {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
