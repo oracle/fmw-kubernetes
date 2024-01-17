@@ -6,7 +6,8 @@
 # The script will first bring down the helper pod and create a new helper pod with latest image
 # Then it will stop admin, soa and oim servers using serverStartPolicy as Never.
 # After all servers are stopped, then it will perform the db schema changes from helper pod.
-# the script will rely on job configmap for fetching db credentials. Post DB schema changes, it will
+# the script will rely on job configmap (for domains created using WLST scripts) or rcu secret (for domains created
+# using WDT models) for fetching db credentials. Post DB schema changes, it will
 # bring admin, soa and oim servers up using the latest image and serverStartPolicy set to IfNeeded
 # The script will exit with zero return code if all servers come up and be in ready state.
 
@@ -16,6 +17,8 @@
 
 # Changes
 # 02/28/2023 - changes related to Weblogic Kubernetes Operator 4.0.4
+# 04/12/2023 - changes to support patching of domains created using wdt models
+
 
 script="${BASH_SOURCE[0]}"
 
@@ -86,9 +89,9 @@ function check_running()
               echo "Pod $SERVER_NAME has failed to Start - Check Image is present on $NODE."
               X=2
         fi
-        if [ "$SERVER_NAME" = *"oim-server"* ]
+        if [ "$SERVER_NAME" = "oim-server1" ]
         then
-              kubectl logs -n $NAMESPACE ${PODNAME} | grep -q "BootStrap configuration Failed"
+              kubectl logs -n $NAMESPACE ${DOMAIN}-${PODNAME} | grep -q "BootStrap configuration Failed"
               if [ $? = 0 ]
               then
                  echo "BootStrap configuration Failed - check kubectl logs -n $NAMESPACE ${PODNAME}"
@@ -131,7 +134,7 @@ function usage {
     - Stops Admin, SOA and OIM servers using serverStartPolicy set as
       Never in domain definition yaml.
     - Wait for all servers to be stopped (default timeout 2000s)
-    - Introspect db properties including credentials from job configmap.
+    - Introspect db properties including credentials from job configmap or RCU secret.
     - Perform DB schema changes from helper pod
     - Starts Admin, SOA and OIM server by setting serverStartPolicy to
       IfNeeded and image to new image tag.
@@ -230,12 +233,12 @@ then
 fi
 
 #get domainUID. assuming only one domain in the namespace
-domainUID=`kubectl get domains -n ${namespace} -o jsonpath="{.items..metadata.name}"`
+domainUID=`kubectl get domains -n ${namespace} -o jsonpath="{.items[*].metadata.name}"`
 info "Found domain name: $domainUID"
 
 #fetch registry name
 if [ -z ${registry} ]; then
-  registry=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{..image}" | cut -d ":" -f 1`
+  registry=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{.spec.image}" | cut -d ":" -f 1`
 fi
 
 image_registry=$registry
@@ -246,8 +249,8 @@ then
   timeout=2000
 fi
 
-current_image_tag=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{..image}" | cut -d ":" -f 2`
-current_image_reg=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{..image}" | cut -d ":" -f 1`
+current_image_tag=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{.spec.image}" | cut -d ":" -f 2`
+current_image_reg=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{.spec.image}" | cut -d ":" -f 1`
 info "Domain $domainUID is currently running with image: $current_image_reg:$current_image_tag"
 
 #fetch no. of current weblogic pod under given domain
@@ -290,7 +293,7 @@ fi
 #create a new helper pod and wait for it to run.
 check_running $namespace $helper_pod_name $timeout $image_registry:$imagetag $domainUID 30
 
-#Stopping Admin, SOA and OIM servers
+##Stopping Admin, SOA and OIM servers
 info "Stopping Admin, SOA and OIM servers in domain $domainUID. This may take some time, monitor log $LOG_DIR/stop_servers.log for details"
 kubectl patch domain ${domainUID} -n ${namespace} --type merge -p '{"spec":{"serverStartPolicy":"Never"}}' > $LOG_DIR/stop_servers.log 2>&1
 
@@ -311,26 +314,43 @@ else
   fail "All servers under domain ${domainUID} could not be stopped. Check kubectl get pods -n ${namespace} for details"
 fi
 
-#fetch details from job configmap for db schema changes
+#fetch db details from job configmap for domains created using wlst script
 JOB_CM=`kubectl get cm -n ${namespace} | grep -i fmw-infra-sample-domain-job | awk '{print $1}' | tr -d " "`
-rcuSchemaPrefix=`kubectl get cm ${JOB_CM} -n ${namespace} -o template --template {{.data}} | grep "rcuSchemaPrefix:" | cut -d ":" -f 2 | tr -d " "`
-rcuCredentialsSecret=`kubectl get cm ${JOB_CM} -n ${namespace} -o template --template {{.data}} | grep "rcuCredentialsSecret:" | cut -d ":" -f 2 | tr -d " "`
-rcuDatabaseURL=`kubectl get cm ${JOB_CM} -n ${namespace} -o template --template {{.data}} | grep "rcuDatabaseURL:" | awk -F 'rcuDatabaseURL:' '{print $2}' | tr -d " "`
-DB_HOST=`echo $rcuDatabaseURL | cut -d ":" -f 1 | tr -d " "`
-DB_PORT=`echo $rcuDatabaseURL | tr ":" "\t" | awk '{print $2}' | tr -d " " | tr "/" "\t" | awk '{print $1}' | tr -d " "`
-DB_SERVICE=`echo $rcuDatabaseURL | tr ":" "\t" | awk '{print $2}' | tr -d " " | tr "/" "\t" | awk '{print $2}' | tr -d " "`
-RCU_SCHEMA_PWD=`kubectl get secrets ${rcuCredentialsSecret} -n ${namespace} -o yaml | grep "\spassword" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
-SYS_PWD=`kubectl get secrets ${rcuCredentialsSecret} -n ${namespace} -o yaml | grep "\ssys_password" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+
+if [ ! -z $JOB_CM ]
+then
+  info "Fetched domain creation job configmap $JOB_CM"
+  rcuSchemaPrefix=`kubectl get cm ${JOB_CM} -n ${namespace} -o template --template '{{.data}}' | grep "rcuSchemaPrefix:" | cut -d ":" -f 2 | tr -d " "`
+  RCU_CREDENTIALS_SECRET=`kubectl get cm ${JOB_CM} -n ${namespace} -o template --template '{{.data}}' | grep "rcuCredentialsSecret:" | cut -d ":" -f 2 | tr -d " "`
+  rcuDatabaseURL=`kubectl get cm ${JOB_CM} -n ${namespace} -o template --template '{{.data}}' | grep "rcuDatabaseURL:" | awk -F 'rcuDatabaseURL:' '{print $2}' | tr -d " "`
+  DB_HOST=`echo $rcuDatabaseURL | cut -d ":" -f 1 | tr -d " "`
+  DB_PORT=`echo $rcuDatabaseURL | tr ":" "\t" | awk '{print $2}' | tr -d " " | tr "/" "\t" | awk '{print $1}' | tr -d " "`
+  DB_SERVICE=`echo $rcuDatabaseURL | tr ":" "\t" | awk '{print $2}' | tr -d " " | tr "/" "\t" | awk '{print $2}' | tr -d " "`
+  RCU_SCHEMA_PWD=`kubectl get secrets ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\spassword" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+  SYS_PWD=`kubectl get secrets ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\ssys_password" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+else
+  #fetch db details from RCU Secret for domains created using WDT models
+  RCU_CREDENTIALS_SECRET=`kubectl get domain ${domainUID} -n ${namespace} -o jsonpath="{.spec.configuration.secrets[*]}"`
+  if [ ! -z ${RCU_CREDENTIALS_SECRET} ]
+  then
+    info "Fetched RCU Credential secret name $RCU_CREDENTIALS_SECRET from domain definition"
+    DB_HOST=`kubectl get secret ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\sdb_host" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+    DB_PORT=`kubectl get secret ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\sdb_port" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+    rcuSchemaPrefix=`kubectl get secret ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\srcu_prefix" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+    DB_SERVICE=`kubectl get secret ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\sdb_service" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+    RCU_SCHEMA_PWD=`kubectl get secret ${RCU_CREDENTIALS_SECRET} -n ${namespace} -o yaml | grep "\srcu_schema_password" | tr -d " " | tr ":" "\t" | awk '{print $2}' | tr -d " " | base64 -d`
+  else
+    fail "Could not fetch RCU Credential Secret, please describe the domain for further details"
+  fi
+fi
 
 echo "DB_HOST=$DB_HOST
-  DB_PORT=$DB_PORT
-  DB_SERVICE=$DB_SERVICE
-  RCU_SCHEMA_PREFIX=$rcuSchemaPrefix
-  RCU_CREDENTIALS_SECRET=$rcuCredentialsSecret
-  RCUDATABASEURL=$rcuDatabaseURL
-  JOBCM=$JOB_CM" > $LOG_DIR/db.properties
+DB_PORT=$DB_PORT
+DB_SERVICE=$DB_SERVICE
+RCU_CREDENTIALS_SECRET=$RCU_CREDENTIALS_SECRET
+RCU_SCHEMA_PREFIX=$rcuSchemaPrefix" > $LOG_DIR/db.properties
 
-#run db schema patch command
+##run db schema patch command
 info "Patching OIM schemas..."
 kubectl exec -it ${helper_pod_name} -n ${namespace} -- bash -c "echo -e ${SYS_PWD}'\n'${RCU_SCHEMA_PWD} > /tmp/pwd.txt"
 kubectl exec -it ${helper_pod_name} -n ${namespace} -- /u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin/ant \
@@ -396,9 +416,3 @@ else
   echo "[SUCCESS] All servers under $domainUID are now in ready state with new image: $image_registry:$imagetag"
   exit 0
 fi
-
-
-
-
-
-

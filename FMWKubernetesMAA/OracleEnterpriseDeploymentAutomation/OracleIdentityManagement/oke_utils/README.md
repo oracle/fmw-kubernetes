@@ -321,43 +321,43 @@ The rest of the parameters all use a reasonable default and it is not required t
 | FS\_WEBCONFIG2\_DISPLAY\_NAME | webconfig2 | Display name for the NFS file system for the OHS configuration data on webhost2. |
 | FS\_WEBCONFIG2\_PATH | /export/IAMCONFIG/webconfig2 | Path to the NFS file system where the OHS configuration data is installed on webhost2. |
 | FS\_OAMPV\_DISPLAY\_NAME | oampv | Display name for the OAM persistent volume file system. |
-| FS\_OAMPV\_NFS\_PATH | /export/IAMPVS/oampv | Path to the NFS file system for the OAM domain. |
+| FS\_OAMPV\_NFS\_PATH | /exports/IAMPVS/oampv | Path to the NFS file system for the OAM domain. |
 | FS\_OAMPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oampv | Local mount point on the bastion host for the OAM persistent volume. |
 | FS\_OIGPV\_DISPLAY\_NAME | oigpv | Display name for the OIG persistent volume file system. |
-| FS\_OIGPV\_NFS\_PATH | /export/IAMPVS/oigpv | Path to the NFS file system for the OIG domain. |
+| FS\_OIGPV\_NFS\_PATH | /exports/IAMPVS/oigpv | Path to the NFS file system for the OIG domain. |
 | FS\_OIGPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oigpv | Local mount point on the bastion host for the OIG persistent volume. |
 | FS\_OUDPV\_DISPLAY\_NAME | oudpv | Display name for the OUD persistent volume file system. |
-| FS\_OUDPV\_NFS\_PATH | /export/IAMPVS/oudpv | Path to the NFS file system for the OUD domain. |
+| FS\_OUDPV\_NFS\_PATH | /exports/IAMPVS/oudpv | Path to the NFS file system for the OUD domain. |
 | FS\_OUDPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oudpv | Local mount point on the bastion host for the OUD persistent volume. |
 | FS\_OUDCONFIGPV\_DISPLAY\_NAME | oudconfigpv | Display name for the OUD configuration persistent volume file system. |
-| FS\_OUDCONFIGPV\_NFS\_PATH | /export/IAMPVS/oudconfigpv | Path to the NFS file system for the OUD configuration data. |
+| FS\_OUDCONFIGPV\_NFS\_PATH | /exports/IAMPVS/oudconfigpv | Path to the NFS file system for the OUD configuration data. |
 | FS\_OUDCONFIGPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oudconfigpv | Local mount point on the bastion host for the OUD configuration data. |
 | FS\_OUDSMPV\_DISPLAY\_NAME | oudsmpv | Display name for the OUD services manager persistent volume file system. |
-| FS\_OUDSMPV\_NFS\_PATH | /export/IAMPVS/oudsmpv | Path to the NFS file system for the OUD services manager domain. |
+| FS\_OUDSMPV\_NFS\_PATH | /exports/IAMPVS/oudsmpv | Path to the NFS file system for the OUD services manager domain. |
 | FS\_OUDSMPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oudsmpv | Local mount point on the bastion host for the OUD services manager persistent volume. |
 | FS\_OIRIPV\_DISPLAY\_NAME | oiripv | Display name for the OIRI persistent volume file system. |
-| FS\_OIRIPV\_NFS\_PATH | /export/IAMPVS/oiripv | Path to the NFS file system for the OIRI domain. |
+| FS\_OIRIPV\_NFS\_PATH | /exports/IAMPVS/oiripv | Path to the NFS file system for the OIRI domain. |
 | FS\_OIRIPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oiripv | Local mount point on the bastion host for the OIRI persistent volume. |
 | FS\_DINGPV\_DISPLAY\_NAME | dingpv | Display name for the data ingestor persistent volume file system. |
-| FS\_DINGPV\_NFS\_PATH | /export/IAMPVS/dingpv | Path to the NFS file system for the OIRI ingestor data. |
+| FS\_DINGPV\_NFS\_PATH | /exports/IAMPVS/dingpv | Path to the NFS file system for the OIRI ingestor data. |
 | FS\_DINGPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/dingpv | Local mount point on the bastion host for the OIRI ingestor data. |
 | FS\_WORKPV\_DISPLAY\_NAME | workpv | Display name for the OIRI working directory  volume file system. |
-| FS\_WORKPV\_NFS\_PATH | /export/IAMPVS/workpv | Path to the NFS file system for the OIRI working directory. |
+| FS\_WORKPV\_NFS\_PATH | /exports/IAMPVS/workpv | Path to the NFS file system for the OIRI working directory. |
 | FS\_WORKPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/workpv | Local mount point on the bastion host for the OIRI working directory. |
 | FS\_OAACONFIGPV\_DISPLAY\_NAME | oaaconfigpv | Display name for the OAA configuration persistent volume file system. |
-| FS\_OAACONFIGPV\_NFS\_PATH | /export/IAMPVS/oaaconfigpv | Path to the NFS file system for the OAA configuration data. |
+| FS\_OAACONFIGPV\_NFS\_PATH | /exports/IAMPVS/oaaconfigpv | Path to the NFS file system for the OAA configuration data. |
 | FS\_OAACONFIGPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oaaconfigpv | Local mount point on the bastion host for the OAA configuration persistent volume data. |
 | FS\_OAACREDPV\_DISPLAY\_NAME | oaacredpv | Display name for the OAA credential store persistent volume file system. |
-| FS\_OAACREDPV\_NFS\_PATH | /export/IAMPVS/oaacredpv | Path to the NFS file system for the OAA credential store data. |
+| FS\_OAACREDPV\_NFS\_PATH | /exports/IAMPVS/oaacredpv | Path to the NFS file system for the OAA credential store data. |
 | FS\_OAACREDPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oaacredpv | Local mount point on the bastion host for the OAA credential store persistent volume data. |
 | FS\_OAAVAULTPV\_DISPLAY\_NAME | oaavaultpv | Display name for the OAA Vault persistent volume file system. |
-| FS\_OAAVAULTPV\_NFS\_PATH | /export/IAMPVS/oaavaultpv | Path to the NFS file system for the OAA Vault store data. |
+| FS\_OAAVAULTPV\_NFS\_PATH | /exports/IAMPVS/oaavaultpv | Path to the NFS file system for the OAA Vault store data. |
 | FS\_OAAVAULTPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oaavaultpv | Local mount point on the bastion host for the OAA Vault store persistent volume data. |
 | FS\_OAALOGPV\_DISPLAY\_NAME | oaalogpv | Display name for the OAA log file persistent volume file system. |
-| FS\_OAALOGPV\_NFS\_PATH | /export/IAMPVS/oaalogpv | Path to the NFS file system for the OAA log files. |
+| FS\_OAALOGPV\_NFS\_PATH | /exports/IAMPVS/oaalogpv | Path to the NFS file system for the OAA log files. |
 | FS\_OAALOGPV\_LOCAL\_MOUNTPOINT | /nfs\_volumes/oaalogpv | Local mount point on the bastion host for the OAA log files. |
 | FS\_IMAGES\_DISPLAY\_NAME | images | Display name for the IDM container images persistent volume file system. |
-| FS\_IMAGES\_NFS\_PATH | /export/IMAGES/images | Path to the NFS file system for the container images. |
+| FS\_IMAGES\_NFS\_PATH | /exports/IMAGES/images | Path to the NFS file system for the container images. |
 | FS\_IMAGES\_LOCAL\_MOUNTPOINT | /images | Local mount point on the bastion host for the container images. |
 
 ### SSL Configuration

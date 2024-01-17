@@ -98,7 +98,7 @@ then
     update_progress
 fi
 
-# Create Namespace and Helper Pod
+# Create Namespace
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
@@ -199,6 +199,14 @@ fi
 #
 if [ "$USE_ELK" = "true" ]
 then
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_elk_secret $OUDNS
+       update_progress
+   fi
+
    new_step
    if [ $STEPNO -gt $PROGRESS ]
    then
@@ -220,6 +228,12 @@ then
        update_progress
     fi
 
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     create_elk_dataview oud
+     update_progress
+   fi
 fi
 
 FINISH_TIME=`date +%s`

@@ -22,6 +22,7 @@ edit_seedfile()
    #
    update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $SEEDFILE
    update_variable "<LDAP_SEARCHBASE>" $LDAP_SEARCHBASE $SEEDFILE
+   OUD_REGION=$(echo $LDAP_SEARCHBASE | cut -f1 -d, | cut -f2 -d=)
    update_variable "<OUD_REGION>" $OUD_REGION $SEEDFILE
    update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $SEEDFILE
    update_variable "<LDAP_USER_SEARCHBASE>" $LDAP_USER_SEARCHBASE $SEEDFILE
@@ -77,26 +78,10 @@ create_override()
    update_variable "<OUD_CPU>" $OUD_CPU $OVERRIDE_FILE
    update_variable "<OUDSERVER_TUNING_PARAMS>" "$OUDSERVER_TUNING_PARAMS" $OVERRIDE_FILE
 
-
    update_variable "<USE_ELK>" $USE_ELK $OVERRIDE_FILE
    update_variable "<ELK_VER>" $ELK_VER $OVERRIDE_FILE
    update_variable "<ELK_USER>" $ELK_USER $OVERRIDE_FILE
    update_variable "<ELK_HOST>" $ELK_HOST $OVERRIDE_FILE
-#   if [ ! "$ELK_API" = "" ]
-#   then
-#      update_variable "<ELK_API_SECRET>" elk-logstash $OVERRIDE_FILE
-#      sed -i '/espassword/d'  $OVERRIDE_FILE
-#   else
-#      update_variable "<ELK_SECRET>" elk-logstash $OVERRIDE_FILE
-#      sed -i '/esapikey/d'  $OVERRIDE_FILE
-#   fi
-
-#   if [ -e $LOCAL_WORKDIR/ELK/ca.crt ] && [ "$USE_ELK" = "true" ]
-#   then
-#       replace_value2 escert "|" $OVERRIDE_FILE
-#       sed -i "/escert/ r $LOCAL_WORKDIR/ELK/ca.crt" $OVERRIDE_FILE
-#   fi
-       
 
    update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $OVERRIDE_FILE
 
@@ -347,7 +332,7 @@ create_oudsm()
    print_msg "Use Helm to create OUDSM"
 
    cd $WORKDIR/samples/kubernetes/helm
-   helm install --namespace $OUDNS --values $WORKDIR/override_oudsm.yaml oudsm oudsm > $LOGDIR/create_oudsm.log 2>&1
+   helm install --namespace $OUDSMNS --values $WORKDIR/override_oudsm.yaml oudsm oudsm > $LOGDIR/create_oudsm.log 2>&1
    print_status $? $LOGDIR/create_oudsm.log
    ET=$(date +%s)
    print_time STEP "Create OUDSM Instances" $ST $ET >> $LOGDIR/timings.log
@@ -361,8 +346,8 @@ check_oudsm_started()
    ST=$(date +%s)
    print_msg "Check OUDSM Server starts"
    echo
-   check_running $OUDNS oudsm
-   kubectl logs oudsm-1 -n $OUDNS >> $LOGDIR/create_oudsm.log
+   check_running $OUDSMNS oudsm
+   kubectl logs oudsm-1 -n $OUDSMNS >> $LOGDIR/create_oudsm.log
    ET=$(date +%s)
    print_time STEP "OUDSM Started " $ST $ET >> $LOGDIR/timings.log
 }
@@ -375,7 +360,7 @@ create_oudsm_nodeport()
    print_msg "Create OUDSM Nodeport Service"
    cp $TEMPLATE_DIR/oudsm_nodeport.yaml $WORKDIR
    update_variable "<OUDSM_SERVICE_PORT>" $OUDSM_SERVICE_PORT $WORKDIR/oudsm_nodeport.yaml
-   update_variable "<OUDNS>" $OUDNS $WORKDIR/oudsm_nodeport.yaml
+   update_variable "<OUDSMNS>" $OUDSMNS $WORKDIR/oudsm_nodeport.yaml
 
    kubectl apply -f $WORKDIR/oudsm_nodeport.yaml > $LOGDIR/oudsm_nodeport.log 2>&1
    print_status $? $LOGDIR/oudsm_nodeport.log
@@ -392,7 +377,7 @@ create_oudsm_ingress()
    print_msg "Create OUDSM Ingress Service"
    filename=oudsm_ingress.yaml
    cp $TEMPLATE_DIR/$filename $WORKDIR
-   update_variable "<OUDNS>" $OUDNS $WORKDIR/$filename
+   update_variable "<OUDSMNS>" $OUDSMNS $WORKDIR/$filename
    update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $WORKDIR/$filename
 
    kubectl create -f $WORKDIR/$filename > $LOGDIR/create_ingress.log 2>&1
@@ -481,8 +466,9 @@ create_oudsm_logstash_cm()
    print_msg "Creating logstash Config Map"
    cp $TEMPLATE_DIR/logstash_cm.yaml $WORKDIR
 
-   update_variable "<OUDNS>" $OUDNS $WORKDIR/logstash_cm.yaml
+   update_variable "<OUDSMNS>" $OUDSMNS $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER>" $ELK_USER $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
 
    kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1

@@ -1,9 +1,9 @@
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.  
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.  
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a responsefile for IDM Provisioning on Kubernetes
 #
-# Version: 4.1
+# Version: 4.2
 
 ############################################################################################
 #                               CONTROL Parameters                                         #
@@ -19,7 +19,7 @@ INSTALL_WLSOPER=true
 INSTALL_OUD=true
 INSTALL_OAM=true
 INSTALL_OIG=true
-INSTALL_OIRI=true
+INSTALL_OIRI=false
 INSTALL_OAA=true
 INSTALL_ELK=false
 INSTALL_PROM=false
@@ -103,6 +103,9 @@ OAA_MGT_IMAGE=$REGISTRY/oaa-mgmt
 #
 KUBECTL_REPO=bitnami/kubectl
 BUSYBOX_REPO=docker.io/busybox
+PROM_REPO=
+ELK_REPO=
+#
 #
 # Image Versions
 # 
@@ -135,7 +138,8 @@ PV_MOUNT=/u01/oracle/user_projects
 
 ELKNS=elkns
 ELK_HOST=https://elasticsearch-es-http.$ELKNS.svc:9200
-ELK_VER=8.3.1
+ELK_OPER_VER=2.10.0
+ELK_VER=8.11.0
 ELK_SHARE=$IAM_PVS/elk_data
 ELK_STORAGE=nfs-client
 ELK_USER=logstash_internal
@@ -207,7 +211,6 @@ OUD_LOCAL_SHARE=/nfs_volumes/oudpv
 OUD_POD_PREFIX=edg
 OUD_CREATE_NODEPORT=true
 OUD_PWD_EXPIRY=2024-01-02
-OUD_REGION=us
 
 OUD_REPLICAS=2
 
@@ -221,7 +224,7 @@ OUD_ADMIN_K8=31444
 #
 OUD_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
 OUD_MAX_MEMORY=4Gi # Max Memory pod is allowed to consume.
-OUD_CPU=500m  # Initial CPU Units 1000m = 1 CPU core
+OUD_CPU=200m  # Initial CPU Units 1000m = 1 CPU core
 OUD_MEMORY=2Gi  # Initial Memory allocated to pod.
 OUDSERVER_TUNING_PARAMS="-Xms1024m -Xmx2048m "
 
@@ -229,6 +232,7 @@ OUDSERVER_TUNING_PARAMS="-Xms1024m -Xmx2048m "
 #                               OUDSM Parameters                                           #
 ############################################################################################
 #
+OUDSMNS=oudsmns
 OUDSM_USER=weblogic
 OUDSM_SHARE=$IAM_PVS/oudsmpv
 OUDSM_LOCAL_SHARE=/nfs_volumes/oudsmpv
@@ -274,9 +278,9 @@ OAM_OAMADMIN_USER=$LDAP_OAMADMIN_USER
 # Resource Parameters
 # 
 OAMSERVER_JAVA_PARAMS="-Xms2048m -Xmx8192m "
-OAM_MAX_CPU=2 # Max CPU Cores pod is allowed to consume.
-OAM_CPU=1000m # Initial CPU Units 1000m = 1 CPU core
-OAM_MAX_MEMORY=10Gi # Max Memory pod is allowed to consume.
+OAM_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
+OAM_CPU=500m # Initial CPU Units 1000m = 1 CPU core
+OAM_MAX_MEMORY=2Gi # Max Memory pod is allowed to consume.
 OAM_MEMORY=2Gi  # Initial Memory allocated to pod.
 
 # OAM Ports
@@ -295,6 +299,7 @@ OAM_OAP_SERVICE_PORT=30540
 #
 OIGNS=oigns
 CONNECTOR_DIR=/home/opc/scripts/connectors
+CONNECTOR_VER=OID-12.2.1.3.0
 OIG_SHARE=$IAM_PVS/oigpv
 OIG_LOCAL_SHARE=/nfs_volumes/oigpv
 OIG_SERVER_COUNT=5
@@ -331,11 +336,11 @@ OIG_EMAIL_REPLY_ADDRESS=noreplies@example.com
 #
 OIMSERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
 SOASERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
-OIM_MAX_CPU=2 # Max CPU Cores pod is allowed to consume.
-OIM_CPU=1000m # Initial CPU Units 1000m = 1 CPU core
-OIM_MAX_MEMORY=10Gi # Max Memory pod is allowed to consume.
+OIM_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
+OIM_CPU=500m # Initial CPU Units 1000m = 1 CPU core
+OIM_MAX_MEMORY=4Gi # Max Memory pod is allowed to consume.
 OIM_MEMORY=4Gi  # Initial Memory allocated to pod.
-SOA_MAX_CPU=2 # Max CPU Cores pod is allowed to consume.
+SOA_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
 SOA_CPU=1000m # Initial CPU Units 1000m = 1 CPU core
 SOA_MAX_MEMORY=10Gi # Max Memory pod is allowed to consume.
 SOA_MEMORY=4Gi  # Initial Memory allocated to pod.
@@ -361,6 +366,7 @@ OHS_USER=opc
 OHS_GRP=opc
 OHS_HOST1=ohs1.example.com
 OHS_HOST2=ohs2.example.com
+OHS_LBR_NETWORK=example.com
 OHS_INSTALLER=fmw_12.2.1.4.0_ohs_linux64_Disk1_1of1.zip
 NM_ADMIN_USER=admin
 NM_PORT=5556

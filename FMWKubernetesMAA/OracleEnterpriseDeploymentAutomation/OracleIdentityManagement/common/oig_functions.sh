@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions and procedures to provision and Configure Oracle Identity Governance
@@ -300,7 +300,7 @@ copy_connector()
     print_msg "Installing Connector into Container" 
 
     printf "\n\t\t\tCheck Connector Exists - "
-    if [ -d $CONNECTOR_DIR/OID-12.2.1* ]
+    if [ -d $CONNECTOR_DIR/${CONNECTOR_VER} ]
     then
           echo "Success"
     else
@@ -316,7 +316,7 @@ copy_connector()
     fi
  
     printf "\t\t\tCopy Connector to container - "
-    kubectl cp $CONNECTOR_DIR/OID-12.2*  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
+    kubectl cp $CONNECTOR_DIR/${CONNECTOR_VER}  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     print_status $?
 
     ET=$(date +%s)
@@ -362,6 +362,7 @@ create_connector_files()
      update_variable "<LDAP_OAMADMIN_USER>" $LDAP_OAMADMIN_USER $WORKDIR/oamoig.sedfile
      update_variable "<LDAP_HOST>" ${LDAP_EXTERNAL_HOST:=$OUD_POD_PREFIX-oud-ds-rs-lbr-ldap.$OUDNS.svc.cluster.local} $WORKDIR/oamoig.sedfile
      update_variable "<LDAP_PORT>" ${LDAP_EXTERNAL_PORT:=1389} $WORKDIR/oamoig.sedfile
+     update_variable "<CONNECTOR_VER>" $CONNECTOR_VER $WORKDIR/oamoig.sedfile
 
      copy_to_k8 $WORKDIR/oamoig.sedfile workdir $OIGNS $OIG_DOMAIN_NAME
      copy_to_k8 $WORKDIR/autn.sedfile workdir $OIGNS $OIG_DOMAIN_NAME
@@ -1005,6 +1006,7 @@ create_logstash_cm()
 
    update_variable "<OIGNS>" $OIGNS $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER>" $ELK_USER $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
 
    kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1

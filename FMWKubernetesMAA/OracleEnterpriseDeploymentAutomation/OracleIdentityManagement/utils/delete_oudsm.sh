@@ -65,28 +65,34 @@ echo
 if [ "$USE_INGRESS" = "false" ]
 then
    echo "Delete NodePort Services"
-   kubectl delete service -n $OUDNS oudsm-nodeport >> $LOG 2>&1
+   kubectl delete service -n $OUDSMNS oudsm-nodeport >> $LOG 2>&1
 else
    echo "Delete Ingress Services"
-   kubectl delete ingress -n $OUDNS oudsm-ingress >> $LOG 2>&1
+   kubectl delete ingress -n $OUDSMNS oudsm-ingress >> $LOG 2>&1
 fi
 
 if [ "$USE_ELK" = "true" ]
 then
    echo "Deleting Logstash"
-   kubectl delete deployment -n $OUDNS oudsm-logstash  >> $LOG 2>&1
+   kubectl delete deployment -n $OUDSMNS oudsm-logstash  >> $LOG 2>&1
    echo "Deleting Logstash configmap"
-   kubectl delete cm -n $OUDNS oudsm-logstash-configmap  >> $LOG 2>&1
+   kubectl delete cm -n $OUDSMNS oudsm-logstash-configmap  >> $LOG 2>&1
 fi
 
 echo "Delete OUDSM Application"
-helm uninstall -n $OUDNS oudsm  >> $LOG 2>&1
+helm uninstall -n $OUDSMNS oudsm  >> $LOG 2>&1
 
-check_stopped $OUDNS oudsm-1 
+check_stopped $OUDSMNS oudsm-1 
 
 if [ "$USE_ELK" = "true" ]
 then
-    check_stopped $OUDNS oudsm-es-cluster-0 
+    check_stopped $OUDSMNS oudsm-es-cluster-0 
+fi
+
+if [ ! "$OUDNS" = "$OUDSMNS" ]
+then
+   echo "Delete Namespace $OUDSMNS"
+   kubectl delete namespace $OUDSMNS
 fi
 
 echo "Delete Volumes"

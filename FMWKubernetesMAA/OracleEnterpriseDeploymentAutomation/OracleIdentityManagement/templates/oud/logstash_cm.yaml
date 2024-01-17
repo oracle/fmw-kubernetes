@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl
@@ -11,6 +11,8 @@ metadata:
  name: oud-logstash-configmap
  namespace: <OUDNS>
 data:
+ logstash.yaml: |
+ #http.host: "0.0.0.0"
  logstash-config.conf: |
    input {
       file {
@@ -45,9 +47,12 @@ data:
       }
    output {
     elasticsearch {
-     hosts => ["<ELK_HOST>"]
-     cacert => '/usr/share/logstash/config/certs/elk.crt'
-     user => "<ELK_USER>"
-     password => "<ELK_USER_PWD>"
+      hosts => ["<ELK_HOST>"]
+      cacert => '/usr/share/logstash/config/certs/elk.crt'
+      user => "<ELK_USER>"
+      password => "${ELASTICSEARCH_PASSWORD}"
+      index => "oudlogs-000001"
+      ssl => true
+      ssl_certificate_verification => false
     }
    }

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example file to create a config map for logstash
@@ -9,6 +9,8 @@ metadata:
   name: oig-logstash-configmap
   namespace: <OIGNS>
 data:
+  logstash.yaml: |
+  #http.host: "0.0.0.0"
   logstash-config.conf: |
     input {
       file {
@@ -61,7 +63,11 @@ data:
       elasticsearch {
         hosts => ["<ELK_HOST>"]
         cacert => '/usr/share/logstash/config/certs/elk.crt'
-        user => "logstash_internal"
-        password => "<ELK_USER_PWD>"
+        index => "oiglogs-000001"
+        ssl => true
+        ssl_certificate_verification => false
+        user => "<ELK_USER>"
+        index => "oiglogs-000001"
+        password => "${ELASTICSEARCH_PASSWORD}"
       }
     }

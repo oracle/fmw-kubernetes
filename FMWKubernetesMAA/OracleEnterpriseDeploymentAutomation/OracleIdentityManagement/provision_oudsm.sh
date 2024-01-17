@@ -83,7 +83,7 @@ echo
 create_local_workdir
 create_logdir
 printf "Using Image:"
-printf "\n\t$OUDSM_IMAGE:$OUDSM_VER"
+printf "\n\t$OUDSM_IMAGE:$OUDSM_VER\n\n"
 
 echo -n "Provisioning OUDSM on " >> $LOGDIR/timings.log
 date +"%a %d %b %Y %T" >> $LOGDIR/timings.log
@@ -97,6 +97,34 @@ PROGRESS=$(get_progress)
 if [ $STEPNO -gt $PROGRESS ]
 then
    download_samples 
+   update_progress
+fi
+
+# Create Namespace 
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    create_namespace $OUDSMNS
+    update_progress
+fi
+
+# Create a Container Registry Secret if requested
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   if [ "$CREATE_REGSECRET" = "true" ]
+   then
+       create_registry_secret $REGISTRY $REG_USER $REG_PWD $OUDSMNS
+   fi
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OUDSMNS dockercred
    update_progress
 fi
 
@@ -161,6 +189,20 @@ then
    new_step
    if [ $STEPNO -gt $PROGRESS ]
    then
+       create_elk_secret $OUDSMNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_cert_cm $OUDSMNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
        create_oudsm_logstash_cm
        update_progress
     fi
@@ -168,10 +210,16 @@ then
    new_step
    if [ $STEPNO -gt $PROGRESS ]
    then
-       create_logstash $OUDNS
+       create_logstash $OUDSMNS
        update_progress
     fi
 
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     create_elk_dataview oudsm
+     update_progress
+   fi
 fi
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OUDSM" $START_TIME $FINISH_TIME 
