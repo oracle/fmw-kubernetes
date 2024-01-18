@@ -12,18 +12,18 @@
     <title>b. Upgrade Elasticsearch and Kibana :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1701680378" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1705563447" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1701680378"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1705563447"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1701680378"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1701680378"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1705563447"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1705563447"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1701680378"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1705563447"></script>
 
     
   </div>
@@ -5546,27 +5546,27 @@
 <p>Create a working directory to setup the source code.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir &lt;workdir&gt;
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/OUDSMK8SOctober23
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir /scratch/OUDSMK8SJan24
 </code></pre></div></li>
 <li>
 <p>Download the latest OUDSM deployment scripts from the OUDSM repository.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;workdir&gt;
 $ git clone https://github.com/oracle/fmw-kubernetes.git
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OUDSMK8SOctober23
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/OUDSMK8SJan24
 $ git clone https://github.com/oracle/fmw-kubernetes.git
 </code></pre></div></li>
 <li>
 <p>Set the <code>$WORKDIR</code> environment variable as follows:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>&lt;workdir&gt;/fmw-kubernetes/OracleUnifiedDirectorySM
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>/scratch/OUDSMK8SOctober23/fmw-kubernetes/OracleUnifiedDirectorySM
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WORKDIR<span style="color:#f92672">=</span>/scratch/OUDSMK8SJan24/fmw-kubernetes/OracleUnifiedDirectorySM
 </code></pre></div></li>
 </ol>
 <h3 id="undeploy-elasticsearch-and-kibana">Undeploy Elasticsearch and Kibana</h3>
 <p>From October 22 (22.4.1) onwards, OUDSM logs should be stored on a centralized Elasticsearch and Kibana (ELK) stack.</p>
 <p>Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana.</p>
-<p>If you are upgrading from July 22 (22.3.1) or earlier, to October 23 (23.4.1), you must first undeploy Elasticsearch and Kibana using the steps below:</p>
+<p>If you are upgrading from July 22 (22.3.1) or earlier, to January 24 (24.1.1), you must first undeploy Elasticsearch and Kibana using the steps below:</p>
 <ol>
 <li>
 <p>Navigate to the <code>$WORKDIR/kubernetes/helm</code> directory and create a <code>logging-override-values-uninstall.yaml</code> with the following:</p>
@@ -9300,19 +9300,19 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1701680378"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1705563447"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1701680378"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1705563447"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1701680378" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1701680378"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1705563447" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1705563447"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>b. Create OIG domains using WDT Models :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1701680378" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1701680378" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1705563447" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1701680378"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1705563447"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1701680378"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1701680378"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1705563447"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1705563447"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1701680378"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1705563447"></script>
 
     
   </div>
@@ -5591,6 +5591,7 @@ Subsequent domain lifecycle updates must be controlled by the WebLogic Server Ad
 <li>Review the <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/">domain-on-pv</a> documentation.</li>
 <li>Ensure that the database is up and running. RCU Schemas are created and patched.</li>
 </ol>
+<p><strong>Note</strong>: In this section a domain creation image is built using the supplied model files and then that image is used for domain creation. You will need your own container registry to upload the domain image to. Having your own container repository is a prerequisite before creating an OIG domain with WDT models. If you don&rsquo;t have your own container registry, you can instead load the image on each node in the cluster. This documentation does not explain how to either create your own container registry or how to load the image onto each node. Consult your vendor specific documentation for more information.</p>
 <h3 id="working-with-wdt-model-files">Working with WDT Model Files</h3>
 <p>The code repository (<code>$WORKDIR</code>) contains different WDT model files to create an OIG domain. The following table defines these files:</p>
 <p>More information on the WDT Metadata model see, <a href="https://oracle.github.io/weblogic-deploy-tooling/concepts/model/">Metadata model</a>.</p>
@@ -5961,13 +5962,27 @@ configmap/agl-cm labeled
 <p>In this section you modify the <code>domain.yaml</code> file in preparation for creating the OIG domain.</p>
 <ol>
 <li>
-<p>Navigate to the <code>$WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/domain-resources</code> directory and take a backup of the domain.yaml:</p>
+<p>Navigate to the <code>$WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/domain-resources</code> directory and take a backup of the <code>domain.yaml</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/domain-resources
 cp domain.yaml domain.yaml.orig
 </code></pre></div></li>
 <li>
-<p>Edit the <code>domain.yaml</code> file and modify the following parameters wherever applicable.</p>
-<p>A full list of parameters in the <code>domain.yaml</code> file are shown below:</p>
+<p>Edit the <code>domain.yaml</code> file and modify the following parameters where applicable. Save the file when complete:</p>
+<p>If you have used the default naming conventions in the documentation for namespace (<code>oigns</code>), domain UID (<code>governancedomain</code>), secrets (<code>orclcred</code>, <code>governancedomain-rcu-credentials</code> and <code>governancedomain-weblogic-credentials</code>), then you only need to change the following parameters:</p>
+<pre><code>image: &lt;container_image_name&gt;
+initContainers.image: &lt;container_image_name&gt;
+nfs.server: &lt;NFS_server_IP_address_used_for_persistent_storage&gt;
+nfs.path: &lt;physical_path_of_persistent_storage&gt;
+domainCreationImages.image: &lt;domain_image_name&gt;
+</code></pre><p>``</p>
+<p>For example:</p>
+<pre><code>image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'24&gt;
+initContainers.image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'24&gt;
+nfs.server: mynfsserver
+nfs.path: /scratch/shared/governancedomainpv
+domainCreationImages.image: container-registry.example.com/oig-aux:v1
+</code></pre><p>``</p>
+<p>If you have changed any of the default naming conventions you will also have to edit other parameters accordingly. A full list of parameters in the <code>domain.yaml</code> file are shown below:</p>
 <p>Domain definition:-</p>
 <table>
 <thead>
@@ -5980,7 +5995,7 @@ cp domain.yaml domain.yaml.orig
 <tbody>
 <tr>
 <td>metadata.name</td>
-<td><code>&lt;Domain name&gt; </code></td>
+<td><code>&lt;Domain name&gt;</code></td>
 <td>governancedomain</td>
 </tr>
 <tr>
@@ -5999,7 +6014,7 @@ cp domain.yaml domain.yaml.orig
 <td><code>/u01/oracle/user_projects/domains/governancedomain</code></td>
 </tr>
 <tr>
-<td><code>image</code></td>
+<td>image</td>
 <td>OIG container image. The operator requires OIG 12.2.1.4. Refer to <a href="../prepare-your-environment#obtain-the-oig-container-image">Obtain the OIG container image</a> for details on how to obtain or create the image. Note that OIG domain creation via WDT models is supported from Oct'23 BP image onwards.</td>
 <td><code>oracle/oig:12.2.1.4.0</code></td>
 </tr>
@@ -6046,12 +6061,12 @@ cp domain.yaml domain.yaml.orig
 <tr>
 <td>nfs.server</td>
 <td>NFS server IP address used for the PV and PVC</td>
-<td></td>
+<td><code>nfsServer</code></td>
 </tr>
 <tr>
 <td>nfs.path</td>
 <td>NFS server Path - physical_path_of_persistent_storage</td>
-<td></td>
+<td><code>/scratch/k8s_dir</code></td>
 </tr>
 <tr>
 <td>persistentVolumeClaim.metadata.name</td>
@@ -6066,7 +6081,7 @@ cp domain.yaml domain.yaml.orig
 <tr>
 <td>domainCreationImages.image</td>
 <td>Domain creation image name, containing WDT Installer and Model files. Can be one or more images specifying models in a layered manner.  Refer to <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/domain-creation-images/#multiple-images">Multiple Images</a> for more details.</td>
-<td></td>
+<td><code>oracle/oig:oct23-aux-12.2.1.4.0</code></td>
 </tr>
 <tr>
 <td>clusters.name</td>
@@ -6133,14 +6148,14 @@ spec:
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: &quot;fmw-paas-sandbox-cert-docker.dockerhub-phx.oci.oraclecorp.com/oracle/oig:12.2.1.4-jdk8-ol7-231011.195819&quot;
+  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'24&gt;&quot;
 
   # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
   imagePullPolicy: IfNotPresent
 
   imagePullSecrets:
   - name: orclcred
-  - name: russcred
+  - name: privatecred
   # Identify which Secret contains the WebLogic Admin credentials
   webLogicCredentialsSecret:
     name: governancedomain-weblogic-credentials
@@ -6173,7 +6188,7 @@ spec:
       #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
       - name: compat-connector-init
         # OIG Product image, same as spec.image mentioned above
-        image: &quot;fmw-paas-sandbox-cert-docker.dockerhub-phx.oci.oraclecorp.com/oracle/oig:12.2.1.4-jdk8-ol7-231011.195819&quot;
+        image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'24&gt;&quot;
         imagePullPolicy: IfNotPresent
         command: [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory&quot;, &quot;mkdir -p  /u01/oracle/user_projects/domains/wdt-logs&quot;]
         volumeMounts:
@@ -6232,8 +6247,8 @@ spec:
           # # The value must be 'hostPath' or 'nfs'.
           # # If using 'nfs', server must be specified.
             nfs:
-              path: &quot;/FileSystem-olcne-idm/russ/governancedomainpv&quot;
-              server: 100.105.18.14
+              path: &quot;/scratch/shared/governancedomainpv&quot;
+              server: mynfsserver
             #hostPath:
               #path: &quot;/scratch/k8s_dir&quot;
         persistentVolumeClaim:
@@ -6250,7 +6265,7 @@ spec:
             createIfNotExists: Domain
             # Image containing WDT installer and Model files.
             domainCreationImages:
-                - image: 'iad.ocir.io/digitalmediasystems/oaaocir/oig-aux:v1'
+                - image: 'container-registry.example.com/oig-aux:v1'
             domainType: OIG
   # References to Cluster resources that describe the lifecycle options for all
   # the Managed Server members of a WebLogic cluster, including Java
@@ -6301,7 +6316,7 @@ spec:
 </code></pre>
     </div>
 </div>
-<p><strong>Note</strong>: In circumstances where you may be pulling the OIG product container image from Oracle Container Registry, and then the domain image from a private registry, you must first create a secret (<code>privatecred</code>) for the private registry. For example:</p>
+<p><strong>Note</strong>: In circumstances where you may be pulling the OIG product container image from Oracle Container Registry, and then the domain image from a private container registry, you must first create a secret (<code>privatecred</code>) for the private registry. For example:</p>
 <pre><code>kubectl create secret docker-registry &quot;privatecred&quot; --docker-server=container-registry.example.com \
 --docker-username=&quot;user@example.com&quot; \
 --docker-password=password --docker-email=user@example.com \
@@ -6317,7 +6332,7 @@ spec:
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;October'23&gt;&quot;
+  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'24&gt;&quot;
 
   # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
   imagePullPolicy: IfNotPresent
@@ -6354,13 +6369,14 @@ spec:
  governancedomain-adminserver   1/1     Running   0          8m57s
  governancedomain-soa-server1   1/1     Running   0          4m14s
  helper                         1/1     Running   0          5h9m
-</code></pre></li>
+</code></pre><p>If there are any failures, follow <strong>Domain creation failure with WDT models</strong> in the <a href="../../troubleshooting/#domain-creation-failure-with-wdt-models">Troubleshooting</a> section.</p>
+</li>
 <li>
 <p>Start the OIM server by running the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl patch cluster -n oigns governancedomain-oim-cluster --type<span style="color:#f92672">=</span>merge -p <span style="color:#e6db74">&#39;{&#34;spec&#34;:{&#34;replicas&#34;:1}}&#39;</span>
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>cluster.weblogic.oracle/governancedomain-oim-cluster patched
-</code></pre><p>You can view the status of the OIM server by running@</p>
+</code></pre><p>You can view the status of the OIM server by running:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oigns -w
 </code></pre></div><p>Once the OIM server is running, the output will look similar to the following:</p>
 <pre><code>NAME                           READY   STATUS    RESTARTS   AGE
@@ -6598,7 +6614,7 @@ helper                         1/1     Running   0          5h24m
    Failure Retry Interval Seconds:  <span style="color:#ae81ff">120</span>
    Failure Retry Limit Minutes:     <span style="color:#ae81ff">1440</span>
    Http Access Log In Log Home:     true
-   Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;October<span style="color:#e6db74">&#39;23&gt;
+   Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#e6db74">&#39;24&gt;
 </span><span style="color:#e6db74">   Image Pull Policy:               IfNotPresent
 </span><span style="color:#e6db74">   Image Pull Secrets:
 </span><span style="color:#e6db74">      Name:                             orclcred
@@ -6628,7 +6644,7 @@ helper                         1/1     Running   0          5h24m
 </span><span style="color:#e6db74">           -c
 </span><span style="color:#e6db74">           mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
 </span><span style="color:#e6db74">           mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-</span><span style="color:#e6db74">         Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-&lt;October&#39;</span>23&gt;
+</span><span style="color:#e6db74">         Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January&#39;</span>24&gt;
          Image Pull Policy:  IfNotPresent
          Name:               compat-connector-init
          Volume Mounts:
@@ -6755,7 +6771,7 @@ helper                         1/1     Running   0          5h24m
       Server Name:   soa_server5
       State:         SHUTDOWN
       State Goal:    SHUTDOWN
-   Start Time:      2023-11-02T14:19:52.736208Z
+   Start Time:      &lt;DATE&gt;
  Events:
    Type    Reason     Age                From               Message
    ----    ------     ----               ----               -------
@@ -10499,19 +10515,19 @@ helper                                                      1/1     Running     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1701680378"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1705563447"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1701680378"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1701680378"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1705563447"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1701680378" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1701680378"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1705563447" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1705563447"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
