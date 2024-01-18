@@ -10,6 +10,20 @@ Review the latest changes and known issues for Oracle Identity Governance on Kub
 
 | Date | Version | Change |
 | --- | --- | --- |
+| January, 2024 | 24.1.1 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the January 2024 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | This release contains the following changes:
+| | | +  Support for patching OIG domains created with Weblogic Deploy Tooling (WDT) Models.|
+| | | If upgrading to January 24 (24.1.1) from October 23 (23.4.1) or later, you must upgrade the following in order:
+| | | 1. Patch the OIG container image to January 24|
+| | | If upgrading to January 24 (24.1.1) from October 22 (22.4.1) or later, you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.1.2|
+| | | 2. Patch the OIG container image to January 24|
+| | | If upgrading to January 24 (24.1.1) from a release prior to October 22 (22.4.1), you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.1.2|
+| | | 2. Patch the OIG container image to January 24|
+| | | 3. Upgrade the Ingress|
+| | | 4. Upgrade Elasticsearch and Kibana|
+| | | See [Patch and Upgrade](../patch-and-upgrade) for these instructions.
 | November, 2023 | 23.4.2 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the October 2023 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | This release contains the following changes:
 | | | +  Support for creation of OIG domains using Weblogic Deploy Tooling (WDT) Models. See [Create OIG domains Using WDT Models](../create-oig-domains/create-oig-domains-wdt).|

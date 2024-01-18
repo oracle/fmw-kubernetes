@@ -456,6 +456,13 @@ then
    new_step
    if [ $STEPNO -gt $PROGRESS ]
    then
+       create_elk_secret $OAMNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
        create_cert_cm $OAMNS
        update_progress
    fi
@@ -474,6 +481,12 @@ then
        update_progress
     fi
 
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     create_elk_dataview oam
+     update_progress
+   fi
 fi
 
 if [ "$USE_PROM" = "true" ]
@@ -498,6 +511,7 @@ then
      enable_monitor
      update_progress
    fi
+
 fi
 
 

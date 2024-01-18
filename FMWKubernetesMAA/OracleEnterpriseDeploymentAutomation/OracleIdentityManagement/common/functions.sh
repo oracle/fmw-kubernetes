@@ -181,39 +181,53 @@ install_operator()
     
     print_msg  "Installing Operator"
 
-    ELK_PROTO=`echo $ELK_HOST | cut -f1 -d:` 
-    ELK_HN=`echo $ELK_HOST | cut -f2 -d: | sed 's/\/\///'` 
-    ELK_PORT=`echo $ELK_HOST | cut -f3 -d:` 
-
     cd $WORKDIR/samples
-    echo helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT \
-            --set "enableClusterRoleBinding=true" \
-            --set "javaLoggingLevel=FINE" \
-            --set "domainNamespaceSelectionStrategy=LabelSelector" \
-            --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
-            --set "elkIntegrationEnabled=$USE_ELK" \
-            --set "elasticSearchHost=$ELK_PROTO://$ELK_HN" \
-            --set "elasticSearchPort=$ELK_PORT" \
-            --set "logStashImage=docker.elastic.co/logstash/logstash:$ELK_VER" \
-            --set "createLogStashConfigMap=true" \
-            --wait > $LOGDIR/install_oper.log 
+    CMD="helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT "
+    CMD="$CMD --set \"enableClusterRoleBinding=true\" --set \"javaLoggingLevel=FINE\" --set \"domainNamespaceSelectionStrategy=LabelSelector\" --set \"domainNamespaceLabelSelector=weblogic-operator\=enabled\" "
+    if [ "$USE_ELK" = "true" ]
+    then
+       ELK_PROTO=$(echo $ELK_HOST | cut -f1 -d:)
+       ELK_HN=$(echo $ELK_HOST | cut -f3 -d/ | cut -f1 -d:)
+       ELK_PORT=$(echo $ELK_HOST | cut -f3 -d:)
+       ELK_IMAGE=${ELK_REPO:=docker.elastic.co}/logstash/logstash:$ELK_VER
 
-    helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT \
-            --set "enableClusterRoleBinding=true" \
-            --set "javaLoggingLevel=FINE" \
-            --set "domainNamespaceSelectionStrategy=LabelSelector" \
-            --set "domainNamespaceLabelSelector=weblogic-operator\=enabled" \
-            --set "elkIntegrationEnabled=$USE_ELK" \
-            --set "elasticSearchHost=$ELK_PROTO://$ELK_HN" \
-            --set "elasticSearchPort=$ELK_PORT" \
-            --set "logStashImage=docker.elastic.co/logstash/logstash:$ELK_VER" \
-            --set "createLogStashConfigMap=true" \
-            --wait >> $LOGDIR/install_oper.log 2>&1
+       ELK_OPTIONS="--set \"elkIntegrationEnabled=$USE_ELK\""
+       ELK_OPTIONS="$ELK_OPTIONS --set \"elasticSearchProtocol=$ELK_PROTO\""
+       ELK_OPTIONS="$ELK_OPTIONS --set \"elasticSearchHost=$ELK_HN\""
+       ELK_OPTIONS="$ELK_OPTIONS --set \"elasticSearchPort=$ELK_PORT\""
+       ELK_OPTIONS="$ELK_OPTIONS --set \"logStashImage=$ELK_IMAGE\""
+       ELK_OPTIONS="$ELK_OPTIONS --set \"imagePullSecrets[0].name=regcred\""
 
+       CMD="$CMD $ELK_OPTIONS"
+    fi
+
+    CMD="$CMD --wait"
+
+    echo CMD: $CMD > $LOGDIR/install_oper.log
+
+    eval $CMD >> $LOGDIR/install_oper.log 2>&1
     print_status $? $LOGDIR/install_oper.log
     ET=$(date +%s)
     print_time STEP "Install Operator" $ST $ET >> $LOGDIR/timings.log
 
+}
+
+restart_operator()
+{
+    ST=$(date +%s)
+    
+    print_msg  "Restarting Operator"
+    echo
+    for pod in $( kubectl get pod -n $OPERNS | awk ' { print $1 }' | sed '/NAME/d')
+    do
+      printf "\t\t\tRestarting $pod - "
+      kubectl delete pod -n $OPERNS $pod >> $LOGDIR/restart_oper.log 2>&1
+      print_status $?
+    done
+ 
+
+    ET=$(date +%s)
+    print_time STEP "Restart Operator" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Kubernetes Functions
@@ -1130,7 +1144,7 @@ check_running()
 
     X=0
     RETRIES=1
-    MAX_RETRIES=30
+    MAX_RETRIES=50
     POD_RUNNING=false
     while [ $X  -lt $MAX_RETRIES ]
     do
@@ -1168,7 +1182,11 @@ check_running()
               exit 1
            elif [ "$PODSTATUS" = "CrashLoopBackOff" ] || [ "$PODSTATUS" = "Pending" ] || [ "$PODSTATUS" = "Init:CrashLoopBackOff" ] || [ "$PODSTATUS" = "Init:Pending" ]
            then
-              echo "Pod $SERVER_NAME has failed to Start - Check Image is present on $NODE."
+              echo $POD > $LOGDIR/check_running_$SERVER_NAME.log 2>&1
+              POD_NAME=$(echo $POD | cut -f1 -d ' ')
+              kubectl describe pod -n  $NAMESPACE $POD_NAME >> $LOGDIR/check_running_$SERVER_NAME.log 2>&1
+              kubectl logs -n  $NAMESPACE $POD_NAME >> $LOGDIR/check_running_$SERVER_NAME.log 2>&1
+              echo "Pod $SERVER_NAME has failed to Start - Pod Status: $PODSTATUS - Check Logfile: $LOGDIR/check_running_$SERVER_NAME.log"
               exit 1
            fi
 
@@ -1466,6 +1484,26 @@ function check_lbr()
     fi
 }
 
+# Create secret with ELK Password
+#
+create_elk_secret()
+{
+   namespace=$1
+   ST=$(date +%s)
+   print_msg "Creating Secret for Elastic Search"
+
+   if [ ! "$ELK_API" = "" ]
+   then
+      kubectl create secret generic elasticsearch-pw-elastic -n $namespace --from-literal password=$ELK_API > $LOGDIR/elk_secret.log 2>&1
+   else
+      kubectl create secret generic elasticsearch-pw-elastic -n $namespace --from-literal password=$ELK_USER_PWD > $LOGDIR/elk_secret.log 2>&1
+   fi
+   print_status $? $LOGDIR/update_kibana_host.log
+
+   ET=$(date +%s)
+   print_time STEP "Update logstash host" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Change Kibana ELK Host
 #
 update_kibana_host()
@@ -1502,11 +1540,32 @@ create_cert_cm()
       exit 1
    fi
 
-   kubectl create configmap elk-cert --from-file=$certfile -n $namespace > $LOGDIR/logstash_cert.log 2>&1
+   kubectl create configmap logstash-certs-secret --from-file=$certfile -n $namespace > $LOGDIR/logstash_cert.log 2>&1
    print_status $? $LOGDIR/logstash_cert.log
 
    ET=$(date +%s)
    print_time STEP "Creating Logstash Certificate Configmap" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_cert_secret()
+{
+   namespace=$1
+
+   ST=$(date +%s)
+   print_msg "Creating Logstash Certificate secret"
+   certfile=$LOCAL_WORKDIR/ELK/ca.crt
+
+   if [ ! -f $certfile ]
+   then 
+      echo "Certificate File does not exist."
+      exit 1
+   fi
+
+   kubectl create secret generic logstash-certs-secret --from-file=$certfile -n $namespace > $LOGDIR/logstash_cert.log 2>&1
+   print_status $? $LOGDIR/logstash_cert.log
+
+   ET=$(date +%s)
+   print_time STEP "Creating Logstash Certificate secret" $ST $ET >> $LOGDIR/timings.log
 }
 
 # Create Logstash Pod
@@ -1543,6 +1602,12 @@ create_logstash()
 
    update_variable "<NAMESPACE>" $namespace $WORKDIR/logstash.yaml
    update_variable "<ELK_VER>" $ELK_VER $WORKDIR/logstash.yaml
+  
+   if [ ! "$ELK_REPO" = "" ]
+   then
+      replace_value2 image $ELK_REPO/logstash/logstash:$ELK_VER  $WORKDIR/logstash.yaml
+      sed -i "s/dockercred/regcred/" $WORKDIR/logstash.yaml
+   fi
  
    kubectl create -f $WORKDIR/logstash.yaml > $LOGDIR/logstash.log 2>&1
    print_status $? $LOGDIR/logstash.log
@@ -1569,10 +1634,15 @@ install_elk_operator()
 
    printf "\t\t\tInstall Operator - "
 
-   helm install elastic-operator elastic/eck-operator -n $ELKNS --create-namespace >> $LOGDIR/operator.log 2>&1
+   if [ "$ELK_REPO" = "" ]
+   then
+      helm install elastic-operator elastic/eck-operator -n $ELKNS --set image.tag=$ELK_OPER_VER >> $LOGDIR/operator.log 2>&1
+   else
+      helm install elastic-operator elastic/eck-operator -n $ELKNS  --set image.repository=$ELK_REPO/eck/eck-operator --set image.tag=$ELK_OPER_VER --set imagePullSecrets[0].name=regcred>> $LOGDIR/operator.log 2>&1
+   fi 
    print_status $? $LOGDIR/operator.log
   
-   check_running $ELKNS elastic-operator
+   check_running $ELKNS elastic-operator 30
 
    ET=$(date +%s)
    print_time STEP "Deploy Elastic Search Operator" $ST $ET >> $LOGDIR/timings.log
@@ -1592,6 +1662,14 @@ deploy_elk()
    update_variable "<ELKNS>" $ELKNS $filename
    update_variable "<ELK_VER>" $ELK_VER $filename
    update_variable "<ELK_STORAGE>" $ELK_STORAGE $filename
+   if [ ! "$ELK_REPO" = "" ]
+   then
+     sed -i "/^  version/i\  image: $ELK_REPO/elasticsearch/elasticsearch:$ELK_VER\n" $filename
+     echo "    podTemplate:" >> $filename
+     echo "      spec:"  >> $filename
+     echo "        imagePullSecrets:" >> $filename
+     echo "        - name: regcred" >> $filename
+   fi
 
    kubectl create -f $filename > $LOGDIR/elk.log 2>&1
    print_status $? $LOGDIR/elk.log
@@ -1611,6 +1689,14 @@ deploy_kibana()
 
    update_variable "<ELKNS>" $ELKNS $filename
    update_variable "<ELK_VER>" $ELK_VER $filename
+   if [ ! "$ELK_REPO" = "" ]
+   then
+     sed -i "/^  version/i\  image: $ELK_REPO/kibana/kibana:$ELK_VER\n" $filename
+     echo "  podTemplate:" >> $filename
+     echo "    spec:"  >> $filename
+     echo "      imagePullSecrets:" >> $filename
+     echo "      - name: regcred" >> $filename
+   fi
 
    kubectl create -f $filename > $LOGDIR/kibana.log 2>&1
    print_status $? $LOGDIR/kibana.log
@@ -1691,6 +1777,8 @@ create_elk_role()
    print_msg "Creating Elastic Search Role"
    ST=$(date +%s)
 
+   sleep 30
+
    ROLE_NAME=logstash_writer
 
    ADMINURL=https://$K8_WORKER_HOST1:$ELK_K8
@@ -1701,8 +1789,8 @@ create_elk_role()
 
    PUT_CURL_COMMAND="curl --location -k --request  PUT "
    CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
-   PAYLOAD="-d '{\"cluster\": [\"manage_index_templates\", \"monitor\", \"manage_ilm\"],\"indices\": [ {\"names\": [ \"logs*\" ],"
-   PAYLOAD=$PAYLOAD"\"privileges\": [\"write\",\"create\",\"create_index\",\"manage\",\"manage_ilm\"] } "
+   PAYLOAD="-d '{\"cluster\": [\"manage_index_templates\", \"monitor\", \"manage_ilm\"],\"indices\": [ {\"names\": [ \"logs*\",\"oam*\",\"oud*\",\"oig*\",\"oiri*\",\"oaa*\",\"wko*\",\"oudsm*\" ],"
+   PAYLOAD=$PAYLOAD"\"privileges\": [\"write\",\"create\",\"create_index\",\"manage\",\"manage_ilm\",\"auto_configure\"] } "
    PAYLOAD=$PAYLOAD" ] }'"
 
    echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/elk_role.log 2>&1
@@ -1739,6 +1827,97 @@ create_elk_user()
 
    ET=$(date +%s)
    print_time STEP "Create Elastic Search User" $ST $ET >> $LOGDIR/timings.log
+}
+
+create_elk_dataview()
+{
+
+   viewtype=$1
+   print_msg "Creating Elastic Search Dataview for $viewtype"
+   ST=$(date +%s)
+
+   ADMINURL=https://$K8_WORKER_HOST1:$ELK_KIBANA_K8
+
+   REST_API="'$ADMINURL/api/data_views/data_view'"
+
+   USER=`encode_pwd elastic:${ELK_PWD}`
+
+   PUT_CURL_COMMAND="curl --location -k --request  POST "
+   CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER' -H 'kbn-xsrf: true'"
+   PAYLOAD="-d '{\"data_view\": { \"title\" : \"${viewtype}*\",\"name\": \"${viewtype}_logs\"} }'"
+
+   echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/elk_dataview.log 2>&1
+   eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/elk_dataview.log 2>&1
+   grep -q "\"id\""  $LOGDIR/elk_dataview.log
+   if [ $? -eq 0 ]
+   then
+      echo "Success"
+   else
+      grep -q "Duplicate data" $LOGDIR/elk_dataview.log
+      if [ $? -eq 0 ]
+      then
+         echo "Already Exists."
+      else
+         echo "Failed - see logfile $LOGDIR/elk_dataview.log"
+         exit 1
+      fi
+   fi
+
+   ET=$(date +%s)
+   print_time STEP "Create Elastic Search Dataview" $ST $ET >> $LOGDIR/timings.log
+}
+
+download_oper_cm()
+{
+
+   print_msg "Downloading Operator configmap"
+   ST=$(date +%s)
+
+   kubectl get cm -n $OPERNS weblogic-operator-logstash-cm -o yaml > $WORKDIR/logstash_cm.yaml 2>&1
+   print_status $? $WORKDIR/logstash_cm.yaml
+   ET=$(date +%s)
+   print_time STEP "Download operator configmap" $ST $ET >> $LOGDIR/timings.log
+}
+
+update_oper_cm()
+{
+
+   print_msg "Changing Operator configmap"
+   ST=$(date +%s)
+
+   filename=$WORKDIR/logstash_cm.yaml
+
+   sed -i "s/#ssl/ssl/" $filename
+   sed -i "s/#user/user/" $filename
+   sed -i "s/#cacert/cacert/" $filename
+   sed -i "/cacert.*/a\        index => \"wkologs-000001\"" $filename
+   sed -i "s/#password/password/" $filename
+   update_variable "<username>" $ELK_USER $filename
+   if [ "$ELK_API" = "" ]
+   then
+      update_variable "<password>" $ELK_USER_PWD $filename
+   else
+      update_variable "<password>" $ELK_API $filename
+   fi
+
+   print_status $? $WORKDIR/logstash_cm.yaml
+   ET=$(date +%s)
+   print_time STEP "Change operator configmap" $ST $ET >> $LOGDIR/timings.log
+}
+
+load_oper_cm()
+{
+
+   print_msg "Updating Operator configmap"
+   ST=$(date +%s)
+
+   filename=$WORKDIR/logstash_cm.yaml
+   kubectl apply -f $WORKDIR/logstash_cm.yaml > $LOGDIR/load_cm.log 2>&1
+
+   print_status $? $WORKDIR/load_cm.log
+
+   ET=$(date +%s)
+   print_time STEP "Update operator configmap" $ST $ET >> $LOGDIR/timings.log
 }
 
 check_ingress()

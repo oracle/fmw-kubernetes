@@ -299,8 +299,8 @@ If you are pulling images from GitHub or Docker hub, then you can also specify t
 |**CREATE\_GITSECRET** | `true` | Specify whether to create a secret for GitHub. This parameter ensures that you do not see errors relating to GitHub not allowing anonymous downloads.|
 |**GIT\_USER** | `gituser` | The GitHub user's name.|
 |**GIT\_TOKEN** | `ghp_aO8fqRNVdfsfshOxsWk40uNMS` | The GitHub token. Stored in password file|
-|**DH\_USER** | *`username`* | The Docker user name for `hub.docker.com`. Used for CronJob images.|
-|**DH\_PWD** | *`mypassword`* | The Docker password for `hub.docker.com`. Used for CronJob images. Stored in password file|
+|**DH\_USER** | *`username`* | The Docker user name for `hub.docker.com`. Used for obtaining public images. If you are hosting the public images in your registry then specify that registry username.|
+|**DH\_PWD** | *`mypassword`* | The Docker password for `hub.docker.com`. Used for obtaining public images. If you are hosting the public images in your registry then specify that registry users password. Stored in password file.|
 
 
 
@@ -324,6 +324,7 @@ These can include registry prefixes if you use a registry. Use the `local/` pref
 |**KUBECTL\_REPO** | `bitnami/kubectl` | The kubectl image used by OUD.|
 |**BUSYBOX\_REPO** | `docker.io/busybox` | The busybox image used by OUD.|
 |**PROM\_REPO** |  | If you are using your own container registry and have staged the Prometheus and Grafana images in this registry then set this variable to the location of your registry.  Leave blank if you wish to obtain the images from the public repositories.|
+|**ELK\_REPO** |  | If you are using your own container registry and have staged the Elastic Search and Kibana images in this registry then set this variable to the location of your registry.  Leave blank if you wish to obtain the images from the public repositories.|
 |**OPER\_VER** | `4.0.4` | The version of the WebLogic Kubernetes Operator.|
 |**OUD\_VER** | `12.2.1.4.0-8-ol7-210715.1921` | The OUD version.|
 |**OUDSM\_VER** | `12.2.1.4.0-8-ol7-210721.0755` | The OUDSM version.|
@@ -354,7 +355,8 @@ These parameters determine how to send log files to Elastic Search.
 | --- | --- | --- |
 |**USE\_ELK** |`false`| Set to `true` if you wish to send logfiles to Elastic Search|
 |**ELKNS** |`elkns`| The Kubernetes namespace used to hold the Elastic Search objects.|
-|**ELK\_VER** |`8.3.1`| The version of Elastic Search/Logstash to use.|
+|**ELK\_OPER\_VER** |`2.10.0`| The version of Elastic Search operator to use.|
+|**ELK\_VER** |`8.11.0`| The version of Elastic Search/Logstash to use.|
 |**ELK\_HOST** |`https://elasticsearch-es-http.<ELKNS>.svc:9200`| The address of the elastic search server to send log files to.   If you are using ELK inside a Kubernetes cluster then specify the address as in the example.  If you are using an Elastic Search outside of the Kubernetes cluster then specify the external address.  The host name specified must be resolvable inside the Kubernetes cluster.|
 |**ELK\_SHARE** | `/export/IAMPVS/elkpv` | Mount point on NFS where ELK persistent volume is exported.|
 |**ELK\_STORAGE** | `nfs-client` | The storage class to use for Elastic Search Stateful Sets.|
@@ -389,6 +391,7 @@ These parameters are specific to OHS.  These parameters are used to construct th
 |**UPDATE\_OHS** |`true`| Set this to true if you wish the scripts to automatically copy the generated OHS configuration files.  Once copied the Oracle HTTP server will be restarted. `Note: This is independent of whether you are installing the Oracle HTTP server or not`|
 |**OHS\_HOST1** |`webhost1.example.com`| The fully qualified name of the host running the first Oracle HTTP Server|
 |**OHS\_HOST2** |`webhost2.example.com`| The fully qualified name of the host running the second Oracle HTTP Server, leave blank if you do not have a second Oracle HTTP Server.|
+|**OHS\_LBR\_NETWORK** |`webtier.example.com`| The Network subnet(s) where OHS Health checks originate.  Multiple entries should be enclosed in quotes and space separated.|
 |**OHS\_INSTALLER** |`fmw_12.2.1.4.0_ohs_linux64_Disk1_1of1.zip`| The name of the OHS installer ZIP file.|
 |**DEPLOY\_WG** |`true`| Deploy WebGate in the `OHS_ORACLE_HOME`.|
 |**COPY\_WG\_FILES** |`true`| Set this to true if you wish the scripts to automatically copy the generated Webgate Artifacts to your OHS Server.  Note: You must first have deployed your Webgate.|
@@ -416,7 +419,6 @@ These parameters are specific to OUD. When deploying OUD, you also require the g
 |**OUD\_LOCAL\_PVSHARE** | `/nfs_volumes/oudpv`| The local directory where **OUD_SHARE** is mounted. Used for deletion.|
 |**OUD\_POD\_PREFIX** | `edg`| The prefix used for the OUD pods.|
 |**OUD\_REPLICAS** | `2`| The number of OUD replicas to create. |
-|**OUD\_REGION** | `us`| The OUD region to use should be the first part of the searchbase without the `dc=`.|
 |**LDAP\_USER\_PWD** | *`<password1>`* | The password to assign to all users being created in LDAP. **Note**: This value should have at least one capital letter, one number, and should be at least eight characters long.
 |**OUD\_PWD\_EXPIRY** | `2024-01-02`| The date when the user passwords you are creating expires.|
 |**OUD\_CREATE\_NODEPORT** | `true`| Set to `true` if you want to create NodePort services for OUD. These services are used to interact with OUD from outside of the Kubernetes cluster.|
@@ -426,6 +428,7 @@ List of parameters used to determine how Oracle Directory Services Manager will 
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
+|**OUDSMNS** | `oudsmns` | The Kubernetes namespace used to hold the OUDSM objects.|
 |**OUDSM\_USER** | `weblogic` | The name of the administration user you want to use for the WebLogic domain that is created when you install OUDSM.|
 |**OUDSM\_PWD** | *`<password>`* | The password you want to use for **OUDSM_USER**.|
 |**OUDSM\_SHARE** | `$IAM_PVS/OUDSMPV` |  The mount point on NFS where OUDSM persistent volume is exported.|
@@ -513,6 +516,7 @@ These parameters determine how OIG is provisioned and configured.
 | --- | --- | --- |
 |**OIGNS** | `oigns` | The Kubernetes namespace used to hold the OIG objects.|
 |**CONNECTOR\_DIR** | `/workdir/OIG/connectors/` | The location on the file system where you have downloaded and extracted the OUD connector bundle.|
+|**CONNECTOR\_VER** | `OID-12.2.1.3.0` | The version of OUD connector bundle.|
 |**OIG\_SHARE** | `$IAM_PVS/oigpv` | The mount point on NFS where OIG persistent volume is exported.|
 |**OIG\_LOCAL\_SHARE** | `/local_volumes/oigpv` |The local directory where **OIG\_SHARE** is mounted. It is used by the deletion procedure.|
 |**OIG\_SERVER\_COUNT** | `5` | The number of OIM/SOA servers to configure. This value should be more than you expect to use.|

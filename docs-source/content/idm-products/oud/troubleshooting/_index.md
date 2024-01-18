@@ -145,7 +145,7 @@ Init Containers:
 Containers:
   oud-ds-rs:
     Container ID:   cri-o://d691b090dfbb1ee1b8606952497d80642424a82a2290071b325ea720098817c3
-    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol7-<April'23>
+    Image:          container-registry.oracle.com/middleware/oud_cpu:12.2.1.4-jdk8-ol8-<January'24>
     Image ID:       container-registry.oracle.com/middleware/oud_cpu@sha256:faca16dbbcda1985ff567eefe3f2ca7bae6cbbb7ebcd296fffb040ce61e9396a
     Ports:          1444/TCP, 1888/TCP, 1389/TCP, 1636/TCP, 1080/TCP, 1081/TCP, 1898/TCP
     Host Ports:     0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP, 0/TCP

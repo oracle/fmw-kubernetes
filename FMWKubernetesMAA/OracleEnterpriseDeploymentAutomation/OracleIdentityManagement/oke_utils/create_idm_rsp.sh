@@ -60,8 +60,6 @@ echo -n "s/dc=example,dc=com/" >> $IDM_SEDFILE
 echo -n $DNS_DOMAIN_NAME | sed "s/\./,dc=/g;s/^/dc=/">> $IDM_SEDFILE
 echo  "/">> $IDM_SEDFILE
 
-echo "Setting Region to $(echo $DNS_DOMAIN_NAME | cut -f1 -d.)"
-echo "s/OUD_REGION.*/OUD_REGION=$(echo $DNS_DOMAIN_NAME | cut -f1 -d.)/" >> $IDM_SEDFILE
 
 echo -e "Setting SSL Country to $SSL_COUNTRY"
 echo "s/SSL_COUNTRY.*/SSL_COUNTRY=\"$SSL_COUNTRY\"/" >> $IDM_SEDFILE

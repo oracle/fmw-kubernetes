@@ -951,8 +951,6 @@ then
       then
            global_replace_value $OLD_SEARCHBASE $ANS $RSPFILE
            LDAP_SEARCHBASE=$ANS
-           OUD_REGION=`echo $ANS | cut -f1 -d, | cut -f2 -d=`
-           replace_value OUD_REGION $OUD_REGION $RSPFILE
            OAM_COOKIE_DOMAIN=`echo $LDAP_SEARCHBASE | sed 's/dc=/./g;s/,//g'`
            replace_value OAM_COOKIE_DOMAIN $OAM_COOKIE_DOMAIN $RSPFILE
       fi

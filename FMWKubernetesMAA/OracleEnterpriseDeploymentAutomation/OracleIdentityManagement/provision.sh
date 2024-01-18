@@ -12,6 +12,7 @@
 #               ./provision_oud.sh
 #               ./provision_oudsm.sh
 #               ./provision_operator.sh
+#               ./provision_ohs.sh
 #               ./provision_oam.sh
 #               ./provision_oig.sh
 #               ./provision_oaa.sh

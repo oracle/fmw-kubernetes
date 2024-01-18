@@ -64,7 +64,7 @@ The OIG Kubernetes deployment requires access to an OIG container image. The ima
 #### Prebuilt OIG container image
 
 
-The latest prebuilt OIG October 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The latest prebuilt OIG January 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
 
@@ -401,7 +401,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October`23> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January`24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -413,7 +413,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol7-<October`23> -n oigns -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-<January`24> -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:
@@ -661,7 +661,7 @@ Before following the steps in this section, make sure that the database and list
    [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_fix.sql
    [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_upg_ent_trg_restore_bkp.sql
    [sql] Executing resource: /u01/oracle/idm/server/db/oim/oracle/Upgrade/oim12cps4/list/oim12cps4_ddl_alter_pwr_add_column.sql
-   [sql] 67 of 67 SQL statements executed successfully
+   [sql] 74 of 74 SQL statements executed successfully
 
    BUILD SUCCESSFUL
    Total time: 6 seconds

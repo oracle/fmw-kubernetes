@@ -46,6 +46,7 @@ Before you begin, perform the following steps:
 1. Review the [Domain On PV](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/) documentation.
 1. Ensure that the database is up and running.
 
+**Note**: In this section a domain creation image is built using the supplied model files and then that image is used for domain creation. You will need your own container registry to upload the domain image to. Having your own container repository is a prerequisite before creating an OAM domain with WDT models. If you don't have your own container registry, you can instead load the image on each node in the cluster. This documentation does not explain how to either create your own container registry or how to load the image onto each node. Consult your vendor specific documentation for more information.
 
 ### Working with WDT Model Files
 
@@ -547,9 +548,29 @@ In this section you modify the `domain.yaml` file in preparation for creating th
    cp domain.yaml domain.yaml.orig
    ```
 
-1. Edit the `domain.yaml` and modify the following parameters where applicable.
+1. Edit the `domain.yaml` and modify the following parameters where applicable. Save the file when complete:
 
-   A full list of parameters in the `domain.yaml` file are shown below:
+   If you have used the default naming conventions in the documentation for namespace (`oamns`), domain UID (`accessdomain`), secrets (`orclcred`, `accessdomain-rcu-credentials` and `accessdomain-weblogic-credentials`), then you only need to change the following parameters:
+	
+	```
+	image: <container_image_name>
+	initContainers.image: <container_image_name>
+	nfs.server: <NFS_server_IP_address_used_for_persistent_storage>
+	nfs.path: <physical_path_of_persistent_storage>
+	domainCreationImages.image: <domain_image_name>
+	```
+	
+	For example:
+	
+	```
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>
+	initContainers.image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>
+	nfs.server: mynfsserver
+	nfs.path: /scratch/shared/accessdomainpv
+	domainCreationImages.image: container-registry.example.com/oam-aux:v1
+	```
+
+   If you have changed any of the default naming conventions you will also have to edit other parameters accordingly. A full list of parameters in the `domain.yaml` file are shown below:
 
    **Domain definition**: 
 
@@ -608,7 +629,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
      domainHomeSourceType: PersistentVolume
 
      # The WebLogic Server image that the Operator uses to start the domain
-     image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`23>"
+     image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>"
 
      # imagePullPolicy defaults to "Always" if image version is :latest
      imagePullPolicy: IfNotPresent
@@ -648,7 +669,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
        initContainers:
         #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
          - name: compat-connector-init
-           image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`23>"
+           image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>"
          #OAM Product image, same as spec.image mentioned above
            imagePullPolicy: IfNotPresent
            command: [ "/bin/bash", "-c", "mkdir -p  /u01/oracle/user_projects/domains/wdt-logs"]
@@ -707,8 +728,8 @@ In this section you modify the `domain.yaml` file in preparation for creating th
               # The value must be 'hostPath' or 'nfs'.
               # If using 'nfs', server must be specified.
                nfs:
-                 server: <IPADDRESS>
-                 path: "/<NFS_PATH>/accessdomainpv"
+                 server: mynfsserver
+                 path: "/scratch/shared/accessdomainpv"
                #hostPath:
                  #path: "/scratch/k8s_dir"
            persistentVolumeClaim:
@@ -795,7 +816,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
 	  domainHomeSourceType: PersistentVolume
 
 	  # The WebLogic Server image that the Operator uses to start the domain
-	  image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October'23>"
+	  image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>"
 
 	  # imagePullPolicy defaults to "Always" if image version is :latest
 	  imagePullPolicy: IfNotPresent
@@ -858,6 +879,7 @@ In this section you deploy the OAM domain using the `domain.yam1'.
    helper                         1/1     Running   0               21h
    ```
 
+  If there are any failures, follow **Domain creation failure with WDT models** in the [Troubleshooting](../../troubleshooting/#domain-creation-failure-with-wdt-models) section.
 
 ### Verify the results
 
@@ -1099,7 +1121,7 @@ In this section you deploy the OAM domain using the `domain.yam1'.
 	  Failure Retry Interval Seconds:  120
 	  Failure Retry Limit Minutes:     1440
 	  Http Access Log In Log Home:     true
-	  Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`23>
+	  Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>
 	  Image Pull Policy:               IfNotPresent
 	  Image Pull Secrets:
 		Name:                             orclcred
@@ -1124,7 +1146,7 @@ In this section you deploy the OAM domain using the `domain.yam1'.
 			/bin/bash
 			-c
 			mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-		  Image:              container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`23>
+		  Image:              container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24>
 		  Image Pull Policy:  IfNotPresent
 		  Name:               compat-connector-init
 		  Volume Mounts:

@@ -612,6 +612,14 @@ fi
 
 if [ "$USE_ELK" = "true" ]
 then
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_elk_secret $OIGNS
+       update_progress
+   fi
+
    new_step
    if [ $STEPNO -gt $PROGRESS ]
    then
@@ -632,6 +640,13 @@ then
        create_logstash $OIGNS
        update_progress
     fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     create_elk_dataview oig
+     update_progress
+   fi
 
 fi
 

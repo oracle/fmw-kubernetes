@@ -118,8 +118,8 @@ then
    if [ "$CREATE_REGSECRET" = "true" ]
    then
       create_registry_secret $REGISTRY $REG_USER $REG_PWD $OPERNS
+      update_progress
    fi
-   update_progress
 fi
 
 new_step
@@ -140,10 +140,67 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
+    print_msg "Wait for Operator to Start"
+    echo
     check_running $OPERNS weblogic-operator 10
     update_progress
 fi
 
+if [ "$USE_ELK" = "true" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_elk_secret $OPERNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_cert_secret $OPERNS
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       download_oper_cm
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       update_oper_cm
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       load_oper_cm
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       restart_operator
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+     create_elk_dataview wko
+     update_progress
+   fi
+fi
+  
+FINISH_TIME=`date +%s`
+print_time TOTAL "Install WebLogic Kubernetes Operator " $START_TIME $FINISH_TIME
+print_time TOTAL "Install WebLogic Kubernetes Operator" $START_TIME $FINISH_TIME >> $LOGDIR/timings.log
 touch $LOCAL_WORKDIR/operator_installed
 exit
 

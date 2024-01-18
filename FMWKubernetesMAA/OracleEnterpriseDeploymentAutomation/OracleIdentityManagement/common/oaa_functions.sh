@@ -646,6 +646,8 @@ create_ohs_entries()
          OAA_KBA_K8=`get_k8_port kba $OAANS`
          RISK_ANAL_K8=`get_k8_port risk $OAANS`
          RISK_CC_K8=`get_k8_port risk-cc $OAANS`
+         OUA_K8=`get_k8_port oua $OAANS`
+         OUA_ADMIN_K8=`get_k8_port oua-admin-ui $OAANS`
      else
          OAA_K8=$INGRESS_HTTP_PORT
          OAA_POLICY_K8=$INGRESS_HTTP_PORT
@@ -660,6 +662,8 @@ create_ohs_entries()
          OAA_KBA_K8=$INGRESS_HTTP_PORT
          RISK_ANAL_K8=$INGRESS_HTTP_PORT
          RISK_CC_K8=$INGRESS_HTTP_PORT
+         OUA_K8=$INGRESS_HTTP_PORT
+         OUA_ADMIN_K8=$INGRESS_HTTP_PORT
          sed -i '/SecureProxy/d' $WORKDIR/ohs_login.conf
          sed -i '/SecureProxy/d' $WORKDIR/ohs_admin.conf
       fi
@@ -676,11 +680,13 @@ create_ohs_entries()
      update_variable "<OAA_POLICY_K8>" $OAA_POLICY_K8 $WORKDIR/ohs_login.conf
      update_variable "<RISK_ANAL_K8>" $RISK_ANAL_K8 $WORKDIR/ohs_login.conf
      update_variable "<RISK_CC_K8>" $RISK_CC_K8 $WORKDIR/ohs_login.conf
+     update_variable "<OUA_K8>" $OUA_K8 $WORKDIR/ohs_login.conf
 
      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $WORKDIR/ohs_admin.conf
      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $WORKDIR/ohs_admin.conf
      update_variable "<OAA_ADMIN_K8>" $OAA_ADMINUI_K8 $WORKDIR/ohs_admin.conf
      update_variable "<OAA_KBA_K8>" $OAA_KBA_K8 $WORKDIR/ohs_admin.conf
+     update_variable "<OUA_ADMIN_K8>" $OUA_ADMIN_K8 $WORKDIR/ohs_admin.conf
 
      OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
      OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2

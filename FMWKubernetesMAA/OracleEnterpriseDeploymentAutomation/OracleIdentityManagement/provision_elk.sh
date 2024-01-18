@@ -87,7 +87,12 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
 then
-   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $ELKNS dockercred
+   if [ ! "$PROM_REPO" = "" ]
+   then
+     create_registry_secret $REGISTRY $REG_USER $REG_PWD $ELKNS
+   else
+     create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $ELKNS dockercred
+   fi
    update_progress
 fi
 

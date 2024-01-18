@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example file to deploy logstash
@@ -25,6 +25,12 @@ spec:
         image: logstash:<ELK_VER>
         imagePullPolicy: IfNotPresent
         name: oig-logstash
+        env:
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-pw-elastic
+              key: password
         ports:
         - containerPort: 5044
           name: logstash
@@ -52,6 +58,13 @@ spec:
             path: elk.crt
           name: elk-cert
         name: elk-cert
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: logstash.yaml
+            path: logstash.yaml
+          name: oig-logstash-configmap
+        name: config-volume
       - name: weblogic-domain-storage-volume
         persistentVolumeClaim:
           claimName: <DOMAIN_NAME>-domain-pvc

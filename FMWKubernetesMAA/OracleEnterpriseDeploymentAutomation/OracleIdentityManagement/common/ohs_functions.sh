@@ -1,4 +1,4 @@
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of procedures used to configure OHS
@@ -232,7 +232,7 @@ create_instance()
    print_status $? $LOGDIR/$HOSTNAME/create_instance.log
 
    ET=$(date +%s)
-   print_time STEP "Create Instance $OHS_NAME on  $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Create Instance $OHS_NAME on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 
 }
 
@@ -242,21 +242,43 @@ create_instance()
 tune_instance()
 {
    HOSTNAME=$1
+   OHS_NAME=$2
    print_msg "Tune Oracle Http Server Instance on $HOSTNAME"
   
    ST=$(date +%s)
 
    $SCP $TEMPLATE_DIR/ohs.sedfile ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
-   echo $SCP ${OHS_USER}@$HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/httpd.conf" > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
-   $SSH ${OHS_USER}@$HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/httpd.conf" >> $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
+   echo $SCP ${OHS_USER}@$HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/httpd.conf" > $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "sed -i -f ohs.sedfile $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/httpd.conf" >> $LOGDIR/$HOSTNAME/tune_instance.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/tune_instance.log
 
    ET=$(date +%s)
-   print_time STEP "Tune Instance $OHS_NAME on  $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
+   print_time STEP "Tune Instance $OHS_NAME on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
 
 }  
 
+#
+# Create OHS Health-check
+#
+create_hc()
+{
+   HOSTNAME=$1
+   OHS_NAME=$2
+
+   print_msg "Create Health Check on $HOSTNAME"
+  
+   ST=$(date +%s)
+
+   echo $SCP $TEMPLATE_DIR/health-check.html ${OHS_USER}@$HOSTNAME:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/htdocs > $LOGDIR/$HOSTNAME/create_hc.log 2>&1
+   $SCP $TEMPLATE_DIR/health-check.html ${OHS_USER}@$HOSTNAME:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/htdocs >> $LOGDIR/$HOSTNAME/create_hc.log 2>&1
+
+   print_status $? $LOGDIR/$HOSTNAME/create_hc.log
+
+   ET=$(date +%s)
+   print_time STEP "Create Health check on $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
+
+}  
 #
 # Start Node Manager
 #
@@ -377,7 +399,17 @@ update_webgate()
 
    ST=$(date +%s)
 
-   $SCP $TEMPLATE_DIR/webgate_rest.conf ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/update_wg.log 2>&1
+
+   cp $TEMPLATE_DIR/webgate_rest.conf $WORKDIR/webgate_rest.conf> $LOGDIR/$HOSTNAME/update_wg.log 2>&1
+   if [ ! "$OHS_LBR_NETWORK" = "" ]
+   then
+      echo "" >> $WORKDIR/webgate_rest.conf
+      echo "<LocationMatch \"/health-check.html\">" >> $WORKDIR/webgate_rest.conf
+      echo "    require host $OHS_LBR_NETWORK" >> $WORKDIR/webgate_rest.conf
+      echo  "</LocationMatch>"  >> $WORKDIR/webgate_rest.conf
+   fi
+
+   $SCP $WORKDIR/webgate_rest.conf ${OHS_USER}@$HOSTNAME:. > $LOGDIR/$HOSTNAME/update_wg.log 2>&1
    $SSH ${OHS_USER}@$HOSTNAME "cat \$HOME/webgate_rest.conf >>  $OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/webgate.conf"  > $LOGDIR/$HOSTNAME/enable_rest.log 2>&1
 
    print_status $? $LOGDIR/$HOSTNAME/enable_rest.log

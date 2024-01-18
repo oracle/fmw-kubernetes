@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022,2023, Oracle and/or its affiliates.
+# Copyright (c) 2022,2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of provisioning Oracle HTTP Server
@@ -148,7 +148,14 @@ then
     new_step
     if [ $STEPNO -gt $PROGRESS ]
     then
-      tune_instance $OHS_HOST1 
+      tune_instance $OHS_HOST1 $OHS1_NAME
+      update_progress
+    fi
+
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+      create_hc  $OHS_HOST1 $OHS1_NAME
       update_progress
     fi
 
@@ -217,9 +224,17 @@ then
     new_step
     if [ $STEPNO -gt $PROGRESS ]
     then
-      tune_instance $OHS_HOST2 
+      tune_instance  $OHS_HOST2 $OHS2_NAME
       update_progress
     fi
+
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+      create_hc  $OHS_HOST2 $OHS2_NAME
+      update_progress
+    fi
+
 
     new_step
     if [ $STEPNO -gt $PROGRESS ]

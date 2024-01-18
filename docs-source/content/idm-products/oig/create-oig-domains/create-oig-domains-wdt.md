@@ -46,6 +46,8 @@ Before you begin, perform the following steps:
 1. Review the [domain-on-pv](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/) documentation.
 1. Ensure that the database is up and running. RCU Schemas are created and patched.
 
+**Note**: In this section a domain creation image is built using the supplied model files and then that image is used for domain creation. You will need your own container registry to upload the domain image to. Having your own container repository is a prerequisite before creating an OIG domain with WDT models. If you don't have your own container registry, you can instead load the image on each node in the cluster. This documentation does not explain how to either create your own container registry or how to load the image onto each node. Consult your vendor specific documentation for more information.
+
 ### Working with WDT Model Files
 
 The code repository (`$WORKDIR`) contains different WDT model files to create an OIG domain. The following table defines these files:
@@ -543,26 +545,46 @@ In this section you create the OIG domain.
 
 In this section you modify the `domain.yaml` file in preparation for creating the OIG domain.
 
-1. Navigate to the `$WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/domain-resources` directory and take a backup of the domain.yaml:
+1. Navigate to the `$WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/domain-resources` directory and take a backup of the `domain.yaml`:
 
    ```bash
    cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/domain-resources
    cp domain.yaml domain.yaml.orig
    ```
 
-1. Edit the `domain.yaml` file and modify the following parameters wherever applicable.
+1. Edit the `domain.yaml` file and modify the following parameters where applicable. Save the file when complete:
 
-   A full list of parameters in the `domain.yaml` file are shown below:
+   If you have used the default naming conventions in the documentation for namespace (`oigns`), domain UID (`governancedomain`), secrets (`orclcred`, `governancedomain-rcu-credentials` and `governancedomain-weblogic-credentials`), then you only need to change the following parameters:
+	
+	```
+	image: <container_image_name>
+	initContainers.image: <container_image_name>
+	nfs.server: <NFS_server_IP_address_used_for_persistent_storage>
+	nfs.path: <physical_path_of_persistent_storage>
+	domainCreationImages.image: <domain_image_name>
+	```
+	
+	For example:
+	
+	```
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>
+	initContainers.image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>
+	nfs.server: mynfsserver
+	nfs.path: /scratch/shared/governancedomainpv
+	domainCreationImages.image: container-registry.example.com/oig-aux:v1
+	```
+	
+	If you have changed any of the default naming conventions you will also have to edit other parameters accordingly. A full list of parameters in the `domain.yaml` file are shown below:
 
    Domain definition:- 
 
    | Parameter | definition | default |
    | --- | --- | --- |
-   | metadata.name | `<Domain name> `| governancedomain |
+   | metadata.name | `<Domain name>` | governancedomain |
    | namespace |  Kubernetes namespace in which to create the domain,cluster,pv etc | oigns |
    | domainUID | Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name. | governancedomain |
    |spec.domainHome | Home directory of the OIG domain, `/u01/oracle/user_projects/domains/<domain name>` | `/u01/oracle/user_projects/domains/governancedomain` |
-   | `image` | OIG container image. The operator requires OIG 12.2.1.4. Refer to [Obtain the OIG container image](../prepare-your-environment#obtain-the-oig-container-image) for details on how to obtain or create the image. Note that OIG domain creation via WDT models is supported from Oct'23 BP image onwards. | `oracle/oig:12.2.1.4.0` |
+   | image | OIG container image. The operator requires OIG 12.2.1.4. Refer to [Obtain the OIG container image](../prepare-your-environment#obtain-the-oig-container-image) for details on how to obtain or create the image. Note that OIG domain creation via WDT models is supported from Oct'23 BP image onwards. | `oracle/oig:12.2.1.4.0` |
    | imagePullSecrets | Name of the Kubernetes secret to access the container registry to pull the OIG product container image and domain creation image. The presence of the secret will be validated when this parameter is specified. | `orclcred` | 
    | webLogicCredentialsSecret | Name of the Kubernetes secret for the Administration Server’s user name and password. If not specified, then the value is derived from the domainUID as `<domainUID>-weblogic-credentials`. | `governancedomain-weblogic-credentials` |
    | logHome | The in-pod location for the domain log, server logs, server out, and Node Manager log files.  | `/u01/oracle/user_projects/domains/logs/governancedomain` |
@@ -571,11 +593,11 @@ In this section you modify the `domain.yaml` file in preparation for creating th
    | configuration.secrets | The Kubernetes secret containing the database credentials. |`governancedomain-rcu-credentials` |
    | persistentVolume.metadata.name | Persistent Volume name | `governancedomain-domain-pv` |
    | storageClassName | Storage class name for the PV and PVC | `governancedomain-domain-storage-class` |
-   | nfs.server | NFS server IP address used for the PV and PVC | |
-   | nfs.path | NFS server Path - physical_path_of_persistent_storage |  |
+   | nfs.server | NFS server IP address used for the PV and PVC | `nfsServer` |
+   | nfs.path | NFS server Path - physical_path_of_persistent_storage | `/scratch/k8s_dir` |
    | persistentVolumeClaim.metadata.name | Name of the persistent volume claim created to host the domain home | `governancedomain-domain-pvc` |
    | volumeName | PV name to bing PV with PVC | `governancedomain-domain-pv` |
-   | domainCreationImages.image | Domain creation image name, containing WDT Installer and Model files. Can be one or more images specifying models in a layered manner.  Refer to [Multiple Images](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/domain-creation-images/#multiple-images) for more details.  | |
+   | domainCreationImages.image | Domain creation image name, containing WDT Installer and Model files. Can be one or more images specifying models in a layered manner.  Refer to [Multiple Images](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/domain-creation-images/#multiple-images) for more details.  | `oracle/oig:oct23-aux-12.2.1.4.0` |
    | clusters.name | list of cluster name for managed oim-server and soa-server - format as `<domainUID>-oim-cluster and <domainUID-soa-cluster>`| `governancedomain-oim-cluster` and `governancedomain-soa-cluster` |
 
    Cluster Definition:-
@@ -612,14 +634,14 @@ spec:
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: "fmw-paas-sandbox-cert-docker.dockerhub-phx.oci.oraclecorp.com/oracle/oig:12.2.1.4-jdk8-ol7-231011.195819"
+  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>"
 
   # imagePullPolicy defaults to "Always" if image version is :latest
   imagePullPolicy: IfNotPresent
 
   imagePullSecrets:
   - name: orclcred
-  - name: russcred
+  - name: privatecred
   # Identify which Secret contains the WebLogic Admin credentials
   webLogicCredentialsSecret:
     name: governancedomain-weblogic-credentials
@@ -652,7 +674,7 @@ spec:
       #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
       - name: compat-connector-init
         # OIG Product image, same as spec.image mentioned above
-        image: "fmw-paas-sandbox-cert-docker.dockerhub-phx.oci.oraclecorp.com/oracle/oig:12.2.1.4-jdk8-ol7-231011.195819"
+        image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>"
         imagePullPolicy: IfNotPresent
         command: [ "/bin/bash", "-c", "mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory", "mkdir -p  /u01/oracle/user_projects/domains/wdt-logs"]
         volumeMounts:
@@ -711,8 +733,8 @@ spec:
           # # The value must be 'hostPath' or 'nfs'.
           # # If using 'nfs', server must be specified.
             nfs:
-              path: "/FileSystem-olcne-idm/russ/governancedomainpv"
-              server: 100.105.18.14
+              path: "/scratch/shared/governancedomainpv"
+              server: mynfsserver
             #hostPath:
               #path: "/scratch/k8s_dir"
         persistentVolumeClaim:
@@ -729,7 +751,7 @@ spec:
             createIfNotExists: Domain
             # Image containing WDT installer and Model files.
             domainCreationImages:
-                - image: 'iad.ocir.io/digitalmediasystems/oaaocir/oig-aux:v1'
+                - image: 'container-registry.example.com/oig-aux:v1'
             domainType: OIG
   # References to Cluster resources that describe the lifecycle options for all
   # the Managed Server members of a WebLogic cluster, including Java
@@ -781,7 +803,7 @@ spec:
 {{% /expand %}}
 	
 
-**Note**: In circumstances where you may be pulling the OIG product container image from Oracle Container Registry, and then the domain image from a private registry, you must first create a secret (`privatecred`) for the private registry. For example:
+**Note**: In circumstances where you may be pulling the OIG product container image from Oracle Container Registry, and then the domain image from a private container registry, you must first create a secret (`privatecred`) for the private registry. For example:
 	
 ```
 kubectl create secret docker-registry "privatecred" --docker-server=container-registry.example.com \
@@ -803,7 +825,7 @@ spec:
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'23>"
+  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>"
 
   # imagePullPolicy defaults to "Always" if image version is :latest
   imagePullPolicy: IfNotPresent
@@ -863,6 +885,8 @@ In this section you deploy the OIG domain using the `domain.yam1'.
 	helper                         1/1     Running   0          5h9m
    ```
    
+	If there are any failures, follow **Domain creation failure with WDT models** in the [Troubleshooting](../../troubleshooting/#domain-creation-failure-with-wdt-models) section.
+	
 1. Start the OIM server by running the following command:
 
    ```bash
@@ -875,7 +899,7 @@ In this section you deploy the OIG domain using the `domain.yam1'.
    cluster.weblogic.oracle/governancedomain-oim-cluster patched
    ```
 	
-   You can view the status of the OIM server by running@
+   You can view the status of the OIM server by running:
 
    ```bash
    $ kubectl get pods -n oigns -w
@@ -1128,7 +1152,7 @@ In this section you deploy the OIG domain using the `domain.yam1'.
 	  Failure Retry Interval Seconds:  120
 	  Failure Retry Limit Minutes:     1440
 	  Http Access Log In Log Home:     true
-	  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'23>
+	  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>
 	  Image Pull Policy:               IfNotPresent
 	  Image Pull Secrets:
 		 Name:                             orclcred
@@ -1158,7 +1182,7 @@ In this section you deploy the OIG domain using the `domain.yam1'.
 			  -c
 			  mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
 			  mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-			Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol7-<October'23>
+			Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'24>
 			Image Pull Policy:  IfNotPresent
 			Name:               compat-connector-init
 			Volume Mounts:
@@ -1285,7 +1309,7 @@ In this section you deploy the OIG domain using the `domain.yam1'.
 		 Server Name:   soa_server5
 		 State:         SHUTDOWN
 		 State Goal:    SHUTDOWN
-	  Start Time:      2023-11-02T14:19:52.736208Z
+	  Start Time:      <DATE>
 	Events:
 	  Type    Reason     Age                From               Message
 	  ----    ------     ----               ----               -------

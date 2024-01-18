@@ -813,6 +813,7 @@ create_logstash_cm()
 
    update_variable "<OAMNS>" $OAMNS $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER>" $ELK_USER $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
 
    kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1

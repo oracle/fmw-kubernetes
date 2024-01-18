@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of the checks that can be performed before Provisioning Identity Management
@@ -210,7 +210,26 @@ then
          FAIL=$((FAIL+1))
        fi
    fi
+else
 
+   echo -n "Checking Oracle Registry User Defined : "
+   if [ ! "$REG_USER" = "" ]
+   then
+     echo "Success"
+   else
+     echo -n "Failed - You must specify a REG_USER for obtaining Oracle images."
+     FAIL=$((FAIL+1))
+   fi
+
+fi
+
+echo -n "Checking Public Registry User Defined : "
+if [ ! "$DH_USER" = "" ]
+then
+      echo "Success"
+else
+      echo -n "Failed - You must specify a DH_USER for obtaining public images."
+      FAIL=$((FAIL+1))
 fi
 
 # Check Load Balancers are set up
@@ -648,8 +667,8 @@ if [ "$INSTALL_OIG" = "true" ]
 then
     if [ "$INSTALL_OAM" = "true" ]
     then 
-       echo -n "Checking Connector Bundle has been downloaded to $CONNECTOR_DIR - "
-       if [ -d $CONNECTOR_DIR/OID-12.2.1* ] 
+       echo -n "Checking Connector Bundle $CONNECTOR_VER has been downloaded to $CONNECTOR_DIR - "
+       if [ -d $CONNECTOR_DIR/$CONNECTOR_VER ] 
        then 
           echo "Success"
        else

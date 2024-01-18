@@ -67,7 +67,7 @@ The OAM Kubernetes deployment requires access to an OAM container image. The ima
 #### Prebuilt OAM container image
 
 
-The prebuilt OAM October 2023 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OAM January 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
 
@@ -409,7 +409,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol7-<October`23> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
    ```
    
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -421,7 +421,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol7-<October`23> -n oamns -- sleep infinity
+   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol8-<January'24> -n oamns -- sleep infinity
    ```
    
    The output will look similar to the following:
