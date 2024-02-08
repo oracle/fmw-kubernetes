@@ -17,6 +17,7 @@ class SOA12214Provisioner:
         }
     }
 
+    ADMIN_SERVER_NAME='AdminServer'
     SOA_MANAGED_SERVERS = []
     OSB_MANAGED_SERVERS = []
     JMSServersList  = ['SOAJMSServer','UMSJMSServer']
@@ -64,7 +65,7 @@ class SOA12214Provisioner:
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
-
+    
     def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
         domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType)
 
@@ -91,7 +92,7 @@ class SOA12214Provisioner:
         try:
             ## Get the schema information for 'WLSSchemaDataSource'
             schemaPrefix = self.getDSSchemaPrefix ('WLSSchemaDataSource')
-            serverList = ['AdminServer']
+            serverList = [self.ADMIN_SERVER_NAME]
             # Extend serverList with self.SOA_MANAGED_SERVERS for domainTypes with soa
             if domainType == "soa" or domainType == "soaosb" or domainType == "soab2b"  or  domainType == "soaosbb2b" :
                 serverList.extend(self.SOA_MANAGED_SERVERS)
@@ -463,6 +464,7 @@ class SOA12214Provisioner:
         cd('/Servers/AdminServer')
         set('ListenPort', admin_port)
         set('Name', adminName)
+        self.ADMIN_SERVER_NAME = adminName
         cmo.setWeblogicPluginEnabled(true)
         if (sslEnabled == 'true'):
             print('Enabling SSL for Admin server...')
@@ -611,7 +613,7 @@ class SOA12214Provisioner:
     def targetSOAServers(self,serverGroupsToTarget):
         cd('/')
         for managedName in self.SOA_MANAGED_SERVERS:
-            if not managedName == 'AdminServer':
+            if not managedName == self.ADMIN_SERVER_NAME:
                 setServerGroups(managedName, serverGroupsToTarget)
                 print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
                 cd('/Servers/' + managedName)
@@ -790,7 +792,7 @@ class SOA12214Provisioner:
         if admin_channel_address == None or admin_channel_port == 'None':
             return
         cd('/')
-        admin_server_name = get('AdminServerName')
+        admin_server_name = self.ADMIN_SERVER_NAME
         print('setting admin server t3channel for ' + admin_server_name)
         cd('/Servers/' + admin_server_name)
         create('T3Channel', 'NetworkAccessPoint')
