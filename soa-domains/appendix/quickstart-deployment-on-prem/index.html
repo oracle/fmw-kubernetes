@@ -12,18 +12,18 @@
     <title>Quick start deployment on-premise :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1705563447" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1705563447" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1709554368" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1709554368" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1709554368"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1705563447"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1705563447"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1709554368"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1709554368"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1705563447"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1709554368"></script>
 
     
   </div>
@@ -5540,7 +5540,7 @@
 These instructions assume that you are already familiar with Kubernetes. If you need more detailed instructions,
 refer to the <a href="/fmw-kubernetes/soa-domains/installguide/">Install Guide</a>.</p>
 <h4 id="hardware-requirements">Hardware requirements</h4>
-<p>The Linux kernel supported for deploying and running Oracle SOA Suite domains with the operator is Oracle Linux 7 (UL6+) and Red Hat Enterprise Linux 7 (UL3+ only with standalone Kubernetes). Refer to the <a href="/fmw-kubernetes/soa-domains/installguide/prerequisites/">prerequisites</a> for more details.</p>
+<p>The Linux kernel supported for deploying and running Oracle SOA Suite domains with the operator is Oracle Linux 8 and Red Hat Enterprise Linux 8. Refer to the <a href="/fmw-kubernetes/soa-domains/installguide/prerequisites/">prerequisites</a> for more details.</p>
 <p>For this exercise, the minimum hardware requirements to create a single-node Kubernetes cluster and then deploy the <code>soaosb</code> (Oracle SOA Suite, Oracle Service Bus, and Enterprise Scheduler (ESS)) domain type with one Managed Server for Oracle SOA Suite and one for the Oracle Service Bus cluster, along with Oracle Database running as a container are:</p>
 <table>
 <thead>
@@ -5576,7 +5576,7 @@ refer to the <a href="/fmw-kubernetes/soa-domains/installguide/">Install Guide</
 <li><a href="#6-create-and-configure-an-oracle-soa-suite-domain">Step 6 - Create and configure an Oracle SOA Suite domain</a></li>
 </ul>
 <h3 id="1-prepare-a-virtual-machine-for-the-kubernetes-cluster">1. Prepare a virtual machine for the Kubernetes cluster</h3>
-<p>For illustration purposes, these instructions are for Oracle Linux 7u6+.  If you are using a different flavor of Linux, you will need to adjust the steps accordingly.</p>
+<p>For illustration purposes, these instructions are for Oracle Linux 8.  If you are using a different flavor of Linux, you will need to adjust the steps accordingly.</p>
 
 <div class="notices note" ><p>These steps must be run with the <code>root</code> user, unless specified otherwise.
 Any time you see <code>YOUR_USERID</code> in a command, you should replace it with your actual <code>userid</code>.</p>
@@ -5585,27 +5585,23 @@ Any time you see <code>YOUR_USERID</code> in a command, you should replace it wi
 <h4 id="11-prerequisites">1.1 Prerequisites</h4>
 <ol>
 <li>
-<p>Choose the directories where your Docker and Kubernetes files will be stored.  The Docker directory should be on a disk with a lot of free space (more than 100GB) because it will be used for the Docker file system, which contains all of your images and containers. The Kubernetes directory is used for the <code>/var/lib/kubelet</code> file system and persistent volume storage.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ export docker_dir<span style="color:#f92672">=</span>/u01/docker
-$ export kubelet_dir<span style="color:#f92672">=</span>/u01/kubelet
-$ mkdir -p $docker_dir $kubelet_dir
+<p>Choose the directories where your Kubernetes files will be stored. The Kubernetes directory is used for the <code>/var/lib/kubelet</code> file system and persistent volume storage.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ export kubelet_dir<span style="color:#f92672">=</span>/u01/kubelet
+$ mkdir -p $kubelet_dir
 $ ln -s $kubelet_dir /var/lib/kubelet
 </code></pre></div></li>
 <li>
 <p>Verify that IPv4 forwarding is enabled on your host.</p>
 <p><strong>Note</strong>: Replace eth0 with the ethernet interface name of your compute resource if it is different.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /sbin/sysctl -a 2&gt;&amp;1|grep -s <span style="color:#e6db74">&#39;net.ipv4.conf.docker0.forwarding&#39;</span>
-$ /sbin/sysctl -a 2&gt;&amp;1|grep -s <span style="color:#e6db74">&#39;net.ipv4.conf.eth0.forwarding&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /sbin/sysctl -a 2&gt;&amp;1|grep -s <span style="color:#e6db74">&#39;net.ipv4.conf.eth0.forwarding&#39;</span>
 $ /sbin/sysctl -a 2&gt;&amp;1|grep -s <span style="color:#e6db74">&#39;net.ipv4.conf.lo.forwarding&#39;</span>
 $ /sbin/sysctl -a 2&gt;&amp;1|grep -s <span style="color:#e6db74">&#39;net.ipv4.ip_nonlocal_bind&#39;</span>
 </code></pre></div><p>For example: Verify that all are set to 1:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ net.ipv4.conf.docker0.forwarding <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
-$ net.ipv4.conf.eth0.forwarding <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ net.ipv4.conf.eth0.forwarding <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
 $ net.ipv4.conf.lo.forwarding <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
 $ net.ipv4.ip_nonlocal_bind <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
 </code></pre></div><p>Solution: Set all values to 1 immediately:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /sbin/sysctl net.ipv4.conf.docker0.forwarding<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
-$ /sbin/sysctl net.ipv4.conf.eth0.forwarding<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /sbin/sysctl net.ipv4.conf.eth0.forwarding<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
 $ /sbin/sysctl net.ipv4.conf.lo.forwarding<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
 $ /sbin/sysctl net.ipv4.ip_nonlocal_bind<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
 </code></pre></div></li>
@@ -5614,7 +5610,7 @@ $ /sbin/sysctl net.ipv4.ip_nonlocal_bind<span style="color:#f92672">=</span><spa
 </li>
 <li>
 <p>Verify the iptables rule for forwarding.</p>
-<p>Kubernetes uses iptables to handle many networking and port forwarding rules. A standard Docker installation may create a firewall rule that prevents forwarding.</p>
+<p>Kubernetes uses iptables to handle many networking and port forwarding rules. A standard container installation may create a firewall rule that prevents forwarding.</p>
 <p>Verify if the iptables rule to accept forwarding traffic is set:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /sbin/iptables -L -n | awk <span style="color:#e6db74">&#39;/Chain FORWARD / {print $4}&#39;</span> | tr -d <span style="color:#e6db74">&#34;)&#34;</span>
 </code></pre></div><p>If the output is &ldquo;DROP&rdquo;, then run the following command:</p>
@@ -5628,9 +5624,9 @@ $ /sbin/sysctl net.ipv4.ip_nonlocal_bind<span style="color:#f92672">=</span><spa
 $ systemctl stop firewalld
 </code></pre></div></li>
 </ol>
-<h4 id="12-install-and-configure-docker">1.2 Install and configure Docker</h4>
+<h4 id="12-install-and-configure-cri-o-and-podman">1.2 Install and configure CRI-O and Podman</h4>
 <blockquote>
-<p>Note: If you have already installed Docker with version 19.03.1+ and configured the Docker daemon root to sufficient disk space along with proxy settings, continue to <a href="#13-install-and-configure-kubernetes">Install and configure Kubernetes</a>.</p>
+<p>Note: If you have already configured CRI-O and Podman, continue to <a href="#13-install-and-configure-kubernetes">Install and configure Kubernetes</a>.</p>
 </blockquote>
 <ol>
 <li>
@@ -5638,111 +5634,69 @@ $ systemctl stop firewalld
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ uname -a
 $ more /etc/oracle-release
 </code></pre></div><p>Example output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Linux xxxxxxx 4.1.12-124.27.1.el7uek.x86_64 <span style="color:#75715e">#2 SMP Mon May 13 08:56:17 PDT 2019 x86_64 x86_64 x86_64 GNU/Linux</span>
-Oracle Linux Server release 7.6
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Linux xxxxxx 5.15.0-100.96.32.el8uek.x86_64 <span style="color:#75715e">#2 SMP Tue Feb 27 18:08:15 PDT 2024 x86_64 x86_64 x86_64 GNU/Linux</span>
+Oracle Linux Server release 8.6
 </code></pre></div></li>
 <li>
-<p>Install the latest <code>docker-engine</code> and start the Docker service:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker_version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;19.03.1.ol&#34;</span>
-$ yum-config-manager --enable ol7_addons
-$ yum install docker-engine-$docker_version
+<p>Installing CRI-O:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Installing the plugins and additional tools needed to setup CRI-O, namely flannel-cni-plugin, kubernetes-cni-plugins and cri-tools</span>
+$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/flannel-cni-plugin-1.2.0-3.el8.x86_64.rpm
+$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/kubernetes-cni-plugins-1.2.0-6.el8.x86_64.rpm
+$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/cri-tools-1.28.0-2.el8.x86_64.rpm
 
-$ systemctl enable docker
-$ systemctl start docker
-</code></pre></div></li>
-<li>
-<p>Add your user ID to the Docker group to allow you to run Docker commands without root access:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ /sbin/usermod -a -G docker &lt;YOUR_USERID&gt;
-</code></pre></div></li>
-<li>
-<p>Check that your Docker version is at least 18.03:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker version
-</code></pre></div><p>Example output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Client: Docker Engine - Community
- Version:           19.03.1-ol
- API version:       1.40
- Go version:        go1.12.5
- Git commit:        ead9442
- Built:             Wed Sep <span style="color:#ae81ff">11</span> 06:40:28 <span style="color:#ae81ff">2019</span>
- OS/Arch:           linux/amd64
- Experimental:      false
-
-Server: Docker Engine - Community
- Engine:
- Version:          19.03.1-ol
- API version:      1.40 <span style="color:#f92672">(</span>minimum version 1.12<span style="color:#f92672">)</span>
- Go version:       go1.12.5
- Git commit:       ead9442
- Built:            Wed Sep <span style="color:#ae81ff">11</span> 06:38:43 <span style="color:#ae81ff">2019</span>
- OS/Arch:          linux/amd64
- Experimental:     false
- Default Registry: docker.io
-containerd:
- Version:          v1.2.0-rc.0-108-gc444666
- GitCommit:        c4446665cb9c30056f4998ed953e6d4ff22c7c39
-runc:
- Version:          1.0.0-rc5+dev
- GitCommit:        4bb1fe4ace1a32d3676bb98f5d3b6a4e32bf6c58
-docker-init:
- Version:          0.18.0
- GitCommit:        fec3683
-</code></pre></div></li>
-<li>
-<p>Update the Docker engine configuration:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir -p /etc/docker
-
-$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/docker/daemon.json
-</span><span style="color:#e6db74">{
-</span><span style="color:#e6db74">   &#34;group&#34;: &#34;docker&#34;,
-</span><span style="color:#e6db74">   &#34;data-root&#34;: &#34;/u01/docker&#34;
-</span><span style="color:#e6db74">}
-</span><span style="color:#e6db74">EOF</span>
-</code></pre></div></li>
-<li>
-<p>Configure proxy settings if you are behind an HTTP proxy:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Create the drop-in file /etc/systemd/system/docker.service.d/http-proxy.conf that contains proxy details:</span>
-$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/systemd/system/docker.service.d/http-proxy.conf
-</span><span style="color:#e6db74">[Service]
-</span><span style="color:#e6db74">Environment=&#34;HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT&#34;
-</span><span style="color:#e6db74">Environment=&#34;HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT&#34;
-</span><span style="color:#e6db74">Environment=&#34;NO_PROXY=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock&#34;
-</span><span style="color:#e6db74">EOF</span>
+<span style="color:#75715e">### Installing crio</span>
+$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/cri-o-1.28.2-2.el8.x86_64.rpm
 </code></pre></div><blockquote>
-<p>Note: On some hosts <code>/etc/systemd/system/docker.service.d</code> may not be available. Create this directory if it is not available.</p>
+<p>Note: To install a different version of CRI-O or on a different operating system, see <a href="https://github.com/cri-o/cri-o/blob/main/install.md">CRI-O Installation Instructions</a>.</p>
 </blockquote>
 </li>
 <li>
-<p>Restart the Docker daemon to load the latest changes:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ systemctl daemon-reload
-$ systemctl restart docker
+<p>Start the CRI-O service:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Enable kernel modules overlay and br_netfilter which are required for Kubernetes Container Network Interface (CNI) plugins</span>
+$ modprobe overlay
+$ modprobe br_netfilter
+<span style="color:#75715e">### To automatically load these modules at system start up create config as below</span>
+$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/modules-load.d/crio.conf
+</span><span style="color:#e6db74">overlay
+</span><span style="color:#e6db74">br_netfilter
+</span><span style="color:#e6db74">EOF</span>
+$ sysctl --system
+
+<span style="color:#75715e">### Setup Proxy for CRIO service</span>
+$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/sysconfig/crio
+</span><span style="color:#e6db74">http_proxy=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
+</span><span style="color:#e6db74">https_proxy=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
+</span><span style="color:#e6db74">HTTPS_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
+</span><span style="color:#e6db74">HTTP_PROXY=http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
+</span><span style="color:#e6db74">no_proxy=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock
+</span><span style="color:#e6db74">NO_PROXY=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock
+</span><span style="color:#e6db74">EOF</span>
+<span style="color:#75715e">### Setting the runtime for crio</span>
+<span style="color:#75715e">## Update crio.conf</span>
+$ vi /etc/crio/crio.conf
+<span style="color:#75715e">## Append following under [crio.runtime]</span>
+conmon_cgroup <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pod&#34;</span>
+cgroup_manager <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;cgroupfs&#34;</span>
+<span style="color:#75715e">## Uncomment following under [crio.network]</span>
+network_dir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/etc/cni/net.d&#34;</span>
+plugin_dirs<span style="color:#f92672">=[</span>
+    <span style="color:#e6db74">&#34;/opt/cni/bin&#34;</span>,
+    <span style="color:#e6db74">&#34;/usr/libexec/cni&#34;</span>,
+<span style="color:#f92672">]</span>
+<span style="color:#75715e">## Restart crio service</span>
+$ systemctl restart crio.service
+$ systemctl enable --now crio
 </code></pre></div></li>
 <li>
-<p>Verify that the proxy is configured with Docker:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker info|grep -i proxy
-</code></pre></div><p>Example output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">HTTP Proxy: http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
-HTTPS Proxy: http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
-No Proxy: localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock
-</code></pre></div></li>
-<li>
-<p>Verify Docker installation:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker run hello-world
-</code></pre></div><p>Example output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Hello from Docker!
-This message shows that your installation appears to be working correctly.
-To generate this message, Docker took the following steps:
-1. The Docker client contacted the Docker daemon.
-2. The Docker daemon pulled the <span style="color:#e6db74">&#34;hello-world&#34;</span> image from the Docker Hub.
-   <span style="color:#f92672">(</span>amd64<span style="color:#f92672">)</span>
-3. The Docker daemon created a new container from that image which runs the
-   executable that produces the output you are currently reading.
-4. The Docker daemon streamed that output to the Docker client, which sent it to your terminal.
-To try something more ambitious, you can run an Ubuntu container with:
- $ docker run -it ubuntu bash
-Share images, automate workflows, and more with a free Docker ID:
- https://hub.docker.com/
-For more examples and ideas, visit:
- https://docs.docker.com/get-started/
+<p>Configure podman rootless:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ usermod --add-subuids 10000-65536 --add-subgids 10000-65536 &lt;user-id&gt;
+$ podman system migrate    
+<span style="color:#75715e">### Verify the user-id addition</span>
+$ cat /etc/subuid
+$ cat /etc/subgid
+<span style="color:#75715e">### Expected similar output</span>
+opc:100000:65536
+&lt;user-id&gt;:20000:45537
 </code></pre></div></li>
 </ol>
 <h4 id="13-install-and-configure-kubernetes">1.3 Install and configure Kubernetes</h4>
@@ -5752,12 +5706,12 @@ For more examples and ideas, visit:
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat <span style="color:#e6db74">&lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 </span><span style="color:#e6db74">[kubernetes]
 </span><span style="color:#e6db74">name=Kubernetes
-</span><span style="color:#e6db74">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+</span><span style="color:#e6db74">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 </span><span style="color:#e6db74">enabled=1
 </span><span style="color:#e6db74">gpgcheck=1
 </span><span style="color:#e6db74">repo_gpgcheck=1
 </span><span style="color:#e6db74">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-</span><span style="color:#e6db74">exclude=kubelet kubeadm kubectl
+</span><span style="color:#e6db74">exclude=kube*
 </span><span style="color:#e6db74">EOF</span>
 </code></pre></div></li>
 <li>
@@ -5774,16 +5728,16 @@ $ ip_addr<span style="color:#f92672">=</span><span style="color:#e6db74">`</span
 $ echo $ip_addr
 
 <span style="color:#75715e">### Set the proxies</span>
-$ export NO_PROXY<span style="color:#f92672">=</span>localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,.svc
-$ export no_proxy<span style="color:#f92672">=</span>localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,.svc
+$ export NO_PROXY<span style="color:#f92672">=</span>localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock,$ip_addr,.svc
+$ export no_proxy<span style="color:#f92672">=</span>localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock,$ip_addr,.svc
 $ export http_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export https_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export HTTPS_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export HTTP_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
 <span style="color:#75715e">### Install Kubernetes</span>
-$ VERSION<span style="color:#f92672">=</span>1.23.6-0
-$ yum install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes<span style="color:#f92672">=</span>kubernetes
+$ VERSION<span style="color:#f92672">=</span>1.27.2
+$ dnf install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes<span style="color:#f92672">=</span>kubernetes
 
 <span style="color:#75715e">### Enable kubelet service so that it automatically restarts on reboot</span>
 $ systemctl enable --now kubelet
@@ -5793,6 +5747,7 @@ $ systemctl enable --now kubelet
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf
 </span><span style="color:#e6db74">net.bridge.bridge-nf-call-ip6tables = 1
 </span><span style="color:#e6db74">net.bridge.bridge-nf-call-iptables = 1
+</span><span style="color:#e6db74">net.ipv4.ip_forward = 1
 </span><span style="color:#e6db74">EOF</span>
 $ sysctl --system
 </code></pre></div></li>
@@ -5805,12 +5760,16 @@ $ systemctl daemon-reload
 $ systemctl restart kubelet
 </code></pre></div></li>
 <li>
-<p>From Kubernetes version v1.22 onward, <code>kubeadm</code> will default <code>cgroup-driver</code> to <code>systemd</code>. If your Docker is using cgroup driver as <code>cgroupfs</code>, set <code>--cgroup-driver=cgroupfs</code> for kubelet.</p>
+<p>From Kubernetes version v1.22 onward, <code>kubeadm</code> will default <code>cgroup-driver</code> to <code>systemd</code>. If your CRI-O is using cgroup driver as <code>cgroupfs</code>, set <code>--cgroup-driver=cgroupfs</code> for kubelet.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sed -i <span style="color:#e6db74">&#39;s/^KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=&#34;--fail-swap-on=false --cgroup-driver=cgroupfs&#34;/&#39;</span> /etc/sysconfig/kubelet
 $ cat /etc/sysconfig/kubelet
 <span style="color:#75715e">### Reload and restart kubelet</span>
 $ systemctl daemon-reload
 $ systemctl restart kubelet
+</code></pre></div></li>
+<li>
+<p>Pull the images using crio:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubeadm config images pull --cri-socket unix:///var/run/crio/crio.sock
 </code></pre></div></li>
 </ol>
 <h4 id="14-set-up-helm">1.4 Set up Helm</h4>
@@ -5860,8 +5819,8 @@ export service_cidr<span style="color:#f92672">=</span><span style="color:#e6db7
 export PATH<span style="color:#f92672">=</span>$PATH:/sbin:/usr/sbin
 
 <span style="color:#75715e">### Set the proxies</span>
-export NO_PROXY<span style="color:#f92672">=</span>localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
-export no_proxy<span style="color:#f92672">=</span>localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/docker.sock,$ip_addr,$pod_network_cidr,$service_cidr
+export NO_PROXY<span style="color:#f92672">=</span>localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock,$ip_addr,$pod_network_cidr,$service_cidr
+export no_proxy<span style="color:#f92672">=</span>localhost,.svc,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock,$ip_addr,$pod_network_cidr,$service_cidr
 export http_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 export https_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 export HTTPS_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
@@ -5907,7 +5866,7 @@ $ sudo chown <span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9e
 <blockquote>
 <p>Note: If you are using a different CIDR block than <code>10.244.0.0/16</code>, then download and update <code>kube-flannel.yml</code> with the correct CIDR address before deploying into the cluster:</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.17.0/Documentation/kube-flannel.yml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.24.2/Documentation/kube-flannel.yml
 $ <span style="color:#75715e">### Update the CIDR address if you are using a CIDR block other than the default 10.244.0.0/16</span>
 $ kubectl apply -f kube-flannel.yml
 </code></pre></div></li>
@@ -5915,8 +5874,8 @@ $ kubectl apply -f kube-flannel.yml
 <p>Verify that the master node is in Ready status:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get nodes
 </code></pre></div><p>Sample output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">NAME                 STATUS   ROLES                  AGE   VERSION
-mymasternode      Ready    control-plane,master   12h   v1.23.6
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">NAME              STATUS      ROLES        AGE   VERSION
+mymasternode      Ready    control-plane   12h   v1.27.2
 </code></pre></div><p>or:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get pods -n kube-system
 </code></pre></div><p>Sample output:</p>
@@ -5932,7 +5891,7 @@ pod/kube-scheduler-mymasternode             1/1         Running         <span st
 </code></pre></div></li>
 <li>
 <p>To schedule pods on the master node, <code>taint</code> the node:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl taint nodes --all node-role.kubernetes.io/master-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 </code></pre></div></li>
 </ol>
 <p>Congratulations! Your Kubernetes cluster environment is ready to deploy your Oracle SOA Suite domain.</p>
@@ -5942,20 +5901,20 @@ pod/kube-scheduler-mymasternode             1/1         Running         <span st
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_23.4.2
-$ cd $HOME/soa_23.4.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_24.1.2
+$ cd $HOME/soa_24.1.2
 </code></pre></div></li>
 <li>
 <p>Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a>. Required artifacts are available at <code>OracleSOASuite/kubernetes</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git
-$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_23.4.2/fmw-kubernetes/OracleSOASuite/kubernetes
+$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.1.2/fmw-kubernetes/OracleSOASuite/kubernetes
 </code></pre></div></li>
 </ol>
 <h4 id="32-get-required-docker-images-and-add-them-to-your-local-registry">3.2 Get required Docker images and add them to your local registry</h4>
 <ol>
 <li>
 <p>Pull the WebLogic Kubernetes Operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:4.1.4
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.1.7
 </code></pre></div></li>
 <li>
 <p>Obtain the Oracle Database image and Oracle SOA Suite Docker image from the <a href="https://container-registry.oracle.com">Oracle Container Registry</a>:</p>
@@ -5963,11 +5922,11 @@ $ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_23.4.2/fmw-kuberne
 <a href="https://profile.oracle.com/myprofile/account/create-account.jspx">https://profile.oracle.com/myprofile/account/create-account.jspx</a>.</p>
 <p>Use the web interface to accept the Oracle Standard Terms and Restrictions for the Oracle software images that you intend to deploy. Your acceptance of these terms are stored in a database that links the software images to your Oracle Single Sign-On login credentials.</p>
 <p>To obtain the image, log in to the Oracle Container Registry:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker login container-registry.oracle.com
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman login container-registry.oracle.com
 </code></pre></div><p>b. Find and then pull the Oracle Database image for 12.2.0.1:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker pull container-registry.oracle.com/database/enterprise:12.2.0.1-slim
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull container-registry.oracle.com/database/enterprise:12.2.0.1-slim
 </code></pre></div><p>c. Find and then pull the prebuilt Oracle SOA Suite image 12.2.1.4 install image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker pull container-registry.oracle.com/middleware/soasuite:12.2.1.4
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull container-registry.oracle.com/middleware/soasuite:12.2.1.4
 </code></pre></div><blockquote>
 <p>Note: This image does not contain any Oracle SOA Suite product patches and can only be used for test and development purposes.</p>
 </blockquote>
@@ -5990,7 +5949,7 @@ $ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_23.4.2/fmw-kuberne
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
 $ helm install weblogic-kubernetes-operator charts/weblogic-operator <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --namespace opns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.1.4 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.1.7 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --set serviceAccount<span style="color:#f92672">=</span>op-sa <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --wait
 </code></pre></div><h4 id="43-verify-the-weblogic-kubernetes-operator">4.3 Verify the WebLogic Kubernetes Operator</h4>
@@ -6004,7 +5963,7 @@ $ helm install weblogic-kubernetes-operator charts/weblogic-operator <span style
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></div></li>
 </ol>
-<p>The WebLogic Kubernetes Operator v4.1.4 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
+<p>The WebLogic Kubernetes Operator v4.1.7 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
 <h3 id="5-install-the-traefik-ingress-based-load-balancer">5. Install the Traefik (ingress-based) load balancer</h3>
 <p>The WebLogic Kubernetes Operator supports these load balancers: Traefik, NGINX, and Apache. Samples are provided in the documentation.</p>
 <p>This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle SOA Suite domain.</p>
@@ -9934,19 +9893,19 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="co
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1709554368"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1705563447"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1705563447"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1709554368"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1709554368"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1705563447" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1705563447"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1709554368" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1709554368"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
