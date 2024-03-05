@@ -16,7 +16,7 @@ class SOA12214Provisioner:
             'ListenPort': 5658
         }
     }
-
+    
     ADMIN_SERVER_NAME='AdminServer'
     SOA_MANAGED_SERVERS = []
     OSB_MANAGED_SERVERS = []
@@ -65,7 +65,7 @@ class SOA12214Provisioner:
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
-    
+
     def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
         domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType)
 
