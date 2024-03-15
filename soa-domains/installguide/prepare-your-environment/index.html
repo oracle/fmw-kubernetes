@@ -5665,7 +5665,7 @@ $
 <pre><code>$ kubectl create namespace opns
 $ kubectl create serviceaccount -n opns  op-sa
 $ cd ${WORKDIR}
-$ helm install weblogic-kubernetes-operator charts/weblogic-operator  --image ghcr.io/oracle/weblogic-kubernetes-operator:4.1.7 --namespace opns  --set serviceAccount=op-sa --set &quot;javaLoggingLevel=FINE&quot; --wait
+$ helm install weblogic-kubernetes-operator charts/weblogic-operator  --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.7 --namespace opns  --set serviceAccount=op-sa --set &quot;javaLoggingLevel=FINE&quot; --wait
 </code></pre><p>This Helm release deploys the operator with the default behavior of managing Oracle SOA Suite domains in all Kubernetes namespaces with the label <code>weblogic-operator=enabled</code>.</p>
 <h3 id="prepare-the-environment-for-oracle-soa-suite-domains">Prepare the environment for Oracle SOA Suite domains</h3>
 <h4 id="create-a-namespace-for-an-oracle-soa-suite-domain">Create a namespace for an Oracle SOA Suite domain</h4>
