@@ -7,7 +7,7 @@ description: "System requirements and limitations for deploying and running an O
 
 ### Introduction
 
-This document provides information about the system requirements and limitations for deploying and running OAM domains with the WebLogic Kubernetes Operator 4.1.2.
+This document provides information about the system requirements and limitations for deploying and running OAM domains with the WebLogic Kubernetes Operator 4.1.8.
 
 
 

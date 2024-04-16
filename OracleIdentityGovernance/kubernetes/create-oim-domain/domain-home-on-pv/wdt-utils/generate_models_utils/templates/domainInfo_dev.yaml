@@ -1,0 +1,39 @@
+# Copyright (c) 2023,2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# For details regarding how to work with WDT model files and WDT model attributes, please refer below links
+# https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/model-files/
+# https://oracle.github.io/weblogic-deploy-tooling/concepts/model/
+#
+
+domainInfo:
+    AdminUserName: '@@SECRET:__weblogic-credentials__:username@@'
+    AdminPassword: '@@SECRET:__weblogic-credentials__:password@@'
+    ServerStartMode: 'dev'
+    EnableJMSStoreDBPersistence: true
+    EnableJTATLogDBPersistence: true
+    OPSSInitialization:
+        Credential:
+            oim:
+                TargetKey:
+                    keystore:
+                        Username: keystore
+                        Password: '@@SECRET:__weblogic-credentials__:password@@'
+                    OIMSchemaPassword:
+                        Username: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:rcu_prefix@@_OIM'
+                        Password: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:rcu_schema_password@@'
+                    sysadmin:
+                        Username: xelsysadm
+                        Password: '@@SECRET:__weblogic-credentials__:password@@'
+                    WeblogicAdminKey:
+                        Username: weblogic
+                        Password: '@@SECRET:__weblogic-credentials__:password@@'
+    ServerGroupTargetingLimits:
+        'OIM-MGD-SVRS': oim_cluster
+        'SOA-MGD-SVRS': soa_cluster
+    RCUDbInfo:
+        rcu_prefix: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:rcu_prefix@@'
+        rcu_schema_password: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:rcu_schema_password@@'
+        rcu_db_conn_string: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@:@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@/@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@'
+        rcu_admin_user: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:dba_user@@'
+        rcu_admin_password: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:dba_password@@'

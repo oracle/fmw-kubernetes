@@ -1,5 +1,5 @@
 {
-        "copyright": "Copyright (c) 2023, Oracle and/or its affiliates.",
+        "copyright": "Copyright (c) 2024, Oracle and/or its affiliates.",
         "license": "Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl",
         "name": "OIG",
         "description": "Oracle Identity Governance Domain Definitions",
@@ -33,6 +33,9 @@
                         ],
                         "postCreateDomainScript": {
                                 "unixScript": "@@ORACLE_HOME@@/dockertools/oig_post_create_script.sh"
+                        },
+                        "postCreateRcuSchemasScript": {
+                                "unixScript": "@@ORACLE_HOME@@/dockertools/rcu_schema_patching.sh"
                         }
                 }
 

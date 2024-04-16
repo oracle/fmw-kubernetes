@@ -1,0 +1,36 @@
+resources:
+    WebAppContainer:
+        WeblogicPluginEnabled: true
+        JaxRsMonitoringDefaultBehavior: false
+    ForeignJNDIProvider:
+        ForeignJNDIProvider-SOA:
+            PasswordEncrypted: '@@SECRET:__weblogic-credentials__:password@@'
+            InitialContextFactory: weblogic.jndi.WLInitialContextFactory
+            ProviderUrl: 'cluster:t3://soa_cluster'
+            User: '@@SECRET:__weblogic-credentials__:username@@'
+            Target: oim_cluster
+            ForeignJNDILink:
+                /ejb/bpel/services/workflow/TaskServiceGlobalTransactionBean:
+                    RemoteJNDIName: /ejb/bpel/services/workflow/TaskServiceGlobalTransactionBean
+                    LocalJNDIName: /ejb/bpel/services/workflow/TaskServiceGlobalTransactionBean
+                RuntimeConfigService:
+                    RemoteJNDIName: RuntimeConfigService
+                    LocalJNDIName: RuntimeConfigService
+                TaskEvidenceServiceBean:
+                    RemoteJNDIName: TaskEvidenceServiceBean
+                    LocalJNDIName: TaskEvidenceServiceBean
+                TaskQueryService:
+                    RemoteJNDIName: TaskQueryService
+                    LocalJNDIName: TaskQueryService
+                TaskReportServiceBean:
+                    RemoteJNDIName: TaskReportServiceBean
+                    LocalJNDIName: TaskReportServiceBean
+                UserMetadataService:
+                    RemoteJNDIName: UserMetadataService
+                    LocalJNDIName: UserMetadataService
+                ejb/bpel/services/workflow/TaskMetadataServiceBean:
+                    RemoteJNDIName: ejb/bpel/services/workflow/TaskMetadataServiceBean
+                    LocalJNDIName: ejb/bpel/services/workflow/TaskMetadataServiceBean
+                ejb/bpel/services/workflow/TaskServiceBean:
+                    RemoteJNDIName: ejb/bpel/services/workflow/TaskServiceBean
+                    LocalJNDIName: ejb/bpel/services/workflow/TaskServiceBean

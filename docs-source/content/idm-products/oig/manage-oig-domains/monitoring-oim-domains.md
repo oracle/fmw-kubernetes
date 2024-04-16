@@ -82,7 +82,7 @@ For usage details execute `./setup-monitoring.sh -h`.
    alertmanagerNodePort: 32102
 
    # Name of the Kubernetes secret for the Admin Server's username and password
-   weblogicCredentialsSecretName: oig-domain-credentials
+   weblogicCredentialsSecretName: governancedomain-weblogic-credentials
    ```
    
 	**Note**: For WDT domains, `weblogicCredentialsSecretName` should be set to `governancedomain-weblogic-credentials`.
@@ -94,7 +94,7 @@ For usage details execute `./setup-monitoring.sh -h`.
    # Refer https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml for additional parameters
    # Sample :
    # additionalParamForKubePrometheusStack: --set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false
-   additionalParamForKubePrometheusStack: --set grafana.image.repository=container-registry.example.com/grafana --set grafana.image.tag=8.3.4
+   additionalParamForKubePrometheusStack: --set grafana.image.registry="container-registry.example.com" --set grafana.image.repository="grafana/grafana" --set grafana.image.tag=8.3.4
    ```
 
 1. Run the following command to setup monitoring:

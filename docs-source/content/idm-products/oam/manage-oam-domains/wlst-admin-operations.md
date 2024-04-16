@@ -3,7 +3,8 @@ title: "b. WLST Administration Operations"
 description: "Describes the steps for WLST administration using helper pod running in the same Kubernetes Cluster as OAM Domain."
 ---
 
-To use WLST to administer the OAM domain, use the helper pod in the same Kubernetes cluster as the OAM Domain.
+To use WLST to administer the OAM domain, use a helper pod in the same Kubernetes cluster as the OAM Domain.
+
 
 1. Check to see if the helper pod exists by running:
 
@@ -24,6 +25,7 @@ To use WLST to administer the OAM domain, use the helper pod in the same Kuberne
    ```
    
    If the helper pod doesn't exist then see Step 1 in [Prepare your environment ](../../prepare-your-environment/#rcu-schema-creation) to create it.
+	
    
 1. Run the following command to start a bash shell in the helper pod:
 

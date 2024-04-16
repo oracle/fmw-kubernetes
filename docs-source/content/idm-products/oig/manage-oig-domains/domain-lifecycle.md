@@ -46,7 +46,6 @@ The output should look similar to the following:
 ```
 NAME                                                        READY   STATUS      RESTARTS   AGE
 governancedomain-adminserver                                1/1     Running     0          23h
-governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
 governancedomain-oim-server1                                1/1     Running     0          23h
 governancedomain-soa-server1                                1/1     Running     0          23h
 ```
@@ -120,7 +119,6 @@ The number of OIG Managed Servers running is dependent on the `replicas` paramet
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running     0          23h
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
    governancedomain-oim-server1                                1/1     Running     0          23h
    governancedomain-oim-server2                                0/1     Running     0          7s
    governancedomain-soa-server1                                1/1     Running     0          23h
@@ -131,7 +129,6 @@ The number of OIG Managed Servers running is dependent on the `replicas` paramet
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE 
    governancedomain-adminserver                                1/1     Running     0          23h
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
    governancedomain-oim-server1                                1/1     Running     0          23h
    governancedomain-oim-server2                                1/1     Running     0          5m27s
    governancedomain-soa-server1                                1/1     Running     0          23h
@@ -210,7 +207,6 @@ As mentioned in the previous section, the number of OIG Managed Servers running 
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running       0          23h
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed     0          24h
    governancedomain-oim-server1                                1/1     Running       0          23h
    governancedomain-oim-server2                                1/1     Terminating   0          7m30s
    governancedomain-soa-server1                                1/1     Running       0          23h
@@ -221,7 +217,6 @@ As mentioned in the previous section, the number of OIG Managed Servers running 
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running     0          23h
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
    governancedomain-oim-server1                                1/1     Running     0          23h
    governancedomain-soa-server1                                1/1     Running     0          23h
    ```
@@ -295,7 +290,6 @@ To stop all the OIG Managed Servers and the Administration Server in one operati
    ```
    NAME                                                        READY   STATUS        RESTARTS   AGE
    governancedomain-adminserver                                1/1     Terminating   0          23h
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed     0          24h
    governancedomain-oim-server1                                1/1     Terminating   0          23h
    governancedomain-soa-server1                                1/1     Terminating   0          23h
    ```
@@ -303,8 +297,7 @@ To stop all the OIG Managed Servers and the Administration Server in one operati
    The AdminServer pod and Managed Server pods will move to a `STATUS` of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
 
    ```
-   NAME                                                        READY   STATUS      RESTARTS   AGE
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
+   No resources found in oigns namespace.
    ```
 
 1. To start the Administration Server and Managed Servers up again, repeat the previous steps but change  `serverStartPolicy: Never` to `IfNeeded` as follows:
@@ -341,7 +334,6 @@ To stop all the OIG Managed Servers and the Administration Server in one operati
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                0/1     Running     0          4s
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
    ```
    
    The Administration Server pod will start followed by the OIG Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with `READY` status `1/1` :
@@ -349,7 +341,6 @@ To stop all the OIG Managed Servers and the Administration Server in one operati
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running     0          6m57s
-   governancedomain-create-fmw-infra-sample-domain-job-8cww8   0/1     Completed   0          24h
    governancedomain-oim-server1                                1/1     Running     0          4m33s
    governancedomain-soa-server1                                1/1     Running     0          4m33s
    ```

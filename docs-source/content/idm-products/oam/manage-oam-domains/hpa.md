@@ -27,7 +27,7 @@ The instructions below show you how to configure and run an HPA to scale an OAM 
 
 ### Prerequisite configuration
 
-In order to use HPA, the OAM domain must have been created with the required `resources` parameter as per [Set the OAM server memory parameters](../../create-oam-domains#set-the-oam-server-memory-parameters). For example:
+In order to use HPA, the OAM domain must have been created with the required `resources` parameter. For OAM domains created with WLST scripts, this is as per [Set the OAM server memory parameters](../../create-oam-domains/create-oam-domains-using-wlst/#set-the-oam-server-memory-parameters). For OAM domains created with WDT models, the values should be set by default. For example:
 
    ```
    serverPod:
@@ -302,10 +302,8 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                     READY   STATUS      RESTARTS        AGE
    accessdomain-adminserver                                 0/1     Running     0               141m
-   accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed   0               5h19m
    accessdomain-oam-policy-mgr1                             0/1     Running     0               138m
    accessdomain-oam-server1                                 1/1     Running     0               138m
-   helper                                                   1/1     Running     0               21h
    nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running     0               4h33m
    ```
    
@@ -361,14 +359,12 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                     READY   STATUS      RESTARTS        AGE
    accessdomain-adminserver                                 0/1     Running                     143m
-   accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed   0               5h21m
    accessdomain-oam-policy-mgr1                             0/1     Running     0               140m
    accessdomain-oam-server1                                 1/1     Running     0               140m
    accessdomain-oam-server2                                 1/1     Running     0               3m20s
    accessdomain-oam-server3                                 1/1     Running     0               3m20s
    accessdomain-oam-server4                                 1/1     Running     0               3m19s
    accessdomain-oam-server5                                 1/1     Running     0               3m5s
-   helper                                                   1/1     Running     0               21h
    ```
    
    In the example above four more OAM Managed Servers have been started (`oam-server2` - `oam-server5`).
@@ -408,12 +404,10 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                     READY   STATUS        RESTARTS        AGE
    accessdomain-adminserver                                 1/1     Running       0               152m
-   accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed     0               5h30m
    accessdomain-oam-policy-mgr1                             1/1     Running       0               149m
    accessdomain-oam-server1                                 1/1     Running       0               149m
    accessdomain-oam-server2                                 1/1     Running       0               14m
    accessdomain-oam-server3                                 0/1     Terminating   0               14m
-   helper                                                   1/1     Running       0               21h
    nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running       0               4h45m
    ```
      
@@ -422,10 +416,8 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                     READY   STATUS      RESTARTS       AGE
    accessdomain-adminserver                                 1/1     Running     0              154m
-   accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed   0              5h32m
    accessdomain-oam-policy-mgr1                             1/1     Running     0              151m
    accessdomain-oam-server1                                 1/1     Running     0              151m
-   helper                                                   1/1     Running     0              21h
    nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running     0              4h47m
    ```
 

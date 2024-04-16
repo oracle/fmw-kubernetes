@@ -10,8 +10,11 @@ Review the latest changes and known issues for Oracle Unified Directory on Kuber
 
 | Date | Version | Change |
 | --- | --- | --- |
+| April, 2024 | 24.2.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the April 2024 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | + Support for Logstash to run as a separate sidecar container for OUD pods using Block Device Storage. See, [Logging and Visualization](../manage-oud-containers/logging-and-visualization#verify-the-pods).|
+| | | To upgrade to April 24 (24.2.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | January, 2024 | 24.1.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the January 2024 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
-| | | To upgrade to January 24 (24.1.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
+| | | To upgrade to January 24(24.1.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | October, 2023 | 23.4.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the October 2023 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | + Support for Block Device Storage. See, [Create OUD Instances](../create-oud-instances#using-a-yaml-file).|
 | | | + Ability to set resource requests and limits for CPU and memory on an OUD instance. See, [Create OUD Instances](../create-oud-instances#using-a-yaml-file). |

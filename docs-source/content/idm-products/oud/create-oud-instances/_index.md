@@ -199,7 +199,7 @@ You can create OUD instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol8-<January'24>
+     tag: 12.2.1.4-jdk8-ol8-<April'24>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -222,7 +222,7 @@ You can create OUD instances using one of the following methods:
    cronJob:
      kubectlImage:
        repository: bitnami/kubectl
-       tag: 1.26.6
+       tag: 1.27.2
        pullPolicy: IfNotPresent
  
      imagePullSecrets:
@@ -245,7 +245,7 @@ You can create OUD instances using one of the following methods:
       ```
   
    
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.26.6` set to `1.26.6`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.27.2` set to `1.27.2`.
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:
    
       ```
@@ -259,7 +259,7 @@ You can create OUD instances using one of the following methods:
 	  cronJob:
 	    kubectlImage:
           repository: container-registry.example.com/bitnami/kubectl
-          tag: 1.26.6
+          tag: 1.27.2
 	      pullPolicy: IfNotPresent
 	   
 	  busybox:
@@ -390,10 +390,10 @@ You can create OUD instances using one of the following methods:
    $ helm install --namespace oudns \
    --set oudConfig.rootUserPassword=<password> \
    --set persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects \
-   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<January'24> \
+   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<April'24> \
    --set oudConfig.sampleData="200" \
    --set oudConfig.resources.limits.cpu="1",oudConfig.resources.limits.memory="8Gi",oudConfig.resources.requests.cpu="500m",oudConfig.resources.requests.memory="4Gi" \
-   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.26.6 \
+   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.27.2 \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
    --set imagePullSecrets[0].name="orclcred" \
    oud-ds-rs oud-ds-rs
@@ -403,7 +403,7 @@ You can create OUD instances using one of the following methods:
 
    * Replace `<password>` with a the relevant password.
    * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry. If `sampleData` is set to `1,000,000` users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: `--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60`.
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.26.6` set to `1.26.6`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.27.2` set to `1.27.2`.
    * If using using NFS for your persistent volume then use:
    
         ```
@@ -876,7 +876,7 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    
    ```bash
    NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
-   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.26.6   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
+   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.27.2   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
    ```
    
 

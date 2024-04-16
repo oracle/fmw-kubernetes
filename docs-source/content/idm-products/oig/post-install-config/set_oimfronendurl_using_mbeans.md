@@ -75,21 +75,15 @@ Follow these post install configuration steps.
    ```
    NAME                                                 READY    STATUS        RESTARTS   AGE
    governancedomain-adminserver                         1/1     Terminating    0          18h
-   governancedomain-create-fmw-infra-domain-job-8cww8   0/1     Completed      0          24h
    governancedomain-oim-server1                         1/1     Terminating    0          18h
    governancedomain-soa-server1                         1/1     Terminating    0          18h
-   helper                                               1/1     Running        0          41h
    ```
-   
-   **Note**: governancedomain-create-fmw-infra-domain-job pod will not show for domains created with WDT models.
    
   
    The Administration Server pods and Managed Server pods will move to a STATUS of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
    
    ```
-   NAME                                                 READY   STATUS      RESTARTS   AGE
-   governancedomain-create-fmw-infra-domain-job-8cww8   0/1     Completed   0          24h
-   helper                                               1/1     Running     0          41h
+   No resources found in oigns namespace.
    ```
    
 1. Start the domain using the following command:
@@ -120,9 +114,7 @@ Follow these post install configuration steps.
 
    ```
    NAME                                                 READY   STATUS      RESTARTS   AGE
-   governancedomain-create-fmw -infra-domain-job-vj69h  0/1     Completed   0          24h
    governancedomain-introspect-domain-job-7qx29         1/1     Running     0          8s
-   helper                                               1/1     Running     0          41h
    ```
    
    The Administration Server pod will start followed by the OIG Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with `READY` status `1/1`:
@@ -130,10 +122,8 @@ Follow these post install configuration steps.
    ```
    NAME                                                READY   STATUS      RESTARTS   AGE  
    governancedomain-adminserver                        1/1     Running     0          6m4s
-   governancedomain-create-fmw-infra-domain-job-vj69h  0/1     Completed   0          24h
    governancedomain-oim-server1                        1/1     Running     0          3m5s
    governancedomain-soa-server1                        1/1     Running     0          3m5s
-   helper                                              1/1     Running     0          41h
    ```
 
 ### Set OIMFrontendURL using MBeans

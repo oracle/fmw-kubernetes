@@ -82,10 +82,8 @@ Follow these post install configuration steps.
    ```
    NAME                                                     READY   STATUS        RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Terminating   0          27m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          4h29m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          24m
    accessdomain-oam-server1                                 1/1     Terminating   0          24m
-   helper                                                   1/1     Running       0          4h44m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          108m
    ```
 
@@ -93,8 +91,6 @@ Follow these post install configuration steps.
    
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h30m
-   helper                                                   1/1     Running     0          4h45m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          109m
    ```
    
@@ -126,9 +122,7 @@ Follow these post install configuration steps.
 
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h30m
    accessdomain-introspector-mckp2                          1/1     Running     0          8s
-   helper                                                   1/1     Running     0          4h46m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          110m
    ```
    
@@ -137,10 +131,8 @@ Follow these post install configuration steps.
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE  
    accessdomain-adminserver                                 1/1     Running     0          5m38s
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h37m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          2m51s
    accessdomain-oam-server1                                 1/1     Running     0          2m50s
-   helper                                                   1/1     Running     0          4h52m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          116m
    ```
 
@@ -244,10 +236,8 @@ For the above changes to take effect, you must restart the OAM domain:
    ```
    NAME                                                     READY   STATUS        RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Terminating   0          27m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          4h29m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          24m
    accessdomain-oam-server1                                 1/1     Terminating   0          24m
-   helper                                                   1/1     Running       0          4h44m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          108m
    ```
 
@@ -255,8 +245,6 @@ For the above changes to take effect, you must restart the OAM domain:
    
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h30m
-   helper                                                   1/1     Running     0          4h45m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          109m
    ```
    
@@ -288,9 +276,7 @@ For the above changes to take effect, you must restart the OAM domain:
 
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h30m
    accessdomain-introspector-mckp2                          1/1     Running     0          8s
-   helper                                                   1/1     Running     0          4h46m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          110m
    ```
    
@@ -299,9 +285,7 @@ For the above changes to take effect, you must restart the OAM domain:
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE  
    accessdomain-adminserver                                 1/1     Running     0          5m38s
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h37m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          2m51s
    accessdomain-oam-server1                                 1/1     Running     0          2m50s
-   helper                                                   1/1     Running     0          4h52m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          116m
    ```

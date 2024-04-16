@@ -5,7 +5,7 @@ pre = "<b>9. </b>"
 description=  "This document provides steps to patch or upgrade an OUD image, and Elasticsearch and Kibana."
 +++
 
-This section shows you how to upgrade the OUDSM image, and how to upgrade the Elasticsearch and Kibana stack to April 23 (23.2.1).
+This section shows you how to upgrade the OUDSM image, and how to upgrade the Elasticsearch and Kibana stack.
 
 The upgrade path taken depends on the version you are upgrading from.
 

@@ -234,7 +234,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            start_position => beginning
          }
          file {
-           path => <Domain Home>/servers/AdminServer/logs/AdminServer-diagnostic.log"
+           path => "<Domain Home>/servers/AdminServer/logs/AdminServer-diagnostic.log"
            tags => "Adminserver_diagnostic"
            start_position => beginning
          }
@@ -244,7 +244,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            start_position => beginning
          }
          file {
-         path => <Domain Home>/servers/AdminServer/logs/auditlogs/OAM/audit.log"
+         path => "<Domain Home>/servers/AdminServer/logs/auditlogs/OAM/audit.log"
          tags => "Audit_logs"
          start_position => beginning
          }
@@ -289,7 +289,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    kind: ConfigMap
    metadata:
      name: oam-logstash-configmap
-     namespace: <ELKNS>
+     namespace: oamns
    data:
      logstash.yml: |
      #http.host: "0.0.0.0"
@@ -311,7 +311,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            start_position => beginning
          }
          file {
-           path => /u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
+           path => "/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/AdminServer-diagnostic.log"
            tags => "Adminserver_diagnostic"
            start_position => beginning
          }
@@ -483,7 +483,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            - containerPort: 5044
              name: logstash
            volumeMounts:
-           - mountPath: /u01/oracle/user_projects/domains
+           - mountPath: /u01/oracle/user_projects 
              name: weblogic-domain-storage-volume
            - name: shared-logs
              mountPath: /shared-logs
@@ -552,13 +552,8 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    ```
    NAME                                            READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          18h
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          23h
    accessdomain-oam-policy-mgr1                             1/1     Running     0          18h
-   accessdomain-oam-policy-mgr2                             1/1     Running     0          18h
    accessdomain-oam-server1                                 1/1     Running     1          18h
-   accessdomain-oam-server2                                 1/1     Running     1          18h
-   elasticsearch-f7b7c4c4-tb4pp                             1/1     Running     0          5m
-   helper                                                   1/1     Running     0          23h
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          20h
    oam-logstash-bbbdf5876-85nkd                             1/1     Running     0          4m23s
    ```

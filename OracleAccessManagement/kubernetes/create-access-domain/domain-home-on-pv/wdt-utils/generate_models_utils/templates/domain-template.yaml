@@ -1,34 +1,36 @@
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-# This is an example of how to define an OIG Domain. For details about the fields in domain specification, refer https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-resource/
+# This is an example of how to define an OAM Domain. For details about the fields in domain specification, refer https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-resource/
 #
 apiVersion: "weblogic.oracle/v9"
 kind: Domain
 metadata:
-  name: governancedomain
-  namespace: oigns
+  name: %DOMAIN_UID%
+  namespace: %NAMESPACE%
   labels:
-    weblogic.domainUID: governancedomain
+    weblogic.domainUID: %DOMAIN_UID%
 spec:
   # The WebLogic Domain Home
-  domainHome: /u01/oracle/user_projects/domains/governancedomain
+  domainHome: %DOMAIN_HOME%
 
   # The domain home source type
   # Set to PersistentVolume for domain-in-pv, Image for domain-in-image, or FromModel for model-in-image
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: "oracle/oig:oct23-12.2.1.4.0"
+  image: "%OAM_IMAGE%"
 
   # imagePullPolicy defaults to "Always" if image version is :latest
   imagePullPolicy: IfNotPresent
 
-  imagePullSecrets:
-  - name: orclcred
+  # Add additional secret name if you are using a different registry for domain creation image.
+  # Identify which Secret contains the credentials for pulling an image
+  %WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%imagePullSecrets:
+  %WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%- name: %WEBLOGIC_IMAGE_PULL_SECRET_NAME%
   # Identify which Secret contains the WebLogic Admin credentials
   webLogicCredentialsSecret:
-    name: governancedomain-weblogic-credentials
+    name: %DOMAIN_UID%-weblogic-credentials
 
   # Whether to include the server out file into the pod's stdout, default is true
   includeServerOutInPodLog: true
@@ -40,7 +42,7 @@ spec:
   httpAccessLogInLogHome: true
 
   # The in-pod location for domain log, server logs, server out, introspector out, and Node Manager log files
-  logHome: /u01/oracle/user_projects/domains/logs/governancedomain
+  logHome: %LOG_HOME%
   # An (optional) in-pod location for data storage of default and custom file stores.
   # If not specified or the value is either not set or empty (e.g. dataHome: "") then the
   # data storage directories are determined from the WebLogic domain home configuration.
@@ -57,86 +59,85 @@ spec:
     initContainers:
       #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
       - name: compat-connector-init
-        # OIG Product image, same as spec.image mentioned above
-        image: "oracle/oig:oct23-12.2.1.4.0"
+        # OAM Product image, same as spec.image mentioned above
+        image: "%OAM_IMAGE%"
         imagePullPolicy: IfNotPresent
-        command: [ "/bin/bash", "-c", "mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory", "mkdir -p  /u01/oracle/user_projects/domains/wdt-logs"]
+        command: [ "/bin/bash", "-c", "mkdir -p  %DOMAIN_ROOT_DIR%/domains/wdt-logs"]
         volumeMounts:
-          - mountPath: /u01/oracle/user_projects/
+          - mountPath: %DOMAIN_ROOT_DIR%
             name: weblogic-domain-storage-volume
     # a mandatory list of environment variable to be set on the servers
     env:
     - name: JAVA_OPTIONS
-      value: "-Dweblogic.StdoutDebugEnabled=false"
+      value: %JAVA_OPTIONS%
     - name: USER_MEM_ARGS
       value: "-Djava.security.egd=file:/dev/./urandom -Xms256m -Xmx1024m "
     - name: WLSDEPLOY_LOG_DIRECTORY
-      value: "/u01/oracle/user_projects/domains/wdt-logs"
-    - name: FRONTENDHOST
-      value: "example.com"
-    - name: FRONTENDPORT
-      value: "14000"
+      value: "%DOMAIN_ROOT_DIR%/domains/wdt-logs"
+    - name: WLSDEPLOY_PROPERTIES
+      value: "-Dwdt.config.disable.rcu.drop.schema=true"
     volumes:
     - name: weblogic-domain-storage-volume
       persistentVolumeClaim:
-        claimName: governancedomain-domain-pvc
+        claimName: %DOMAIN_UID%-domain-pvc
     volumeMounts:
-    - mountPath: /u01/oracle/user_projects/
+    - mountPath: %DOMAIN_ROOT_DIR%
       name: weblogic-domain-storage-volume
 
   # adminServer is used to configure the desired behavior for starting the administration server.
   adminServer:
-    # adminService:
-    #   channels:
+    %EXPOSE_ANY_CHANNEL_PREFIX%adminService:
+    %EXPOSE_ANY_CHANNEL_PREFIX%  channels:
     # The Admin Server's NodePort
-    #    - channelName: default
-    #      nodePort: 30711
+    %EXPOSE_ADMIN_PORT_PREFIX%   - channelName: default
+    %EXPOSE_ADMIN_PORT_PREFIX%     nodePort: %ADMIN_NODE_PORT%
     # Uncomment to export the T3Channel as a service
-    #    - channelName: T3Channel
+    %EXPOSE_T3_CHANNEL_PREFIX%   - channelName: T3Channel
     serverPod:
       # an (optional) list of environment variable to be set on the admin servers
       env:
       - name: USER_MEM_ARGS
         value: "-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m "
+      - name: CLASSPATH
+        value: "/u01/oracle/wlserver/server/lib/weblogic.jar"
 
   configuration:
-      secrets: [ governancedomain-rcu-credentials ]
+      secrets: [ %DOMAIN_UID%-rcu-credentials ]
       initializeDomainOnPV:
         persistentVolume:
           metadata:
-              name: governancedomain-domain-pv
+              name: %DOMAIN_UID%-domain-pv
           spec:
-            storageClassName: governancedomain-domain-storage-class
+            storageClassName: %DOMAIN_UID%-domain-storage-class
             capacity:
           # Total storage allocated to the persistent storage.
-                storage: 10Gi
+                storage: %STORAGE_SIZE%
           # Reclaim policy of the persistent storage
           # # The valid values are: 'Retain', 'Delete', and 'Recycle'
-            persistentVolumeReclaimPolicy: Retain
+            persistentVolumeReclaimPolicy: %SAMPLE_STORAGE_RECLAIM_POLICY%
           # Persistent volume type for the persistent storage.
           # # The value must be 'hostPath' or 'nfs'.
           # # If using 'nfs', server must be specified.
-            nfs:
-              path: /scratch/k8s_dir
-              server: nfsServer
-            #hostPath:
-              #path: "/scratch/k8s_dir"
+            %NFS_PREFIX%nfs:
+              %NFS_PREFIX%server: %SAMPLE_STORAGE_NFS_SERVER%
+            %HOST_PATH_PREFIX%hostPath:
+              path: "%SAMPLE_STORAGE_PATH%"
         persistentVolumeClaim:
           metadata:
-              name: governancedomain-domain-pvc
+              name: %DOMAIN_UID%-domain-pvc
           spec:
-            storageClassName: governancedomain-domain-storage-class
+            storageClassName: %DOMAIN_UID%-domain-storage-class
             resources:
                 requests:
-                    storage: 10Gi
-            volumeName: governancedomain-domain-pv
+                    storage: %STORAGE_SIZE%
+            volumeName: %DOMAIN_UID%-domain-pv
         domain:
             # Domain | DomainAndRCU
-            createIfNotExists: Domain
+            createIfNotExists: DomainAndRCU
             # Image containing WDT installer and Model files.
             domainCreationImages:
-                - image: 'oracle/oig:oct23-aux-12.2.1.4.0'
-            domainType: OIG
+                - image: '%DOMAIN_CREATION_IMAGE%'
+            domainType: OAM
   # References to Cluster resources that describe the lifecycle options for all
   # the Managed Server members of a WebLogic cluster, including Java
   # options, environment variables, additional Pod content, and the ability to
@@ -144,8 +145,8 @@ spec:
   # must describe a cluster that already exists in the WebLogic domain
   # configuration.
   clusters:
-  - name: governancedomain-oim-cluster
-  - name: governancedomain-soa-cluster
+  - name: %DOMAIN_UID%-oam-cluster
+  - name: %DOMAIN_UID%-policy-cluster
 
   # The number of managed servers to start for unlisted clusters
   # replicas: 1
@@ -155,31 +156,37 @@ spec:
 apiVersion: weblogic.oracle/v1
 kind: Cluster
 metadata:
-  name: governancedomain-oim-cluster
-  namespace: oigns
+  name: %DOMAIN_UID%-oam-cluster
+  namespace: %NAMESPACE%
 spec:
-  clusterName: oim_cluster
+  clusterName: oam_cluster
   serverService:
     precreateService: true
-  replicas: 0
+  replicas: %INITIAL_MANAGED_SERVER_REPLICAS%
   serverPod:
     env:
     - name: USER_MEM_ARGS
-      value: "-Djava.security.egd=file:/dev/./urandom -Xms4096m -Xmx8192m "
+      value: "-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom %OAMSERVER_JAVA_PARAMS% "
+    resources:
+      limits:
+        cpu: "%OAM_MAX_CPU%"
+        memory: "%OAM_MAX_MEMORY%"
+      requests:
+        cpu: "%OAM_CPU%"
+        memory: "%OAM_MEMORY%"
+
 
 ---
 # This is an example of how to define a Cluster resource.
 apiVersion: weblogic.oracle/v1
 kind: Cluster
 metadata:
-  name: governancedomain-soa-cluster
-  namespace: oigns
+  name: %DOMAIN_UID%-policy-cluster
+  namespace: %NAMESPACE%
 spec:
-  clusterName: soa_cluster
+  clusterName: policy_cluster
   serverService:
     precreateService: true
-  replicas: 1
-  serverPod:
-    env:
-    - name: USER_MEM_ARGS
-      value: "-Xms4096m -Xmx8192m"
+  replicas: %INITIAL_MANAGED_SERVER_REPLICAS%
+
+

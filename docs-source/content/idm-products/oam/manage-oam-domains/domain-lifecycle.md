@@ -52,10 +52,8 @@ The output should look similar to the following:
 ```
 NAME                                                     READY   STATUS      RESTARTS   AGE
 accessdomain-adminserver                                 1/1     Running     0          3h29m
-accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h36m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h21m
 accessdomain-oam-server1                                 1/1     Running     0          3h21m
-helper                                                   1/1     Running     0          3h51m
 nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          55m
 ```
 
@@ -132,12 +130,10 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h33m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h40m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h25m
    accessdomain-oam-server1                                 1/1     Running     0          3h25m
    accessdomain-oam-server2                                 0/1     Running     0          3h25m
    accessdomain-oam-server3                                 0/1     Pending     0          9s
-   helper                                                   1/1     Running     0          3h55m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          59m
    ```
    
@@ -146,12 +142,10 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h37m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h43m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h29m
    accessdomain-oam-server1                                 1/1     Running     0          3h29m
    accessdomain-oam-server2                                 1/1     Running     0          3h29m
    accessdomain-oam-server3                                 1/1     Running     0          3m45s
-   helper                                                   1/1     Running     0          3h59m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          63m
 
    ```
@@ -233,12 +227,10 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    ```
    NAME                                                     READY   STATUS        RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running       0          3h45m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h51m
    accessdomain-oam-policy-mgr1                             1/1     Running       0          3h37m
    accessdomain-oam-server1                                 1/1     Running       0          3h37m
    accessdomain-oam-server2                                 1/1     Running       0          3h37m
    accessdomain-oam-server3                                 1/1     Terminating   0          11m
-   helper                                                   1/1     Running       0          4h6m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          71m
    ```
    
@@ -247,10 +239,8 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    ```
    NAME                                            READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h48m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h54m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h40m
    accessdomain-oam-server1                                 1/1     Running     0          3h40m
-   helper                                                   1/1     Running     0          4h9m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          74m
    ```
 
@@ -309,12 +299,10 @@ The number of OAM Policy Managed Servers running is dependent on the `replicas` 
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h43m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h49m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h35m
    accessdomain-oam-policy-mgr2                             1/1     Running     0          3h35m
    accessdomain-oam-policy-mgr3                             1/1     Running     0          4m18s
    accessdomain-oam-server1                                 1/1     Running     0          3h35m
-   helper                                                   1/1     Running     0          4h4m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          69m
    ```
 
@@ -353,12 +341,10 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    ```
    NAME                                            READY   STATUS        RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running       0          3h49m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h55m
    accessdomain-oam-policy-mgr1                             1/1     Running       0          3h41m
    accessdomain-oam-policy-mgr2                             1/1     Running       0          3h41m
    accessdomain-oam-policy-mgr3                             1/1     Terminating   0          10m
    accessdomain-oam-server1                                 1/1     Running       0          3h41m
-   helper                                                   1/1     Running       0          4h11m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          75m
    ```
    
@@ -367,10 +353,8 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Running     0          3h50m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          3h57m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h42m
    accessdomain-oam-server1                                 1/1     Running     0          3h42m
-   helper                                                   1/1     Running     0          4h12m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          76m
    ```
 
@@ -405,8 +389,6 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
         persistentVolumeClaim:
           claimName: accessdomain-domain-pvc
     serverStartPolicy: IfNeeded
-    webLogicCredentialsSecret:
-    name: accessdomain-credentials
    ...
    ```
    
@@ -422,8 +404,6 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
         persistentVolumeClaim:
           claimName: accessdomain-domain-pvc
     serverStartPolicy: Never
-    webLogicCredentialsSecret:
-    name: accessdomain-credentials
    ...
    ```
    
@@ -446,10 +426,8 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    ```
    NAME                                                     READY   STATUS        RESTARTS   AGE
    accessdomain-adminserver                                 1/1     Terminating   0          3h52m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed     0          3h59m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          3h44m
    accessdomain-oam-server1                                 1/1     Terminating   0          3h44m
-   helper                                                   1/1     Running       0          4h14m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          78m
    ```
    
@@ -457,8 +435,6 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
 
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h
-   helper                                                   1/1     Running     0          4h15m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          80m
    ```
 
@@ -474,8 +450,6 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
         persistentVolumeClaim:
           claimName: accessdomain-domain-pvc
     serverStartPolicy: IfNeeded
-    webLogicCredentialsSecret:
-    name: accessdomain-credentials
    ...
    ```
 1. Run the following kubectl command to view the pods:
@@ -494,9 +468,7 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
 
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h1m
    accessdomain-introspector-jwqxw                          1/1     Running     0          10s
-   helper                                                   1/1     Running     0          4h17m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          81m
    ```
    
@@ -505,10 +477,8 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE  
    accessdomain-adminserver                                 1/1     Running     0          10m
-   accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          4h12m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          7m35s
    accessdomain-oam-server1                                 1/1     Running     0          7m35s
-   helper                                                   1/1     Running     0          4h28m
    nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          92m
    ```
 

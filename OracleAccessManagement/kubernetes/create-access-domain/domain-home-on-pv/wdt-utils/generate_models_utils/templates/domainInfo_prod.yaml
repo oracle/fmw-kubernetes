@@ -1,4 +1,4 @@
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023,2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # This is an example of how to define the domainInfo section of WDT Model for OAM domain.
 # For details regarding how to work with WDT model files and WDT model attributes, please refer below links
@@ -9,6 +9,7 @@
 domainInfo:
     AdminUserName: '@@SECRET:__weblogic-credentials__:username@@'
     AdminPassword: '@@SECRET:__weblogic-credentials__:password@@'
+    ServerStartMode: 'prod'
     ServerGroupTargetingLimits:
         'OAM-MGD-SVRS': oam_cluster
         'OAM-POLICY-MANAGED-SERVER': policy_cluster
@@ -16,5 +17,5 @@ domainInfo:
         rcu_prefix: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:rcu_prefix@@'
         rcu_schema_password: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:rcu_schema_password@@'
         rcu_db_conn_string: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@:@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@/@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@'
-        rcu_db_user: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:dba_user@@'
+        rcu_admin_user: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:dba_user@@'
         rcu_admin_password: '@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:dba_password@@'
