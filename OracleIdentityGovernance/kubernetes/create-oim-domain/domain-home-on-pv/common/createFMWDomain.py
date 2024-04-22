@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2023, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle  and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -69,7 +69,7 @@ class OIMProvisioner:
         'extensionTemplates': [
             '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa_template.jar'
         ],
-        'serverGroupsToTarget': ['SOA-MGD-SVRS-ONLY']
+        'serverGroupsToTarget': ['SOA-MGD-SVRS']
     }
 
     OIM_TEMPLATES = {
@@ -171,8 +171,13 @@ class OIMProvisioner:
         ms_t3_port = 14002
         oim_listenAddress = '-oim-server'
 
-        if isJMSStorePersistenceConfigurable() and not isJMSStoreDBPersistenceSet(): (enableJMSStoreDBPersistence(true))
-        if isJTATLogPersistenceConfigurable() and not isJTATLogDBPersistenceSet(): (enableJTATLogDBPersistence(true))
+        #enable DB Persistence for JMS Stores and JTA TLog
+        if isJMSStorePersistenceConfigurable() and not isJMSStoreDBPersistenceSet():
+            print("Enabling DB Persistence for JMS Stores")
+            enableJMSStoreDBPersistence(True)
+        if isJTATLogPersistenceConfigurable() and not isJTATLogDBPersistenceSet():
+            print("Enabling DB Persistence for JTA TLog")
+            enableJTATLogDBPersistence(True)
 
         # Create a OIM cluster
         # ======================
@@ -278,12 +283,23 @@ class OIMProvisioner:
         cd('%s' % soa_cluster_name)
 
         ## Setting front End Host Port for OIM
-
         cd('/Cluster')
         cd('%s' % clusterName)
 
-        print('Using datasource type: ' + dstype)
+        # Targeting Server Groups
+        print('Targeting SOA Server Groups...')
+        serverGroupsToTarget = list(self.SOA_12214_TEMPLATES['serverGroupsToTarget'])
+        cd('/')
+        self.targetSOAServers(serverGroupsToTarget)
 
+        # Targeting Server Groups
+        print('Targeting OIM Server Groups...')
+        oimServerGroupsToTarget = list(self.OIM_TEMPLATES['serverGroupsToTarget'])
+        cd('/')
+        self.targetOIMServers(oimServerGroupsToTarget)
+
+
+        print('Using datasource type: ' + dstype)
         #construct Long URL from short URL for AGL datasource
         if dstype == "agl":
             db_host = db.split(":")[0].strip()
@@ -956,7 +972,7 @@ class OIMProvisioner:
             set('TestFrequencySeconds', 0)
             set('TestConnectionsOnReserve', 'true')
             set('TestTableName', 'SQL ISVALID')
-            
+
             # configure Global Transaction Protocol
             cd('/JdbcSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource/JdbcDataSourceParams/NO_NAME')
             set('GlobalTransactionsProtocol', 'None')
@@ -964,6 +980,8 @@ class OIMProvisioner:
             # set long url
             cd('/JdbcSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource/JdbcDriverParams/NO_NAME')
             cmo.setUrl(fmwDb_agl)
+
+
 
         cd('/')
         cd('Credential/TargetStore/oim')
@@ -999,6 +1017,7 @@ class OIMProvisioner:
 
         updateDomain()
         closeDomain()
+
         exit()
 
     ###########################################################################

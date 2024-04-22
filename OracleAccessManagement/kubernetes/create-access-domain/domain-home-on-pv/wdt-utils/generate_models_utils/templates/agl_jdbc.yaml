@@ -1,0 +1,85 @@
+JDBCSystemResource:
+    LocalSvcTblDataSource:
+        Target: AdminServer
+        JdbcResource:
+            JDBCConnectionPoolParams:
+                ConnectionReserveTimeoutSeconds: 10
+                InitialCapacity: 0
+                MaxCapacity: 400
+                TestConnectionsOnReserve: true
+                CapacityIncrement: 1
+                TestFrequencySeconds: 0
+                SecondsToTrustAnIdlePoolConnection: 0
+                TestTableName: SQL ISVALID
+            JDBCOracleParams:
+                FanEnabled: true
+                ActiveGridlink: true
+            JDBCDriverParams:
+                URL: 'jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@ )(PORT= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))'
+    opss-audit-DBDS:
+        Target: oam_cluster,policy_cluster,AdminServer
+        JdbcResource:
+            JDBCConnectionPoolParams:
+                TestFrequencySeconds: 0
+                TestConnectionsOnReserve: true
+                TestTableName: SQL ISVALID
+            JDBCOracleParams:
+                FanEnabled: true
+                ActiveGridlink: true
+            JDBCDriverParams:
+                URL: 'jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@ )(PORT= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))'
+    opss-audit-viewDS:
+        Target: oam_cluster,policy_cluster,AdminServer
+        JdbcResource:
+            JDBCConnectionPoolParams:
+                TestFrequencySeconds: 0
+                TestConnectionsOnReserve: true
+                TestTableName: SQL ISVALID
+            JDBCOracleParams:
+                FanEnabled: true
+                ActiveGridlink: true
+            JDBCDriverParams:
+                URL: 'jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@ )(PORT= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))'
+    opss-data-source:
+        Target: oam_cluster,policy_cluster,AdminServer    
+        JdbcResource:
+            JDBCConnectionPoolParams:
+                TestFrequencySeconds: 0
+                TestConnectionsOnReserve: true
+                TestTableName: SQL ISVALID
+            JDBCOracleParams:
+                FanEnabled: true
+                ActiveGridlink: true
+            JDBCDriverParams:
+                URL: 'jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@ )(PORT= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))'
+    WLSSchemaDataSource:
+        JdbcResource:
+            JDBCConnectionPoolParams:
+                MaxCapacity: 150
+                TestConnectionsOnReserve: true
+                TestFrequencySeconds: 0
+                TestTableName: SQL ISVALID
+            JDBCOracleParams:
+                FanEnabled: true
+                ActiveGridlink: true
+            JDBCDriverParams:
+                URL: 'jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@ )(PORT= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))'
+    oamDS:
+        Target: oam_cluster,policy_cluster,AdminServer
+        JdbcResource:
+            JDBCConnectionPoolParams:
+                MaxCapacity: 800
+                MinCapacity: 800
+                TestConnectionsOnReserve: true
+                TestTableName: SQL ISVALID
+                CapacityIncrement: 1
+                ConnectionCreationRetryFrequencySeconds: 10
+                InitialCapacity: 800
+                SecondsToTrustAnIdlePoolConnection: 0
+                TestFrequencySeconds: 0
+                InactiveConnectionTimeoutSeconds: 300
+            JDBCOracleParams:
+                FanEnabled: true
+                ActiveGridlink: true
+            JDBCDriverParams:
+                URL: 'jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@ )(PORT= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME= @@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))'

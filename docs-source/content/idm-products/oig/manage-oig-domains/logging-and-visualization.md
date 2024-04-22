@@ -486,7 +486,7 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
            - containerPort: 5044
              name: logstash
            volumeMounts:
-           - mountPath: /u01/oracle/user_projects/domains
+           - mountPath: /u01/oracle/user_projects
              name: weblogic-domain-storage-volume
            - name: shared-logs
              mountPath: /shared-logs
@@ -556,10 +556,8 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    ```
    NAME                                            READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running     0          90m
-   governancedomain-create-fmw-infra-sample-domain-job-fqgnr   0/1     Completed   0          2d19h
    governancedomain-oim-server1                                1/1     Running     0          88m
    governancedomain-soa-server1                                1/1     Running     0          88m
-   helper                                                      1/1     Running     0          2d20h
    oig-logstash-77fbbc66f8-lsvcw                               1/1     Running     0          3m25s
    ```
    

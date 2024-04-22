@@ -1,0 +1,389 @@
+JDBCSystemResource:
+  ApplicationDB:
+    Target: oim_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 50
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        MinCapacity: 200
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        InactiveConnectionTimeoutSeconds: 300
+        SecondsToTrustAnIdlePoolConnection: 30
+        MaxCapacity: 200
+      JDBCDataSourceParams:
+        JNDIName: jdbc/ApplicationDBDS
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+        Properties:
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+          oracle.net.READ_TIMEOUT:
+            Value: '300000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  EDNDataSource:
+    Target: soa_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        RemoveInfectedConnections: false
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        MaxCapacity: 80
+      JDBCDataSourceParams:
+        JNDIName: jdbc/EDNDataSource
+        GlobalTransactionsProtocol: TwoPhaseCommit
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.xa.client.OracleXADataSource
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+      JDBCXAParams:
+        XaRetryDurationSeconds: 300
+  EDNLocalTxDataSource:
+    Target: soa_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        RemoveInfectedConnections: false
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        MaxCapacity: 80
+      JDBCDataSourceParams:
+        JNDIName: jdbc/EDNLocalTxDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  LocalSvcTblDataSource:
+    Target: oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        SecondsToTrustAnIdlePoolConnection: 0
+        MaxCapacity: 800
+      JDBCDataSourceParams:
+        JNDIName: jdbc/LocalSvcTblDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+        Properties:
+          SendStreamAsBlob:
+            Value: 'true'
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+          weblogic.jdbc.crossPartitionEnabled:
+            Value: 'true'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  OraSDPMDataSource:
+    Target: soa_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        SecondsToTrustAnIdlePoolConnection: 0
+        MaxCapacity: 1200
+      JDBCDataSourceParams:
+        JNDIName: jdbc/OraSDPMDataSource
+        GlobalTransactionsProtocol: TwoPhaseCommit
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.xa.client.OracleXADataSource
+        Properties:
+          SendStreamAsBlob:
+            Value: 'true'
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  SOADataSource:
+    Target: soa_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        RemoveInfectedConnections: false
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        MaxCapacity: 1200
+      JDBCDataSourceParams:
+        JNDIName: jdbc/SOADataSource
+        GlobalTransactionsProtocol: TwoPhaseCommit
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.xa.client.OracleXADataSource
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+      JDBCXAParams:
+        XaRetryDurationSeconds: 300
+  SOALocalTxDataSource:
+    Target: soa_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        RemoveInfectedConnections: false
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        MaxCapacity: 1200
+      JDBCDataSourceParams:
+        JNDIName: jdbc/SOALocalTxDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  WLSSchemaDataSource:
+    Target: soa_cluster,oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        TestConnectionsOnReserve: true
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        MaxCapacity: 300
+      JDBCDataSourceParams:
+        JNDIName: jdbc/WLSSchemaDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  mds-oim:
+    Target: oim_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 50
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        MinCapacity: 50
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        InactiveConnectionTimeoutSeconds: 30
+        SecondsToTrustAnIdlePoolConnection: 30
+        MaxCapacity: 150
+      JDBCDataSourceParams:
+        JNDIName: jdbc/mds/MDS_REPOS
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+        Properties:
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+          oracle.net.READ_TIMEOUT:
+            Value: '300000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  mds-owsm:
+    Target: soa_cluster,oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        SecondsToTrustAnIdlePoolConnection: 0
+      JDBCDataSourceParams:
+        JNDIName: jdbc/mds/owsm
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+        Properties:
+          SendStreamAsBlob:
+            Value: 'true'
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '120000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  mds-soa:
+    Target: soa_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 0
+        RemoveInfectedConnections: false
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        MaxCapacity: 200
+      JDBCDataSourceParams:
+        JNDIName: jdbc/mds/MDS_LocalTxDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+        Properties:
+          SendStreamAsBlob:
+            Value: 'true'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  oimJMSStoreDS:
+    Target: oim_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 15
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        MinCapacity: 60
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        InactiveConnectionTimeoutSeconds: 300
+        SecondsToTrustAnIdlePoolConnection: 30
+        MaxCapacity: 60
+      JDBCDataSourceParams:
+        JNDIName: jdbc/oimJMSStoreDS
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+        Properties:
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+          oracle.net.READ_TIMEOUT:
+            Value: '300000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  oimOperationsDB:
+    Target: soa_cluster,oim_cluster
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 32
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        MinCapacity: 128
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        InactiveConnectionTimeoutSeconds: 300
+        SecondsToTrustAnIdlePoolConnection: 30
+        MaxCapacity: 200
+      JDBCDataSourceParams:
+        JNDIName: jdbc/operationsDB
+        GlobalTransactionsProtocol: TwoPhaseCommit
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.xa.client.OracleXADataSource
+        Properties:
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+          oracle.net.READ_TIMEOUT:
+            Value: '300000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+      JDBCXAParams:
+        XaTransactionTimeout: 1260
+        XaRetryDurationSeconds: 300
+  opss-audit-DBDS:
+    Target: soa_cluster,oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        TestConnectionsOnReserve: true
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+      JDBCDataSourceParams:
+        JNDIName: jdbc/AuditAppendDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  opss-audit-viewDS:
+    Target: soa_cluster,oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        TestConnectionsOnReserve: true
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+      JDBCDataSourceParams:
+        JNDIName: jdbc/AuditViewDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  opss-data-source:
+    Target: soa_cluster,oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        TestConnectionsOnReserve: true
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+      JDBCDataSourceParams:
+        JNDIName: jdbc/OpssDataSource
+        GlobalTransactionsProtocol: None
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.OracleDriver
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+  soaOIMLookupDB:
+    Target: soa_cluster,oim_cluster,AdminServer
+    JdbcResource:
+      JDBCConnectionPoolParams:
+        InitialCapacity: 20
+        TestConnectionsOnReserve: true
+        ConnectionCreationRetryFrequencySeconds: 10
+        MinCapacity: 80
+        TestTableName: SQL ISVALID
+        TestFrequencySeconds: 0
+        InactiveConnectionTimeoutSeconds: 300
+        SecondsToTrustAnIdlePoolConnection: 30
+        MaxCapacity: 80
+      JDBCDataSourceParams:
+        JNDIName: jdbc/soaOIMLookupDB
+        GlobalTransactionsProtocol: TwoPhaseCommit
+      JDBCDriverParams:
+        URL: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_host@@)(PORT=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_port@@)))(CONNECT_DATA=(SERVICE_NAME=@@SECRET:@@ENV:DOMAIN_UID@@-rcu-credentials:db_service@@)))
+        DriverName: oracle.jdbc.xa.client.OracleXADataSource
+        Properties:
+          oracle.net.CONNECT_TIMEOUT:
+            Value: '10000'
+          oracle.net.READ_TIMEOUT:
+            Value: '300000'
+      JDBCOracleParams:
+        FanEnabled: true
+        ActiveGridlink: true
+      JDBCXAParams:
+        XaRetryDurationSeconds: 300

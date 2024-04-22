@@ -9,6 +9,7 @@ description: "Describes the steps for logging and visualization with Elasticsear
 1. [Enable Logstash](#enable-logstash)
 	1. [Upgrade OUD deployment with ELK configuration](#upgrade-oud-deployment-with-elk-configuration)
 	1. [Verify the pods](#verify-the-pods)
+	1. [Troubleshooting](#troubleshooting)
 1. [Verify and access the Kibana console](#verify-and-access-the-kibana-console)
 
 ### Introduction
@@ -242,6 +243,11 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    ```
  
 #### Verify the pods
+
+
+##### Using NFS Storage
+
+If you are using OUD with NFS or file system storage, a new logstash pod will be created.
    
 1. Run the following command to check the `logstash` pod is created correctly:
    
@@ -267,13 +273,57 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    oud-pod-cron-job-27758400-kd6pn       0/1     Completed   0          36m
    oud-pod-cron-job-27758430-ndmgj       0/1     Completed   0          6m33s
    ```
-   
+	
+	
    **Note**: Wait a couple of minutes to make sure the pod has not had any failures or restarts. If the pod fails you can view the pod log using:
    
    ```
    $ kubectl logs -f oud-ds-rs-logstash-<pod> -n oudns
    ```
-    
+	
+	See [Troubleshooting](#troubleshooting) for further details.
+   
+
+##### With Block Storage
+	
+If you are using OUD with block devices, the logstash pod will run as a separate sidecar container in the OUD pods. 
+
+1. Run the following command to check the sidecar pod is created:
+
+   ```bash
+   $ kubectl get pods -n <namespace>
+   ```
+  
+   For example:
+   
+   ```bash
+   $ kubectl get pods -n oudns
+   ```
+
+   The output should look similar to the following:
+	 
+   ```
+   NAME                                  READY   STATUS      RESTARTS   AGE
+   oud-ds-rs-0                           2/2     Running     0          24m
+   oud-ds-rs-1                           2/2     Running     0          17m
+   oud-ds-rs-2                           2/2     Running     0          10m
+   etc..
+   ```
+	
+	Notice the pods `oud-ds-rs-0` - `oud-ds-rs-2`  have a `READY` status of `2/2`.
+	
+	**Note**: The pods will terminate one at a time and restart to add the sidecar logstash container. For example `oud-ds-rs-2` will terminate and restart. `oud-ds-rs1` will not terminate until `oud-ds-rs-2` is at `2/2`. If any of the pods fail, you can view the pod logs using:
+	
+	```
+	$ kubectl logs -f oud-ds-rs-<pod> -c oud-ds-rs-logstash -n oudns
+	```
+	
+	See [Troubleshooting](#troubleshooting) for further details.
+	
+	
+	
+#### Troubleshooting 
+
    Most errors occur due to misconfiguration of the `logging-override-values.yaml`. This is usually because of an incorrect value set, or the certificate was not pasted with the correct indentation.	
 	
    If the pod has errors, view the helm history to find the last working revision, for example:
@@ -285,9 +335,9 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
    The output will look similar to the following:
    
    ```
-   REVISION        UPDATED                         STATUS          CHART           APP VERSION     DESCRIPTION
-   1               Tue Jan 10 14:06:01 2023        superseded      oud-ds-rs-0.2   12.2.1.4.0      Install complete
-   2               Tue Jan 10 16:34:21 2023        deployed        oud-ds-rs-0.2   12.2.1.4.0      Upgrade complete
+   REVISION        UPDATED       STATUS          CHART           APP VERSION     DESCRIPTION
+   1               <DATE>        superseded      oud-ds-rs-0.2   12.2.1.4.0      Install complete
+   2               <DATE>        deployed        oud-ds-rs-0.2   12.2.1.4.0      Upgrade complete
    ```
    
    Rollback to the previous working revision by running:
@@ -320,7 +370,7 @@ To access the Kibana console you will need the Kibana URL as per [Installing Ela
 
 1. In the **Configure settings** page, from the **Time Filter field name** drop down menu select `@timestamp` and click **Create index pattern**.
 
-1. Once the index pattern is created click on **Discover** in the navigation menu to view the OIG logs.
+1. Once the index pattern is created click on **Discover** in the navigation menu to view the OUD logs.
 
 
 **For  Kibana version 7.8.X and above**:

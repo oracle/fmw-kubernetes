@@ -1,0 +1,123 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# The version of this inputs file.  Do not modify.
+version: create-weblogic-sample-domain-inputs-v1
+
+# Port number for admin server
+adminPort: 7001
+
+# Unique ID identifying a domain.
+# This ID must not contain an underscope ("_"), and must be lowercase and unique across all domains in a Kubernetes cluster
+domainUID: governancedomain
+
+# Number of oim and soa servers to generate for the domain
+configuredManagedServerCount: 5
+
+# Number of soa servers to initially start for the domain. Note oim server can be started post soa server readiness
+initialManagedServerReplicas: 1
+
+# Boolean indicating if production mode is enabled for the domain
+productionModeEnabled: true
+
+# Port for the T3Channel of the NetworkAccessPoint
+t3ChannelPort: 30012
+
+# dataSource Type
+# supported values are agl or generic. Use agl for active gridlink type of datasource
+# generic datasource is not applicable for RAC DB.
+datasourceType: generic
+
+# If set to true, generated model will have EDG recommended datasource type i.e. AGL and necessary connection pool parameters.
+edgInstall: false
+
+# Home of the WebLogic domain
+domainHome: /u01/oracle/user_projects/domains/governancedomain
+
+# Oracle Identity Governance docker image, this is the product image containing Oracle Home.
+image: oracle/oig:12.2.1.4.0
+
+# Name of the Kubernetes secret to pull the images from container registry.
+# The presence of the secret will be validated when this parameter is enabled.
+imagePullSecretName: orclcred
+
+# The in-pod location for domain log, server logs, server out, and node manager log files
+logHome: /u01/oracle/user_projects/domains/logs/governancedomain
+
+# Public address for T3Channel of the NetworkAccessPoint.  This value should be set to the
+# kubernetes server address, which you can get by running "${KUBERNETES_CLI:-kubectl} cluster-info".  If this
+# value is not set to that address, WLST will not be able to connect from outside the
+# kubernetes cluster.
+#t3PublicAddress:
+
+# Boolean to indicate if the channel should be exposed as a service
+exposeAdminT3Channel: false
+
+# NodePort to expose for the admin server
+adminNodePort: 30701
+
+# Boolean to indicate if the adminNodePort will be exposed
+exposeAdminNodePort: false
+
+# Name of the domain namespace
+namespace: oigns
+
+#Java Option for WebLogic Server #NOT IN EDG
+javaOptions: -Dweblogic.StdoutDebugEnabled=false
+
+# Mount path of the domain persistent volume.
+domainPVMountPath: /u01/oracle/user_projects
+
+## Persistent volume type for the persistent storage.
+## The value must be 'HOST_PATH' or 'NFS'.
+## If using 'NFS', weblogicDomainStorageNFSServer must be specified.
+weblogicDomainStorageType: NFS
+#
+## The server name or ip address of the NFS server to use for the persistent storage.
+## The following line must be uncomment and customized if weblogicDomainStorateType is NFS:
+weblogicDomainStorageNFSServer: 'nfsServer'
+#
+## Physical path of the persistent storage.
+## When weblogicDomainStorageType is set to HOST_PATH, this value should be set the to path to the
+## domain storage on the Kubernetes host.
+## When weblogicDomainStorageType is set to NFS, then weblogicDomainStorageNFSServer should be set
+## to the IP address or name of the DNS server, and this value should be set to the exported path
+## on that server.
+## Note that the path where the domain is mounted in the WebLogic containers is not affected by this
+## setting, that is determined when you create your domain.
+## The following line must be uncommented and customized:
+weblogicDomainStoragePath: /scratch/governancedomainpv
+#
+## Reclaim policy of the persistent storage
+## The valid values are: 'Retain', 'Delete', and 'Recycle'
+weblogicDomainStorageReclaimPolicy: Retain
+#
+## Total storage allocated to the persistent storage.
+weblogicDomainStorageSize: 10Gi
+
+# Front End Host that will front end the oim and soa servers, this should be updated with the Load balancer hostname and port, if available.
+# Otherwise same can be set via EM console.
+frontEndHost: example.com
+frontEndPort: 14000
+
+#
+# Pod Resource Allocation
+#
+oimServerJavaParams: "-Xms8192m -Xmx8192m "
+soaServerJavaParams: "-Xms8192m -Xmx8192m "
+# Max CPU Cores pod is allowed to consume.
+oimMaxCPU: 2
+# Initial CPU Units 1000m = 1 CPU core
+oimCPU: 1000m
+ # Max Memory pod is allowed to consume.
+oimMaxMemory: 8Gi
+# Initial Memory allocated to pod.
+oimMemory: 4Gi
+# Max CPU Cores pod is allowed to consume.
+soaMaxCPU: 1
+# Initial CPU Units 1000m = 1 CPU core
+soaCPU: 1000m
+# Max Memory pod is allowed to consume.
+soaMaxMemory: 10Gi
+# Initial Memory allocated to pod.
+soaMemory: 4Gi

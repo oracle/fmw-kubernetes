@@ -10,9 +10,9 @@ The WebLogic Kubernetes Operator supports deployment of Oracle Access Management
 In this release, OAM domains are supported using the “domain on a persistent volume”
 [model](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
 
-Domain on persistent volume (Domain on PV) is an operator [domain home source type](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/), which requires that the domain home exists on a persistent volume. The domain home can be created either using the Weblogic Scripting Tool (WLST) scripts or Weblogic Deploy Tooling (WDT) model files by specifying the section domain.spec.configuration.initializeDomainOnPV, in the domain resource YAML file. The initial domain topology and resources are described using [WebLogic Deploy Tooling (WDT) models](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/overview/#weblogic-deploy-tooling-models).
+Domain on persistent volume (Domain on PV) is an operator [domain home source type](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/), which requires that the domain home exists on a persistent volume. The domain home can be created either manually using the Weblogic Scripting Tool (WLST) scripts or automatically by specifying the section, `domain.spec.configuration.initializeDomainOnPV`, in the domain resource YAML file. The initial domain topology and resources are described using [WebLogic Deploy Tooling (WDT) models](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/overview/#weblogic-deploy-tooling-models).
 
-NOTE: The initializeDomainOnPV section provides a one time only domain home initialization. The operator creates the domain when the domain resource is first deployed. After the domain is created, this section is ignored. Subsequent domain lifecycle updates must be controlled by the WebLogic Server Administration Console, the WebLogic Remote Console, WebLogic Scripting Tool (WLST), or other mechanisms.
+NOTE: The initializeDomainOnPV section provides a one time only domain home initialization. The operator creates the domain when the domain resource is first deployed. After the domain is created, this section is ignored. Subsequent domain lifecycle updates must be controlled by the WebLogic Server Administration Console, WebLogic Scripting Tool (WLST), or other mechanisms.
 
 The WebLogic Kubernetes Operator has several key features to assist you with deploying and managing Oracle Access Management domains in a Kubernetes
 environment. You can:
@@ -37,7 +37,7 @@ The main benefits of WDT are:
 
 ### Current production release
 
-The current production release for the Oracle Access Management domain deployment on Kubernetes is [24.1.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.1.2.
+The current production release for the Oracle Access Management domain deployment on Kubernetes is [24.2.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.1.8.
 
 For 4.0.X WebLogic Kubernetes Operator refer to [Version 23.3.1](https://oracle.github.io/fmw-kubernetes/23.3.1/idm-products/oam/)
 
@@ -69,6 +69,7 @@ Please note, you also have the option to follow the Enterprise Deployment Guide 
 
 To view documentation for an earlier release, see:
 
+* [Version 24.1.1](https://oracle.github.io/fmw-kubernetes/24.1.1/idm-products/oam/)
 * [Version 23.4.2](https://oracle.github.io/fmw-kubernetes/23.4.2/idm-products/oam/)
 * [Version 23.4.1](https://oracle.github.io/fmw-kubernetes/23.4.1/idm-products/oam/)
 * [Version 23.3.1](https://oracle.github.io/fmw-kubernetes/23.3.1/idm-products/oam/)

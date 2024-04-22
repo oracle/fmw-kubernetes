@@ -170,7 +170,7 @@ For testing purposes, you can resolve this issue by:
    $ kubectl delete -f $WORKDIR/kubernetes/hpa/components.yaml
    ``` 
    
-1. Edit the `$WORKDIR/hpa/components.yaml` and locate the `args:` section. Add  `kubelet-insecure-tls` to the arguments. For example:
+1. Edit the `$WORKDIR/kubernetes/hpa/components.yaml` and locate the `args:` section. Add  `kubelet-insecure-tls` to the arguments. For example:
 
    ```
    spec:
@@ -300,10 +300,8 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                        READY   STATUS      RESTARTS   AGE
    governancedomain-adminserver                                1/1     Running     0          20m
-   governancedomain-create-fmw-infra-sample-domain-job-8wd2b   0/1     Completed   0          2d18h
    governancedomain-oim-server1                                1/1     Running     0          17m
    governancedomain-soa-server1                                1/1     Running     0          17m
-   helper                                                      1/1     Running     0          2d18h
    ```
    
    In the above only `governancedomain-oim-server1` is running.
@@ -358,14 +356,12 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                     READY   STATUS      RESTARTS      AGE
    governancedomain-adminserver                                1/1     Running     0          30m
-   governancedomain-create-fmw-infra-sample-domain-job-8wd2b   0/1     Completed   0          2d18h
    governancedomain-oim-server1                                1/1     Running     0          27m
    governancedomain-oim-server2                                1/1     Running     0          10m
    governancedomain-oim-server3                                1/1     Running     0          10m
    governancedomain-oim-server4                                1/1     Running     0          10m
    governancedomain-oim-server5                                1/1     Running     0          10m
    governancedomain-soa-server1                                1/1     Running     0          27m
-   helper                                                      1/1     Running     0          2d18h
    ```
    
    In the example above four more OIG Managed Servers have been started (`oim-server2` - `oim-server5`).
@@ -405,14 +401,12 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                        READY   STATUS        RESTARTS      AGE
    governancedomain-adminserver                                1/1     Running       0             43m
-   governancedomain-create-fmw-infra-sample-domain-job-8wd2b   0/1     Completed     0             2d18h
    governancedomain-oim-server1                                1/1     Running       0             40m
    governancedomain-oim-server2                                1/1     Running       0             13m
    governancedomain-oim-server3                                1/1     Running       0             13m
    governancedomain-oim-server4                                1/1     Running       0             13m
    governancedomain-oim-server5                                0/1     Terminating   0             13m
    governancedomain-soa-server1                                1/1     Running       0             40m
-   helper                                                      1/1     Running       0             2d19h
    ```
      
    Eventually, all the servers except `oim-server1` will disappear:
@@ -420,10 +414,8 @@ In the following example an HPA resource is created, targeted at the cluster res
    ```
    NAME                                                     READY   STATUS      RESTARTS       AGE
    governancedomain-adminserver                                1/1     Running       0             44m
-   governancedomain-create-fmw-infra-sample-domain-job-8wd2b   0/1     Completed     0             2d18h
    governancedomain-oim-server1                                1/1     Running       0             41m
    governancedomain-soa-server1                                1/1     Running       0             41m
-   helper                                                      1/1     Running       0             2d20h
    ```
 
 

@@ -1,0 +1,13 @@
+topology:
+    Name: '@@ENV:DOMAIN_UID@@'
+    ParallelDeployApplicationModules: true
+    ProductionModeEnabled: false
+    Cluster:
+        oam_cluster:
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+        policy_cluster:
+            CoherenceClusterSystemResource: defaultCoherenceCluster
+    Server:
+        AdminServer:
+            ListenPort: '@@PROP:Server.AdminServer.ListenPort@@'
+            ServerLifeCycleTimeoutVal: 30

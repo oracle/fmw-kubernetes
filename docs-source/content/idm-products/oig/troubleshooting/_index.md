@@ -7,7 +7,7 @@ description = "Sample for creating an OIG domain home on an existing PV or PVC, 
 
 #### Domain creation failure with WLST scripts
 
-If the OIG domain creation fails when running `create-domain.sh`, run the following to diagnose the issue:
+If the OIG domain creation fails, run the following to diagnose the issue:
 
 1. Run the following command to diagnose the create domain job:
 
@@ -151,9 +151,20 @@ If the domain creation fails while creation domain resources using the `domain.y
    kubectl create -f domain.yaml
    ```
 
-1. If the domain creation fails because of database issues, clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home](../manage-oig-domains/delete-domain-home). Then follow [RCU schema creation](../prepare-your-environment/#rcu-schema-creation) recreate the RCU schema. Then execute the steps in [Create OIG domain using WDT Models](../create-oig-domains/create-oig-domains-wdt) again.
+1. If the domain creation fails because of database issues:
 
-   **Note** You might need to recreate the domain creation image depending upon the errors. Domain creation logs are stored in `<persistent_volume>/domains/wdt-logs`.
+   a. Create a helper pod:
+
+   ```
+	kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April`24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+	```
+
+	b. Clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home](../manage-oig-domains/delete-domain-home). 
+	
+	c. Execute the steps in [Create OIG domain using WDT Models](../create-oig-domains/create-oig-domains-wdt) again.
+
+
+**Note** You might need to recreate the domain creation image depending upon the errors. Domain creation logs are stored in `<persistent_volume>/domains/wdt-logs`.
 
 1. If there is any issues while bringing up AdminServer, SOA Server or OIM Server, you can run the following to check the logs:
 

@@ -13,12 +13,14 @@ To prepare for Oracle Access Management deployment in a Kubernetes environment, 
 1. [Install the WebLogic Kubernetes Operator](#install-the-weblogic-kubernetes-operator)
 1. [Create a namespace for Oracle Access Management](#create-a-namespace-for-oracle-access-management)
 1. [Create a Kubernetes secret for the container registry](#create-a-kubernetes-secret-for-the-container-registry)
-1. [RCU schema creation](#rcu-schema-creation)
-1. [Preparing the environment for domain creation](#preparing-the-environment-for-domain-creation)
-    
-    a. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
-    
-	b. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
+1. [Create OAM Domains Using WDT Models](#create-oam-domains-using-wdt-models)
+1. [Create OAM Domains Using WLST Scripts](#create-oam-domains-using-wlst-scripts)
+
+	a. [RCU schema creation](#rcu-schema-creation)
+		
+	b. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
+		
+   c. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
 
 
 
@@ -38,9 +40,9 @@ Check that all the nodes in the Kubernetes cluster are running.
 
 	```
     NAME                  STATUS   ROLES                  AGE   VERSION
-    node/worker-node1     Ready    <none>                 17h   v1.26.6+1.el8
-    node/worker-node2     Ready    <none>                 17h   v1.26.6+1.el8
-    node/master-node      Ready    control-plane,master   23h   v1.26.6+1.el8
+    node/worker-node1     Ready    <none>                 17h   v1.28.3+3.el8
+    node/worker-node2     Ready    <none>                 17h   v1.28.3+3.el8
+    node/master-node      Ready    control-plane,master   23h   v1.28.3+3.el8
 
     NAME                                     READY   STATUS    RESTARTS   AGE
     pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -67,7 +69,7 @@ The OAM Kubernetes deployment requires access to an OAM container image. The ima
 #### Prebuilt OAM container image
 
 
-The prebuilt OAM January 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OAM April 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
 
@@ -204,7 +206,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.2 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.8 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -218,7 +220,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.2 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.8 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -393,8 +395,23 @@ If you are not using a container registry and have loaded the images on each of 
    secret/orclcred created
    ```
 
-### RCU schema creation
-	
+
+### Create OAM Domains Using WDT Models
+
+If you want to create an OAM domain using WDT models, ignore everything else on this page and move directly to [Create OAM Domains Using WDT Models](../create-oam-domains/create-oam-domains-using-wdt-models).
+
+### Create OAM Domains Using WLST Scripts
+
+If you want to create an OAM domain using WLST scripts, follow the rest of the instructions below.
+
+a. [RCU schema creation](#rcu-schema-creation)
+
+b. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
+
+c. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
+
+#### RCU schema creation
+
 In this section you create the RCU schemas in the Oracle Database.
 	
 Before following the steps in this section, make sure that the database and listener are up and running and you can connect to the database via SQL*Plus or other client tool.
@@ -409,7 +426,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
    ```
    
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -421,7 +438,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol8-<January'24> -n oamns -- sleep infinity
+   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol8-<April'24> -n oamns -- sleep infinity
    ```
    
    The output will look similar to the following:
@@ -607,16 +624,6 @@ Before following the steps in this section, make sure that the database and list
 	
 
 	
-### Preparing the environment for domain creation
-
-**Note**: If you want to create an OAM domain using WDT models, skip the steps below and continue from [Create OAM Domains Using WDT Models](../create-oam-domains/create-oam-domains-using-wdt-models).
-
-In this section you prepare the environment for the OAM domain creation using WLST scripts. This involves the following steps:
-
-   a. [Creating Kubernetes secrets for the domain and RCU](#creating-kubernetes-secrets-for-the-domain-and-rcu)
-    
-   b. [Create a Kubernetes persistent volume and persistent volume claim](#create-a-kubernetes-persistent-volume-and-persistent-volume-claim)
-
 #### Creating Kubernetes secrets for the domain and RCU
 
 
@@ -758,7 +765,7 @@ In this section you prepare the environment for the OAM domain creation using WL
    ```
 
 	
-### Create a Kubernetes persistent volume and persistent volume claim
+#### Create a Kubernetes persistent volume and persistent volume claim
 
    As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system. 
   
@@ -997,4 +1004,4 @@ In this section you prepare the environment for the OAM domain creation using WL
    ```
    
    
-   You are now ready to create the OAM domain as per [Create OAM Domains](../create-oam-domains/).
+   You are now ready to create the OAM domain with WLST scripts as as per [Create OAM Domains Using WLST scripts](../create-oam-domains/create-oam-domains-using-wlst).

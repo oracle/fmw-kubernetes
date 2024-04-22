@@ -102,7 +102,7 @@ After the Oracle Unified Directory Services Manager instance is set up you can m
    **Note**: If your cluster does not have access to the internet to pull external images, such as prometheus or grafana, you must load the images in a local container registry. You must then set install as follows:
    
    ```
-   helm install --set grafana.image.repository==container-registry.example.com/grafana --set grafana.image.tag=8.4.2 monitoring prometheus/kube-prometheus-stack -n monitoring
+   helm install --set grafana.image.registry="container-registry.example.com" --set grafana.image.repository="grafana/grafana" --set grafana.image.tag=8.3.4 monitoring prometheus/kube-prometheus-stack -n monitoring
    ```
    
 #### View Prometheus and Grafana Objects created

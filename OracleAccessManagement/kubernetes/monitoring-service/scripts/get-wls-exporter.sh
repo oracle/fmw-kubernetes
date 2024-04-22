@@ -8,7 +8,7 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/utils.sh
 warDir=$scriptDir/../bin
 mkdir -p $warDir
-curl -L -o $warDir/wls-exporter.war https://github.com/oracle/weblogic-monitoring-exporter/releases/download/v2.1.6/wls-exporter.war 
+curl -L -o $warDir/wls-exporter.war https://github.com/oracle/weblogic-monitoring-exporter/releases/download/v2.0.0/wls-exporter.war 
 mkdir -p $scriptDir/wls-exporter-deploy 
 echo "created $scriptDir/wls-exporter-deploy dir"
 

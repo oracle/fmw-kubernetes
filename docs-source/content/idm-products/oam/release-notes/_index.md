@@ -10,6 +10,22 @@ Review the latest changes and known issues for Oracle Access Management on Kuber
 
 | Date | Version | Change |
 | --- | --- | --- |
+ April, 2024 | 24.2.1 | Supports Oracle Access Management 12.2.1.4 domain deployment using the April 2024 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | This release contains the following changes:
+| | | + Support for WebLogic Kubernetes Operator 4.1.8.|
+| | | + Changes to creating domains with WDT models:|
+| | |    a. RCU schema creation is now performed as part of the domain creation.|
+| | |    b. Automation scripts to generate WDT models and domain resource yaml file.|
+| | |    c. Automation scripts to build domain creation image and push it to container registry.|
+| | | If upgrading to April 24 (24.2.1) from October 22 (22.4.1) or later, you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.1.8|
+| | | 2. Patch the OAM container image to April 24|
+| | | If upgrading to April 24 (24.2.1) from a release prior to October 22 (22.4.1), you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.1.8|
+| | | 2. Patch the OAM container image to April 24|
+| | | 3. Upgrade the Ingress|
+| | | 4. Upgrade Elasticsearch and Kibana|
+| | | See [Patch and Upgrade](../patch-and-upgrade) for these instructions.
  January, 2024 | 24.1.1 | Supports Oracle Access Management 12.2.1.4 domain deployment using the January 2024 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | This release contains no changes other than support for the January Patch Set Update
 | | | If upgrading to January 24 (24.1.1) from October 23 (23.4.1) or later, you must upgrade the following in order:
