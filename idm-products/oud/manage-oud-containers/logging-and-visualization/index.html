@@ -12,18 +12,18 @@
     <title>b) Logging and Visualization for Helm Chart oud-ds-rs Deployment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1710144679" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843534" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843534"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1710144679"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1710144679"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843534"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1710144679"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843534"></script>
 
     
   </div>
@@ -5546,6 +5546,7 @@
 <ol>
 <li><a href="#upgrade-oud-deployment-with-elk-configuration">Upgrade OUD deployment with ELK configuration</a></li>
 <li><a href="#verify-the-pods">Verify the pods</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
 </ol>
 </li>
 <li><a href="#verify-and-access-the-kibana-console">Verify and access the Kibana console</a></li>
@@ -5749,6 +5750,8 @@ Please refer to README.md from Helm Chart to find more details about accessing i
 </code></pre></li>
 </ol>
 <h4 id="verify-the-pods">Verify the pods</h4>
+<h5 id="using-nfs-storage">Using NFS Storage</h5>
+<p>If you are using OUD with NFS or file system storage, a new logstash pod will be created.</p>
 <ol>
 <li>
 <p>Run the following command to check the <code>logstash</code> pod is created correctly:</p>
@@ -5766,20 +5769,43 @@ oud-pod-cron-job-27758400-kd6pn       0/1     Completed   0          36m
 oud-pod-cron-job-27758430-ndmgj       0/1     Completed   0          6m33s
 </code></pre><p><strong>Note</strong>: Wait a couple of minutes to make sure the pod has not had any failures or restarts. If the pod fails you can view the pod log using:</p>
 <pre><code>$ kubectl logs -f oud-ds-rs-logstash-&lt;pod&gt; -n oudns
-</code></pre><p>Most errors occur due to misconfiguration of the <code>logging-override-values.yaml</code>. This is usually because of an incorrect value set, or the certificate was not pasted with the correct indentation.</p>
+</code></pre><p>See <a href="#troubleshooting">Troubleshooting</a> for further details.</p>
+</li>
+</ol>
+<h5 id="with-block-storage">With Block Storage</h5>
+<p>If you are using OUD with block devices, the logstash pod will run as a separate sidecar container in the OUD pods.</p>
+<ol>
+<li>
+<p>Run the following command to check the sidecar pod is created:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n &lt;namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oudns
+</code></pre></div><p>The output should look similar to the following:</p>
+<pre><code>NAME                                  READY   STATUS      RESTARTS   AGE
+oud-ds-rs-0                           2/2     Running     0          24m
+oud-ds-rs-1                           2/2     Running     0          17m
+oud-ds-rs-2                           2/2     Running     0          10m
+etc..
+</code></pre><p>Notice the pods <code>oud-ds-rs-0</code> - <code>oud-ds-rs-2</code>  have a <code>READY</code> status of <code>2/2</code>.</p>
+<p><strong>Note</strong>: The pods will terminate one at a time and restart to add the sidecar logstash container. For example <code>oud-ds-rs-2</code> will terminate and restart. <code>oud-ds-rs1</code> will not terminate until <code>oud-ds-rs-2</code> is at <code>2/2</code>. If any of the pods fail, you can view the pod logs using:</p>
+<pre><code>$ kubectl logs -f oud-ds-rs-&lt;pod&gt; -c oud-ds-rs-logstash -n oudns
+</code></pre><p>``</p>
+<p>See <a href="#troubleshooting">Troubleshooting</a> for further details.</p>
+</li>
+</ol>
+<h4 id="troubleshooting">Troubleshooting</h4>
+<p>Most errors occur due to misconfiguration of the <code>logging-override-values.yaml</code>. This is usually because of an incorrect value set, or the certificate was not pasted with the correct indentation.</p>
 <p>If the pod has errors, view the helm history to find the last working revision, for example:</p>
 <pre><code>$ helm history oud-ds-rs -n oudns
 </code></pre><p>The output will look similar to the following:</p>
-<pre><code>REVISION        UPDATED                         STATUS          CHART           APP VERSION     DESCRIPTION
-1               Tue Jan 10 14:06:01 2023        superseded      oud-ds-rs-0.2   12.2.1.4.0      Install complete
-2               Tue Jan 10 16:34:21 2023        deployed        oud-ds-rs-0.2   12.2.1.4.0      Upgrade complete
+<pre><code>REVISION        UPDATED       STATUS          CHART           APP VERSION     DESCRIPTION
+1               &lt;DATE&gt;        superseded      oud-ds-rs-0.2   12.2.1.4.0      Install complete
+2               &lt;DATE&gt;        deployed        oud-ds-rs-0.2   12.2.1.4.0      Upgrade complete
 </code></pre><p>Rollback to the previous working revision by running:</p>
 <pre><code>$ helm rollback &lt;release&gt; &lt;revision&gt; -n &lt;domain_namespace&gt;
 </code></pre><p>For example:</p>
 <pre><code>helm rollback oud-ds-rs 1 -n oudns
 </code></pre><p>Once you have resolved the issue in the yaml files, run the <code>helm upgrade</code> command outlined earlier to recreate the logstash pod.</p>
-</li>
-</ol>
 <h3 id="verify-and-access-the-kibana-console">Verify and access the Kibana console</h3>
 <p>To access the Kibana console you will need the Kibana URL as per <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-monitoring-and-visualization-software.html#GUID-C0013AA8-B229-4237-A1D8-8F38FA6E2CEC">Installing Elasticsearch (ELK) Stack and Kibana</a>.</p>
 <p><strong>For Kibana 7.7.x and below</strong>:</p>
@@ -5797,7 +5823,7 @@ oud-pod-cron-job-27758430-ndmgj       0/1     Completed   0          6m33s
 <p>In the <strong>Configure settings</strong> page, from the <strong>Time Filter field name</strong> drop down menu select <code>@timestamp</code> and click <strong>Create index pattern</strong>.</p>
 </li>
 <li>
-<p>Once the index pattern is created click on <strong>Discover</strong> in the navigation menu to view the OIG logs.</p>
+<p>Once the index pattern is created click on <strong>Discover</strong> in the navigation menu to view the OUD logs.</p>
 </li>
 </ol>
 <p><strong>For  Kibana version 7.8.X and above</strong>:</p>
@@ -9544,19 +9570,19 @@ oud-pod-cron-job-27758430-ndmgj       0/1     Completed   0          6m33s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843534"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843534"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1710144679" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1710144679"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843534" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843534"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

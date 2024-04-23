@@ -823,7 +823,7 @@ If you do not want to expose additional ports and perform WLST administration op
       
       <guid>/fmw-kubernetes/idm-products/oud/patch-and-upgrade/</guid>
       <description>In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from.
- Upgrading to January 24 (24.1.1) from April 23 (23.2.1) or later Upgrading to January 24 (24.1.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to January 24 (24.1.1) from July 22 (22.3.1) Upgrading to January 24 (24.1.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
+ Upgrading to April 24 (24.2.1) from April 23 (23.2.1) or later Upgrading to April 24 (24.2.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to April 24 (24.2.1) from July 22 (22.3.1) Upgrading to April 24 (24.2.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
     </item>
     
     <item>
@@ -982,7 +982,7 @@ d. Setup routing rules for the domain
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/idm-products/oud/manage-oud-containers/logging-and-visualization/</guid>
-      <description>Introduction Install Elasticsearch and Kibana Create a Kubernetes secret Enable Logstash  Upgrade OUD deployment with ELK configuration Verify the pods   Verify and access the Kibana console  Introduction This section describes how to install and configure logging and visualization for the oud-ds-rs Helm chart deployment.
+      <description>Introduction Install Elasticsearch and Kibana Create a Kubernetes secret Enable Logstash  Upgrade OUD deployment with ELK configuration Verify the pods Troubleshooting   Verify and access the Kibana console  Introduction This section describes how to install and configure logging and visualization for the oud-ds-rs Helm chart deployment.
 The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK you can gain insights in real-time from the log data from your applications.</description>
     </item>
     
@@ -1005,16 +1005,16 @@ The ELK stack consists of Elasticsearch, Logstash, and Kibana. Using ELK you can
       <guid>/fmw-kubernetes/idm-products/oam/create-oam-domains/create-oam-domains-using-wdt-models/</guid>
       <description>Introduction
   Prerequisites
-  Working with WDT Model Files
-  Preparing the environment for domain creation
-  Create Domain Creation Image
-  Customize sample WDT models (Optional)
-  Create the OAM domain
+  Create OAM domains using WDT models
+a. Prepare the persistent storage
+b. Create Kubernetes secrets for the domain and RCU
+c. Generate WDT models and the domain resource yaml file
+d. Build the Domain Creation Image
+e. Deploy the OAM domain resource
   Verify the results
 a. Verify the domain, pods and services
 b. Verify the domain
-c. Verify the pods
-  Introduction This section demonstrates the creation of an OAM domain home using sample Weblogic Deploy Tooling (WDT) model files.</description>
+c. Verify the pods</description>
     </item>
     
     <item>
@@ -1025,15 +1025,16 @@ c. Verify the pods
       <guid>/fmw-kubernetes/idm-products/oig/create-oig-domains/create-oig-domains-wdt/</guid>
       <description>Introduction
   Prerequisites
-  Working with WDT Model files
-  Preparing the environment for domain creation
-  Create Domain Creation Image
-  Create the OIG Domain
+  Create OIG domains using WDT models
+a. Prepare the persistent storage
+b. Create Kubernetes secrets for the domain and RCU
+c. Generate WDT models and the domain resource yaml file
+d. Build the Domain Creation Image
+e. Deploy the OIG domain resource
   Verify the results
 a. Verify the domain, pods and services
 b. Verify the domain
-c. Verify the pods
-  Introduction This section demonstrates the creation of an OIG domain home using sample WebLogic Deploy Tooling (WDT) model files.</description>
+c. Verify the pods</description>
     </item>
     
     <item>
@@ -1082,7 +1083,7 @@ To determine if this step is required for the version you are upgrading from, re
 Download the latest code repository Download the latest code repository as follows:
   Create a working directory to setup the source code.
 $ mkdir &amp;lt;workdir&amp;gt; For example:
-$ mkdir /scratch/OUDSMK8SJan24   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
+$ mkdir /scratch/OUDSMK8SApr24   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
     </item>
     
     <item>
@@ -1107,7 +1108,7 @@ b. Create a namespace</description>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/fmw-kubernetes/idm-products/oam/manage-oam-domains/wlst-admin-operations/</guid>
-      <description>To use WLST to administer the OAM domain, use the helper pod in the same Kubernetes cluster as the OAM Domain.
+      <description>To use WLST to administer the OAM domain, use a helper pod in the same Kubernetes cluster as the OAM Domain.
   Check to see if the helper pod exists by running:
 $ kubectl get pods -n &amp;lt;domain_namespace&amp;gt; | grep helper For example:
 $ kubectl get pods -n oamns | grep helper The output should look similar to the following:
