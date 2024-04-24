@@ -12,18 +12,18 @@
     <title>e. Kubernetes Horizontal Pod Autoscaler :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1710144679" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843534" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843534"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1710144679"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1710144679"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843534"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1710144679"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843534"></script>
 
     
   </div>
@@ -5558,7 +5558,7 @@
 <p>The instructions below show you how to configure and run an HPA to scale an OAM cluster (<code>accessdomain-oam-cluster</code>) resource, based on CPU utilization or memory resource metrics. If required, you can also perform the following for the <code>accessdomain-policy-cluster</code>.</p>
 <p><strong>Note</strong>: If you enable HPA and then decide you want to start/stop/scale OAM Managed servers manually as per <a href="../domain-lifecycle">Domain Life Cycle</a>, it is recommended to delete HPA beforehand as per <a href="#delete-the-hpa">Delete the HPA</a>.</p>
 <h3 id="prerequisite-configuration">Prerequisite configuration</h3>
-<p>In order to use HPA, the OAM domain must have been created with the required <code>resources</code> parameter as per <a href="../../create-oam-domains#set-the-oam-server-memory-parameters">Set the OAM server memory parameters</a>. For example:</p>
+<p>In order to use HPA, the OAM domain must have been created with the required <code>resources</code> parameter. For OAM domains created with WLST scripts, this is as per <a href="../../create-oam-domains/create-oam-domains-using-wlst/#set-the-oam-server-memory-parameters">Set the OAM server memory parameters</a>. For OAM domains created with WDT models, the values should be set by default. For example:</p>
 <pre><code>serverPod:
   env:
   - name: USER_MEM_ARGS
@@ -5743,10 +5743,8 @@ accessdomain-oam-cluster-hpa   Cluster/accessdomain-oam-cluster   5%/70%    1   
 </code></pre><p>The output will look similar to the following:</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS        AGE
 accessdomain-adminserver                                 0/1     Running     0               141m
-accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed   0               5h19m
 accessdomain-oam-policy-mgr1                             0/1     Running     0               138m
 accessdomain-oam-server1                                 1/1     Running     0               138m
-helper                                                   1/1     Running     0               21h
 nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running     0               4h33m
 </code></pre><p>In the above, only <code>accessdomain-oam-server1</code> is running.</p>
 </li>
@@ -5773,14 +5771,12 @@ accessdomain-oam-cluster-hpa   Cluster/accessdomain-oam-cluster   470%/70%    1 
 </code></pre><p>The output will look similar to the following:</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS        AGE
 accessdomain-adminserver                                 0/1     Running                     143m
-accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed   0               5h21m
 accessdomain-oam-policy-mgr1                             0/1     Running     0               140m
 accessdomain-oam-server1                                 1/1     Running     0               140m
 accessdomain-oam-server2                                 1/1     Running     0               3m20s
 accessdomain-oam-server3                                 1/1     Running     0               3m20s
 accessdomain-oam-server4                                 1/1     Running     0               3m19s
 accessdomain-oam-server5                                 1/1     Running     0               3m5s
-helper                                                   1/1     Running     0               21h
 </code></pre><p>In the example above four more OAM Managed Servers have been started (<code>oam-server2</code> - <code>oam-server5</code>).</p>
 <p><strong>Note</strong>: It may take some time for the servers to appear and start. Once the servers are at <code>READY</code> status of <code>1/1</code>, the servers are started.</p>
 </li>
@@ -5801,20 +5797,16 @@ accessdomain-oam-cluster-hpa   Cluster/accessdomain-oam-cluster   19%/70%   1   
 </code></pre><p>The output will look similar to the following:</p>
 <pre><code>NAME                                                     READY   STATUS        RESTARTS        AGE
 accessdomain-adminserver                                 1/1     Running       0               152m
-accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed     0               5h30m
 accessdomain-oam-policy-mgr1                             1/1     Running       0               149m
 accessdomain-oam-server1                                 1/1     Running       0               149m
 accessdomain-oam-server2                                 1/1     Running       0               14m
 accessdomain-oam-server3                                 0/1     Terminating   0               14m
-helper                                                   1/1     Running       0               21h
 nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running       0               4h45m
 </code></pre><p>Eventually, all the servers except <code>oam-server1</code> will disappear:</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS       AGE
 accessdomain-adminserver                                 1/1     Running     0              154m
-accessdomain-create-oam-infra-domain-job-6br2j           0/1     Completed   0              5h32m
 accessdomain-oam-policy-mgr1                             1/1     Running     0              151m
 accessdomain-oam-server1                                 1/1     Running     0              151m
-helper                                                   1/1     Running     0              21h
 nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running     0              4h47m
 </code></pre></li>
 </ol>
@@ -9547,19 +9539,19 @@ $ kubectl delete -f autoscalehpa.yaml
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843534"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843534"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1710144679" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1710144679"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843534" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843534"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

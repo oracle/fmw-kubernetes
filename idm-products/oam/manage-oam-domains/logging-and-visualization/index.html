@@ -12,18 +12,18 @@
     <title>c. Logging and Visualization :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1710144679" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1710144679" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843534" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843534"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1710144679"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1710144679"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843534"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1710144679"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843534"></script>
 
     
   </div>
@@ -5709,7 +5709,7 @@ data:
         start_position =&gt; beginning
       }
       file {
-        path =&gt; &lt;Domain Home&gt;/servers/AdminServer/logs/AdminServer-diagnostic.log&quot;
+        path =&gt; &quot;&lt;Domain Home&gt;/servers/AdminServer/logs/AdminServer-diagnostic.log&quot;
         tags =&gt; &quot;Adminserver_diagnostic&quot;
         start_position =&gt; beginning
       }
@@ -5719,7 +5719,7 @@ data:
         start_position =&gt; beginning
       }
       file {
-      path =&gt; &lt;Domain Home&gt;/servers/AdminServer/logs/auditlogs/OAM/audit.log&quot;
+      path =&gt; &quot;&lt;Domain Home&gt;/servers/AdminServer/logs/auditlogs/OAM/audit.log&quot;
       tags =&gt; &quot;Audit_logs&quot;
       start_position =&gt; beginning
       }
@@ -5760,7 +5760,7 @@ data:
 kind: ConfigMap
 metadata:
   name: oam-logstash-configmap
-  namespace: &lt;ELKNS&gt;
+  namespace: oamns
 data:
   logstash.yml: |
   #http.host: &quot;0.0.0.0&quot;
@@ -5782,7 +5782,7 @@ data:
         start_position =&gt; beginning
       }
       file {
-        path =&gt; /u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/AdminServer-diagnostic.log&quot;
+        path =&gt; &quot;/u01/oracle/user_projects/domains/accessdomain/servers/AdminServer/logs/AdminServer-diagnostic.log&quot;
         tags =&gt; &quot;Adminserver_diagnostic&quot;
         start_position =&gt; beginning
       }
@@ -5941,7 +5941,7 @@ spec:
         - containerPort: 5044
           name: logstash
         volumeMounts:
-        - mountPath: /u01/oracle/user_projects/domains
+        - mountPath: /u01/oracle/user_projects 
           name: weblogic-domain-storage-volume
         - name: shared-logs
           mountPath: /shared-logs
@@ -5994,13 +5994,8 @@ spec:
 </code></pre></div><p>The output should look similar to the following:</p>
 <pre><code>NAME                                            READY   STATUS      RESTARTS   AGE
 accessdomain-adminserver                                 1/1     Running     0          18h
-accessdomain-create-oam-infra-domain-job-7c9r9           0/1     Completed   0          23h
 accessdomain-oam-policy-mgr1                             1/1     Running     0          18h
-accessdomain-oam-policy-mgr2                             1/1     Running     0          18h
 accessdomain-oam-server1                                 1/1     Running     1          18h
-accessdomain-oam-server2                                 1/1     Running     1          18h
-elasticsearch-f7b7c4c4-tb4pp                             1/1     Running     0          5m
-helper                                                   1/1     Running     0          23h
 nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          20h
 oam-logstash-bbbdf5876-85nkd                             1/1     Running     0          4m23s
 </code></pre><p><strong>Note</strong>: Wait a couple of minutes to make sure the pod has not had any failures or restarts. If the pod fails you can view the pod log using:</p>
@@ -9776,19 +9771,19 @@ $ kubectl delete -f $WORKDIR/kubernetes/elasticsearch-and-kibana/logstash_cm.yam
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843534"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1710144679"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1710144679"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843534"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1710144679" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1710144679"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843534" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843534"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

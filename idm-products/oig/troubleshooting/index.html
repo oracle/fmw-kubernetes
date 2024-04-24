@@ -12,18 +12,18 @@
     <title>Troubleshooting :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1710144680" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1710144680" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843535" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1710144680"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843535"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1710144680"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1710144680"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843535"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843535"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1710144680"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843535"></script>
 
     
   </div>
@@ -5532,7 +5532,7 @@
 
 
 	<h4 id="domain-creation-failure-with-wlst-scripts">Domain creation failure with WLST scripts</h4>
-<p>If the OIG domain creation fails when running <code>create-domain.sh</code>, run the following to diagnose the issue:</p>
+<p>If the OIG domain creation fails, run the following to diagnose the issue:</p>
 <ol>
 <li>
 <p>Run the following command to diagnose the create domain job:</p>
@@ -5603,9 +5603,16 @@
 kubectl create -f domain.yaml
 </code></pre></li>
 <li>
-<p>If the domain creation fails because of database issues, clean down the failed domain creation by following steps 1-3 in <a href="../manage-oig-domains/delete-domain-home">Delete the OIG domain home</a>. Then follow <a href="../prepare-your-environment/#rcu-schema-creation">RCU schema creation</a> recreate the RCU schema. Then execute the steps in <a href="../create-oig-domains/create-oig-domains-wdt">Create OIG domain using WDT Models</a> again.</p>
-<p><strong>Note</strong> You might need to recreate the domain creation image depending upon the errors. Domain creation logs are stored in <code>&lt;persistent_volume&gt;/domains/wdt-logs</code>.</p>
+<p>If the domain creation fails because of database issues:</p>
+<p>a. Create a helper pod:</p>
+<pre><code> kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April`24&gt; --image-pull-policy=&quot;IfNotPresent&quot; --overrides='{&quot;apiVersion&quot;: &quot;v1&quot;,&quot;spec&quot;:{&quot;imagePullSecrets&quot;: [{&quot;name&quot;: &quot;orclcred&quot;}]}}' helper -n oigns -- sleep infinity
+</code></pre><p>``</p>
+<p>b. Clean down the failed domain creation by following steps 1-3 in <a href="../manage-oig-domains/delete-domain-home">Delete the OIG domain home</a>.</p>
+<p>c. Execute the steps in <a href="../create-oig-domains/create-oig-domains-wdt">Create OIG domain using WDT Models</a> again.</p>
 </li>
+</ol>
+<p><strong>Note</strong> You might need to recreate the domain creation image depending upon the errors. Domain creation logs are stored in <code>&lt;persistent_volume&gt;/domains/wdt-logs</code>.</p>
+<ol>
 <li>
 <p>If there is any issues while bringing up AdminServer, SOA Server or OIM Server, you can run the following to check the logs:</p>
 <pre><code>$ kubectl logs &lt;pod&gt; -n oigns
@@ -9328,19 +9335,19 @@ kubectl create -f domain.yaml
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1710144680"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843535"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1710144680"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1710144680"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843535"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1710144680" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1710144680"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843535" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843535"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
