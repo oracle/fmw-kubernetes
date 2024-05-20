@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OUD deployment
@@ -64,14 +64,17 @@ echo
 echo Log of Delete Session can be found at: $LOG
 echo
 
-echo "Check OUDSM is not installed"
-kubectl get svc -n $OUDNS | grep oudsm
-if [ $? = 0 ]
+if [ "$OUDNS" = "$OUDSMNS" ]
 then
-   echo "Need to delete OUDSM first."
-   exit 1
-fi
+    echo "Check OUDSM is not installed"
+    kubectl get svc -n $OUDSMNS | grep oudsm
 
+    if [ $? = 0 ]
+    then
+       echo "Need to delete OUDSM first."
+       exit 1
+    fi
+fi
 if [ "$USE_INGRESS" = "true" ]
 then
     echo "Delete Ingress"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example script to populate the responsefile
@@ -385,6 +385,26 @@ else
     INSTALL_OAA=false
 fi
 
+echo -n  "  Do you wish to install/config Oracle Adaptive Risk Management (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_RISK=true
+else
+    INSTALL_RISK=false
+fi
+
+echo -n  "  Do you wish to install/config Oracle Universal Authenticator (y/n) : "
+read ANS
+
+if check_yes $ANS 
+then
+    INSTALL_OUA=true
+else
+    INSTALL_OUA=false
+fi
+
 replace_value INSTALL_ELK $INSTALL_ELK $RSPFILE
 replace_value INSTALL_PROM $INSTALL_PROM $RSPFILE
 replace_value INSTALL_INGRESS $INSTALL_INGRESS $RSPFILE
@@ -397,6 +417,8 @@ replace_value INSTALL_OAM $INSTALL_OAM $RSPFILE
 replace_value INSTALL_OIG $INSTALL_OIG $RSPFILE
 replace_value INSTALL_OIRI $INSTALL_OIRI $RSPFILE
 replace_value INSTALL_OAA $INSTALL_OAA $RSPFILE
+replace_value INSTALL_RISK $INSTALL_RISK $RSPFILE
+replace_value INSTALL_OUA $INSTALL_OUA $RSPFILE
 
 replace_value USE_INGRESS $USE_INGRESS $RSPFILE
 replace_value USE_ELK $USE_ELK $RSPFILE
@@ -903,7 +925,7 @@ then
       fi
 
 
-      echo -n "Enter Number of OUD Replicas required (In addition to Primary) [$OUD_REPLICAS]:"
+      echo -n "Enter Number of OUD Replicas required [$OUD_REPLICAS]:"
       read ANS
 
       if [ ! "$ANS" = "" ]
@@ -1173,6 +1195,35 @@ then
           fi
 
       fi
+
+      echo -n  "Do you wish to set the secret for oparator install (y/n) : "
+      read ANS
+      if  check_yes $ANS
+      then
+         OPER_ENABLE_SECRET=true
+      else
+         OPER_ENABLE_SECRET=false
+      fi
+      replace_value OPER_ENABLE_SECRET $OPER_ENABLE_SECRET $RSPFILE
+
+   if [ "$WLS_CREATION_TYPE" = "WDT" ]
+   then
+      echo -n "Enter the WDT image registry [$WDT_IMAGE_REGISTRY]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+         replace_value WDT_IMAGE_REGISTRY $ANS $$RSPFILE
+      fi 
+
+      echo -n "Enter the WDT image registry user [$WDT_IMAGE_REG_USER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+         replace_value WDT_IMAGE_REG_USER $ANS $$RSPFILE
+      fi 
+   fi       
 fi
 
 if [ "$INSTALL_OAM" = "true" ] 
@@ -1452,6 +1503,13 @@ then
         fi
       fi
 
+      echo -n "Enter OAM Admin Loadbalancer Protocol [$OAM_ADMIN_LBR_PROTOCOL]:"
+      read ANS
+      if [ ! "$ANS" = "" ]
+      then
+         replace_value OAM_ADMIN_LBR_PROTOCOL $ANS $RSPFILE
+      fi
+
 
       if [ "$GET_USER" = "true" ]
       then
@@ -1716,6 +1774,13 @@ then
            echo "Port must be numeric - leaving value unchanged."
         fi
       fi
+
+      echo -n "Enter OIG Admin Loadbalancer Protocol [$OIG_ADMIN_LBR_PROTOCOL]:"
+      read ANS
+      if [ ! "$ANS" = "" ]
+      then
+         replace_value OIG_ADMIN_LBR_PROTOCOL $ANS $RSPFILE
+      fi      
 
       if [ "$GET_PORT" = "true" ]
       then
@@ -2168,6 +2233,34 @@ then
          echo "Leaving value as previously defined"
       fi
 
+      echo -n "Enter OIG Database Scan Address (Use Hostname for non-RAC)  [$OIRI_OIG_DB_SCAN]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OIRI_OIG_DB_SCAN $ANS $RSPFILE
+      fi
+
+      echo -n "Enter OIG Database Listener Port [$OIRI_OIG_DB_LISTENER]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+        if check_number $ANS
+        then
+           replace_value OIRI_OIG_DB_LISTENER $ANS $RSPFILE
+        else
+           echo "Port must be numeric - leaving value unchanged."
+        fi
+      fi
+
+      echo -n "Enter OIG Database Service Name [$OIRI_OIG_DB_SERVICE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OIRI_DB_SERVICE $ANS $RSPFILE
+      fi
       echo -n "Enter Password for OIRI Keystore: "
       read -s ANS
 
@@ -2256,6 +2349,68 @@ then
       if [ ! "$ANS" = "" ]
       then
            replace_value OIRI_OIG_URL $ANS $RSPFILE
+      fi
+
+      echo -n "Create Users in OIG :"
+      read ANS
+
+      if [  "$ANS" = "y" ]
+      then
+           
+         replace_value OIRI_CREATE_OIG_USER true $RSPFILE
+
+         echo -n "Enter T3 URL for oim-server1 [$OIRI_OIG_SERVER]:"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              replace_value OIRI_OIG_SERVER $ANS $RSPFILE
+         fi
+
+         echo -n "Enter OIG Administration User [$OIRI_OIG_XELSYSADM_USER]:"
+         read ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+              replace_value OIRI_OIG_XELSYSADM_USER $ANS $RSPFILE
+         fi
+
+         echo -n "Enter Password for $OIRI_OIG_XELSYSADM_USER: "
+         read -s ANS
+
+         if [ ! "$ANS" = "" ]
+         then
+           echo
+           echo -n "Confirm Password :"
+           read -s ACHECK
+           if [ ! "$ANS" = "$ACHECK" ]
+           then
+              echo "Passwords do not match!"
+              exit
+           else
+               echo
+               replace_password OIRI_OIG_USER_PWD $ANS $PWDFILE
+           fi
+         else
+            echo "Leaving value as previously defined"
+         fi
+
+      fi
+
+      echo -n "Place OIG into Compliance Mode :"
+      read ANS
+
+      if [  "$ANS" = "y" ]
+      then
+         replace_value OIRI_SET_OIG_COMPLIANCE true $RSPFILE
+      fi
+
+      echo -n "Enter Location of xell.pem file (leave blank if OIG is inside Kubernetes) [$OIRI_OIG_XELL_FILE]:"
+      read ANS
+
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OIRI_OIG_XELL_FILE $ANS $RSPFILE
       fi
 
       echo -n "Perform Initial OIG Data Load [$OIRI_LOAD_DATA]:"
@@ -2492,6 +2647,7 @@ then
            replace_value OAA_EMAIL_REPLICAS $ANS $RSPFILE
            replace_value OAA_SMS_REPLICAS $ANS $RSPFILE
            replace_value OAA_PUSH_REPLICAS $ANS $RSPFILE
+           replace_value OAA_KBA_REPLICAS $ANS $RSPFILE
         else
            echo "Port must be numeric - leaving value unchanged."
         fi
@@ -2818,7 +2974,50 @@ then
          echo "Leaving value as previously defined"
       fi
 
+      if [ ! "$ANS" = "" ]
+      then
+           replace_value OAA_EMAIL_USER $ANS $RSPFILE
+           replace_value OAA_SMS_USER $ANS $RSPFILE
+      fi 
+
+      echo -n "Do you wish to add existing users in LDAP in User Search base to OAA_USER_GROUP (y/n) : "
+      read ANS
+      if  check_yes $ANS
+      then
+         OAA_ADD_USERS_LDAP=true
+      else
+         OAA_ADD_USERS_LDAP=false
+      fi  
+      replace_value OAA_ADD_USERS_LDAP $OAA_ADD_USERS_LDAP $RSPFILE      
+
 fi
+
+if [ "$INSTALL_OUA" = "true" ] 
+then
+   echo -n "Do you wish set ldap param obpsftid to all existing users in OAA_USER_GROUP (y/n) : "
+   read ANS
+   if  check_yes $ANS
+   then
+      OAA_ADD_USERS_OUA_OBJ=true
+   else
+      OAA_ADD_USERS_OUA_OBJ=false
+   fi  
+   replace_value OAA_ADD_USERS_OUA_OBJ $OAA_ADD_USERS_OUA_OBJ $RSPFILE      
+   
+   echo -n "Enter Number of OUA DRSS Servers to start  [$OAA_DRSS_REPLICAS]:"
+   read ANS
+
+   if [ ! "$ANS" = "" ]
+   then
+      if check_number $ANS
+      then
+         replace_value OAA_DRSS_REPLICAS $ANS $RSPFILE
+      else
+         echo "Replica must be numeric - leaving value unchanged."
+      fi
+   fi
+fi      
+
 echo
 echo "Oracle HTTP Server Parameters"
 echo "-----------------------------"

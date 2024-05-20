@@ -444,20 +444,30 @@ copy_lbr_cert()
 update_ohs_route()
 {
    print_msg "Change OHS Routing"
+   echo
 
    ST=$(date +%s)
-   
-   OLD_HOST1=$(grep WebLogicCluster $WORKDIR/*_vh.conf | sed "s/WebLogicCluster//" | tr -d ' ' | sed 's/,/:/' | cut -f2,4 -d: | tr ":" "\n" |sort | uniq  | head -1 )
-   OLD_HOST2=$(grep WebLogicCluster $WORKDIR/*_vh.conf | sed "s/WebLogicCluster//" | tr -d ' ' | sed 's/,/:/' | cut -f2,4 -d: | tr ":" "\n" |sort | uniq  | tail -1 )
-   NEW_HOST1=$(kubectl get nodes | cut -f1 -d " "  | sed "/NAME/d" | head -1)
-   NEW_HOST2=$(kubectl get nodes | cut -f1 -d " "  | sed "/NAME/d" | tail -1)
 
-   printf "\n\t\t\tChanging $OLD_HOST1 to $NEW_HOST1 - "
-   sed -i "s/$OLD_HOST1/$NEW_HOST1/g" $WORKDIR/*_vh.conf  > $LOGDIR/update_ohs_route.log 2>&1
-   print_status $?  $LOGDIR/update_ohs_route.log
-   printf "\n\t\t\tChanging $OLD_HOST2 to $NEW_HOST2 - "
-   sed -i "s/$OLD_HOST2/$NEW_HOST2/g" $WORKDIR/*_vh.conf  >> $LOGDIR/update_ohs_route.log 2>&1
-   print_status $?  $LOGDIR/update_ohs_route.log
+   FILES=$(ls -1 $WORKDIR/*vh.conf)
+   K8NODES=$(get_k8nodes)
+
+
+   for file in $FILES
+   do
+    printf "\t\t\tProcessing File:$file - "
+    PORTS=$(grep WebLogicCluster $file | sed "s/WebLogicCluster//" | awk 'BEGIN { RS = "," } { print $0 }' | cut -f2 -d: | sort | uniq)
+    for PORT in $PORTS
+    do
+      ROUTE="WebLogicCluster "
+      for NODE in $K8NODES
+      do
+        ROUTE="$ROUTE,$NODE:$PORT"
+      done
+      DIRECTIVE=$(echo $ROUTE | sed 's/,//')
+      sed -i "/:$PORT/c\        $DIRECTIVE" $file >> $LOGDIR/update_ohs_route.log 2>&1
+    done
+    print_status $? $LOGDIR/update_ohs_route.log
+   done
 
    ET=$(date +%s)
    print_time STEP "Change OHS Routing" $ST $ET >> $LOGDIR/timings.log
@@ -496,7 +506,7 @@ copy_ohs_dr_config()
    print_msg "Copy OHS Config"
    ST=$(date +%s)
    
-   printf "\t\t\tCopy OHS Config to $OHS_HOST1 - "
+   printf "\n\t\t\tCopy OHS Config to $OHS_HOST1 - "
    $SCP $WORKDIR/$OHS_HOST1/*vh.conf $OHS_HOST1:$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS1_NAME/moduleconf/ > $LOGDIR/copy_ohs_config.log 2>&1
    print_status $? $LOGDIR/copy_ohs_config.log
 
@@ -508,4 +518,111 @@ copy_ohs_dr_config()
    fi
    ET=$(date +%s)
    print_time STEP "Change OHS Routing" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Add location directives to OHS Config Files
+#
+create_location()
+{
+  locfile=$1
+  nodes=$2
+  ohs_path=$3
+
+  printf "\t\t\tAdding location Directives to OHS conf file  - "
+  while IFS= read -r LOCATIONS
+  do
+     file=$(echo $LOCATIONS | cut -f1 -d:)
+     location=$(echo $LOCATIONS | cut -f2 -d:)
+     port=$(echo $LOCATIONS | cut -f3 -d:)
+     ssl=$(echo $LOCATIONS | cut -f4 -d:)
+
+     conf_file=${file}_vh.conf
+
+     case $file in
+       iadadmin)
+        protocol=$OAM_ADMIN_LBR_PROTOCOL
+        ;;
+       login)
+        protocol=$OAM_LOGIN_LBR_PROTOCOL
+        ;;
+       prov)
+        protocol=$OIG_LBR_PROTOCOL
+        ;;
+       igdinternal)
+        protocol=$OIG_LBR_INT_PROTOCOL
+        ;;
+       igdadmin)
+        protocol=$OIG_ADMIN_LBR_PROTOCOL
+        ;;
+       *)
+         echo "FILE:$file"
+        ;;
+     esac
+
+     sed -i "/<\/VirtualHost>/d" $ohs_path/$conf_file
+
+     printf "Adding Location $location to $ohs_path/$conf_file - " >> $LOGDIR/$file.log
+     grep -q "$location>" $ohs_path/$conf_file
+     if [ $? -eq 1 ]
+     then
+       printf "\n    <Location $location>" >> $ohs_path/$conf_file
+       printf "\n        WLSRequest ON" >> $ohs_path/$conf_file
+       printf "\n        DynamicServerList OFF" >> $ohs_path/$conf_file
+
+       if [ "$ssl" = "Y" ] && [ "$USE_INGRESS"  = "false" ]
+       then
+           printf "\n        SecureProxy ON" >> $ohs_path/$conf_file
+           printf "\n        WLSSLWallet   \"${ORACLE_INSTANCE}/ohswallet\"" >> $ohs_path/$conf_file
+       fi
+
+       if [ "$file" = "login" ]
+       then
+          printf "\n        WLCookieName OAMJSESSIONID" >> $ohs_path/$conf_file
+          echo $location | grep -q well-known
+           if [ $? -eq 0 ]
+          then
+              printf "\n        PathTrim /.well-known" >> $ohs_path/$conf_file
+              printf "\n        PathPrepend /oauth2/rest" >> $ohs_path/$conf_file
+          fi
+
+       elif [ "$file" = "prov" ]
+       then
+          printf "\n        WLCookieName oimjsessionid" >> $ohs_path/$conf_file
+       elif [ "$file" = "igdinternal" ]
+       then
+          if [ "$location" = "/spmlws" ] 
+          then
+              printf "\n        PathTrim /weblogic" >> $ohs_path/$conf_file
+          fi
+       fi
+
+       if [ "$protocol" = "https" ]
+       then
+          printf "\n        WLProxySSL ON" >> $ohs_path/$conf_file
+          printf "\n        WLProxySSLPassThrough ON" >> $ohs_path/$conf_file
+       fi
+
+       cluster_cmd="        WebLogicCluster " >> $ohs_path/$conf_file
+       node_count=0
+       for node in $nodes
+       do
+          if [ $node_count -eq 0 ]
+          then
+             cluster_cmd=$cluster_cmd"$node:$(($port))"
+          else
+             cluster_cmd=$cluster_cmd",$node:$(($port))"
+          fi
+          ((node_count++))
+       done
+       printf "\n$cluster_cmd" >> $ohs_path/$conf_file
+
+       printf "\n    </Location>\n" >> $ohs_path/$conf_file
+       echo "Success" >>$LOGDIR/$file.log
+    else
+       echo "Already Exists" >>$LOGDIR/$file.log
+    fi
+
+    printf "\n</VirtualHost>\n" >> $ohs_path/$conf_file
+  done < $locfile
+
 }

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example file to compile java program and Run Recon Jobs
@@ -10,6 +10,6 @@ echo "Compiling Java Code:"
 
 javac /u01/oracle/user_projects/workdir/createAdminUser.java -Xlint:deprecation -Xlint:unchecked > createAdminUser_compile.log 2> createAdminUser_compile_err.log
 
-java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 createAdminUser t3://<OIG_DOMAIN_NAME>-oim-server1.oigns.svc.cluster.local:14000/ <LDAP_XELSYSADM_USER> <LDAP_USER_PWD> <OIRI_SERVICE_USER> <OIRI_SERVICE_PWD> <OIRI_ENG_USER> <OIRI_ENG_PWD>  <OIRI_ENG_GROUP>
+java -Djava.security.policy=/u01/oracle/user_projects/workdir/lib/xl.policy -Djava.security.auth.login.config=/u01/oracle/user_projects/workdir/lib/authwl.conf -DAPPSERVER_TYPE=wls -Dweblogic.Name=oim_server1 createAdminUser <OIRI_OIG_SERVER> <OIRI_OIG_XELSYSADM_USER> <OIRI_OIG_USER_PWD> <OIRI_SERVICE_USER> <OIRI_SERVICE_PWD> <OIRI_ENG_USER> <OIRI_ENG_PWD>  <OIRI_ENG_GROUP>
 
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OIG deployment
@@ -118,6 +118,13 @@ check_stopped $OIGNS adminserver
 
 # Drop the OIG schemas
 #
+
+echo "Recreating helper pod."
+
+kubectl delete pod -n $OIGNS helper > /dev/null 2>&1
+
+create_helper_pod $OIGNS $OIG_IMAGE:$OIG_VER
+
 
 ST=`date +%s`
 kubectl get pod -n $OIGNS helper > /dev/null 2>&1

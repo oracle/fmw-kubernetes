@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of provisioning Oracle Identity Governance and wiring it to Oracle Unified Directory
@@ -51,6 +51,7 @@ fi
 
 . $SCRIPTDIR/common/functions.sh
 . $SCRIPTDIR/common/oig_functions.sh
+. $SCRIPTDIR/common/ohs_functions.sh
 
 START_TIME=`date +%s`
 
@@ -137,6 +138,19 @@ then
     update_progress
 fi
 
+if [ "$WLS_CREATION_TYPE" = "WDT" ] && [ ! "$REGISTRY" = "$WDT_IMAGE_REGISTRY" ]
+then
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+      if [ "$CREATE_REGSECRET" = "true" ]
+      then
+         create_registry_secret $WDT_IMAGE_REGISTRY $WDT_IMAGE_REG_USER $WDT_IMAGE_REG_PWD $OIGNS regcred2
+      fi
+      update_progress
+   fi
+fi
+
 new_step
 if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
 then
@@ -151,62 +165,76 @@ then
     update_progress
 fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_helper_pod $OIGNS $OIG_IMAGE:$OIG_VER
-    update_progress
-fi
-
-# Create RCU Schema Objects
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_schemas  $OIGNS  $OIG_DB_SCAN $OIG_DB_LISTENER $OIG_DB_SERVICE $OIG_RCU_PREFIX OIG $OIG_DB_SYS_PWD $OIG_SCHEMA_PWD
-    update_progress
-fi
-
 # Create Kubernetes Secrets
 #
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    create_domain_secret $OIGNS $OIG_DOMAIN_NAME $OIG_WEBLOGIC_USER $OIG_WEBLOGIC_PWD 
+    if [ "$WLS_CREATION_TYPE" = "WDT" ]
+    then
+      create_domain_secret_wdt $OIGNS $OIG_DOMAIN_NAME $OIG_WEBLOGIC_USER $OIG_WEBLOGIC_PWD 
+    else
+      create_domain_secret $OIGNS $OIG_DOMAIN_NAME $OIG_WEBLOGIC_USER $OIG_WEBLOGIC_PWD 
+    fi
     update_progress
 fi
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    create_rcu_secret $OIGNS $OIG_DOMAIN_NAME $OIG_RCU_PREFIX $OIG_SCHEMA_PWD $OIG_DB_SYS_PWD
+    if [ "$WLS_CREATION_TYPE" = "WDT" ]
+    then
+      create_rcu_secret_wdt $OIGNS $OIG_DOMAIN_NAME $OIG_RCU_PREFIX $OIG_SCHEMA_PWD $OIG_DB_SYS_PWD $OIG_DB_SCAN $OIG_DB_LISTENER $OIG_DB_SERVICE
+    else
+      create_rcu_secret $OIGNS $OIG_DOMAIN_NAME $OIG_RCU_PREFIX $OIG_SCHEMA_PWD $OIG_DB_SYS_PWD
+    fi
     update_progress
 fi
 
-# Create Persistent Volumes
-#
-
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$WLS_CREATION_TYPE" = "WLST" ]
 then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    create_helper_pod $OIGNS $OIG_IMAGE:$OIG_VER
+    update_progress
+  fi
+
+  # Create RCU Schema Objects
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    create_schemas  $OIGNS  $OIG_DB_SCAN $OIG_DB_LISTENER $OIG_DB_SERVICE $OIG_RCU_PREFIX OIG $OIG_DB_SYS_PWD $OIG_SCHEMA_PWD
+    update_progress
+  fi
+
+  # Create Persistent Volumes
+  #
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
     create_persistent_volumes
     update_progress
-fi
+  fi
 
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
     check_pv_ok $OIG_DOMAIN_NAME
     update_progress
-fi
+  fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
     check_pvc_ok $OIG_DOMAIN_NAME $OIGNS
     update_progress
-fi
+  fi
+
+fi 
 
 # Create Domain Configuration File
 #
@@ -214,45 +242,131 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    edit_domain_creation_file $WORKDIR/create-domain-inputs.yaml
+    edit_domain_creation_file 
     update_progress
 fi
 
-# Initialise Domain
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$WLS_CREATION_TYPE" = "WDT" ]
 then
-    create_oig_domain
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     generate_wdt_model_files
+     update_progress
+  fi
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    build_wdt_image
     update_progress
+  fi
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    add_image_wdt
+    update_progress
+  fi
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     create_oig_domain_wdt
+     update_progress
+  fi
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     check_running $OIGNS introspector true
+     update_progress
+  fi
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     check_introspector $OIGNS 
+     update_progress
+  fi
+
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     check_domain_ok $OIGNS $OIG_DOMAIN_NAME
+     update_progress
+  fi
+
+   # Check that the domain is started
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       check_running $OIGNS adminserver true
+       update_progress
+   fi
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       check_running $OIGNS soa-server1 true
+       update_progress
+   fi
+
+
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       scale_cluster $OIGNS $OIG_DOMAIN_NAME oim-cluster 1
+       update_progress
+   fi
+
+else
+
+   # Initialise Domain
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       create_oig_domain
+       update_progress
+   fi
+
+   # Update Java Parameters
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       update_java_parameters
+       update_progress
+   fi
+
+   # Increase Timeouts
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       increase_to
+       update_progress
+   fi
+
+   # Perform Initial Domain Start
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       perform_initial_start
+       update_progress
+   fi
 fi
 
-# Update Java Parameters
-#
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    update_java_parameters
-    update_progress
+  check_oim_bootstrap
+  update_progress
 fi
 
-# Increase Timeouts
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    increase_to
-    update_progress
-fi
-
-# Perform Initial Domain Start
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    perform_initial_start
-    update_progress
-fi
 # Create Services
 #
 
@@ -288,22 +402,25 @@ then
 fi
 
 
-# Update MDS Datasource
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    update_mds
-    update_progress
-fi
 
-
-# Set Weblogic Plugin
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$WLS_CREATION_TYPE" = "WLST" ]
 then
-   set_weblogic_plugin
-   update_progress
+   # Update MDS Datasource
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+       update_mds
+       update_progress
+   fi
+
+   # Set Weblogic Plugin
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+      set_weblogic_plugin
+      update_progress
+   fi
 fi
 
 if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
@@ -402,7 +519,7 @@ then
    if [ $STEPNO -gt $PROGRESS ]
    then
       configure_sso
-       update_progress
+      update_progress
    fi
 
    # Enable OAM Notifications
@@ -424,33 +541,47 @@ then
    fi
 
 fi
+
 # Get Loadbalancer Certificates
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+certs=false
+if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
 then
-     if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
+     new_step
+     if [ $STEPNO -gt $PROGRESS ]
      then
-          get_lbr_certificate $OAM_LOGIN_LBR_HOST $OAM_LOGIN_LBR_PORT
+        get_lbr_certificate $OAM_LOGIN_LBR_HOST $OAM_LOGIN_LBR_PORT
+        update_progress
      fi
-     if [ "$OIG_BI_INTEG" = "true" ] || [ "$OIG_BI_INTEG" = "TRUE" ]
-     then 
-       if [ "$OIG_BI_PROTOCOL" = "https" ]  ||  [ "$OIG_BI_PROTOCOL" = "HTTPS" ]
-       then
-          get_lbr_certificate $OIG_BI_HOST $OIG_BI_PORT
-       fi
+     certs=true
+fi
+
+if [ "$OIG_BI_INTEG" = "true" ] || [ "$OIG_BI_INTEG" = "TRUE" ]
+then 
+   if [ "$OIG_BI_PROTOCOL" = "https" ]  ||  [ "$OIG_BI_PROTOCOL" = "HTTPS" ]
+   then
+     new_step
+     if [ $STEPNO -gt $PROGRESS ]
+     then
+      get_lbr_certificate $OIG_BI_HOST $OIG_BI_PORT
+      update_progress
      fi
-    update_progress
+     certs=true
+   fi
 fi
 
 # Add certificates to Oracle Keystore Service
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$certs" = "true" ]
 then
-    add_certs_to_kss
-    update_progress
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+      add_certs_to_kss
+      update_progress
+   fi
 fi
+
 
 if  [ "$INSTALL_OAM" = "true" ] && [ "$OAM_OIG_INTEG" = "true" ]
 then

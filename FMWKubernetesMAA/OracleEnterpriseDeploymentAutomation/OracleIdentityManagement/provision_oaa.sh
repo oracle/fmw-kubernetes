@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which can be used to deploy Oracle Advanced Authentication
@@ -49,6 +49,7 @@ fi
 
 . $SCRIPTDIR/common/functions.sh
 . $SCRIPTDIR/common/oaa_functions.sh
+. $SCRIPTDIR/common/ohs_functions.sh
 
 START_TIME=`date +%s`
 
@@ -57,6 +58,12 @@ WORKDIR=$LOCAL_WORKDIR/OAA
 LOGDIR=$WORKDIR/logs
 
 if [ "$INSTALL_OAA" != "true" ] && [ "$INSTALL_OAA" != "TRUE" ]
+then
+     echo "You have not requested Oracle Advanced Authentication"
+     exit 1
+fi
+
+if [ "$INSTALL_OUA" = "true" ] && [ "$INSTALL_OAA" != "true" ]
 then
      echo "You have not requested Oracle Advanced Authentication"
      exit 1
@@ -101,11 +108,14 @@ fi
 
 # Add Existig Users to OAA Group
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$OAA_ADD_USERS_LDAP" = "true" ]
 then
-   add_existing_users oud
-   update_progress
+  new_step
+  if [ $STEPNO -gt $PROGRESS ] 
+  then
+     add_existing_users oud
+     update_progress
+  fi
 fi
 
 # Create Kubernetes Namespace(s)
@@ -120,32 +130,37 @@ fi
 
 # Create a Container Registry Secret if requested
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+if  [ "$CREATE_REGSECRET" = "true" ]
 then
-   create_registry_secret $REGISTRY $REG_USER $REG_PWD $OAANS
-   update_progress
+  new_step
+  if [ $STEPNO -gt $PROGRESS ] 
+  then
+     create_registry_secret $REGISTRY $REG_USER $REG_PWD $OAANS
+     update_progress
+  fi
 fi
-
 
 
 # Create GitHub Secret if requested
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$CREATE_GITSECRET" = "true" ]
 then
-   if [ "$CREATE_GITSECRET" = "true" ]
-   then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
        create_git_secret $GIT_USER $GIT_TOKEN $OAANS
+       update_progress       
    fi
-   update_progress
 fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ] &&  [ "$CREATE_REGSECRET" = "true" ]
+if [ "$CREATE_REGSECRET" = "true" ] 
 then
-   create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OAANS dockercred
-   update_progress
+  new_step
+  if [ $STEPNO -gt $PROGRESS ] 
+  then
+     create_registry_secret "https://index.docker.io/v1/" $DH_USER $DH_PWD $OAANS dockercred
+     update_progress
+  fi
 fi
 
 # Create a Management Container
@@ -213,7 +228,6 @@ then
    update_progress
 fi
 
-
 # Enable OAM Auth
 
 new_step
@@ -275,6 +289,29 @@ then
    fi
 fi
 
+# Register TAP for OUA
+#
+if [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    register_tap_oua
+    update_progress
+  fi
+fi
+
+# Edit properties file for OUA
+#
+if [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    edit_properties_oua
+    update_progress
+  fi
+fi
 
 # Deploy OAA
 #
@@ -284,7 +321,6 @@ then
    deploy_oaa
    update_progress
 fi
-
 
 
 # Add OHS entries for OAA to OAM ohs config files if Ingress is not being used
@@ -319,20 +355,29 @@ then
   fi
 fi
 
-
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   check_running $OAANS email 0
-   check_running $OAANS yotp 0
-   check_running $OAANS totp 0
-   check_running $OAANS fido 0
-   check_running $OAANS kba 0
-   check_running $OAANS sms 0
-   check_running $OAANS push 0
-   check_running $OAANS spui 0
-   check_running $OAANS policy 0
-   check_running $OAANS fido 0
+   check_running $OAANS email 0 true
+   check_running $OAANS yotp 0 
+   check_running $OAANS totp 0 
+   check_running $OAANS fido 0 
+   check_running $OAANS kba 0 
+   check_running $OAANS sms 0 
+   check_running $OAANS push 0 
+   check_running $OAANS spui 0 
+   check_running $OAANS policy 0 
+   check_running $OAANS oaa-admin 0 
+   check_running $OAANS oaa 0 
+   if [ "$INSTALL_OUA" = "true" ]
+   then
+     check_running $OAANS drss 0 
+   fi
+   if [ "$INSTALL_RISK" = "true" ]
+   then
+     check_running $OAANS risk-cc 0 
+     check_running $OAANS risk 0 
+   fi
    update_progress
 fi
 
@@ -349,7 +394,7 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   check_running $OAMNS adminserver 0
+   check_running $OAMNS adminserver 0 
    update_urls
    update_progress
 fi
@@ -372,7 +417,6 @@ then
     update_progress
 fi
 
-
 # Create OAA Agent
 #
 new_step
@@ -382,8 +426,6 @@ then
     update_progress
 fi
 
-
-
 # Install OAA Plugin
 #
 new_step
@@ -392,7 +434,6 @@ then
     install_plugin
     update_progress
 fi
-
 
 # Create OAM Authentication Module
 #
@@ -421,6 +462,15 @@ then
     update_progress
 fi
 
+# Set OAA Cookie Domain
+#
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    create_cookie_domain
+    update_progress
+fi
+
 # Create Test User
 #
 new_step
@@ -429,6 +479,80 @@ then
     create_test_user oud
     update_progress
 fi
+
+# Configure DRSS for OUA
+#
+if [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    configure_drss_oua
+    update_progress
+  fi
+fi
+
+# Set DRSS parameter for OUA
+#
+if [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    set_drss_param_oua
+    update_progress
+  fi
+fi
+
+# Enable OAM Identity Service
+#
+if [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ] 
+  then
+      enable_oam_identity_service
+      update_progress
+  fi
+fi  
+
+# Set RequireAuthorizationHeader for OAM
+#
+if [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ] 
+  then
+      set_oam_authz_header
+      update_progress
+  fi
+fi  
+
+# Set User Identity Store for OAM
+#
+if [ "$INSTALL_OUA" = "true" ]
+then 
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+      set_userid_store
+      update_progress
+  fi
+fi  
+
+
+# Set ldap attribute to true to all the users in OAA_USER_GROUP
+#
+if [ "$OAA_ADD_USERS_OUA_OBJ" = "true" ] && [ "$INSTALL_OUA" = "true" ]
+then
+  new_step
+  if [ $STEPNO -gt $PROGRESS ] 
+  then
+     set_ldapattr_to_oaausers
+     update_progress
+  fi
+fi  
+
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OAA" $START_TIME $FINISH_TIME 
