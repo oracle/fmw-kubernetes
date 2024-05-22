@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which can be used to deploy Oracle Identity Role Intelligence
@@ -48,6 +48,7 @@ then
 fi
 . $SCRIPTDIR/common/functions.sh
 . $SCRIPTDIR/common/oiri_functions.sh
+. $SCRIPTDIR/common/ohs_functions.sh
 
 START_TIME=`date +%s`
 
@@ -198,7 +199,7 @@ then
 fi
 
 
-# Obtain OIG certificate and add to oiri-clie
+# Obtain OIG certificate and add to oiri-cli
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
@@ -234,20 +235,26 @@ fi
 
 # Create an Service Account, Engineering user and Role in OIG
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$OIRI_CREATE_OIG_USER" = "true" ]
 then
-   create_users
-   update_progress
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+     create_users
+     update_progress
+  fi
 fi
 
 # Ensure that OIG is running in Compliance Mode
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$OIRI_SET_OIG_COMPLIANCE" = "true" ]
 then
-   set_compliance_mode
-   update_progress
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+      set_compliance_mode
+      update_progress
+   fi
 fi
 
 # Having created the wallet ensure that the details inside are correct

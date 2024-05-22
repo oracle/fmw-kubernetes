@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of the checks that can be performed before Provisioning Identity Management
@@ -85,7 +85,7 @@ create_override()
 
    update_variable "<OUDSM_INGRESS_HOST>" $OUDSM_INGRESS_HOST $OVERRIDE_FILE
 
-   KUBERNETES_VER=`kubectl version --short=true 2>/dev/null | grep Server | cut -f2 -d: | cut -f1 -d + | sed 's/ v//' | cut -f 1-3 -d.`
+   KUBERNETES_VER=$(get_k8_ver)
    update_variable "<KUBERNETES_VER>" $KUBERNETES_VER $OVERRIDE_FILE
    update_variable "<KUBECTL_REPO>" $KUBECTL_REPO $OVERRIDE_FILE
    update_variable "<BUSYBOX_REPO>" $BUSYBOX_REPO $OVERRIDE_FILE
@@ -441,6 +441,7 @@ create_oud_logstash_cm()
 
    update_variable "<OUDNS>" $OUDNS $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_HOST>" $ELK_HOST $WORKDIR/logstash_cm.yaml
+   update_variable "<ELK_USER>" $ELK_USER $WORKDIR/logstash_cm.yaml
    update_variable "<ELK_USER_PWD>" $ELK_USER_PWD $WORKDIR/logstash_cm.yaml
 
    kubectl create -f $WORKDIR/logstash_cm.yaml >$LOGDIR/logstash_cm.log 2>&1

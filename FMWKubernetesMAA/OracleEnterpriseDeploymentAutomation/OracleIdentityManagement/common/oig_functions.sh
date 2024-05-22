@@ -37,11 +37,19 @@ create_persistent_volumes()
 #
 edit_domain_creation_file()
 {
-     filename=$1
-
-     print_msg "Creating Domain Configuration File"
-     cp $WORKDIR/samples/create-oim-domain/domain-home-on-pv/create-domain-inputs.yaml $filename
      ST=$(date +%s)
+     print_msg "Creating Domain Configuration File"
+
+     if [ "$WLS_CREATION_TYPE" = "WLST" ]
+     then
+        filename=$WORKDIR/create-domain-inputs.yaml
+        cp $WORKDIR/samples/create-oim-domain/domain-home-on-pv/create-domain-inputs.yaml $filename
+     else
+        filename=$WORKDIR/create-domain-wdt.yaml
+        cp $WORKDIR/samples/create-oim-domain/domain-home-on-pv/wdt-utils/generate_models_utils/create-domain-wdt.yaml $filename
+        replace_value2 edgInstall true $filename
+     fi
+
      if [  "$CREATE_REGSECRET" = "true" ]
      then
         replace_value2 imagePullSecretName regcred $filename
@@ -72,12 +80,91 @@ edit_domain_creation_file()
      replace_value2 t3ChannelPort $OIG_ADMIN_T3_K8 $filename
      replace_value2 frontEndHost $OIG_LBR_HOST $filename
      replace_value2 frontEndPort $OIG_LBR_PORT $filename
+
+     if [ "$WLS_CREATION_TYPE" = "WDT" ]
+     then
+        replace_value2 weblogicDomainStorageNFSServer $PVSERVER $filename
+        replace_value2 weblogicDomainStorageType NFS $filename
+        replace_value2 weblogicDomainStoragePath $OIG_SHARE $filename
+        replace_value2 edgInstall true $filename
+        replace_value2 oamServerJavaParams "$OIGSERVER_JAVA_PARAMS" $filename
+        replace_value2 soaServerJavaParams "$SOASERVER_JAVA_PARAMS" $filename
+        replace_value2 oimMaxCPU "$OIM_MAX_CPU" $filename
+        replace_value2 oimCPU "$OIM_CPU" $filename
+        replace_value2 oimMaxMemory "$OIM_MAX_MEMORY" $filename
+        replace_value2 oimMemory "$OIM_MEMORY" $filename
+        replace_value2 oimMaxCPU "$OIM_MAX_CPU" $filename
+        replace_value2 oimCPU "$OIM_CPU" $filename
+        replace_value2 oimMaxMemory "$OIM_MAX_MEMORY" $filename
+        replace_value2 oimMemory "$OIM_MEMORY" $filename
+        replace_value2 soaMaxCPU "$SOA_MAX_CPU" $filename
+        replace_value2 soaCPU "$SOA_CPU" $filename
+        replace_value2 soaMaxMemory "$SOA_MAX_MEMORY" $filename
+        replace_value2 soaMemory "$SOA_MEMORY" $filename
+        replace_value2 soaMaxCPU "$SOA_MAX_CPU" $filename
+        replace_value2 soaCPU "$SOA_CPU" $filename
+        replace_value2 soaMaxMemory "$SOA_MAX_MEMORY" $filename
+        replace_value2 soaMemory "$SOA_MEMORY" $filename
+     fi
      print_status $?
      printf "\t\t\tCopy saved to $WORKDIR\n"
      ET=$(date +%s)
      print_time STEP "Create Domain Configuration File" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Build WDT Domain Creation Image
+#
+build_wdt_image()
+{
+     print_msg "Build WDT Domain Creation Image"
+
+     cd $WORKDIR/samples/create-oim-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/
+     filename=$WORKDIR/build-domain-creation-image.properties
+     cp properties/build-domain-creation-image.properties $filename
+     if [ $? -gt 0 ]
+     then
+        echo "Failed to create copy file $WORKDIR/samples/create-oim-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/properties/build-domain-creation-image.properties"
+        exit 1
+     fi
+
+     JAVA_HOME=$(dirname $(dirname $(which java)))
+     if [ "$JAVA_HOME" = "" ]
+     then
+        echo "JAVA_HOME must be set to continue"
+        exit 1
+     fi
+
+     replace_value JAVA_HOME "$JAVA_HOME" $filename
+     replace_value REPOSITORY ${WDT_IMAGE_REGISTRY}/oig_wdt $filename
+     replace_value REG_USER $WDT_IMAGE_REG_USER $filename
+     replace_value IMAGE_PUSH_REQUIRES_AUTH true $filename
+     echo "REG_PASSWORD=\"$WDT_IMAGE_REG_PWD\"" > $WORKDIR/.buildpwd
+     replace_value WDT_MODEL_FILE "$WORKDIR/weblogic-domains/$OIG_DOMAIN_NAME/oig.yaml" $filename
+     replace_value WDT_VARIABLE_FILE "$WORKDIR/weblogic-domains/$OIG_DOMAIN_NAME/oig.properties" $filename
+     replace_value IMAGE_TAG $OIG_DOMAIN_NAME $filename
+
+     ./build-domain-creation-image.sh -i $filename -p $WORKDIR/.buildpwd > $LOGDIR/build_wdt_image.log 2>&1
+     print_status $? $LOGDIR/build_wdt_image.log
+     ET=`date +%s`
+     print_time STEP "Generate WDT Model Files" $ST $ET >> $LOGDIR/timings.log
+}
+
+add_image_wdt()
+{
+     print_msg "Adding image name to domain.yaml"
+
+     filename=$WORKDIR/weblogic-domains/$OIG_DOMAIN_NAME/domain.yaml
+     update_variable "%DOMAIN_CREATION_IMAGE%" "${WDT_IMAGE_REGISTRY}/oig_wdt:$OIG_DOMAIN_NAME" $filename
+
+     if [ ! "$REGISTRY" = "$WDT_IMAGE_REGISTRY" ]
+     then
+        sed -i "/regcred/a\  - name: regcred2\n" $filename
+     fi
+
+     print_status $?
+     ET=`date +%s`
+     print_time STEP "Adding image name to domain.yaml" $ST $ET >> $LOGDIR/timings.log
+}
 # Create the OIG domain
 #
 create_oig_domain()
@@ -128,6 +215,51 @@ create_oig_domain()
 
 }
 
+create_oig_domain_wdt()
+{
+
+     print_msg "Initialising the Domain"
+     ST=`date +%s`
+
+     printf "\n\t\t\tCreating the domain - "
+     oper_pod=$(kubectl get pods -n $OPERNS --no-headers=true | grep -v webhook | head -1 | awk '{ print $1 }')
+     if [ "$oper_pod" = "" ]
+     then
+        echo "Failed to get the name of the WebLogic Operator Pod."
+        exit 1
+     fi
+
+     kubectl create -f $WORKDIR/weblogic-domains/$OIG_DOMAIN_NAME/domain.yaml > $LOGDIR/create_domain.log 2>$LOGDIR/create_domain.log
+     print_status $? $LOGDIR/create_domain.log
+
+
+     printf "\t\t\tChecking no errors in WebLogic Operator log - "
+     sleep 30
+     kubectl logs -n $OPERNS $oper_pod --since=60s| grep $OIG_DOMAIN_NAME | grep SEVERE >> $LOGDIR/create_domain.log
+     grep -q SEVERE $LOGDIR/create_domain.log
+     if [ $? -eq 0 ]
+     then
+        echo "Failed - Check Logfile: $LOGDIR/create_domain.log"
+        exit 1
+     fi
+
+     sleep 90
+     kubectl logs -n $OPERNS $oper_pod --since=120s| grep $OIG_DOMAIN_NAME | grep SEVERE >> $LOGDIR/create_domain.log
+     grep -q SEVERE $LOGDIR/create_domain.log
+     if [ $? -eq 0 ]
+     then
+        echo "Failed - Check Logfile: $LOGDIR/create_domain.log"
+        exit 1
+     else
+        echo "Success"
+     fi
+
+     ET=`date +%s`
+
+     print_time STEP "Initialise the Domain" $ST $ET >> $LOGDIR/timings.log
+}
+
+
 # Update the oim_cluster memory parameters
 #
 update_java_parameters()
@@ -159,6 +291,7 @@ update_java_parameters()
      print_time STEP "Update Java Parameters" $ST $ET >> $LOGDIR/timings.log
 }
 
+
 # Start the OIG domain for the first time.
 # start Admin server and SOA then OIM
 #
@@ -179,7 +312,7 @@ perform_initial_start()
      check_running $OIGNS soa-server1
  
      scale_cluster $OIGNS $OIG_DOMAIN_NAME oim-cluster 1 
-     kubectl logs -n $OIGNS $OIG_DOMAIN_NAME-oim-server1 | grep -q "BootStrap configuration Successfull"
+     kubectl logs -n $OIGNS $OIG_DOMAIN_NAME-oim-server1 -c weblogic-server | grep -q "BootStrap configuration Successfull"
      if [ "$?" = "0" ]
      then 
           echo "BOOTSTRAP SUCCESSFULL" > $LOGDIR/initial_start.log 2>&1
@@ -189,6 +322,24 @@ perform_initial_start()
      fi
      ET=$(date +%s)
      print_time STEP "First Domain Start " $ST $ET >> $LOGDIR/timings.log
+}
+
+check_oim_bootstrap()
+{
+
+     print_msg "Checking OIM Bootstrap"
+     ST=$(date +%s)
+     kubectl logs -n $OIGNS ${OIG_DOMAIN_NAME}-oim-server1 -c weblogic-server | grep -q "BootStrap configuration Failed"
+     if [ $? = 0 ]
+     then
+        echo "BootStrap configuration Failed - check kubectl logs -n $OIGNS ${OIG_DOMAIN_NAME}-oim-server1"
+        exit 1
+     else
+        echo "Bootstrap Successful."
+     fi
+
+     ET=$(date +%s)
+     print_time STEP "Check OIM Bootstrap Start " $ST $ET >> $LOGDIR/timings.log
 }
 
 # Create Ingress Services for OIG
@@ -308,7 +459,7 @@ copy_connector()
           exit 1
     fi
    
-    kubectl exec -ti $OIG_DOMAIN_NAME-oim-server1 -n $OIGNS -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
+    kubectl exec -ti $OIG_DOMAIN_NAME-oim-server1 -c weblogic-server -n $OIGNS -- mkdir -p /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
     if ! [ "$?" = "0" ]
     then
        echo "Fail"
@@ -316,7 +467,7 @@ copy_connector()
     fi
  
     printf "\t\t\tCopy Connector to container - "
-    kubectl cp $CONNECTOR_DIR/${CONNECTOR_VER}  $OIGNS/$OIG_DOMAIN_NAME-adminserver:/u01/oracle/user_projects/domains/ConnectorDefaultDirectory
+    copy_to_k8  $CONNECTOR_DIR/${CONNECTOR_VER}  domains/ConnectorDefaultDirectory $OIGNS $OIG_DOMAIN_NAME
     print_status $?
 
     ET=$(date +%s)
@@ -759,8 +910,21 @@ run_recon_jobs()
 
 
      run_command_k8 $OIGNS $OIG_DOMAIN_NAME "$PV_MOUNT/workdir/runJob.sh "> $LOGDIR/recon_jobs.log 2>&1
+     if [ $? -gt 0 ]
+     then
+        echo "Failed see logfile: $LOGDIR/recon_jobs.log
+        exit 1
+     fi
 
-     print_status $?  $LOGDIR/recon_jobs.log
+     grep -q NullPointer recon_jobs.log
+
+     if [ $? -eq 0 ]
+     then
+        echo "Failed see logfile: $LOGDIR/recon_jobs.log
+        exit 1
+     else
+        echo "Success"
+     fi
      ET=$(date +%s)
      print_time STEP "Run Recon Jobs" $ST $ET >> $LOGDIR/timings.log
 }
@@ -857,7 +1021,7 @@ set_email_notifications()
      update_variable "<OIG_EMAIL_REPLY_ADDRESS>" $OIG_EMAIL_REPLY_ADDRESS $filename
 
      copy_to_k8 $filename  workdir $OIGNS $OIG_DOMAIN_NAME
-     kubectl exec -n $OIGNS -ti $OIG_DOMAIN_NAME-adminserver -- /u01/oracle/soa/common/bin/wlst.sh $PV_MOUNT/workdir/update_notifications.py > $LOGDIR/update_notifications.log
+     kubectl exec -n $OIGNS -ti $OIG_DOMAIN_NAME-adminserver -c weblogic-server -- /u01/oracle/soa/common/bin/wlst.sh $PV_MOUNT/workdir/update_notifications.py > $LOGDIR/update_notifications.log
 
      print_status $? $LOGDIR/update_notifications.log
      ET=$(date +%s)
@@ -921,7 +1085,7 @@ create_oig_ohs_config()
    ST=$(date +%s)
 
 
-   print_msg "Creating OHS Conf files"
+   print_msg "Creating OHS Config files"
    OHS_PATH=$LOCAL_WORKDIR/OHS
    if ! [ -d $OHS_PATH/$OHS_HOST1 ]
    then
@@ -934,12 +1098,14 @@ create_oig_ohs_config()
 
    if [ ! "$OHS_HOST1" = "" ]
    then
+      printf "\n\t\t\tCreating Virtual Host Files - "
       cp $TEMPLATE_DIR/igdadmin_vh.conf $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       cp $TEMPLATE_DIR/igdinternal_vh.conf $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       cp $TEMPLATE_DIR/prov_vh.conf $OHS_PATH/$OHS_HOST1/prov_vh.conf
 
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
+      update_variable "<OIG_ADMIN_LBR_PROTOCOL>" $OIG_ADMIN_LBR_PROTOCOL $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       update_variable "<OIG_ADMIN_LBR_HOST>" $OIG_ADMIN_LBR_HOST $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       update_variable "<OIG_ADMIN_LBR_PORT>" $OIG_ADMIN_LBR_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
       update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
@@ -950,38 +1116,32 @@ create_oig_ohs_config()
       update_variable "<OIG_LBR_PROTOCOL>" $OIG_LBR_PROTOCOL $OHS_PATH/$OHS_HOST1/prov_vh.conf
       update_variable "<OIG_LBR_HOST>" $OIG_LBR_HOST $OHS_PATH/$OHS_HOST1/prov_vh.conf
       update_variable "<OIG_LBR_PORT>" $OIG_LBR_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/prov_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/prov_vh.conf
 
       update_variable "<OHS_HOST>" $OHS_HOST1 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<OHS_PORT>" $OHS_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<OIG_LBR_INT_PROTOCOL>" $OIG_LBR_INT_PROTOCOL $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<OIG_LBR_INT_HOST>" $OIG_LBR_INT_HOST $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
       update_variable "<OIG_LBR_INT_PORT>" $OIG_LBR_INT_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-      update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
+      print_status $?
 
       if [ "$USE_INGRESS" = "true" ]
       then
-         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/prov_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-         update_variable "<OIG_ADMIN_K8>" $INGRESS_HTTP_PORT $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
-      else
-         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/prov_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST1/prov_vh.conf
-         update_variable "<OIG_OIM_PORT_K8>" $OIG_OIM_PORT_K8 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-         update_variable "<OIG_SOA_PORT_K8>" $OIG_SOA_PORT_K8 $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf
-         update_variable "<OIG_ADMIN_K8>" $OIG_ADMIN_K8 $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf
+         OIG_OIM_PORT_K8=$INGRESS_HTTP_PORT 
+         OIG_OIM_PORT_K8=$INGRESS_HTTP_PORT
+         OIG_SOA_PORT_K8=$INGRESS_HTTP_PORT
+         OIG_OIM_PORT_K8=$INGRESS_HTTP_PORT
+         OIG_SOA_PORT_K8=$INGRESS_HTTP_PORT
+         OIG_ADMIN_K8=$INGRESS_HTTP_PORT
       fi
 
    fi
 
+   NODELIST=$(kubectl get nodes --no-headers=true  | cut -f1 -d ' ')
+   create_location $TEMPLATE_DIR/locations.txt "$NODELIST" $OHS_PATH/$OHS_HOST1
+
    if [ ! "$OHS_HOST2" = "" ] 
    then
+      printf "\n\t\t\tCreating Virtual Host files for $OHS_HOST2 - "
       cp  $OHS_PATH/$OHS_HOST1/igdadmin_vh.conf $OHS_PATH/$OHS_HOST2/igdadmin_vh.conf
       cp $OHS_PATH/$OHS_HOST1/prov_vh.conf $OHS_PATH/$OHS_HOST2/prov_vh.conf
       cp $OHS_PATH/$OHS_HOST1/igdinternal_vh.conf $OHS_PATH/$OHS_HOST2/igdinternal_vh.conf

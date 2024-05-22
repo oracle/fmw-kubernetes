@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script which will delete an OAM deployment
@@ -107,14 +107,12 @@ check_stopped $OAMNS adminserver
 # Drop OAM Schemas
 #
 ST=`date +%s`
+
+echo "Recreating Helper Pod."
+remove_helper_pod $OAMNS
+create_helper_pod $OAMNS $OAM_IMAGE:$OAM_VER
+
 printf "Dropping Schemas - "
-kubectl get pod -n $OAMNS helper > /dev/null 2>&1
-
-if [ $? -gt 0 ]
-then
-   create_helper_pod $OAMNS $OAM_IMAGE:$OAM_VER
-fi 
-
 drop_schemas  $OAMNS $OAM_DB_SCAN $OAM_DB_LISTENER $OAM_DB_SERVICE $OAM_RCU_PREFIX OAM $OAM_DB_SYS_PWD $OAM_SCHEMA_PWD >> $LOG 2>&1
 ET=`date +%s`
 

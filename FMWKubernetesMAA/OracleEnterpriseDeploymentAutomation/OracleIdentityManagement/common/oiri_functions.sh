@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions and procedures to provision and Configure Oracle Identity Role Intelligence
@@ -114,7 +114,7 @@ create_rbac()
 
    kubectl apply -f $WORKDIR/$filename > $LOGDIR/create_rbac.log 2>&1
    print_status $? $LOGDIR/create_rbac.log
-   KVER=`kubectl version --short 2>/dev/null | grep Server | cut -f2 -d: |sed 's/v//;s/ //g' `
+   KVER=$(get_k8_ver)
    KVER=${KVER:0:4}
    if [ $KVER > "1.23" ]
    then
@@ -212,9 +212,9 @@ setup_config_files()
    ST=`date +%s`
     k8url=`grep server: $KUBECONFIG | sed 's/server://;s/ //g'`
     echo oiri_cli "/oiri-cli/scripts/setupConfFiles.sh -m prod \
-             --oigdbhost $OIG_DB_SCAN \
-             --oigdbport $OIG_DB_LISTENER \
-             --oigdbsname $OIG_DB_SERVICE \
+             --oigdbhost $OIRI_OIG_DB_SCAN \
+             --oigdbport $OIRI_OIG_DB_LISTENER \
+             --oigdbsname $OIRI_OIG_DB_SERVICE \
              --oiridbhost $OIRI_DB_SCAN \
              --oiridbport $OIRI_DB_LISTENER \
              --oiridbsname $OIRI_DB_SERVICE \
@@ -226,9 +226,9 @@ setup_config_files()
              --sparkk8smasterurl k8s://${k8url} \
              --oigserverurl $OIRI_OIG_URL " > $LOGDIR/setup_config.log
     oiri_cli "/oiri-cli/scripts/setupConfFiles.sh -m prod \
-             --oigdbhost $OIG_DB_SCAN \
-             --oigdbport $OIG_DB_LISTENER \
-             --oigdbsname $OIG_DB_SERVICE \
+             --oigdbhost $OIRI_OIG_DB_SCAN \
+             --oigdbport $OIRI_OIG_DB_LISTENER \
+             --oigdbsname $OIRI_OIG_DB_SERVICE \
              --oiridbhost $OIRI_DB_SCAN \
              --oiridbport $OIRI_DB_LISTENER \
              --oiridbsname $OIRI_DB_SERVICE \
@@ -323,49 +323,60 @@ create_keystore()
 get_oig_certificate()
 {
    print_msg "Obtaining OIG Certificate"
-   ST=`date +%s`
-   run_command_k8 $OIGNS $OIG_DOMAIN_NAME "keytool -export -rfc -alias xell \
+   ST=$(date +%s)
+   if [ "$OIRI_OIG_XELL_FILE" = "" ]
+   then
+     run_command_k8 $OIGNS $OIG_DOMAIN_NAME "keytool -export -rfc -alias xell \
                -file $PV_MOUNT/workdir/xell.pem \
                -keystore $PV_MOUNT/domains/$OIG_DOMAIN_NAME/config/fmwconfig/default-keystore.jks \
                -storepass $OIG_WEBLOGIC_PWD" > $LOGDIR/get_oig_cert.log
-   print_status $? 
+     print_status $? 
 
-   printf "\t\t\tCopy Certificate to working directory -"
-   copy_from_k8 $PV_MOUNT/workdir/xell.pem $WORKDIR/xell.pem $OIGNS $OIG_DOMAIN_NAME >> $LOGDIR/get_oig_cert.log 2>&1
-   print_status $RETCODE $LOGDIR/get_oig_cert.log 
+     printf "\t\t\tCopy Certificate to working directory - "
+     copy_from_k8 $PV_MOUNT/workdir/xell.pem $WORKDIR/xell.pem $OIGNS $OIG_DOMAIN_NAME >> $LOGDIR/get_oig_cert.log 2>&1
+     print_status $RETCODE $LOGDIR/get_oig_cert.log 
 
-   printf "\t\t\tCopy Certificate PEM to working directory -"
-   copy_to_oiri $WORKDIR/xell.pem /app/k8s/xell.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
-   print_status $RETCODE $LOGDIR/get_oig_cert.log 
+     printf "\t\t\tCopy Certificate PEM to working directory - "
+     copy_to_oiri $WORKDIR/xell.pem /app/k8s/xell.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
+     print_status $RETCODE $LOGDIR/get_oig_cert.log 
+   else
+     printf "\t\t\tCopy Certificate PEM to working directory - "
+     copy_to_oiri $OIRI_OIG_XELL_FILE /app/k8s/xell.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
+     print_status $RETCODE $LOGDIR/get_oig_cert.log 
+   fi
 
-   printf "\t\t\tImport OIG Certificate into OIRI -"
+   printf "\t\t\tImport OIG Certificate into OIRI - "
    oiri_cli "keytool -import \
                -alias xell \
                -file /app/k8s/xell.pem \
                -keystore /app/oiri/data/keystore/keystore.jks\
                -storepass  $OIRI_KEYSTORE_PWD -noprompt" >> $LOGDIR/get_oig_cert.log 2>&1
    print_status $? $LOGDIR/get_oig_cert.log
-   printf "\t\t\tGet Loadbalancer Certificate - "
-   get_lbr_certificate $OIG_LBR_HOST $OIG_LBR_PORT >> $LOGDIR/get_oig_cert.log 2>&1
-   grep -q Failed $LOGDIR/get_oig_cert.log
-   if [ $? = 0 ]
-   then 
-     echo "Failed see logfile $LOGDIR/get_oig_cert.log"
-   else
-     echo "Success"
-   fi 
 
-   printf "\t\t\tCopy Loadbalancer Certificate - "
-   copy_to_oiri $WORKDIR/$OIG_LBR_HOST.pem /app/k8s/$OIG_LBR_HOST.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
-   print_status $RETCODE $LOGDIR/get_oig_cert.log
+   if [ "$OIG_LBR_PROTOCOL" = "https" ]
+   then
+     printf "\t\t\tGet Loadbalancer Certificate - "
+     get_lbr_certificate $OIG_LBR_HOST $OIG_LBR_PORT >> $LOGDIR/get_oig_cert.log 2>&1
+     grep -q Failed $LOGDIR/get_oig_cert.log
+     if [ $? = 0 ]
+     then 
+       echo "Failed see logfile $LOGDIR/get_oig_cert.log"
+     else
+       echo "Success"
+     fi 
 
-   printf "\t\t\tImport OIG Loadbalancer Certificate into OIRI -"
-   oiri_cli "keytool -import \
-               -alias oigssl \
-               -file /app/k8s/$OIG_LBR_HOST.pem \
-               -keystore /app/oiri/data/keystore/keystore.jks\
-               -storepass  $OIRI_KEYSTORE_PWD -noprompt" >> $LOGDIR/get_oig_cert.log 2>&1
-   print_status $? $LOGDIR/get_oig_cert.log
+     printf "\t\t\tCopy Loadbalancer Certificate - "
+     copy_to_oiri $WORKDIR/$OIG_LBR_HOST.pem /app/k8s/$OIG_LBR_HOST.pem $OIRINS oiri-cli >> $LOGDIR/get_oig_cert.log 2>&1
+     print_status $RETCODE $LOGDIR/get_oig_cert.log
+
+     printf "\t\t\tImport OIG Loadbalancer Certificate into OIRI - "
+     oiri_cli "keytool -import \
+                 -alias oigssl \
+                 -file /app/k8s/$OIG_LBR_HOST.pem \
+                 -keystore /app/oiri/data/keystore/keystore.jks\
+                 -storepass  $OIRI_KEYSTORE_PWD -noprompt" >> $LOGDIR/get_oig_cert.log 2>&1
+     print_status $? $LOGDIR/get_oig_cert.log
+   fi
 
    ET=`date +%s`
    print_time STEP "Obtain and Load OIG Certificates" $ST $ET >> $LOGDIR/timings.log
@@ -449,13 +460,14 @@ create_users()
    # Perform variable substitution in template files
    #
    update_variable "<OIG_DOMAIN_NAME>" $OIG_DOMAIN_NAME $USERFILE
-   update_variable "<LDAP_XELSYSADM_USER>" $LDAP_XELSYSADM_USER $USERFILE
-   update_variable "<LDAP_USER_PWD>" $LDAP_USER_PWD $USERFILE
+   update_variable "<OIRI_OIG_XELSYSADM_USER>" $OIRI_OIG_XELSYSADM_USER $USERFILE
+   update_variable "<OIRI_OIG_USER_PWD>" $OIRI_OIG_USER_PWD $USERFILE
    update_variable "<OIRI_ENG_USER>" $OIRI_ENG_USER $USERFILE
    update_variable "<OIRI_ENG_PWD>" $OIRI_ENG_PWD $USERFILE
    update_variable "<OIRI_ENG_GROUP>" $OIRI_ENG_GROUP $USERFILE
    update_variable "<OIRI_SERVICE_USER>" $OIRI_SERVICE_USER $USERFILE
    update_variable "<OIRI_SERVICE_PWD>" $OIRI_SERVICE_PWD $USERFILE
+   update_variable "<OIRI_OIG_SERVER>" $OIRI_OIG_SERVER $USERFILE
  
    copy_to_k8 $TEMPLATE_DIR/createAdminUser.java workdir $OIGNS $OIG_DOMAIN_NAME
    copy_to_k8 $USERFILE workdir $OIGNS $OIG_DOMAIN_NAME
@@ -642,44 +654,28 @@ set_incremental()
 create_ohs_entries()
 {
    print_msg "Update OHS Files"
+   echo
    ST=`date +%s`
 
-   UIFILE=$WORKDIR/ohs1.conf
-   APIFILE=$WORKDIR/ohs2.conf
-
-   cp $TEMPLATE_DIR/ohs1.conf $UIFILE
-   cp $TEMPLATE_DIR/ohs2.conf $APIFILE
-   update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $UIFILE
-   update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $UIFILE
-   update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $APIFILE
-   update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $APIFILE
  
    if [ "$USE_INGRESS" = "true" ]
    then
-      update_variable "<OIRI_UI_K8>" $INGRESS_HTTP_PORT $UIFILE
-      update_variable "<OIRI_K8>" $INGRESS_HTTP_PORT $APIFILE
-   else
-      update_variable "<OIRI_UI_K8>" $OIRI_UI_K8 $UIFILE
-      update_variable "<OIRI_K8>" $OIRI_K8 $APIFILE
+      OIRI_UI_K8=$INGRESS_HTTP_PORT
+      OIRI_K8=$INGRESS_HTTP_PORT
    fi
    OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
    OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2
 
+   NODELIST=$(kubectl get nodes --no-headers=true  | cut -f1 -d ' ')
+
    if [ ! "$OHS_HOST1" = "" ]
    then
-      sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/igdadmin_vh.conf
-      sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/igdinternal_vh.conf
-      cat $UIFILE >> $OHSHOST1FILES/igdadmin_vh.conf
-      cat $APIFILE >> $OHSHOST1FILES/igdadmin_vh.conf
-      cat $APIFILE >> $OHSHOST1FILES/igdinternal_vh.conf
+     create_location $TEMPLATE_DIR/locations.txt "$NODELIST" $OHSHOST1FILES
+     print_status $?
    fi
    if [ ! "$OHS_HOST2" = "" ]
    then
-      sed -i '/<\/VirtualHost>/d' $OHSHOST2FILES/igdadmin_vh.conf
-      sed -i '/<\/VirtualHost>/d' $OHSHOST2FILES/igdinternal_vh.conf
-      cat $UIFILE >> $OHSHOST2FILES/igdadmin_vh.conf
-      cat $APIFILE >> $OHSHOST2FILES/igdadmin_vh.conf
-      cat $APIFILE >> $OHSHOST2FILES/igdinternal_vh.conf
+     create_location $TEMPLATE_DIR/locations.txt "$NODELIST" $OHSHOST2FILES
    fi
    
    print_status $?

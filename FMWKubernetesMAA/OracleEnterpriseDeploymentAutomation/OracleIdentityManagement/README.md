@@ -95,7 +95,7 @@ The scripts perform the following actions:
 * Create OIRI users in Oracle Identity Governance as described in [Creating User Names and Groups in Oracle Identity Governance](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-role-intelligence.html).
 * Perform an initial OIG data load into OIRI as described in [Performing an Initial Data Load Using the Data Ingester](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-role-intelligence.html#GUID-38ECFCFD-E80F-4F29-B90E-644BE522C058).
 * Create OIRI Kubernetes Services either NodePort or Ingress as described in [Creating the Kubernetes NodePort Services](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-role-intelligence.html#GUID-9368D654-3A45-40D3-82E1-EFB7EFE45929).
-* Deploy Oracle Advanced Authentication and Risk Management as described in [Deploying Oracle Advanced Authentication](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-C0B16343-3E9C-41FB-9E32-9FDCA9A4025B).
+* Deploy Oracle Advanced Authentication, Risk Management and Univeral Authentication as described in [Deploying Oracle Advanced Authentication](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-C0B16343-3E9C-41FB-9E32-9FDCA9A4025B).
 * Create OAA Users as described in [Creating Users and Groups in LDAP](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-278C0CB3-9CC1-400C-B06B-B5DF8603B2EC).
 * Create OAA Test User as described in [Creating a Test User](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-10B461F2-C309-4273-936A-35387EF7332C).
 * Integrate OAA with Unified Messaging Service as described in [Configuring Email/SMS Servers](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-advanced-authentication-oaa.html#GUID-2020B622-4AAB-485E-8965-1BF071B32B48).
@@ -260,8 +260,10 @@ These parameters determine which products the deployment scripts attempt to depl
 | **INSTALL\_WLSOPER** | `true` | Set to `true` to deploy WebLogic Kubernetes Operator. |
 | **INSTALL\_OAM** | `true` | Set to `true` to configure OAM. |
 | **INSTALL\_OIG** | `true` | Set to `true` to configure OIG. |
-|**INSTALL\_OIRI** | `true` | Set to `true` to configure OIRI. |
+| **INSTALL\_OIRI** | `true` | Set to `true` to configure OIRI. |
 | **INSTALL\_OAA** | `true` | Set to `true` to configure OAA.|
+| **INSTALL\_RISK** | `true` | Set to `true` to configure RISK.|
+| **INSTALL\_OUA** | `true` | Set to `true` to configure OUA.|
 
 
 ### Control Parameters
@@ -272,6 +274,7 @@ These parameters are used to specify the type of Kubernetes deployment and the n
 |**USE\_REGISTRY** | `false` | Set to `true` to obtain images from a Container Registry.|
 | **USE\_INGESS** | `true` | Set to true if using and ingress controller|
 |**IMAGE\_TYPE** | `crio` | Set to `crio` or `docker` depending on your container engine.|
+|**OPER\_ENABLE\_SECRET** | `false` | Set to `true` or `false` depending on your wish to set the secret for oparator install.|
 
 
 ### Generic Parameters
@@ -301,6 +304,8 @@ If you are pulling images from GitHub or Docker hub, then you can also specify t
 |**GIT\_TOKEN** | `ghp_aO8fqRNVdfsfshOxsWk40uNMS` | The GitHub token. Stored in password file|
 |**DH\_USER** | *`username`* | The Docker user name for `hub.docker.com`. Used for obtaining public images. If you are hosting the public images in your registry then specify that registry username.|
 |**DH\_PWD** | *`mypassword`* | The Docker password for `hub.docker.com`. Used for obtaining public images. If you are hosting the public images in your registry then specify that registry users password. Stored in password file.|
+|**WDT\_IMAGE\_REGISTRY** | `iad.ocir.io/mytenancy` | Set to the location of your container internal registry.|
+|**WDT\_IMAGE\_REG\_USER** | `mytenancy/oracleidentitycloudservice/email@example.com` |  Set to your internal registry user name.|
 
 
 
@@ -407,6 +412,7 @@ These parameters are specific to OHS.  These parameters are used to construct th
 |**OHS\_PORT** |`7777`| The port your Oracle HTTP Servers listen on.|
 |**OHS\_HTTPS\_PORT** |`4443`| The SSL port your Oracle HTTP Servers listen on.|
 |**NM\_PORT** |`5556`| The port to use for Node Manager.|
+
 ### OUD Parameters
 These parameters are specific to OUD. When deploying OUD, you also require the generic LDAP parameters.
 
@@ -422,6 +428,10 @@ These parameters are specific to OUD. When deploying OUD, you also require the g
 |**LDAP\_USER\_PWD** | *`<password1>`* | The password to assign to all users being created in LDAP. **Note**: This value should have at least one capital letter, one number, and should be at least eight characters long.
 |**OUD\_PWD\_EXPIRY** | `2024-01-02`| The date when the user passwords you are creating expires.|
 |**OUD\_CREATE\_NODEPORT** | `true`| Set to `true` if you want to create NodePort services for OUD. These services are used to interact with OUD from outside of the Kubernetes cluster.|
+|**OUD\_CPU** |`200m`| Initial CPU Units allocated to OUD pods (1000m = 1 CPU core).|
+|**OUD\_MAX\_CPU** |`1`| Maximum CPU cores allocated to the OUD Containers.|
+|**OUD\_MEMORY** |`2Gi`| Initial Memory allocated to OUD pods.|
+|**OUD\_MAX\_MEMORY** |`4Gi`| Maximum amount of that an OUD pods can consume.|
 
 ### OUDSM Parameters
 List of parameters used to determine how Oracle Directory Services Manager will be deployed.
@@ -477,6 +487,7 @@ These parameters determines how the WebLogic Kubernetes Operator is provisioned.
 | --- | --- | --- |
 |**OPERNS** | `opns` | The Kubernetes namespace used to hold the WebLogic Kubernetes Operator.|
 |**OPER\_ACT** | `operadmin` | The Kubernetes service account for use by the WebLogic Kubernetes Operator.|
+|**OPER\_ENABLE\_SECRET** | `false` | Set to true if using your own Container Registry that requires authentication.|
 
 ### OAM Parameters
 These parameters determine how OAM is deployed and configured.
@@ -502,12 +513,17 @@ These parameters determine how OAM is deployed and configured.
 |**OAM\_LOGIN\_LBR\_PROTOCOL** | `https` | The protocol of the load balancer port to use for logging in to OAM.|
 |**OAM\_ADMIN\_LBR\_HOST** | `iadadmin.example.com` | The load balancer name to use for accessing OAM administrative functions.|
 |**OAM\_ADMIN\_LBR\_PORT** | `80` | The load balancer port to use for accessing OAM administrative functions.|
+|**OAM\_ADMIN\_LBR\_PROTOCOL** | `http` | The load balancer protocol to use for accessing OAM administrative functions.|
 |**OAM\_COOKIE\_DOMAIN** | `.example.com` | The OAM cookie domain is generally similar to the search base. Ensure that you have a '`.`' (dot) at the beginning.|
 |**OAM\_OIG\_INTEG** | `true` | Set to `true` if OAM is integrated with OIG.|
 |**OAM\_OAP\_HOST** | `k8worker1.example.com` | The name of one of the Kubernetes worker nodes used for OAP calls.|
 |**OAM\_OAP\_PORT** | `5575` | The internal Kubernetes port used for OAM requests.|
 |**OAMSERVER\_JAVA\_PARAMS** | "`-Xms2048m -Xmx8192m`" | The internal Kubernetes port used for OAM requests.|
 |**COPY\_WG\_FILES** | `true` | Set to true if you wish the deployment to copy the WebGate Artifacts to your Oracle HTTP Server(s)|
+|**OAM\_CPU** |`500m`| Initial CPU Units allocated to OAM pods (1000m = 1 CPU core).|
+|**OAM\_MAX\_CPU** |`1`| Maximum CPU cores allocated to the OAM Containers.|
+|**OAM\_MEMORY** |`2Gi`| Initial Memory allocated to OAM pods.|
+|**OAM\_MAX\_MEMORY** |`8Gi`| Maximum amount of that an OAM pods can consume.|
 
 ### OIG Parameters
 These parameters determine how OIG is provisioned and configured.
@@ -532,6 +548,7 @@ These parameters determine how OIG is provisioned and configured.
 |**OIG\_WEBLOGIC\_PWD** | *`<password>`* | The OIG WebLogic administration user.|
 |**OIG\_ADMIN\_LBR\_HOST** | `igdadmin.example.com` | The load balancer name to use for accessing OIG administrative functions.|
 |**OIG\_ADMIN\_LBR\_PORT** | `80` | The load balancer port you use for accessing the OIG administrative functions.|
+|**OIG\_ADMIN\_LBR\_PROTOCOL** | `80` | The load balancer protocol to you use for accessing the OIG administrative functions.|
 |**OIG\_LBR\_HOST** | `prov.example.com` | The load balancer name to use for accessing the OIG Identity Console.|
 |**OIG\_LBR\_PORT** | `443` | The load balancer port to use for accessing the OIG Identity Console.|
 |**OIG\_LBR\_PROTOCOL** | `https` | The load balancer protocol to use for accessing the OIG Identity Console.|
@@ -555,6 +572,14 @@ These parameters determine how OIG is provisioned and configured.
 |**OIG\_EMAIL\_PWD** | *`<password>`* | The password of your SMTP server.|
 |**OIG\_EMAIL\_FROM\_ADDRESS** | `from@example.com` | The '`From`' email address used when emails are sent.|
 |**OIG\_EMAIL\_REPLY\_ADDRESS** | `noreplies@example.com` | The '`Reply`' to email address of the emails that are sent.|
+|**OIG\_CPU** |`500m`| Initial CPU Units allocated to OAM pods (1000m = 1 CPU core).|
+|**OIM\_MAX\_CPU** |`1`| Maximum CPU cores allocated to the OIM Containers.|
+|**OIM\_MEMORY** |`4Gi`| Initial Memory allocated to OIM pods.|
+|**OIM\_MAX\_MEMORY** |`8Gi`| Maximum amount of that an OIM pods can consume.|
+|**SOA\_CPU** |`1000m`| Initial CPU Units allocated to SOA pods (1000m = 1 CPU core).|
+|**SOA\_MAX\_CPU** |`1`| Maximum CPU cores allocated to the SOA Containers.|
+|**SOA\_MEMORY** |`4Gi`| Initial Memory allocated to SOA pods.|
+|**SOA\_MAX\_MEMORY** |`10Gi`| Maximum amount of that an SOA pods can consume.|
 
 
 ### OIRI Parameters
@@ -580,6 +605,9 @@ These parameters determine how OIRI is provisioned and configured.
 |**OIRI\_DB\_SYS\_PWD** |`MySysPassword`| The SYS password of the OIRI database.|
 |**OIRI\_RCU\_PREFIX** |`ORIEDG`| The RCU prefix to use for the OIRI schemas.|
 |**OIRI\_SCHEMA\_PWD** |`MySchemPassword`| The password to use for the OIRI schemas that get created. If you are using special characters, you may need to escape them with a '`\`'. For example: '`Password\#`'.|
+|**OIRI\_OIG\_DB\_SCAN** |`dbscan.example.com`| The database SCAN address of the grid infrastructure for OIG Database.|
+|**OIRI\_OIG\_DB\_LISTENER** |`1521`| The OIG database listener port.|
+|**OIRI\_OIG\_DB\_SERVICE** |`oigsvc.example.com`| The database service which connects to the database you want to use for storing mining OIG schemas.|
 |**OIRI\_CREATE\_OHS** |`true`| This value instructs the scripts to generate OHS entries for connecting to OIRI. You should set this to `true` unless you are configuring a standalone OIRI.|
 |**OIRI\_INGRESS\_HOST** |`igdadmin.example.com`| If you are creating a fully integrated deployment and want OIRI to be included in the OHS deployment, then this value should be set to the OIG Administration host name. For example: `iagadmin.example.com`. <p><p>If you are deploying OIRI standalone using Ingress to route requests, then set this value to the virtual hostname you want to use. For example: `oiri.example.com`.|
 |**OIRI\_KEYSTORE\_PWD** |`MyKeystore_Password100`| The password to use for the OIRI keystore.|
@@ -589,9 +617,13 @@ These parameters determine how OIRI is provisioned and configured.
 |**OIRI\_SERVICE\_USER** |`oirisvc`| The user name for the OIG OIRI service account.|
 |**OIRI\_SERVICE\_PWD** |`MyPassword1`| The password for  **OIRI_SERVICE_USER**.|
 |**OIRI\_OIG\_URL** |`http://$OIG_DOMAIN_NAME-cluster-oim-cluster.$OIGNS.svc.cluster.local:14000`| The URL to access OIG. If internal to the Kubernetes cluster, use the Kubernetes service name as shown in the sample value. If external, use the `IGDINTERNAL` URL.|
+|**OIRI\_OIG\_SERVER** |`t3://$OIG_DOMAIN_NAME-oim-server1.$OIGNS.svc.cluster.local:14000`| The T3 URL to access the OIG oim server (used to Create Users in OIG).|
 |**OIRI\_LOAD\_DATA** |`true`| Set to `true` if you want to load data from the OIG database.|
-
-
+|**OIRI\_OIG\_XELSYSADM\_USER** |`xelsysadm`| Set to an OIM Administrator , used to create users in OIG.|
+|**OIRI\_OIG\_USER\_PWD** |`mypassword`| Password of the OIRI_OIG_XELSYSADM_USER. |
+|**OIRI\_OIG\_XELL\_FILE=** | If your OIG is not inside Kubernetes, you need to manually acquire the [OIG rest certificate](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-role-intelligence.html#GUID-B37680A8-5A03-4E55-B373-5BDC2AD4AAB6).   Set this parameter to the location of that file.  Leave blank if OIG is in Kubernetes.|
+|**OIRI\_CREATE\_OIG_\USER** |`true`| Set to true to allow the automation scripts to create the OIRI users in OIG. |
+|**OIRI\_SET\_OIG_\COMPLIANCE** |`true`| Set to true to allow the automation scripts place OIG in compliance mode. |
 
 ### OAA Parameters
 These parameters determine how OAA is provisioned and configured.
@@ -629,6 +661,8 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_API\_PWD** |`oaapassword`| The password to be used for OAA API interactions.|
 |**OAA\_POLICY\_PWD** |`oaapassword`| The password to be used for OAA policy interactions.|
 |**OAA\_FACT\_PWD** |`oaapassword`| The password to be used for OAA keystores for factor interactions.|
+|**OAA\_ADD\_USERS\_LDAP** |`true`| Set to `true` if you wish to add existing users in LDAP in User Search base to OAA_USER_GROUP.|
+|**OAA\_ADD\_USERS\_OUA\_OBJ** |`true`| Set to `true` if you wish to set ldap parameter obpsftid to all existing users in OAA_USER_GROUP.|
 
 
 #### OAA Filesystem Vault Parameters
@@ -699,6 +733,41 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_PUS\H_REPLICAS** |`2`| The number of OAA PUSH service pods to be created. For HA, the minimum number is two.|
 |**OAA\_RISK\_REPLICAS** |`2`| The number of OAA RISK service pods to be created. For HA, the minimum number is two.|
 |**OAA\_RISKCC\_REPLICAS** |`2`| The number of OAA RISK CC service pods to be created. For HA, the minimum number is two.|
+|**OAA\_KBA\_REPLICAS** |`2`| The number of KBA service pods to be created. For HA, the minimum number is two.|
+|**OAA\_DRSS\_REPLICAS** |`2`| The number of OUA service pods to be created. For HA, the minimum number is two.|
+
+#### Resource Parameters
+
+| **Parameter** | **Sample Value** | **Comments** |
+| --- | --- | --- |
+|**OAA\_OAA\_CPU** |`200m`| Initial CPU Units allocated to OAA pod (1000m = 1 CPU core).|
+|**OAA\_OAA\_MEMORY** |`1Gi`| Initial Memory allocated to OAA pod.|
+|**OAA\_ADMIN\_CPU** |`200m`| Initial CPU Units allocated to ADMIN pod (1000m = 1 CPU core).|
+|**OAA\_ADMIN\_MEMORY** |`1Gi`| Initial Memory allocated to ADMIN pod.|
+|**OAA\_POLICY\_CPU** |`200m`| Initial CPU Units allocated to POLICY pod (1000m = 1 CPU core).|
+|**OAA\_POLICY\_MEMORY** |`1Gi`| Initial Memory allocated to POLICY pod.|
+|**OAA\_SPUI\_CPU** |`200m`| Initial CPU Units allocated to SPUI pod (1000m = 1 CPU core).|
+|**OAA\_SPUI\_MEMORY** |`1Gi`| Initial Memory allocated to SPUI pod.|
+|**OAA\_TOTP\_CPU** |`200m`| Initial CPU Units allocated to TOTP pod (1000m = 1 CPU core).|
+|**OAA\_TOTP\_MEMORY** |`1Gi`| Initial Memory allocated to TOTP pod.|
+|**OAA\_YOTP\_CPU** |`200m`| Initial CPU Units allocated to YOTP pod (1000m = 1 CPU core).|
+|**OAA\_YOTP\_MEMORY** |`1Gi`| Initial Memory allocated to YOTP pod.|
+|**OAA\_FIDO\_CPU** |`200m`| Initial CPU Units allocated to FIDO pod (1000m = 1 CPU core).|
+|**OAA\_FIDO\_MEMORY** |`1Gi`| Initial Memory allocated to FIDO pod.|
+|**OAA\_EMAIL\_CPU** |`200m`| Initial CPU Units allocated to EMAIL pod (1000m = 1 CPU core).|
+|**OAA\_EMAIL\_MEMORY** |`1Gi`| Initial Memory allocated to EMAIL pod.|
+|**OAA\_PUSH\_CPU** |`200m`| Initial CPU Units allocated to PUSH pod (1000m = 1 CPU core).|
+|**OAA\_PUSH\_MEMORY** |`1Gi`| Initial Memory allocated to PUSH pod.|
+|**OAA\_SMS\_CPU** |`200m`| Initial CPU Units allocated to SMS pod (1000m = 1 CPU core).|
+|**OAA\_SMS\_MEMORY** |`1Gi`| Initial Memory allocated to SMS pod.|
+|**OAA\_KBA\_CPU** |`200m`| Initial CPU Units allocated to KBA pod (1000m = 1 CPU core).|
+|**OAA\_KBA\_MEMORY** |`1Gi`| Initial Memory allocated to KBA pod.|
+|**OAA\_RISK\_CPU** |`200m`| Initial CPU Units allocated to RISK pod (1000m = 1 CPU core).|
+|**OAA\_RISK\_MEMORY** |`1Gi`| Initial Memory allocated to RISK pod.|
+|**OAA\_RISKCC\_CPU** |`200m`| Initial CPU Units allocated to RISKCC pod (1000m = 1 CPU core).|
+|**OAA\_RISKCC\_MEMORY** |`1Gi`| Initial Memory allocated to RISKCC pod.|
+|**OAA\_DRSS\_CPU** |`200m`| Initial CPU Units allocated to DRSS pod (1000m = 1 CPU core).|
+|**OAA\_DRSS\_MEMORY** |`1Gi`| Initial Memory allocated to DRSS pod.|
 
 ### Port Mappings
 

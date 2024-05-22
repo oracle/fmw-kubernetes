@@ -1,4 +1,5 @@
-# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+#!/bin/bash
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of functions and procedures to provision and Configure Oracle Advanced Authentication
@@ -111,7 +112,7 @@ prepare_property_file()
    ST=$(date +%s)
 
    kubectl cp  $OAANS/oaa-mgmt:/u01/oracle/installsettings/installOAA.properties $WORKDIR/installOAA.properties > $LOGDIR/create_property.log 2>&1
-   kubectl cp  $OAANS/oaa-mgmt:/u01/oracle/installsettings/oaaoverride.yaml $WORKDIR/oaaoverride.yaml > $LOGDIR/create_property.log 2>&1
+   cp $TEMPLATE_DIR/oaaoverride.yaml $WORKDIR/oaaoverride.yaml > $LOGDIR/create_property.log 2>&1
    propfile=$WORKDIR/installOAA.properties
    override=$WORKDIR/oaaoverride.yaml
 
@@ -129,9 +130,22 @@ prepare_property_file()
    replace_value database.name "" $propfile
    replace_value database.createschema true $propfile
    replace_value common.deployment.name $OAA_DEPLOYMENT $propfile
+   replace_value oauth.applicationid $OAA_DEPLOYMENT $propfile
    replace_value common.kube.namespace $OAANS $propfile
    replace_value common.deployment.keystorepassphrase $OAA_KEYSTORE_PWD $propfile
    replace_value common.deployment.truststorepassphrase $OAA_KEYSTORE_PWD $propfile
+
+   if [ "$INSTALL_OAA" = "true" ] && [ "$INSTALL_OUA" = "true" ] && [ "$INSTALL_RISK" = "true" ]
+   then
+     replace_value common.deployment.mode OUA $propfile
+     replace_value install.global.drssapikey $OAA_API_PWD $propfile
+   elif [ "$INSTALL_OAA" = "true" ] && [ "$INSTALL_RISK" = "true" ]
+   then   
+     replace_value common.deployment.mode Both $propfile 
+   elif  [ "$INSTALL_OAA" = "true" ]
+   then
+     replace_value common.deployment.mode OAA $propfile    
+   fi
    replace_value oauth.domainname $OAA_DOMAIN $propfile
    replace_value oauth.identityprovider OAMIDSTORE $propfile
    replace_value oauth.clientpassword $OAA_OAUTH_PWD $propfile
@@ -216,6 +230,8 @@ prepare_property_file()
        replace_value install.risk.service.type NodePort $propfile
        replace_value install.risk.riskcc.service.type NodePort $propfile
        replace_value install.customfactor.service.type NodePort $propfile
+       replace_value install.oaa-drss.service.type NodePort $propfile
+       
    else
        replace_value install.service.type ClusterIP $propfile
        replace_value install.oaa-admin-ui.service.type ClusterIP $propfile
@@ -231,6 +247,7 @@ prepare_property_file()
        replace_value install.risk.service.type ClusterIP $propfile
        replace_value install.risk.riskcc.service.type ClusterIP $propfile
        replace_value install.customfactor.service.type ClusterIP $propfile
+       replace_value install.oaa-drss.service.type ClusterIP $propfile     
        awk  -v "var=install.ingress.hosts\\\\[0\\\\].host=${OAM_LOGIN_LBR_HOST}\ninstall.ingress.hosts\\\\[1\\\\].host=${OAM_ADMIN_LBR_HOST}" '/install.ingress.hosts/ && !x {print var; x=1} 1' $propfile > ${propfile}1
        mv ${propfile}1 $propfile
    fi
@@ -249,10 +266,11 @@ prepare_property_file()
    sed -i "/sms:/{n;s/replicaCount.*/replicaCount: $OAA_SMS_REPLICAS/}"  $override
    sed -i "/oaa-policy:/{n;s/replicaCount.*/replicaCount: $OAA_POLICY_REPLICAS/}"  $override
    sed -i "/push:/{n;s/replicaCount.*/replicaCount: $OAA_PUSH_REPLICAS/}"  $override
-   echo "resources:" >> $override
-   echo "  requests:"  >> $override
-   echo "    cpu: $OAA_OAA_CPU"  >> $override
-   echo "    memory: \"$OAA_OAA_MEMORY\""  >> $override
+   sed -i "/risk:/{n;s/replicaCount.*/replicaCount: $OAA_RISK_REPLICAS/}"  $override   
+   sed -i "/risk-cc:/{n;s/replicaCount.*/replicaCount: $OAA_RISKCC_REPLICAS/}"  $override      
+   sed -i "/oaa-drss:/{n;s/replicaCount.*/replicaCount: $OAA_DRSS_REPLICAS/}"  $override  
+   sed -i "/oaa-kba:/{n;s/replicaCount.*/replicaCount: $OAA_KBA_REPLICAS/}"  $override
+   sed -i "/^replicaCount:/a\resources:\n  requests:\n    cpu: $OAA_OAA_CPU\n    memory: \"$OAA_OAA_MEMORY\""   $override
    sed -i "/spui:/a\  resources:\n    requests:\n      cpu: $OAA_SPUI_CPU\n      memory: \"$OAA_SPUI_MEMORY\""   $override
    sed -i "/totp:/a\  resources:\n    requests:\n      cpu: $OAA_TOTP_CPU\n      memory: \"$OAA_TOTP_MEMORY\""   $override
    sed -i "/yotp:/a\  resources:\n    requests:\n      cpu: $OAA_YOTP_CPU\n      memory: \"$OAA_YOTP_MEMORY\""   $override
@@ -264,8 +282,9 @@ prepare_property_file()
    sed -i "/oaa-policy:/a\  resources:\n    requests:\n      cpu: $OAA_POLICY_CPU\n      memory: \"$OAA_POLICY_MEMORY\""   $override
    sed -i "/customfactor:/a\  resources:\n    requests:\n      cpu: $OAA_CUSTOM_CPU\n      memory: \"$OAA_CUSTOM_MEMORY\""   $override
    sed -i "/risk:/a\  resources:\n    requests:\n      cpu: $OAA_RISK_CPU\n      memory: \"$OAA_RISK_MEMORY\""   $override
-   sed -i "/^riskcc:/a\  resources:\n    requests:\n      cpu: $OAA_RISKCC_CPU\n      memory: \"$OAA_RISKCC_MEMORY\""   $override
+   sed -i "/risk-cc:/a\  resources:\n    requests:\n      cpu: $OAA_RISKCC_CPU\n      memory: \"$OAA_RISKCC_MEMORY\""   $override
    sed -i "/oaa-admin-ui:/a\  resources:\n    requests:\n      cpu: $OAA_ADMIN_CPU\n      memory: \"$OAA_ADMIN_MEMORY\""   $override
+   sed -i "/oaa-drss:/a\  resources:\n    requests:\n      cpu: $OAA_DRSS_CPU\n      memory: \"$OAA_DRSS_MEMORY\""   $override
 
 
    copy_to_oaa $propfile /u01/oracle/scripts/settings/installOAA.properties $OAANS oaa-mgmt  >> $LOGDIR/create_property.log 2>&1
@@ -293,7 +312,7 @@ create_rbac()
    kubectl apply -f $WORKDIR/$filename > $LOGDIR/create_rbac.log 2>&1
    print_status $? $LOGDIR/create_rbac.log
 
-   KVER=`kubectl version --short 2>/dev/null | grep Server | cut -f2 -d: |sed 's/v//;s/ //g' `
+   KVER=$(get_k8_ver)
    KVER=${KVER:0:4}
    if [ $KVER > "1.23" ]
    then
@@ -543,6 +562,9 @@ validate_oauth()
      print_time STEP "Validate OAuth" $ST $ET >> $LOGDIR/timings.log
 }
 
+# 
+# Add all existing users in LDAP in User Search base to OAA_USER_GROUP
+#
 add_existing_users()
 {
 
@@ -623,13 +645,9 @@ create_ohs_entries()
 
      ST=$(date +%s)
      print_msg "Add OHS Directives"
-
-     cp $TEMPLATE_DIR/ohs_login.conf $WORKDIR
-     cp $TEMPLATE_DIR/ohs_admin.conf $WORKDIR
+     print_status $? 
+     
      cp $TEMPLATE_DIR/create_ohs_wallet.sh $WORKDIR
-
-     update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $WORKDIR/ohs_login.conf
-     update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $WORKDIR/ohs_login.conf
 
      if [ "$USE_INGRESS"  = "false" ]
      then
@@ -646,8 +664,7 @@ create_ohs_entries()
          OAA_KBA_K8=`get_k8_port kba $OAANS`
          RISK_ANAL_K8=`get_k8_port risk $OAANS`
          RISK_CC_K8=`get_k8_port risk-cc $OAANS`
-         OUA_K8=`get_k8_port oua $OAANS`
-         OUA_ADMIN_K8=`get_k8_port oua-admin-ui $OAANS`
+         OAA_DRSS_K8=`get_k8_port oaa-drs $OAANS`
      else
          OAA_K8=$INGRESS_HTTP_PORT
          OAA_POLICY_K8=$INGRESS_HTTP_PORT
@@ -662,50 +679,21 @@ create_ohs_entries()
          OAA_KBA_K8=$INGRESS_HTTP_PORT
          RISK_ANAL_K8=$INGRESS_HTTP_PORT
          RISK_CC_K8=$INGRESS_HTTP_PORT
-         OUA_K8=$INGRESS_HTTP_PORT
-         OUA_ADMIN_K8=$INGRESS_HTTP_PORT
-         sed -i '/SecureProxy/d' $WORKDIR/ohs_login.conf
-         sed -i '/SecureProxy/d' $WORKDIR/ohs_admin.conf
+         OAA_DRSS_K8=$INGRESS_HTTP_PORT
       fi
 
-     update_variable "<OAA_K8>" $OAA_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_FIDO_K8>" $OAA_FIDO_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_SPUI_K8>" $OAA_SPUI_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_EMAIL_K8>" $OAA_EMAIL_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_SMS_K8>" $OAA_SMS_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_TOTP_K8>" $OAA_TOTP_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_YOTP_K8>" $OAA_YOTP_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_KBA_K8>" $OAA_KBA_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_PUSH_K8>" $OAA_PUSH_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OAA_POLICY_K8>" $OAA_POLICY_K8 $WORKDIR/ohs_login.conf
-     update_variable "<RISK_ANAL_K8>" $RISK_ANAL_K8 $WORKDIR/ohs_login.conf
-     update_variable "<RISK_CC_K8>" $RISK_CC_K8 $WORKDIR/ohs_login.conf
-     update_variable "<OUA_K8>" $OUA_K8 $WORKDIR/ohs_login.conf
-
-     update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $WORKDIR/ohs_admin.conf
-     update_variable "<K8_WORKER_HOST2>" $K8_WORKER_HOST2 $WORKDIR/ohs_admin.conf
-     update_variable "<OAA_ADMIN_K8>" $OAA_ADMINUI_K8 $WORKDIR/ohs_admin.conf
-     update_variable "<OAA_KBA_K8>" $OAA_KBA_K8 $WORKDIR/ohs_admin.conf
-     update_variable "<OUA_ADMIN_K8>" $OUA_ADMIN_K8 $WORKDIR/ohs_admin.conf
 
      OHSHOST1FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST1
      OHSHOST2FILES=$LOCAL_WORKDIR/OHS/$OHS_HOST2
 
-     grep -q "/oaa/rui"  $OHSHOST1FILES/login_vh.conf
-     if [ $? -gt 0 ]
-     then
-         sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/iadadmin_vh.conf
-         sed -i '/<\/VirtualHost>/d' $OHSHOST1FILES/login_vh.conf
-         cat $WORKDIR/ohs_login.conf >> $OHSHOST1FILES/login_vh.conf
-         cat $WORKDIR/ohs_admin.conf >> $OHSHOST1FILES/iadadmin_vh.conf
+     NODELIST=$(kubectl get nodes --no-headers=true  | cut -f1 -d ' ')
+     create_location $TEMPLATE_DIR/locations.txt "$NODELIST" $OHSHOST1FILES
+     print_status $?      
 
-         if [ ! "$OHS_HOST2" = "" ]
-         then
-            sed -i '/<\/VirtualHost>/d' $OHSHOST2FILES/iadadmin_vh.conf
-            sed -i '/<\/VirtualHost>/d' $OHSHOST2FILES/login_vh.conf
-            cat $WORKDIR/ohs_login.conf >> $OHSHOST2FILES/login_vh.conf
-            cat $WORKDIR/ohs_admin.conf >> $OHSHOST2FILES/iadadmin_vh.conf
-         fi
+     if [ ! "$OHS_HOST2" = "" ]
+     then
+         create_location $TEMPLATE_DIR/locations.txt "$NODELIST" $OHSHOST2FILES
+         print_status $? 
      fi
 
      update_variable "<OHS_ORACLE_HOME>" $OHS_ORACLE_HOME $WORKDIR/create_ohs_wallet.sh
@@ -713,7 +701,6 @@ create_ohs_entries()
      update_variable "<K8_WORKER_HOST1>" $K8_WORKER_HOST1 $WORKDIR/create_ohs_wallet.sh
      update_variable "<OAA_K8>" $OAA_K8  $WORKDIR/create_ohs_wallet.sh
 
-     print_status $? 
      ET=$(date +%s)
      print_time STEP "Add OHS Directives" $ST $ET >> $LOGDIR/timings.log
 }
@@ -964,6 +951,7 @@ register_tap()
    print_time STEP "Create OAM TAP Partner" $ST $ET >> $LOGDIR/timings.log
 }
 
+
 # Create UMS integration
 #
 configure_ums()
@@ -982,7 +970,8 @@ configure_ums()
 
    GET_CURL_COMMAND="curl -s -X GET -u $USER"
    POST_CURL_COMMAND="curl --location -k --request  POST "
-   PUT_CURL_COMMAND="curl --location -k --request  PUT "
+   PUT_CURL_COMMAND="curl --fail --location -k --request  PUT "
+   PUT_CURL_COMMAND1="curl --location -k --request  PUT "
    CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
 
    PAYLOAD="-d '[" \
@@ -991,13 +980,26 @@ configure_ums()
    PAYLOAD=$PAYLOAD"{ \"name\": \"bharosa.uio.default.challenge.type.enum.ChallengeEmail.umsClientPass\",\"value\": \"$OAA_EMAIL_PWD\"},"
    PAYLOAD=$PAYLOAD"{ \"name\": \"bharosa.uio.default.challenge.type.enum.ChallengeSMS.umsClientURL\",\"value\": \"$OAA_SMS_SERVER\"},"
    PAYLOAD=$PAYLOAD"{ \"name\": \"bharosa.uio.default.challenge.type.enum.ChallengeSMS.umsClientName\",\"value\": \"$OAA_SMS_USER\"},"
-   PAYLOAD=$PAYLOAD"{ \"name\": \"bharosa.uio.default.challenge.type.enum.ChallengeSMS.umsClientPass\",\"value\": \"$OAA_SMS_PWD\"}"
+   PAYLOAD=$PAYLOAD"{ \"name\": \"bharosa.uio.default.challenge.type.enum.ChallengeSMS.umsClientPass\",\"value\": \"$OAA_SMS_PWD\"}",
+   PAYLOAD=$PAYLOAD"{ \"name\": \"oaa.default.spui.pref.runtime.autoCreateUser\",\"value\": \"true\"}"
    PAYLOAD=$PAYLOAD"  ]'"
 
-   echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/configure_ums.log 2>&1
+   echo "$PUT_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/configure_ums.log 2>&1
    eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/configure_ums.log 2>&1
-   print_status $? $LOGDIR/configure_ums.log
-
+   if [ $? -gt 0 ]
+   then
+        eval $PUT_CURL_COMMAND1 >> $LOGDIR/configure_ums.log 2>&1
+        grep -q "already exists" $LOGDIR/configure_ums.log
+        if [ $? = 0 ]
+        then
+           echo "Already Exists"
+        else
+           echo "Failed - see logfile $LOGDIR/configure_ums.log"
+           exit 1
+        fi
+    else
+        echo "Success"
+    fi
 
    ET=$(date +%s)
    print_time STEP "Create OAA Agent" $ST $ET >> $LOGDIR/timings.log
@@ -1032,17 +1034,24 @@ create_oaa_agent()
    echo "$POST_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" > $LOGDIR/create_oaa_agent.log 2>&1
    eval "$POST_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/create_oaa_agent.log 2>&1
 
-   sleep 10
+   sleep 15
    echo "$GET_CURL_COMMAND | jq -r .agents[].agentgid" >> $LOGDIR/create_oaa_agent.log 2>&1
-   XX="$GET_CURL_COMMAND | jq -r .agents[].agentgid"
-   AGENTID=`eval $XX`
+   XX="$GET_CURL_COMMAND"
 
-   if [ "$AGENTID" = "" ]
+   echo ""  >> $LOGDIR/create_oaa_agent.log
+   eval $XX >> $LOGDIR/oaa_agent.log 2>&1
+
+   grep -q "agentgid"  $LOGDIR/oaa_agent.log
+   if [ $? -eq 0 ]
    then
-        echo "Failed - Check Logfile $LOGDIR/create_oaa_agent.log"
-        exit 1
+      AGENTID=$(grep "status" $LOGDIR/oaa_agent.log | jq -r .agents[].agentgid)
+      echo "Success"
+   else
+      echo "Failed - Check Logfile $LOGDIR/create_oaa_agent.log"
+      exit 1
    fi
 
+   printf "\t\t\tUpdating Agent - "
    REST_API="'$ADMINURL/oaa-policy/agent/v1/$AGENTID'"
    PAYLOAD1="-d '{\"description\" : \"OAM TAP Agent\","
    PAYLOAD1=$PAYLOAD1"\"privateKey\": \"$OAA_KEY\","
@@ -1059,7 +1068,8 @@ create_oaa_agent()
    ET=$(date +%s)
    print_time STEP "Create OAA Agent" $ST $ET >> $LOGDIR/timings.log
 }
-   
+
+
 # Obtain OAA Plugin
 #
 copy_plugin()
@@ -1144,6 +1154,7 @@ create_auth_module()
    update_variable "<OAM_LOGIN_LBR_PROTOCOL>" $OAM_LOGIN_LBR_PROTOCOL $filename
    update_variable "<OAM_LOGIN_LBR_HOST>" $OAM_LOGIN_LBR_HOST $filename
    update_variable "<OAM_LOGIN_LBR_PORT>" $OAM_LOGIN_LBR_PORT $filename
+   update_variable "<OAA_DEPLOYMENT>" $OAA_DEPLOYMENT $filename
 
    ADMINURL=http://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT
 
@@ -1293,7 +1304,7 @@ delete_auth_policy()
 
    LOG=$1
 
-   DELETE_URL="http://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT/oam/services/rest/11.1.2.0.0/ssa/policyadmin/authnpolicy?appdomain=IAM Suite&name=OAA_MFA-Policy"
+   DELETE_URL="http://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT/oam/services/rest/11.1.2.0.0/ssa/policyadmin/authnpolicy?appdomain=IAM%20Suite&name=OAA_MFA-Policy"
    USER=`encode_pwd $LDAP_OAMADMIN_USER:$LDAP_USER_PWD`
 
    
@@ -1310,6 +1321,47 @@ delete_auth_policy()
    fi
 
 }
+
+# Set OAA Cookie Domain
+#
+create_cookie_domain()
+{
+   ST=$(date +%s)
+   print_msg "Setting OAA Cookie Domain"
+
+   USER=`encode_pwd ${OAA_DEPLOYMENT}-oaa-policy:${OAA_API_PWD}`
+   PUT_CURL_COMMAND="curl -k -g --fail --request PUT --location "
+   PUT_CURL_COMMAND1="curl -k -g --request PUT --location "
+   CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
+   PAYLOAD="-d '[{\"name\": \"oaa.browser.cookie.domain\", \"value\": \"$OAM_LOGIN_LBR_HOST\"},"
+   PAYLOAD=$PAYLOAD"{ \"name\": \"oaa.risk.integration.postauth.cp\",\"value\": \"postauth\"}"
+   PAYLOAD=$PAYLOAD" ]'"
+   ADMINURL=$OAM_ADMIN_LBR_PROTOCOL://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT
+   REST_API="'$ADMINURL/policy/config/property/v1'"
+
+   echo "   " > $LOGDIR/create_cookie_domain.log 2>&1
+   echo "$PUT_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/create_cookie_domain.log 2>&1
+   eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/create_cookie_domain.log 2>&1
+   if [ $? -gt 0 ]
+   then
+        eval "$PUT_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/create_cookie_domain.log 2>&1
+        grep -q "already exists" $LOGDIR/create_cookie_domain.log
+        if [ $? = 0 ]
+        then
+           echo "Already Exists"
+        else
+           echo "Failed - see logfile $LOGDIR/create_cookie_domain.log"
+           exit 1
+        fi
+    else
+        echo "Success"
+    fi   
+  
+
+   ET=$(date +%s)
+   print_time STEP "Setting OAA Cookie Domain" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Create OAA Test User
 #
 
@@ -1364,6 +1416,425 @@ create_test_user()
    ET=$(date +%s)
    print_time STEP "Create Test User $OAA_USER in LDAP" $ST $ET >> $LOGDIR/timings.log
 }
+
+
+
+# Register OUA as an OAM Partner Application
+#
+register_tap_oua()
+{
+
+   ST=$(date +%s)
+   print_msg "Creating OAM TAP Partner for OUA"
+   cp $TEMPLATE_DIR/create_tap_partner_oua.py $WORKDIR
+
+   filename=$WORKDIR/create_tap_partner_oua.py
+   update_variable "<OAM_DOMAIN_NAME>" $OAM_DOMAIN_NAME $filename
+   update_variable "<OAM_WEBLOGIC_USER>" $OAM_WEBLOGIC_USER $filename
+   update_variable "<OAM_WEBLOGIC_PWD>" $OAM_WEBLOGIC_PWD $filename
+   update_variable "<OAMNS>" $OAMNS $filename
+   update_variable "<OAM_ADMIN_PORT>" $OAM_ADMIN_PORT $filename
+   update_variable "<OAA_KEYSTORE_PWD>" $OAA_KEYSTORE_PWD $filename
+   update_variable "<OAM_LOGIN_LBR_PROTOCOL>" $OAM_LOGIN_LBR_PROTOCOL $filename
+   update_variable "<OAM_LOGIN_LBR_HOST>" $OAM_LOGIN_LBR_HOST $filename
+   update_variable "<OAM_LOGIN_LBR_PORT>" $OAM_LOGIN_LBR_PORT $filename
+
+   copy_to_k8 $filename workdir $OAMNS $OAM_DOMAIN_NAME
+   run_wlst_command $OAMNS $OAM_DOMAIN_NAME $PV_MOUNT/workdir/create_tap_partner_oua.py > $LOGDIR/register_tap_oua.log
+
+   print_status $WLSRETCODE $LOGDIR/register_tap_oua.log
+
+   printf "\t\t\tCopy keystore to $WORKDIR - "
+   copy_from_k8 $PV_MOUNT/workdir/OAMOUAKeyStore.jks $WORKDIR/OAMOUAKeyStore.jks $OAMNS $OAM_DOMAIN_NAME
+   print_status $RETCODE $LOGDIR/register_tap_oua.log
+
+   ET=$(date +%s)
+   print_time STEP "Creating OAM TAP Partner for OUA" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Edit properties file for OUA
+#
+edit_properties_oua()
+{
+   ST=$(date +%s)
+   print_msg "Editing properties file for OUA"
+
+   echo "kubectl cp $WORKDIR/OAMOUAKeyStore.jks $OAANS/oaa-mgmt:/u01/oracle/scripts/creds/OAMOUAKeyStore.jks" > $LOGDIR/edit_properties_oua.log 2>&1
+   kubectl cp $WORKDIR/OAMOUAKeyStore.jks $OAANS/oaa-mgmt:/u01/oracle/scripts/creds/OAMOUAKeyStore.jks
+   echo "kubectl cp $OAANS/oaa-mgmt:/u01/oracle/scripts/settings/installOAA.properties $WORKDIR/installOAA.properties" >> $LOGDIR/edit_properties_oua.log 2>&1
+   kubectl cp  $OAANS/oaa-mgmt:/u01/oracle/scripts/settings/installOAA.properties $WORKDIR/installOAA.properties >> $LOGDIR/edit_properties_oua.log 2>&1
+   propfile=$WORKDIR/installOAA.properties       
+
+   sed -i "s/#\s*oua.tapAgentName/oua.tapAgentName/" $propfile
+   sed -i "s/#\s*oua.tapAgentFilePass/oua.tapAgentFilePass/" $propfile
+   sed -i "s/#\s*oua.tapAgentFileLocation/oua.tapAgentFileLocation/" $propfile
+   sed -i "s/#\s*oua.oamRuntimeEndpoint/oua.oamRuntimeEndpoint/" $propfile  
+   
+   replace_value oua.tapAgentName "OAM-OUA-TAP" $propfile     
+   ENCODED_TAP_PWD=$(encode_pwd $OAA_KEYSTORE_PWD)     
+   replace_value oua.tapAgentFilePass $ENCODED_TAP_PWD $propfile 
+   replace_value oua.tapAgentFileLocation "/u01/oracle/scripts/creds/OAMOUAKeyStore.jks" $propfile
+   replace_value oua.oamRuntimeEndpoint "$OAM_LOGIN_LBR_PROTOCOL://$OAM_LOGIN_LBR_HOST:$OAM_LOGIN_LBR_PORT" $propfile           
+   
+   echo "kubectl cp $propfile $OAANS/oaa-mgmt:/u01/oracle/scripts/settings/installOAA.properties" >> $LOGDIR/edit_properties_oua.log 2>&1
+   kubectl cp $propfile $OAANS/oaa-mgmt:/u01/oracle/scripts/settings/installOAA.properties >> $LOGDIR/edit_properties_oua.log 2>&1
+   print_status $?  $LOGDIR/edit_properties_oua.log   
+   ET=$(date +%s)
+   print_time STEP "Editing properties file for OUA" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Configure DRSS for OUA
+#
+configure_drss_oua()
+{
+   ST=$(date +%s)
+   print_msg "Configuring DRSS for OUA"
+
+   kubectl exec -n $OAANS -ti oaa-mgmt -- sed -i '1 i\#!/bin/bash' /u01/oracle/scripts/drssconfig/configureDRSS.sh
+   oaa_mgmt "/u01/oracle/scripts/drssconfig/configureDRSS.sh -f /u01/oracle/scripts/settings/installOAA.properties" > $LOGDIR/configure_drss_oua.log 2>&1
+   if [ $? = 0 ]
+   then 
+      grep -iq "Agent not found with global id" $LOGDIR/configure_drss_oua.log
+      if [ $? = 0 ]
+      then 
+         printf "Agent not created. Retrying ... \n"
+         oaa_mgmt "/u01/oracle/scripts/drssconfig/configureDRSS.sh -f /u01/oracle/scripts/settings/installOAA.properties" > $LOGDIR/configure_drss_oua.log 2>&1
+         grep -iq "Agent not found with global id" $LOGDIR/configure_drss_oua.log
+         if [ $? = 0 ]
+         then 
+            print_status 1 $LOGDIR/configure_drss_oua.log 
+         fi
+      else
+         print_status 0 $LOGDIR/configure_drss_oua.log   
+      fi
+   fi 
+
+   ET=$(date +%s)
+   print_time STEP "Configuring DRSS for OUA" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Set DRSS parameter for OUA
+#
+set_drss_param_oua()
+{
+   ST=$(date +%s)
+   print_msg "Setting DRSS parameter for OUA"
+
+   propfile="$WORKDIR/installOAA.properties"
+   DRSS_API_KEY=`grep "install.global.drssapikey" $propfile | cut -d '='  -f 2`
+   OAA_DEP_UPPERCASE=$(echo "$OAA_DEPLOYMENT" | tr '[:lower:]' '[:upper:]')
+   USER=`encode_pwd ${OAA_DEP_UPPERCASE}_OAA_DRSS:$DRSS_API_KEY`
+   PUT_CURL_COMMAND="curl -k -g --fail --request PUT --location "
+   PUT_CURL_COMMAND1="curl -k -g --request PUT --location "
+   CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
+   OAUTH_APPID=`grep "oauth.applicationid" $propfile | cut -d '='  -f 2`
+   PAYLOAD="-d '[{\"name\": \"oua.drss.oaa.group\", \"value\": \"$OAUTH_APPID\"}"
+   PAYLOAD=$PAYLOAD" ]'"
+   ADMINURL=$OAM_LOGIN_LBR_PROTOCOL://$OAM_LOGIN_LBR_HOST:$OAM_LOGIN_LBR_PORT
+   REST_API="'$ADMINURL/oaa-drss/oua/property/v1'"
+
+   echo "   " > $LOGDIR/set_drss_param_oua.log 2>&1
+   echo "$PUT_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/set_drss_param_oua.log 2>&1
+   eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/set_drss_param_oua.log 2>&1
+   if [ $? -gt 0 ]
+   then
+        eval "$PUT_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/set_drss_param_oua.log 2>&1
+        grep -q "already exists" $LOGDIR/set_drss_param_oua.log
+        if [ $? = 0 ]
+        then
+           echo "Already Exists"
+        else
+           echo "Failed - see logfile $LOGDIR/set_drss_param_oua.log"
+           exit 1
+        fi
+    else
+        echo "Success"
+    fi   
+
+   ET=$(date +%s)
+   print_time STEP "Setting DRSS parameter for OUA" $ST $ET >> $LOGDIR/timings.log   
+}
+
+# Enable OAM Identity Service
+#
+enable_oam_identity_service()
+{
+   ST=$(date +%s)
+   print_msg "Enabling OAM Identity Service"
+
+   ADMINURL=$OAM_ADMIN_LBR_PROTOCOL://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT
+   REST_API="$ADMINURL/iam/admin/config/api/v1/config?path=/DeployedComponent/Server/NGAMServer/Profile/IdentityManagement/IdentityServiceConfiguration/IdentityServiceEnabled"
+   USER=`encode_pwd $LDAP_WLSADMIN_USER:$LDAP_USER_PWD`
+   PUT_CURL_COMMAND="curl -s -X PUT "
+   GET_CURL_COMMAND="curl -s -X GET "
+   CONTENT_TYPE="-H 'Content-Type: text/xml' -H 'Authorization: Basic $USER'"
+  
+   XX="$GET_CURL_COMMAND $REST_API $CONTENT_TYPE | grep "IdentityServiceEnabled" | grep -iq true"
+   echo "$XX" > $LOGDIR/enable_oam_identity_service.log 2>&1
+   eval "$XX" >> $LOGDIR/enable_oam_identity_service.log 2>&1
+   if [ $? -eq 0 ]
+   then
+     echo "IdentityServiceEnabled set to true Already " >> $LOGDIR/enable_oam_identity_service.log 2>&1
+     echo "Already Exists "
+     return 0
+   else
+      PAYLOAD="-d @$TEMPLATE_DIR/service.xml"
+      echo "   " >> $LOGDIR/enable_oam_identity_service.log 2>&1
+      echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/enable_oam_identity_service.log 2>&1
+      eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/enable_oam_identity_service.log 2>&1
+      print_status $? $LOGDIR/enable_oam_identity_service.log
+   fi
+  
+    ET=$(date +%s)
+    print_time STEP "Enabling OAM Identity Service" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Set RequireAuthorizationHeader for OAM
+#
+set_oam_authz_header()
+{
+   ST=$(date +%s)
+   print_msg "Setting RequireAuthorizationHeader for OAM"
+
+   ADMINURL=$OAM_ADMIN_LBR_PROTOCOL://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT
+   REST_API="$ADMINURL/iam/admin/config/api/v1/config?path=/DeployedComponent/Server/NGAMServer/Profile/RestServices/Token/RequireAuthorizationHeader"
+   USER=`encode_pwd $LDAP_WLSADMIN_USER:$LDAP_USER_PWD`
+   PUT_CURL_COMMAND="curl -s -X PUT "
+   GET_CURL_COMMAND="curl -s -X GET "
+   CONTENT_TYPE="-H 'Content-Type: text/xml' -H 'Authorization: Basic $USER'"
+  
+   XX="$GET_CURL_COMMAND $REST_API $CONTENT_TYPE | grep "RequireAuthorizationHeader" | grep -iq true"
+   echo "$XX" > $LOGDIR/set_oam_authz_header.log 2>&1
+   eval "$XX" >> $LOGDIR/set_oam_authz_header.log 2>&1
+   if [ $? -eq 0 ]
+   then
+     echo "RequireAuthorizationHeader set to true Already " >> $LOGDIR/set_oam_authz_header.log 2>&1
+     echo "Already Exists "
+   else
+      PAYLOAD="-d @$TEMPLATE_DIR/session.xml"
+      echo "   " >> $LOGDIR/set_oam_authz_header.log 2>&1
+      echo "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/set_oam_authz_header.log 2>&1
+      eval "$PUT_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/set_oam_authz_header.log 2>&1
+      print_status $? $LOGDIR/set_oam_authz_header.log
+   fi
+   # Restart Domain
+   #
+   new_step
+   if [ $STEPNO -gt $PROGRESS ] && [ "$INSTALL_OUA" = "true" ]
+   then
+     stop_domain $OAMNS $OAM_DOMAIN_NAME
+     update_progress
+   fi
+   new_step
+   if [ $STEPNO -gt $PROGRESS ] && [ "$INSTALL_OUA" = "true" ]
+   then
+     start_domain $OAMNS $OAM_DOMAIN_NAME
+     update_progress
+   fi
+    ET=$(date +%s)
+    print_time STEP "Setting RequireAuthorizationHeader for OAM" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Set User Identity Store for OAM
+#
+set_userid_store ()
+{
+   ST=$(date +%s)
+   print_msg "Setting User Identity Store on OAM for OUA"
+
+   USER=`encode_pwd $LDAP_WLSADMIN_USER:$LDAP_USER_PWD`
+   ADMINURL=$OAM_ADMIN_LBR_PROTOCOL://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT
+   GET_CURL_COMMAND="curl -s -X GET "   
+   CONTENT_TYPE="-H 'Content-Type: text/xml' -H 'Authorization: Basic $USER'"
+   REST_API="$ADMINURL/iam/admin/config/api/v1/config?path=/DeployedComponent/Server/NGAMServer/Profile/ssoengine/PersistentLogin"
+   XX="$GET_CURL_COMMAND $REST_API $CONTENT_TYPE | grep "UserAttributeName" | grep -iq obPSFTID"
+   echo "$XX" > $LOGDIR/set_userid_store.log 2>&1
+   eval "$XX" >> $LOGDIR/set_userid_store.log 2>&1
+   counter=0
+   if [ $? -eq 0 ]
+   then
+    echo "UserAttributeName obPSFTID is set Already " >> $LOGDIR/set_userid_store.log 2>&1
+    counter=$(expr $counter + 1)
+   fi
+
+   REST_API="$ADMINURL/iam/admin/config/api/v1/config?path=/Resource/LDAP"
+   XX="$GET_CURL_COMMAND $REST_API $CONTENT_TYPE | grep "ENABLE_PASSWORD_POLICY" | grep -iq true"
+   echo "$XX" >> $LOGDIR/set_userid_store.log 2>&1
+   eval "$XX" >> $LOGDIR/set_userid_store.log 2>&1
+   if [ $? -eq 0 ]
+   then
+    echo "ENABLE_PASSWORD_POLICY is set to true Already " >> $LOGDIR/set_userid_store.log 2>&1
+    counter=$(expr $counter + 1)
+   fi
+
+   REST_API="$ADMINURL/iam/admin/config/api/v1/config?path=/Resource/LDAP"
+   XX="$GET_CURL_COMMAND $REST_API $CONTENT_TYPE | grep "USER_SCHEMA" | grep -iq Oblix"
+   echo "$XX" >> $LOGDIR/set_userid_store.log 2>&1
+   eval "$XX" >> $LOGDIR/set_userid_store.log 2>&1
+   if [ $? -eq 0 ]
+   then
+     echo "USER_SCHEMA is set to Oblix Already " >> $LOGDIR/set_userid_store.log 2>&1
+     counter=$(expr $counter + 1)
+
+   fi 
+
+   if [ $counter -eq 3 ]
+   then
+     echo "Already Exists "
+     return 0
+   else
+     cp $TEMPLATE_DIR/configure_oam_oua.py $WORKDIR
+     filename=$WORKDIR/configure_oam_oua.py
+     update_variable "<OAM_DOMAIN_NAME>" $OAM_DOMAIN_NAME $filename
+     update_variable "<OAM_WEBLOGIC_USER>" $OAM_WEBLOGIC_USER $filename
+     update_variable "<OAM_WEBLOGIC_PWD>" $OAM_WEBLOGIC_PWD $filename
+     update_variable "<OAMNS>" $OAMNS $filename
+     update_variable "<OAM_ADMIN_PORT>" $OAM_ADMIN_PORT $filename
+
+     copy_to_k8 $filename workdir $OAMNS $OAM_DOMAIN_NAME
+     echo "   " >> $LOGDIR/set_userid_store.log 2>&1
+     echo "Executing WLST command: "run_wlst_command $OAMNS $OAM_DOMAIN_NAME $PV_MOUNT/workdir/configure_oam_oua.py >> $LOGDIR/set_userid_store.log 
+     run_wlst_command $OAMNS $OAM_DOMAIN_NAME $PV_MOUNT/workdir/configure_oam_oua.py >> $LOGDIR/set_userid_store.log 
+     print_status $? $LOGDIR/set_userid_store.log
+   fi 
+
+    ET=$(date +%s)
+    print_time STEP "Setting User Identity Store on OAM for OUA" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Set ldap attribute to true to all the users in OAA_USER_GROUP
+#
+set_ldapattr_to_oaausers()
+{
+   ST=$(date +%s)
+   print_msg "Setting ldap attribute to all the users in OAA_USER_GROUP"
+
+   cp $TEMPLATE_DIR/search_modify_oaa_users.sh $WORKDIR
+   shfile=$WORKDIR/search_modify_oaa_users.sh
+   chmod +x $shfile
+   update_variable "<LDAP_HOST>" ${LDAP_EXTERNAL_HOST:=$OUD_POD_PREFIX-oud-ds-rs-lbr-ldap.$OUDNS.svc.cluster.local} $shfile
+   update_variable "<LDAP_PORT>" ${LDAP_EXTERNAL_PORT:=1389} $shfile
+   update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $shfile
+   update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $shfile
+   update_variable "<OAA_USER_GROUP>" $OAA_USER_GROUP $shfile
+   update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $shfile
+   update_variable "<LDAP_USER_SEARCHBASE>" $LDAP_USER_SEARCHBASE $shfile       
+
+   kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input  > $LOGDIR/set_ldapattr_to_oaausers.log 2>&1
+   if  [  $? -gt 0 ]
+   then
+      echo "Failed to copy $shfile."
+      exit 1
+   fi
+   kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -c oud-ds-rs -- /u01/oracle/config-input/search_modify_oaa_users.sh >> $LOGDIR/set_ldapattr_to_oaausers.log 2>&1
+
+   if [ $? = 0 ]
+   then
+     grep -qi "already modified" $LOGDIR/set_ldapattr_to_oaausers.log
+       if [ $? = 0 ]
+       then 
+         echo "Already exists"
+       else 
+         echo " Success" 
+       fi 
+   else
+     grep -qi "failed" $LOGDIR/set_ldapattr_to_oaausers.log
+       if [ $? = 0 ]
+       then 
+          echo "Failed - see logfile $LOGDIR/set_ldapattr_to_oaausers.log"
+          print_status 1 $LOGDIR/set_ldapattr_to_oaausers.log
+
+      fi       
+   fi 
+   ET=$(date +%s)
+   print_time STEP "Setting ldap attribute to all the users in OAA_USER_GROUP" $ST $ET >> $LOGDIR/timings.log      
+}
+
+
+
+# Add all the users under OAA-App-User group to the OAA DB
+#
+
+add_oua_usersToDB()
+{
+   ST=$(date +%s)
+   print_msg "Adding all the users under $OAA_USER_GROUP group to the OAA DB"
+
+   cp $TEMPLATE_DIR/search_oaa_users.sh $WORKDIR
+   shfile=$WORKDIR/search_oaa_users.sh
+   chmod +x $shfile
+   update_variable "<LDAP_HOST>" ${LDAP_EXTERNAL_HOST:=$OUD_POD_PREFIX-oud-ds-rs-lbr-ldap.$OUDNS.svc.cluster.local} $shfile
+   update_variable "<LDAP_PORT>" ${LDAP_EXTERNAL_PORT:=1389} $shfile
+   update_variable "<LDAP_ADMIN_USER>" $LDAP_ADMIN_USER $shfile
+   update_variable "<LDAP_ADMIN_PWD>" $LDAP_ADMIN_PWD $shfile
+   update_variable "<OAA_USER_GROUP>" $OAA_USER_GROUP $shfile
+   update_variable "<LDAP_GROUP_SEARCHBASE>" $LDAP_GROUP_SEARCHBASE $shfile     
+
+   kubectl cp $shfile $OUDNS/$OUD_POD_PREFIX-oud-ds-rs-0:/u01/oracle/config-input  > $LOGDIR/add_oua_usersToDB.log 2>&1
+   if  [  $? -gt 0 ]
+   then
+      echo "Failed to copy $shfile."
+      print_status 1 $LOGDIR/add_oua_usersToDB.log
+   fi
+   kubectl exec -ti -n $OUDNS $OUD_POD_PREFIX-oud-ds-rs-0 -c oud-ds-rs -- /u01/oracle/config-input/search_oaa_users.sh >> $LOGDIR/add_oua_usersToDB.log 2>&1
+   if  [  $? -gt 0 ]
+   then
+      echo "Failed to connect to OUD pod - Check OUD is running."
+      print_status 1 $LOGDIR/add_oua_usersToDB.log
+   fi
+  
+   ADMINURL=$OAM_LOGIN_LBR_PROTOCOL://$OAM_LOGIN_LBR_HOST:$OAM_LOGIN_LBR_PORT
+   REST_API="'$ADMINURL/oaa/runtime/preferences/v1'"
+   propfile="$WORKDIR/installOAA.properties"
+   OAA_DEP_UPPERCASE=$(echo "$OAA_DEPLOYMENT" | tr '[:lower:]' '[:upper:]')
+   USER=`encode_pwd "${OAA_DEP_UPPERCASE}-OAA:${OAA_API_PWD}"`
+
+   CONTENT_TYPE="-H 'Content-Type: application/json' -H 'Authorization: Basic $USER'"
+   OAUTH_APPID=`grep "oauth.applicationid" $propfile | cut -d '='  -f 2`
+   PAYLOAD="-d @$WORKDIR/oua_user_add.json"
+   
+   counter=0 
+   for unique_member in `grep "uniqueMember:"  "$LOGDIR/add_oua_usersToDB.log" | awk '{print $2}' |  cut -f1 -d "," | cut -f2 -d "="`
+   do 
+      counter=$(expr $counter + 1)
+      cp $TEMPLATE_DIR/oua_user_add.json $WORKDIR
+      filename=$WORKDIR/oua_user_add.json   
+      update_variable "<OAUTH_APPID>" $OAUTH_APPID $filename
+      update_variable "<OAA_USER>" $unique_member $filename
+      echo "   " >> $LOGDIR/add_oua_usersToDB.log 2>&1
+      POST_CURL_COMMAND="curl -k -g --fail --request POST --location "
+      POST_CURL_COMMAND1="curl -k -g --request POST --location "
+      echo "$POST_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/add_oua_usersToDB.log 2>&1
+      eval "$POST_CURL_COMMAND $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/add_oua_usersToDB.log 2>&1
+      if [ $? -gt 0 ]
+      then
+        eval "$POST_CURL_COMMAND1 $REST_API $CONTENT_TYPE $PAYLOAD" >> $LOGDIR/add_oua_usersToDB.log 2>&1
+        grep -iq "Cannot Create User" $LOGDIR/add_oua_usersToDB.log
+        if [ $? = 0 ]
+        then
+           echo "Cannot Create User $unique_member as it already exists" >> $LOGDIR/add_oua_usersToDB.log 2>&1
+        else
+           echo "Failed - see logfile $LOGDIR/add_oua_usersToDB.log"
+           print_status 1 $LOGDIR/add_oua_usersToDB.log
+           exit 1
+        fi
+      else
+        echo "$unique_member added to OAA DB " >> $LOGDIR/add_oua_usersToDB.log 2>&1
+        sleep 1
+      fi
+   done
+
+   if [ $counter -eq `grep -i "already exists" $LOGDIR/add_oua_usersToDB.log | wc -l` ]; then 
+     echo "Already Exists"
+     return 0
+   else
+      echo "Success"
+   fi
+
+   ET=$(date +%s)
+   print_time STEP "Adding all the users under $OAA_USER_GROUP group to the OAA DB" $ST $ET >> $LOGDIR/timings.log   
+}
+
 
 # Modify the template to create a cronjob
 #

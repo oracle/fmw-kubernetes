@@ -82,6 +82,22 @@ then
     WARN=$((WARN+1))
 fi
 
+echo -n "Checking KUBECONFIG File : "
+if [ -n "$KUBECONFIG" ]
+then 
+  if [ -f "$KUBECONFIG" ]
+  then
+    echo "Success"
+  else
+    echo "Failed - KUBECONFIG file $KUBECONFIG does not exist"
+    FAIL=$((FAIL+1))
+  fi  
+else   
+  echo "Failed - KUBECONFIG variable not set"
+  FAIL=$((FAIL+1))
+fi
+
+
 if [ ! "$USE_REGISTRY" = "true" ]
 then
    echo -n "Checking Images Directory : "

@@ -3,7 +3,7 @@
 #
 # This is an example of a responsefile for IDM Provisioning on Kubernetes
 #
-# Version: 4.2
+# Version: 5.0
 
 ############################################################################################
 #                               CONTROL Parameters                                         #
@@ -14,13 +14,15 @@
 #
 INSTALL_OHS=true
 INSTALL_INGRESS=true
-INSTALL_OUDSM=true
+INSTALL_OUDSM=false
 INSTALL_WLSOPER=true
 INSTALL_OUD=true
 INSTALL_OAM=true
 INSTALL_OIG=true
-INSTALL_OIRI=false
+INSTALL_OIRI=true
 INSTALL_OAA=true
+INSTALL_RISK=true
+INSTALL_OUA=true
 INSTALL_ELK=false
 INSTALL_PROM=false
 
@@ -51,8 +53,8 @@ K8_WORKDIR=/u01/oracle/user_projects/workdir
 
 # Kubernetes Worker Nodes used in OHS configuration and for Configuration calls
 # 
-K8_WORKER_HOST1=worker1.example.com
-K8_WORKER_HOST2=worker2.example.com
+K8_WORKER_HOST1=work1.example.com
+K8_WORKER_HOST2=work2.example.com
 
 # SSL Certificate Entries - Used when creating Self-Signed Certificates
 #
@@ -70,6 +72,11 @@ SSL_STATE=California
 REGISTRY=iad.ocir.io/mytenancy/idm
 REG_USER=mytenancy/oracleidentitycloudservice/myemail@example.com
 CREATE_REGSECRET=true
+
+# Used for storing the domain images for creating domains via WDT
+#
+WDT_IMAGE_REGISTRY=$REGISTRY
+WDT_IMAGE_REG_USER=mytenancy/oracleidentitycloudservice/myemail@example.com
 
 # GitHub
 #
@@ -117,11 +124,9 @@ OIRICLI_VER=12.2.1.4-jdk8-ol7-DATE
 OIRI_VER=12.2.1.4-jdk8-ol7-DATE
 OIRIUI_VER=12.2.1.4-jdk8-ol7-DATE
 OIRIDING_VER=12.2.1.4-jdk8-ol7-DATE
-OAAMGT_VER=12.2.1.4-jdk8-ol7-DATE
 OAA_VER=12.2.1.4-jdk8-ol7-DATE
-
-OPER_VER=4.1.2
-
+OAAMGT_VER=12.2.1.4-jdk8-ol7-DATE
+OPER_VER=4.1.8
 ############################################################################################
 #                               NFS Parameters                                             #
 ############################################################################################
@@ -166,7 +171,7 @@ INGRESS_TYPE=nginx
 INGRESSNS=ingressns
 INGRESS_ENABLE_TCP=true
 INGRESS_NAME=idmedg
-INGRESS_SSL=true
+INGRESS_SSL=false
 INGRESS_SERVICE_TYPE=NodePort
 INGRESS_DOMAIN=example.com
 INGRESS_REPLICAS=2
@@ -247,6 +252,7 @@ OUDSM_SERVICE_PORT=30901
 #
 OPERNS=opns
 OPER_ACT=operadmin
+OPER_ENABLE_SECRET=false
 
 ############################################################################################
 #                               OAM Parameters                                             #
@@ -268,6 +274,7 @@ OAM_LOGIN_LBR_PORT=443
 OAM_LOGIN_LBR_PROTOCOL=https
 OAM_ADMIN_LBR_HOST=iadadmin.example.com
 OAM_ADMIN_LBR_PORT=80
+OAM_ADMIN_LBR_PROTOCOL=http
 OAM_COOKIE_DOMAIN=.example.com
 
 OAM_OAP_HOST=0.0.0.0
@@ -280,7 +287,7 @@ OAM_OAMADMIN_USER=$LDAP_OAMADMIN_USER
 OAMSERVER_JAVA_PARAMS="-Xms2048m -Xmx8192m "
 OAM_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
 OAM_CPU=500m # Initial CPU Units 1000m = 1 CPU core
-OAM_MAX_MEMORY=2Gi # Max Memory pod is allowed to consume.
+OAM_MAX_MEMORY=8Gi # Max Memory pod is allowed to consume.
 OAM_MEMORY=2Gi  # Initial Memory allocated to pod.
 
 # OAM Ports
@@ -312,6 +319,7 @@ OIG_RCU_PREFIX=IGD
 OIG_WEBLOGIC_USER=weblogic
 OIG_ADMIN_LBR_HOST=igdadmin.example.com
 OIG_ADMIN_LBR_PORT=80
+OIG_ADMIN_LBR_PROTOCOL=http
 OIG_LBR_HOST=prov.example.com
 OIG_LBR_PORT=443
 OIG_LBR_PROTOCOL=https
@@ -325,12 +333,13 @@ OIG_BI_PORT=443
 OIG_BI_PROTOCOL=https
 OIG_BI_USER=idm_report
 OIG_EMAIL_CREATE=true
-OIG_EMAIL_SERVER=smtp.example.com 
+OIG_EMAIL_SERVER=smtp.example.com
 OIG_EMAIL_PORT=25
 OIG_EMAIL_SECURITY=None
 OIG_EMAIL_ADDRESS=email@example.com
 OIG_EMAIL_FROM_ADDRESS=fromaddress@example.com
 OIG_EMAIL_REPLY_ADDRESS=noreplies@example.com
+
 
 # Pod Resource Allocation
 #
@@ -338,7 +347,7 @@ OIMSERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
 SOASERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
 OIM_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
 OIM_CPU=500m # Initial CPU Units 1000m = 1 CPU core
-OIM_MAX_MEMORY=4Gi # Max Memory pod is allowed to consume.
+OIM_MAX_MEMORY=8Gi # Max Memory pod is allowed to consume.
 OIM_MEMORY=4Gi  # Initial Memory allocated to pod.
 SOA_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
 SOA_CPU=1000m # Initial CPU Units 1000m = 1 CPU core
@@ -404,7 +413,11 @@ OIRI_WORK_SHARE=$IAM_PVS/workpv
 OIRI_DB_SCAN=db-scan.example.com
 OIRI_DB_LISTENER=1521
 OIRI_DB_SERVICE=oirisvc.example.com
-OIRI_RCU_PREFIX=ORI
+OIRI_RCU_PREFIX=OIRI
+
+OIRI_OIG_DB_SCAN=$OIG_DB_SCAN
+OIRI_OIG_DB_LISTENER=$OIG_DB_LISTENER
+OIRI_OIG_DB_SERVICE=$OIG_DB_SERVICE
 
 # Ingress Parameters
 # 
@@ -420,7 +433,12 @@ OIRI_SERVICE_USER=oirisvc
 # OIG Parameters
 #
 OIRI_OIG_URL=http://$OIG_DOMAIN_NAME-cluster-oim-cluster.$OIGNS.svc.cluster.local:14000
+OIRI_OIG_SERVER=t3://$OIG_DOMAIN_NAME-oim-server1.$OIGNS.svc.cluster.local:14000/
 OIRI_LOAD_DATA=true
+OIRI_OIG_XELSYSADM_USER=$LDAP_XELSYSADM_USER
+OIRI_OIG_XELL_FILE=
+OIRI_CREATE_OIG_USER=true
+OIRI_SET_OIG_COMPLIANCE=true
 
 # Number of Container Instances
 #
@@ -468,6 +486,8 @@ OAA_RCU_PREFIX=OAA
 OAA_ADMIN_GROUP=OAA-Admin-Role
 OAA_USER_GROUP=OAA-App-User
 OAA_ADMIN_USER=oaaadmin
+OAA_ADD_USERS_LDAP=true
+OAA_ADD_USERS_OUA_OBJ=true
 
 
 # File Vault
@@ -520,6 +540,8 @@ OAA_SMS_REPLICAS=2
 OAA_PUSH_REPLICAS=2
 OAA_RISK_REPLICAS=2
 OAA_RISKCC_REPLICAS=2
+OAA_DRSS_REPLICAS=2
+OAA_KBA_REPLICAS=2
 
 # Resource Allocations
 #
@@ -547,6 +569,8 @@ OAA_KBA_CPU=200m # Initial CPU Units 1000m = 1 CPU core
 OAA_KBA_MEMORY=1Gi  # Initial Memory allocated to pod.
 OAA_CUSTOM_CPU=200m # Initial CPU Units 1000m = 1 CPU core
 OAA_CUSTOM_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_DRSS_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_DRSS_MEMORY=1Gi  # Initial Memory allocated to pod.
 OAA_RISK_CPU=200m # Initial CPU Units 1000m = 1 CPU core
 OAA_RISK_MEMORY=1Gi  # Initial Memory allocated to pod.
 OAA_RISKCC_CPU=200m # Initial CPU Units 1000m = 1 CPU core
@@ -559,4 +583,5 @@ OAA_RISKCC_MEMORY=1Gi  # Initial Memory allocated to pod.
 ############################################################################################
 #
 DELETE_SAMPLES=true
+WLS_CREATION_TYPE=WDT
 SAMPLES_REP="https://github.com/oracle/fmw-kubernetes.git"

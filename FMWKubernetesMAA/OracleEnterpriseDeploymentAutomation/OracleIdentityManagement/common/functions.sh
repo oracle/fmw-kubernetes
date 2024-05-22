@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of common functions and procedures used by the provisioning and deletion scripts
@@ -184,6 +184,10 @@ install_operator()
     cd $WORKDIR/samples
     CMD="helm install weblogic-kubernetes-operator charts/weblogic-operator --namespace $OPERNS --set image=$OPER_IMAGE:$OPER_VER --set serviceAccount=$OPER_ACT "
     CMD="$CMD --set \"enableClusterRoleBinding=true\" --set \"javaLoggingLevel=FINE\" --set \"domainNamespaceSelectionStrategy=LabelSelector\" --set \"domainNamespaceLabelSelector=weblogic-operator\=enabled\" "
+    if [ "$OPER_ENABLE_SECRET" = "true" ]
+    then
+        CMD="$CMD --set \"imagePullSecrets[0].name=regcred\" "
+    fi
     if [ "$USE_ELK" = "true" ]
     then
        ELK_PROTO=$(echo $ELK_HOST | cut -f1 -d:)
@@ -272,6 +276,21 @@ delete_crd()
 }
 
 #
+# Get Kubernetes Version
+#
+get_k8_ver()
+{
+  kubectl version --short >/dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+     KVER=$(kubectl version --short=true 2>/dev/null | grep Server | cut -f2 -d: | cut -f1 -d + | sed 's/ v//' | cut -f 1-3 -d.)
+  else
+     KVER=$(kubectl version 2>/dev/null | grep Server | cut -f2 -d: | cut -f1 -d + | sed 's/ v//' | cut -f 1-3 -d.)
+  fi
+
+  echo $KVER
+}
+#
 # Get Kubernetes NodePort Port
 #
 
@@ -359,7 +378,7 @@ copy_to_k8()
    namespace=$3
    domain_name=$4
 
-   kubectl cp $filename  $namespace/$domain_name-adminserver:$PV_MOUNT/$destination
+   kubectl -c weblogic-server cp $filename $namespace/$domain_name-adminserver:$PV_MOUNT/$destination 
    if  [  $? -gt 0 ]
    then
       echo "Failed to copy $filename."
@@ -434,6 +453,28 @@ create_domain_secret()
    print_time STEP "Create Domain Secret" $ST $ET >> $LOGDIR/timings.log
 }
 
+create_domain_secret_wdt()
+{
+   namespace=$1
+   domain_name=$2
+   wlsuser=$3
+   wlspwd=$4
+
+   ST=$(date +%s)
+   print_msg "Creating a Kubernetes Domain Secret"
+   if [ "$domain_name" = "$OIG_DOMAIN_NAME" ]
+   then
+      cd $WORKDIR/samples/create-oim-domain/domain-home-on-pv/wdt-utils
+   else
+      cd $WORKDIR/samples/create-access-domain/domain-home-on-pv/wdt-utils
+   fi
+   ./create-secret.sh -l "username=$wlsuser" -l "password=$wlspwd" -n $namespace -d $domain_name -s $domain_name-weblogic-credentials > $LOGDIR/domain_secret.log  2>&1
+
+   print_status $? $LOGDIR/domain_secret.log
+   ET=$(date +%s)
+
+   print_time STEP "Create Domain Secret" $ST $ET >> $LOGDIR/timings.log
+}
 create_rcu_secret()
 {
    namespace=$1
@@ -453,6 +494,32 @@ create_rcu_secret()
    print_time STEP "Create RCU Secret" $ST $ET >> $LOGDIR/timings.log
 }
 
+create_rcu_secret_wdt()
+{
+   namespace=$1
+   domain_name=$2
+   rcuprefix=$3
+   rcupwd=$4
+   syspwd=$5
+   dbhost=$6
+   dbport=$7
+   dbservice=$8
+
+   ST=$(date +%s)
+   print_msg "Creating a Kubernetes RCU Secret"
+   if [ "$domain_name" = "$OIG_DOMAIN_NAME" ]
+   then
+      cd $WORKDIR/samples/create-oim-domain/domain-home-on-pv/wdt-utils
+   else
+      cd $WORKDIR/samples/create-access-domain/domain-home-on-pv/wdt-utils
+   fi
+   ./create-secret.sh -l "rcu_prefix=$rcuprefix" -l "rcu_schema_password=$rcupwd" -l "db_host=$dbhost" -l "db_port=$dbport" -l "db_service=$dbservice" -l "dba_user=sys" -l "dba_password=$syspwd" -n $namespace -d $domain_name -s $domain_name-rcu-credentials > $LOGDIR/rcu_secret.log  2>&1
+
+   print_status $? $LOGDIR/rcu_secret.log
+   ET=$(date +%s)
+
+   print_time STEP "Create RCU Secret" $ST $ET >> $LOGDIR/timings.log
+}
 # Create a working directory inside the Kubernetes container
 #
 create_workdir()
@@ -462,11 +529,11 @@ create_workdir()
   
    ST=$(date +%s)
    print_msg "Creating Work directory inside container"
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $K8_WORKDIR
+   kubectl exec -n $namespace -ti $domain_name-adminserver -c weblogic-server -- mkdir -p $K8_WORKDIR
    print_status $? 
 
    printf "\t\t\tCreating Keystores directory inside container - "
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- mkdir -p $PV_MOUNT/keystores
+   kubectl exec -n $namespace -ti $domain_name-adminserver -c weblogic-server -- mkdir -p $PV_MOUNT/keystores
    print_status $? 
    ET=$(date +%s)
 
@@ -481,7 +548,7 @@ run_command_k8()
    domain_name=$2
    command=$3
   
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- $command
+   kubectl exec -n $namespace -ti $domain_name-adminserver -c weblogic-server -- $command
 }
 
 # Execute a command inside the Kubernetes container
@@ -493,7 +560,7 @@ run_wlst_command()
    command=$3
   
    WLSRETCODE=0
-   kubectl exec -n $namespace -ti $domain_name-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh $command 
+   kubectl exec -n $namespace -ti $domain_name-adminserver -c weblogic-server -- /u01/oracle/oracle_common/common/bin/wlst.sh $command 
    if [ $? -gt 0 ]
    then 
       echo "Failed to Execute wlst command: $command"
@@ -525,6 +592,7 @@ download_samples()
 
     print_time STEP "Download IDM Samples" $ST $ET >> $LOGDIR/timings.log
 }
+
 
 # Copy Samples to Working Directory
 #
@@ -573,6 +641,19 @@ download_maa_samples()
     print_time STEP "Download MAA Samples" $ST $ET >> $LOGDIR/timings.log
 }
 
+# Generate the files required to Build the Domain Creation Image
+#
+generate_wdt_model_files()
+{
+     print_msg "Generating WDT Model Files"
+
+     cd $WORKDIR/samples/create-*-domain/domain-home-on-pv/wdt-utils/generate_models_utils
+     ./generate_wdt_models.sh -i $WORKDIR/create-domain-wdt.yaml -o $WORKDIR >$LOGDIR/generate_wdt_models.log 2>&1
+     print_status $? $LOGDIR/generate_wdt_models.log
+     ET=`date +%s`
+     print_time STEP "Generate WDT Model Files" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Create helper pod
 #
 create_helper_pod ()
@@ -586,7 +667,7 @@ create_helper_pod ()
    if [ "$?" = "0" ]
    then
        echo "Already Created"
-       check_running $NS helper
+       check_running $NS helper 5
    else
        if [ "$USE_REGISTRY" = "true" ]
        then
@@ -596,7 +677,7 @@ create_helper_pod ()
            kubectl run helper  --image $IMAGE -n $NS -- sleep infinity > $LOGDIR/helper.log 2>&1
            print_status $? $LOGDIR/helper.log
        fi
-       check_running $NS helper
+       check_running $NS helper 20
    fi
    ET=$(date +%s)
    print_time STEP "Create Helper Pod" $ST $ET >> $LOGDIR/timings.log
@@ -607,7 +688,7 @@ create_helper_pod ()
 remove_helper_pod()
 {
    NS=$1
-   kubectl -n $NS delete pod,svc helper
+   kubectl -n $NS delete pod helper --force  2> /dev/null
    echo "Helper Pod Deleted:"
 }
 
@@ -1133,15 +1214,25 @@ check_running()
     NAMESPACE=$1
     SERVER_NAME=$2
     DELAY=$3
-    
-    printf "\t\t\tChecking $SERVER_NAME "
+    STEP=$4
+    if ! [[ $DELAY =~ ^[0-9]+$ ]]
+    then
+      STEP=$DELAY
+      unset DELAY
+    fi
+    if [ "$STEP" = "true" ]
+    then
+       print_msg "Checking $SERVER_NAME"
+    else
+       printf "\t\t\tChecking $SERVER_NAME "
+    fi
+
     if [ "$SERVER_NAME" = "adminserver" ]
     then
         sleep ${DELAY:=120}
     else 
         sleep ${DELAY:=120}
     fi
-
     X=0
     RETRIES=1
     MAX_RETRIES=50
@@ -1190,17 +1281,6 @@ check_running()
               exit 1
            fi
 
-           if [ "$SERVER_NAME" = "oim-server1" ]
-           then
-              kubectl logs -n $OIGNS ${OIG_DOMAIN_NAME}-oim-server1 | grep -q "BootStrap configuration Failed"
-              if [ $? = 0 ]
-              then
-                 echo "BootStrap configuration Failed - check kubectl logs -n $OIGNS ${OIG_DOMAIN_NAME}-oim-server1"
-                 exit 1
-              fi
-           fi
-
-
            if [ ! "$RUNNING" = "0" ] 
            then
               X=$MAX_RETRIES
@@ -1223,6 +1303,71 @@ check_running()
     fi
 }
 
+# Check introspector
+#
+check_introspector()
+{
+    NAMESPACE=$1
+    
+    ST=$(date +%s)
+    print_msg "Waiting for Introspector to complete"
+     
+    POD_RUNNING=true
+    while [ "$POD_RUNNING" = "true" ]
+    do
+       POD=$(kubectl -n $NAMESPACE get pods -o wide --no-headers=true --ignore-not-found | grep introspect | head -1 )
+
+       if [ "$POD" = "" ]
+       then
+         POD_RUNNING=false
+       else
+         PODSTATUS=$(echo $POD | awk '{ print $3 }')
+         if [ "$PODSTATUS" = "CrashLoopBackOff" ] || [ "$PODSTATUS" = "Pending" ] || [ "$PODSTATUS" = "Init:CrashLoopBackOff" ] || [ "$PODSTATUS" = "Init:Pending" ]
+         then
+           echo $POD > $LOGDIR/check_introspector.log 2>&1
+           POD_NAME=$(echo $POD | cut -f1 -d ' ')
+           kubectl describe pod -n  $NAMESPACE $POD_NAME >> $LOGDIR/check_introspector.log 2>&1
+           kubectl logs -n  $NAMESPACE $POD_NAME >> $LOGDIR/check_introspector.log 2>&1
+           echo "Pod introspector has failed - Pod Status: $PODSTATUS - Check Logfile: $LOGDIR/check_introspector.log"
+           exit 1
+         fi
+      fi
+      echo -e ".\c"
+      sleep 60
+    done
+
+    if [ "$POD_RUNNING" = "false" ]
+    then
+       echo " Completed."
+    fi
+    ET=`date +%s`
+    print_time STEP "Waiting for Introspector" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Check domain created successfully
+#
+check_domain_ok()
+{
+    NAMESPACE=$1
+    DOMAIN_NAME=$2
+    
+    ST=$(date +%s)
+    print_msg "Check Domain created without error"
+     
+    kubectl describe domain -n $NAMESPACE $DOMAIN_NAME  > $LOGDIR/domain_status.log
+    grep -q SEVERE $LOGDIR/domain_status.log
+    if [ $? -eq 0 ]
+    then
+       echo "Failed - Check Logfile: $LOGDIR/domain_status.log"
+       exit 1
+    else
+       echo "Success"
+    fi
+
+    ET=`date +%s`
+    print_time STEP "Check Domain Created without Error" $ST $ET >> $LOGDIR/timings.log
+}
+
 # Check whether a Kubernetes pod has shutdown
 #
 check_stopped()
@@ -1238,7 +1383,7 @@ check_stopped()
     while [ $X  -lt $RETRIES ]
     do
     
-        POD=$(kubectl --namespace $NAMESPACE get pod | grep $SERVER_NAME)
+        POD=$(kubectl --ignore-not-found=true --namespace $NAMESPACE get pod | grep $SERVER_NAME)
         PODSTATUS=$(echo $POD | awk '{ print $3 }')
         RUNNING=$(echo $POD | awk '{ print $2 }')
         if [ "$POD" = "" ]
@@ -1379,6 +1524,7 @@ get_lbr_certificate()
 
      print_msg "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT"
      ST=$(date +%s)
+
      openssl s_client -connect ${LBRHOST}:${LBRPORT} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > $WORKDIR/${LBRHOST}.pem 2>$LOGDIR/lbr_cert.log
      print_status $? $LOGDIR/lbr_cert.log
 
@@ -2498,4 +2644,43 @@ copy_files_to_dr()
    print_status $? $LOGDIR/copy_file_to_dr.log
    ET=$(date +%s)
    print_time STEP "Copying OHS Configuration to $DR_HOST" $ST $ET >> $LOGDIR/timings.log
+}
+
+# Check health-check is not being blocked
+#
+check_healthcheck_ok()
+{
+   ST=$(date +%s)
+   print_msg "Checking Health-check is not blocked"
+
+   printf "\n\t\t\t$OHS_HOST1 - "
+   blocked_ip=$( $SSH ${OHS_USER}@$OHS_HOST1 grep health-check.html  $OHS_DOMAIN/servers/ohs?/logs/access_log | grep 403 | awk '{ print $1 }' | tail -1 )
+   if [ "$blocked_ip" = "" ]
+   then
+     echo "Success"
+   else
+     printf "Blocked by IP Address: $blocked_ip - Fixing - "
+     $SSH ${OHS_USER}@$OHS_HOST1 -C sed -i \"/    require host/a "\\    require ip $blocked_ip"\" $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/webgate.conf
+     print_status $?
+     printf "\t\t\tRestarting OHS $OHS_HOST1 - "
+     $SSH ${OHS_USER}@$OHS_HOST1 "$OHS_DOMAIN/bin/restartComponent.sh $OHS1_NAME" > $LOGDIR/restart_$OHS_HOST1.log 2>&1
+     print_status $? $LOGDIR/restart_$OHS_HOST1.log
+   fi
+
+   if [ ! "$OHS_HOST2" = "" ]
+   then
+     printf "\n\t\t\t$OHS_HOST2 - "
+     blocked_ip=$( $SSH ${OHS_USER}@$OHS_HOST2 grep health-check.html  $OHS_DOMAIN/servers/ohs?/logs/access_log | grep 403 | awk '{ print $1 }' | tail -1 )
+     if [ "$blocked_ip" = "" ]
+     then
+       echo "Success"
+     else
+       printf "Blocked by IP Address: $blocked_ip - Fixing - "
+       $SSH ${OHS_USER}@$OHS_HOST2 -C sed -i \"/    require host/a "\\    require ip $blocked_ip"\" $OHS_DOMAIN/config/fmwconfig/components/OHS/ohs?/webgate.conf
+       print_status $?
+       printf "\t\t\tRestarting OHS $OHS_HOST2 - "
+       $SSH ${OHS_USER}@$OHS_HOST2 "$OHS_DOMAIN/bin/restartComponent.sh $OHS2_NAME" > $LOGDIR/restart_$OHS_HOST2.log 2>&1
+       print_status $? $LOGDIR/restart_$OHS_HOST2.log
+     fi
+   fi
 }
