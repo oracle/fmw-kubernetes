@@ -12,18 +12,18 @@
     <title>Traefik :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1717668926" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1717668926"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843534"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1717668926"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1717668926"></script>
 
     
   </div>
@@ -5704,7 +5704,7 @@ Sample values for default configuration are shown in the file <code>${WORKDIR}/c
 By default, <code>type</code> is <code>TRAEFIK</code>, <code>sslType</code> is <code>NONSSL</code>, and <code>domainType</code> is <code>soa</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code> based on the type of configuration (NONSSL, SSL, and E2ESSL).<br>
 If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at <code>${WORKDIR}/charts/ingress-per-domain/templates/traefik-ingress.yaml</code>.</p>
 <blockquote>
-<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v24.1.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
+<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v24.2.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
 </blockquote>
 <ol>
 <li>
@@ -5814,13 +5814,13 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      Host                                                   Path  Backends
      ----                                                   ----  --------
      www.example.com
-                                                           /console                   soainfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.45:7001<span style="color:#f92672">)</span>
-                                                           /em                        soainfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.45:7001<span style="color:#f92672">)</span>
-                                                           /weblogic/ready            soainfra-adminserver:7001 <span style="color:#f92672">(</span>10.244.0.45:7001<span style="color:#f92672">)</span>
-                                                                                      soainfra-cluster-soa-cluster:8001    <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
-                                                            /soa-infra                 soainfra-cluster-soa-cluster:8001 <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
-                                                            /soa/composer              soainfra-cluster-soa-cluster:8001 <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
-                                                            /integration/worklistapp   soainfra-cluster-soa-cluster:8001 <span style="color:#f92672">(</span>10.244.0.46:8001,10.244.0.47:8001<span style="color:#f92672">)</span>
+                                                           /console                   soainfra-adminserver:7011 <span style="color:#f92672">(</span>10.244.0.45:7011<span style="color:#f92672">)</span>
+                                                           /em                        soainfra-adminserver:7011 <span style="color:#f92672">(</span>10.244.0.45:7011<span style="color:#f92672">)</span>
+                                                           /weblogic/ready            soainfra-adminserver:7011 <span style="color:#f92672">(</span>10.244.0.45:7011<span style="color:#f92672">)</span>
+                                                                                      soainfra-cluster-soa-cluster:8011    <span style="color:#f92672">(</span>10.244.0.46:8011,10.244.0.47:8011<span style="color:#f92672">)</span>
+                                                            /soa-infra                 soainfra-cluster-soa-cluster:8011 <span style="color:#f92672">(</span>10.244.0.46:8011,10.244.0.47:8011<span style="color:#f92672">)</span>
+                                                            /soa/composer              soainfra-cluster-soa-cluster:8011 <span style="color:#f92672">(</span>10.244.0.46:8011,10.244.0.47:8011<span style="color:#f92672">)</span>
+                                                            /integration/worklistapp   soainfra-cluster-soa-cluster:8011 <span style="color:#f92672">(</span>10.244.0.46:8011,10.244.0.47:8011<span style="color:#f92672">)</span>
     Annotations:                                             kubernetes.io/ingress.class: traefik
     Events:                                                  &lt;none&gt;
 
@@ -5854,13 +5854,13 @@ If needed, you can update the ingress YAML file to define more path rules (in se
   Host                    Path  Backends
   ----                    ----  --------
   www.example.com
-                          /console                   soainfra-adminserver:7001 ()
-                          /em                        soainfra-adminserver:7001 ()
-                          /weblogic/ready            soainfra-adminserver:7001 ()
-                                                     soainfra-cluster-soa-cluster:8001 ()
-                          /soa-infra                 soainfra-cluster-soa-cluster:8001 ()
-                          /soa/composer              soainfra-cluster-soa-cluster:8001 ()
-                          /integration/worklistapp   soainfra-cluster-soa-cluster:8001 ()
+                          /console                   soainfra-adminserver:7011 ()
+                          /em                        soainfra-adminserver:7011 ()
+                          /weblogic/ready            soainfra-adminserver:7011 ()
+                                                     soainfra-cluster-soa-cluster:8011 ()
+                          /soa-infra                 soainfra-cluster-soa-cluster:8011 ()
+                          /soa/composer              soainfra-cluster-soa-cluster:8011 ()
+                          /integration/worklistapp   soainfra-cluster-soa-cluster:8011 ()
   Annotations:              kubernetes.io/ingress.class: traefik
                           meta.helm.sh/release-name: soa-traefik-ingress
                           meta.helm.sh/release-namespace: soans
@@ -5933,7 +5933,7 @@ If needed, you can update the ingress YAML file to define more path rules (in se
      Services:
       Termination Delay:  400
      Name:               soainfra-adminserver
-     Port:               7002
+     Port:               7012
      Weight:             3
     Tls:
     Passthrough:  true
@@ -9715,19 +9715,19 @@ X.X.X.X  osb.org
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1717668926"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1717668926"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843534" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843534"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1717668926" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1717668926"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

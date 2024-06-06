@@ -12,18 +12,18 @@
     <title>Troubleshooting :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1713843535" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843535" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1717668927" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1717668927" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1717668927"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843535"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843535"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1717668927"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1717668927"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843535"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1717668927"></script>
 
     
   </div>
@@ -5534,6 +5534,7 @@
 <li><a href="#ingress-controller-not-serving-the-domain-urls">Ingress controller not serving the domain urls</a></li>
 <li><a href="#security-warnings-reported-in-weblogic-administration-console">Security warnings reported in WebLogic Administration console</a></li>
 <li><a href="#disable-remote-anonymous-rmi-t3-and-iiop-requests">Disable Remote Anonymous RMI T3 and IIOP Requests</a></li>
+<li><a href="#oracle-service-bus-owsm-policy-error">Oracle Service Bus OWSM policy error</a></li>
 </ul>
 <h4 id="weblogic-kubernetes-operator-installation-failure">WebLogic Kubernetes Operator installation failure</h4>
 <p>If the WebLogic Kubernetes Operator installation failed with timing out:</p>
@@ -5699,13 +5700,13 @@ Rules:
 Host                                                     Path  Backends
 ----                                                     ----  --------
 &lt;Hostname&gt;
-                                                         /console                   soainfra-adminserver:7001 (10.244.0.123:7001)
-                                                         /em                        soainfra-adminserver:7001 (10.244.0.123:7001)
-                                                         /weblogic/ready            soainfra-adminserver:7001 (10.244.0.123:7001)
-                                                         /soa-infra                 soainfra-cluster-soa-cluster:8001 (10.244.0.126:8001,10.244.0.127:8001)
-                                                         /soa/composer              soainfra-cluster-soa-cluster:8001 (10.244.0.126:8001,10.244.0.127:8001)
-                                                         /integration/worklistapp   soainfra-cluster-soa-cluster:8001 (10.244.0.126:8001,10.244.0.127:8001)
-                                                         /EssHealthCheck            soainfra-cluster-soa-cluster:8001 (10.244.0.126:8001,10.244.0.127:8001)
+                                                         /console                   soainfra-adminserver:7011 (10.244.0.123:7011)
+                                                         /em                        soainfra-adminserver:7011 (10.244.0.123:7011)
+                                                         /weblogic/ready            soainfra-adminserver:7011 (10.244.0.123:7011)
+                                                         /soa-infra                 soainfra-cluster-soa-cluster:8011 (10.244.0.126:8011,10.244.0.127:8011)
+                                                         /soa/composer              soainfra-cluster-soa-cluster:8011 (10.244.0.126:8011,10.244.0.127:8011)
+                                                         /integration/worklistapp   soainfra-cluster-soa-cluster:8011 (10.244.0.126:8011,10.244.0.127:8011)
+                                                         /EssHealthCheck            soainfra-cluster-soa-cluster:8011 (10.244.0.126:8011,10.244.0.127:8011)
 Annotations:                                               kubernetes.io/ingress.class: traefik
                                                          meta.helm.sh/release-name: soainfra-traefik
                                                          meta.helm.sh/release-namespace: soans
@@ -5726,6 +5727,9 @@ $
     - name: JAVA_OPTIONS
       value: &quot;-Dweblogic.StdoutDebugEnabled=false -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.security.remoteAnonymousRMIT3Enabled=false -Dweblogic.security.remoteAnonymousRMIIIOPEnabled=false&quot;
 </code></pre><p>See <a href="https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/lockd/secure.html#GUID-D053EEFA-7461-4A22-865A-1180A49CACCD">link</a> for more details.</p>
+<h4 id="oracle-service-bus-owsm-policy-error">Oracle Service Bus OWSM policy error</h4>
+<p>If you see error messages like
+<code>CannotCommit [OSB-387177]OWSM Policy oracle/xxxxxx is not supported</code> on Oracle Service Bus console and exceptions like <code>oracle.wsm.policymanager.PolicyManagerException: WSM-02141 : Unable to connect to the policy access service due to Oracle WSM policy manager host server being down</code> in Administration server logs, resolve this error by targeting the <code>wsm-pm</code> application to Administration server. See <a href="https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/wlach/taskhelp/deployment/ChangeTargetServers.html">link</a> for details.</p>
 
 
 
@@ -9433,19 +9437,19 @@ $
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1717668927"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1713843535"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843535"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1717668927"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1717668927"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843535" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843535"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1717668927" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1717668927"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
