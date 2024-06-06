@@ -1,17 +1,17 @@
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # The version of this inputs file.  Do not modify.
 version: create-weblogic-sample-domain-inputs-v1
 
-# SSL is disabled by default. Select true to enable SSL.
+# Select true to enable SSL. If secureEnabled is set to true, sslEnabled will be set to true by default.
 sslEnabled: false
 
 # Port number for admin server
-adminPort: 7001
+adminPort: 7011
 
 # SSL Port number for admin server
-adminServerSSLPort: 7002
+adminServerSSLPort: 7012
 
 # Name of the Admin Server
 adminServerName: AdminServer
@@ -51,10 +51,10 @@ soaClusterName: soa_cluster
 soaManagedServerNameBase: soa_server
 
 # Port number for each SOA managed server
-soaManagedServerPort: 8001
+soaManagedServerPort: 8011
 
 # SSL Port number for each SOA managed server
-soaManagedServerSSLPort: 8002
+soaManagedServerSSLPort: 8012
 # END: Configuration for SOA cluster
 
 # BEGIN: Configuration for OSB cluster
@@ -66,16 +66,16 @@ osbClusterName: osb_cluster
 osbManagedServerNameBase: osb_server
 
 # Port number for each OSB managed server
-osbManagedServerPort: 9001
+osbManagedServerPort: 9011
 
 # SSL Port number for each OSB managed server
-osbManagedServerSSLPort: 9002
+osbManagedServerSSLPort: 9012
 # END: Configuration for OSB cluster
 
 # SOA Suite image.
-# The operator requires SOA Suite 12.2.1.4.0.
+# The operator requires SOA Suite image.
 # Refer to https://oracle.github.io/fmw-kubernetes/soa-domains/userguide/prepare-your-environment/#obtaining-the-soa-suite-docker-image/  for details on how to obtain or create the image.
-image: soasuite:12.2.1.4
+image: soasuite:release-version
 
 # Image pull policy
 # Legal values are "IfNotPresent", "Always", or "Never"
@@ -87,6 +87,11 @@ imagePullPolicy: IfNotPresent
 
 # Boolean indicating if production mode is enabled for the domain
 productionModeEnabled: true
+
+# Boolean indicating if secure is enabled for the domain.
+# This value has significance only with 14.1.2.0.0.
+# This value has no significance in dev mode i.e., when productionModeEnabled is false.
+secureEnabled: false
 
 # Name of the Kubernetes secret for the Admin Server's username and password
 # The name must be lowercase.
@@ -129,7 +134,7 @@ namespace: soans
 # Java Option for WebLogic Server
 javaOptions: -Dweblogic.StdoutDebugEnabled=false
 
-# If sslEnabled is set to 'true', then comment out the above javaOptions param and uncomment the below javaOptions line.
+# If sslEnabled is set to 'true' or secureEnabled is set to 'true', then comment out the above javaOptions param and uncomment the below javaOptions line.
 # To enable SSL, you need to add -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true if sslEnabled is true.
 # The reason is the WebLogic generated Demo certificate's host name is different from that of the runtime container.
 #javaOptions: -Dweblogic.StdoutDebugEnabled=false -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true

@@ -73,11 +73,11 @@ For example:
 
 ```
 $ cd ${WORKDIR}/monitoring-service/scripts
-$ export adminServerPort=7001 
+$ export adminServerPort=7011 
 $ export wlsMonitoringExporterTosoaCluster=true
-$ export soaManagedServerPort=8001
+$ export soaManagedServerPort=8011
 $ export wlsMonitoringExporterToosbCluster=true
-$ export osbManagedServerPort=9001
+$ export osbManagedServerPort=9011
 $ sh get-wls-exporter.sh
 ```
 
@@ -111,7 +111,7 @@ $ cd ${WORKDIR}/monitoring-service/scripts
 $ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy soans/soainfra-adminserver:/u01/oracle
 $ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py soans/soainfra-adminserver:/u01/oracle/wls-exporter-deploy
 $ ${KUBERNETES_CLI:-kubectl} exec -it -n soans soainfra-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
--domainName soainfra -adminServerName AdminServer -adminURL soainfra-adminserver:7001 \
+-domainName soainfra -adminServerName AdminServer -adminURL soainfra-adminserver:7011 \
 -soaClusterName soa_cluster -wlsMonitoringExporterTosoaCluster true \
 -osbClusterName osb_cluster -wlsMonitoringExporterToosbCluster true \
 -username weblogic -password Welcome1 
@@ -187,12 +187,12 @@ The following parameters can be provided in the inputs file.
 | `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support, Admission webhook support for PrometheusRules resources and custom Grafana image repository is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false --set grafana.image.repository=xxxxxxxxx/grafana/grafana`|  |
 | `monitoringNamespace` | Kubernetes namespace for monitoring setup. | `monitoring` |
 | `adminServerName` | Name of the Administration Server. | `AdminServer` |
-| `adminServerPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7001` |
+| `adminServerPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7011` |
 | `soaClusterName` | Name of the soaCluster. | `soa_cluster` |
-| `soaManagedServerPort` | Port number of the managed servers in the soaCluster. | `8001` |
+| `soaManagedServerPort` | Port number of the managed servers in the soaCluster. | `8011` |
 | `wlsMonitoringExporterTosoaCluster` | Boolean value indicating whether to deploy WebLogic Monitoring Exporter to soaCluster. | `false` |
 | `osbClusterName` | Name of the osbCluster. | `osb_cluster` |
-| `osbManagedServerPort` | Port number of the managed servers in the osbCluster. | `9001` |
+| `osbManagedServerPort` | Port number of the managed servers in the osbCluster. | `9011` |
 | `wlsMonitoringExporterToosbCluster` | Boolean value indicating whether to deploy WebLogic Monitoring Exporter to osbCluster. | `false` |
 | `exposeMonitoringNodePort` | Boolean value indicating if the Monitoring Services (Prometheus, Grafana and Alertmanager) is exposed outside of the Kubernetes cluster. | `false` |
 | `prometheusNodePort` | Port number of the Prometheus outside the Kubernetes cluster. | `32101` |

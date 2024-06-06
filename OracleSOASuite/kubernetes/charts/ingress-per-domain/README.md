@@ -73,15 +73,17 @@ sslType: NONSSL
 # WLS domain as backend to the load balancer
 wlsDomain:
   domainUID: soainfra
+  secureEnabled: false
   adminServerName: AdminServer
-  adminServerPort: 7001
-  adminServerSSLPort: 7002
+  adminServerPort: 7011
+  adminServerSSLPort: 7012
+  adminSecurePort: 9002
   soaClusterName: soa_cluster
-  soaManagedServerPort: 8001
-  soaManagedServerSSLPort: 8002
+  soaManagedServerPort: 8011
+  soaManagedServerSSLPort: 8012
   osbClusterName: osb_cluster
-  osbManagedServerPort: 9001
-  osbManagedServerSSLPort: 9002
+  osbManagedServerPort: 9011
+  osbManagedServerSSLPort: 9012
 
 # Host Specific Values
 hostName:
@@ -102,6 +104,7 @@ The following table lists the configurable parameters of this chart and their de
 | --- | --- | --- |
 | `type` | Type of Ingress controller. Legal values are `TRAEFIK` or `NGINX`. | `TRAEFIK` |
 | `sslType` | Type of Configuration. values are `NONSSL` , `SSL` and `E2ESSL`. | `NONSSL` |
+| `secureEnabled` | Secure Administration enabled in SOA domain | `false` |
 | `domainType` | Type of SOA Domain. values are `soa` or `osb` or`soaosb`. | `soa` |
 | `hostName.admin` | Admin host name. | `admin.org` |
 | `hostName.soa` | Soa host name. | `soa.org` |
@@ -111,6 +114,7 @@ The following table lists the configurable parameters of this chart and their de
 | `wlsDomain.osbClusterName` | Cluster name in the OSB domain. | `osb_cluster` |
 | `wlsDomain.adminServerPort` | Port number of the Admin servers in the Soa domain cluster . | `7001` |
 | `wlsDomain.adminServerSSLPort` | Port number of the Admin servers in the Soa domain cluster . | `7002` |
+| `wlsDomain.adminSecurePort` | Port number of the Secure Administration servers in the Soa domain cluster and not configurable. | `9002` |
 | `wlsDomain.soaManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `8001` |
 | `wlsDomain.soaManagedServerSSLPort` | SSL Port number of the managed servers in the Soa domain cluster. | `8002` |
 | `wlsDomain.osbManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `9001` |

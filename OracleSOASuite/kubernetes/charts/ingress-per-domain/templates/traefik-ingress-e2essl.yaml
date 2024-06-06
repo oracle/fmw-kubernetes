@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 {{- if eq .Values.type "TRAEFIK" }}
@@ -16,7 +16,11 @@ spec:
   - match: HostSNI(`{{ .Values.hostName.admin }}`)
     services:
     - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+      {{- if eq .Values.wlsDomain.secureEnabled true }}
+      port: {{ .Values.wlsDomain.adminSecurePort }}
+      {{- else }}
       port: {{ .Values.wlsDomain.adminServerSSLPort }}
+      {{- end }}
       weight: 3
       terminationDelay: 400
   {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}

@@ -6,10 +6,6 @@ The WebLogic Kubernetes operator (the “operator”) supports deployment of Ora
 * `osb`: Deploys an Oracle Service Bus domain
 * `soaosb`: Deploys a domain with SOA, Oracle Enterprise Scheduler (ESS), and Oracle Service Bus
 
-***
-The current supported production release is [24.1.2](https://github.com/oracle/fmw-kubernetes/releases).
-***
-
 In this release, Oracle SOA Suite domains are supported using the “domain on a persistent volume”
 [model](https://oracle.github.io/weblogic-kubernetes-operator/userguide/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
 

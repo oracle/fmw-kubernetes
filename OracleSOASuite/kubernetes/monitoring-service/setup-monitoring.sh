@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # setup-monitoring.sh
@@ -77,20 +77,29 @@ function installKubePrometheusStack {
   echo "Setup prometheus-community/kube-prometheus-stack in progress"   
   if [ ${exposeMonitoringNodePort} == "true" ]; then
    
-     helm install ${monitoringNamespace} prometheus-community/kube-prometheus-stack \
+     helm install ${monitoringHelmReleaseName} prometheus-community/kube-prometheus-stack \
        --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
        --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
        --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
        --wait
   else
-     helm install ${monitoringNamespace}  prometheus-community/kube-prometheus-stack \
+     helm install ${monitoringHelmReleaseName}  prometheus-community/kube-prometheus-stack \
        --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set grafana.adminPassword=admin \
        --wait
   fi
   exitIfError $? "ERROR: prometheus-community/kube-prometheus-stack install failed."
 }
+
+function WebLogicMonitoringExporter {
+  echo "Configuring WebLogic Monitoring Exporter as a sidecar...."
+  echo "!!! WARNING !!! This will be triggering the Domain restart...."
+  ${KUBERNETES_CLI:-kubectl} patch domain ${domainUID} -n ${domainNamespace} --patch-file ${scriptDir}/config/config.yaml --type=merge
+  sleep 10
+  sh ${scriptDir}/scripts/waitForDomain.sh -d ${domainUID} -n ${domainNamespace} -p "Completed"
+}
+
 
 #Parse the inputs
 while getopts "hi:" opt; do
@@ -147,18 +156,11 @@ fi
 export username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
 export password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
-# Setting up the WebLogic Monitoring Exporter
-echo "Deploy WebLogic Monitoring Exporter started"
-script=${scriptDir}/scripts/deploy-weblogic-monitoring-exporter.sh
-sh ${script} 
-exitIfError $? "ERROR: $script failed."
-echo "Deploy WebLogic Monitoring Exporter completed"
-
 
 # Deploy servicemonitors
 serviceMonitor=${scriptDir}/manifests/wls-exporter-ServiceMonitor.yaml
 cp "${serviceMonitor}.template" "${serviceMonitor}"
-sed -i -e "s/release: monitoring/release: ${monitoringNamespace}/g" ${serviceMonitor}
+sed -i -e "s/release: monitoring/release: ${monitoringHelmReleaseName}/g" ${serviceMonitor}
 sed -i -e "s/user: %USERNAME%/user: `echo -n $username|base64 -w0`/g" ${serviceMonitor}
 sed -i -e "s/password: %PASSWORD%/password: `echo -n $password|base64 -w0`/g" ${serviceMonitor}
 sed -i -e "s/namespace:.*/namespace: ${domainNamespace}/g" ${serviceMonitor}
@@ -167,6 +169,7 @@ sed -i -e "$!N;s/matchNames:\n    -.*/matchNames:\n    - ${domainNamespace}/g;P;
 
 ${KUBERNETES_CLI:-kubectl} apply -f ${serviceMonitor}
 
+WebLogicMonitoringExporter
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then
    # Deploying  WebLogic Server Grafana Dashboard
