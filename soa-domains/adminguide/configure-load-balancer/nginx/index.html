@@ -12,18 +12,18 @@
     <title>NGINX :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1717668926" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1717668926"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843534"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1717668926"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1717668926"></script>
 
     
   </div>
@@ -5737,7 +5737,7 @@
 <p>Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file <code>${WORKDIR}/charts/ingress-per-domain/values.yaml</code>. By default, <code>type</code> is <code>TRAEFIK</code> , <code>sslType</code> is <code>NONSSL</code>, and <code>domainType</code> is <code>soa</code>. These values can be overridden by passing values through the command line or can be edited in the sample file <code>values.yaml</code>.<br>
 If needed, you can update the ingress YAML file to define more path rules (in section <code>spec.rules.host.http.paths</code>) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at <code>${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml</code>.</p>
 <blockquote>
-<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v24.1.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
+<p>Note: See <a href="https://github.com/oracle/fmw-kubernetes/blob/v24.2.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration">here</a> for all the configuration parameters.</p>
 </blockquote>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
  $ helm install soa-nginx-ingress  charts/ingress-per-domain <span style="color:#ae81ff">\
@@ -5810,13 +5810,13 @@ Rules:
 Host                                                   Path  Backends
 ----                                                   ----  --------
 domain1.org
-                                                     /console                   soainfra-adminserver:7001 (10.244.0.45:7001)
-                                                     /em                        soainfra-adminserver:7001 (10.244.0.45:7001)
-                                                     /weblogic/ready            soainfra-adminserver:7001 (10.244.0.45:7001)
-                                                     /                          soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
-                                                     /soa-infra                 soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
-                                                     /soa/composer              soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
-                                                     /integration/worklistapp   soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                     /console                   soainfra-adminserver:7011 (10.244.0.45:7011)
+                                                     /em                        soainfra-adminserver:7011 (10.244.0.45:7011)
+                                                     /weblogic/ready            soainfra-adminserver:7011 (10.244.0.45:7011)
+                                                     /                          soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
+                                                     /soa-infra                 soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
+                                                     /soa/composer              soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
+                                                     /integration/worklistapp   soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
 Annotations:                                             &lt;none&gt;
 Events:
 Type    Reason  Age    From                      Message
@@ -5853,13 +5853,13 @@ Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
     Host                                                   Path  Backends
     ----                                                   ----  --------
      domain1.org
-                                                      /console                   soainfra-adminserver:7001 (10.244.0.45:7001)
-                                                      /em                        soainfra-adminserver:7001 (10.244.0.45:7001)
-                                                      /weblogic/ready            soainfra-adminserver:7001 (10.244.0.45:7001)
-                                                      /                          soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
-                                                      /soa-infra                 soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
-                                                      /soa/composer              soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
-                                                      /integration/worklistapp   soainfra-cluster-soa-cluster:8001 (10.244.0.46:8001,10.244.0.47:8001)
+                                                      /console                   soainfra-adminserver:7011 (10.244.0.45:7011)
+                                                      /em                        soainfra-adminserver:7011 (10.244.0.45:7011)
+                                                      /weblogic/ready            soainfra-adminserver:7011 (10.244.0.45:7011)
+                                                      /                          soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
+                                                      /soa-infra                 soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
+                                                      /soa/composer              soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
+                                                      /integration/worklistapp   soainfra-cluster-soa-cluster:8011 (10.244.0.46:8011,10.244.0.47:8011)
  Annotations:                                             kubernetes.io/ingress.class: nginx
                                                           nginx.ingress.kubernetes.io/configuration-snippet:
                                                           more_set_input_headers &quot;X-Forwarded-Proto: https&quot;;
@@ -5900,7 +5900,7 @@ Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
    Host        Path  Backends
    ----        ----  --------
    admin.org
-                       soainfra-adminserver-nginx-ssl:7002 (10.244.0.247:7002)
+                       soainfra-adminserver-nginx-ssl:7012 (10.244.0.247:7012)
   Annotations:  kubernetes.io/ingress.class: nginx
                 meta.helm.sh/release-name: soa-nginx-ingress
                 meta.helm.sh/release-namespace: soans
@@ -5920,7 +5920,7 @@ Normal  UPDATE  94s    nginx-ingress-controller  Ingress soans/soainfra-nginx
   Host        Path  Backends
   ----        ----  --------
   soa.org
-                 /   soainfra-cluster-soa-cluster:8002 (10.244.0.249:8002)
+                 /   soainfra-cluster-soa-cluster:8012 (10.244.0.249:8012)
  Annotations:  kubernetes.io/ingress.class: nginx
                meta.helm.sh/release-name: soa-nginx-ingress
                meta.helm.sh/release-namespace: soans
@@ -9719,19 +9719,19 @@ https://soa.org:<span style="color:#e6db74">${</span>LOADBALANCER_SSLPORT<span s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1717668926"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1717668926"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843534" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843534"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1717668926" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1717668926"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>Quick start deployment on-premise :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1713843534" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1713843534" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1717668926" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1717668926"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1713843534"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1717668926"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1713843534"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1717668926"></script>
 
     
   </div>
@@ -5624,7 +5624,7 @@ $ /sbin/sysctl net.ipv4.ip_nonlocal_bind<span style="color:#f92672">=</span><spa
 $ systemctl stop firewalld
 </code></pre></div></li>
 </ol>
-<h4 id="12-install-and-configure-cri-o-and-podman">1.2 Install and configure CRI-O and Podman</h4>
+<h4 id="12-install-cri-o-and-podman">1.2 Install CRI-O and Podman</h4>
 <blockquote>
 <p>Note: If you have already configured CRI-O and Podman, continue to <a href="#13-install-and-configure-kubernetes">Install and configure Kubernetes</a>.</p>
 </blockquote>
@@ -5639,28 +5639,31 @@ Oracle Linux Server release 8.6
 </code></pre></div></li>
 <li>
 <p>Installing CRI-O:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Installing the plugins and additional tools needed to setup CRI-O, namely flannel-cni-plugin, kubernetes-cni-plugins and cri-tools</span>
-$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/flannel-cni-plugin-1.2.0-3.el8.x86_64.rpm
-$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/kubernetes-cni-plugins-1.2.0-6.el8.x86_64.rpm
-$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/cri-tools-1.28.0-2.el8.x86_64.rpm
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Add OLCNE( Oracle Cloud Native Environment ) Repository to dnf config-manager. This allows dnf to install the additional packages required for CRI-O installation.</span>
+$ dnf config-manager --add-repo https://yum.oracle.com/repo/OracleLinux/OL9/olcne18/x86_64
 
-<span style="color:#75715e">### Installing crio</span>
-$ dnf install https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64/getPackage/cri-o-1.28.2-2.el8.x86_64.rpm
+<span style="color:#75715e">### Installing cri-o</span>
+$ dnf install -y cri-o
 </code></pre></div><blockquote>
 <p>Note: To install a different version of CRI-O or on a different operating system, see <a href="https://github.com/cri-o/cri-o/blob/main/install.md">CRI-O Installation Instructions</a>.</p>
 </blockquote>
 </li>
 <li>
 <p>Start the CRI-O service:</p>
+<p>Set up Kernel Modules and Proxies</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Enable kernel modules overlay and br_netfilter which are required for Kubernetes Container Network Interface (CNI) plugins</span>
 $ modprobe overlay
 $ modprobe br_netfilter
+
 <span style="color:#75715e">### To automatically load these modules at system start up create config as below</span>
 $ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/modules-load.d/crio.conf
 </span><span style="color:#e6db74">overlay
 </span><span style="color:#e6db74">br_netfilter
 </span><span style="color:#e6db74">EOF</span>
 $ sysctl --system
+
+<span style="color:#75715e">### Set the environmental variable CONTAINER_RUNTIME_ENDPOINT to crio.sock to use crio as the container runtime</span>
+$ export CONTAINER_RUNTIME_ENDPOINT<span style="color:#f92672">=</span>unix:///var/run/crio/crio.sock
 
 <span style="color:#75715e">### Setup Proxy for CRIO service</span>
 $ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/sysconfig/crio
@@ -5671,47 +5674,61 @@ $ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/sysconfig/crio
 </span><span style="color:#e6db74">no_proxy=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock
 </span><span style="color:#e6db74">NO_PROXY=localhost,127.0.0.0/8,ADD-YOUR-INTERNAL-NO-PROXY-LIST,/var/run/crio/crio.sock
 </span><span style="color:#e6db74">EOF</span>
-<span style="color:#75715e">### Setting the runtime for crio</span>
+</code></pre></div><p>Set the runtime for CRI-O</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Setting the runtime for crio</span>
 <span style="color:#75715e">## Update crio.conf</span>
 $ vi /etc/crio/crio.conf
 <span style="color:#75715e">## Append following under [crio.runtime]</span>
-conmon_cgroup <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pod&#34;</span>
-cgroup_manager <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;cgroupfs&#34;</span>
+conmon_cgroup <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubepods.slice&#34;</span>
+cgroup_manager <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;systemd&#34;</span>
 <span style="color:#75715e">## Uncomment following under [crio.network]</span>
 network_dir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/etc/cni/net.d&#34;</span>
 plugin_dirs<span style="color:#f92672">=[</span>
     <span style="color:#e6db74">&#34;/opt/cni/bin&#34;</span>,
     <span style="color:#e6db74">&#34;/usr/libexec/cni&#34;</span>,
 <span style="color:#f92672">]</span>
-<span style="color:#75715e">## Restart crio service</span>
+</code></pre></div><p>Start the CRI-O Service</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">## Restart crio service</span>
 $ systemctl restart crio.service
 $ systemctl enable --now crio
 </code></pre></div></li>
 <li>
-<p>Configure podman rootless:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ usermod --add-subuids 10000-65536 --add-subgids 10000-65536 &lt;user-id&gt;
-$ podman system migrate    
-<span style="color:#75715e">### Verify the user-id addition</span>
-$ cat /etc/subuid
+<p>Installing Podman:</p>
+<p>On Oracle Linux 8, if podman is not available, then install Podman and related tools with following command syntax:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo dnf module install container-tools:ol8
+</code></pre></div><p>On Oracle Linux 9, if podman is not available, then install Podman and related tools with following command syntax:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo dnf install container-tools
+</code></pre></div><p>Since the setup uses &ldquo;docker&rdquo; CLI commands, on Oracle Linux 8/9, install the podman-docker package if not available, that effectively aliases the docker command to podman,with following command syntax:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo dnf install podman-docker
+</code></pre></div></li>
+<li>
+<p>Configure Podman rootless:</p>
+<p>For using podman with your User ID (Rootless environment), Podman requires the user running it to have a range of UIDs listed in the files /etc/subuid and /etc/subgid. Rather than updating the files directly, the usermod program can be used to assign UIDs and GIDs to a user with the following commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo /sbin/usermod --add-subuids 100000-165535 --add-subgids 100000-165535 &lt;REPLACE_USER_ID&gt;
+$ podman system migrate
+</code></pre></div><blockquote>
+<p>Note: The above &ldquo;podman system migrate&rdquo; need to be executed with your User ID and not root.</p>
+</blockquote>
+<p>Verify the user-id addition</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat /etc/subuid
 $ cat /etc/subgid
-<span style="color:#75715e">### Expected similar output</span>
-opc:100000:65536
-&lt;user-id&gt;:20000:45537
+</code></pre></div><p>Expected similar output</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">opc:100000:65536
+&lt;user-id&gt;:100000:65536
 </code></pre></div></li>
 </ol>
-<h4 id="13-install-and-configure-kubernetes">1.3 Install and configure Kubernetes</h4>
+<h4 id="13-install-and-configure-kubernetes">1.3 Install and Configure Kubernetes</h4>
 <ol>
 <li>
 <p>Add the external Kubernetes repository:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat <span style="color:#e6db74">&lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 </span><span style="color:#e6db74">[kubernetes]
 </span><span style="color:#e6db74">name=Kubernetes
-</span><span style="color:#e6db74">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+</span><span style="color:#e6db74">baseurl=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
 </span><span style="color:#e6db74">enabled=1
 </span><span style="color:#e6db74">gpgcheck=1
-</span><span style="color:#e6db74">repo_gpgcheck=1
-</span><span style="color:#e6db74">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-</span><span style="color:#e6db74">exclude=kube*
+</span><span style="color:#e6db74">gpgkey=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
+</span><span style="color:#e6db74">exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
 </span><span style="color:#e6db74">EOF</span>
 </code></pre></div></li>
 <li>
@@ -5721,7 +5738,7 @@ $ setenforce <span style="color:#ae81ff">0</span>
 $ sed -i <span style="color:#e6db74">&#39;s/^SELINUX=enforcing$/SELINUX=permissive/&#39;</span> /etc/selinux/config
 </code></pre></div></li>
 <li>
-<p>Export proxy and install <code>kubeadm</code>, <code>kubelet</code>, and <code>kubectl</code>:</p>
+<p>Export proxy and enable <code>kubelet</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Get the nslookup IP address of the master node to use with apiserver-advertise-address during setting up Kubernetes master</span>
 <span style="color:#75715e">### as the host may have different internal ip (hostname -i) and nslookup $HOSTNAME</span>
 $ ip_addr<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>nslookup <span style="color:#66d9ef">$(</span>hostname -f<span style="color:#66d9ef">)</span> | grep -m2 Address | tail -n1| awk -F: <span style="color:#e6db74">&#39;{print $2}&#39;</span>| tr -d <span style="color:#e6db74">&#34; &#34;</span><span style="color:#e6db74">`</span>
@@ -5735,11 +5752,8 @@ $ export https_proxy<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR
 $ export HTTPS_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 $ export HTTP_PROXY<span style="color:#f92672">=</span>http://REPLACE-WITH-YOUR-COMPANY-PROXY-HOST:PORT
 
-<span style="color:#75715e">### Install Kubernetes</span>
-$ VERSION<span style="color:#f92672">=</span>1.27.2
-$ dnf install -y kubelet-$VERSION kubeadm-$VERSION kubectl-$VERSION --disableexcludes<span style="color:#f92672">=</span>kubernetes
-
-<span style="color:#75715e">### Enable kubelet service so that it automatically restarts on reboot</span>
+<span style="color:#75715e">### Install the kubernetes components and enable the kubelet service so that it automatically restarts on reboot</span>
+$ dnf install -y kubeadm kubelet kubectl
 $ systemctl enable --now kubelet
 </code></pre></div></li>
 <li>
@@ -5754,14 +5768,6 @@ $ sysctl --system
 <li>
 <p>Disable swap check:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sed -i <span style="color:#e6db74">&#39;s/KUBELET_EXTRA_ARGS=/KUBELET_EXTRA_ARGS=&#34;--fail-swap-on=false&#34;/&#39;</span> /etc/sysconfig/kubelet
-$ cat /etc/sysconfig/kubelet
-<span style="color:#75715e">### Reload and restart kubelet</span>
-$ systemctl daemon-reload
-$ systemctl restart kubelet
-</code></pre></div></li>
-<li>
-<p>From Kubernetes version v1.22 onward, <code>kubeadm</code> will default <code>cgroup-driver</code> to <code>systemd</code>. If your CRI-O is using cgroup driver as <code>cgroupfs</code>, set <code>--cgroup-driver=cgroupfs</code> for kubelet.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sed -i <span style="color:#e6db74">&#39;s/^KUBELET_EXTRA_ARGS=.*/KUBELET_EXTRA_ARGS=&#34;--fail-swap-on=false --cgroup-driver=cgroupfs&#34;/&#39;</span> /etc/sysconfig/kubelet
 $ cat /etc/sysconfig/kubelet
 <span style="color:#75715e">### Reload and restart kubelet</span>
 $ systemctl daemon-reload
@@ -5866,7 +5872,7 @@ $ sudo chown <span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9e
 <blockquote>
 <p>Note: If you are using a different CIDR block than <code>10.244.0.0/16</code>, then download and update <code>kube-flannel.yml</code> with the correct CIDR address before deploying into the cluster:</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wget https://raw.githubusercontent.com/flannel-io/flannel/v0.24.2/Documentation/kube-flannel.yml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wget https://github.com/flannel-io/flannel/releases/download/v0.25.1/kube-flannel.yml
 $ <span style="color:#75715e">### Update the CIDR address if you are using a CIDR block other than the default 10.244.0.0/16</span>
 $ kubectl apply -f kube-flannel.yml
 </code></pre></div></li>
@@ -5901,20 +5907,20 @@ pod/kube-scheduler-mymasternode             1/1         Running         <span st
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_24.1.2
-$ cd $HOME/soa_24.1.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_24.2.2
+$ cd $HOME/soa_24.2.2
 </code></pre></div></li>
 <li>
 <p>Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a>. Required artifacts are available at <code>OracleSOASuite/kubernetes</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git
-$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.1.2/fmw-kubernetes/OracleSOASuite/kubernetes
+$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.2.2/fmw-kubernetes/OracleSOASuite/kubernetes
 </code></pre></div></li>
 </ol>
 <h4 id="32-get-required-docker-images-and-add-them-to-your-local-registry">3.2 Get required Docker images and add them to your local registry</h4>
 <ol>
 <li>
 <p>Pull the WebLogic Kubernetes Operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.1.7
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.2
 </code></pre></div></li>
 <li>
 <p>Obtain the Oracle Database image and Oracle SOA Suite Docker image from the <a href="https://container-registry.oracle.com">Oracle Container Registry</a>:</p>
@@ -5949,7 +5955,7 @@ $ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.1.2/fmw-kuberne
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>
 $ helm install weblogic-kubernetes-operator charts/weblogic-operator <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --namespace opns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.1.7 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --set image<span style="color:#f92672">=</span>ghcr.io/oracle/weblogic-kubernetes-operator:4.2.2 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --set serviceAccount<span style="color:#f92672">=</span>op-sa <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --wait
 </code></pre></div><h4 id="43-verify-the-weblogic-kubernetes-operator">4.3 Verify the WebLogic Kubernetes Operator</h4>
@@ -5963,7 +5969,7 @@ $ helm install weblogic-kubernetes-operator charts/weblogic-operator <span style
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></div></li>
 </ol>
-<p>The WebLogic Kubernetes Operator v4.1.7 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
+<p>The WebLogic Kubernetes Operator v4.2.2 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
 <h3 id="5-install-the-traefik-ingress-based-load-balancer">5. Install the Traefik (ingress-based) load balancer</h3>
 <p>The WebLogic Kubernetes Operator supports these load balancers: Traefik, NGINX, and Apache. Samples are provided in the documentation.</p>
 <p>This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle SOA Suite domain.</p>
@@ -9893,19 +9899,19 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="co
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1717668926"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1713843534"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1713843534"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1717668926"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1713843534" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1713843534"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1717668926" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1717668926"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
