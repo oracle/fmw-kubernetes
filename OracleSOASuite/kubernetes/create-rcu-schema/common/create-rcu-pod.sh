@@ -20,7 +20,7 @@ usage() {
   echo "  -p OracleSOASuite ImagePullSecret (optional) "
   echo "      (default: none) "
   echo "  -i OracleSOASuite Image (optional) "
-  echo "      (default: soasuite:12.2.1.4) "
+  echo "      (default: soasuite:release-version) "
   echo "  -u OracleSOASuite ImagePullPolicy (optional) "
   echo "      (default: IfNotPresent) "
   echo "  -o Output directory for the generated YAML file. (optional)"
@@ -34,7 +34,7 @@ usage() {
 
 namespace="default"
 credSecret="oracle-rcu-secret"
-fmwimage="soasuite:12.2.1.4"
+fmwimage="soasuite:release-version"
 imagePullPolicy="IfNotPresent"
 rcuOutputDir="rcuoutput"
 

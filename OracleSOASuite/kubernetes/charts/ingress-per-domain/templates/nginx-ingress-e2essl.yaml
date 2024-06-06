@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 {{- if eq .Values.type "NGINX" }}
@@ -11,9 +11,15 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
+  {{- if eq .Values.wlsDomain.secureEnabled true }}
+  - port: {{ .Values.wlsDomain.adminSecurePort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminSecurePort }}
+  {{- else }}
   - port: {{ .Values.wlsDomain.adminServerSSLPort }}
     protocol: TCP
     targetPort: {{ .Values.wlsDomain.adminServerSSLPort }}
+  {{- end }}
   selector:
     weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
     weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
@@ -45,7 +51,11 @@ spec:
           service:
             name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-ssl'
             port:
+              {{- if eq .Values.wlsDomain.secureEnabled true }}
+              number: {{ .Values.wlsDomain.adminSecurePort }}
+              {{- else }}
               number: {{ .Values.wlsDomain.adminServerSSLPort }}
+              {{- end }}
 {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
 ---
 apiVersion: networking.k8s.io/v1

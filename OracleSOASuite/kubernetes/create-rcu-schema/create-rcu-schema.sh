@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Configure RCU schema based on schemaPreifix and rcuDatabaseURL
@@ -9,10 +9,10 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../common/utility.sh
 
 usage() {
-  echo "usage: ${script} -s <schemaPrefix> [-t <schemaType>] [-d <dburl>] [-n <namespace>] [-c <credentialsSecretName>] [-p <docker-store>] [-i <image>] [-u <imagePullPolicy>] [-o <rcuOutputDir>] [-r <customVariables>] [-l <timeoutLimit>] [-h]"
+  echo "usage: ${script} -s <schemaPrefix> [-t <schemaType>] [-d <dburl>] [-n <namespace>] [-c <credentialsSecretName>] [-p <docker-store>] [-i <image>] [-u <imagePullPolicy>] [-o <rcuOutputDir>] [-r <customVariables>] [-l <timeoutLimit>] [-b <databaseType>] [-e <edition>] [-h]"
   echo "  -s RCU Schema Prefix (required)"
   echo "  -t RCU Schema Type (optional)"
-  echo "      (supported values: osb,soa,soaosb) "
+  echo "      (supported values: osb,soa,soaosb, default: soa) "
   echo "  -d RCU Oracle Database URL (optional) "
   echo "      (default: oracle-db.default.svc.cluster.local:1521/devpdb.k8s) "
   echo "  -n Namespace for RCU pod (optional)"
@@ -25,7 +25,7 @@ usage() {
   echo "  -p OracleSOASuite ImagePullSecret (optional) "
   echo "      (default: none) "
   echo "  -i OracleSOASuite Image (optional) "
-  echo "      (default: soasuite:12.2.1.4) "
+  echo "      (default: soasuite:release-version) "
   echo "  -u OracleSOASuite ImagePullPolicy (optional) "
   echo "      (default: IfNotPresent) "
   echo "  -o Output directory for the generated YAML file. (optional)"
@@ -34,6 +34,10 @@ usage() {
   echo "      (default: none)"
   echo "  -l Timeout limit in seconds. (optional)."
   echo "      (default: 300)"
+  echo "  -b Type of database to which you are connecting (optional). Supported values: ORACLE,EBR"
+  echo "      (default: ORACLE)"
+  echo "  -e The edition name. This parameter is only valid if you specify type of database (-b) as EBR. (optional)."
+  echo "      (default: 'ORA\$BASE')"
   echo "  -h Help"
   echo ""
   echo "NOTE: The c, p, i, u, and o arguments are ignored if an rcu pod is already running in the namespace."
@@ -82,13 +86,21 @@ function checkPodStateUsingCustomTimeout(){
 }
 
 timeout=300
-
-rcuType="${rcuType}"
+edition='ORA$BASE'
 dburl="oracle-db.default.svc.cluster.local:1521/devpdb.k8s"
 namespace="default"
 createPodArgs=""
+databaseType="ORACLE"
 
-while getopts ":s:t:d:n:c:p:i:u:o:r:l:h:" opt; do
+if [ -z ${rcuType} ]; then
+ rcuType="soa"
+fi
+
+if [ -z ${customVariables} ]; then
+ customVariables="none"
+fi
+
+while getopts ":s:t:d:n:c:p:i:u:o:r:l:b:e:h:" opt; do
   case $opt in
     s) schemaPrefix="${OPTARG}"
     ;;
@@ -104,6 +116,10 @@ while getopts ":s:t:d:n:c:p:i:u:o:r:l:h:" opt; do
     ;;
     l) timeout="${OPTARG}"
     ;;
+    b) databaseType="${OPTARG}"
+    ;;
+    e) edition="${OPTARG}"
+    ;;
     h) usage 0
     ;;
     *) usage 1
@@ -116,11 +132,15 @@ if [ -z "${schemaPrefix}" ]; then
   usage 1
 fi
 
+if [ "${databaseType}" == "ORACLE" ]; then
+   edition=''
+fi
+
 # this creates the rcu pod if it doesn't already exist
 echo "[INFO] Calling '${scriptDir}/common/create-rcu-pod.sh -n $namespace $createPodArgs'"
 ${scriptDir}/common/create-rcu-pod.sh -n $namespace $createPodArgs || exit -4
 
-${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- /bin/bash /u01/oracle/createRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${customVariables}
+${KUBERNETES_CLI:-kubectl} exec -n $namespace -i rcu -- /bin/bash /u01/oracle/createRepository.sh ${dburl} ${schemaPrefix} ${rcuType} ${customVariables} ${databaseType} ${edition}
 if [ $? != 0 ]; then
  echo "######################";
  echo "[ERROR] Could not create the RCU Repository";

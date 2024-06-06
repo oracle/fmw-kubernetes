@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 {{- if eq .Values.type "NGINX" }}
@@ -39,6 +39,13 @@ spec:
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
       - path: /weblogic/ready
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /management
         pathType: ImplementationSpecific
         backend:
           service:
@@ -101,6 +108,15 @@ spec:
       {{- end }}
       {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
       - path: /lwpfconsole
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+      - path: /testconsole
         pathType: ImplementationSpecific
         backend:
           service:

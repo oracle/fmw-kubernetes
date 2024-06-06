@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -6,7 +6,7 @@ import sys
 
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
-class SOA12214Provisioner:
+class SOAProvisioner:
 
     jrfDone = 0;
     MACHINES = {
@@ -16,13 +16,13 @@ class SOA12214Provisioner:
             'ListenPort': 5658
         }
     }
-    
+
     ADMIN_SERVER_NAME='AdminServer'
     SOA_MANAGED_SERVERS = []
     OSB_MANAGED_SERVERS = []
     JMSServersList  = ['SOAJMSServer','UMSJMSServer']
 
-    JRF_12214_TEMPLATES = {
+    JRF_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar',
@@ -34,7 +34,7 @@ class SOA12214Provisioner:
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR', 'WSMPM-MAN-SVR' ]
     }
      
-    SOA_12214_TEMPLATES = {
+    SOA_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa.refconfig_template.jar',
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.ess.basic_template.jar',
@@ -43,7 +43,7 @@ class SOA12214Provisioner:
         'serverGroupsToTarget' : [ 'SOA-MGD-SVRS', 'ESS-MGD-SVRS' ]
     }
 
-    SOA_B2B_12214_TEMPLATES = {
+    SOA_B2B_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa.refconfig_template.jar',
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.ess.basic_template.jar',
@@ -53,7 +53,7 @@ class SOA12214Provisioner:
         'serverGroupsToTarget' : [ 'SOA-MGD-SVRS', 'ESS-MGD-SVRS' ]
     }
 
-    OSB_12214_TEMPLATES = {
+    OSB_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/osb/common/templates/wls/oracle.osb.refconfig_template.jar'
         ],
@@ -66,8 +66,9 @@ class SOA12214Provisioner:
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
-        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType)
+    def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType)
+                 
 
         if domainType == "soa" or domainType == "soaosb":
                 self.extendSoaDomain(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
@@ -85,6 +86,7 @@ class SOA12214Provisioner:
             self.reConfigureJMSStore(domainHome, domainType)
         else:
             print 'persistentStore = '+persistentStore+'...skipping JDBC reconfig'
+
 
     def configureTlogJDBCStore(self, domainHome, domainType):
         readDomain(domainHome)
@@ -442,14 +444,18 @@ class SOA12214Provisioner:
         print ms_servers
         return ms_servers
 
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase,soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType):
-        baseTemplate = self.replaceTokens(self.JRF_12214_TEMPLATES['baseTemplate'])
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase,soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType):
+        baseTemplate = self.replaceTokens(self.JRF_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
         setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
-        if (prodMode == 'true'):
-            setOption('ServerStartMode', 'prod')
+        domainVersion = cmo.getDomainVersion()
+        if prodMode == 'true':
+            if (domainVersion == "14.1.2.0.0" and secureMode == 'true'):
+               setOption('ServerStartMode', 'secure')
+            else:
+               setOption('ServerStartMode', 'prod')
         else:
             setOption('ServerStartMode', 'dev')
         set('Name', domainName)
@@ -479,7 +485,6 @@ class SOA12214Provisioner:
         cd('/Security/' + domainName + '/User/weblogic')
         set('Name', user)
         set('Password', password)
-
         # Create cluster and managed servers
         if  domainType == "soa" or domainType == "soaosb" or domainType == "soab2b" or domainType == "soaosbb2b":
             ms_port = int(soaManagedServerPort)
@@ -550,25 +555,25 @@ class SOA12214Provisioner:
 
     def applyJRFTemplates(self):
         print 'Applying JRF templates...'
-        for extensionTemplate in self.JRF_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.JRF_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
         return
 
     def applySOATemplates(self):
         print 'Applying SOA templates...'
-        for extensionTemplate in self.SOA_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.SOA_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
         return
 
     def applySOAB2BTemplates(self):
         print 'INFO: Applying SOA B2B templates...'
-        for extensionTemplate in self.SOA_B2B_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.SOA_B2B_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
         return
 
     def applyOSBTemplates(self):
         print 'Applying OSB templates...'
-        for extensionTemplate in self.OSB_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.OSB_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
         return
 
@@ -659,8 +664,8 @@ class SOA12214Provisioner:
         self.configureXADataSources()
 
         print 'Targeting Server Groups...'
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.SOA_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.SOA_TEMPLATES['serverGroupsToTarget'])
         cd('/')
         self.targetSOAServers(serverGroupsToTarget)
 
@@ -698,8 +703,8 @@ class SOA12214Provisioner:
         self.configureXADataSources()
 
         print 'Targeting Server Groups...'
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.SOA_B2B_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.SOA_B2B_TEMPLATES['serverGroupsToTarget'])
         cd('/')
         self.targetSOAServers(serverGroupsToTarget)
 
@@ -736,8 +741,8 @@ class SOA12214Provisioner:
         set('DriverName', 'oracle.jdbc.xa.client.OracleXADataSource')
 
         print 'Targeting Server Groups...'
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.OSB_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.OSB_TEMPLATES['serverGroupsToTarget'])
         if domainType == "osb" or domainType == "soaosb" or domainType == "soaosbb2b":
             cd('/')
             self.targetOSBServers(serverGroupsToTarget)
@@ -792,7 +797,7 @@ class SOA12214Provisioner:
         if admin_channel_address == None or admin_channel_port == 'None':
             return
         cd('/')
-        admin_server_name = self.ADMIN_SERVER_NAME
+        admin_server_name = get('AdminServerName')
         print('setting admin server t3channel for ' + admin_server_name)
         cd('/Servers/' + admin_server_name)
         create('T3Channel', 'NetworkAccessPoint')
@@ -814,7 +819,7 @@ def usage():
           '-soaManagedNameBase <soaManagedNameBase> -osbManagedNameBase <osbManagedNameBase> ' \
           '-soaManagedServerPort <soaManagedServerPort> -osbManagedServerPort <osbManagedServerPort> ' \
           '-soaManagedServerSSLPort <soaManagedServerSSLPort> -osbManagedServerSSLPort <osbManagedServerSSLPort> ' \
-          '-prodMode <prodMode> -managedServerCount <managedCount> ' \
+          '-prodMode <prodMode> -managedServerCount <managedCount> -secureMode <secureMode> '  \
           '-soaClusterName <soaClusterName> -osbClusterName <osbClusterName> ' \
           '-domainType <soa|osb|soaosb|soab2b|soaosbb2b> ' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
@@ -909,6 +914,9 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-secureMode':
+        secureMode = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-managedServerCount':
         managedCount = sys.argv[i + 1]
         i += 2
@@ -941,5 +949,5 @@ while i < len(sys.argv):
         usage()
         sys.exit(1)
 
-provisioner = SOA12214Provisioner(oracleHome, javaHome, domainParentDir)
-provisioner.createSOADomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner = SOAProvisioner(oracleHome, javaHome, domainParentDir)
+provisioner.createSOADomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode,secureMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)

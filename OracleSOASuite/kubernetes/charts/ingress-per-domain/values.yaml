@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 #
@@ -19,15 +19,17 @@ domainType: soa
 #WLS domain as backend to the load balancer
 wlsDomain:
   domainUID: soainfra
+  secureEnabled: false
   adminServerName: AdminServer
-  adminServerPort: 7001
-  adminServerSSLPort: 7002
+  adminSecurePort: 9002
+  adminServerPort: 7011
+  adminServerSSLPort: 7012
   soaClusterName: soa_cluster
-  soaManagedServerPort: 8001
-  soaManagedServerSSLPort: 8002
+  soaManagedServerPort: 8011
+  soaManagedServerSSLPort: 8012
   osbClusterName: osb_cluster
-  osbManagedServerPort: 9001
-  osbManagedServerSSLPort: 9002
+  osbManagedServerPort: 9011
+  osbManagedServerSSLPort: 9012
 
 # Host  specific values
 hostName:

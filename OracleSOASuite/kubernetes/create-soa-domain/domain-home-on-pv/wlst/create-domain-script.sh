@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 export DOMAIN_HOME=${DOMAIN_HOME_DIR}
@@ -26,6 +26,7 @@ wlst.sh -skipWLSModuleScanning \
         -soaManagedServerPort ${CUSTOM_SOA_MANAGEDSERVER_PORT} \
         -osbManagedServerPort ${CUSTOM_OSB_MANAGEDSERVER_PORT} \
         -prodMode ${CUSTOM_PRODUCTION_MODE} \
+        -secureMode ${CUSTOM_SECURE_MODE} \
         -managedServerCount ${CUSTOM_MANAGED_SERVER_COUNT} \
         -soaClusterName ${CUSTOM_SOA_CLUSTER_NAME} \
         -osbClusterName ${CUSTOM_OSB_CLUSTER_NAME} \
