@@ -20,22 +20,29 @@ Set up the WebLogic Monitoring Exporter that will collect WebLogic Server metric
 
 ## Set up manually
 
-### Deploy Prometheus and Grafana
+### Install kube-prometheus-stack
 
-Refer to the compatibility matrix of [Kube Prometheus](https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix) and clone the [release](https://github.com/coreos/kube-prometheus/releases) version of the `kube-prometheus` repository according to the Kubernetes version of your cluster.
+Refer to [link](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) and install the Kube Prometheus stack.
 
-1. Clone the `kube-prometheus` repository:
+1. Get Helm Repository Info for the `kube-prometheus`:
     ```
-    $ git clone https://github.com/coreos/kube-prometheus.git
+    $ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    $ helm repo update
     ```
 
-1. Change to folder `kube-prometheus` and enter the following commands to create the namespace and CRDs, and then wait for their availability before creating the remaining resources:
-
+1. Install the helm chart:
     ```
-    $ cd kube-prometheus
-    $ ${KUBERNETES_CLI:-kubectl} create -f manifests/setup
-    $ until ${KUBERNETES_CLI:-kubectl} get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
-    $ ${KUBERNETES_CLI:-kubectl} create -f manifests/
+    namespace=monitoring
+    release_name=myrelease
+    prometheusNodePort=32101
+    alertmanagerNodePort=32102
+    grafanaNodePort=32100
+    $ helm install $release_name prometheus-community/kube-prometheus-stack \
+       --namespace $namespace \
+       --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
+       --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
+       --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
+       --wait
     ```
 
 1. `kube-prometheus` requires all nodes in the Kubernetes cluster to be labeled with `kubernetes.io/os=linux`. If any node is not labeled with this, then you need to label it using the following command:
@@ -44,78 +51,22 @@ Refer to the compatibility matrix of [Kube Prometheus](https://github.com/coreos
     $ ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux
     ```
 
-1. Enter the following commands to provide external access for Grafana, Prometheus, and Alertmanager:
+1. With the nodePort values provided during helm install, monitoring serives will be available at:
 
-    ```
-    $ ${KUBERNETES_CLI:-kubectl} patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
-
-    $ ${KUBERNETES_CLI:-kubectl} patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
-
-    $ ${KUBERNETES_CLI:-kubectl} patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
-    ```
-
-    Note:
     * `32100` is the external port for Grafana
     * `32101` is the external port for Prometheus
     * `32102` is the external port for Alertmanager
 
-### Generate the WebLogic Monitoring Exporter Deployment Package  
+### Use the Monitoring Exporter with WebLogic Kubernetes Operator  
 
-The `wls-exporter.war` package need to be updated and created for each listening ports (Administration Server and Managed Servers) in the domain.
-Set the below environment values based on your environment and run the script `get-wls-exporter.sh` to generate the required WAR files at `${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy`:
-- adminServerPort
-- wlsMonitoringExporterTosoaCluster
-- soaManagedServerPort
-- wlsMonitoringExporterToosbCluster
-- osbManagedServerPort
-
-For example:
+For enabling monitoring exporter, simply add the [monitoringExporter](https://github.com/oracle/weblogic-kubernetes-operator/blob/main/documentation/domains/Domain.md#monitoring-exporter-specification) configuration element in the domain resource.
+Sample configuration available at `${WORKDIR}/monitoring-service/config/config.yaml` can be added to your domain using below command:
 
 ```
-$ cd ${WORKDIR}/monitoring-service/scripts
-$ export adminServerPort=7011 
-$ export wlsMonitoringExporterTosoaCluster=true
-$ export soaManagedServerPort=8011
-$ export wlsMonitoringExporterToosbCluster=true
-$ export osbManagedServerPort=9011
-$ sh get-wls-exporter.sh
+$ kubectl patch domain ${domainUID} -n ${domainNamespace} --patch-file ${WORKDIR}/monitoring-service/config/config.yaml --type=merge
 ```
 
-Verify whether the required WAR files are generated at `${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy`.
-
-```
-$ ls ${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy
-```
-
-### Deploy the WebLogic Monitoring Exporter into the OracleSOASuite domain
-
-Follow these steps to copy and deploy the WebLogic Monitoring Exporter WAR files into the OracleSOASuite Domain. 
-
-**Note**: Replace the `<xxxx>` with appropriate values based on your environment:
-
-```
-$ cd ${WORKDIR}/monitoring-service/scripts
-$ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy <namespace>/<admin_pod_name>:/u01/oracle
-$ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py <namespace>/<admin_pod_name>:/u01/oracle/wls-exporter-deploy
-$ ${KUBERNETES_CLI:-kubectl} exec -it -n <namespace> <admin_pod_name> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
--domainName <domainUID> -adminServerName <adminServerName> -adminURL <adminURL> \
--soaClusterName <soaClusterName> -wlsMonitoringExporterTosoaCluster <wlsMonitoringExporterTosoaCluster> \
--osbClusterName <osbClusterName> -wlsMonitoringExporterToosbCluster <wlsMonitoringExporterToosbCluster> \
--username <username> -password <password> 
-```
-
-For example:
-
-```
-$ cd ${WORKDIR}/monitoring-service/scripts
-$ ${KUBERNETES_CLI:-kubectl} cp wls-exporter-deploy soans/soainfra-adminserver:/u01/oracle
-$ ${KUBERNETES_CLI:-kubectl} cp deploy-weblogic-monitoring-exporter.py soans/soainfra-adminserver:/u01/oracle/wls-exporter-deploy
-$ ${KUBERNETES_CLI:-kubectl} exec -it -n soans soainfra-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
--domainName soainfra -adminServerName AdminServer -adminURL soainfra-adminserver:7011 \
--soaClusterName soa_cluster -wlsMonitoringExporterTosoaCluster true \
--osbClusterName osb_cluster -wlsMonitoringExporterToosbCluster true \
--username weblogic -password Welcome1 
-```
+This will trigger the restart of domain. The newly created server pods will have the exporter sidecar. See https://github.com/oracle/weblogic-monitoring-exporter for details.
 
 ### Configure Prometheus Operator 
 
@@ -186,21 +137,15 @@ The following parameters can be provided in the inputs file.
 | `setupKubePrometheusStack` | Boolean value indicating whether kube-prometheus-stack (Prometheus, Grafana and Alertmanager) to be installed | `true` |
 | `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support, Admission webhook support for PrometheusRules resources and custom Grafana image repository is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false --set grafana.image.repository=xxxxxxxxx/grafana/grafana`|  |
 | `monitoringNamespace` | Kubernetes namespace for monitoring setup. | `monitoring` |
+| `monitoringHelmReleaseName` | Helm release name for monitoring resources. | `monitoring` |
 | `adminServerName` | Name of the Administration Server. | `AdminServer` |
-| `adminServerPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7011` |
-| `soaClusterName` | Name of the soaCluster. | `soa_cluster` |
-| `soaManagedServerPort` | Port number of the managed servers in the soaCluster. | `8011` |
-| `wlsMonitoringExporterTosoaCluster` | Boolean value indicating whether to deploy WebLogic Monitoring Exporter to soaCluster. | `false` |
-| `osbClusterName` | Name of the osbCluster. | `osb_cluster` |
-| `osbManagedServerPort` | Port number of the managed servers in the osbCluster. | `9011` |
-| `wlsMonitoringExporterToosbCluster` | Boolean value indicating whether to deploy WebLogic Monitoring Exporter to osbCluster. | `false` |
 | `exposeMonitoringNodePort` | Boolean value indicating if the Monitoring Services (Prometheus, Grafana and Alertmanager) is exposed outside of the Kubernetes cluster. | `false` |
 | `prometheusNodePort` | Port number of the Prometheus outside the Kubernetes cluster. | `32101` |
 | `grafanaNodePort` | Port number of the Grafana outside the Kubernetes cluster. | `32100` |
 | `alertmanagerNodePort` | Port number of the Alertmanager outside the Kubernetes cluster. | `32102` |
 | `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server's user name and password. | `soainfra-domain-credentials` |
 
-Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and deploying WebLogic Monitoring Exporter into the OracleSOASuite domain. Hence make the domain specific values to be same as that used during domain creation.
+Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and enabling WebLogic Monitoring Exporter into the OracleSOASuite domain. Hence make the domain specific values to be same as that used during domain creation.
 
 ### Run the setup monitoring script
 
@@ -214,12 +159,9 @@ $ ./setup-monitoring.sh \
 The script will perform the following steps:
 
 - Helm install `prometheus-community/kube-prometheus-stack` if `setupKubePrometheusStack` is set to `true`.
-- Deploys WebLogic Monitoring Exporter to Administration Server.
-- Deploys WebLogic Monitoring Exporter to `soaCluster` if `wlsMonitoringExporterTosoaCluster` is set to `true`.
-- Deploys WebLogic Monitoring Exporter to `osbCluster` if `wlsMonitoringExporterToosbCluster` is set to `true`.
+- Configures Monitoring Exporter as sidecar
 - Exposes the Monitoring Services (Prometheus at `32101`, Grafana at `32100` and Alertmanager at `32102`) outside of the Kubernetes cluster if `exposeMonitoringNodePort` is set to `true`.
 - Imports the WebLogic Server Grafana Dashboard if `setupKubePrometheusStack` is set to `true`.
-
 
 ### Verify the results
 The setup monitoring script will report failure if there was any error. However, verify that required resources were created by the script.
