@@ -18,7 +18,7 @@ Download the latest code repository as follows:
    
    For example:
    ```bash
-   $ mkdir /scratch/OUDSMK8SApr24
+   $ mkdir /scratch/OUDSMK8SJul24
    ```
    
 1. Download the latest OUDSM deployment scripts from the OUDSM repository.
@@ -31,7 +31,7 @@ Download the latest code repository as follows:
    For example:
    
    ```bash
-   $ cd /scratch/OUDSMK8SApr24
+   $ cd /scratch/OUDSMK8SJul24
    $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
 
@@ -44,7 +44,7 @@ Download the latest code repository as follows:
    For example:
    
    ```bash
-   $ export WORKDIR=/scratch/OUDSMK8SApr24/fmw-kubernetes/OracleUnifiedDirectorySM
+   $ export WORKDIR=/scratch/OUDSMK8SJul24/fmw-kubernetes/OracleUnifiedDirectorySM
    ```
 
 ### Undeploy Elasticsearch and Kibana

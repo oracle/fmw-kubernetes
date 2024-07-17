@@ -37,7 +37,7 @@ The main benefits of WDT are:
 
 ### Current production release
 
-The current production release for the Oracle Identity Governance domain deployment on Kubernetes is [24.2.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.1.8.
+The current production release for the Oracle Identity Governance domain deployment on Kubernetes is [24.3.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.1.8.
 
 For 4.0.X WebLogic Kubernetes Operator refer to [Version 23.3.1](https://oracle.github.io/fmw-kubernetes/23.3.1/idm-products/oig/)
 
@@ -67,6 +67,7 @@ Please note, you also have the option to follow the Enterprise Deployment Guide 
 
 To view documentation for an earlier release, see:
 
+* [Version 24.2.1](https://oracle.github.io/fmw-kubernetes/24.2.1/idm-products/oig/)
 * [Version 24.1.1](https://oracle.github.io/fmw-kubernetes/24.1.1/idm-products/oig/)
 * [Version 23.4.2](https://oracle.github.io/fmw-kubernetes/23.4.2/idm-products/oig/)
 * [Version 23.4.1](https://oracle.github.io/fmw-kubernetes/23.4.1/idm-products/oig/)

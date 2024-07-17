@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -68,16 +68,15 @@ ingress:
   enabled: true
   # Supported values: nginx
   type: nginx
+  className: nginx
   # Configuration for Ingress rules about Data HTTP/HTTPS interfaces
   http:
     nginxAnnotations: 
-      kubernetes.io/ingress.class: "nginx"
       # Server-side HTTPS enforcement through redirect - for specific ingress resources
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
       # Required to be set if backendPort is configured as https
       # nginx.ingress.kubernetes.io/backend-protocol: "https"
     nginxAnnotationsTLS: 
-      kubernetes.io/ingress.class: "nginx"
       # Server-side HTTPS enforcement through redirect - for specific ingress resources
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
       # Required to be set if backendPort is configured as https
@@ -99,13 +98,11 @@ ingress:
   # Configuration for Ingress rules about Admin HTTPS interface
   admin:
     nginxAnnotations:
-      kubernetes.io/ingress.class: "nginx"
       # Backend Port is always HTTPS only
       nginx.ingress.kubernetes.io/backend-protocol: "https"
       # Server-side HTTPS enforcement through redirect - for specific ingress resources
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginxAnnotationsTLS:
-      kubernetes.io/ingress.class: "nginx"
       # Backend Port is always HTTPS only
       nginx.ingress.kubernetes.io/backend-protocol: "https"
       # For Forcing TLS/HTTPS
@@ -251,7 +248,7 @@ deploymentConfig:
   timeout: 30
   # Paramter to decide livenessProbe initialDelaySeconds
   livenessProbeInitialDelay: 900
-  terminationPeriodSeconds: 300
+  terminationPeriodSeconds: 120
   replicationTimeout: 600000
 
 # Generic configuration parameters for OUD Instances

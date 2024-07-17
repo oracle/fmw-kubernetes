@@ -10,6 +10,10 @@ Review the latest changes and known issues for Oracle Unified Directory on Kuber
 
 | Date | Version | Change |
 | --- | --- | --- |
+| July, 2024 | 24.3.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the July 2024 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | + Ingress now uses ingressClassName instead of the deprecated kubernetes.io/ingress.class. See, [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation).|
+| | | + Default pod deletion time for OUD reduced from 5 minutes to 2 minutes.|
+| | | To upgrade to July 24 (24.3.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | April, 2024 | 24.2.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the April 2024 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | + Support for Logstash to run as a separate sidecar container for OUD pods using Block Device Storage. See, [Logging and Visualization](../manage-oud-containers/logging-and-visualization#verify-the-pods).|
 | | | To upgrade to April 24 (24.2.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 

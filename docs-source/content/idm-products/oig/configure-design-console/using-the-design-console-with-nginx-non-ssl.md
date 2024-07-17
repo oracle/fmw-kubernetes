@@ -206,7 +206,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'24> bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<July'24> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -304,7 +304,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'24> bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<July'24> bash
    ```
 
    This will take you into a bash shell inside the container:

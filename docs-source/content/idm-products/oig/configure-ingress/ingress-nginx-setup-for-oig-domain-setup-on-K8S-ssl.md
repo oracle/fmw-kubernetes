@@ -168,13 +168,13 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    a) Using NodePort
 
    ```bash
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false  stable/ingress-nginx --version 4.7.2
    ```    
    
    The output will look similar to the following:
    
    ```
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false  stable/ingress-nginx --version 4.7.2
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
    NAMESPACE: nginxssl
@@ -234,7 +234,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    b) Using LoadBalancer
 
    ```bash
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false  stable/ingress-nginx --version 4.7.2
    ```    
    
    The output will look similar to the following:

@@ -1,14 +1,14 @@
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
 {{- $root := . -}}
 {{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
-{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 #
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "oud-ds-rs.fullname" . }}-admin-ingress-nginx
@@ -25,6 +25,7 @@ metadata:
   {{- end }}
 {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
 {{- if (.Values.ingress.tlsSecret) }}
   - secretName: {{ .Values.ingress.tlsSecret }}
@@ -35,14 +36,11 @@ spec:
 {{- if (.Values.ingress.admin.host) }}
   {{- if (.Values.ingress.admin.domain) }}
     - {{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}
-    - {{ .Values.ingress.admin.host }}-0.{{ .Values.ingress.admin.domain }}
   {{ else }}
     - {{ .Values.ingress.admin.host }}
-    - {{ .Values.ingress.admin.host }}-0
   {{- end }}
 {{ else }}
     - {{ include "oud-ds-rs.fullname" . }}-admin
-    - {{ include "oud-ds-rs.fullname" . }}-admin-0
 {{- end }}
 {{- range $replicaIndex, $replicaN := until (.Values.replicaCount| int) }}
 {{- $replicaIndx := (add $replicaIndex 0) }}
@@ -69,10 +67,13 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-0
-          servicePort: adminhttps
-{{- range $replicaIndex, $replicaN := until (.Values.replicaCount| int) }}
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-0
+            port:
+              name: adminhttps
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
 {{- $replicaIndx := (add $replicaIndex 0) }}
 {{- if ($root.Values.ingress.admin.host) }}
   {{- if ($root.Values.ingress.admin.domain) }}
@@ -86,10 +87,13 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
-          servicePort: adminhttps
-{{- end }}
+          service:
+            name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+            port:
+              name: adminhttps
+    {{- end }}
 {{- if (.Values.ingress.admin.host) }}
   {{- if (.Values.ingress.admin.domain) }}
   - host: {{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}
@@ -102,14 +106,20 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
-          servicePort: adminhttps
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+            port:
+              name: adminhttps
   - http:
       paths:
       - path: /rest/v1/admin
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
-          servicePort: adminhttps
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+            port:
+              name: adminhttps
 {{- end }}
 {{- end }}

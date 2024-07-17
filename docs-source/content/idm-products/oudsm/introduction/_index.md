@@ -13,7 +13,7 @@ Follow the instructions in this guide to set up Oracle Unified Directory Service
 
 ### Current production release
 
-The current production release for the Oracle Unified Directory 12c PS4 (12.2.1.4.0) deployment on Kubernetes is [24.2.1](https://github.com/oracle/fmw-kubernetes/releases).
+The current production release for the Oracle Unified Directory 12c PS4 (12.2.1.4.0) deployment on Kubernetes is [24.3.1](https://github.com/oracle/fmw-kubernetes/releases).
 
 ### Recent changes and known issues
 
@@ -35,6 +35,7 @@ Please note, you also have the option to follow the Enterprise Deployment Guide 
 
 To view documentation for an earlier release, see:
 
+* [Version 24.2.1](https://oracle.github.io/fmw-kubernetes/24.2.1/idm-products/oudsm/)
 * [Version 24.1.1](https://oracle.github.io/fmw-kubernetes/24.1.1/idm-products/oudsm/)
 * [Version 23.4.1](https://oracle.github.io/fmw-kubernetes/23.4.1/idm-products/oudsm/)
 * [Version 23.3.1](https://oracle.github.io/fmw-kubernetes/23.3.1/idm-products/oudsm/)
