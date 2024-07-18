@@ -199,7 +199,7 @@ You can create OUD instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol8-<April'24>
+     tag: 12.2.1.4-jdk8-ol8-<July'24>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -222,7 +222,7 @@ You can create OUD instances using one of the following methods:
    cronJob:
      kubectlImage:
        repository: bitnami/kubectl
-       tag: 1.27.2
+       tag: 1.28.3
        pullPolicy: IfNotPresent
  
      imagePullSecrets:
@@ -245,7 +245,7 @@ You can create OUD instances using one of the following methods:
       ```
   
    
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.27.2` set to `1.27.2`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.28.3` set to `1.28.3`.
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:
    
       ```
@@ -259,7 +259,7 @@ You can create OUD instances using one of the following methods:
 	  cronJob:
 	    kubectlImage:
           repository: container-registry.example.com/bitnami/kubectl
-          tag: 1.27.2
+          tag: 1.28.3
 	      pullPolicy: IfNotPresent
 	   
 	  busybox:
@@ -390,10 +390,10 @@ You can create OUD instances using one of the following methods:
    $ helm install --namespace oudns \
    --set oudConfig.rootUserPassword=<password> \
    --set persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects \
-   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<April'24> \
+   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<July'24> \
    --set oudConfig.sampleData="200" \
    --set oudConfig.resources.limits.cpu="1",oudConfig.resources.limits.memory="8Gi",oudConfig.resources.requests.cpu="500m",oudConfig.resources.requests.memory="4Gi" \
-   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.27.2 \
+   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.28.3 \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
    --set imagePullSecrets[0].name="orclcred" \
    oud-ds-rs oud-ds-rs
@@ -403,7 +403,7 @@ You can create OUD instances using one of the following methods:
 
    * Replace `<password>` with a the relevant password.
    * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry. If `sampleData` is set to `1,000,000` users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: `--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60`.
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.27.2` set to `1.27.2`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.28.3` set to `1.28.3`.
    * If using using NFS for your persistent volume then use:
    
         ```
@@ -876,7 +876,7 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    
    ```bash
    NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
-   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.27.2   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
+   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.28.3   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
    ```
    
 
@@ -1059,10 +1059,10 @@ The following table lists the configurable parameters of the `oud-ds-rs` chart a
 | ingress.nginx.http.host | Hostname to be used with Ingress Rules. <br>If not set, hostname would be configured according to fullname. <br> Hosts would be configured as < fullname >-http.< domain >, < fullname >-http-0.< domain >, < fullname >-http-1.< domain >, etc. | |
 | ingress.nginx.http.domain | Domain name to be used with Ingress Rules. <br>In ingress rules, hosts would be configured as < host >.< domain >, < host >-0.< domain >, < host >-1.< domain >, etc. | |
 | ingress.nginx.http.backendPort | | http |
-| ingress.nginx.http.nginxAnnotations | | { <br>kubernetes.io/ingress.class: "nginx"<br> }|
+| ingress.nginx.http.nginxAnnotations | | { <br>ingressClassName: "nginx"<br> }|
 | ingress.nginx.admin.host | Hostname to be used with Ingress Rules. <br>If not set, hostname would be configured according to fullname. <br> Hosts would be configured as < fullname >-admin.< domain >, < fullname >-admin-0.< domain >, < fullname >-admin-1.< domain >, etc. | |
 | ingress.nginx.admin.domain | Domain name to be used with Ingress Rules. <br>In ingress rules, hosts would be configured as < host >.< domain >, < host >-0.< domain >, < host >-1.< domain >, etc. | |
-| ingress.nginx.admin.nginxAnnotations | | { <br>kubernetes.io/ingress.class: "nginx" <br> nginx.ingress.kubernetes.io/backend-protocol: "https"<br>} |
+| ingress.nginx.admin.nginxAnnotations | | { <br>ingressClassName: "nginx" <br> nginx.ingress.kubernetes.io/backend-protocol: "https"<br>} |
 | ingress.ingress.tlsSecret | Secret name to use an already created TLS Secret. If such secret is not provided, one would be created with name < fullname >-tls-cert. If the TLS Secret is in different namespace, name can be mentioned as < namespace >/< tlsSecretName > | |
 | ingress.certCN | Subject's common name (cn) for SelfSigned Cert. | < fullname > |
 | ingress.certValidityDays | Validity of Self-Signed Cert in days | 365 |

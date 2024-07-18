@@ -38,7 +38,7 @@ You can update the deployment with a new OUDSM container image using one of the 
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oudsm_cpu
-     tag: 12.2.1.4-jdk8-ol8-<April'24>
+     tag: 12.2.1.4-jdk8-ol8-<July'24>
    imagePullSecrets:
      - name: orclcred
    ```
@@ -89,7 +89,7 @@ You can update the deployment with a new OUDSM container image using one of the 
 
    ```bash
    $ helm upgrade --namespace oudsmns \
-   --set image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol8-<April'24> \
+   --set image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol8-<July'24> \
    --set imagePullSecrets[0].name="orclcred" \
    oudsm oudsm --reuse-values
    ```
@@ -163,6 +163,6 @@ You can update the deployment with a new OUDSM container image using one of the 
      ----     ------     ----               ----     -------
      Normal   Killing    22m                kubelet  Container oudsm definition changed, will be restarted
      Normal   Created    21m (x2 over 61m)  kubelet  Created container oudsm
-     Normal   Pulling    21m                kubelet  Container image "container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol8-<April'24>"
+     Normal   Pulling    21m                kubelet  Container image "container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol8-<July'24>"
      Normal   Started    21m (x2 over 61m)  kubelet  Started container oudsm
    ```

@@ -1,14 +1,14 @@
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
 {{- $root := . -}}
 {{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "nginx") -}}
-{{- if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 #
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "oud-ds-rs.fullname" . }}-http-ingress-nginx
@@ -25,6 +25,7 @@ metadata:
   {{- end }}
 {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
 {{- if (.Values.ingress.tlsSecret) }}
   - secretName: {{ .Values.ingress.tlsSecret }}
@@ -35,14 +36,11 @@ spec:
 {{- if (.Values.ingress.http.host) }}
   {{- if (.Values.ingress.http.domain) }}
     - {{ .Values.ingress.http.host }}.{{ .Values.ingress.http.domain }}
-    - {{ .Values.ingress.http.host }}-0.{{ .Values.ingress.http.domain }}
   {{ else }}
     - {{ .Values.ingress.http.host }}
-    - {{ .Values.ingress.http.host }}-0
   {{- end }}
 {{ else }}
     - {{ include "oud-ds-rs.fullname" . }}-http
-    - {{ include "oud-ds-rs.fullname" . }}-http-0
 {{- end }}
 {{- range $replicaIndex, $replicaN := until (.Values.replicaCount| int) }}
 {{- $replicaIndx := (add $replicaIndex 0) }}
@@ -57,22 +55,7 @@ spec:
 {{- end }}
 {{- end }}
   rules:
-{{- if (.Values.ingress.http.host) }}
-  {{- if (.Values.ingress.http.domain) }}
-  - host: {{ .Values.ingress.http.host }}-0.{{ .Values.ingress.http.domain }}
-  {{ else }}
-  - host: {{ .Values.ingress.http.host }}-0
-  {{- end }}
-{{ else }}
-  - host: {{ include "oud-ds-rs.fullname" . }}-http-0
-{{- end }}
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-http-0
-          servicePort: {{ .Values.ingress.http.backendPort }}
-{{- range $replicaIndex, $replicaN := until (.Values.replicaCount| int) }}
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
 {{- $replicaIndx := (add $replicaIndex 0) }}
 {{- if ($root.Values.ingress.http.host) }}
   {{- if ($root.Values.ingress.http.domain) }}
@@ -86,9 +69,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
-          servicePort: {{ $root.Values.ingress.http.backendPort }}
+          service:
+            name: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+            port:
+              name: {{ $root.Values.ingress.http.backendPort }}
 {{- end }}
 {{- if (.Values.ingress.http.host) }}
   {{- if (.Values.ingress.http.domain) }}
@@ -102,20 +88,29 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-http
-          servicePort: {{ .Values.ingress.http.backendPort }}
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+            port:
+              name: {{ $root.Values.ingress.http.backendPort }}
   - http:
       paths:
       - path: /rest/v1/directory
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-http
-          servicePort: {{ .Values.ingress.http.backendPort }}
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+            port:
+              name: {{ $root.Values.ingress.http.backendPort }}
   - http:
       paths:
       - path: /iam/directory
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{ include "oud-ds-rs.fullname" . }}-lbr-http
-          servicePort: {{ .Values.ingress.http.backendPort }}
+          service:
+            name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+            port:
+              name: {{ $root.Values.ingress.http.backendPort }}
 {{- end }}
 {{- end }}
