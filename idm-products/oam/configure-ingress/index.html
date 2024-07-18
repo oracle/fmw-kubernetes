@@ -12,18 +12,18 @@
     <title>Configure an Ingress for an OAM domain :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1721304727" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1721304727" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1721304727"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1717668926"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1721304727"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1721304727"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1721304727"></script>
 
     
   </div>
@@ -5593,9 +5593,9 @@ Update Complete. ⎈ Happy Helming!⎈
 <li>
 <p>To install NGINX use the following helm command depending on if you are using <code>NodePort</code> or <code>LoadBalancer</code>:</p>
 <p>a) Using NodePort</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n &lt;domain_namespace&gt; --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>&lt;domain_namespace&gt;/&lt;ssl_secret&gt; --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n &lt;domain_namespace&gt; --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>&lt;domain_namespace&gt;/&lt;ssl_secret&gt; --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false  stable/ingress-nginx --version 4.7.2
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>oamns/accessdomain-tls-cert --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate<span style="color:#f92672">=</span>oamns/accessdomain-tls-cert --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx --version 4.7.2
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME: nginx-ingress
 LAST DEPLOYED: &lt;DATE&gt;
@@ -5654,9 +5654,9 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
     tls.key: &lt;base64 encoded key&gt;
   type: kubernetes.io/tls
 </code></pre><p>b) Using LoadBalancer</p>
-<pre><code>$ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+<pre><code>$ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false  stable/ingress-nginx --version 4.7.2
 </code></pre><p>The output will look similar to the following:</p>
-<pre><code>$ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+<pre><code>$ helm install nginx-ingress -n oamns --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false  stable/ingress-nginx --version 4.7.2
    
 NAME: nginx-ingress
 LAST DEPLOYED: &lt;DATE&gt;
@@ -9573,19 +9573,19 @@ Events:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1721304727"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1721304727"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1721304727"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1717668926" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1717668926"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1721304727" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1721304727"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

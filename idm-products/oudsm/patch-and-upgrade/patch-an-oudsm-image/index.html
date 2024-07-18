@@ -12,18 +12,18 @@
     <title>a. Patch an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1717668926" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1717668926" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1721304726" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1721304726" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1721304726"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1717668926"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1721304726"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1721304726"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1717668926"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1721304726"></script>
 
     
   </div>
@@ -5560,7 +5560,7 @@
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oudsm_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol8-&lt;April&#39;<span style="color:#ae81ff">24</span>&gt;
+  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol8-&lt;July&#39;<span style="color:#ae81ff">24</span>&gt;
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
 </code></pre></div><p>The following caveats exist:</p>
@@ -5597,7 +5597,7 @@
 </span><span style="color:#ae81ff"></span>&lt;release_name&gt; oudsm --reuse-values
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade --namespace oudsmns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oudsm_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol8-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>24&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oudsm_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol8-&lt;July<span style="color:#960050;background-color:#1e0010">&#39;</span>24&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>oudsm oudsm --reuse-values
 </code></pre></div><p>The following caveats exist:</p>
@@ -5648,7 +5648,7 @@ Events:
   ----     ------     ----               ----     -------
   Normal   Killing    22m                kubelet  Container oudsm definition changed, will be restarted
   Normal   Created    21m <span style="color:#f92672">(</span>x2 over 61m<span style="color:#f92672">)</span>  kubelet  Created container oudsm
-  Normal   Pulling    21m                kubelet  Container image <span style="color:#e6db74">&#34;container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol8-&lt;April&#39;24&gt;&#34;</span>
+  Normal   Pulling    21m                kubelet  Container image <span style="color:#e6db74">&#34;container-registry.oracle.com/middleware/oudsm_cpu:12.2.1.4-jdk8-ol8-&lt;July&#39;24&gt;&#34;</span>
   Normal   Started    21m <span style="color:#f92672">(</span>x2 over 61m<span style="color:#f92672">)</span>  kubelet  Started container oudsm
 </code></pre></div></li>
 </ol>
@@ -9365,19 +9365,19 @@ Events:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1721304726"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1717668926"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1717668926"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1721304726"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1721304726"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1717668926" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1717668926"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1721304726" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1721304726"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
