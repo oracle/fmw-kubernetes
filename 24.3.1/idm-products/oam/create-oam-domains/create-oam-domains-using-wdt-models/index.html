@@ -1,0 +1,5585 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="description" content="">
+
+
+    <link rel="icon" href="/fmw-kubernetes/24.3.1/images/favicon.png" type="image/png">
+
+    <title>b. Create OAM domains using WDT models :: Oracle Fusion Middleware on Kubernetes</title>
+
+    
+    <link href="/fmw-kubernetes/24.3.1/css/nucleus.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/fontawesome-all.min.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/hybrid.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/featherlight.min.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/perfect-scrollbar.min.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/auto-complete.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/atom-one-dark-reasonable.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/theme.css?1721304740" rel="stylesheet">
+    <link href="/fmw-kubernetes/24.3.1/css/hugo-theme.css?1721304740" rel="stylesheet">
+    
+
+    <script src="/fmw-kubernetes/24.3.1/js/jquery-3.6.0.min.js?1721304740"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/create-oam-domains-using-wdt-models/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/fmw-kubernetes/24.3.1">
+  <img src="/fmw-kubernetes/24.3.1/images/fmw_12c_12_2_1_4_0-logo.png" height="100"><br/>
+  <b>Oracle Fusion Middleware on Kubernetes </b>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/fmw-kubernetes/24.3.1/js/lunr.min.js?1721304740"></script>
+<script type="text/javascript" src="/fmw-kubernetes/24.3.1/js/auto-complete.js?1721304740"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/fmw-kubernetes\/24.3.1";
+    
+</script>
+<script type="text/javascript" src="/fmw-kubernetes/24.3.1/js/search.js?1721304740"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+        <li><a  class="" href="/fmw-kubernetes/">Home</a></li>
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/" title="Oracle Identity Management on Kubernetes" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/">
+          Oracle Identity Management on Kubernetes
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/enterprise-deployments/" title="Enterprise Deployments" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/enterprise-deployments/">
+          Enterprise Deployments
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/enterprise-deployments/enterprise-deployment-guide/" title="a. Enterprise Deployment Guide" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/enterprise-deployments/enterprise-deployment-guide/">
+          a. Enterprise Deployment Guide
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/enterprise-deployments/enterprise-deployment-automation/" title="b. Enterprise Deployment Guide Automation Scripts" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/enterprise-deployments/enterprise-deployment-automation/">
+          b. Enterprise Deployment Guide Automation Scripts
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/" title="Oracle Access Management" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/">
+          Oracle Access Management
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/introduction/" title="Introduction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/introduction/">
+          <b>1. </b>Introduction
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/release-notes/" title="Release Notes" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/release-notes/">
+          <b>2. </b>Release Notes
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/prerequisites/">
+          <b>3. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/prepare-your-environment/">
+          <b>4. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/" title="Create OAM domains" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/">
+          <b>5. </b>Create OAM domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/create-oam-domains-using-wlst/" title="a. Create OAM domains using WLST scripts" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/create-oam-domains-using-wlst/">
+        a. Create OAM domains using WLST scripts
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/create-oam-domains-using-wdt-models/" title="b. Create OAM domains using WDT models" class="dd-item active">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/create-oam-domains-using-wdt-models/">
+        b. Create OAM domains using WDT models
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/configure-ingress/" title="Configure an Ingress for an OAM domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/configure-ingress/">
+          <b>6. </b>Configure an Ingress for an OAM domain
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/validate-domain-urls/" title="Validate Domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/validate-domain-urls/">
+          <b>7. </b>Validate Domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/post-install-config/" title="Post Install Configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/post-install-config/">
+          <b>8. </b>Post Install Configuration
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/validate-sso-using-webgate/" title="Validate a Basic SSO Flow using WebGate Registration " class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/validate-sso-using-webgate/">
+          <b>9. </b>Validate a Basic SSO Flow using WebGate Registration 
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/" title="Manage OAM Domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/">
+          <b>10. </b>Manage OAM Domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/domain-lifecycle/" title="a. Domain Life Cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/domain-lifecycle/">
+        a. Domain Life Cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/wlst-admin-operations/" title="b. WLST Administration Operations" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/wlst-admin-operations/">
+        b. WLST Administration Operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/logging-and-visualization/" title="c. Logging and Visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/logging-and-visualization/">
+        c. Logging and Visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/monitoring-oam-domains/" title="d. Monitoring an OAM domain" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/monitoring-oam-domains/">
+        d. Monitoring an OAM domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/hpa/" title="e. Kubernetes Horizontal Pod Autoscaler" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/hpa/">
+        e. Kubernetes Horizontal Pod Autoscaler
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/delete-domain-home/" title="f. Delete the OAM domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/manage-oam-domains/delete-domain-home/">
+        f. Delete the OAM domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/create-or-update-image/">
+          <b>11. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/">
+          <b>12. </b>Patch and Upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/upgrade-an-operator-release/" title="a. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/upgrade-an-operator-release/">
+        a. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/patch-an-image/" title="b. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/patch-an-image/">
+        b. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/upgrade-an-ingress/" title="c. Upgrade Ingress" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/upgrade-an-ingress/">
+        c. Upgrade Ingress
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/upgrade-elk/" title="d. Upgrade Elasticsearch and Kibana" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oam/patch-and-upgrade/upgrade-elk/">
+        d. Upgrade Elasticsearch and Kibana
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oam/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oam/troubleshooting/">
+          <b>13. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/" title="Oracle Identity Governance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/">
+          Oracle Identity Governance
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/introduction/" title="Introduction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/introduction/">
+          <b>1. </b>Introduction
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/release-notes/" title="Release Notes" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/release-notes/">
+          <b>2. </b>Release Notes
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/prerequisites/">
+          <b>3. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/prepare-your-environment/" title="Prepare your environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/prepare-your-environment/">
+          <b>4. </b>Prepare your environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/create-oig-domains/" title="Create OIG domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/create-oig-domains/">
+          <b>5. </b>Create OIG domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/create-oig-domains/create-oig-domains-using-wlst/" title="a. Create OIG domains using WLST scripts" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/create-oig-domains/create-oig-domains-using-wlst/">
+        a. Create OIG domains using WLST scripts
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/create-oig-domains/create-oig-domains-wdt/" title="b. Create OIG domains using WDT Models" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/create-oig-domains/create-oig-domains-wdt/">
+        b. Create OIG domains using WDT Models
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/configure-ingress/" title="Configure an ingress for an OIG domain" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/configure-ingress/">
+          <b>6. </b>Configure an ingress for an OIG domain
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/" title="a. Using an Ingress with NGINX (non-SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/">
+        a. Using an Ingress with NGINX (non-SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/" title="b. Using an Ingress with NGINX (SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/">
+        b. Using an Ingress with NGINX (SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/validate-domain-urls/" title="Validate domain URLs" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/validate-domain-urls/">
+          <b>7. </b>Validate domain URLs
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/post-install-config/" title="Post install configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/post-install-config/">
+          <b>8. </b>Post install configuration
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/post-install-config/set_oimfronendurl_using_mbeans/" title="a. Post Install Tasks" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/post-install-config/set_oimfronendurl_using_mbeans/">
+        a. Post Install Tasks
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/post-install-config/install_and_configure_connectors/" title="b. Install and configure connectors" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/post-install-config/install_and_configure_connectors/">
+        b. Install and configure connectors
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/configure-design-console/" title="Configure Design Console" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/configure-design-console/">
+          <b>9. </b>Configure Design Console
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/configure-design-console/using-the-design-console-with-nginx-non-ssl/" title="a. Using Design Console with NGINX(non-SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/configure-design-console/using-the-design-console-with-nginx-non-ssl/">
+        a. Using Design Console with NGINX(non-SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/configure-design-console/using-the-design-console-with-nginx-ssl/" title="b. Using Design Console with NGINX(SSL)" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/configure-design-console/using-the-design-console-with-nginx-ssl/">
+        b. Using Design Console with NGINX(SSL)
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/" title="Manage OIG domains" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/">
+          <b>10. </b>Manage OIG domains
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/domain-lifecycle/" title="a. Domain life cycle" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/domain-lifecycle/">
+        a. Domain life cycle
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/wlst-admin-operations/" title="b. WLST administration operations" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/wlst-admin-operations/">
+        b. WLST administration operations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/running-oig-utilities/" title="c. Runnning OIG utilities" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/running-oig-utilities/">
+        c. Runnning OIG utilities
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/logging-and-visualization/" title="d. Logging and visualization" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/logging-and-visualization/">
+        d. Logging and visualization
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/monitoring-oim-domains/" title="e. Monitoring an OIG domain" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/monitoring-oim-domains/">
+        e. Monitoring an OIG domain
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/hpa/" title="f. Kubernetes Horizontal Pod Autoscaler" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/hpa/">
+        f. Kubernetes Horizontal Pod Autoscaler
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/delete-domain-home/" title="g. Delete the OIG domain home" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/manage-oig-domains/delete-domain-home/">
+        g. Delete the OIG domain home
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/create-or-update-image/">
+          <b>11. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/">
+          <b>12. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/upgrade-an-operator-release/" title="a. Upgrade an operator release" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/upgrade-an-operator-release/">
+        a. Upgrade an operator release
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/patch-an-image/" title="b. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/patch-an-image/">
+        b. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/upgrade-an-ingress/" title="c. Upgrade Ingress" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/upgrade-an-ingress/">
+        c. Upgrade Ingress
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/upgrade-elk/" title="d. Upgrade Elasticsearch and Kibana" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oig/patch-and-upgrade/upgrade-elk/">
+        d. Upgrade Elasticsearch and Kibana
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oig/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oig/troubleshooting/">
+          <b>13. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oid/" title="Oracle Internet Directory" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oid/">
+          Oracle Internet Directory
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oid/release-notes/" title="Release Notes" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oid/release-notes/">
+        <b>1. </b>Release Notes
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/" title="Oracle Unified Directory" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/">
+          Oracle Unified Directory
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/introduction/" title="Introduction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/introduction/">
+          <b>1. </b>Introduction
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/release-notes/" title="Release Notes" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/release-notes/">
+          <b>2. </b>Release Notes
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/prerequisites/">
+          <b>3. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/prepare-your-environment/">
+          <b>4. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/create-oud-instances/" title="Create Oracle Unified Directory Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/create-oud-instances/">
+          <b>5. </b>Create Oracle Unified Directory Instances
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/configure-ingress/" title="Configure an Ingress for OUD" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/configure-ingress/">
+          <b>6. </b>Configure an Ingress for OUD
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/" title="Manage Oracle Unified Directory Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/">
+          <b>7. </b>Manage Oracle Unified Directory Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/scaling-up-down/" title="a) Scaling Up/Down OUD Pods " class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/scaling-up-down/">
+        a) Scaling Up/Down OUD Pods 
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/logging-and-visualization/" title="b) Logging and Visualization for Helm Chart oud-ds-rs Deployment" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/logging-and-visualization/">
+        b) Logging and Visualization for Helm Chart oud-ds-rs Deployment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/monitoring-oud-instance/" title="c) Monitoring an Oracle Unified Directory Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/monitoring-oud-instance/">
+        c) Monitoring an Oracle Unified Directory Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/hpa/" title="d. Kubernetes Horizontal Pod Autoscaler" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oud/manage-oud-containers/hpa/">
+        d. Kubernetes Horizontal Pod Autoscaler
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/create-or-update-image/">
+          <b>8. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/patch-and-upgrade/" title="Patch and Upgrade" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oud/patch-and-upgrade/">
+        <b>9. </b>Patch and Upgrade
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oud/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oud/troubleshooting/">
+          <b>10. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/" title="Oracle Unified Directory Services Manager" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/">
+          Oracle Unified Directory Services Manager
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/introduction/" title="Introduction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/introduction/">
+          <b>1. </b>Introduction
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/release-notes/" title="Release Notes" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/release-notes/">
+          <b>2. </b>Release Notes
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/prerequisites/" title="Prerequisites" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/prerequisites/">
+          <b>3. </b>Prerequisites
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/prepare-your-environment/" title="Prepare Your Environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/prepare-your-environment/">
+          <b>4. </b>Prepare Your Environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/create-oudsm-instances/" title="Create Oracle Unified Directory Services Manager Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/create-oudsm-instances/">
+          <b>5. </b>Create Oracle Unified Directory Services Manager Instances
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/configure-ingress/" title="Configure an Ingress for OUDSM" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/configure-ingress/">
+          <b>6. </b>Configure an Ingress for OUDSM
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/" title="Manage Oracle Unified Directory Services Manager Containers" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/">
+          <b>7. </b>Manage Oracle Unified Directory Services Manager Containers
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/scaling-up-down/" title="a) Scaling Up/Down OUDSM Pods " class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/scaling-up-down/">
+        a) Scaling Up/Down OUDSM Pods 
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/logging-and-visualization/" title="b) Logging and Visualization for Helm Chart oudsm Deployment" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/logging-and-visualization/">
+        b) Logging and Visualization for Helm Chart oudsm Deployment
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/" title="c) Monitoring an Oracle Unified Directory Services Manager Instance" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/">
+        c) Monitoring an Oracle Unified Directory Services Manager Instance
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/create-or-update-image/" title="Create or update an image" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/create-or-update-image/">
+          <b>8. </b>Create or update an image
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/patch-and-upgrade/" title="Patch and upgrade" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/patch-and-upgrade/">
+          <b>9. </b>Patch and upgrade
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/patch-and-upgrade/patch-an-oudsm-image/" title="a. Patch an image" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/patch-and-upgrade/patch-an-oudsm-image/">
+        a. Patch an image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/patch-and-upgrade/upgrade-elk/" title="b. Upgrade Elasticsearch and Kibana" class="dd-item ">
+        <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/patch-and-upgrade/upgrade-elk/">
+        b. Upgrade Elasticsearch and Kibana
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/fmw-kubernetes/24.3.1/idm-products/oudsm/troubleshooting/" title="Troubleshooting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/fmw-kubernetes/24.3.1/idm-products/oudsm/troubleshooting/">
+          <b>10. </b>Troubleshooting
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      <p>Created with <i class="fas fa-heart"></i> from <a href="https://www.oracle.com">Oracle</a></p>
+<p>&nbsp;</p>
+<p><a href="https://github.com/oracle/fmw-kubernetes"><i class="fab fa-github"></i> GitHub repo</a></p>
+
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/24.3.1/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/24.3.1/idm-products/'>Oracle Identity Management on Kubernetes</a> > <a href='/fmw-kubernetes/24.3.1/idm-products/oam/'>Oracle Access Management</a> > <a href='/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/'>Create OAM domains</a> > b. Create OAM domains using WDT models
+          
+         
+          
+         
+          
+         
+          
+         
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#create-oam-domains-using-wdt-models">Create OAM domains using WDT models</a></li>
+        <li><a href="#verify-the-results">Verify the results</a></li>
+        <li><a href="#verify-the-domain-pods-and-services">Verify the domain, pods and services</a></li>
+        <li><a href="#verify-the-domain">Verify the domain</a></li>
+        <li><a href="#verify-the-pods">Verify the pods</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              b. Create OAM domains using WDT models
+            </h1>
+          
+
+        
+
+
+
+<ol>
+<li>
+<p><a href="#introduction">Introduction</a></p>
+</li>
+<li>
+<p><a href="#prerequisites">Prerequisites</a></p>
+</li>
+<li>
+<p><a href="#create-oam-domains-using-wdt-models">Create OAM domains using WDT models</a></p>
+<p>a. <a href="#prepare-the-persistent-storage">Prepare the persistent storage</a></p>
+<p>b. <a href="#create-kubernetes-secrets-for-the-domain-and-rcu">Create Kubernetes secrets for the domain and RCU</a></p>
+<p>c. <a href="#generate-wdt-models-and-the-domain-resource-yaml-file">Generate WDT models and the domain resource yaml file</a></p>
+<p>d. <a href="#build-the-domain-creation-image">Build the Domain Creation Image</a></p>
+<p>e. <a href="#deploy-the-oam-domain-resource">Deploy the OAM domain resource</a></p>
+</li>
+<li>
+<p><a href="#verify-the-results">Verify the results</a></p>
+<p>a. <a href="#verify-the-domain-pods-and-services">Verify the domain, pods and services</a></p>
+<p>b. <a href="#verify-the-domain">Verify the domain</a></p>
+<p>c. <a href="#verify-the-pods">Verify the pods</a></p>
+</li>
+</ol>
+<h3 id="introduction">Introduction</h3>
+<p>This section demonstrates the creation of an OAM domain home using sample WebLogic Deploy Tooling (WDT) model files.</p>
+<p>From WebLogic Kubernetes Operator version 4.1.2 onwards, you can provide a section, <code>domain.spec.configuration.initializeDomainOnPV</code>, to initialize an OAM domain on a persistent volume when it is first deployed. This eliminates the need to pre-create your OAM domain using sample Weblogic Scripting Tool (WLST) offline scripts.</p>
+<p>With WLST offline scripts it is required to deploy a separate Kubernetes job that creates the domain on a persistent volume, and then deploy the domain with a custom resource YAML. The RCU schema also had to be created manually. Now, using WDT models, all the required information is specified in the domain custom resource YAML file, eliminating the requirement for a separate Kubernetes job.  With WDT models, the WebLogic Kubernetes Operator will create the RCU schemas, create the persistent volume and claim, then create the WebLogic domain on the persistent volume, prior to starting the servers.</p>
+<p><strong>Note</strong>: This is a one time only initialization. After the domain is created, subsequent updates to this section in the domain resource YAML file will not recreate or update the WebLogic domain. Subsequent domain lifecycle updates must be controlled by the WebLogic Server Administration Console, Enterprise Manager Console, WebLogic Scripting Tool (WLST), or other mechanisms.</p>
+<p>Weblogic Deploy Tooling (WDT) models are a convenient and simple alternative to WebLogic Scripting Tool (WLST) configuration scripts. They compactly define a WebLogic domain using model files, variable properties files, and application archive files. For more information about the model format and its integration, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/usage/">Usage</a> and <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/model-files/">Working with WDT Model files</a>. The WDT model format is fully described in the open source, <a href="https://oracle.github.io/weblogic-deploy-tooling/">WebLogic Deploy Tooling GitHub project</a>.</p>
+<p>The main benefits of WDT are:</p>
+<ul>
+<li>A set of single-purpose tools supporting Weblogic domain configuration lifecycle operations.</li>
+<li>All tools work off of a shared, declarative model, eliminating the need to maintain specialized WLST scripts.</li>
+<li>WDT knowledge base understands the MBeans, attributes, and WLST capabilities/bugs across WLS versions.</li>
+</ul>
+<p>The initializeDomainOnPv section:</p>
+<ol>
+<li>Creates the PersistentVolume (PV) and/or PersistenVolumeClaim (PVC).</li>
+<li>Creates the RCU schema.</li>
+<li>Creates the OAM domain home on the persistent volume based on the provided WDT models</li>
+</ol>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Before you begin, perform the following steps:</p>
+<ol>
+<li>Review the <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/">Domain On PV</a> documentation.</li>
+<li>Ensure that the database is up and running.</li>
+</ol>
+<h3 id="create-oam-domains-using-wdt-models">Create OAM domains using WDT models</h3>
+<p>In this section you will:</p>
+<ul>
+<li><a href="#prepare-the-persistent-storage">Prepare the persistent storage</a>.</li>
+<li><a href="#create-kubernetes-secrets-for-the-domain-and-rcu">Create Kubernetes secrets for the domain and RCU</a>.</li>
+<li><a href="#generate-wdt-models-and-the-domain-resource-yaml-file">Generate the WDT models and the domain resource yaml file</a>.</li>
+<li><a href="#build-the-domain-creation-image">Build the domain creation image hosting the WDT models and WDT installation</a>.</li>
+<li><a href="#deploy-the-oam-domain-resource">Deploy the OAM domain resource</a></li>
+</ul>
+<p><strong>Note</strong>: In this section a domain creation image is built using the supplied model files and that image is used for domain creation. You will need your own container registry to upload the domain image to. Having your own container repository is a prerequisite before creating an OAM domain with WDT models. If you don&rsquo;t have your own container registry, you can load the image on each node in the cluster instead. This documentation does not explain how to create your own container registry, or how to load the image onto each node. Consult your vendor specific documentation for more information.</p>
+<p><strong>Note:</strong> Building a domain creation image is a one time activity. The domain creation image can be used to create an OAM domain in multiple environments. You do not need to rebuild the domain creation image every time you create a domain.</p>
+<h4 id="prepare-the-persistent-storage">Prepare the persistent storage</h4>
+<p>As referenced in <a href="../../prerequisites">Prerequisites</a> the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system.</p>
+<p>Domain on persistent volume (Domain on PV) is an operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/">domain home source type</a>, which requires that the domain home exists on a persistent volume.</p>
+<p>When a container is started, it needs to mount that volume. The physical volume should be on a shared disk accessible by all the Kubernetes worker nodes because it is not known on which worker node the container will be started. In the case of Oracle Identity and Access Management, the persistent volume does not get erased when a container stops. This enables persistent configurations.</p>
+<p>The example below uses an NFS mounted volume (<code>&lt;persistent_volume&gt;/accessdomainpv</code>). Other volume types can also be used. See the official Kubernetes documentation for Volumes.</p>
+<p><strong>Note</strong>: The persistent volume directory needs to be accessible to both the master and worker node(s). In this example <code>/scratch/shared/accessdomainpv</code> is accessible from all nodes via NFS.</p>
+<p>To create the persistent volume run the following commands:</p>
+<ol>
+<li>
+<p>Create the required directories:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p &lt;persistent_volume&gt;/accessdomainpv
+$ sudo chown -R 1000:0 &lt;persistent_volume&gt;/accessdomainpv
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p /scratch/shared/accessdomainpv
+$ sudo chown -R 1000:0 /scratch/shared/accessdomainpv
+</code></pre></div></li>
+<li>
+<p>On the master node run the following command to ensure it is possible to read and write to the persistent volume:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd &lt;persistent_volume&gt;/accessdomainpv
+touch file.txt
+ls filemaster.txt
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/shared/accessdomainpv
+touch filemaster.txt
+ls filemaster.txt
+</code></pre></div></li>
+<li>
+<p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/shared/accessdomainpv
+ls filemaster.txt
+touch fileworker1.txt
+ls fileworker1.txt
+</code></pre></div></li>
+<li>
+<p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it’s possible to read and write from each node to the persistent volume, delete the files created.</p>
+<p>For more information on PV and PVC requirements, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/usage/#references">Domain on Persistent Volume (PV)</a>.</p>
+</li>
+</ol>
+<h4 id="create-kubernetes-secrets-for-the-domain-and-rcu">Create Kubernetes secrets for the domain and RCU</h4>
+<p>In this section you create the Kubernetes secrets for the OAM doman and RCU.</p>
+<ol>
+<li>
+<p>Create a Kubernetes secret for the domain using the create-weblogic-credentials script in the same Kubernetes namespace as the domain:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils
+$ ./create-secret.sh -l <span style="color:#e6db74">&#34;username=weblogic&#34;</span> -l <span style="color:#e6db74">&#34;password=&lt;password&gt;&#34;</span> -n &lt;domain_namespace&gt; -d &lt;domain_uid&gt; -s &lt;domain-uid&gt;-weblogic-credentials
+</code></pre></div><p>where:</p>
+<p><code>-n &lt;domain_namespace&gt;</code> is the domain namespace you created in <a href="../../prepare-your-environment#create-a-namespace-for-oracle-access-management">Create a namespace for Oracle Access Management</a>. For example <code>oamns</code>.</p>
+<p><code>-d &lt;domain_uid&gt;</code> is the domain UID that you want to create. For example, <code>accessdomain</code>.</p>
+<p><code>-s &lt;domain-uid&gt;-weblogic-credentials</code> is the name of the secret for this namespace. <strong>Note</strong>: the secret name must follow this format (<code>&lt;domain-uid&gt;-weblogic-credentials</code>) or domain creation will fail.</p>
+<p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils
+$ ./create-secret.sh -l <span style="color:#e6db74">&#34;username=weblogic&#34;</span> -l <span style="color:#e6db74">&#34;password=&lt;password&gt;&#34;</span> -n oamns -d accessdomain -s accessdomain-weblogic-credentials
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">@@ Info: Setting up secret <span style="color:#e6db74">&#39;accessdomain-weblogic-credentials&#39;</span>.
+secret/accessdomain-weblogic-credentials created
+secret/accessdomain-weblogic-credentials labeled
+</code></pre></div></li>
+<li>
+<p>Verify the secret is created using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get secret &lt;kubernetes_domain_secret&gt; -o yaml -n &lt;domain_namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get secret accessdomain-weblogic-credentials -o yaml -n oamns
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: v1
+data:
+  password: &lt;password&gt;
+  username: d2VibG9naWM<span style="color:#f92672">=</span>
+kind: Secret
+metadata:
+  creationTimestamp: <span style="color:#e6db74">&#34;&lt;DATE&gt;&#34;</span>
+  labels:
+    weblogic.domainUID: accessdomain
+  name: accessdomain-weblogic-credentials
+  namespace: oamns
+  resourceVersion: <span style="color:#e6db74">&#34;44175245&#34;</span>
+  uid: a135780e-6f3b-4be1-8643-f81bfb9ba399
+type: Opaque
+</code></pre></div></li>
+<li>
+<p>Create a Kubernetes secret for RCU in the same Kubernetes namespace, using the <code>create-secrets.sh</code> script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils
+$ ./create-secret.sh -l <span style="color:#e6db74">&#34;rcu_prefix=&lt;rcu_prefix&gt;&#34;</span> -l <span style="color:#e6db74">&#34;rcu_schema_password=&lt;rcu_schema_pwd&gt;&#34;</span> -l <span style="color:#e6db74">&#34;db_host=&lt;db_host.domain&gt;&#34;</span> -l <span style="color:#e6db74">&#34;db_port=1521&#34;</span> -l <span style="color:#e6db74">&#34;db_service=&lt;service_name&gt;&#34;</span> -l <span style="color:#e6db74">&#34;dba_user=&lt;sys_db_user&gt;&#34;</span> -l <span style="color:#e6db74">&#34;dba_password=&lt;sys_db_pwd&gt;&#34;</span> -n &lt;domain_namespace&gt; -d &lt;domain_uid&gt; -s &lt;domain_uid&gt;-rcu-credentials
+</code></pre></div><p>where</p>
+<p><code>&lt;rcu_prefix&gt;</code> is the name of the RCU schema to be created.</p>
+<p><code>&lt;rcu_schema_pwd&gt;</code> is the password you want to create for the RCU schema prefix.</p>
+<p><code>&lt;db_host.domain&gt;</code> is the hostname.domain of the database.</p>
+<p><code>&lt;sys_db_user&gt;</code> is the database user with sys dba privilege.</p>
+<p><code>&lt;sys_db_pwd&gt;</code> is the sys database password.</p>
+<p><code>&lt;domain_uid&gt;</code> is the <code>domain_uid</code> that you want to create. This must be the same <code>domain_uid</code> used in the domain secret. For example, <code>accessdomain</code>.</p>
+<p><code>&lt;domain_namespace&gt;</code> is the domain namespace. This the domain namespace you created in <a href="../../prepare-your-environment#create-a-namespace-for-oracle-access-management">Create a namespace for Oracle Access Management</a>. For example <code>oamns</code>.</p>
+<p><code>&lt;domain_uid&gt;-rcu-credentials</code> is the name of the rcu secret to create. <strong>Note</strong>: The secret name must follow this format (<code>&lt;domain_uid&gt;-rcu-credentials</code>) or domain creation will fail.</p>
+<p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils
+$ ./create-secret.sh -l <span style="color:#e6db74">&#34;rcu_prefix=OAMK8S&#34;</span> -l <span style="color:#e6db74">&#34;rcu_schema_password=&lt;password&gt;&#34;</span> -l <span style="color:#e6db74">&#34;db_host=mydatabasehost.example.com&#34;</span> -l <span style="color:#e6db74">&#34;db_port=1521&#34;</span> -l <span style="color:#e6db74">&#34;db_service=orcl.example.com&#34;</span> -l <span style="color:#e6db74">&#34;dba_user=sys&#34;</span> -l <span style="color:#e6db74">&#34;dba_password=&lt;password&gt;&#34;</span> -n oamns -d accessdomain -s accessdomain-rcu-credentials
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">@@ Info: Setting up secret <span style="color:#e6db74">&#39;accessdomain-rcu-credentials&#39;</span>.
+secret/accessdomain-rcu-credentials created
+secret/accessdomain-rcu-credentials labeled
+</code></pre></div></li>
+<li>
+<p>Verify the secret is created using the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get secret &lt;kubernetes_rcu_secret&gt; -o yaml -n &lt;domain_namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get secrets -n oamns accessdomain-rcu-credentials -o yaml
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apiVersion: v1
+data:
+  db_host: &lt;DB_HOST&gt;
+  db_port: MTUyMQ<span style="color:#f92672">==</span>
+  db_service: &lt;SERVICE_NAME&gt;
+  dba_password: &lt;PASSWORD&gt;
+  dba_user: c3lz
+  rcu_prefix: &lt;RCU_PREFIX&gt;
+  rcu_schema_password: &lt;RCU_PWD&gt;
+kind: Secret
+metadata:
+  creationTimestamp: <span style="color:#e6db74">&#34;&lt;DATE&gt;&#34;</span>
+  labels:
+    weblogic.domainUID: accessdomain
+  name: accessdomain-rcu-credentials
+  namespace: oamns
+  resourceVersion: <span style="color:#e6db74">&#34;866948&#34;</span>
+  uid: b5e3b4e0-9458-4413-a6ff-874e9af7511b
+type: Opaque
+</code></pre></div></li>
+</ol>
+<h4 id="generate-wdt-models-and-the-domain-resource-yaml-file">Generate WDT models and the domain resource yaml file</h4>
+<p>In this section you generate the required WDT models for the OAM domain, along with the domain resource yaml file.</p>
+<ol>
+<li>
+<p>Navigate to the <code>$WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/generate_models_utils</code> directory:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/generate_models_utils
+</code></pre></div></li>
+<li>
+<p>Make a copy of the <code>create-domain-wdt.yaml</code> file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cp create-domain-wdt.yaml create-domain-wdt.yaml.orig
+</code></pre></div></li>
+<li>
+<p>Edit the <code>create-domain-wdt.yaml</code> and modify the following parameters. Save the file when complete:</p>
+<pre><code>domainUID: &lt;domain_uid&gt;
+domainHome: /u01/oracle/user_projects/domains/&lt;domain_uid&gt;
+image: &lt;image_name&gt;:&lt;tag&gt;
+imagePullSecretName: &lt;container_registry_secret&gt;
+logHome: /u01/oracle/user_projects/domains/logs/&lt;domain_uid&gt;
+namespace: &lt;domain_namespace&gt;
+weblogicDomainStorageType: NFS
+weblogicDomainStorageNFSServer: &lt;nfs_server&gt;
+weblogicDomainStoragePath: &lt;physical_path_of_persistent_storage&gt;
+weblogicDomainStorageSize: 10G
+</code></pre><p>For example:</p>
+<pre><code>domainUID: accessdomain
+domainHome: /u01/oracle/user_projects/domains/accessdomain
+image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July'24&gt;
+imagePullSecretName: orclcred
+logHome: /u01/oracle/user_projects/domains/logs/accessdomain
+namespace: oamns
+weblogicDomainStorageType: NFS
+weblogicDomainStorageNFSServer: mynfsserver
+weblogicDomainStoragePath: /scratch/shared/accessdomainpv
+weblogicDomainStorageSize: 10G
+</code></pre><p>``</p>
+<p><strong>Note</strong> : If using a shared file system instead of NFS, set <code>weblogicDomainStorageType: HOST_PATH</code> and remove <code>weblogicDomainStorageNFSServer</code>.</p>
+<p>A full list of parameters in the <code>create-domain-wdt.yaml</code> file are shown below:</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Definition</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>adminPort</code></td>
+<td>Port number for the Administration Server inside the Kubernetes cluster.</td>
+<td><code>7001</code></td>
+</tr>
+<tr>
+<td><code>adminNodePort</code></td>
+<td>Port number for the Administration Server outside the Kubernetes cluster.</td>
+<td><code>30701</code></td>
+</tr>
+<tr>
+<td><code>configuredManagedServerCount</code></td>
+<td>Number of Managed Server instances to generate for the domain.</td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td><code>datasourceType</code></td>
+<td>Type of JDBC datasource applicable for the OAM domain. Legal values are <code>agl</code> and <code>generic</code>. Choose <code>agl</code> for Active GridLink datasource and <code>generic</code> for Generic datasource. For enterprise deployments, Oracle recommends that you use GridLink data sources to connect to Oracle RAC databases. See the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-existing-database-enterprise-deployment.html#GUID-E3705EFF-AEF2-4F75-B5CE-1A829CDF0A1F">Enterprise Deployment Guide</a> for further details.</td>
+<td><code>generic</code></td>
+</tr>
+<tr>
+<td><code>domainHome</code></td>
+<td>Home directory of the OAM domain. If not specified, the value is derived from the <code>domainUID</code> as <code>/shared/domains/&lt;domainUID&gt;</code>.</td>
+<td><code>/u01/oracle/user_projects/domains/accessdomain</code></td>
+</tr>
+<tr>
+<td><code>domainPVMountPath</code></td>
+<td>Mount path of the domain persistent volume.</td>
+<td><code>/u01/oracle/user_projects/domains</code></td>
+</tr>
+<tr>
+<td><code>domainUID</code></td>
+<td>Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name.</td>
+<td><code>accessdomain</code></td>
+</tr>
+<tr>
+<td><code>edgInstall</code></td>
+<td>Used only if performing an install using the Enterprise Deployment Guide. See, <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg">Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster</a>.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>exposeAdminNodePort</code></td>
+<td>Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>exposeAdminT3Channel</code></td>
+<td>Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>OAM container image. The operator requires OAM 12.2.1.4. Refer to <a href="../../prepare-your-environment#obtain-the-oam-container-image">Obtain the OAM container image</a> for details on how to obtain or create the image. For WDT domains you must use April 24 or later.</td>
+<td><code>oracle/oam:12.2.1.4.0</code></td>
+</tr>
+<tr>
+<td><code>imagePullSecretName</code></td>
+<td>Name of the Kubernetes secret to access the container registry to pull the OAM container image. The presence of the secret will be validated when this parameter is specified.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>initialManagedServerReplicas</code></td>
+<td>Number of Managed Servers to initially start for the domain.</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>javaOptions</code></td>
+<td>Java options for starting the Administration Server and Managed Servers. A Java option can have references to one or more of the following pre-defined variables to obtain WebLogic domain information: <code>$(DOMAIN_NAME)</code>, <code>$(DOMAIN_HOME)</code>, <code>$(ADMIN_NAME)</code>, <code>$(ADMIN_PORT)</code>, and <code>$(SERVER_NAME)</code>.</td>
+<td><code>-Dweblogic.StdoutDebugEnabled=false</code></td>
+</tr>
+<tr>
+<td><code>logHome</code></td>
+<td>The in-pod location for the domain log, server logs, server out, and Node Manager log files. If not specified, the value is derived from the <code>domainUID</code> as <code>/shared/logs/&lt;domainUID&gt;</code>.</td>
+<td><code>/u01/oracle/user_projects/domains/logs/accessdomain</code></td>
+</tr>
+<tr>
+<td><code>namespace</code></td>
+<td>Kubernetes namespace in which to create the domain.</td>
+<td><code>oamns</code></td>
+</tr>
+<tr>
+<td><code>oamCPU</code></td>
+<td>Initial CPU Units, 1000m = 1 CPU core.</td>
+<td><code>1000m</code></td>
+</tr>
+<tr>
+<td><code>oamMaxCPU</code></td>
+<td>Initial memory allocated to pod.</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>oamMemory</code></td>
+<td>Initial memory allocated to a pod.</td>
+<td><code>4Gi</code></td>
+</tr>
+<tr>
+<td><code>oamMaxMemory</code></td>
+<td>Max memory a pod is allowed to consume.</td>
+<td><code>8Gi</code></td>
+</tr>
+<tr>
+<td><code>oamServerJavaParams</code></td>
+<td>The memory parameters to use for the OAM managed servers.</td>
+<td><code>&quot;-Xms8192m -Xmx8192m&quot;</code></td>
+</tr>
+<tr>
+<td><code>productionModeEnabled</code></td>
+<td>Boolean indicating if production mode is enabled for the domain.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>t3PublicAddress</code></td>
+<td>Public address for the T3 channel.  This should be set to the public address of the Kubernetes cluster.  This would typically be a load balancer address. <!-- raw HTML omitted -->For development environments only: In a single server (all-in-one) Kubernetes deployment, this may be set to the address of the master, or at the very least, it must be set to the address of one of the worker nodes.</td>
+<td>If not provided, the script will attempt to set it to the IP address of the Kubernetes cluster</td>
+</tr>
+<tr>
+<td><code>weblogicDomainStorageType</code></td>
+<td>Persistent volume storage type. Options are <code>NFS</code> for NFS volumes or <code>HOST_PATH</code> for shared file system.</td>
+<td><code>NFS</code></td>
+</tr>
+<tr>
+<td><code>weblogicDomainStorageNFSServer</code></td>
+<td>Hostname or IP address of the NFS Server.</td>
+<td><code>nfsServer</code></td>
+</tr>
+<tr>
+<td><code>weblogicDomainStoragePath</code></td>
+<td>Physical path to the persistent volume.</td>
+<td><code>/scratch/accessdomainpv</code></td>
+</tr>
+<tr>
+<td><code>weblogicDomainStorageSize</code></td>
+<td>Total storage allocated to the persistent storage.</td>
+<td><code>10Gi</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: The above CPU and memory values are for examples only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE">Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster</a>.</p>
+<ol start="4">
+<li>
+<p>Run the <code>generate_wdt_models.sh</code>, specifying your input file and an output directory to store the generated artifacts:</p>
+<pre><code> $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/generate_models_utils
+ $ ./generate_wdt_models.sh -i create-domain-wdt.yaml -o &lt;path_to_output_directory&gt;
+</code></pre><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/generate_models_utils
+$ ./generate_wdt_models.sh -i create-domain-wdt.yaml -o output
+</code></pre></div><p>The output will look similar to the following:</p>
+<pre><code>input parameters being used
+export version=&quot;create-weblogic-sample-domain-inputs-v1&quot;
+export adminPort=&quot;7001&quot;
+export domainUID=&quot;accessdomain&quot;
+export configuredManagedServerCount=&quot;5&quot;
+export initialManagedServerReplicas=&quot;1&quot;
+export productionModeEnabled=&quot;true&quot;
+export t3ChannelPort=&quot;30012&quot;
+export datasourceType=&quot;generic&quot;
+export edgInstall=&quot;false&quot;
+export domainHome=&quot;/u01/oracle/user_projects/domains/accessdomain&quot;
+export image=&quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July'24&gt;&quot;
+export imagePullSecretName=&quot;orclcred&quot;
+export logHome=&quot;/u01/oracle/user_projects/domains/logs/accessdomain&quot;
+export exposeAdminT3Channel=&quot;false&quot;
+export adminNodePort=&quot;30701&quot;
+export exposeAdminNodePort=&quot;false&quot;
+export namespace=&quot;oamns&quot;
+javaOptions=-Dweblogic.StdoutDebugEnabled=false
+export domainPVMountPath=&quot;/u01/oracle/user_projects&quot;
+export weblogicDomainStorageType=&quot;NFS&quot;
+export weblogicDomainStorageNFSServer=&quot;mynfsServer&quot;
+export weblogicDomainStoragePath=&quot;/scratch/shared/accessdomainpv&quot;
+export weblogicDomainStorageReclaimPolicy=&quot;Retain&quot;
+export weblogicDomainStorageSize=&quot;10Gi&quot;
+export oamServerJavaParams=&quot;-Xms8192m -Xmx8192m&quot;
+export oamMaxCPU=&quot;2&quot;
+export oamCPU=&quot;1000m&quot;
+export oamMaxMemory=&quot;8Gi&quot;
+export oamMemory=&quot;4Gi&quot;
+	
+validateWlsDomainName called with accessdomain
+WDT model file, property file and sample domain.yaml are genereted successfully at output/weblogic-domains/accessdomain
+</code></pre><p>``</p>
+<p>This will generate <code>domain.yaml</code>, <code>oam.yaml</code> and <code>oam.properties</code> in <code>output/weblogic-domains/accessdomain</code>.</p>
+</li>
+<li>
+<p>Copy the generated files to a <code>$WORKDIR/yaml</code> directory:</p>
+<pre><code> $ mkdir $WORKDIR/yaml
+ $ cp output/weblogic-domains/accessdomain/*.* $WORKDIR/yaml
+</code></pre><p>``</p>
+</li>
+</ol>
+<h4 id="build-the-domain-creation-image">Build the Domain Creation Image</h4>
+<p>In this section you build a domain creation image to host the WDT model files and WebLogic Deploy Tooling (WDT) installer.</p>
+<p>Domain creation images are used for supplying WDT model files, WDT variables files, WDT application archive files (collectively known as WDT model files), and the directory where the WebLogic Deploy Tooling software is installed (known as the WDT Home), when deploying a domain using a Domain on PV model. You distribute WDT model files and the WDT executable using these images, and the WebLogic Kubernetes Operator uses them to manage the domain.</p>
+<p><strong>Note</strong>: These images are only used for creating the domain and will not be used to update the domain. The domain creation image is used for domain creation only, it is not the product container image used for OAM.</p>
+<p>For more details on creating the domain image, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/domain-creation-images/">Domain creation images</a>.</p>
+<p>The steps to build the domain creation image are shown in the sections below.</p>
+<h5 id="prerequisites-1">Prerequisites</h5>
+<p>Verify that your environment meets the following prerequisites:</p>
+<ul>
+<li>You have created the yaml files are per <a href="#generate-wdt-models-and-the-domain-resource-yaml-file">Generate WDT models and the domain resource yaml file</a>.</li>
+<li>You have a container registry available to push the domain creation image to.</li>
+<li>A container image client on the build machine, such as Docker or Podman.
+<ul>
+<li>For Docker, a minimum version of 18.03.1.ce is required.</li>
+<li>For Podman, a minimum version of 3.0.1 is required.</li>
+</ul>
+</li>
+<li>An installed version of JDK to run Image Tool, version 8+.</li>
+<li>Proxies are set accordingly at the OS level if required.</li>
+</ul>
+<h5 id="prepare-the-build-domain-image-script">Prepare the build domain image script</h5>
+<p>The sample scripts for the Oracle Access Management domain image creation are available at <code>$WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image</code>.</p>
+<ol>
+<li>
+<p>Navigate to the <code>$WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/properties</code> directory:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/properties
+</code></pre></div></li>
+<li>
+<p>Make a copy of the <code>build-domain-creation-image.properties</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cp build-domain-creation-image.properties build-domain-creation-image.properties.orig
+</code></pre></div></li>
+<li>
+<p>Edit the <code>build-domain-creation-image.properties</code> and modify the following parameters. Save the file when complete:</p>
+<pre><code>JAVA_HOME=&lt;Java home location&gt;
+IMAGE_TAG=&lt;Image tag name&gt;
+REPOSITORY= &lt;Container image repository to push the image&gt;
+REG_USER= &lt;Container registry username&gt;
+IMAGE_PUSH_REQUIRES_AUTH=&lt;Whether image push requires authentication to the registry&gt;
+WDT_MODEL_FILE=&lt;Full Path to WDT Model file oam.yaml&gt; 
+WDT_VARIABLE_FILE=&lt;Full path to WDT variable file oam.properties&gt;
+WDT_ARCHIVE_FILE=&lt;Full Path to WDT Archive file&gt; 
+WDT_VERSION=&quot;Version of WebLogic Deploy Tool version to use&quot;
+WIT_VERSION=&quot;Version of WebLogic Image Tool to use&quot;
+</code></pre><p>For example:</p>
+<pre><code>JAVA_HOME=/scratch/jdk
+IMAGE_TAG=oam-aux-generic-v1
+BASE_IMAGE=ghcr.io/oracle/oraclelinux:8-slim
+REPOSITORY=container-registry.example.com/mytenancy/idm
+REG_USER=mytenancy/myemail@example.com
+IMAGE_PUSH_REQUIRES_AUTH=true
+WDT_MODEL_FILE=&quot;/scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/yaml/oam.yaml&quot;
+WDT_VARIABLE_FILE=&quot;/scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/oam.properties&quot;
+WDT_ARCHIVE_FILE=&quot;&quot;
+WDT_VERSION=&quot;3.5.3&quot;
+WIT_VERSION=&quot;1.12.1&quot;
+</code></pre><p>A full list of parameters and descriptions in the <code>build-domain-creation-image.properties</code> file are shown below:</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Definition</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JAVA_HOME</td>
+<td>Path to the JAVA_HOME for the JDK8+.</td>
+<td></td>
+</tr>
+<tr>
+<td>IMAGE_TAG</td>
+<td>Image tag for the final domain creation image.</td>
+<td><code>oam-aux-generic-v1</code></td>
+</tr>
+<tr>
+<td>BASE_IMAGE</td>
+<td>The Oracle Linux product container image to use as a base image.</td>
+<td><code>ghcr.io/oracle/oraclelinux:8-slim</code></td>
+</tr>
+<tr>
+<td>REPOSITORY</td>
+<td>Container image repository that will host the domain creation image.</td>
+<td><code>iad.ocir.io/mytenancy/idm</code></td>
+</tr>
+<tr>
+<td>REG_USER</td>
+<td>Username to authenticate to the <code>&lt;REGISTRY&gt;</code> and push the domain creation image.</td>
+<td><code>mytenancy/oracleidentitycloudservice/myemail@example.com</code></td>
+</tr>
+<tr>
+<td>IMAGE_PUSH_REQUIRES_AUTH</td>
+<td>If authentication to <code>&lt;REGISTRY&gt;</code> is required then set to true, else set to false. If set to false, <code>&lt;REG_USER&gt;</code> is not required.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>WDT_MODEL_FILE</td>
+<td>Absolute path to WDT model file <code>oam.yaml</code>. For example <code>$WORKDIR/yaml/oam.yaml</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td>WDT_MODEL_FILE</td>
+<td>Absolute path to WDT variable file <code>oam.properties</code>. For example <code>$WORKDIR/yaml/oam.properties</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td>WDT_ARCHIVE_FILE</td>
+<td>Absolute path to WDT archive file.</td>
+<td></td>
+</tr>
+<tr>
+<td>WDT_VERSION</td>
+<td>WebLogic Deploy Tool version. If not specified the latest available version will be downloaded. It is recommended to use the default value.</td>
+<td><code>3.5.3</code></td>
+</tr>
+<tr>
+<td>WIT_VERSION</td>
+<td>WebLogic Image Tool Version. If not specified the latest available version will be downloaded. It is recommended to use the default value.</td>
+<td><code>1.12.1</code></td>
+</tr>
+<tr>
+<td>TARGET</td>
+<td>Select the target environment in which the created image will be used. Supported values: <code>Default</code> or <code>OpenShift</code>. See <a href="https://oracle.github.io/weblogic-image-tool/userguide/tools/create-aux-image/#--target">Additional Information</a>.</td>
+<td>Default</td>
+</tr>
+<tr>
+<td>CHOWN</td>
+<td><code>userid:groupid</code> to be used for creating files within the image, such as the WDT installer, WDT model, and WDT archive. If the user or group does not exist in the image, they will be added with <code>useradd</code>/<code>groupadd</code>.</td>
+<td><code>oracle:oracle</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: If <code>IMAGE_PUSH_REQUIRES_AUTH=true</code>, you must edit the <code>$WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/properties/.regpassword</code> and change <code>&lt;REGISTRY_PASSWORD&gt;</code> to your registry password:</p>
+<pre><code>REG_PASSWORD=&quot;&lt;REGISTRY_PASSWORD&gt;&quot;
+</code></pre><h5 id="run-the-build-domain-creation-image-script">Run the build-domain-creation-image script</h5>
+<ol>
+<li>
+<p>Execute the <code>build-domain-creation-image.sh</code> by specifying the input properties parameter files:</p>
+<pre><code> $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image
+ $ ./build-domain-creation-image.sh -i properties/build-domain-creation-image.properties
+</code></pre><p>``</p>
+<p><strong>Note</strong>: If using a password file, you must add <code>-p properties/.regpassword</code> to the end of the command.</p>
+<p>Executing this command will build the image and push it to the container registry.</p>
+<p><strong>Note</strong>: You can use the same same domain creation image to create a domain in multiple environments, based on your need. You do not need to rebuild it every time during domain creation. This is a one time activity.</p>
+<p>The output will look similar to the following:</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see example output:
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code>using WDT_DIR: /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir
+Using WDT_VERSION 3.5.3
+Using WIT_DIR /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir
+Using WIT_VERSION 1.12.1
+Using Image tag: oam-aux-generic-v1
+using Base Image: ghcr.io/oracle/oraclelinux:8-slim
+using IMAGE_BUILDER_EXE /usr/bin/podman
+JAVA_HOME is set to /scratch/jdk
+@@  Info: WIT_INSTALL_ZIP_URL is ''
+@@ WIT_INSTALL_ZIP_URL is not set
+@@ imagetool.sh not found in /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir/imagetool/bin. Installing imagetool...
+@@ Info:  Downloading https://github.com/oracle/weblogic-image-tool/releases/download/release-1.12.1/imagetool.zip
+@@ Info:  Downloading https://github.com/oracle/weblogic-image-tool/releases/download/release-1.12.1/imagetool.zip with https_proxy=&quot;http://proxy.example.com:80&quot;
+@@ Info: Archive downloaded to /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir/imagetool.zip, about to unzip via '/home/opc/jdk/bin/jar xf'.
+@@ Info: imageTool cache does not contain a valid entry for wdt_3.5.3. Installing WDT
+@@  Info: WDT_INSTALL_ZIP_URL is ''
+@@ WDT_INSTALL_ZIP_URL is not set
+@@ Info:  Downloading https://github.com/oracle/weblogic-deploy-tooling/releases/download/release-3.5.3/weblogic-deploy.zip
+@@ Info:  Downloading https://github.com/oracle/weblogic-deploy-tooling/releases/download/release-3.5.3/weblogic-deploy.zip with https_proxy=&quot;http://proxy.example.com:80&quot;
+@@ Info: Archive downloaded to /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir/weblogic-deploy.zip
+[INFO   ] Successfully added to cache. wdt_3.5.3=/scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir/weblogic-deploy.zip
+@@ Info: Install succeeded, imagetool install is in the /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir/imagetool directory.
+Starting Building Image registry.example.com/mytenancy/idm:oam-aux-generic-v1
+ Login Succeeded!
+WDT_MODEL_FILE is set to /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/yaml/oam.yaml
+WDT_VARIABLE_FILE is set to /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/yaml/oam.properties
+Additional Build Commands file is set to /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/additonal-build-files/build-files.txt
+Additonal Build file is set to /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/additonal-build-files/OAM.json
+[INFO   ] WebLogic Image Tool version 1.12.1
+[INFO   ] Image Tool build ID: 0c9aa58f-808b-4707-a11a-7766fb301cbb
+[INFO   ] Temporary directory used for image build context: /home/oracle/wlsimgbuilder_temp1198331326550546381
+[INFO   ] Copying /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/additonal-build-files/OAM.json to build context folder.
+[INFO   ] User specified fromImage ghcr.io/oracle/oraclelinux:8-slim
+[INFO   ] Inspecting ghcr.io/oracle/oraclelinux:8-slim, this may take a few minutes if the image is not available locally.
+[INFO   ] Copying /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/yaml/oam.yaml to build context folder.
+[INFO   ] Copying /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/yaml/oam.properties to build context folder.
+[INFO   ] Copying /scratch/OAMK8S/fmw-kubernetes/OracleAccessManagement/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils/build-domain-creation-image/workdir/weblogic-deploy.zip to build context folder.
+[INFO   ] Starting build: /usr/bin/podman build --no-cache --force-rm --tag registry.example.com/mytenancy/idm:oam-aux-generic-v1 --pull --build-arg http_proxy=http://proxy.example.com:80 --build-arg https_proxy=http://proxy.example.com:80 --build-arg no_proxy=localhost,127.0.0.0/8,.example.com,,/var/run/crio/crio.sock,X.X.X.X /home/oracle/wlsimgbuilder_temp1198331326550546381
+[1/3] STEP 1/5: FROM ghcr.io/oracle/oraclelinux:8-slim AS os_update
+[1/3] STEP 2/5: LABEL com.oracle.weblogic.imagetool.buildid=&quot;0c9aa58f-808b-4707-a11a-7766fb301cbb&quot;
+--&gt; ba91c351bf94
+[1/3] STEP 3/5: USER root
+--&gt; d8f89c65892a
+[1/3] STEP 4/5: RUN microdnf update     &amp;&amp; microdnf install gzip tar unzip libaio libnsl jq findutils diffutils shadow-utils     &amp;&amp; microdnf clean all
+Downloading metadata...
+Downloading metadata...
+Package                                         Repository            Size
+Upgrading:
+ libgcc-8.5.0-20.0.3.el8.x86_64                 ol8_baseos_latest  93.4 kB
+  replacing libgcc-8.5.0-20.0.2.el8.x86_64
+ libstdc++-8.5.0-20.0.3.el8.x86_64              ol8_baseos_latest 474.6 kB
+  replacing libstdc++-8.5.0-20.0.2.el8.x86_64
+ systemd-libs-239-78.0.4.el8.x86_64             ol8_baseos_latest   1.2 MB
+   replacing systemd-libs-239-78.0.3.el8.x86_64
+Transaction Summary:
+ Installing:        0 packages
+ Reinstalling:      0 packages
+ Upgrading:         3 packages
+ Obsoleting:        0 packages
+ Removing:          0 packages
+ Downgrading:       0 packages
+Downloading packages...
+Running transaction test...
+Updating: libgcc;8.5.0-20.0.3.el8;x86_64;ol8_baseos_latest
+Updating: libstdc++;8.5.0-20.0.3.el8;x86_64;ol8_baseos_latest
+Updating: systemd-libs;239-78.0.4.el8;x86_64;ol8_baseos_latest
+Cleanup: libstdc++;8.5.0-20.0.2.el8;x86_64;installed
+Cleanup: systemd-libs;239-78.0.3.el8;x86_64;installed
+Cleanup: libgcc;8.5.0-20.0.2.el8;x86_64;installed
+Complete.
+Package                           Repository            Size
+Installing:
+ diffutils-3.6-6.el8.x86_64       ol8_baseos_latest 369.3 kB
+ findutils-1:4.6.0-21.el8.x86_64  ol8_baseos_latest 539.8 kB
+ gzip-1.9-13.el8_5.x86_64         ol8_baseos_latest 170.7 kB
+ jq-1.6-7.0.3.el8.x86_64          ol8_appstream     206.5 kB
+ libaio-0.3.112-1.el8.x86_64      ol8_baseos_latest  33.4 kB
+ libnsl-2.28-236.0.1.el8.7.x86_64 ol8_baseos_latest 111.4 kB
+ oniguruma-6.8.2-2.1.el8_9.x86_64 ol8_appstream     191.5 kB
+ unzip-6.0-46.0.1.el8.x86_64      ol8_baseos_latest 201.0 kB
+Transaction Summary:
+Installing:        8 packages
+ Reinstalling:      0 packages
+ Upgrading:         0 packages
+ Obsoleting:        0 packages
+ Removing:          0 packages
+ Downgrading:       0 packages
+Downloading packages...
+Running transaction test...
+Installing: oniguruma;6.8.2-2.1.el8_9;x86_64;ol8_appstream
+Installing: jq;1.6-7.0.3.el8;x86_64;ol8_appstream
+Installing: unzip;6.0-46.0.1.el8;x86_64;ol8_baseos_latest
+Installing: libnsl;2.28-236.0.1.el8.7;x86_64;ol8_baseos_latest
+Installing: libaio;0.3.112-1.el8;x86_64;ol8_baseos_latest
+Installing: gzip;1.9-13.el8_5;x86_64;ol8_baseos_latest
+Installing: findutils;1:4.6.0-21.el8;x86_64;ol8_baseos_latest
+Installing: diffutils;3.6-6.el8;x86_64;ol8_baseos_latest
+Complete.
+Complete.
+--&gt; 73fb79fa40b2
+[1/3] STEP 5/5: RUN if [ -z &quot;$(getent group oracle)&quot; ]; then groupadd oracle || exit 1 ; fi  &amp;&amp; if [ -z &quot;$(getent group oracle)&quot; ]; then groupadd oracle || exit 1 ; fi  &amp;&amp; if [ -z &quot;$(getent passwd oracle)&quot; ]; then useradd -g oracle oracle || exit 1; fi  &amp;&amp; mkdir -p /u01  &amp;&amp; chown oracle:oracle /u01  &amp;&amp; chmod 775 /u01
+--&gt; ff6cf74351d1
+[2/3] STEP 1/4: FROM ff6cf74351d1e0124121321174eaa64ebefa0bc3eef80ec88caec12feb9e8fb3 AS wdt_build
+[2/3] STEP 2/4: RUN mkdir -p /auxiliary  &amp;&amp; mkdir -p /auxiliary/models  &amp;&amp; chown oracle:oracle /auxiliary
+--&gt; a061b678fa0a
+[2/3] STEP 3/4: COPY --chown=oracle:oracle [&quot;weblogic-deploy.zip&quot;, &quot;/tmp/imagetool/&quot;]
+--&gt; 3daccfef2f06
+[2/3] STEP 4/4: RUN test -d /auxiliary/weblogic-deploy &amp;&amp; rm -rf /auxiliary/weblogic-deploy || echo Initial WDT install         &amp;&amp; unzip -q &quot;/tmp/imagetool/weblogic-deploy.zip&quot; -d /auxiliary
+Initial WDT install
+--&gt; b77b02f66a83
+[3/3] STEP 1/12: FROM ff6cf74351d1e0124121321174eaa64ebefa0bc3eef80ec88caec12feb9e8fb3 AS final
+[3/3] STEP 2/12: ENV AUXILIARY_IMAGE_PATH=/auxiliary     WDT_HOME=/auxiliary     WDT_MODEL_HOME=/auxiliary/models
+--&gt; 10dc1832266f
+[3/3] STEP 3/12: RUN mkdir -p /auxiliary &amp;&amp; chown oracle:oracle /auxiliary
+--&gt; 0b85f8e7399a
+[3/3] STEP 4/12: COPY --from=wdt_build --chown=oracle:oracle /auxiliary /auxiliary/
+--&gt; c64bf2bef430
+[3/3] STEP 5/12: RUN mkdir -p /auxiliary/models &amp;&amp; chown oracle:oracle /auxiliary/models
+--&gt; d8817f84ab58
+[3/3] STEP 6/12: COPY --chown=oracle:oracle [&quot;oam.yaml&quot;, &quot;/auxiliary/models/&quot;]
+--&gt; 45b1d25264b9
+[3/3] STEP 7/12: COPY --chown=oracle:oracle [&quot;oam.properties&quot;, &quot;/auxiliary/models/&quot;]
+--&gt; 2ceba77ee226
+[3/3] STEP 8/12: RUN chmod -R 640 /auxiliary/models/*
+--&gt; 34385bac7974
+[3/3] STEP 9/12: USER oracle
+--&gt; 409f6e3ccce4
+[3/3] STEP 10/12: WORKDIR /auxiliary
+--&gt; aaa2f154f512
+[3/3] STEP 11/12: COPY --chown=oracle:oracle files/OAM.json /auxiliary/weblogic-deploy/lib/typedefs
+--&gt; c8a9d29106d3
+[3/3] STEP 12/12: RUN chmod -R 755 /auxiliary
+[3/3] COMMIT registry.example.com/mytenancy/idm:oam-aux-generic-v1
+--&gt; 0797418499a1
+Successfully tagged registry.example.com/mytenancy/idm:oam-aux-generic-v1
+0797418499a1dfd6d2a28672948c17ed747291ad069cebca5fac1b0410978d75
+[INFO   ] Build successful. Build time=72s. Image tag=registry.example.com/mytenancy/idm:oam-aux-generic-v1
+Getting image source signatures
+ Copying blob 462ffb36555c done
+Copying blob 3db4d3748983 done
+Copying blob 7e9f3f6c7a0a done
+Copying blob 32aa5f13e19b done
+Copying blob d979da323f64 done
+Copying blob f18b9e5f415f done
+Copying blob aaaea7c1392f done
+Copying blob 5504fa641a87 done
+Copying blob 5aa81493c602 done
+Copying blob f56f992ba90d done
+Copying blob 2b1e0644fbd3 done
+Copying config a39dc6ae7f done
+Writing manifest to image destination
+Pushed image registry.example.com/mytenancy/idm/oam-aux-generic-v1 to image registry Docker Hub	
+</code></pre>
+    </div>
+</div>
+</li>
+</ol>
+<h4 id="deploy-the-oam-domain-resource">Deploy the OAM domain resource</h4>
+<p>In this section you modify the OAM <code>domain.yaml</code> and deploy the OAM domain using the build image created.</p>
+<h5 id="modify-the-oam-domainyaml">Modify the OAM domain.yaml</h5>
+<p>In this section you modify the <code>domain.yaml</code> file in preparation for creating the OAM domain.</p>
+<ol>
+<li>
+<p>Edit the <code>$WORKDIR/yaml/domain.yaml</code> and update the <code>%DOMAIN_CREATION_IMAGE%</code> with the previously generated image name.</p>
+<p><strong>Note</strong>: <code>%DOMAIN_CREATION_IMAGE%</code> takes the format of <code>&lt;REPOSITORY&gt;:&lt;TAG&gt;</code>:</p>
+<pre><code>domain:
+         # Domain | DomainAndRCU
+         createIfNotExists: DomainAndRCU
+         # Image containing WDT installer and Model files.
+         domainCreationImages:
+             - image: '%DOMAIN_CREATION_IMAGE%'
+         domainType: OAM
+
+</code></pre><p>For example:</p>
+<pre><code>domain:
+        # Domain | DomainAndRCU
+        createIfNotExists: DomainAndRCU
+        # Image containing WDT installer and Model files.
+        domainCreationImages:
+            - image: 'container-registry.example.com/mytenancy/idm:oam-aux-generic-v1'
+        domainType: OAM
+
+</code></pre></li>
+<li>
+<p>In circumstances where you may be pulling the OAM product container image from Oracle Container Registry, and then the domain image from a private registry, you must first create a secret (privatecred) for the private registry. For example:</p>
+<pre><code>$ kubectl create secret docker-registry &quot;privatecred&quot; --docker-server=container-registry.example.com \
+--docker-username=&quot;user@example.com&quot; \
+--docker-password=password --docker-email=user@example.com \
+--namespace=oamns
+</code></pre><p>Then specify both secrets for <code>imagePullSecrets</code> in the <code>domain.yaml</code>. For example:</p>
+<pre><code> ...
+spec:
+  # The WebLogic Domain Home
+  domainHome: /u01/oracle/user_projects/domains/accessdomain
+
+  # The domain home source type
+  # Set to PersistentVolume for domain-in-pv, Image for domain-in-image, or FromModel for model-in-image
+  domainHomeSourceType: PersistentVolume
+
+  # The WebLogic Server image that the Operator uses to start the domain
+  image: &quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July'24&gt;&quot;
+
+  # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
+  imagePullPolicy: IfNotPresent
+
+  imagePullSecrets:
+  - name: orclcred
+  - name: privatecred
+  # Identify which Secret contains the WebLogic Admin credentials
+...
+</code></pre><p>For more information about the configuration parameters in <code>domain.yaml</code>, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-resource/">Domain Resources</a>.</p>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see an example domain.yaml:
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <pre><code># Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of how to define an OAM Domain. For details about the fields in domain specification, refer https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-resource/
+#
+apiVersion: &quot;weblogic.oracle/v9&quot;
+kind: Domain
+metadata:
+  name: accessdomain
+  namespace: oamns
+  labels:
+    weblogic.domainUID: accessdomain
+spec:
+  # The WebLogic Domain Home
+  domainHome: /u01/oracle/user_projects/domains/accessdomain
+
+  # The domain home source type
+  # Set to PersistentVolume for domain-in-pv, Image for domain-in-image, or FromModel for model-in-image
+  domainHomeSourceType: PersistentVolume
+
+  # The WebLogic Server image that the Operator uses to start the domain
+  image: &quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July'24&gt;&quot;
+
+  # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
+  imagePullPolicy: IfNotPresent
+
+  # Add additional secret name if you are using a different registry for domain creation image.
+  # Identify which Secret contains the credentials for pulling an image
+  imagePullSecrets:
+  - name: orclcred
+  - name: privatecred
+  # Identify which Secret contains the WebLogic Admin credentials
+  webLogicCredentialsSecret:
+    name: accessdomain-weblogic-credentials
+
+  # Whether to include the server out file into the pod's stdout, default is true
+  includeServerOutInPodLog: true
+
+  # Whether to enable log home
+  logHomeEnabled: true
+
+  # Whether to write HTTP access log file to log home
+  httpAccessLogInLogHome: true
+
+  # The in-pod location for domain log, server logs, server out, introspector out, and Node Manager log files
+  logHome: /u01/oracle/user_projects/domains/logs/accessdomain
+  # An (optional) in-pod location for data storage of default and custom file stores.
+  # If not specified or the value is either not set or empty (e.g. dataHome: &quot;&quot;) then the
+  # data storage directories are determined from the WebLogic domain home configuration.
+  dataHome: &quot;&quot;
+
+  # serverStartPolicy legal values are &quot;Never, &quot;IfNeeded&quot;, or &quot;AdminOnly&quot;
+  # This determines which WebLogic Servers the Operator will start up when it discovers this Domain
+  # - &quot;Never&quot; will not start any server in the domain
+  # - &quot;AdminOnly&quot; will start up only the administration server (no managed servers will be started)
+  # - &quot;IfNeeded&quot; will start all non-clustered servers, including the administration server and clustered servers up to the replica count
+  serverStartPolicy: IfNeeded
+
+  serverPod:
+    initContainers:
+      #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
+      - name: compat-connector-init
+        # OAM Product image, same as spec.image mentioned above
+        image: &quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July'24&gt;&quot;
+        imagePullPolicy: IfNotPresent
+        command: [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;mkdir -p  /u01/oracle/user_projects/domains/wdt-logs&quot;]
+        volumeMounts:
+          - mountPath: /u01/oracle/user_projects
+            name: weblogic-domain-storage-volume
+    # a mandatory list of environment variable to be set on the servers
+    env:
+    - name: JAVA_OPTIONS
+      value: -Dweblogic.StdoutDebugEnabled=false
+    - name: USER_MEM_ARGS
+      value: &quot;-Djava.security.egd=file:/dev/./urandom -Xms256m -Xmx1024m &quot;
+    - name: WLSDEPLOY_LOG_DIRECTORY
+      value: &quot;/u01/oracle/user_projects/domains/wdt-logs&quot;
+    - name: WLSDEPLOY_PROPERTIES
+      value: &quot;-Dwdt.config.disable.rcu.drop.schema=true&quot;
+    volumes:
+    - name: weblogic-domain-storage-volume
+      persistentVolumeClaim:
+        claimName: accessdomain-domain-pvc
+    volumeMounts:
+    - mountPath: /u01/oracle/user_projects
+      name: weblogic-domain-storage-volume
+
+  # adminServer is used to configure the desired behavior for starting the administration server.
+  adminServer:
+    # adminService:
+    #   channels:
+    # The Admin Server's NodePort
+    #    - channelName: default
+    #      nodePort: 30701
+    # Uncomment to export the T3Channel as a service
+    #    - channelName: T3Channel
+    serverPod:
+      # an (optional) list of environment variable to be set on the admin servers
+      env:
+      - name: USER_MEM_ARGS
+        value: &quot;-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx1024m &quot;
+      - name: CLASSPATH
+        value: &quot;/u01/oracle/wlserver/server/lib/weblogic.jar&quot;
+
+  configuration:
+      secrets: [ accessdomain-rcu-credentials ]
+      initializeDomainOnPV:
+        persistentVolume:
+          metadata:
+              name: accessdomain-domain-pv
+          spec:
+            storageClassName: accessdomain-domain-storage-class
+            capacity:
+          # Total storage allocated to the persistent storage.
+                storage: 10Gi
+          # Reclaim policy of the persistent storage
+          # # The valid values are: 'Retain', 'Delete', and 'Recycle'
+            persistentVolumeReclaimPolicy: Retain
+          # Persistent volume type for the persistent storage.
+          # # The value must be 'hostPath' or 'nfs'.
+          # # If using 'nfs', server must be specified.
+           nfs:
+              server: mynfserver
+            # hostPath:
+              path: &quot;/scratch/shared/accessdomainpv&quot;
+        persistentVolumeClaim:
+          metadata:
+              name: accessdomain-domain-pvc
+          spec:
+            storageClassName: accessdomain-domain-storage-class
+            resources:
+                requests:
+                    storage: 10Gi
+            volumeName: accessdomain-domain-pv
+        domain:
+            # Domain | DomainAndRCU
+            createIfNotExists: DomainAndRCU
+            # Image containing WDT installer and Model files.
+            domainCreationImages:
+                - image: 'container-registry.example.com/mytenancy/idm:oam-aux-generic-v1'
+            domainType: OAM
+  # References to Cluster resources that describe the lifecycle options for all
+  # the Managed Server members of a WebLogic cluster, including Java
+  # options, environment variables, additional Pod content, and the ability to
+  # explicitly start, stop, or restart cluster members. The Cluster resource
+  # must describe a cluster that already exists in the WebLogic domain
+  # configuration.
+  clusters:
+  - name: accessdomain-oam-cluster
+  - name: accessdomain-policy-cluster
+
+  # The number of managed servers to start for unlisted clusters
+  # replicas: 1
+
+---
+# This is an example of how to define a Cluster resource.
+apiVersion: weblogic.oracle/v1
+kind: Cluster
+metadata:
+  name: accessdomain-oam-cluster
+  namespace: oamns
+spec:
+  clusterName: oam_cluster
+  serverService:
+    precreateService: true
+  replicas: 1
+  serverPod:
+  serverPod:
+    env:
+    - name: USER_MEM_ARGS
+      value: &quot;-XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -Xms8192m -Xmx8192m &quot;
+    resources:
+      limits:
+        cpu: &quot;2&quot;
+        memory: &quot;8Gi&quot;
+      requests:
+        cpu: &quot;1000m&quot;
+        memory: &quot;4Gi&quot;
+
+
+---  
+# This is an example of how to define a Cluster resource.
+apiVersion: weblogic.oracle/v1
+kind: Cluster
+metadata:
+  name: accessdomain-policy-cluster
+  namespace: oamns
+spec:
+  clusterName: policy_cluster
+  serverService:
+    precreateService: true
+  replicas: 1
+ ```
+ 
+ </code></pre>
+    </div>
+</div>
+<p><strong>Note</strong>: By default, WebLogic operator will create the RCU schema using WDT tooling during every domain deployment. If the RCU Schema with the given prefix already exists, and error will be thrown and the domain creation will fail. If you want to delete the schema every time during domain deployment, then can use change the value <code>&quot;-Dwdt.config.disable.rcu.drop.schema=true&quot;</code> to <code>&quot;-Dwdt.config.disable.rcu.drop.schema=false&quot;</code>.</p>
+</li>
+</ol>
+<h5 id="optional-wdt-models-configmap">Optional WDT Models ConfigMap</h5>
+<p>If required, you can provide a Kubernetes ConfigMap with additional WDT models and WDT variables files as supplements, or overrides, to those in <code>domainCreationImages</code>. For example in the  <code>output/weblogic-domains/accessdomain/domain.yaml</code>:</p>
+<pre><code>      domain:
+          ...
+          domainCreationImages:
+              ...
+          domainCreationConfigMap: mymodel-domain-configmap
+</code></pre><p>The files inside <code>domainCreationConfigMap</code> must have file extensions, <code>.yaml</code>, <code>.properties</code>, or <code>.zip</code>.</p>
+<ol>
+<li>
+<p>To create a configmap run the following command:</p>
+<pre><code> $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/wdt-utils
+ $ ./create-configmap.sh -n oamns -d accessdomain -c mymodel-domain-configmap -f wdt_models/mymodel.yaml
+</code></pre></li>
+</ol>
+<p>For more information on the usage of additional configuration, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/usage/#optional-wdt-models-configmap">Optional WDT models ConfigMap</a>.</p>
+<h5 id="deploy-the-oam-domain">Deploy the OAM domain</h5>
+<p>In this section you deploy the OAM domain using the <code>domain.yaml</code>.</p>
+<ol>
+<li>
+<p>Run the following command to create OAM domain resources:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create -f $WORKDIR/yaml/domain.yaml
+</code></pre></div><p>The following steps will be performed by WebLogic Kubernetes Operator:</p>
+<ul>
+<li>Run the introspector job.</li>
+<li>The introspection job will create the RCU Schemas.</li>
+<li>The introspector job pod will create the domain on PV using the model provided in the domain creation image.</li>
+<li>The introspector job pod will execute OAM offline configuration actions post successful creation of domain via WDT.</li>
+<li>Brings up the Administration Server, OAM server (<code>oam_server1</code>), and the OAM Policy Managed Server (<code>oam_policy_mgr1</code>).</li>
+</ul>
+<p>The output will look similar to the following:</p>
+<pre><code>domain.weblogic.oracle/accessdomain created
+cluster.weblogic.oracle/accessdomain-oam-cluster created
+cluster.weblogic.oracle/accessdomain-policy-cluster created
+</code></pre><p>Whilst the domain creation is running, you can run the following command to monitor the progress:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oamns -w
+</code></pre></div><p>You can also tail the logs for the pods by running:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs -f &lt;pod&gt; -n oamns
+</code></pre></div><p>WDT specific logs can be found in <code>&lt;persistent_volume&gt;/domains/wdt-logs</code>.</p>
+<p>Once everything is started you should see the Administration Server and OAM servers are running:</p>
+<pre><code>NAME                           READY   STATUS    RESTARTS        AGE
+accessdomain-adminserver       1/1     Running   0               11m
+accessdomain-oam-policy-mgr1   1/1     Running   0               3m53s
+accessdomain-oam-server1       1/1     Running   0               3m53s
+</code></pre></li>
+</ol>
+<p>If there are any failures, follow <strong>Domain creation failure with WDT models</strong> in the <a href="../../troubleshooting/#domain-creation-failure-with-wdt-models">Troubleshooting</a> section.</p>
+<h3 id="verify-the-results">Verify the results</h3>
+<h3 id="verify-the-domain-pods-and-services">Verify the domain, pods and services</h3>
+<ol>
+<li>
+<p>Verify the domain, servers pods and services are created and in the <code>READY</code> state with a <code>STATUS</code> of <code>1/1</code>, by running the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all,domains -n &lt;domain_namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get all,domains -n oamns
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME                               READY   STATUS    RESTARTS        AGE
+pod/accessdomain-adminserver       1/1     Running   <span style="color:#ae81ff">0</span>               12m
+pod/accessdomain-oam-policy-mgr1   1/1     Running   <span style="color:#ae81ff">0</span>               4m19s
+pod/accessdomain-oam-server1       1/1     Running   <span style="color:#ae81ff">0</span>               4m19s
+
+NAME                                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>     AGE
+service/accessdomain-adminserver              ClusterIP   None             &lt;none&gt;        7001/TCP    12m
+service/accessdomain-cluster-oam-cluster      ClusterIP   10.104.17.83     &lt;none&gt;        14100/TCP   4m19s
+service/accessdomain-cluster-policy-cluster   ClusterIP   10.98.157.157    &lt;none&gt;        15100/TCP   4m19s
+service/accessdomain-oam-policy-mgr1          ClusterIP   None             &lt;none&gt;        15100/TCP   4m19s
+service/accessdomain-oam-policy-mgr2          ClusterIP   10.101.141.238   &lt;none&gt;        15100/TCP   4m19s
+service/accessdomain-oam-policy-mgr3          ClusterIP   10.107.167.143   &lt;none&gt;        15100/TCP   4m19s
+service/accessdomain-oam-policy-mgr4          ClusterIP   10.106.100.191   &lt;none&gt;        15100/TCP   4m19s
+service/accessdomain-oam-policy-mgr5          ClusterIP   10.105.5.126     &lt;none&gt;        15100/TCP   4m19s
+service/accessdomain-oam-server1              ClusterIP   None             &lt;none&gt;        14100/TCP   4m19s
+service/accessdomain-oam-server2              ClusterIP   10.98.248.74     &lt;none&gt;        14100/TCP   4m19s
+service/accessdomain-oam-server3              ClusterIP   10.106.224.54    &lt;none&gt;        14100/TCP   4m19s
+service/accessdomain-oam-server4              ClusterIP   10.104.241.109   &lt;none&gt;        14100/TCP   4m19s
+service/accessdomain-oam-server5              ClusterIP   10.96.189.205    &lt;none&gt;        14100/TCP   4m19s
+
+NAME                                  AGE
+domain.weblogic.oracle/accessdomain   18m
+
+NAME                                                  AGE
+cluster.weblogic.oracle/accessdomain-oam-cluster      18m
+cluster.weblogic.oracle/accessdomain-policy-cluster   18m
+</code></pre></div><p>The default domain created by the script has the following characteristics:</p>
+<ul>
+<li>An Administration Server named <code>AdminServer</code> listening on port 7001.</li>
+<li>A configured OAM cluster named <code>oam_cluster</code> of size 5.</li>
+<li>A configured Policy cluster named <code>policy_cluster</code> of size 5.</li>
+<li>One started OAM managed Server, named <code>oam_server1</code>, listening on port 14100.</li>
+<li>One started Policy managed Server, named <code>oam-policy-mgr1</code>, listening on port 15100.</li>
+<li>Log files that are located in <code>&lt;persistent_volume&gt;/logs/&lt;domainUID&gt;</code>.</li>
+</ul>
+</li>
+</ol>
+<h3 id="verify-the-domain">Verify the domain</h3>
+<ol>
+<li>
+<p>Run the following command to describe the domain:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe domain &lt;domain_uid&gt; -n &lt;namespace&gt;
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe domain accessdomain -n oamns
+</code></pre></div>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fas fa-chevron-down' : 'fas fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fas fa-chevron-right"></i>
+        <span>
+        
+    	
+    	Click here to see example output:
+    	
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+        <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> Name:         accessdomain
+ Namespace:    oamns
+ Labels:       weblogic.domainUID<span style="color:#f92672">=</span>accessdomain
+ Annotations:  &lt;none&gt;
+ API Version:  weblogic.oracle/v9
+ Kind:         Domain
+ Metadata:
+   Creation Timestamp:  &lt;DATE&gt;
+   Generation:          <span style="color:#ae81ff">1</span>
+   Managed Fields:
+     API Version:  weblogic.oracle/v9
+     Fields Type:  FieldsV1
+     fieldsV1:
+       f:metadata:
+         f:labels:
+           .:
+           f:weblogic.domainUID:
+       f:spec:
+         .:
+         f:adminServer:
+           .:
+           f:adminChannelPortForwardingEnabled:
+           f:serverPod:
+             .:
+             f:env:
+           f:serverStartPolicy:
+         f:clusters:
+         f:configuration:
+           .:
+           f:initializeDomainOnPV:
+             .:
+             f:domain:
+               .:
+               f:createIfNotExists:
+               f:domainCreationImages:
+               f:domainType:
+             f:persistentVolume:
+               .:
+               f:metadata:
+                 .:
+                 f:name:
+               f:spec:
+                 .:
+                 f:capacity:
+                   .:
+                   f:storage:
+                 f:nfs:
+                   .:
+                   f:path:
+                   f:server:
+                 f:persistentVolumeReclaimPolicy:
+                 f:storageClassName:
+             f:persistentVolumeClaim:
+               .:
+               f:metadata:
+                 .:
+                 f:name:
+                 f:namespace:
+               f:spec:
+                 .:
+                 f:resources:
+                   .:
+                   f:requests:
+                     .:
+                     f:storage:
+                 f:storageClassName:
+                 f:volumeName:
+           f:overrideDistributionStrategy:
+           f:secrets:
+         f:dataHome:
+         f:domainHome:
+         f:domainHomeSourceType:
+         f:failureRetryIntervalSeconds:
+         f:failureRetryLimitMinutes:
+         f:httpAccessLogInLogHome:
+         f:image:
+         f:imagePullPolicy:
+         f:imagePullSecrets:
+         f:includeServerOutInPodLog:
+         f:logHome:
+         f:logHomeEnabled:
+         f:maxClusterConcurrentShutdown:
+         f:maxClusterConcurrentStartup:
+         f:maxClusterUnavailable:
+         f:replaceVariablesInJavaOptions:
+         f:replicas:
+         f:serverPod:
+           .:
+           f:env:
+           f:initContainers:
+           f:volumeMounts:
+           f:volumes:
+         f:serverStartPolicy:
+         f:webLogicCredentialsSecret:
+           .:
+           f:name:
+     Manager:      kubectl-create
+     Operation:    Update
+     Time:         &lt;DATE&gt;
+     API Version:  weblogic.oracle/v9
+     Fields Type:  FieldsV1
+     fieldsV1:
+       f:status:
+         .:
+         f:clusters:
+         f:conditions:
+         f:observedGeneration:
+         f:servers:
+         f:startTime:
+     Manager:         Kubernetes Java Client
+     Operation:       Update
+     Subresource:     status
+     Time:            &lt;DATE&gt;
+   Resource Version:  <span style="color:#ae81ff">981416</span>
+   UID:               e42ea8c3-9e23-44b9-bb27-e61040f972f5
+ Spec:
+   Admin Server:
+     Admin Channel Port Forwarding Enabled:  true
+     Server Pod:
+       Env:
+         Name:             USER_MEM_ARGS
+         Value:            -Djava.security.egd<span style="color:#f92672">=</span>file:/dev/./urandom -Xms512m -Xmx1024m
+         Name:             CLASSPATH
+         Value:            /u01/oracle/wlserver/server/lib/weblogic.jar
+     Server Start Policy:  IfNeeded
+   Clusters:
+     Name:  accessdomain-oam-cluster
+     Name:  accessdomain-policy-cluster
+   Configuration:
+     Initialize Domain On PV:
+       Domain:
+         Create If Not Exists:  Domain
+         Domain Creation Images:
+           Image:      container-registry.example.com/mytenancy/idm:oam-aux-generic-v1
+         Domain Type:  OAM
+       Persistent Volume:
+         Metadata:
+           Name:  accessdomain-domain-pv
+         Spec:
+           Capacity:
+             Storage:  10Gi
+           Nfs:
+             Path:                            /&lt;NFS_PATH&gt;/accessdomainpv
+             Server:                          &lt;IPADDRESS&gt;
+           Persistent Volume Reclaim Policy:  Retain
+           Storage Class Name:                accessdomain-domain-storage-class
+       Persistent Volume Claim:
+         Metadata:
+           Name:       accessdomain-domain-pvc
+           Namespace:  oamns
+         Spec:
+           Resources:
+             Requests:
+               Storage:               10Gi
+           Storage Class Name:        accessdomain-domain-storage-class
+           Volume Name:               accessdomain-domain-pv
+     Override Distribution Strategy:  Dynamic
+     Secrets:
+       accessdomain-rcu-credentials
+   Data Home:
+   Domain Home:                     /u01/oracle/user_projects/domains/accessdomain
+   Domain Home Source Type:         PersistentVolume
+   Failure Retry Interval Seconds:  <span style="color:#ae81ff">120</span>
+   Failure Retry Limit Minutes:     <span style="color:#ae81ff">1440</span>
+   Http Access Log In Log Home:     true
+   Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July<span style="color:#e6db74">&#39;24&gt;
+</span><span style="color:#e6db74">   Image Pull Policy:               IfNotPresent
+</span><span style="color:#e6db74">   Image Pull Secrets:
+</span><span style="color:#e6db74">     Name:                             orclcred
+</span><span style="color:#e6db74">   Include Server Out In Pod Log:      true
+</span><span style="color:#e6db74">   Log Home:                           /u01/oracle/user_projects/domains/logs/accessdomain
+</span><span style="color:#e6db74">   Log Home Enabled:                   true
+</span><span style="color:#e6db74">   Max Cluster Concurrent Shutdown:    1
+</span><span style="color:#e6db74">   Max Cluster Concurrent Startup:     0
+</span><span style="color:#e6db74">   Max Cluster Unavailable:            1
+</span><span style="color:#e6db74">   Replace Variables In Java Options:  false
+</span><span style="color:#e6db74">   Replicas:                           1
+</span><span style="color:#e6db74">   Server Pod:
+</span><span style="color:#e6db74">     Env:
+</span><span style="color:#e6db74">       Name:   JAVA_OPTIONS
+</span><span style="color:#e6db74">       Value:  -Dweblogic.StdoutDebugEnabled=false
+</span><span style="color:#e6db74">       Name:   WLSDEPLOY_LOG_DIRECTORY
+</span><span style="color:#e6db74">       Value:  /u01/oracle/user_projects/domains/wdt-logs
+</span><span style="color:#e6db74">       Name:   USER_MEM_ARGS
+</span><span style="color:#e6db74">       Value:  -Djava.security.egd=file:/dev/./urandom -Xms256m -Xmx1024m
+</span><span style="color:#e6db74">     Init Containers:
+</span><span style="color:#e6db74">       Command:
+</span><span style="color:#e6db74">         /bin/bash
+</span><span style="color:#e6db74">         -c
+</span><span style="color:#e6db74">         mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
+</span><span style="color:#e6db74">       Image:              container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;July&#39;</span>24&gt;
+       Image Pull Policy:  IfNotPresent
+       Name:               compat-connector-init
+       Volume Mounts:
+         Mount Path:  /u01/oracle/user_projects/
+         Name:        weblogic-domain-storage-volume
+     Volume Mounts:
+       Mount Path:  /u01/oracle/user_projects
+       Name:        weblogic-domain-storage-volume
+     Volumes:
+       Name:  weblogic-domain-storage-volume
+       Persistent Volume Claim:
+         Claim Name:     accessdomain-domain-pvc
+   Server Start Policy:  IfNeeded
+   Web Logic Credentials Secret:
+     Name:  accessdomain-weblogic-credentials
+ Status:
+   Clusters:
+     Cluster Name:  oam_cluster
+     Conditions:
+       Last Transition Time:  &lt;DATE&gt;
+       Status:                True
+       Type:                  Available
+       Last Transition Time:  &lt;DATE&gt;
+       Status:                True
+       Type:                  Completed
+     Label Selector:          weblogic.domainUID<span style="color:#f92672">=</span>accessdomain,weblogic.clusterName<span style="color:#f92672">=</span>oam_cluster
+     Maximum Replicas:        <span style="color:#ae81ff">5</span>
+     Minimum Replicas:        <span style="color:#ae81ff">0</span>
+     Observed Generation:     <span style="color:#ae81ff">1</span>
+     Ready Replicas:          <span style="color:#ae81ff">1</span>
+     Replicas:                <span style="color:#ae81ff">1</span>
+     Replicas Goal:           <span style="color:#ae81ff">1</span>
+     Cluster Name:            policy_cluster
+     Conditions:
+       Last Transition Time:  &lt;DATE&gt;
+       Status:                True
+       Type:                  Available
+       Last Transition Time:  &lt;DATE&gt;
+       Status:                True
+       Type:                  Completed
+     Label Selector:          weblogic.domainUID<span style="color:#f92672">=</span>accessdomain,weblogic.clusterName<span style="color:#f92672">=</span>policy_cluster
+     Maximum Replicas:        <span style="color:#ae81ff">5</span>
+     Minimum Replicas:        <span style="color:#ae81ff">0</span>
+     Observed Generation:     <span style="color:#ae81ff">1</span>
+     Ready Replicas:          <span style="color:#ae81ff">1</span>
+     Replicas:                <span style="color:#ae81ff">1</span>
+     Replicas Goal:           <span style="color:#ae81ff">1</span>
+   Conditions:
+     Last Transition Time:  &lt;DATE&gt;
+     Status:                True
+     Type:                  Available
+     Last Transition Time:  &lt;DATE&gt;
+     Status:                True
+     Type:                  Completed
+   Observed Generation:     <span style="color:#ae81ff">1</span>
+   Servers:
+     Health:
+       Activation Time:  &lt;DATE&gt;
+       Overall Health:   ok
+       Subsystems:
+         Subsystem Name:  ServerRuntime
+         Symptoms:
+     Node Name:     worker-node2
+     Pod Phase:     Running
+     Pod Ready:     True
+     Server Name:   AdminServer
+     State:         RUNNING
+     State Goal:    RUNNING
+     Cluster Name:  oam_cluster
+     Health:
+       Activation Time:  &lt;DATE&gt;
+       Overall Health:   ok
+       Subsystems:
+         Subsystem Name:  ServerRuntime
+         Symptoms:
+     Node Name:     worker-node1
+     Pod Phase:     Running
+     Pod Ready:     True
+     Server Name:   oam_server1
+     State:         RUNNING
+     State Goal:    RUNNING
+     Cluster Name:  oam_cluster
+     Server Name:   oam_server2
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  oam_cluster
+     Server Name:   oam_server3
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  oam_cluster
+     Server Name:   oam_server4
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  oam_cluster
+     Server Name:   oam_server5
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  policy_cluster
+     Health:
+       Activation Time:  &lt;DATE&gt;
+       Overall Health:   ok
+       Subsystems:
+         Subsystem Name:  ServerRuntime
+         Symptoms:
+     Node Name:     worker-node1
+     Pod Phase:     Running
+     Pod Ready:     True
+     Server Name:   oam_policy_mgr1
+     State:         RUNNING
+     State Goal:    RUNNING
+     Cluster Name:  policy_cluster
+     Server Name:   oam_policy_mgr2
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  policy_cluster
+     Server Name:   oam_policy_mgr3
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  policy_cluster
+     Server Name:   oam_policy_mgr4
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+     Cluster Name:  policy_cluster
+     Server Name:   oam_policy_mgr5
+     State:         SHUTDOWN
+     State Goal:    SHUTDOWN
+   Start Time:      &lt;DATE&gt;
+ Events:
+   Type     Reason                      Age                From               Message
+   ----     ------                      ----               ----               -------
+   Normal   Created                     19m                weblogic.operator  Domain accessdomain was created.
+   Warning  Failed                      19m                weblogic.operator  Domain accessdomain failed due to <span style="color:#e6db74">&#39;Persistent volume claim unbound&#39;</span>: PersistentVolumeClaim <span style="color:#e6db74">&#39;accessdomain-domain-pvc&#39;</span> is not bound; the status phase is <span style="color:#e6db74">&#39;Pending&#39;</span>.. Operator is waiting <span style="color:#66d9ef">for</span> the persistent volume claim to be bound, it may be a temporary condition. If this condition persists, <span style="color:#66d9ef">then</span> ensure that the PVC has a correct volume name or storage class name and is in bound status..
+   Normal   PersistentVolumeClaimBound  19m                weblogic.operator  The persistent volume claim is bound and ready.
+   Normal   Available                   3m19s              weblogic.operator  Domain accessdomain is available: a sufficient number of its servers have reached the ready state.
+   Normal   Completed                   3m19s              weblogic.operator  Domain accessdomain is complete because all of the following are true: there is no failure detected, there are no pending server shutdowns, and all servers expected to be running are ready and at their target image, auxiliary images, restart version, and introspect version.
+</code></pre></div>
+    </div>
+</div>
+</li>
+</ol>
+<h3 id="verify-the-pods">Verify the pods</h3>
+<ol>
+<li>
+<p>Run the following command to see the pods running the servers and which nodes they are running on:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n &lt;namespace&gt; -o wide
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n oamns -o wide
+</code></pre></div><p>The output will look similar to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> NAME                           READY   STATUS    RESTARTS      AGE   IP            NODE               NOMINATED NODE   READINESS GATES
+ accessdomain-adminserver       1/1     Running   <span style="color:#ae81ff">0</span>             24m   10.244.2.14   worker-node2   &lt;none&gt;           &lt;none&gt;
+ accessdomain-oam-policy-mgr1   1/1     Running   <span style="color:#ae81ff">0</span>             16m   10.244.1.23   worker-node1   &lt;none&gt;           &lt;none&gt;
+ accessdomain-oam-server1       1/1     Running   <span style="color:#ae81ff">0</span>             16m   10.244.1.24   worker-node1   &lt;none&gt;           &lt;none&gt;
+</code></pre></div></li>
+</ol>
+<p>You are now ready to configure an Ingress to direct traffic for your OAM domain as per <a href="../configure-ingress">Configure an ingress For an OAM Domain</a>.</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/fmw-kubernetes/24.3.1/idm-products/oam/create-oam-domains/create-oam-domains-using-wlst/" title="a. Create OAM domains using WLST scripts"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/24.3.1/idm-products/oam/configure-ingress/" title="Configure an Ingress for an OAM domain" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/fmw-kubernetes/24.3.1/js/clipboard.min.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/perfect-scrollbar.min.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/perfect-scrollbar.jquery.min.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/jquery.sticky.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/featherlight.min.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/highlight.pack.js?1721304740"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/fmw-kubernetes/24.3.1/js/modernizr.custom-3.6.0.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/learn.js?1721304740"></script>
+    <script src="/fmw-kubernetes/24.3.1/js/hugo-learn.js?1721304740"></script>
+
+    <link href="/fmw-kubernetes/24.3.1/mermaid/mermaid.css?1721304740" rel="stylesheet" />
+    <script src="/fmw-kubernetes/24.3.1/mermaid/mermaid.js?1721304740"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
