@@ -311,7 +311,7 @@ getDomainInfo() {
   domain_info_clusters=$( echo "$domain_info_clusters" | sed 's/"name"//g' | tr -d '[]{}:' | sortlist | sed 's/,/ /') # convert to sorted space separated list
 
   # gather observed and goal generation for each cluster:
-  cl_info_observed_generations=""
+    cl_info_observed_generations=""
   cl_info_goal_generations=""
   local lgen
   local cl
