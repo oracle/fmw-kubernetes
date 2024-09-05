@@ -57,8 +57,10 @@ class SOAProvisioner:
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/osb/common/templates/wls/oracle.osb.refconfig_template.jar'
         ],
-        'serverGroupsToTarget' : [ 'OSB-MGD-SVRS-ONLY' ]
+        'serverGroupsToTarget' : [ 'OSB-MGD-SVRS-COMBINED' ]
     }
+
+    FLAG_1412 = 'false'
 
     def __init__(self, oracleHome, javaHome, domainParentDir):
         self.oracleHome = self.validateDirectory(oracleHome)
@@ -86,6 +88,16 @@ class SOAProvisioner:
             self.reConfigureJMSStore(domainHome, domainType)
         else:
             print 'persistentStore = '+persistentStore+'...skipping JDBC reconfig'
+
+        # Fix for bug 36654711 until changes comes with WSM template
+        self.updateAppTarget(domainHome,"wsm-pm",adminName)
+
+
+    def updateAppTarget(self, domainHome, appName, targetName):
+        print 'Adding target: '+ targetName+' for '+appName
+        readDomain(domainHome)
+        assign("AppDeployment", appName, "Target", targetName)
+        updateDomain()
 
 
     def configureTlogJDBCStore(self, domainHome, domainType):
@@ -430,6 +442,8 @@ class SOAProvisioner:
             cd('/Servers/%s/' % name )
             print('Creating managed server: %s' % name);
             set('ListenPort', ms_port)
+            if (self.FLAG_1412 == 'true'):
+              set('ListenPortEnabled', true)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
@@ -454,6 +468,9 @@ class SOAProvisioner:
         if prodMode == 'true':
             if (domainVersion == "14.1.2.0.0" and secureMode == 'true'):
                setOption('ServerStartMode', 'secure')
+            elif (domainVersion == "14.1.2.0.0" and secureMode == 'false'):
+               setOption('ServerStartMode', 'prod')
+               self.FLAG_1412 = 'true'
             else:
                setOption('ServerStartMode', 'prod')
         else:
@@ -469,6 +486,8 @@ class SOAProvisioner:
         print 'Creating Admin Server...'
         cd('/Servers/AdminServer')
         set('ListenPort', admin_port)
+        if ( self.FLAG_1412 == 'true'):
+            set('ListenPortEnabled', true)
         set('Name', adminName)
         self.ADMIN_SERVER_NAME = adminName
         cmo.setWeblogicPluginEnabled(true)

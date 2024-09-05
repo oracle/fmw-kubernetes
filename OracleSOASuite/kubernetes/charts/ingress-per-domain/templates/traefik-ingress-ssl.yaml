@@ -104,16 +104,16 @@ spec:
               number: {{ .Values.wlsDomain.adminServerPort }}
       {{- end }}
       {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
-      - path: /lwpfconsole
+      - path: /testconsole
         pathType: ImplementationSpecific
         backend:
           service:
             name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
-      {{- end }}      
+      {{- end }}
       {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
-      - path: /testconsole
+      - path: /lwpfconsole
         pathType: ImplementationSpecific
         backend:
           service:

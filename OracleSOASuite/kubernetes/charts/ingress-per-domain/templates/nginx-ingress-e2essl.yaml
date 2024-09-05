@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 {{- if eq .Values.type "NGINX" }}
@@ -7,8 +7,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower }}-nginx-ssl
+  name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-e2essl
   namespace: {{ .Release.Namespace }}
+  labels:
+    serviceType: SERVER
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
 spec:
   ports:
   {{- if eq .Values.wlsDomain.secureEnabled true }}
@@ -49,14 +54,36 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-ssl'
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-e2essl'
             port:
               {{- if eq .Values.wlsDomain.secureEnabled true }}
               number: {{ .Values.wlsDomain.adminSecurePort }}
               {{- else }}
-              number: {{ .Values.wlsDomain.adminServerSSLPort }}
+              number: {{ .Values.wlsDomain.adminServerSSLPort  }}
               {{- end }}
 {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+  namespace: {{ .Release.Namespace }}
+  labels:
+    serviceType: CLUSTER
+    weblogic.clusterName: {{ .Values.wlsDomain.soaClusterName }}
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.clusterName: {{ .Values.wlsDomain.soaClusterName }}
+  type: ClusterIP
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -81,11 +108,33 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}-nginx-e2essl'
             port:
-              number: {{ .Values.wlsDomain.soaManagedServerSSLPort  }}
+              number: {{ .Values.wlsDomain.soaManagedServerSSLPort }}            
 {{- end }}
 {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+  namespace: {{ .Release.Namespace }}
+  labels:
+    serviceType: CLUSTER
+    weblogic.clusterName: {{ .Values.wlsDomain.osbClusterName }}
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.clusterName: {{ .Values.wlsDomain.osbClusterName }}
+  type: ClusterIP
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -110,9 +159,9 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}-nginx-e2essl'
             port:
-              number: {{ .Values.wlsDomain.osbManagedServerSSLPort  }}
+              number: {{ .Values.wlsDomain.osbManagedServerSSLPort }}            
 {{- end }}
 
 {{- end }}

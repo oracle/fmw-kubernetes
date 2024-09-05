@@ -57,3 +57,5 @@ Make sure to point the logstash configuration file to correct location and also 
 
 1. Now, you can view the diagnostics logs using Kibana with index pattern `logstash-*`.
 
+
+
