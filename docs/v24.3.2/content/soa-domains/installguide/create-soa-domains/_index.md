@@ -28,7 +28,7 @@ provide in this file.
 
 #### Configuration parameters
 The following parameters can be provided in the inputs file.
->**Note**: In versions 24.3.2 and above, the default ports used to create the domain are updated.
+>**Note**: In versions 24.2.2 and above, the default ports used to create the domain are updated.
 
 | Parameter | Definition | Default |
 | --- | --- | --- |
@@ -114,12 +114,11 @@ The script will perform the following steps:
 
 #### Start the domain
 
-The `domain.yaml` created by `create-domain.sh` script above has details about the Oracle SOA Suite Domain and Cluster Kubernetes resources. You can create Oracle SOA Suite Domain using the `kubectl create -f`
-  or `kubectl apply -f` command:
+The `domain.yaml` created by `create-domain.sh` script above has details about the Oracle SOA Suite Domain and Cluster Kubernetes resources. You can create Oracle SOA Suite Domain using the `kubectl create -f` or `kubectl apply -f` command:
 
-    ```
-    $ kubectl apply -f <path to output-directory>/weblogic-domains/<domainUID>/domain.yaml
-    ```
+```
+$ kubectl apply -f <path to output-directory>/weblogic-domains/<domainUID>/domain.yaml
+```
 
 The default domain created by the script has the following characteristics:
 

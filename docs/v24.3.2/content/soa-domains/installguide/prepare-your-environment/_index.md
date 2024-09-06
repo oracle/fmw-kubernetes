@@ -127,15 +127,15 @@ If you want to build and use an Oracle SOA Suite Docker image with any additiona
 
 ### Install the WebLogic Kubernetes Operator
 
-The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the steps in [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v4.2.4/documentation/site/content/quickstart/install.md#install-the-operator) to install the operator.
+The WebLogic Kubernetes Operator supports the deployment of Oracle SOA Suite domains in the Kubernetes environment. Follow the below steps to install the operator.
 > Note: Optionally, you can follow [these steps](https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/) to send the contents of the operator's logs to Elasticsearch.
 
 In the following example commands to install the WebLogic Kubernetes Operator, `opns` is the namespace and `op-sa` is the service account created for the operator:
   ```
   $ kubectl create namespace opns
-  $ kubectl create serviceaccount -n opns  op-sa
+  $ kubectl create serviceaccount -n opns op-sa
   $ helm repo add weblogic-operator https://oracle.github.io/weblogic-kubernetes-operator/charts --force-update 
-  $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator  --set version=4.2.4 --namespace opns  --set serviceAccount=op-sa --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --set version=4.2.4 --namespace opns --set serviceAccount=op-sa --set "javaLoggingLevel=FINE" --wait
   ```
 This Helm release deploys the operator with the default behavior of managing Oracle SOA Suite domains in all Kubernetes namespaces with the label `weblogic-operator=enabled`.
 
