@@ -493,7 +493,7 @@ Refer to the official [documentation](https://kubernetes.io/docs/setup/#producti
    ```shell
    $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator \
      --namespace opns \
-     --set version=4.2.4 \
+     --version 4.2.4 \
      --set serviceAccount=op-sa \
      --wait
    ```

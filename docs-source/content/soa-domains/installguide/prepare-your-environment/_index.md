@@ -135,7 +135,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   $ kubectl create namespace opns
   $ kubectl create serviceaccount -n opns op-sa
   $ helm repo add weblogic-operator https://oracle.github.io/weblogic-kubernetes-operator/charts --force-update 
-  $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --set version=4.2.4 --namespace opns --set serviceAccount=op-sa --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --version 4.2.4 --namespace opns --set serviceAccount=op-sa --set "javaLoggingLevel=FINE" --wait
   ```
 This Helm release deploys the operator with the default behavior of managing Oracle SOA Suite domains in all Kubernetes namespaces with the label `weblogic-operator=enabled`.
 
