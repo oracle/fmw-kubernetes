@@ -247,6 +247,7 @@ The rest of the parameters all use a reasonable default and it is not required t
 | :--- | :--- | :--- | 
 | OKE\_CLUSTER\_DISPLAY\_NAME | oke-cluster | Display name for the OKE cluster. |
 | OKE\_CLUSTER\_VERSION | v1.29.1 | What version of Kubernetes to deploy on the OKE nodes. |
+| OKE\_CLUSTER\_TYPE | STD | Type of Cluster to be used Standard (STD) or Enhanced (ENH). |
 | OKE\_MOUNT\_TARGET\_AD | ad1 | Which availability domain to use for the OKE mount target. **Note: this value is not the actual availability domain name but a representation of the AD to use. For example: ad1, ad2, or ad3.** |
 | OKE\_PODS\_CIDR | 10.244.0.0/16 | The CIDR for the OKE pods. |
 | OKE\_SERVICES\_CIDR | 10.96.0.0/16 | The CIDR for the OKE load balancer services. |
