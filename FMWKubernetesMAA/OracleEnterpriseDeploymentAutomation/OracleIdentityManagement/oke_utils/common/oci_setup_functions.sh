@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script that will configure a bastion host and webtier hosts with the necessary
@@ -15,7 +15,7 @@
 
 # Install the required OS packages on the bastion host
 install_bastion_packages() {
-   PACKAGE_LIST="python36-oci-cli libXrender libXtst xauth xterm nc openldap* git"
+   PACKAGE_LIST="python36-oci-cli libXrender libXtst xauth xterm nc openldap* git java podman"
    for package in $PACKAGE_LIST
    do
      STEPNO=$((STEPNO+1))
@@ -26,6 +26,33 @@ install_bastion_packages() {
        print_msg end
      fi
    done
+}
+
+# Expanding the boot volume on the hosts
+expand_boot_volume_grow() {
+   IP=$1
+   STEPNO=$((STEPNO+1))
+   if [[ $STEPNO -gt $PROGRESS ]]; then
+     print_msg begin "Running oci-growfs on $IP ..."
+     if [[ "${BASTIONIP}" = "${IP}" ]]; then
+       cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" opc@$BASTIONIP \"sudo /usr/libexec/oci-growfs -y \""
+       execute "$cmd"
+     else
+       cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$IP \"sudo /usr/libexec/oci-growfs -y \""
+       execute "$cmd"
+     fi
+     print_msg end
+   fi
+}
+
+setupBoot() {
+  expand_boot_volume_grow "$BASTIONIP"
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    WEBHOST_PARAM="webhost"$i
+    WEBHOSTIP="${!WEBHOST_PARAM}"
+    expand_boot_volume_grow "$WEBHOSTIP"
+  done
 }
 
 # Enable X11 forading on the bastion host
@@ -54,7 +81,11 @@ install_helm() {
    STEPNO=$((STEPNO+1))
    if [[ $STEPNO -gt $PROGRESS ]]; then
      print_msg begin "Downloading the Helm version $HELM_VER package..."
-     cmd="ssh -q -o \"StrictHostKeyChecking no\" -i $SSH_ID_KEYFILE opc@$BASTIONIP \"wget https://get.helm.sh/helm-v${HELM_VER}-linux-amd64.tar.gz\""
+     if [[ "${HELM_VER,,}" = "latest" ]]; then
+       cmd="curl https://get.helm.sh/helm-latest-version  --connect-timeout 30"
+       execute "$cmd"
+     fi
+     cmd="ssh -q -o \"StrictHostKeyChecking no\" -i $SSH_ID_KEYFILE opc@$BASTIONIP \"wget https://get.helm.sh/helm-v${HELM_VER}-linux-amd64.tar.gz --connect-timeout=30\""
      execute "$cmd"
      print_msg end
    fi
@@ -113,7 +144,7 @@ install_oci_tools() {
 
 # Install kubectl on the bastion host and configure it to connect to the OKE cluster 
 setup_kubectl() {
-   OKEID=$(cat $RESOURCE_OCID_FILE | grep $OKE_CLUSTER_DISPLAY_NAME | cut -d: -f2)
+   OKEID=$(cat $RESOURCE_OCID_FILE | grep $OKE_CLUSTER_DISPLAY_NAME | tail -1 | cut -d: -f2)
    
    STEPNO=$((STEPNO+1))
    if [[ $STEPNO -gt $PROGRESS ]]; then
@@ -142,7 +173,11 @@ setup_kubectl() {
    STEPNO=$((STEPNO+1))
    if [[ $STEPNO -gt $PROGRESS ]]; then
      print_msg begin "Downloading kubectl..."
-     cmd="ssh -q -o \"StrictHostKeyChecking no\" -i $SSH_ID_KEYFILE opc@$BASTIONIP \"curl -LO https://storage.googleapis.com/kubernetes-release/release/$OKE_CLUSTER_VERSION/bin/linux/amd64/kubectl\""
+     #if [[ "${OKE_CLUSTER_VERSION,,}" = "latest" ]]; then
+     #  cmd="curl https://storage.googleapis.com/kubernetes-release/release/stable.txt --connect-timeout 30"
+     #  execute "$cmd"
+     #fi
+     cmd="ssh -q -o \"StrictHostKeyChecking no\" -i $SSH_ID_KEYFILE opc@$BASTIONIP \"curl -LO https://storage.googleapis.com/kubernetes-release/release/$OKE_CLUSTER_VERSION/bin/linux/amd64/kubectl --connect-timeout 30 --silent --show-error \""
      execute "$cmd"
      print_msg end
    fi
@@ -173,6 +208,7 @@ mount_bastion_nfs() {
      okemt=$(oci fs mount-target list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $OKE_MOUNT_TARGET_DISPLAY_NAME \
         --availability-domain ${!OKE_MOUNT_TARGET_AD} --query 'data[0]."private-ip-ids"' | jq -r '.[]')
      okeip=$(oci network private-ip get --region $REGION --private-ip-id $okemt | jq -r '.data."ip-address"')
+     echo "okeip=\"$okeip\"" >> $INTERIM_PARAM
 
      echo "# $BASTION_INSTANCE_DISPLAY_NAME node" > $OUTDIR/bastion_mounts.sh
      echo "sudo mkdir -p $FS_OAALOGPV_LOCAL_MOUNTPOINT" >> $OUTDIR/bastion_mounts.sh
@@ -373,69 +409,80 @@ mount_webtier_nfs() {
      echo $PROGRESS > $LOGDIR/progressfile
    fi
 
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Copying the Webhost1 Mount Configuration File..."
-     cmd="scp -q -i $SSH_ID_KEYFILE -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE -W %h:%p opc@$BASTIONIP' $OUTDIR/webhost1_mounts.sh opc@$WEBHOST1IP:."
-     execute "$cmd"
-     print_msg end
-   fi
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    WEBHOST_LABEL="$WEBHOST_PREFIX"$i
+    WEBHOST_PARAM="webhost"$i
+    WEBHOST_NUMBER=$i
+    if [[ $(($WEBHOST_NUMBER%2)) == 0 ]]; then 
+      WEBHOST2IP=${!WEBHOST_PARAM}
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Copying the Webhost2 Mount Configuration File..."
+        cmd="scp -q -i $SSH_ID_KEYFILE -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE -W %h:%p opc@$BASTIONIP' $OUTDIR/webhost2_mounts.sh opc@$WEBHOST2IP:."
+        execute "$cmd"
+        print_msg end
+      fi
 
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Setting the Execute Permission..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP chmod 700 ./webhost1_mounts.sh"
-     execute "$cmd"
-     print_msg end
-   fi
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Setting the Execute Permission..."
+        cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP chmod 700 ./webhost2_mounts.sh"
+        execute "$cmd"
+        print_msg end
+      fi
 
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Creating and Mounting the Webhost1 Filesystems..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP ./webhost1_mounts.sh"
-     execute "$cmd"
-     print_msg end
-   fi
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Creating and Mounting the Webhost2 Filesystems on $WEBHOST2IP..."
+        cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP ./webhost2_mounts.sh"
+        execute "$cmd"
+        print_msg end
+      fi
+
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Cleaning up the Webhost2 Mount Configuration File..."
+        cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP rm ./webhost2_mounts.sh"
+        execute "$cmd"
+        print_msg end
+      fi
+    else
+      WEBHOST1IP=${!WEBHOST_PARAM}
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Copying the Webhost1 Mount Configuration File..."
+        cmd="scp -q -i $SSH_ID_KEYFILE -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE -W %h:%p opc@$BASTIONIP' $OUTDIR/webhost1_mounts.sh opc@$WEBHOST1IP:."
+        execute "$cmd"
+        print_msg end
+      fi
+
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Setting the Execute Permission..."
+        cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP chmod 700 ./webhost1_mounts.sh"
+        execute "$cmd"
+        print_msg end
+      fi
+
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Creating and Mounting the Webhost1 Filesystems on $WEBHOST1IP..."
+        cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP ./webhost1_mounts.sh"
+        execute "$cmd"
+        print_msg end
+      fi
    
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Cleaning up the Webhost1 Mount Configuration File..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP rm ./webhost1_mounts.sh"
-     execute "$cmd"
-     print_msg end
-   fi
-   
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Copying the Webhost2 Mount Configuration File..."
-     cmd="scp -q -i $SSH_ID_KEYFILE -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE -W %h:%p opc@$BASTIONIP' $OUTDIR/webhost2_mounts.sh opc@$WEBHOST2IP:."
-     execute "$cmd"
-     print_msg end
-   fi
-
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Setting the Execute Permission..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP chmod 700 ./webhost2_mounts.sh"
-     execute "$cmd"
-     print_msg end
-   fi
-
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Creating and Mounting the Webhost2 Filesystems..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP ./webhost2_mounts.sh"
-     execute "$cmd"
-     print_msg end
-   fi
-   
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Cleaning up the Webhost2 Mount Configuration File..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP rm ./webhost2_mounts.sh"
-     execute "$cmd"
-     print_msg end
-   fi
+      STEPNO=$((STEPNO+1))
+      if [[ $STEPNO -gt $PROGRESS ]]; then
+        print_msg begin "Cleaning up the Webhost1 Mount Configuration File..."
+        cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP rm ./webhost1_mounts.sh"
+        execute "$cmd"
+        print_msg end
+      fi
+    fi
+  done
+##################   
 }
 
 # Update the /etc/hosts file with the public load balancer IP address
@@ -446,21 +493,19 @@ update_webhosts_hosts_file() {
       exit 1
    fi
 
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin  "Updating the /etc/hosts File on Webhost1..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST1IP \"echo \\\"$LBRIP  $PUBLIC_LBR_LOGIN_HOSTNAME \\\" | sudo tee -a /etc/hosts\""
-     execute "$cmd"
-     print_msg end
-   fi
-
-   STEPNO=$((STEPNO+1))
-   if [[ $STEPNO -gt $PROGRESS ]]; then
-     print_msg begin "Updating the /etc/hosts File on Webhost2..."
-     cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOST2IP \"echo \\\"$LBRIP  $PUBLIC_LBR_LOGIN_HOSTNAME \\\" | sudo tee -a /etc/hosts\""
-     execute "$cmd"
-     print_msg end
-   fi
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    WEBHOST_LABEL="$WEBHOST_PREFIX"$i
+    WEBHOST_PARAM="webhost"$i
+    WEBHOSTIP="${!WEBHOST_PARAM}" 
+    STEPNO=$((STEPNO+1))
+    if [[ $STEPNO -gt $PROGRESS ]]; then
+      print_msg begin  "Updating the /etc/hosts File on $WEBHOST_LABEL..."
+      cmd="ssh -q -i $SSH_ID_KEYFILE -t -o \"StrictHostKeyChecking no\" -o ProxyCommand='ssh -q -i $SSH_ID_KEYFILE opc@$BASTIONIP -W %h:%p' opc@$WEBHOSTIP \"echo \\\"$LBRIP  $PUBLIC_LBR_LOGIN_HOSTNAME \\\" | sudo tee -a /etc/hosts\""
+      execute "$cmd"
+      print_msg end
+    fi
+  done
 }
 
 # Setup a user other than opc on the webhost
@@ -526,19 +571,26 @@ setup_users() {
 # Call the individal functions required to setup the webhost instances
 setupWebHosts() {
   get_bastion_ip
-  get_webhost_ip
-  install_webhost_packages $WEBHOST1IP
-  install_webhost_packages $WEBHOST2IP
-  webhost_enable_x11 $WEBHOST1IP
-  webhost_enable_x11 $WEBHOST2IP
-  open_firewall $WEBHOST1IP
-  open_firewall $WEBHOST2IP
+  get_whip
+
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    WEBHOST_LABEL="webhost"$i
+    install_webhost_packages ${!WEBHOST_LABEL}
+    webhost_enable_x11 ${!WEBHOST_LABEL}
+    open_firewall ${!WEBHOST_LABEL}
+  done
+
   mount_webtier_nfs
   update_webhosts_hosts_file 
   if [[  "$OHS_SOFTWARE_OWNER" != "opc" ]]; then
-      setup_users $WEBHOST1IP
-      setup_users $WEBHOST2IP
+    for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+    do
+      WEBHOST_LABEL="webhost"$i
+      setup_users ${!WEBHOST_LABEL}
+    done
   fi
+  setupBoot
 }
 
 # Poll the database waiting for it to reach an AVAILABLE state for a max of 3 hours
@@ -546,10 +598,21 @@ waitForDatabase() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Waiting for the '${DB_NAME}_${DB_SUFFIX}' Database to Become Available (waiting up to 3 hours)..."
-    ocid=$(cat $RESOURCE_OCID_FILE | grep $DB_DISPLAY_NAME | cut -d: -f2)
+    ocid=$(cat $RESOURCE_OCID_FILE | grep $DB_DISPLAY_NAME | tail -1 | cut -d: -f2)
     dbCnt=0
     dbOutput=$(oci db system get --region $REGION --db-system-id $ocid --query 'data."lifecycle-state"' --raw-output)
     while [[ ! "$dbOutput" =~ "AVAILABLE" ]] || [[ "$dbCnt" -ge 36 ]]; do
+      if [[ "$dbCnt" -eq 0 ]] || [[ "$dbCnt" -eq 2 ]] || [[ "$dbCnt" -eq 5 ]] || [[ "$dbCnt" -eq 10 ]]; then
+        echo -e "\n"
+        echo -e "DB creation is still in Progress"
+        echo -e "If you wish for the provisioning script to continue waiting for DB creation to complete, please enter 'Y'"
+        echo -e "otherwise enter 'N' and rerun this provision_oke.sh script at a later time to finish the OKE setup."
+        read -t 25 -r -p "The input prompt will default to Y after a timeout of 25 seconds. Please input your choice [Y|N]? " confirm
+        if [[ $confirm =~ ^[Nn]$ ]]; then
+          echo "Please rerun after some time or when the DB creation $DB_DISPLAY_NAME : $ocid is complete..."
+          exit 1
+        fi
+      fi
       now=$(date +"%a %d %b %Y %T")
       echo -en "\n      DB availability check at $now (sleeping 5 minutes)..."
       sleep 300
@@ -568,7 +631,7 @@ createPluggableDB() {
   if [[ $STEPNO -gt $PROGRESS ]]; then
     if [[ ! "$DBPDBS" =~ "$1" ]]; then
       print_msg begin "Creating the '$1' Pluggable Database (and waiting for it to become available)..."
-      ocid=$(cat $RESOURCE_OCID_FILE | grep $DB_DISPLAY_NAME | cut -d: -f2)
+      ocid=$(cat $RESOURCE_OCID_FILE | grep $DB_DISPLAY_NAME | tail -1 | cut -d: -f2)
       cdb=$(oci db database list --region $REGION --compartment-id $COMPARTMENT_ID --db-system-id $ocid --query 'data[0].id' --raw-output)
       cmd="oci db pluggable-database create --region $REGION --container-database-id $cdb --pdb-name $1 \
           --pdb-admin-password $DB_PWD --tde-wallet-password $DB_PWD --wait-for-state AVAILABLE --wait-for-state FAILED"
@@ -746,7 +809,9 @@ get_db_instance_pdbs_services() {
   output=$(eval $cmd 2>&1)
   DBINSTANCES=$output
  
-  cmd="oci db pluggable-database list --region $REGION --compartment-id $COMPARTMENT_ID --all --lifecycle-state AVAILABLE --query 'data[*].\"pdb-name\"'"
+  cmd="oci db database list --region $REGION --compartment-id $COMPARTMENT_ID --db-system-id $DBSYSTEMID --lifecycle-state AVAILABLE --query 'data[*].id' | jq -r '.[]'"
+  DB_OCID=$(eval $cmd 2>&1)
+  cmd="oci db pluggable-database list --region $REGION --database-id $DB_OCID --lifecycle-state AVAILABLE --all --query 'data[*].\"pdb-name\"'"
   output=$(eval $cmd 2>&1)
   DBPDBS=$output
 
