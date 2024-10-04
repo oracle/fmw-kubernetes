@@ -112,7 +112,7 @@ These files are generated as part of the provisioning process.
 
 | **Filename** | **Contents** | 
 | :--- | :--- | 
-r \$WORKDIR/TEMPLATE_NAME/output/ca.crt | The self-signed certificate authority SSL certificate. | 
+| \$WORKDIR/TEMPLATE_NAME/output/ca.crt | The self-signed certificate authority SSL certificate. | 
 | \$WORKDIR/TEMPLATE_NAME/output/ca.csr | The certificate authority signing request which can be helpful when needing to renew the CA certificate. | 
 | \$WORKDIR/TEMPLATE_NAME/output/ca.key | The self-signed certificate authority SSL private key. | 
 | \$WORKDIR/TEMPLATE_NAME/output/ca.srl | The openssl serial number using when signing the CA certificate. | 
