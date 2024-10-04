@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of the functions needed to delete all of the infrastructure components that were
@@ -736,33 +736,23 @@ deleteVCN() {
 
 # Delete the resources related to the web hosts
 deleteWebHosts() {
-  # Delete the webhos1 instance
-  STEPNO=$((STEPNO+1))
-  print_msg begin "Deleting the '$WEBHOST1_DISPLAY_NAME' Instance..."
-  ocid=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST1_DISPLAY_NAME: | cut -d: -f2) 
-  if [[ "$ocid" =~ "ocid"  ]]; then
-    cmd="oci compute instance terminate --region $REGION --instance-id $ocid --force \
-      --wait-for-state TERMINATED --wait-interval-seconds 10"
-    execute "$cmd"
-    out=$(ex +"g/$ocid/d" -scwq $RESOURCE_OCID_FILE)
-    print_msg end
-  else
-    print_msg screen "resource not found, probably already deleted"
-  fi
-
-  # Delete the webhost2 instance
-  STEPNO=$((STEPNO+1))
-  print_msg begin "Deleting the '$WEBHOST2_DISPLAY_NAME' Instance..."
-  ocid=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST2_DISPLAY_NAME: | cut -d: -f2) 
-  if [[ "$ocid" =~ "ocid"  ]]; then
-   cmd="oci compute instance terminate --region $REGION --instance-id $ocid --force \
-      --wait-for-state TERMINATED --wait-interval-seconds 10"
-    execute "$cmd"
-    out=$(ex +"g/$ocid/d" -scwq $RESOURCE_OCID_FILE)
-    print_msg end
-  else
-    print_msg screen "resource not found, probably already deleted"
-  fi
+  # Delete webhost instances
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    WEBHOST_LABEL="$WEBHOST_PREFIX"$i
+    STEPNO=$((STEPNO+1))
+    print_msg begin "Deleting the '$WEBHOST_LABEL' Instance..."
+    ocid=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST_LABEL: | cut -d: -f2)
+    if [[ "$ocid" =~ "ocid"  ]]; then
+      cmd="oci compute instance terminate --region $REGION --instance-id $ocid --force \
+        --wait-for-state TERMINATED --wait-interval-seconds 10"
+      execute "$cmd"
+      out=$(ex +"g/$ocid/d" -scwq $RESOURCE_OCID_FILE)
+      print_msg end
+    else
+      print_msg screen "resource not found, probably already deleted"
+    fi
+  done
   
   # Delete the web subnet
   STEPNO=$((STEPNO+1))

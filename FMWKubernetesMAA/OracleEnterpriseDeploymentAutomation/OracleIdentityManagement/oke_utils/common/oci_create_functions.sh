@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of the functions needed to create all of the infrastructure components listed in 
@@ -76,6 +76,14 @@ createBastion() {
   	     \"tcpOptions\": {\"destinationPortRange\": {\"min\": $OAM_ADMIN_SERVICE_PORT, 
          \"max\": $OAM_ADMIN_SERVICE_PORT}, \"sourcePortRange\": null},
   	     \"description\": \"OAM Administration Server Kubernetes Service Port\"},
+             {\"source\": \"$BASTION_SUBNET_CIDR\", \"protocol\": \"6\", \"isStateless\": false,
+             \"tcpOptions\": {\"destinationPortRange\": {\"min\": $BASTION_ELK_PORT,
+         \"max\": $BASTION_ELK_PORT}, \"sourcePortRange\": null},
+             \"description\": \"ELK PORT Service Port\"},
+             {\"source\": \"$BASTION_SUBNET_CIDR\", \"protocol\": \"6\", \"isStateless\": false,
+             \"tcpOptions\": {\"destinationPortRange\": {\"min\": $BASTION_KIBANA_PORT,
+         \"max\": $BASTION_KIBANA_PORT}, \"sourcePortRange\": null},
+             \"description\": \"KIBANA PORT Service Port\"},
   	     {\"source\": \"$BASTION_SUBNET_CIDR\", \"protocol\": \"6\", \"isStateless\": false, 
          \"tcpOptions\": {\"destinationPortRange\": {\"min\": 1521, \"max\": 1521}, \"sourcePortRange\": null},
          \"description\": \"SQLNet connectivity\"}
@@ -88,7 +96,7 @@ createBastion() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$BASTION_ROUTE_TABLE_DISPLAY_NAME' Route Table..."
-    igw=$(cat $RESOURCE_OCID_FILE | grep $VCN_INTERNET_GATEWAY_DISPLAY_NAME | cut -d: -f2)
+    igw=$(cat $RESOURCE_OCID_FILE | grep $VCN_INTERNET_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network route-table create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -103,8 +111,8 @@ createBastion() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$BASTION_SUBNET_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $BASTION_PUBLIC_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $BASTION_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $BASTION_PUBLIC_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $BASTION_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -123,7 +131,7 @@ createBastion() {
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Adding the '$BASTION_PRIVATE_SECLIST_DISPLAY_NAME' to the Kubernetes Node Subnet..."
     sl=$(oci network subnet get --region $REGION --subnet-id $okeSubnetId --query 'data."security-list-ids"')
-    bpsl=$(cat $RESOURCE_OCID_FILE | grep $BASTION_PRIVATE_SECLIST_DISPLAY_NAME | cut -d: -f2)
+    bpsl=$(cat $RESOURCE_OCID_FILE | grep $BASTION_PRIVATE_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
     sl="'${sl/\"/\"$bpsl\",\"}'"
     cmd="oci network subnet update \
       --region $REGION \
@@ -141,7 +149,7 @@ createBastion() {
   if [[ $STEPNO -gt $PROGRESS ]]; then  
     print_msg begin "Adding the '$BASTION_SETUP_SECLIST_DISPLAY_NAME' to the Kubernetes Node Subnet..."
     sl=$(oci network subnet get --region $REGION --subnet-id $okeSubnetId --query 'data."security-list-ids"')
-    bssl=$(cat $RESOURCE_OCID_FILE | grep $BASTION_SETUP_SECLIST_DISPLAY_NAME | cut -d: -f2)
+    bssl=$(cat $RESOURCE_OCID_FILE | grep $BASTION_SETUP_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
     sl="'${sl/\"/\"$bssl\",\"}'"
     cmd="oci network subnet update \
       --region $REGION \
@@ -159,22 +167,22 @@ createBastion() {
     ocid=$(oci compute instance list --region $REGION --compartment-id $COMPARTMENT_ID \
       --display-name $BASTION_INSTANCE_DISPLAY_NAME --query 'data[0].id' --raw-output 2>/dev/null)
     if [[ "$ocid" =~ "ocid" ]]; then
-      print_msg screen "Error, the Bastion Name '$BASTION_INSTANCE_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
-      exit 1
+      lifecycleStatus=$(oci compute instance list --region $REGION --compartment-id $COMPARTMENT_ID \
+      --display-name $BASTION_INSTANCE_DISPLAY_NAME --query 'data[0]."lifecycle-state"' --raw-output 2>/dev/null)
+      if [[ ! "$lifecycleStatus" =~ "TERMINATED" ]]; then
+        print_msg screen "Error, the Bastion Name '$BASTION_INSTANCE_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
+        exit 1
+      fi
     fi
-    sn=$(cat $RESOURCE_OCID_FILE | grep $BASTION_SUBNET_DISPLAY_NAME | cut -d: -f2)
-    im=$(oci compute image list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $BASTION_IMAGE_NAME \
-         --query 'data[0].id' --raw-output)
-    if [[ ! "$im" =~ "ocid" ]]; then
-      print_msg screen "Error, the OS image '$BASTION_IMAGE_NAME' is not present in the system."
-      exit 1
-    fi
+    sn=$(cat $RESOURCE_OCID_FILE | grep $BASTION_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    get_os_image
     cmd="oci compute instance launch \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
       --display-name $BASTION_INSTANCE_DISPLAY_NAME \
       --availability-domain ${!BASTION_AD} \
       --shape $BASTION_INSTANCE_SHAPE \
+      --boot-volume-size-in-gbs 100 \
       --shape-config $BASTION_SHAPE_CONFIG \
       --subnet-id $sn \
       --assign-public-ip $BASTION_PUBLIC_IP \
@@ -182,22 +190,42 @@ createBastion() {
       --image-id $im \
       --ssh-authorized-keys-file $SSH_PUB_KEYFILE \
       --wait-for-state RUNNING \
-      --wait-for-state TERMINATED"
+      --wait-for-state TERMINATED $TAG_PARAM"
     execute "$cmd"
     print_msg end
   fi
+}
 
-  # Copy the ssh files to the bastion host
+# Copy the ssh files to the bastion host
+copyBastionSSH() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     ST=`date +%s`
     print_msg begin "Copying the ssh keyfile '$SSH_ID_KEYFILE' to the Bastion Node..."
-    id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME: | cut -d: -f2)
+    id=$(cat $RESOURCE_OCID_FILE | grep $BASTION_INSTANCE_DISPLAY_NAME: | tail -1 | cut -d: -f2)
     ip=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $id \
            --query 'data[0]."public-ip"' --raw-output)
     cmd="scp -q -o \"StrictHostKeyChecking no\" -i $SSH_ID_KEYFILE $SSH_ID_KEYFILE opc@$ip:~/.ssh/id_rsa"
     execute "$cmd"
     print_msg end
+  fi
+}
+
+addWebhostARecord() {
+  STEPNO=$((STEPNO+1))
+  if [[ $STEPNO -gt $PROGRESS ]]; then
+    WEBHOST_NUMBER=$1
+    WEBHOST_LABEL="$WEBHOST_PREFIX"$WEBHOST_NUMBER
+    WEBHOST_PARAM="webhost"$WEBHOST_NUMBER
+    WEBHOST_HOSTNAME="$WEBHOST_LABEL.$DNS_DOMAIN_NAME"
+    print_msg begin "Adding the 'A' Record for '$WEBHOST_HOSTNAME' to the Zone..."
+    if [[ -n "${!WEBHOST_PARAM}" ]]; then
+      cmd="oci dns record zone patch --zone-name-or-id $zn --region $REGION --compartment-id $COMPARTMENT_ID \
+        --scope PRIVATE --items '[{\"domain\": \"$WEBHOST_HOSTNAME\", \"rtype\": \"A\", \"ttl\": 86400, \
+        \"rdata\": \"${!WEBHOST_PARAM}\"}]'"
+      execute "$cmd"
+      print_msg end
+    fi
   fi
 }
 
@@ -221,6 +249,7 @@ createDNS() {
     if [[ "$ocid" =~ "ocid" ]]; then
       print_msg screen "Error, the Zone '$DNS_DOMAIN_NAME' already exists in compartment $COMPARTMENT_NAME"
       exit 1
+
     fi
     pv=$(oci dns view list --region $REGION --compartment-id $COMPARTMENT_ID \
       --query "data [?contains(\"display-name\",'$VCN_DISPLAY_NAME')].id" | jq -r '.[]')
@@ -237,8 +266,8 @@ createDNS() {
     print_msg end
   fi
     
-  zn=$(cat $RESOURCE_OCID_FILE | grep $DNS_DOMAIN_NAME | cut -d: -f2)
-  
+  zn=$(cat $RESOURCE_OCID_FILE | grep $DNS_DOMAIN_NAME | tail -1 | cut -d: -f2)
+
   # Add iadadmin CNAME record
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
@@ -307,33 +336,13 @@ createDNS() {
     print_msg end 
   fi
     
-  # Add webhost1 A record
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Adding the 'A' Record for '$WEBHOST1_HOSTNAME' to the Zone..."
-    wh1=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST1_DISPLAY_NAME: | cut -d: -f2)
-    whip1=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $wh1 \
-      --query 'data[0]."private-ip"' --raw-output)
-    cmd="oci dns record zone patch --zone-name-or-id $zn --region $REGION --compartment-id $COMPARTMENT_ID \
-      --scope PRIVATE --items '[{\"domain\": \"$WEBHOST1_HOSTNAME\", \"rtype\": \"A\", \"ttl\": 86400, \
-      \"rdata\": \"$whip1\"}]'"
-    execute "$cmd"
-    print_msg end 
-  fi
-  
-  # Add webhost2 A record    
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Adding the 'A' Record for '$WEBHOST2_HOSTNAME' to the Zone..."
-    wh2=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST2_DISPLAY_NAME: | cut -d: -f2)
-    whip2=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $wh2 \
-      --query 'data[0]."private-ip"' --raw-output)
-    cmd="oci dns record zone patch --zone-name-or-id $zn --region $REGION --compartment-id $COMPARTMENT_ID \
-      --scope PRIVATE --items '[{\"domain\": \"$WEBHOST2_HOSTNAME\", \"rtype\": \"A\", \"ttl\": 86400, \
-      \"rdata\": \"$whip2\"}]'"
-    execute "$cmd"
-    print_msg end
-  fi
+  # Add webhost A record
+  source $INTERIM_PARAM
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    addWebhostARecord "$i"
+  done
+
 }
 
 # Create the resources for the RAC database, including
@@ -374,7 +383,7 @@ createDatabase() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$DB_ROUTE_TABLE_DISPLAY_NAME' Route Table..."
-    sgw=$(cat $RESOURCE_OCID_FILE | grep $VCN_SERVICE_GATEWAY_DISPLAY_NAME | cut -d: -f2)
+    sgw=$(cat $RESOURCE_OCID_FILE | grep $VCN_SERVICE_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
     dest=$(oci network service-gateway list --region $REGION --compartment-id $COMPARTMENT_ID --vcn-id $VCN_ID \
            --query 'data[0].services[0]."service-name"' --raw-output)
     dest1="${dest// /-}"
@@ -394,8 +403,8 @@ createDatabase() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$DB_SUBNET_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $DB_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $DB_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $DB_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $DB_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -435,7 +444,7 @@ createDatabase() {
     else
       initialPDB=${DB_NAME}_pdb1
     fi
-    snid=$(cat $RESOURCE_OCID_FILE | grep $DB_SUBNET_DISPLAY_NAME | cut -d: -f2)
+    snid=$(cat $RESOURCE_OCID_FILE | grep $DB_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
     hst=$(echo $((1 + RANDOM % 100)))
     cmd="oci db system launch \
       --region $REGION \
@@ -459,9 +468,38 @@ createDatabase() {
       --subnet-id $snid \
       --tde-wallet-password $DB_PWD \
       --time-zone $DB_TIMEZONE \
-      --wait-for-state PROVISIONING"
+      --wait-for-state PROVISIONING $TAG_PARAM "
     execute "$cmd"
     print_msg end
+  fi
+}
+
+addWebhostLBRBackend() {
+  STEPNO=$((STEPNO+1))
+  if [[ $STEPNO -gt $PROGRESS ]]; then
+    WEBHOST_NUMBER=$1
+    WEBHOST_LABEL="$WEBHOST_PREFIX"$WEBHOST_NUMBER
+    WEBHOST_PARAM="webhost"$WEBHOST_NUMBER
+    LBR_OHS_SERVERS_BS_NAME=$2
+    lbr=$3
+    print_msg begin "Adding '$WEBHOST_LABEL' to the '$LBR_OHS_SERVERS_BS_NAME' Backend Set..."
+    currentIpList=$(oci lb backend list --region $REGION --backend-set-name $LBR_OHS_SERVERS_BS_NAME \
+        --load-balancer-id $lbr --query 'data[*]."ip-address"' --all 2>/dev/null | jq -r '.[]')
+    if ! [[ "$currentIpList" =~ "${!WEBHOST_PARAM}" ]]; then
+      cmd="oci lb backend create \
+        --region $REGION \
+        --wait-for-state SUCCEEDED \
+        --wait-for-state FAILED \
+        --backend-set-name $LBR_OHS_SERVERS_BS_NAME \
+        --load-balancer-id $lbr \
+        --port $OHS_NON_SSL_PORT \
+        --ip-address ${!WEBHOST_PARAM}"
+      execute "$cmd"
+    else
+      PROGRESS=$((PROGRESS+1))
+      echo $PROGRESS > $LOGDIR/progressfile
+    fi
+  print_msg end
   fi
 }
 
@@ -483,7 +521,7 @@ createInternalLBR() {
       print_msg screen "Error, the Load Balancer '$INT_LBR_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
       exit 1
     fi
-    snid=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | cut -d: -f2)
+    snid=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci lb load-balancer create \
       --region $REGION \
       --wait-for-state SUCCEEDED \
@@ -498,7 +536,7 @@ createInternalLBR() {
     print_msg end
   fi
     
-  lbr=$(cat $RESOURCE_OCID_FILE | grep $INT_LBR_DISPLAY_NAME | cut -d: -f2)
+  lbr=$(cat $RESOURCE_OCID_FILE | grep $INT_LBR_DISPLAY_NAME | tail -1 | cut -d: -f2)
 
   # Create the backend set connecting to the OHS webhosts
   STEPNO=$((STEPNO+1))
@@ -518,57 +556,12 @@ createInternalLBR() {
     print_msg end
   fi
 
-  # Add webhost1 to the backend set
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Adding '$WEBHOST1_DISPLAY_NAME' to the '$INT_LBR_OHS_SERVERS_BS_NAME' Backend Set..."
-    wh1=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST1_DISPLAY_NAME: | cut -d: -f2)
-    ip1=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $wh1 \
-      --query 'data[0]."private-ip"' --raw-output)
-    currentIpList=$(oci lb backend list --region $REGION --backend-set-name $INT_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr --query 'data[*]."ip-address"' --all 2>/dev/null | jq -r '.[]')
-    if ! [[ "$currentIpList" =~ "$ip1" ]]; then
-      cmd="oci lb backend create \
-        --region $REGION \
-        --wait-for-state SUCCEEDED \
-        --wait-for-state FAILED \
-        --backend-set-name $INT_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr \
-        --port $OHS_NON_SSL_PORT \
-        --ip-address $ip1"
-        execute "$cmd"
-    else
-      PROGRESS=$((PROGRESS+1))
-      echo $PROGRESS > $LOGDIR/progressfile
-    fi
-    print_msg end
-  fi
-    
-  # Add webhost2 to the backend set
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Adding '$WEBHOST2_DISPLAY_NAME' to the '$INT_LBR_OHS_SERVERS_BS_NAME' Backend Set..."
-    wh2=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST2_DISPLAY_NAME: | cut -d: -f2)
-    ip2=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $wh2 \
-      --query 'data[0]."private-ip"' --raw-output)
-    currentIpList=$(oci lb backend list --region $REGION --backend-set-name $INT_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr --query 'data[*]."ip-address"' --all 2>/dev/null | jq -r '.[]')
-    if ! [[ "$currentIpList" =~ "$ip2" ]]; then
-        cmd="oci lb backend create \
-        --region $REGION \
-        --wait-for-state SUCCEEDED \
-        --wait-for-state FAILED \
-        --backend-set-name $INT_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr \
-        --port $OHS_NON_SSL_PORT \
-        --ip-address $ip2"
-      execute "$cmd"
-    else
-      PROGRESS=$((PROGRESS+1))
-      echo $PROGRESS > $LOGDIR/progressfile
-    fi
-    print_msg end
-  fi
+  # Add webhost to the backend set
+  source $INTERIM_PARAM
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    addWebhostLBRBackend "$i" "$INT_LBR_OHS_SERVERS_BS_NAME" "$lbr"
+  done
 
   # Add the SSL Certificate to the load balancer
   STEPNO=$((STEPNO+1))
@@ -744,7 +737,7 @@ createInternalLBR() {
     print_msg end
   fi
 
-  lgid=$(cat $RESOURCE_OCID_FILE | grep $LBR_LOG_GROUP_NAME | cut -d: -f2)
+  lgid=$(cat $RESOURCE_OCID_FILE | grep $LBR_LOG_GROUP_NAME | tail -1 | cut -d: -f2)
            
   # Create the lbr access log
   STEPNO=$((STEPNO+1))
@@ -859,12 +852,23 @@ createNFS() {
     print_msg end
   fi
   
-  esl1=$(oci fs export-set list --region $REGION --compartment-id $COMPARTMENT_ID --availability-domain ${!WEBHOST1_AD} \
+  #Retrive export-set list value
+  STEPNO=$((STEPNO+1))
+  if [[ $STEPNO -gt $PROGRESS ]]; then
+    print_msg begin "Retrive export-set list values..."
+    esl1=$(oci fs export-set list --region $REGION --compartment-id $COMPARTMENT_ID --availability-domain ${!WEBHOST1_AD} \
       --display-name "$WEBHOST1_MOUNT_TARGET_DISPLAY_NAME - export set" --query 'data[0].id' --raw-output)
-  esl2=$(oci fs export-set list --region $REGION --compartment-id $COMPARTMENT_ID --availability-domain ${!WEBHOST2_AD} \
-      --display-name "$WEBHOST2_MOUNT_TARGET_DISPLAY_NAME - export set" --query 'data[0].id' --raw-output) 
-  esl3=$(oci fs export-set list --region $REGION --compartment-id $COMPARTMENT_ID --availability-domain ${!OKE_MOUNT_TARGET_AD} \
+    esl2=$(oci fs export-set list --region $REGION --compartment-id $COMPARTMENT_ID --availability-domain ${!WEBHOST2_AD} \
+      --display-name "$WEBHOST2_MOUNT_TARGET_DISPLAY_NAME - export set" --query 'data[0].id' --raw-output)
+    esl3=$(oci fs export-set list --region $REGION --compartment-id $COMPARTMENT_ID --availability-domain ${!OKE_MOUNT_TARGET_AD} \
       --display-name "$OKE_MOUNT_TARGET_DISPLAY_NAME - export set" --query 'data[0].id' --raw-output)
+    echo "esl1=\"$esl1\"" >> $INTERIM_PARAM
+    echo "esl2=\"$esl2\"" >> $INTERIM_PARAM
+    echo "esl3=\"$esl3\"" >> $INTERIM_PARAM
+    print_msg end
+    PROGRESS=$((PROGRESS+1))
+    echo $PROGRESS > $LOGDIR/progressfile
+  fi
 
   # Set the webhost1 mount target size
   STEPNO=$((STEPNO+1))
@@ -1135,7 +1139,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_WEBBINARIES1_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBBINARIES1_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBBINARIES1_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl1 --file-system-id $fs --path $FS_WEBBINARIES1_PATH"
     execute "$cmd"
     print_msg end
@@ -1145,7 +1149,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_WEBBINARIES2_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBBINARIES2_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBBINARIES2_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl2 --file-system-id $fs --path $FS_WEBBINARIES2_PATH"
     execute "$cmd"
     print_msg end
@@ -1155,7 +1159,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OAMPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAMPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAMPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OAMPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1165,7 +1169,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OIGPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OIGPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OIGPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OIGPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1175,7 +1179,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OUDPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OUDPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OUDPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OUDPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1185,7 +1189,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OUDCONFIGPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OUDCONFIGPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OUDCONFIGPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OUDCONFIGPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1195,7 +1199,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OUDSMPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OUDSMPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OUDSMPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OUDSMPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1205,7 +1209,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OIRIPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OIRIPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OIRIPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OIRIPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1215,7 +1219,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_DINGPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_DINGPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_DINGPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_DINGPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1225,7 +1229,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_WORKPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WORKPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WORKPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_WORKPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1235,7 +1239,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OAACONFIGPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAACONFIGPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAACONFIGPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OAACONFIGPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1245,7 +1249,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OAACREDPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAACREDPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAACREDPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OAACREDPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1255,7 +1259,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OAAVAULTPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAAVAULTPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAAVAULTPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OAAVAULTPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1265,7 +1269,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_OAALOGPV_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAALOGPV_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_OAALOGPV_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_OAALOGPV_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1275,7 +1279,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_WEBCONFIG1_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBCONFIG1_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBCONFIG1_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl1 --file-system-id $fs --path $FS_WEBCONFIG1_PATH"
     execute "$cmd"
     print_msg end
@@ -1285,7 +1289,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_WEBCONFIG2_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBCONFIG2_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_WEBCONFIG2_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl2 --file-system-id $fs --path $FS_WEBCONFIG2_PATH"
     execute "$cmd"
     print_msg end
@@ -1295,7 +1299,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$FS_IMAGES_DISPLAY_NAME' NFS Mount..."
-    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_IMAGES_DISPLAY_NAME | cut -d: -f2)
+    fs=$(cat $RESOURCE_OCID_FILE | grep $FS_IMAGES_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci fs export create --region $REGION --export-set-id $esl3 --file-system-id $fs --path $FS_IMAGES_NFS_PATH"
     execute "$cmd"
     print_msg end
@@ -1356,7 +1360,7 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Adding the '$PV_SECLIST_DISPLAY_NAME' to the OKE Subnet..."
-    pvsl=$(cat $RESOURCE_OCID_FILE | grep $PV_SECLIST_DISPLAY_NAME | cut -d: -f2)
+    pvsl=$(cat $RESOURCE_OCID_FILE | grep $PV_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
     sl=$(oci network subnet get --region $REGION --subnet-id $okeSubnetId --query 'data."security-list-ids"')
     sl="'${sl/\"/\"$pvsl\",\"}'"
     cmd="oci network subnet update \
@@ -1372,8 +1376,8 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Adding the '$PV_SECLIST_DISPLAY_NAME' to the '$BASTION_SUBNET_DISPLAY_NAME' Subnet..."
-    pvsl=$(cat $RESOURCE_OCID_FILE | grep $PV_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    snid=$(cat $RESOURCE_OCID_FILE | grep $BASTION_SUBNET_DISPLAY_NAME | cut -d: -f2)
+    pvsl=$(cat $RESOURCE_OCID_FILE | grep $PV_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    snid=$(cat $RESOURCE_OCID_FILE | grep $BASTION_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
     sl=$(oci network subnet get --region $REGION --subnet-id $snid --query 'data."security-list-ids"')
     sl="'${sl/\"/\"$pvsl\",\"}'"
     cmd="oci network subnet update \
@@ -1389,8 +1393,8 @@ createNFS() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Adding the '$PV_SECLIST_DISPLAY_NAME' to the '$WEB_SUBNET_DISPLAY_NAME' Subnet..."
-    pvsl=$(cat $RESOURCE_OCID_FILE | grep $PV_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    snid=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | cut -d: -f2) 
+    pvsl=$(cat $RESOURCE_OCID_FILE | grep $PV_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    snid=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2) 
     sl=$(oci network subnet get --region $REGION --subnet-id $snid --query 'data."security-list-ids"')
     sl="'${sl/\"/\"$pvsl\",\"}'"
     cmd="oci network subnet update \
@@ -1431,7 +1435,7 @@ createNetworkLBR() {
     print_msg end
   fi
 
-  lbr=$(cat $RESOURCE_OCID_FILE | grep $K8_LBR_DISPLAY_NAME | cut -d: -f2)
+  lbr=$(cat $RESOURCE_OCID_FILE | grep $K8_LBR_DISPLAY_NAME | tail -1 | cut -d: -f2)
          
   # Create the backend set connecting to the OHS webhosts
   STEPNO=$((STEPNO+1))
@@ -1456,8 +1460,8 @@ createNetworkLBR() {
     newStepNo=$((STEPNO+$OKE_NODE_POOL_SIZE-1))
     print_msg begin "(through Step $newStepNo) Adding the OKE Nodes to the '$K8_LBR_K8_WORKERS_BS_NAME' Backend Set..."
     STEPNO=$newStepNo
-    clid=$(cat $RESOURCE_OCID_FILE | grep $OKE_CLUSTER_DISPLAY_NAME | cut -d: -f2)
-    npid=$(cat $RESOURCE_OCID_FILE | grep $OKE_NODE_POOL_DISPLAY_NAME | cut -d: -f2)
+    clid=$(cat $RESOURCE_OCID_FILE | grep $OKE_CLUSTER_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    npid=$(cat $RESOURCE_OCID_FILE | grep $OKE_NODE_POOL_DISPLAY_NAME | tail -1 | cut -d: -f2)
     for i in $(oci ce node-pool get --region $REGION --node-pool-id $npid --query \
       'data.nodes[*].id' | jq -r '.[]')
     do
@@ -1513,8 +1517,13 @@ createOKE() {
       print_msg screen "Error, the OKE Cluster '$OKE_CLUSTER_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
       exit 1
     fi
-    slbsn=$(cat $RESOURCE_OCID_FILE | grep $OKE_SVCLB_SUBNET_DISPLAY_NAME | cut -d: -f2)
-    apiep=$(cat $RESOURCE_OCID_FILE | grep $OKE_API_SUBNET_DISPLAY_NAME | cut -d: -f2)
+    if [[ "$OKE_CLUSTER_TYPE" =~ "ENH" ]]; then
+      clusterType="ENHANCED_CLUSTER"
+    else
+      clusterType="BASIC_CLUSTER"
+    fi
+    slbsn=$(cat $RESOURCE_OCID_FILE | grep $OKE_SVCLB_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    apiep=$(cat $RESOURCE_OCID_FILE | grep $OKE_API_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci ce cluster create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -1523,11 +1532,12 @@ createOKE() {
       --name $OKE_CLUSTER_DISPLAY_NAME \
       --cluster-pod-network-options '[{\"cni-type\": \"$OKE_NETWORK_TYPE\"}]' \
       --endpoint-subnet-id $apiep \
+      --type $clusterType \
       --pods-cidr $OKE_PODS_CIDR \
       --services-cidr $OKE_SERVICES_CIDR \
       --service-lb-subnet-ids '[\"$slbsn\"]' \
       --wait-for-state IN_PROGRESS \
-      --wait-for-state FAILED"
+      --wait-for-state FAILED  $TAG_PARAM"
     execute "$cmd"
     print_msg end
   fi
@@ -1536,13 +1546,8 @@ createOKE() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$OKE_NODE_POOL_DISPLAY_NAME' Kubernetes Node Pool..."
-    clid=$(cat $RESOURCE_OCID_FILE | grep $OKE_CLUSTER_DISPLAY_NAME | cut -d: -f2)
-    im=$(oci compute image list --region $REGION --compartment-id $COMPARTMENT_ID --display-name \
-      $OKE_NODE_POOL_IMAGE_NAME --query 'data[0].id' --raw-output)
-    if [[ ! "$im" =~ "ocid" ]]; then
-      print_msg screen "Error, the OS image '$OKE_NODE_POOL_IMAGE_NAME' is not present in the system."
-      exit 1
-    fi
+    clid=$(cat $RESOURCE_OCID_FILE | grep $OKE_CLUSTER_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    get_os_image
     key=$(cat $SSH_PUB_KEYFILE)
     cmd="oci ce node-pool create \
       --region $REGION \
@@ -1563,7 +1568,7 @@ createOKE() {
     cmd="$cmd ]' --size $OKE_NODE_POOL_SIZE \
       --ssh-public-key \"$key\" \
       --wait-for-state ACCEPTED \
-      --wait-for-state FAILED"
+      --wait-for-state FAILED  $TAG_PARAM "
     execute "$cmd"
     print_msg end
   fi
@@ -1706,7 +1711,7 @@ _end_of_text
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$PUBLIC_LBR_ROUTE_TABLE_DISPLAY_NAME' Route Table..."
-    igw=$(cat $RESOURCE_OCID_FILE | grep $VCN_INTERNET_GATEWAY_DISPLAY_NAME | cut -d: -f2)
+    igw=$(cat $RESOURCE_OCID_FILE | grep $VCN_INTERNET_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network route-table create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -1721,8 +1726,8 @@ _end_of_text
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$LBR1_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -1741,8 +1746,8 @@ _end_of_text
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$LBR2_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -1767,8 +1772,8 @@ _end_of_text
       print_msg screen "Error, the Load Balancer '$PUBLIC_LBR_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
       exit 1
     fi
-    snid1=$(cat $RESOURCE_OCID_FILE | grep $LBR1_DISPLAY_NAME | cut -d: -f2)
-    snid2=$(cat $RESOURCE_OCID_FILE | grep $LBR2_DISPLAY_NAME | cut -d: -f2)
+    snid1=$(cat $RESOURCE_OCID_FILE | grep $LBR1_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    snid2=$(cat $RESOURCE_OCID_FILE | grep $LBR2_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci lb load-balancer create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -1783,7 +1788,7 @@ _end_of_text
     print_msg end
   fi
 
-  lbr=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_DISPLAY_NAME | cut -d: -f2)
+  lbr=$(cat $RESOURCE_OCID_FILE | grep $PUBLIC_LBR_DISPLAY_NAME | tail -1 | cut -d: -f2)
   
   # Create the backend set connecting to the OHS webhosts
   STEPNO=$((STEPNO+1))
@@ -1803,57 +1808,12 @@ _end_of_text
     print_msg end
   fi
 
-  # Add webhost1 to the public load balancer backend set
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Adding '$WEBHOST1_DISPLAY_NAME' to the '$PUBLIC_LBR_OHS_SERVERS_BS_NAME' Backend Set..."
-    wh1=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST1_DISPLAY_NAME: | cut -d: -f2)
-    ip1=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $wh1 \
-      --query 'data[0]."private-ip"' --raw-output)
-    currentIpList=$(oci lb backend list --region $REGION --backend-set-name $PUBLIC_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr --query 'data[*]."ip-address"' --all 2>/dev/null | jq -r '.[]')
-    if ! [[ "$currentIpList" =~ "$ip1" ]]; then
-      cmd="oci lb backend create \
-        --region $REGION \
-        --wait-for-state SUCCEEDED \
-        --wait-for-state FAILED \
-        --backend-set-name $PUBLIC_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr \
-        --port $OHS_NON_SSL_PORT \
-        --ip-address $ip1"
-      execute "$cmd"
-    else
-      PROGRESS=$((PROGRESS+1))
-      echo $PROGRESS > $LOGDIR/progressfile
-    fi
-    print_msg end
-  fi
-    
-  # Add webhost2 to the public load balancer backend set
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Adding '$WEBHOST2_DISPLAY_NAME' to the '$PUBLIC_LBR_OHS_SERVERS_BS_NAME' Backend Set..."
-    wh2=$(cat $RESOURCE_OCID_FILE | grep $WEBHOST2_DISPLAY_NAME: | cut -d: -f2)
-    ip2=$(oci compute instance list-vnics --region $REGION --compartment-id $COMPARTMENT_ID --instance-id $wh2 \
-      --query 'data[0]."private-ip"' --raw-output)
-    currentIpList=$(oci lb backend list --region $REGION --backend-set-name $PUBLIC_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr --query 'data[*]."ip-address"' --all 2>/dev/null | jq -r '.[]')
-    if ! [[ "$currentIpList" =~ "$ip2" ]]; then
-      cmd="oci lb backend create \
-        --region $REGION \
-        --wait-for-state SUCCEEDED \
-        --wait-for-state FAILED \
-        --backend-set-name $PUBLIC_LBR_OHS_SERVERS_BS_NAME \
-        --load-balancer-id $lbr \
-        --port $OHS_NON_SSL_PORT \
-        --ip-address $ip2"
-      execute "$cmd"
-    else
-      PROGRESS=$((PROGRESS+1))
-      echo $PROGRESS > $LOGDIR/progressfile
-    fi
-    print_msg end
-  fi
+  # Add webhost to the public load balancer backend set
+  source $INTERIM_PARAM
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    addWebhostLBRBackend "$i" "$PUBLIC_LBR_OHS_SERVERS_BS_NAME" "$lbr"
+  done
 
   # Add the SSL certificate to the load balancer
   STEPNO=$((STEPNO+1))
@@ -2019,7 +1979,7 @@ _end_of_text
     print_msg end
   fi
 
-  lgid=$(cat $RESOURCE_OCID_FILE | grep $LBR_LOG_GROUP_NAME | cut -d: -f2)
+  lgid=$(cat $RESOURCE_OCID_FILE | grep $LBR_LOG_GROUP_NAME | tail -1 | cut -d: -f2)
 
   # Create the public load balancer access log
   STEPNO=$((STEPNO+1))
@@ -2085,7 +2045,7 @@ createVCN() {
     print_msg end
   fi
     
-  VCN_ID=$(cat $RESOURCE_OCID_FILE | grep $VCN_DISPLAY_NAME | cut -d: -f2)
+  VCN_ID=$(cat $RESOURCE_OCID_FILE | grep $VCN_DISPLAY_NAME | tail -1 | cut -d: -f2)
       
   # Create the internet gateway
   STEPNO=$((STEPNO+1))
@@ -2138,7 +2098,7 @@ createVCN() {
     print_msg begin "Updating the 'Default Route Table for $VCN_DISPLAY_NAME' Route Table..."
     rtid=$(oci network route-table list --region $REGION --compartment-id $COMPARTMENT_ID --vcn-id $VCN_ID \
       --query "data[?contains(\"display-name\",'$VCN_DISPLAY_NAME')].{ocid:id}" | jq -r '.[].ocid')
-    igw=$(cat $RESOURCE_OCID_FILE | grep $VCN_INTERNET_GATEWAY_DISPLAY_NAME | cut -d: -f2)
+    igw=$(cat $RESOURCE_OCID_FILE | grep $VCN_INTERNET_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network route-table update \
       --region $REGION \
       --rt-id $rtid \
@@ -2154,8 +2114,8 @@ createVCN() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME' Route Table..."
-    sgw=$(cat $RESOURCE_OCID_FILE | grep $VCN_SERVICE_GATEWAY_DISPLAY_NAME | cut -d: -f2)
-    ngw=$(cat $RESOURCE_OCID_FILE | grep $VCN_NAT_GATEWAY_DISPLAY_NAME | cut -d: -f2)
+    sgw=$(cat $RESOURCE_OCID_FILE | grep $VCN_SERVICE_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    ngw=$(cat $RESOURCE_OCID_FILE | grep $VCN_NAT_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
     dest=$(oci network service-gateway list --region $REGION --compartment-id $COMPARTMENT_ID --vcn-id $VCN_ID \
            --query 'data[0].services[0]."service-name"' --raw-output)
     dest1="${dest// /-}"
@@ -2274,8 +2234,8 @@ createVCN() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$OKE_API_SUBNET_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $OKE_API_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $OKE_API_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -2295,8 +2255,8 @@ createVCN() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$OKE_NODE_SUBNET_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $OKE_NODE_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $OKE_NODE_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -2335,7 +2295,53 @@ createVCN() {
     print_msg end
   fi
 
-  okeSubnetId=$(cat $RESOURCE_OCID_FILE | grep $OKE_NODE_SUBNET_DISPLAY_NAME | cut -d: -f2)
+  okeSubnetId=$(cat $RESOURCE_OCID_FILE | grep $OKE_NODE_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
+}
+
+# Function for create Webhosts.
+createWebHostAdditional() {
+  WEBHOST_NUMBER=$1
+  WEBHOST_LABEL="$WEBHOST_PREFIX"$WEBHOST_NUMBER
+  WEBHOST_PARAM="webhost"$WEBHOST_NUMBER
+  if [[ -n "${WEBHOST_SHAPE_CONFIG}" ]]; then
+    whshapeConfig="--shape-config ${WEBHOST_SHAPE_CONFIG}"
+  else
+    whshapeConfig=""
+  fi
+  WEBHOST_PUBLIC_IP=$WEBHOST_PUBLIC_IP
+  WEBHOST_SHAPE=$WEBHOST_SHAPE
+  if [[ $(($WEBHOST_NUMBER%2)) == 0 ]]; then
+    WEBHOST_AD=${!WEBHOST2_AD}
+  else
+    WEBHOST_AD=${!WEBHOST1_AD}
+  fi
+  print_msg begin "Creating the '$WEBHOST_LABEL' Compute Instance..."
+  ocid=$(oci compute instance list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $WEBHOST_LABEL \
+      --query 'data[0].id' --raw-output 2>/dev/null)
+  if [[ "$ocid" =~ "ocid" ]]; then
+      lifecycleStatus=$(oci compute instance list --region $REGION --compartment-id $COMPARTMENT_ID \
+      --display-name $WEBHOST_LABEL --query 'data[0]."lifecycle-state"' --raw-output 2>/dev/null)
+      if [[ ! "$lifecycleStatus" =~ "TERMINATED" ]]; then
+        print_msg screen "Error, the Webhost Name '$WEBHOST_LABEL' already exists in compartment $COMPARTMENT_NAME"
+        exit 1
+      fi
+  fi
+  sn=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
+  get_os_image
+  cmd="oci compute instance launch \
+      --region $REGION \
+      --compartment-id $COMPARTMENT_ID \
+      --display-name $WEBHOST_LABEL \
+      --availability-domain $WEBHOST_AD \
+      --boot-volume-size-in-gbs 100 \
+      --shape $WEBHOST_SHAPE $whshapeConfig \
+      --subnet-id $sn \
+      --assign-public-ip $WEBHOST_PUBLIC_IP \
+      --hostname-label $WEBHOST_LABEL \
+      --image-id $im \
+      --ssh-authorized-keys-file $SSH_PUB_KEYFILE  $TAG_PARAM"
+  execute "$cmd"
+  print_msg end
 }
 
 # Create the resources for the web hosts, including
@@ -2446,7 +2452,7 @@ createWebHosts() {
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Adding the '$OHS_SECLIST_DISPLAY_NAME' to the Kubernetes Node Subnet..."
     sl=$(oci network subnet get --region $REGION --subnet-id $okeSubnetId --query 'data."security-list-ids"')
-    ohssl=$(cat $RESOURCE_OCID_FILE | grep $OHS_SECLIST_DISPLAY_NAME | cut -d: -f2)
+    ohssl=$(cat $RESOURCE_OCID_FILE | grep $OHS_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
     sl="'${sl/\"/\"$ohssl\",\"}'"
     cmd="oci network subnet update \
       --region $REGION \
@@ -2462,7 +2468,7 @@ createWebHosts() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$WEB_ROUTE_TABLE_DISPLAY_NAME' Route Table..."
-    sgw=$(cat $RESOURCE_OCID_FILE | grep $VCN_SERVICE_GATEWAY_DISPLAY_NAME | cut -d: -f2)
+    sgw=$(cat $RESOURCE_OCID_FILE | grep $VCN_SERVICE_GATEWAY_DISPLAY_NAME | tail -1 | cut -d: -f2)
     dest=$(oci network service-gateway list --region $REGION --compartment-id $COMPARTMENT_ID --vcn-id $VCN_ID \
            --query 'data[0].services[0]."service-name"' --raw-output)
     dest1="${dest// /-}"
@@ -2482,8 +2488,8 @@ createWebHosts() {
   STEPNO=$((STEPNO+1))
   if [[ $STEPNO -gt $PROGRESS ]]; then
     print_msg begin "Creating the '$WEB_SUBNET_DISPLAY_NAME' Subnet..."
-    sl=$(cat $RESOURCE_OCID_FILE | grep $WEB_PUBLIC_SECLIST_DISPLAY_NAME | cut -d: -f2)
-    rt=$(cat $RESOURCE_OCID_FILE | grep $WEB_ROUTE_TABLE_DISPLAY_NAME | cut -d: -f2)
+    sl=$(cat $RESOURCE_OCID_FILE | grep $WEB_PUBLIC_SECLIST_DISPLAY_NAME | tail -1 | cut -d: -f2)
+    rt=$(cat $RESOURCE_OCID_FILE | grep $WEB_ROUTE_TABLE_DISPLAY_NAME | tail -1 | cut -d: -f2)
     cmd="oci network subnet create \
       --region $REGION \
       --compartment-id $COMPARTMENT_ID \
@@ -2497,80 +2503,13 @@ createWebHosts() {
     execute "$cmd"
     print_msg end
   fi
-
-  # Create the webhsot1 instance
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Creating the '$WEBHOST1_DISPLAY_NAME' Compute Instance..."
-    ocid=$(oci compute instance list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $WEBHOST1_DISPLAY_NAME \
-      --query 'data[0].id' --raw-output 2>/dev/null) 
-    if [[ "$ocid" =~ "ocid" ]]; then
-      print_msg screen "Error, the Host '$WEBHOST1_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
-      exit 1
+  for (( i=1; i <= $WEBHOST_SERVERS; ++i ))
+  do
+    STEPNO=$((STEPNO+1))
+    if [[ $STEPNO -gt $PROGRESS ]]; then
+      createWebHostAdditional "$i"
     fi
-    sn=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | cut -d: -f2)
-    im=$(oci compute image list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $WEB_IMAGE_NAME \
-         --query 'data[0].id' --raw-output)
-    if [[ ! "$im" =~ "ocid" ]]; then
-      print_msg screen "Error, the OS image '$WEB_IMAGE_NAME' is not present in the system."
-      exit 1
-    fi
-    if [[ -n "${WEBHOST1_SHAPE_CONFIG}" ]]; then
-      wh1shapeConfig="--shape-config ${WEBHOST1_SHAPE_CONFIG}"
-    else
-      wh1shapeConfig=""
-    fi
-    cmd="oci compute instance launch \
-      --region $REGION \
-      --compartment-id $COMPARTMENT_ID \
-      --display-name $WEBHOST1_DISPLAY_NAME \
-      --availability-domain ${!WEBHOST1_AD} \
-      --shape $WEBHOST1_SHAPE $wh1shapeConfig \
-      --subnet-id $sn \
-      --assign-public-ip $WEBHOST1_PUBLIC_IP \
-      --hostname-label $WEBHOST1_HOSTNAME_LABEL \
-      --image-id $im \
-      --ssh-authorized-keys-file $SSH_PUB_KEYFILE"
-    execute "$cmd"
-    print_msg end
-  fi
-    
-  # Create the webhost2 instance
-  STEPNO=$((STEPNO+1))
-  if [[ $STEPNO -gt $PROGRESS ]]; then
-    print_msg begin "Creating the '$WEBHOST2_DISPLAY_NAME' Compute Instance..."
-    ocid=$(oci compute instance list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $WEBHOST2_DISPLAY_NAME \
-      --query 'data[0].id' --raw-output 2>/dev/null) 
-    if [[ "$ocid" =~ "ocid" ]]; then
-      print_msg screen "Error, the Host '$WEBHOST2_DISPLAY_NAME' already exists in compartment $COMPARTMENT_NAME"
-      exit 1
-    fi
-    sn=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | cut -d: -f2)
-    im=$(oci compute image list --region $REGION --compartment-id $COMPARTMENT_ID --display-name $WEB_IMAGE_NAME \
-         --query 'data[0].id' --raw-output)
-    if [[ ! "$im" =~ "ocid" ]]; then
-      print_msg screen "Error, the OS image '$WEB_IMAGE_NAME' is not present in the system."
-      exit 1
-    fi
-    if [[ -n "${WEBHOST2_SHAPE_CONFIG}" ]]; then
-      wh2shapeConfig="--shape-config ${WEBHOST2_SHAPE_CONFIG}"
-    else 
-      wh2shapeConfig=""
-    fi
-    cmd="oci compute instance launch \
-      --region $REGION \
-      --compartment-id $COMPARTMENT_ID \
-      --display-name $WEBHOST2_DISPLAY_NAME \
-      --availability-domain ${!WEBHOST2_AD} \
-      --shape $WEBHOST2_SHAPE $wh2shapeConfig \
-      --subnet-id $sn \
-      --assign-public-ip $WEBHOST2_PUBLIC_IP \
-      --hostname-label $WEBHOST2_DISPLAY_NAME \
-      --image-id $im \
-      --ssh-authorized-keys-file $SSH_PUB_KEYFILE"
-    execute "$cmd"
-    print_msg end
-  fi
-
-  webSubnetId=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | cut -d: -f2)
+  done
+  webSubnetId=$(cat $RESOURCE_OCID_FILE | grep $WEB_SUBNET_DISPLAY_NAME | tail -1 | cut -d: -f2)
 }
+
