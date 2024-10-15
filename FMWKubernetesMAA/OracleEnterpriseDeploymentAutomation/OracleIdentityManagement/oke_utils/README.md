@@ -67,15 +67,17 @@ Before running the utility ensure that the following Pre-Requisites are in place
 * Ensure that the 'oci' command runs properly by executing the command `oci iam availability-domain list` and checking that valid output is returned.
 * Create an SSH private/public key that will be used to access the OCI instances using the Linux command `ssh-keygen`.
 * Create a configuration response file defining the parameters desired for this EDG installation using the delivered `oci-oke.rsp` file as an example.
-* You have enough quota available in your tennancy to create the various resources.
+* You have enough quota available in your tenancy to create the various resources.
  
 ## Creating a Response File
 
-A Sample response file is created for you in the `SCRIPT_DIR/oke_utils/responsefile` directory called `oci-oke.rsp.` You can edit this file or make a copy of it to another file in the same directory.
+A Sample response file is created for you in the `SCRIPT_DIR/oke_utils/responsefile` directory called `oci-oke.rsp` and `.ocipwd`. You can edit this file or make a copy of it to another file in the same directory.
 
 All parameters in the section  `MANDATORY PARAMETERS` should be carefully reviewed and set as appropriate. Some values include reasonable default values while others are installation dependent and require to be explictly set.
 
 This file will be referenced as `TEMPLATE_NAME` in the rest of this document.
+
+Please enter sensitive data like ssh key path and DB passwords in the `SCRIPT_DIR/oke_utils/responsefile` directory called `.ocipwd'.
 
 **Notes:**  
 > The file consists of key/value pairs. There should be no spaces between the name of the key and its value. For example: Key=value.
@@ -122,6 +124,8 @@ These files are generated as part of the provisioning process.
 | \$WORKDIR/TEMPLATE_NAME/output/webhost2\_mounts.sh | A bash shell script that can be run manually to mount the NFS volumes on WebHost2. | 
 | \$WORKDIR/TEMPLATE_NAME/output/db-tuning.sh | A bash schell script that can be run manually to configure the database init.ora parameters for the selected memory size defined by the `DB_MEMORY_CONFIG` parameter. | 
 | \$WORKDIR/TEMPLATE_NAME/output/db-xaviews.sh | A bash schell script that can be run manually to install the XA views into the OIG pluggable database. | 
+| \$WORKDIR/TEMPLATE_NAME/output/interim_parameters | A listing that includes gathered information during provisioning, needed for faster processing. |
+
 
 
 
@@ -169,17 +173,17 @@ Some values include reasonable default values while others are installation depe
 | CREATE\_OIG\_PDB | true | If the `CONFIGURE_DATABASE` is enabled should an OIM pluggable database be created. |
 | OIG\_PDB\_NAME | oigpdb | The name of the OIG pluggable database. |
 | OIG\_SERVICE\_NAME | oig\_s | The name of the OIG database service. |
-| CREATE\_OAA\_PDB | false | If the `CONFIGURE_DATABASE` is enabled should an OAA pluggable database be created. |
+| CREATE\_OAA\_PDB | false | Update it as true, if the `CONFIGURE_DATABASE` is enabled should an OAA pluggable database be created. |
 | OAA\_PDB\_NAME | oaapdb | The name of the OAA pluggable database. |
 | OAA\_SERVICE\_NAME | oaa\_s | The name of the OAA database service. |
-| CREATE\_OIRI\_PDB | false | If the `CONFIGURE_DATABASE` is enabled should an OIRI pluggable database be created. |
+| CREATE\_OIRI\_PDB | false | Update it as true, if the `CONFIGURE_DATABASE` is enabled should an OIRI pluggable database be created. |
 | OIRI\_PDB\_NAME | oiripdb | The name of the OIRI pluggable database. |
 | OIRI\_SERVICE\_NAME | oiri\_s | The name of the OIRI database service. |
-| BASTION\_IMAGE\_NAME | Oracle-Linux-8.7-2023.01.31-3 | The Linux image to use for the Bastion host. |
+| BASTION\_IMAGE\_NAME | Oracle-Linux-8 | The Linux image to use for the Bastion host. |
 | WEB\_IMAGE\_NAME | \$BASTION\_IMAGE\_NAME | The Linux image to use for the 2 WebTiers. |
 | OKE\_NODE\_POOL\_IMAGE\_NAME | \$BASTION\_IMAGE\_NAME | The Linux image to use for the OKE nodes. |
 | CONFIGURE\_BASTION | true | Should the Bastion host be automatically configured with the required OS packages, OCI tools, helm, and Kubernetes configuration once the installation is complete. |
-| HELM\_VER | 3.7.1 | The version of helm to install on the Bastion node. |
+| HELM\_VER | 3.11.1 | The version of helm to install on the Bastion node. It can be marked as Latest as well. |
 | CONFIGURE\_WEBHOSTS | true | Should the WebTiers be automatically configured with the required OS packages & firewall settings once the installation is complete. |
 | OHS\_SOFTWARE\_OWNER | opc | The OS user that will own the OHS configration on the WebTiers. |
 | OHS\_SOFTWARE\_GROUP | opc | The OS group that will own the OHS configuration on the WebTiers. |
@@ -242,7 +246,8 @@ The rest of the parameters all use a reasonable default and it is not required t
 | **Parameter** | **Default Value** | **Comments** | 
 | :--- | :--- | :--- | 
 | OKE\_CLUSTER\_DISPLAY\_NAME | oke-cluster | Display name for the OKE cluster. |
-| OKE\_CLUSTER\_VERSION | v1.24.1 | What version of Kubernetes to deploy on the OKE nodes. |
+| OKE\_CLUSTER\_VERSION | v1.29.1 | What version of Kubernetes to deploy on the OKE nodes. |
+| OKE\_CLUSTER\_TYPE | STD | Type of Cluster to be used Standard (STD) or Enhanced (ENH). |
 | OKE\_MOUNT\_TARGET\_AD | ad1 | Which availability domain to use for the OKE mount target. **Note: this value is not the actual availability domain name but a representation of the AD to use. For example: ad1, ad2, or ad3.** |
 | OKE\_PODS\_CIDR | 10.244.0.0/16 | The CIDR for the OKE pods. |
 | OKE\_SERVICES\_CIDR | 10.96.0.0/16 | The CIDR for the OKE load balancer services. |
@@ -286,22 +291,15 @@ The rest of the parameters all use a reasonable default and it is not required t
 | WEB\_SUBNET\_DISPLAY\_NAME | web-subnet | Display name for the Web subnet. |
 | WEB\_DNS\_LABEL | websubnet | DNS label for the Web subnet.  Used in conjunction with the hostname and subnet DNS label to form a FQDN for each host. |
 | WEB\_PROHIBIT\_PUBLIC\_IP | true | Should the Web subnet allow compute instances with a public IP address. |
-| WEBHOST1\_DISPLAY\_NAME | webhost1 | Display name for the first OHS Web host. |
+| WEBHOST\_SERVERS | 2 | List the number of wehost servers that are required to be provisioned. |
+| WEBHOST\_PREFIX | webhost | The hostname prefix to be used while creating the required number of webhost servers. |
 | WEBHOST1\_AD | ad1 |   Which availability domain to use for the first Web host. **Note: this value is not the actual availability domain name but a representation of the AD to use. For example: ad1, ad2, or ad3.** |
-| WEBHOST1\_SHAPE | VM.Standard.E4.Flex | Which image shape to use for the first Web host. |
-| WEBHOST1\_SHAPE\_CONFIG | '{\memoryInGBs\: 16.0, \ocpus\: 1.0}' | Shape configuration for the memory and OCPUs for the first Web host. **Note that entire string must be enclosed inside single quotes and parameter names must be enclosed inside of double quotes that are escaped with a backslash.** |
-| WEBHOST1\_PUBLIC\_IP | false | Should the first Web host get assigned a public IP address. |
-| WEBHOST1\_HOSTNAME | webhost1.example.com | Hostname of the first Web host. |
-| WEBHOST1\_HOSTNAME\_LABEL | webhost1 | Hostname label for the first Web host. |
+| WEBHOST\_SHAPE | VM.Standard.E4.Flex | Which image shape to use for the all the Web host. |
+| WEBHOST\_SHAPE\_CONFIG | '{\memoryInGBs\: 16.0, \ocpus\: 1.0}' | Shape configuration for the memory and OCPUs for the Web hosts. **Note that entire string must be enclosed inside single quotes and parameter names must be enclosed inside of double quotes that are escaped with a backslash.** |
+| WEBHOST\_PUBLIC\_IP | false | Should the first Web host get assigned a public IP address. |
 | WEBHOST1\_PRODUCTS\_PATH | /u02/private/oracle/products | Where on the first Web host will the OHS product be installed. |
 | WEBHOST1\_CONFIG\_PATH | /u02/private/oracle/config | Where on the first Web host will the OHS configuration files be stored. |
-| WEBHOST2\_DISPLAY\_NAME | webhost2 | Display name for the second OHS Web host. |
 | WEBHOST2\_AD | ad2 | Which availability domain to use for the first Web host. **Note: this value is not the actual availability domain name but a representation of the AD to use. For example: ad1, ad2, or ad3.** |
-| WEBHOST2\_SHAPE | VM.Standard.E4.Flex | Which image shape to use for the second Web host. |
-| WEBHOST2\_SHAPE\_CONFIG | '{\memoryInGBs\: 16.0, \ocpus\: 1.0}' | Shape configuration for the memory and OCPUs for the second Web host. **Note that entire string must be enclosed inside single quotes and parameter names must be enclosed inside of double quotes that are escaped with a backslash.** |
-| WEBHOST2\_PUBLIC\_IP | false | Should the secod Web host get assigned a public IP address. |
-| WEBHOST2\_HOSTNAME | webhost2.example.com |  Hostname of the second Web host. |
-| WEBHOST2\_HOSTNAME\_LABEL | webhost2 | Hostname label for the second Web host. |
 | WEBHOST2\_PRODUCTS\_PATH | /u02/private/oracle/products | Where on the second Web host will the OHS product be installed. |
 | WEBHOST2\_CONFIG\_PATH | /u02/private/oracle/config | Where on the second Web host will the OHS configuration files be stored. |
 
@@ -474,6 +472,17 @@ The rest of the parameters all use a reasonable default and it is not required t
 | DB\_STORAGE\_MGMT | ASM | Database storage management type. |
 | DB\_TIMEZONE | UTC | Database timezone. |
 
+### OCI Tags Configuration
+----------------------
+This section lists the parameters to be defined to create Freeform OCI tags that would be associated with some of the hardware provisioned by the framework.
+| **Parameter** | **Value** | **Comments** |
+| :--- | :--- | :--- |
+| OCI\_TAGS | "CreatedBy:ABCD WXYZ" | The Value whould be having a "key:value" pair which are separated by colon (:). The Key cannot include a double-quote, Colon, Space and all other characters which are defined as restricted in the Freeform tags OCI page. |
+# Incase multiple tags are needed, please repeat the line in the response file.
+# For instance -
+# OCI_TAGS="CreatedBy:ABCD WXYZ"
+# OCI_TAGS="ProjectNo:PR1234"
+
 ## Components of the Deployment Script
 | **Filename** | **Directory** | **Purpose** | 
 | :--- | :--- | :--- |
@@ -485,6 +494,7 @@ The rest of the parameters all use a reasonable default and it is not required t
 | oci\_setup\_functions.sh | \$SCRIPT\_DIR/oke\_utils/common | Helper script that contains all of the functions to setup/configure the Bastion host, WebTiers, and database. | 
 | oci\_util\_functions.sh | \$SCRIPT\_DIR/oke\_utils/common | Helper script that contains all of the functions shared between the provisioning and deletion scripts.  | 
 | oci\_oke.rsp | \$SCRIPT\_DIR/oke\_utils/responsefile |An example responsefile that is used as a startng point for end-user response files. | 
+| .ocipwd | \$SCRIPT\_DIR/oke\_utils/responsefile |An example responsefile that is used to key in sensitive data. |
 | oci\_setup\_bastion.sh | \$SCRIPT\_DIR/oke\_utils/utils | Helper script that can be executed manually to configure the Bastion host. The script executes the same functions that are called when the `CONFIGURE_BASTION` parameter is enabled. | 
 | oci\_setup\_webhosts.sh | \$SCRIPT\_DIR/oke\_utils/utils |Helper script that can be executed manually to configure the WebTier hosts. The script executes the same functions that are called when the `CONFIGURE_WEBHOSTS` parameter is enabled. | 
 | oci\_setup\_database.sh | \$SCRIPT\_DIR/oke\_utils/utils | Helper script that can be executed manually to configure the RAC database. The script executes the same functions that are called when the `CONFIGURE_DATABASE` parameter is enabled. | 

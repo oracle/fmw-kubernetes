@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of an Umbrella script that will create all of the OCI infrastructure components
@@ -22,19 +22,56 @@ fi
 DIRNAME=$(dirname $0)
 if test -f $DIRNAME/responsefile/$1 ; then
   source $DIRNAME/responsefile/$1
+  source $DIRNAME/responsefile/.ocipwd
   TEMPLATE=$(basename $DIRNAME/responsefile/$1 | sed 's/.rsp//')
   LOGDIR=$WORKDIR/$TEMPLATE/logs
   LOGFILE="provision_oci.log"
   OUTDIR=$WORKDIR/$TEMPLATE/output
   RESOURCE_OCID_FILE=$OUTDIR/$TEMPLATE.ocid
+  INTERIM_PARAM=$OUTDIR/interim_parameters
+  FREEFORM_TAG=$OUTDIR/freeform_tag.json
 else
   echo "Error, Unable to read template file '$DIRNAME/responsefile/$1'"
   exit 1
 fi
-
+CONFIG_LOCATION=$DIRNAME/responsefile/$1
 source $DIRNAME/common/oci_util_functions.sh
 source $DIRNAME/common/oci_create_functions.sh
 source $DIRNAME/common/oci_setup_functions.sh
+
+mkdir -p $LOGDIR
+mkdir -p $OUTDIR
+
+if test -f $INTERIM_PARAM ; then
+  source $INTERIM_PARAM
+else
+  touch $INTERIM_PARAM
+fi
+
+if test -f $FREEFORM_TAG ; then
+  rm $FREEFORM_TAG
+fi
+
+TAG_NUMBER=$(grep ^OCI_TAG $CONFIG_LOCATION | wc -l)
+echo \{ >> $FREEFORM_TAG
+for (( i=1; i <= $TAG_NUMBER; ++i ))
+do
+  TAG=$(grep ^OCI_TAG $CONFIG_LOCATION | head -$i | tail -1 | awk -F\" '{print $2}')
+  TAG_KEY=$(echo $TAG | awk -F: '{print $1}')
+  TAG_VALUE=$(echo $TAG | awk -F: '{print $2}')
+  if [[ "$i" -eq "$TAG_NUMBER" ]]; then
+    echo "   \"$TAG_KEY\": \"$TAG_VALUE\"" >> $FREEFORM_TAG
+    echo \} >> $FREEFORM_TAG
+  else
+    echo "   \"$TAG_KEY\": \"$TAG_VALUE\"," >> $FREEFORM_TAG
+  fi
+done
+ 
+if [[ $TAG_NUMBER -gt 0 ]]; then
+  TAG_PARAM=" --freeform-tags file://$FREEFORM_TAG "
+else
+  TAG_PARAM=""
+fi
 
 validateVariables
 formatShapeConfig
@@ -51,7 +88,7 @@ echo -e "============================================================\n"
 
 echo -e "Are you sure you wish to continue and install the EDG infrastructure"
 echo -e "components into the above compartment ($COMPARTMENT_NAME) using the specified"
-read -r -p "template named '$TEMPLATE' [Y|N]? " confirm
+read -t 25 -r -p "template named '$TEMPLATE' [Y|N]? " confirm
 if ! [[ $confirm =~ ^[Yy]$ ]]; then
     echo "Exiting without making any changes"
     exit 1
@@ -77,43 +114,81 @@ PROGRESS=$(get_progress)
 
 print_msg screen "Setting up the VCN Resources..."
 createVCN # Steps 1-12
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createVCN-${dx} 2>/dev/null
+
 print_msg screen "Setting up the Database..."
 createDatabase # Steps 13-16
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createDB-${dx} 2>/dev/null
+
 print_msg screen "Setting up the OKE Cluster..."
 createOKE # Steps 17-18
-print_msg screen "Setting up the Bastion Host Resources..."
-createBastion # Steps 19-27
-print_msg screen "Setting up the Web Host Resources..."
-createWebHosts # Steps 28-24
-print_msg screen "Setting up the NFS Resources..."
-createNFS # Steps 35-76
-print_msg screen "Setting up the Public Load Balancer..."
-createPublicLBR # Steps 77-97
-print_msg screen "Setting up the Internal Load Balancer..."
-createInternalLBR # Steps 98-114
-print_msg screen "Setting up the Network Load Balancer..."
-createNetworkLBR # Steps 115-120
-print_msg screen "Setting up the DNS Server..."
-createDNS # Steps 121-129
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createOKE-${dx} 2>/dev/null
 
+print_msg screen "Setting up the Bastion Host Resources..."
+createBastion # Steps 19-26
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createBastion-${dx} 2>/dev/null
+
+print_msg screen "Setting up the Web Host Resources..."
+createWebHosts # Steps 27-33
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createWebHosts-${dx} 2>/dev/null
+
+print_msg screen "Setting up the NFS Resources..."
+createNFS # Steps 34-78
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createNFS-${dx} 2>/dev/null
+
+get_whip
+
+print_msg screen "Setting up the Public Load Balancer..."
+createPublicLBR # Steps 79-99
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createPublicLBR-${dx} 2>/dev/null
+
+print_msg screen "Setting up the Internal Load Balancer..."
+createInternalLBR # Steps 100-116
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createInternalLBR-${dx} 2>/dev/null
+
+print_msg screen "Setting up the Network Load Balancer..."
+createNetworkLBR # Steps 117-122
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createNetworkLBR-${dx} 2>/dev/null
+
+print_msg screen "Setting up the DNS Server..."
+createDNS # Steps 123-131
+dx=`date +%m-%d-%Y-%H-%M-%S`
+mv $LOGDIR/$LOGFILE $LOGDIR/createDNS-${dx} 2>/dev/null
+
+copyBastionSSH # Step 132
 CONFIGURE_BASTION=$(tr '[:upper:]' '[:lower:]' <<< $CONFIGURE_BASTION)
 if [[ "$CONFIGURE_BASTION" == "true" ]]; then
   print_msg screen "Configuring the Bastion Host..."
-  setupBastion # Steps 130-158
+  setupBastion # Steps 133-163
+  dx=`date +%m-%d-%Y-%H-%M-%S`
+  mv $LOGDIR/$LOGFILE $LOGDIR/setupBastion-${dx} 2>/dev/null
 else
   print_msg screen "The Bastion Host Can be Configured By Manually Running the $DIRNAME/util/oci_setup_bastion.sh script"
 fi
 CONFIGURE_WEBHOSTS=$(tr '[:upper:]' '[:lower:]' <<< $CONFIGURE_WEBHOSTS)
 if [[ "$CONFIGURE_WEBHOSTS" == "true" ]]; then
   print_msg screen "Configuring the Web hosts..."
-  setupWebHosts # Steps 159-199
+  setupWebHosts # Steps 164-207
+  dx=`date +%m-%d-%Y-%H-%M-%S`
+  mv $LOGDIR/$LOGFILE $LOGDIR/setupWebHosts-${dx} 2>/dev/null
 else
   print_msg screen "The Webhosts Host Can be Configured By Manually Running the $DIRNAME/util/oci_setup_webhosts.sh script"
 fi
 CONFIGURE_DATABASE=$(tr '[:upper:]' '[:lower:]' <<< $CONFIGURE_DATABASE)
 if [[ "$CONFIGURE_DATABASE" == "true" ]]; then
   print_msg screen "Configuring the Database..."
-  setupDatabase # Steps 206-234
+  setupDatabase # Steps 208-232
+  dx=`date +%m-%d-%Y-%H-%M-%S`
+  mv $LOGDIR/$LOGFILE $LOGDIR/setupDB-${dx} 2>/dev/null
 else
   print_msg screen "The initial database creation is in progress and may take 1-2 hours to complete."
   print_msg screen "The Database Can be Configured By Manually Running the $DIRNAME/util/oci_setup_database.sh script"

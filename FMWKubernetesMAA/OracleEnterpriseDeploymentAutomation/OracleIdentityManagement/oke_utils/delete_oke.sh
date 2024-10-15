@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of a script that will delete all of the infrastructure components that were
@@ -20,11 +20,13 @@ fi
 DIRNAME=$(dirname $0)
 if test -f $DIRNAME/responsefile/$1 ; then
   source $DIRNAME/responsefile/$1
+  source $DIRNAME/responsefile/.ocipwd
   TEMPLATE=$(basename $DIRNAME/responsefile/$1 | sed 's/.rsp//')
   LOGDIR=$WORKDIR/$TEMPLATE/logs
   LOGFILE=delete_oke.log
   OUTDIR=$WORKDIR/$TEMPLATE/output
   RESOURCE_OCID_FILE=$OUTDIR/$TEMPLATE.ocid
+  INTERIM_PARAM=$OUTDIR/interim_parameters
 else
   echo "Error, Unable to read template file '$DIRNAME/responsefile/$1'"
   exit 1
@@ -37,6 +39,7 @@ fi
 
 source $DIRNAME/common/oci_util_functions.sh
 source $DIRNAME/common/oci_delete_functions.sh
+source $INTERIM_PARAM
 
 echo -e "Getting the OCID of the '$COMPARTMENT_NAME' compartment..."
 get_compartment_ocid

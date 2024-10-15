@@ -1,15 +1,15 @@
-# Copyright (c) 2023,2024 Oracle and/or its affiliates.  All rights reserved.
+# Copyright (c) 2023, 2024, Oracle and/or its affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # This is an example of a responsefile for the create_infra.sh script
+# Please use .ocipwd file to key in the sensitive information.
 #
 # Note: the values for the following variables MUST be unique within the specified compartment otherwise
 # unexpected results may occur.
 #   VCN_DISPLAY_NAME
 #   OKE_CLUSTER_DISPLAY_NAME
 #   BASTION_INSTANCE_DISPLAY_NAME
-#   WEBHOST1_DISPLAY_NAME
-#   WEBHOST2_DISPLAY_NAME
+#   WEBHOST_PREFIX
 #   WEBTIER1_MOUNT_TARGET_DISPLAY_NAME
 #   WEBTIER2_MOUNT_TARGET_DISPLAY_NAME
 #   OKE_MOUNT_TARGET_DISPLAY_NAME
@@ -39,21 +39,11 @@ REGION="<your-region>"
 # The name of the compartment to create all resource in
 COMPARTMENT_NAME="<your-compartment-name>"
 
-# Location of the ssh private & public key file to use for bastion host, web tier hosts, and db host
-# Use full paths only
-SSH_PUB_KEYFILE="<path-to>/id_rsa.pub"
-SSH_ID_KEYFILE="<path-to>/id_rsa"
-
 SSL_COUNTRY="<country>"
 SSL_STATE="<state>"
 SSL_LOCALE="<city>"
 SSL_ORG="<company>"
 SSL_ORGUNIT="<organization>"
-
-# Database configuration
-# Password to use for the database. Note the password requirements are 2 upper, 2 lower, 2 number, and
-# 2 special characters with a minimum of 10 characters.
-DB_PWD="WElcome11##"
 
 # The combination of DB_NAME + DB_SUFFIX needs to be a unique value within the DB_DOMAIN.
 DB_NAME="idmdb"
@@ -62,6 +52,12 @@ DB_SUFFIX="edg"
 # Which init.ora/SGA memory parameters to use for the database? Options include "dev", "small", "medium",
 # and "large". See table 10-3 in the EDG for details.
 DB_MEMORY_CONFIG="dev"
+
+# Configuration of the DNS zone (this section must remain at here within the file)
+DNS_DOMAIN_NAME="example.com"
+DNS_ZONE_TYPE="PRIMARY"
+DNS_SCOPE="PRIVATE"
+DNS_INTERNAL_LBR_DNS_HOSTNAME="loadbalancer.$DNS_DOMAIN_NAME"
 
 # Do you wish to configure/tune the database? Note that this requires the script to poll the status of the database
 # before it can proceed. This will cause the script to wait 2+ hours until the database becomes available. 
@@ -81,12 +77,14 @@ OIRI_SERVICE_NAME="oirisvc.$DNS_DOMAIN_NAME"
 
 # OCI images names to use for the underlying OS instances. Note that they default to use the same as defined for the
 # Bastion host but each can be set separately if desired.
-BASTION_IMAGE_NAME="Oracle-Linux-8.8-2023.10.24-0"
-WEB_IMAGE_NAME="$BASTION_IMAGE_NAME"
-OKE_NODE_POOL_IMAGE_NAME="$BASTION_IMAGE_NAME"
+BASTION_IMAGE_NAME="Oracle-Linux-8"
+
+# OCI Shape from which various Hosts and Nodepools are created.
+DEFAULT_HOST_SHAPE="VM.Standard.E4.Flex"
 
 # Which helm version to download and install to the bastion node
-HELM_VER="3.11.1"
+# Please pass "latest" for using the lastest version available.
+HELM_VER="3.15.4"
 
 # OS user and group to use for the OHS software on the Webhosts
 OHS_SOFTWARE_OWNER="opc"
@@ -115,6 +113,9 @@ CONFIGURE_WEBHOSTS="true"
 # Do not change the OCI_CLI_REGION unless you know what you are doing!
 export OCI_CLI_REGION=$REGION
 
+# Please choose the Cluster Type - STD / ENH
+OKE_CLUSTER_TYPE="STD"
+
 # Port numbers configuration
 OAM_ADMIN_SERVICE_PORT="30701"
 OAM_POLICY_SERVICE_PORT="30510"
@@ -139,12 +140,6 @@ OKE_NODE_SUBNET_CIDR="10.0.10.0/24"
 OKE_API_SUBNET_CIDR="10.0.0.0/28"
 OKE_SVCLB_SUBNET_CIDR="10.0.20.0/24"
 
-# Configuration of the DNS zone (this section must remain at here within the file)
-DNS_DOMAIN_NAME="example.com"
-DNS_ZONE_TYPE="PRIMARY"
-DNS_SCOPE="PRIVATE"
-DNS_INTERNAL_LBR_DNS_HOSTNAME="loadbalancer.$DNS_DOMAIN_NAME"
-
 # VCN configuration
 VCN_DISPLAY_NAME="idm-oke-vcn"
 VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME="oke-private-rt"
@@ -156,7 +151,7 @@ VCN_SERVICE_GATEWAY_DISPLAY_NAME="oke-sgw"
 
 # OKE configuration
 OKE_CLUSTER_DISPLAY_NAME="oke-cluster"
-OKE_CLUSTER_VERSION="v1.27.2"
+OKE_CLUSTER_VERSION="v1.29.1"
 OKE_MOUNT_TARGET_AD="ad1"
 OKE_PODS_CIDR="10.244.0.0/16"
 OKE_SERVICES_CIDR="10.96.0.0/16"
@@ -172,7 +167,7 @@ OKE_SVCLBR_DNS_LABEL="svclbdns"
 OKE_SVCLBR_SECLIST_DISPLAY_NAME="oke-svclb-seclist"
 OKE_NODE_POOL_DISPLAY_NAME="pool1"
 OKE_NODE_POOL_SIZE="3"
-OKE_NODE_POOL_SHAPE="VM.Standard.E4.Flex"
+OKE_NODE_POOL_SHAPE="$DEFAULT_HOST_SHAPE"
 OKE_NODE_POOL_SHAPE_CONFIG="'{\"memoryInGBs\": 32.0, \"ocpus\": 2.0}'"
 
 # Configuration of bastion host
@@ -184,7 +179,7 @@ BASTION_SUBNET_DISPLAY_NAME="bastion-subnet"
 BASTION_DNS_LABEL="bastionsubnet"
 BASTION_INSTANCE_DISPLAY_NAME="idm-bastion"
 BASTION_AD="ad1"
-BASTION_INSTANCE_SHAPE="VM.Standard.E4.Flex"
+BASTION_INSTANCE_SHAPE="$DEFAULT_HOST_SHAPE"
 BASTION_SHAPE_CONFIG="'{\"memoryInGBs\": 16.0, \"ocpus\": 1.0, \"baselineOcpuUtilization\": \"BASELINE_1_8\"}'"
 BASTION_PUBLIC_IP="true"
 BASTION_HOSTNAME="idm-bastion"
@@ -192,32 +187,26 @@ BASTION_ELK_PORT=31920
 BASTION_KIBANA_PORT=31800
 
 # Configuration of OHS and WebTier
+WEBHOST_SERVERS=2         # Minimum of 2. Please increase them as per your requirement.
+WEBHOST_PREFIX="webhost"
+WEBHOST_SHAPE="$DEFAULT_HOST_SHAPE"
+WEBHOST_SHAPE_CONFIG="'{\"memoryInGBs\": 16.0, \"ocpus\": 1.0, \"baselineOcpuUtilization\": \"BASELINE_1_8\"}'"
+WEBHOST_PUBLIC_IP="false"
 OHS_SECLIST_DISPLAY_NAME="ohs-seclist"
 WEB_PUBLIC_SECLIST_DISPLAY_NAME="web-public-seclist"
 WEB_ROUTE_TABLE_DISPLAY_NAME="web-route-table"
 WEB_SUBNET_DISPLAY_NAME="web-subnet"
 WEB_DNS_LABEL="websubnet"
 WEB_PROHIBIT_PUBLIC_IP="true"
-WEBHOST1_DISPLAY_NAME="webhost1"
 WEBHOST1_AD="ad1"
-WEBHOST1_SHAPE="VM.Standard.E4.Flex"
-WEBHOST1_SHAPE_CONFIG="'{\"memoryInGBs\": 16.0, \"ocpus\": 1.0, \"baselineOcpuUtilization\": \"BASELINE_1_8\"}'"
-WEBHOST1_PUBLIC_IP="false"
-WEBHOST1_HOSTNAME="webhost1.$DNS_DOMAIN_NAME"
-WEBHOST1_HOSTNAME_LABEL="webhost1"
 WEBHOST1_PRODUCTS_PATH="/u02/private/oracle/products"
 WEBHOST1_CONFIG_PATH="/u02/private/oracle/config"
-WEBHOST2_DISPLAY_NAME="webhost2"
 WEBHOST2_AD="ad2"
-WEBHOST2_SHAPE="VM.Standard.E4.Flex"
-WEBHOST2_SHAPE_CONFIG="'{\"memoryInGBs\": 16.0, \"ocpus\": 1.0, \"baselineOcpuUtilization\": \"BASELINE_1_8\"}'"
-WEBHOST2_PUBLIC_IP="false"
-WEBHOST2_HOSTNAME="webhost2.$DNS_DOMAIN_NAME"
-WEBHOST2_HOSTNAME_LABEL="webhost2"
 WEBHOST2_PRODUCTS_PATH="/u02/private/oracle/products"
 WEBHOST2_CONFIG_PATH="/u02/private/oracle/config"
 
 # Configuration of file systems and mount targets
+NFS_IAMPV_EXPORT_PATH="/exports/IAMPVS"
 WEBHOST1_MOUNT_TARGET_DISPLAY_NAME="webhost1-mt"
 WEBHOST2_MOUNT_TARGET_DISPLAY_NAME="webhost2-mt"
 OKE_MOUNT_TARGET_DISPLAY_NAME="oke-mt"
@@ -231,40 +220,40 @@ FS_WEBCONFIG1_PATH="/exports/IAMCONFIG/webconfig1"
 FS_WEBCONFIG2_DISPLAY_NAME="webconfig2"
 FS_WEBCONFIG2_PATH="/exports/IAMCONFIG/webconfig2"
 FS_OAMPV_DISPLAY_NAME="oampv"
-FS_OAMPV_NFS_PATH="/exports/IAMPVS/oampv"
+FS_OAMPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oampv"
 FS_OAMPV_LOCAL_MOUNTPOINT="/nfs_volumes/oampv"
 FS_OIGPV_DISPLAY_NAME="oigpv"
-FS_OIGPV_NFS_PATH="/exports/IAMPVS/oigpv"
+FS_OIGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oigpv"
 FS_OIGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oigpv"
 FS_OUDPV_DISPLAY_NAME="oudpv"
-FS_OUDPV_NFS_PATH="/exports/IAMPVS/oudpv"
+FS_OUDPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oudpv"
 FS_OUDPV_LOCAL_MOUNTPOINT="/nfs_volumes/oudpv"
 FS_OUDCONFIGPV_DISPLAY_NAME="oudconfigpv"
-FS_OUDCONFIGPV_NFS_PATH="/exports/IAMPVS/oudconfigpv"
+FS_OUDCONFIGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oudconfigpv"
 FS_OUDCONFIGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oudconfigpv"
 FS_OUDSMPV_DISPLAY_NAME="oudsmpv"
-FS_OUDSMPV_NFS_PATH="/exports/IAMPVS/oudsmpv"
+FS_OUDSMPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oudsmpv"
 FS_OUDSMPV_LOCAL_MOUNTPOINT="/nfs_volumes/oudsmpv"
 FS_OIRIPV_DISPLAY_NAME="oiripv"
-FS_OIRIPV_NFS_PATH="/exports/IAMPVS/oiripv"
+FS_OIRIPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oiripv"
 FS_OIRIPV_LOCAL_MOUNTPOINT="/nfs_volumes/oiripv"
 FS_DINGPV_DISPLAY_NAME="dingpv"
-FS_DINGPV_NFS_PATH="/exports/IAMPVS/dingpv"
+FS_DINGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/dingpv"
 FS_DINGPV_LOCAL_MOUNTPOINT="/nfs_volumes/dingpv"
 FS_WORKPV_DISPLAY_NAME="workpv"
-FS_WORKPV_NFS_PATH="/exports/IAMPVS/workpv"
+FS_WORKPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/workpv"
 FS_WORKPV_LOCAL_MOUNTPOINT="/nfs_volumes/workpv"
 FS_OAACONFIGPV_DISPLAY_NAME="oaaconfigpv"
-FS_OAACONFIGPV_NFS_PATH="/exports/IAMPVS/oaaconfigpv"
+FS_OAACONFIGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaaconfigpv"
 FS_OAACONFIGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaaconfigpv"
 FS_OAACREDPV_DISPLAY_NAME="oaacredpv"
-FS_OAACREDPV_NFS_PATH="/exports/IAMPVS/oaacredpv"
+FS_OAACREDPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaacredpv"
 FS_OAACREDPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaacredpv"
 FS_OAAVAULTPV_DISPLAY_NAME="oaavaultpv"
-FS_OAAVAULTPV_NFS_PATH="/exports/IAMPVS/oaavaultpv"
+FS_OAAVAULTPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaavaultpv"
 FS_OAAVAULTPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaavaultpv"
 FS_OAALOGPV_DISPLAY_NAME="oaalogpv"
-FS_OAALOGPV_NFS_PATH="/exports/IAMPVS/oaalogpv"
+FS_OAALOGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaalogpv"
 FS_OAALOGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaalogpv"
 FS_IMAGES_DISPLAY_NAME="images"
 FS_IMAGES_NFS_PATH="/exports/IMAGES/images"
@@ -311,7 +300,7 @@ PUBLIC_LBR_PROV_LISTENER_DISPLAY_NAME="prov"
 PUBLIC_LBR_OHS_SERVERS_BS_NAME="ohs_servers"
 PUBLIC_LBR_OHS_SERVERS_BS_POLICY="WEIGHTED_ROUND_ROBIN"
 PUBLIC_LBR_OHS_SERVERS_BS_PROTOCOL="HTTP"
-PUBLIC_LBR_OHS_SERVERS_BS_URI_PATH="/"
+PUBLIC_LBR_OHS_SERVERS_BS_URI_PATH="/health-check.html"
 
 # Configuration of internal load balancer
 INT_LBR_ACCESS_LOG_DISPLAY_NAME="internal_loadbalancer_access"
@@ -339,7 +328,7 @@ INT_LBR_PROV_LISTENER_DISPLAY_NAME=$PUBLIC_LBR_PROV_DISPLAY_NAME
 INT_LBR_OHS_SERVERS_BS_NAME="ohs_servers"
 INT_LBR_OHS_SERVERS_BS_POLICY="WEIGHTED_ROUND_ROBIN"
 INT_LBR_OHS_SERVERS_BS_PROTOCOL="HTTP"
-INT_LBR_OHS_SERVERS_BS_URI_PATH="/"
+INT_LBR_OHS_SERVERS_BS_URI_PATH="/health-check.html"
 
 # Configuration of the network load balancer
 K8_LBR_DISPLAY_NAME="k8workers"
@@ -366,6 +355,12 @@ DB_DISPLAY_NAME="Identity-Management-Database"
 DB_INITIAL_STORAGE="256"
 DB_LICENSE="BRING_YOUR_OWN_LICENSE"
 DB_NODE_COUNT="2"
-DB_SHAPE="VM.Standard.E4.Flex"
+DB_SHAPE="$DEFAULT_HOST_SHAPE"
 DB_STORAGE_MGMT="ASM"
 DB_TIMEZONE="UTC"
+
+# Freeform TAGS can be mentioned one after the other with OCI_TAGS="KEY:Value"
+# Please note ": are not allowed to be part of either the Key or its Value for this implementation.
+OCI_TAGS="CreatedBy:ABCD WXYZ"
+OCI_TAGS="ProjectNo:PR1234"
+
