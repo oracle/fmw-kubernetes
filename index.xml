@@ -409,7 +409,7 @@ Add the Helm repos (if not added) Add following Helm repos</description>
       
       <guid>/fmw-kubernetes/soa-domains/patch_and_upgrade/upgrade-operator-release/</guid>
       <description>To upgrade the WebLogic Kubernetes operator, use the helm upgrade command with new Helm chart and operator image. See the steps here to pull the operator image and set up the Oracle SOA Suite repository that contains the operator chart. To upgrade the operator run the following command:
-$ cd ${WORKDIR} $ helm upgrade \ --reuse-values \ --set version=4.2.4 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-kubernetes-operator \ weblogic-operator/weblogic-operator  Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.</description>
+$ cd ${WORKDIR} $ helm upgrade \ --reuse-values \ --version 4.2.4 \ --namespace weblogic-operator-namespace \ --wait \ weblogic-kubernetes-operator \ weblogic-operator/weblogic-operator  Note: When the WebLogic Kubernetes Operator is upgraded from release version 3.</description>
     </item>
     
     <item>
@@ -823,7 +823,7 @@ If you do not want to expose additional ports and perform WLST administration op
       
       <guid>/fmw-kubernetes/idm-products/oud/patch-and-upgrade/</guid>
       <description>In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from.
- Upgrading to July 24 (24.3.1) from April 23 (23.2.1) or later Upgrading to July 24 (24.3.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to July 24 (24.3.1) from July 22 (22.3.1) Upgrading to July 24 (24.3.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
+ Upgrading to October 24 (24.4.1) from April 23 (23.2.1) or later Upgrading to October 24 (24.4.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to October 24 (24.4.1) from July 22 (22.3.1) Upgrading to October 24 (24.4.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
     </item>
     
     <item>
@@ -907,6 +907,19 @@ This document shows the basic operations for starting, stopping and scaling serv
       <description>View existing OIG servers Starting/Scaling up OIG Managed servers Stopping/Scaling down OIG Managed servers Stopping and starting the Administration Server and Managed Servers Domain lifecycle sample scripts  As OIG domains use the WebLogic Kubernetes Operator, domain lifecyle operations are managed using the WebLogic Kubernetes Operator itself.
 This document shows the basic operations for starting, stopping and scaling servers in the OIG domain.
 For more detailed information refer to Domain Life Cycle in the WebLogic Kubernetes Operator documentation.</description>
+    </item>
+    
+    <item>
+      <title>a. Domain Lifecycle</title>
+      <link>/fmw-kubernetes/ohs/manage-ohs-containers/domain-lifecycle/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/ohs/manage-ohs-containers/domain-lifecycle/</guid>
+      <description>View existing OHS servers Starting/Scaling up OHS servers Stopping/Scaling down OHS servers  This document shows the basic operations for scaling servers in OHS containers.
+View existing OHS servers The default OHS deployment starts one OHS server (assuming replicas: 1 in ohs.yaml).
+To view the running OHS servers, run the following command:
+$ kubectl get pods -n &amp;lt;namespace&amp;gt; For example:
+$ kubectl get pods -n ohsns The output should look similar to the following:</description>
     </item>
     
     <item>
@@ -1050,6 +1063,21 @@ $ cp $HOME/Downloads/Exchange-12.2.1.3.0.zip /scratch/OIGK8S/stage/ $ cd /scratc
     </item>
     
     <item>
+      <title>b. Modifying the OHS container</title>
+      <link>/fmw-kubernetes/ohs/manage-ohs-containers/modfy-ohs-config/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/ohs/manage-ohs-containers/modfy-ohs-config/</guid>
+      <description>This document shows how to modify the OHS configuration after the OHS container is deployed.
+Modifying the deployed OHS container configuration can be achieved in the following ways:
+a. Editing the configuration files in $MYOHSFILES/ohsConfig.
+b. Running kubectl edit configmap.
+Editing the configuration files in the $MYOHSFILES/ohsConfig To edit the configuration files:
+  Edit the required files in the $MYOHSFILES/ohsConfig directories.
+  Delete the configmaps for any files you have changed.</description>
+    </item>
+    
+    <item>
       <title>b. Patch an image</title>
       <link>/fmw-kubernetes/idm-products/oam/patch-and-upgrade/patch-an-image/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1146,6 +1174,19 @@ Install Prometheus and Grafana Create a Kubernetes namespace   Create a Kubernet
       <guid>/fmw-kubernetes/idm-products/oudsm/manage-oudsm-containers/monitoring-oudsm-instance/</guid>
       <description>Introduction Install Prometheus and Grafana  Create a Kubernetes namespace Add Prometheus and Grafana Helm repositories Install the Prometheus operator View Prometheus and Grafana Objects Created Add the NodePort   Verify Using Grafana GUI  Introduction After the Oracle Unified Directory Services Manager instance is set up you can monitor it using Prometheus and Grafana.
 Install Prometheus and Grafana Create a Kubernetes namespace   Create a Kubernetes namespace to provide a scope for Prometheus and Grafana objects such as pods and services that you create in the environment.</description>
+    </item>
+    
+    <item>
+      <title>c. Delete the OHS container</title>
+      <link>/fmw-kubernetes/ohs/manage-ohs-containers/delete-ohs-container/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/ohs/manage-ohs-containers/delete-ohs-container/</guid>
+      <description>The following commands show how to remove the OHS container, OHS nodeport service, configmaps, secrets, and namespace:
+  Run the following command to delete the OHS nodeport service:
+$ kubectl delete -f $MYOHSFILES/ohs_service.yaml   Run the following command to delete the OHS container:
+$ kubectl delete -f $MYOHSFILES/ohs.yaml   Run the following commands to delete any configmaps you have created, for example:
+$ kubectl delete cm -n ohsns ohs-config $ kubectl delete cm -n ohsns ohs-httpd $ kubectl delete cm -n ohsns ohs-htdocs $ kubectl delete cm -n ohsns ohs-myapp $ kubectl delete cm -n ohsns webgate-config $ kubectl delete cm -n ohsns webgate-wallet $ kubectl delete cm -n ohsns ohs-wallet ``</description>
     </item>
     
     <item>
