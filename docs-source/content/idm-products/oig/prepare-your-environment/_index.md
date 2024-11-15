@@ -504,7 +504,7 @@ Before following the steps in this section, make sure that the database and list
    
    `<service_name>` is the database service name
    
-   `<rcu_schema_prefix>` is the RCU schema prefix you want to set
+   `<rcu_schema_prefix>` is the RCU schema prefix you want to set. **Note**: The RCU schema prefix can only contain alpha-numeric characters, and contain no spaces, or other special characters. It must begin with a letter and be no longer than 8 characters.
    
    `<rcu_schema_pwd>` is the password you want to set for the `<rcu_schema_prefix>`
 	

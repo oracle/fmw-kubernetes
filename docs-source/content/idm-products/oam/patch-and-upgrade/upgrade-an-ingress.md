@@ -65,14 +65,14 @@ To upgrade the existing ingress rules, follow the steps below:
    oam-nginx       oamns           1               <DATE>      deployed        ingress-per-domain-0.1.0    1.0
    ```
 
-1. Edit the `$WORKDIR/kubernetes/charts/ingress-per-domain/values.yaml` and change the `domainUID` parameter to match your domainUID, for example `domainUID: accessdomain`. For example:
+1. Edit the `$WORKDIR/kubernetes/charts/ingress-per-domain/values.yaml` and change the parameters to the same as you had when you initially configured the ingress. See [Prepare the values.yaml for the ingress](../../configure-ingress/#prepare-the-values.yaml-for-the-ingress). For example:
 
    ```
    # Load balancer type. Supported values are: NGINX
    type: NGINX
 
    # SSL configuration Type. Supported Values are : NONSSL,SSL
-   sslType: SSL
+   sslType: NONSSL
 
    # domainType. Supported values are: oam
    domainType: oam
@@ -162,8 +162,7 @@ To upgrade the existing ingress rules, follow the steps below:
                  /oam/services/rest/access/api   accessdomain-cluster-oam-cluster:14100 (10.244.1.225:14100)
                  /access                         accessdomain-cluster-policy-cluster:15100 (10.244.1.226:15100)
                  /                               accessdomain-cluster-oam-cluster:14100 (10.244.1.225:14100)
-   Annotations:  kubernetes.io/ingress.class: nginx
-                 meta.helm.sh/release-name: oam-nginx
+   Annotations:  meta.helm.sh/release-name: oam-nginx
                  meta.helm.sh/release-namespace: oamns
                  nginx.ingress.kubernetes.io/configuration-snippet:
                    more_clear_input_headers "WL-Proxy-Client-IP" "WL-Proxy-SSL";
