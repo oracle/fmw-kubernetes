@@ -1,0 +1,25 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example file to create an OHS NodePort Service
+#
+kind: Service
+apiVersion: v1
+metadata:
+  name: ohs-domain-nodeport
+  namespace: <NAMESPACE>
+spec:
+  selector:
+    oracle: ohs
+  type: NodePort
+  ports:
+    - name: http
+      targetPort: 7777
+      port: 7777
+      nodePort: 31777
+      protocol: TCP
+    - name: https
+      targetPort: 4443
+      port: 4443
+      nodePort: 31443
+      protocol: TCP
