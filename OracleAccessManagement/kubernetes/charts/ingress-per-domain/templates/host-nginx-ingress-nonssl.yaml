@@ -118,9 +118,9 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}'
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
             port:
-              number: {{ .Values.wlsDomain.oamManagedServerPort }}
+              number: {{ .Values.wlsDomain.adminServerPort }}
       - path: /access
         pathType: ImplementationSpecific
         backend:
