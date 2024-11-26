@@ -69,33 +69,33 @@ To set up the WebLogic Image Tool:
  
 1. Execute the following commands to set up the WebLogic Image Tool:
 
-    ```bash
-    $ cd <workdir>/imagetool-setup/imagetool/bin
-    $ source setup.sh
-    ```
+   ```bash
+   $ cd <workdir>/imagetool-setup/imagetool/bin
+   $ source setup.sh
+   ```
 	
-	For example:
+   For example:
 	
-    ```bash
-    $ cd /scratch/imagetool-setup/imagetool/bin
-    $ source setup.sh
-    ```
+   ```bash
+   $ cd /scratch/imagetool-setup/imagetool/bin
+   $ source setup.sh
+   ```
 
 ##### Validate setup
 To validate the setup of the WebLogic Image Tool:
 
 1. Enter the following command to retrieve the version of the WebLogic Image Tool:
 
-    ``` bash
-    $ imagetool --version
-    ```
+   ``` bash
+   $ imagetool --version
+   ```
 
 1. Enter `imagetool` then press the Tab key to display the available `imagetool` commands:
 
-    ``` bash
-    $ imagetool <TAB>
-    cache   create  help    rebase  update
-    ```
+   ``` bash
+   $ imagetool <TAB>
+   cache   create  help    rebase  update
+   ```
 
 ##### WebLogic Image Tool build directory
 
@@ -155,14 +155,13 @@ You must download the required Oracle HTTP Server installation binaries and patc
 The installation binaries and patches required are:
 
 * Oracle Web Tier  12.2.1.4.0
-	 * V983369-01.zip
+   * V983369-01.zip
 
 * Oracle JDK v8
-    * jdk-8uXXX-linux-x64.tar.gz
+   * jdk-8uXXX-linux-x64.tar.gz
 	 
 * Oracle Database 19c Upgrade for FMW 12.2.1.4.0 (OID/OHS/OTD homes only) 
-	
-	 * Patch 34761383 DB Client 19c Upgrade for FMW 12.2.1.4.0 (OID/OHS/OTD homes only)
+   * Patch 34761383 DB Client 19c Upgrade for FMW 12.2.1.4.0 (OID/OHS/OTD homes only)
 	
 ##### Update required build files
 
@@ -190,17 +189,17 @@ The following files are used for creating the image:
    COPY --chown=oracle:root files/create-sa-ohs-domain.py files/configureWLSProxyPlugin.sh files/mod_wl_ohs.conf.sample files/provisionOHS.sh files/start-ohs.py files/stop-ohs.py files/helloWorld.html /u01/oracle/
    WORKDIR ${ORACLE_HOME}
    CMD ["/u01/oracle/provisionOHS.sh"]
-	```
+   ```
 	
-	**Note:** `oracle:root` is used for OpenShift which has more stringent policies.  Users who do not want those permissions can change to the permissions they require.
+   **Note:** `oracle:root` is used for OpenShift which has more stringent policies.  Users who do not want those permissions can change to the permissions they require.
 
 
 1. Create the `<workdir>/imagetool-setup/docker-images/OracleHTTPServer/buildArgs` file as follows and change the following:
 
    + `<workdir>` to your working directory, for example `/scratch/`
-	+ `%BUILDTAG%` to the tag you want create for the image, for example `oracle/ohs:12.2.1.4-db19`
-	+ `%JDK_VERSION%` to the version of your JDK, for example `8uXXX`
-	+ `<user>` to your [My Oracle Support](https://support.oracle.com) username
+   + `%BUILDTAG%` to the tag you want create for the image, for example `oracle/ohs:12.2.1.4-db19`
+   + `%JDK_VERSION%` to the version of your JDK, for example `8uXXX`
+   + `<user>` to your [My Oracle Support](https://support.oracle.com) username
    
    ```
    create
@@ -235,7 +234,7 @@ The following files are used for creating the image:
    ```
 
 	
-	Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
+   Refer to [this page](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) for the complete list of options available with the WebLogic Image Tool `create` command.
    
 ##### Create the image
 
@@ -284,14 +283,14 @@ The following files are used for creating the image:
 1. If you want to see what patches were installed, you can run:
 
    ```
-	imagetool inspect --image=<REPOSITORY>:<TAG> --patches
-	```
+   $ imagetool inspect --image=<REPOSITORY>:<TAG> --patches
+   ```
 	
-	For example:
+   For example:
 	
-	```
-	imagetool inspect --image=oracle/ohs:12.2.1.4-db19 --patches
-	```
+   ```
+   $ imagetool inspect --image=oracle/ohs:12.2.1.4-db19 --patches
+   ```
 	
 1. Run the following command to save the container image to a tar file:
 

@@ -23,7 +23,7 @@ To edit the configuration files:
    ```
    $ kubectl delete cm ohs-httpd -n ohsns
    $ kubectl delete cm ohs-config -n ohsns
-	```
+   ```
 	
 1. Recreate the required configmaps:
 	
@@ -46,6 +46,7 @@ To edit the configuration files:
    ```
 	
    The output will look similar to the following: 
+  
    ```
    NAME                         READY   STATUS    RESTARTS   AGE
    ohs-domain-d5b648bc5-vkp4s   1/1     Running   0          55s
@@ -55,19 +56,19 @@ To edit the configuration files:
 
    ```
    $ kubectl delete pod <pod> -n <namespace>
-	```
+   ```
 	
-	For example:
+   For example:
 	
-	```
+   ```
    $ kubectl delete pod ohs-domain-d5b648bc5-vkp4s -n ohsns
-	```
+   ```
 	
-	The output will look similar to the following:
+   The output will look similar to the following:
 	
-	```
-	pod "ohs-domain-d5b648bc5-vkp4s" deleted
-	```
+   ```
+   pod "ohs-domain-d5b648bc5-vkp4s" deleted
+   ```
 
 1. Run the following command to make sure the pod has restarted:
 
@@ -113,7 +114,7 @@ To edit the configuration files:
    $ kubectl get pods -n <namespace>
    ```
 	
-	For example:
+   For example:
 
    ```bash
    $ kubectl get pods -n ohsns
@@ -130,19 +131,19 @@ To edit the configuration files:
 
    ```
    $ kubectl delete pod <pod> -n <namespace>
-	```
+   ```
 	
-	For example:
+   For example:
 	
    ```
    $ kubectl delete pod ohs-domain-d5b648bc5-vkp4s -n ohsns
-	```
+   ```
 	
-	The output will look similar to the following:
+   The output will look similar to the following:
 	
-	```
-	pod "ohs-domain-d5b648bc5-vkp4s" deleted
-	```
+   ```
+   pod "ohs-domain-d5b648bc5-vkp4s" deleted
+   ```
 
 1. Run the following command to make sure the pod has restarted:
 

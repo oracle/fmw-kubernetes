@@ -28,14 +28,14 @@ The following commands show how to remove the OHS container, OHS nodeport servic
    $ kubectl delete cm -n ohsns webgate-config
    $ kubectl delete cm -n ohsns webgate-wallet
    $ kubectl delete cm -n ohsns ohs-wallet
-	```
+   ```
 	
 1. Run the following command to delete the secrets:
 
    ```
-	$ kubectl delete secret regcred -n ohsns
-	$ kubectl delete secret ohs-secret -n ohsns
-	```
+   $ kubectl delete secret regcred -n ohsns
+   $ kubectl delete secret ohs-secret -n ohsns
+   ```
 	
 1. Run the following command to delete the namespace:
 
