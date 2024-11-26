@@ -24,13 +24,13 @@ Check that all the nodes in the Kubernetes cluster are running.
 
 1. Run the following command on the master node to check the cluster and worker nodes are running:
     
-	```bash
-    $ kubectl get nodes,pods -n kube-system
-    ```
+   ```bash
+   $ kubectl get nodes,pods -n kube-system
+   ```
 	
     The output will look similar to the following:
 
-	```
+   ```
     NAME                  STATUS   ROLES                  AGE   VERSION
     node/worker-node1     Ready    <none>                 17h   v1.28.3+3.el8
     node/worker-node2     Ready    <none>                 17h   v1.28.3+3.el8
@@ -49,7 +49,7 @@ Check that all the nodes in the Kubernetes cluster are running.
     pod/kube-proxy-82vvj                     1/1     Running   0          17h
     pod/kube-proxy-nrgw9                     1/1     Running   0          23h
     pod/kube-scheduler-master                1/1     Running   0          21h
-    ```
+   ```
 	
 ## Obtain the OHS container image
 
@@ -118,7 +118,6 @@ To deploy OHS you need to set up the code repository which provides sample deplo
 
    ```bash
    $ export SCRIPTDIR=<ohsscripts>/fmw-kubernetes/OracleHTTPServer/kubernetes
-
    ```
 
    For example:
@@ -143,15 +142,15 @@ The steps below assume familiarity with on premises Oracle HTTP Server in terms 
 
 1. Make a directory to store your OHS configuration files:
    
-	```
-	mkdir -p <myohsfiles>
-	```
+   ```
+   mkdir -p <myohsfiles>
+   ```
    
-	For example:
+   For example:
 	
-	```
-	mkdir -p /OHSK8S/myOHSfiles
-	```
+   ```
+   mkdir -p /OHSK8S/myOHSfiles
+   ```
 	
 1. Set the `$MYOHSFILES` environment variable as follows:
 
@@ -159,7 +158,7 @@ The steps below assume familiarity with on premises Oracle HTTP Server in terms 
    $ export MYOHSFILES=<myohsfiles>
    ```
 	
-	For example:
+   For example:
 
    ```bash
    $ export MYOHSFILES=/OHSK8S/myOHSfiles
@@ -181,21 +180,21 @@ The steps below assume familiarity with on premises Oracle HTTP Server in terms 
    + `httpconf` - contains any configuration files you want to configure that are usually found in the `$OHS_DOMAIN_HOME/config/fmwconfig/components/OHS/ohs1` directory. For example `httpd.conf`, `ssl.conf` and `mod_wl_ohs.conf`. The `webgate.conf` does not need to be copied as this will get generated automatically if deploying with WebGate.
    + `moduleconf` - contains any additional config files, for example virtual host configuration files that you want to copy to the `$OHS_DOMAIN_HOME/config/fmwconfig/components/OHS/ohs1/moduleconf` folder in the container.
    + `htdocs` - contains any html files, or similar, that you want to copy to the `$OHS_DOMAIN_HOME/config/fmwconfig/components/OHS/ohs1/htdocs` folder in the container.
-	+ `htdocs/myapp` - `myapp` is an example directory name that exists under `htdocs`. If you need to copy any directories under `htdocs` above, then create the directories you require.
+   + `htdocs/myapp` - `myapp` is an example directory name that exists under `htdocs`. If you need to copy any directories under `htdocs` above, then create the directories you require.
    + `webgate/config` - contains the extracted WebGate configuration. For example, when you download the `<agent>.zip` file from Oracle Access Management Console, you extract the zip file into this directory. If you are accessing OAM URL's via SSL, this directory must also contain the Certificate Authority `cacert.pem` file that signed the certificate of the OAM entry point. For example, if you will access OAM via a HTTPS Load Balancer URL, then `cacert.pem` is the CA certificate that signed the load balancer certificate.
    + `webgate/config/wallet` - contains the contents of the wallet directory extracted from the `<agent.zip>` file.
-	+ `wallet/mywallet` - If OHS is to be configured to use SSL, this directory contains the preconfigured OHS Wallet file `cwallet.sso`.
+   + `wallet/mywallet` - If OHS is to be configured to use SSL, this directory contains the preconfigured OHS Wallet file `cwallet.sso`.
 	
 	
-	**Note**: Administrators should be aware of the following if configuring OHS for SSL:
+   **Note**: Administrators should be aware of the following if configuring OHS for SSL:
 	
-	+ The wallet must contain a valid certificate.
-	+ Only auto-login-only wallets (`cwallet.sso` only) are supported. For example, wallets created with `orapki` using the `-auto-login-only` option. Password protected wallets (`ewallet.p12`) are not supported.
-	+ You must configure `ssl.conf` in `$WORKDIR/ohsConfig/httpconf` and set the directory for `SSLWallet` to: `SSLWallet "${ORACLE_INSTANCE}/config/fmwconfig/components/${COMPONENT_TYPE}/instances/${COMPONENT_NAME}/keystores/wallet/mywallet"`. 
+   + The wallet must contain a valid certificate.
+   + Only auto-login-only wallets (`cwallet.sso` only) are supported. For example, wallets created with `orapki` using the `-auto-login-only` option. Password protected wallets (`ewallet.p12`) are not supported.
+   + You must configure `ssl.conf` in `$WORKDIR/ohsConfig/httpconf` and set the directory for `SSLWallet` to: `SSLWallet "${ORACLE_INSTANCE}/config/fmwconfig/components/${COMPONENT_TYPE}/instances/${COMPONENT_NAME}/keystores/wallet/mywallet"`. 
 			
    An example file system may contain the following:
     
-	```
+   ```
    ls -R $MYOHSFILES/ohsConfig
    /OHSK8S/myOHSfiles/ohsConfig:
    htdocs  httpconf  moduleconf  wallet  webgate
@@ -227,7 +226,7 @@ The steps below assume familiarity with on premises Oracle HTTP Server in terms 
    /OHSK8S/myOHSfiles/ohsConfig/webgate/config/wallet:
    cwallet.sso  cwallet.sso.lck
 
-	```
+   ```
 
 	
 ### Set WLDNSRefreshInterval and WebLogicCluster directives
@@ -263,8 +262,7 @@ For example, if you were connecting to the WebLogic Server Administration Server
       WLProxySSLPassThrough ON
       WLCookieName OAMJSESSIONID
       WebLogicCluster APPHOST1.example.com:7001,APPHOST2.example.com:7001
-    </Location>
-    
+    </Location>   
    ```
 
 
@@ -367,18 +365,18 @@ namespace/ohsns created
 
 1. Run the following commands to create the required configmaps for the OHS directories and files created in [Prepare your OHS configuration files](#prepare-your-ohs-configuration-files).
 
-	```
-	cd $MYOHSFILES
+   ```
+   cd $MYOHSFILES
    kubectl create cm -n ohsns ohs-config --from-file=ohsConfig/moduleconf
    kubectl create cm -n ohsns ohs-httpd --from-file=ohsConfig/httpconf
    kubectl create cm -n ohsns ohs-htdocs --from-file=ohsConfig/htdocs
-	kubectl create cm -n ohsns ohs-myapp --from-file=ohsConfig/htdocs/myapp
+   kubectl create cm -n ohsns ohs-myapp --from-file=ohsConfig/htdocs/myapp
    kubectl create cm -n ohsns webgate-config --from-file=ohsConfig/webgate/config
    kubectl create cm -n ohsns webgate-wallet --from-file=ohsConfig/webgate/config/wallet
    kubectl create cm -n ohsns ohs-wallet --from-file=ohsConfig/wallet/mywallet
-	```
+   ```
 	
-	**Note**: Only create the configmaps for directories that you want to copy to OHS.
+   **Note**: Only create the configmaps for directories that you want to copy to OHS.
 	
 ### Create a Kubernetes secret for the container registry
 
@@ -389,22 +387,22 @@ If you are not using a container registry and have loaded the images on each of 
 1. Run the following command to create the secret:
 
    ```
-	$ kubectl create secret docker-registry "regcred" --docker-server=<CONTAINER_REGISTRY> \
+   $ kubectl create secret docker-registry "regcred" --docker-server=<CONTAINER_REGISTRY> \
    --docker-username="<USER_NAME>" \
    --docker-password=<PASSWORD> --docker-email=<EMAIL_ID> \
    --namespace=<domain_namespace>
-	```
+   ```
 	
-	For example, if using Oracle Container Registry:
+   For example, if using Oracle Container Registry:
 	
-	```
-	$ kubectl create secret docker-registry "regcred" --docker-server=container-registry.oracle.com \
+   ```
+   $ kubectl create secret docker-registry "regcred" --docker-server=container-registry.oracle.com \
    --docker-username="user@example.com" \
    --docker-password=password --docker-email=user@example.com \
    --namespace=ohsns
-	```
+   ```
 	
-	Replace `<USER_NAME>` and `<PASSWORD>` with the credentials for the registry with the following caveats:
+   Replace `<USER_NAME>` and `<PASSWORD>` with the credentials for the registry with the following caveats:
 
    If using Oracle Container Registry to pull the OHS container image, this is the username and password used to login to Oracle Container Registry. Before you can use this image you must login to [Oracle Container Registry](https://container-registry.oracle.com/) , navigate to `Middleware` > `ohs_cpu` and accept the license agreement.
 
@@ -413,8 +411,8 @@ If you are not using a container registry and have loaded the images on each of 
    The output will look similar to the following:
 
    ```
-	secret/regcred created
-	```
+   secret/regcred created
+   ```
 	
 ### Create a Kubernetes secret for the OHS domain credentials
 
@@ -423,22 +421,22 @@ In this section you create a secret that stores the credentials for the OHS doma
 1. Run the following command to create the secret:
 
    ```
-	$ kubectl create secret generic ohs-secret -n <namespace> --from-literal=username=weblogic --from-literal=password='<password>'
+   $ kubectl create secret generic ohs-secret -n <namespace> --from-literal=username=weblogic --from-literal=password='<password>'
    ```
    
 	For example:
 	
-	```
-	$ kubectl create secret generic ohs-secret -n ohsns --from-literal=username=weblogic --from-literal=password='<password>`
-	```
+   ```
+   $ kubectl create secret generic ohs-secret -n ohsns --from-literal=username=weblogic --from-literal=password='<password>`
+   ```
 	
 	Replace `<password>` with a password of your choice.
 	
 	The output will look similar to the following:
 	
-	```
-	secret/ohs-secret created
-	```
+   ```
+   secret/ohs-secret created
+   ```
 	
 	
 	
@@ -449,24 +447,24 @@ In this section you prepare the `ohs.yaml` file ready for OHS deployment.
 1. Copy of the sample yaml files to `$MYOHSFILES`:
 
    ```
-	$ cd $MYOHSFILES
-	$ cp $SCRIPTDIR/*.yaml .
-	```
+   $ cd $MYOHSFILES
+   $ cp $SCRIPTDIR/*.yaml .
+   ```
 
 
 1. Edit the `$MYOHSFILES/ohs.yaml` and change the following parameters to match your installation:
 
    **Note**:
 	
-	+ `<NAMESPACE> ` to your namespace, for example `ohsns`.
-	+ `<IMAGE_NAME>` to the correct image tag on Oracle Container Registry. If you are using your own container registry for the image, you will need to change the `image` location appropriately. If your own container registry is open, you do not need the `imagePullSecrets`.
-	+ During the earlier creation of the configmaps, and secret, if you changed the names from the given examples, then you will need to update the values accordingly.
-	+ All configMaps are shown for completeness. Remove any configMaps that you are not using, for example if you don't require `htdocs` then remove the `ohs-htdocs` configMap. If you are not deploying webgate then remove the `webgate-config` and `webgate-wallet` configMaps, and so forth.
-	+ If you have created any additional directories under `htdocs`, then add the additional entries in that match the configmap and directory names.
+   + `<NAMESPACE> ` to your namespace, for example `ohsns`.
+   + `<IMAGE_NAME>` to the correct image tag on Oracle Container Registry. If you are using your own container registry for the image, you will need to change the `image` location appropriately. If your own container registry is open, you do not need the `imagePullSecrets`.
+   + During the earlier creation of the configmaps, and secret, if you changed the names from the given examples, then you will need to update the values accordingly.
+   + All configMaps are shown for completeness. Remove any configMaps that you are not using, for example if you don't require `htdocs` then remove the `ohs-htdocs` configMap. If you are not deploying webgate then remove the `webgate-config` and `webgate-wallet` configMaps, and so forth.
+   + If you have created any additional directories under `htdocs`, then add the additional entries in that match the configmap and directory names.
    + All configMaps used must mount to the directories stated.
-	+ Ports can be changed if required.
-	+ Set `DEPLOY_WG` to `true` or `false` depending on whether webgate is to be deployed.
-	+ If using SSL change `<WALLET_NAME>` to the wallet directory created under `ohsConfig/webgate/config/wallet`, for example `mywallet`.
+   + Ports can be changed if required.
+   + Set `DEPLOY_WG` to `true` or `false` depending on whether webgate is to be deployed.
+   + If using SSL change `<WALLET_NAME>` to the wallet directory created under `ohsConfig/webgate/config/wallet`, for example `mywallet`.
    + `initialDelaySeconds` may need to be changed to 10 on slower systems. See, [Issues with LivenessProbe](../troubleshooting/#issues-with-livenessprobe).
 	
 	

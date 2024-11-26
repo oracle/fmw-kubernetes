@@ -45,7 +45,7 @@ The number of OHS Servers running is dependent on the `replicas` parameter confi
    $ kubectl -n <namespace> patch deployment ohs-domain -p '{"spec": {"replicas": <replica count>}}' 
    ```
 	
-	where `<replica count>` is the number of OHS servers to start.
+   where `<replica count>` is the number of OHS servers to start.
 
    In the example below, two additional OHS servers are started:
 
@@ -66,7 +66,7 @@ The number of OHS Servers running is dependent on the `replicas` parameter confi
    $ kubectl get pods -n <namespace> -w
    ```
 	
-	For example:
+   For example:
 	
    ```bash
    $ kubectl get pods -n ohsns -w
@@ -81,7 +81,7 @@ The number of OHS Servers running is dependent on the `replicas` parameter confi
    ohs-domain-d5b648bc5-vkp4s   1/1     Running             0          5h21m
    ```
 	
-	Two new OHS pods have now been created, in this example `ohs-domain-d5b648bc5-2q8bw` and `ohs-domain-d5b648bc5-qvdjn`. 
+   Two new OHS pods have now been created, in this example `ohs-domain-d5b648bc5-2q8bw` and `ohs-domain-d5b648bc5-qvdjn`. 
 	
 1. To check what is happening while the pods are in `ContainerCreating` status, you can run:
 	
@@ -91,9 +91,9 @@ The number of OHS Servers running is dependent on the `replicas` parameter confi
 	
 1. To check what is happening while the pods are in  `0/1 Running` status, you can run:
 	
-	```
-	$ kubectl logs -f <pod> -n <namespace>
-	```
+   ```
+   $ kubectl logs -f <pod> -n <namespace>
+   ```
 	
 1. Once everything is started you should see all the additional OHS containers are running (`READY 1/1`):
 	
@@ -116,7 +116,7 @@ As mentioned in the previous section, the number of OHS servers running is depen
    $ kubectl -n <namespace> patch deployment ohs-domain -p '{"spec": {"replicas": <replica count>}}' 
    ```
 	
-	where `<replica count>` is the number of OHS servers you want to run.
+   where `<replica count>` is the number of OHS servers you want to run.
 
    In the example below, replicas is dropped to `1` so only one OHS is running:
 
@@ -149,7 +149,6 @@ As mentioned in the previous section, the number of OHS servers running is depen
    ohs-domain-d5b648bc5-2q8bw   0/1     Terminating   0          12m
    ohs-domain-d5b648bc5-qvdjn   0/1     Terminating   0          12m
    ohs-domain-d5b648bc5-vkp4s   1/1     Running       0          5h31m
-
    ```
    
    Two pods now have a `STATUS` of `Terminating`. Keep executing the command until the pods have disappeared and you are left with the one OHS pod:

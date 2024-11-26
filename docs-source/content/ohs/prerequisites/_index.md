@@ -13,10 +13,10 @@ This document provides information about the system requirements and limitations
 
 
 * A running Kubernetes cluster that meets the following requirements:
-	* The Kubernetes cluster must have sufficient nodes and resources.
-	* A supported container engine must be installed and running on the Kubernetes cluster.
+   * The Kubernetes cluster must have sufficient nodes and resources.
+   * A supported container engine must be installed and running on the Kubernetes cluster.
    * The Kubernetes cluster and container engine must meet the minimum version requirements outlined in document ID 3058838.1 on [My Oracle Support](https://support.oracle.com).
-	* The system clocks on node of the Kubernetes cluster must be synchronized. Run the `date` command simultaneously on all the nodes in each cluster and then syncrhonize accordingly.
+   * The system clocks on node of the Kubernetes cluster must be synchronized. Run the `date` command simultaneously on all the nodes in each cluster and then syncrhonize accordingly.
  
 
 **Note**: This documentation does not tell you how to install a Kubernetes cluster, the container engine, or how to push container images to a container registry. 

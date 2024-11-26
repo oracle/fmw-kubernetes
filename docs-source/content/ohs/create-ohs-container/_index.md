@@ -30,9 +30,9 @@ The nodeport is the entry point for OHS. For example `http://ohs.example.com:317
 1. Edit the `$MYOHSFILES/ohs_service.yaml` and make the following changes:
 
    + `<NAMESPACE>` to your namespace, for example `ohsns`.
-	+ If you want your OHS node port to listen on something other that 31777 and 31443, change accordingly
-	+ If you are using your own `httpd.conf` file and have changed the port to anything other than `7777`, you must change the `targetPort` and `port` to match.
-	+ If you are using your own `ssl.conf` file and have changed the port to anything other than `4443`, you must change the `targetPort` and `port` to match.
+   + If you want your OHS node port to listen on something other that 31777 and 31443, change accordingly
+   + If you are using your own `httpd.conf` file and have changed the port to anything other than `7777`, you must change the `targetPort` and `port` to match.
+   + If you are using your own `ssl.conf` file and have changed the port to anything other than `4443`, you must change the `targetPort` and `port` to match.
 	
 	
    ```
@@ -63,15 +63,15 @@ The nodeport is the entry point for OHS. For example `http://ohs.example.com:317
 
    **Note**: Administrators should be aware of the following:
 	
-	+ As this is a Kubernetes service the port is accessible on all the worker nodes in the cluster.
-	+ If you create another OHS container on a different port, you will need to create another nodeport service for that OHS.
+   + As this is a Kubernetes service the port is accessible on all the worker nodes in the cluster.
+   + If you create another OHS container on a different port, you will need to create another nodeport service for that OHS.
 
 
    ```
-	$ kubectl create -f $MYOHSFILES/ohs_service.yaml
+   $ kubectl create -f $MYOHSFILES/ohs_service.yaml
    ```
 	
-	The output will look similar to the following:
+   The output will look similar to the following:
 	
    ```
    service/ohs-domain-nodeport created
@@ -79,17 +79,17 @@ The nodeport is the entry point for OHS. For example `http://ohs.example.com:317
 	
 1. Validate the service has been created using the command:
    
-	```
+   ```
    $ kubectl get service -n <namespace>
-	```
+   ```
 	
-	For example:
+   For example:
 	
    ```
    $ kubectl get service -n ohsns
-	```
+   ```
 	
-	The output will look similar to the following:
+   The output will look similar to the following:
 	
    ```
    NAME                  TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                         AGE
@@ -117,50 +117,50 @@ In this section you create the OHS container using the `ohs.yaml` file created i
    deployment.apps/ohs-domain created
    ```
 	
-	Run the following command to view the status of the pods:
+   Run the following command to view the status of the pods:
    
-	```bash
+   ```bash
    $ kubectl get pods -n <namespace> -w
    ```
 	
-	For example:
+   For example:
 	
 	
    ```bash
    $ kubectl get pods -n ohsns -w
    ```
 	
-	Whilst the OHS container is creating you, may see:
+   Whilst the OHS container is creating you, may see:
 	
-	```
+   ```
    NAME                         READY   STATUS              RESTARTS   AGE
    ohs-domain-d5b648bc5-vkp4s   0/1     ContainerCreating   0          2m13s
    ```
 	
-	To check what is happening while the pod is in `ContainerCreating` status, you can run:
+   To check what is happening while the pod is in `ContainerCreating` status, you can run:
 	
-	```
-	kubectl describe pod <podname> -n <namespace>
-	```
+   ```
+   kubectl describe pod <podname> -n <namespace>
+   ```
 	
-	For example:
+   For example:
 	
-	```
-	$ kubectl describe pod ohs-domain-d5b648bc5-vkp4s -n ohsns
-	```
+   ```
+   $ kubectl describe pod ohs-domain-d5b648bc5-vkp4s -n ohsns
+   ```
 	
-	Once the container is created, it will go to a `READY` status of `0/1` with `STATUS` of `Running`. For example:
+   Once the container is created, it will go to a `READY` status of `0/1` with `STATUS` of `Running`. For example:
 	
    ```
    NAME                         READY   STATUS    RESTARTS   AGE
    ohs-domain-d5b648bc5-vkp4s   1/1     Running   0          3m10s
    ```
 	
-	To check what is happening while the pod is in this status, you can run:
+   To check what is happening while the pod is in this status, you can run:
 	
-	```
-	$ kubectl logs -f <pod> -n <namespace>
-	```
+   ```
+   $ kubectl logs -f <pod> -n <namespace>
+   ```
 		
    Once everything is started you should see the OHS is running (`READY 1/1`):
    
@@ -169,7 +169,7 @@ In this section you create the OHS container using the `ohs.yaml` file created i
    ohs-domain-d5b648bc5-vkp4s   1/1     Running   0          4m10s
    ```
 
-  If there are any failures, follow [Troubleshooting](../troubleshooting).
+   If there are any failures, follow [Troubleshooting](../troubleshooting).
 
 
 	
@@ -186,20 +186,20 @@ To validate the OHS container file system:
 1. Run the following command to get the name of the OHS container:
 
   
-	```bash
+   ```bash
    $ kubectl get pods -n <namespace>
    ```
 	
-	For example:
+   For example:
 	
 	
    ```bash
    $ kubectl get pods -n ohsns
    ```
 	
-	The output will look similar to the following:
+   The output will look similar to the following:
 	
-	```
+   ```
    NAME                         READY   STATUS    RESTARTS   AGE
    ohs-domain-d5b648bc5-vkp4s   1/1     Running   0          5m34s
    ```
@@ -207,20 +207,20 @@ To validate the OHS container file system:
 1. Run the following command to create a bash shell inside the container:
 
    ```
-	 kubectl exec -n <namespace> -ti <pod> -- /bin/bash
-	```
-	
-	For example:
-	
-	```
-	kubectl exec -n ohsns -ti ohs-domain-79f8f99575-8qwfh -- /bin/bash
+   $ kubectl exec -n <namespace> -ti <pod> -- /bin/bash
    ```
 	
-	This will take you to a bash shell inside the container:
+   For example:
 	
-	```
-	[oracle@ohs-domain-75fbd9b597-z77d8 oracle]$
-	```
+   ```
+   $ kubectl exec -n ohsns -ti ohs-domain-79f8f99575-8qwfh -- /bin/bash
+   ```
+	
+   This will take you to a bash shell inside the container:
+	
+   ```
+   [oracle@ohs-domain-75fbd9b597-z77d8 oracle]$
+   ```
 
 1. Inside the bash shell navigate to the `/u01/oracle/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs1/` directory:
 
@@ -228,7 +228,7 @@ To validate the OHS container file system:
    cd  /u01/oracle/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs1/
    ```	
 	
-	From within this directory, you can navigate around and list (`ls`) or  `cat` any files you configured using the configmaps.
+   From within this directory, you can navigate around and list (`ls`) or  `cat` any files you configured using the configmaps.
 
 
 
