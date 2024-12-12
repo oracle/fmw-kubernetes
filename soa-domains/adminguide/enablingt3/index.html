@@ -12,18 +12,18 @@
     <title>Expose the T3/T3S protocol :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1732610810" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005914" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005914"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1732610810"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1732610810"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005914"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005914"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1732610810"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005914"></script>
 
     
   </div>
@@ -5916,7 +5916,7 @@ disconnect()
 <p>Run <code>wlst.sh t3_admin_config.py</code> by using <code>exec</code> into the Administration Server pod with the following  parameters:</p>
 <ul>
 <li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
-<li>admin_port:  7011</li>
+<li>admin_port:  7001</li>
 <li>user_name: weblogic</li>
 <li>password: Welcome1 <em># weblogic password</em></li>
 <li>listen_port: 30014 <em># New port for T3 Administration Server</em></li>
@@ -5927,7 +5927,7 @@ disconnect()
 </ul>
 <pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_admin_config.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;t3 port on Administration Server&gt; &lt;t3 nodeport&gt; &lt;master_ip&gt; &lt;AdminServerName&gt; &lt;channelType t3 or t3s&gt;
 </code></pre><p>For example:</p>
-<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_admin_config.py soainfra-adminserver  7011 weblogic Welcome1 30014 30014 xxx.xxx.xxx.xxx AdminServer t3
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_admin_config.py soainfra-adminserver  7001 weblogic Welcome1 30014 30014 xxx.xxx.xxx.xxx AdminServer t3
 </code></pre></li>
 <li>
 <p>Create <code>t3_admin_svc.yaml</code> with the following contents to expose T3 at NodePort <code>30014</code> for <code>domainName</code> and <code>domainUID</code> as <code>soainfra</code> and domain deployed in <code>soans</code> namespace:</p>
@@ -5972,7 +5972,7 @@ spec:
 </blockquote>
 <pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- bash
 $ /u01/oracle/oracle_common/common/bin/wlst.sh
-$ connect('weblogic','Welcome1','t3://soainfra-adminserver:7011')
+$ connect('weblogic','Welcome1','t3://soainfra-adminserver:7001')
 $ svc = getOpssService(name='KeyStoreService')
 $ svc.exportKeyStoreCertificate(appStripe='system', name='demoidentity', password='DemoIdentityKeyStorePassPhrase', alias='DemoIdentity', type='Certificate', filepath='/tmp/cert.txt/')
 </code></pre><p>These steps download the certificate at <code>/tmp/cert.txt</code>.</p>
@@ -6055,7 +6055,7 @@ disconnect()
 <p>Run <code>wlst.sh t3_ms_config.py</code> by exec into the Administration Server pod with the following  parameters:</p>
 <ul>
 <li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
-<li>admin_port:  7011</li>
+<li>admin_port:  7001</li>
 <li>user_name: weblogic</li>
 <li>password: Welcome1 <em># weblogic password</em></li>
 <li>listen_port: 30016 <em># New port for T3 Managed Servers</em></li>
@@ -6067,7 +6067,7 @@ disconnect()
 </ul>
 <pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_ms_config.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;t3 port on Managed Server&gt; &lt;t3 nodeport&gt; &lt;master_ip&gt; &lt;managedNameBase&gt; &lt;ms_count&gt; &lt;channelType t3 or t3s&gt;
 </code></pre><p>For example:</p>
-<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_ms_config.py soainfra-adminserver  7011 weblogic Welcome1 30016 30016 xxx.xxx.xxx.xxx soa_server 5 t3
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_ms_config.py soainfra-adminserver  7001 weblogic Welcome1 30016 30016 xxx.xxx.xxx.xxx soa_server 5 t3
 </code></pre></li>
 <li>
 <p>Create <code>t3_ms_svc.yaml</code> with the following contents to expose T3 at Managed Server port <code>30016</code> for <code>domainName</code>, <code>domainUID</code> as <code>soainfra</code>, and <code>clusterName</code> as <code>soa_cluster</code> for the SOA cluster. Similarly, you can create the Kubernetes service with <code>clusterName</code> as <code>osb_cluster</code> for an Oracle Service Bus cluster:</p>
@@ -6112,7 +6112,7 @@ spec:
 </blockquote>
 <pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- bash
 $ /u01/oracle/oracle_common/common/bin/wlst.sh
-$ connect('weblogic','Welcome1','t3://soainfra-adminserver:7011')
+$ connect('weblogic','Welcome1','t3://soainfra-adminserver:7001')
 $ svc = getOpssService(name='KeyStoreService')
 $ svc.exportKeyStoreCertificate(appStripe='system', name='demoidentity', password='DemoIdentityKeyStorePassPhrase', alias='DemoIdentity', type='Certificate', filepath='/tmp/cert.txt/')
 </code></pre><p>The above steps download the certificate at <code>/tmp/cert.txt</code>.</p>
@@ -6165,7 +6165,7 @@ disconnect()
 <p>Run <code>wlst.sh t3_admin_delete.py</code> by exec into the Administration Server pod with the following  parameters:</p>
 <ul>
 <li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
-<li>admin_port:  7011</li>
+<li>admin_port:  7001</li>
 <li>user_name: weblogic</li>
 <li>password: Welcome1 <em># weblogic password</em></li>
 <li>AdminServerName: AdminServer <em># Give administration Server name</em></li>
@@ -6173,7 +6173,7 @@ disconnect()
 </ul>
 <pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_admin_delete.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;AdminServerName&gt; &lt;protocol t3 or t3s&gt;
 </code></pre><p>For example:</p>
-<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_admin_delete.py soainfra-adminserver 7011 weblogic Welcome1 AdminServer t3
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_admin_delete.py soainfra-adminserver 7001 weblogic Welcome1 AdminServer t3
 </code></pre></li>
 <li>
 <p>Delete the NodePort service for port <code>30014</code>:</p>
@@ -6222,7 +6222,7 @@ disconnect()
 <p>Run <code>wlst.sh t3_ms_delete.py</code> by exec into the Administration Server pod with the following  parameters:</p>
 <ul>
 <li>admin_pod_name: soainfra-adminserver <em># Administration Server pod</em></li>
-<li>admin_port:  7011</li>
+<li>admin_port:  7001</li>
 <li>user_name: weblogic</li>
 <li>password: Welcome1 <em># weblogic password</em></li>
 <li>managedNameBase: soa_server <em># Give Managed Server base name. For osb_cluster this will be osb_server</em></li>
@@ -6231,7 +6231,7 @@ disconnect()
 </ul>
 <pre><code>$ kubectl exec -it &lt;Administration Server pod&gt; -n &lt;namespace&gt; -- /u01/oracle/oracle_common/common/bin/wlst.sh  &lt;domain_home&gt;/t3_ms_delete.py &lt;Administration Server pod&gt;  &lt;Administration Server port&gt;  weblogic &lt;password for weblogic&gt; &lt;t3 port on Managed Server&gt; &lt;t3 nodeport&gt; &lt;master_ip&gt; &lt;managedNameBase&gt; &lt;ms_count&gt; &lt;channelType t3 or t3s&gt;
 </code></pre><p>For example:</p>
-<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_ms_delete.py soainfra-adminserver 7011 weblogic Welcome1 soa_server 5 t3
+<pre><code>$ kubectl exec -it soainfra-adminserver -n soans -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/user_projects/domains/soainfra/t3_ms_delete.py soainfra-adminserver 7001 weblogic Welcome1 soa_server 5 t3
 </code></pre></li>
 <li>
 <p>Delete the NodePort service for port <code>30016</code> (or the NodePort used while creating the Kubernetes service):</p>
@@ -10157,19 +10157,19 @@ disconnect()
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005914"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005914"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1732610810" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1732610810"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005914" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005914"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
