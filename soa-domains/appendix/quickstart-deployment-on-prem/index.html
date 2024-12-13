@@ -12,18 +12,18 @@
     <title>Quick start deployment on-premise :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1732610810" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005914" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005914"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1732610810"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1732610810"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005914"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005914"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1732610810"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005914"></script>
 
     
   </div>
@@ -5956,9 +5956,15 @@ Oracle Linux Server release 8.6
 </code></pre></div></li>
 <li>
 <p>Installing CRI-O:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Add OLCNE( Oracle Cloud Native Environment ) Repository to dnf config-manager. This allows dnf to install the additional packages required for CRI-O installation.</span>
-$ dnf config-manager --add-repo https://yum.oracle.com/repo/OracleLinux/OL9/olcne18/x86_64
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">### Add OLCNE( Oracle Cloud Native Environment ) Repository and  KVM repository to the dnf config-manager. This allows dnf to install &#34;qemu-kvm-core&#34; packages and any other additional packages required for CRI-O installation.</span> 
+<span style="color:#75715e">## For OL8</span>
+$ dnf config-manager --add-repo https://yum.oracle.com/repo/OracleLinux/OL8/olcne18/x86_64
+$ dnf config-manager --add-repo https://yum.oracle.com/repo/OracleLinux/OL8/kvm/appstream/x86_64
 
+<span style="color:#75715e">## For OL9</span>
+$ dnf config-manager --add-repo https://yum.oracle.com/repo/OracleLinux/OL9/olcne18/x86_64
+$ dnf config-manager --add-repo https://yum.oracle.com/repo/OracleLinux/OL9/kvm/appstream/x86_64
+   
 <span style="color:#75715e">### Installing cri-o</span>
 $ dnf install -y cri-o
 </code></pre></div><blockquote>
@@ -6036,18 +6042,6 @@ $ cat /etc/subgid
 </ol>
 <h4 id="13-install-and-configure-kubernetes">1.3 Install and Configure Kubernetes</h4>
 <ol>
-<li>
-<p>Add the external Kubernetes repository:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat <span style="color:#e6db74">&lt;&lt;EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
-</span><span style="color:#e6db74">[kubernetes]
-</span><span style="color:#e6db74">name=Kubernetes
-</span><span style="color:#e6db74">baseurl=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
-</span><span style="color:#e6db74">enabled=1
-</span><span style="color:#e6db74">gpgcheck=1
-</span><span style="color:#e6db74">gpgkey=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
-</span><span style="color:#e6db74">exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
-</span><span style="color:#e6db74">EOF</span>
-</code></pre></div></li>
 <li>
 <p>Set SELinux in permissive mode (effectively disabling it):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ export PATH<span style="color:#f92672">=</span>/sbin:$PATH
@@ -6224,20 +6218,20 @@ pod/kube-scheduler-mymasternode             1/1         Running         <span st
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_24.3.2
-$ cd $HOME/soa_24.3.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_24.4.2
+$ cd $HOME/soa_24.4.2
 </code></pre></div></li>
 <li>
 <p>Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a>. Required artifacts are available at <code>OracleSOASuite/kubernetes</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git
-$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.3.2/fmw-kubernetes/OracleSOASuite/kubernetes
+$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.4.2/fmw-kubernetes/OracleSOASuite/kubernetes
 </code></pre></div></li>
 </ol>
 <h4 id="32-get-required-docker-images-and-add-them-to-your-local-registry">3.2 Get required Docker images and add them to your local registry</h4>
 <ol>
 <li>
 <p>Pull the WebLogic Kubernetes Operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.4
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.9
 </code></pre></div></li>
 <li>
 <p>Obtain the Oracle Database image and Oracle SOA Suite Docker image from the <a href="https://container-registry.oracle.com">Oracle Container Registry</a>:</p>
@@ -6277,7 +6271,7 @@ $ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.3.2/fmw-kuberne
 <p>Use Helm to install and start the operator:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --namespace opns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --version 4.2.4 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --version 4.2.9 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --set serviceAccount<span style="color:#f92672">=</span>op-sa <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --wait
 </code></pre></div></li>
@@ -6293,7 +6287,7 @@ $ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_24.3.2/fmw-kuberne
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
 </code></pre></div></li>
 </ol>
-<p>The WebLogic Kubernetes Operator v4.2.4 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
+<p>The WebLogic Kubernetes Operator v4.2.9 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.</p>
 <h3 id="5-install-the-traefik-ingress-based-load-balancer">5. Install the Traefik (ingress-based) load balancer</h3>
 <p>The WebLogic Kubernetes Operator supports these load balancers: Traefik, NGINX, and Apache. Samples are provided in the documentation.</p>
 <p>This Quick Start demonstrates how to install the Traefik ingress controller to provide load balancing for an Oracle SOA Suite domain.</p>
@@ -10433,19 +10427,19 @@ http://<span style="color:#e6db74">${</span>LOADBALANCER_HOSTNAME<span style="co
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005914"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005914"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1732610810" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1732610810"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005914" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005914"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

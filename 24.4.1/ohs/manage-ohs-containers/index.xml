@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Manage OHS Domains on Oracle Fusion Middleware on Kubernetes</title>
+    <link>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/</link>
+    <description>Recent content in Manage OHS Domains on Oracle Fusion Middleware on Kubernetes</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>a. Domain Lifecycle</title>
+      <link>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/domain-lifecycle/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/domain-lifecycle/</guid>
+      <description>View existing OHS servers Starting/Scaling up OHS servers Stopping/Scaling down OHS servers  This document shows the basic operations for scaling servers in OHS containers.
+View existing OHS servers The default OHS deployment starts one OHS server (assuming replicas: 1 in ohs.yaml).
+To view the running OHS servers, run the following command:
+$ kubectl get pods -n &amp;lt;namespace&amp;gt; For example:
+$ kubectl get pods -n ohsns The output should look similar to the following:</description>
+    </item>
+    
+    <item>
+      <title>b. Modifying the OHS container</title>
+      <link>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/modfy-ohs-config/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/modfy-ohs-config/</guid>
+      <description>This document shows how to modify the OHS configuration after the OHS container is deployed.
+Modifying the deployed OHS container configuration can be achieved in the following ways:
+a. Editing the configuration files in $MYOHSFILES/ohsConfig.
+b. Running kubectl edit configmap.
+Editing the configuration files in the $MYOHSFILES/ohsConfig To edit the configuration files:
+  Edit the required files in the $MYOHSFILES/ohsConfig directories.
+  Delete the configmaps for any files you have changed.</description>
+    </item>
+    
+    <item>
+      <title>c. Delete the OHS container</title>
+      <link>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/delete-ohs-container/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/fmw-kubernetes/24.4.1/ohs/manage-ohs-containers/delete-ohs-container/</guid>
+      <description>The following commands show how to remove the OHS container, OHS nodeport service, configmaps, secrets, and namespace:
+  Run the following command to delete the OHS nodeport service:
+$ kubectl delete -f $MYOHSFILES/ohs_service.yaml   Run the following command to delete the OHS container:
+$ kubectl delete -f $MYOHSFILES/ohs.yaml   Run the following commands to delete any configmaps you have created, for example:
+$ kubectl delete cm -n ohsns ohs-config $ kubectl delete cm -n ohsns ohs-httpd $ kubectl delete cm -n ohsns ohs-htdocs $ kubectl delete cm -n ohsns ohs-myapp $ kubectl delete cm -n ohsns webgate-config $ kubectl delete cm -n ohsns webgate-wallet $ kubectl delete cm -n ohsns ohs-wallet   Run the following command to delete the secrets:</description>
+    </item>
+    
+  </channel>
+</rss>

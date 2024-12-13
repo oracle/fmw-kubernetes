@@ -12,18 +12,18 @@
     <title>Perform WLST operations :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1732610810" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1732610810" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005914" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005914"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1732610810"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1732610810"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005914"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005914"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1732610810"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005914"></script>
 
     
   </div>
@@ -5930,11 +5930,11 @@ wls:/offline&gt;
 <p>Connect using <code>t3</code>:</p>
 <p>a. To connect to the Administration Server or Managed Servers using <code>t3</code>, you can use the Kubernetes services created by the WebLogic Server Kubernetes operator:</p>
 <pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://&lt;domainUID&gt;-&lt;WebLogic Server Name&gt;:&lt;Server Port&gt;')
-</code></pre><p>For example, if the domainUID is <code>soainfra</code>, Administration Server name is <code>AdminServer</code>, and Administration Server port is <code>7011</code>, then you can connect to the Administration Server using <code>t3</code>:</p>
-<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-adminserver:7011')
+</code></pre><p>For example, if the domainUID is <code>soainfra</code>, Administration Server name is <code>AdminServer</code>, and Administration Server port is <code>7001</code>, then you can connect to the Administration Server using <code>t3</code>:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-adminserver:7001')
 </code></pre><p>The output will look similar to the following:</p>
-<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-adminserver:7011')
-Connecting to t3://soainfra-adminserver:7011 with userid weblogic ...
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-adminserver:7001')
+Connecting to t3://soainfra-adminserver:7001 with userid weblogic ...
 Successfully connected to Admin Server &quot;AdminServer&quot; that belongs to domain &quot;soainfra&quot;.
 
 Warning: An insecure protocol was used to connect to the server.
@@ -5943,11 +5943,11 @@ To ensure on-the-wire security, the SSL port or Admin port should be used instea
 wls:/soainfra/serverConfig/&gt;
 </code></pre><p>b. To connect a WebLogic Server cluster (SOA or Oracle Service Bus) using <code>t3</code>, you can use the Kubernetes services created by the WebLogic Server Kubernetes operator:</p>
 <pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://&lt;domainUID&gt;-cluster-&lt;Cluster name&gt;:&lt;Managed Server Port&gt;')
-</code></pre><p>For example, if the domainUID is <code>soainfra</code>, SOA cluster name is <code>soa-cluster</code>, and  SOA Managed Server port is <code>8011</code>, then you can connect to SOA Cluster using <code>t3</code>:</p>
-<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-cluster-soa-cluster:8011')
+</code></pre><p>For example, if the domainUID is <code>soainfra</code>, SOA cluster name is <code>soa-cluster</code>, and  SOA Managed Server port is <code>7003</code>, then you can connect to SOA Cluster using <code>t3</code>:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-cluster-soa-cluster:7003')
 </code></pre><p>The output will look similar to the following:</p>
-<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-cluster-soa-cluster:8011')
-Connecting to t3://soainfra-cluster-soa-cluster:8011 with userid weblogic ...
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-cluster-soa-cluster:7003')
+Connecting to t3://soainfra-cluster-soa-cluster:7003 with userid weblogic ...
 Successfully connected to Managed Server &quot;soa_server1&quot; that belongs to domain &quot;soainfra&quot;.
 
 Warning: An insecure protocol was used to connect to the server.
@@ -5963,7 +5963,7 @@ wls:/soainfra/serverConfig/&gt;
 [oracle@helper bin]$ ./wlst.sh
 .
 .
-wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-adminserver:7011')
+wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3://soainfra-adminserver:7001')
 .
 .
 wls:/soainfra/serverConfig/&gt; svc = getOpssService(name='KeyStoreService')
@@ -5977,11 +5977,11 @@ wls:/soainfra/serverConfig/&gt; svc.exportKeyStoreCertificate(appStripe='system'
 [oracle@helper oracle]$ cd $ORACLE_HOME/oracle_common/common/bin
 [oracle@helper bin]$ ./wlst.sh
 </code></pre><p>d. Access <code>t3s</code> for the Administration Server.</p>
-<p>For example, if the domainUID is <code>soainfra</code>, Administration Server name is <code>AdminServer</code>, and Administration Server SSL port is <code>7012</code>, connect to the Administration Server as follows:</p>
-<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3s://soainfra-adminserver:7012')
+<p>For example, if the domainUID is <code>soainfra</code>, Administration Server name is <code>AdminServer</code>, and Administration Server SSL port is <code>7002</code>, connect to the Administration Server as follows:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3s://soainfra-adminserver:7002')
 </code></pre><p>e. Access <code>t3s</code> for the SOA cluster.</p>
-<p>For example, if the domainUID is <code>soainfra</code>, SOA cluster name is <code>soa-cluster</code>, and SOA Managed Server SSL port is <code>8012</code>, connect to the SOA cluster as follows:</p>
-<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3s://soainfra-cluster-soa-cluster:8012')
+<p>For example, if the domainUID is <code>soainfra</code>, SOA cluster name is <code>soa-cluster</code>, and SOA Managed Server SSL port is <code>7004</code>, connect to the SOA cluster as follows:</p>
+<pre><code>wls:/offline&gt; connect('weblogic','&lt;password&gt;','t3s://soainfra-cluster-soa-cluster:7004')
 </code></pre></li>
 </ol>
 <h5 id="script-mode">Script mode</h5>
@@ -6020,8 +6020,8 @@ Welcome to WebLogic Server Administration Scripting Shell
 
 Type help() for help on available commands
 
-wls:/offline&gt; connect('weblogic','Welcome1','t3://soainfra-adminserver:7011')
-Connecting to t3://soainfra-adminserver:7011 with userid weblogic ...
+wls:/offline&gt; connect('weblogic','Welcome1','t3://soainfra-adminserver:7001')
+Connecting to t3://soainfra-adminserver:7001 with userid weblogic ...
 Successfully connected to Admin Server &quot;AdminServer&quot; that belongs to domain &quot;soainfra&quot;.
 
 Warning: An insecure protocol was used to connect to the server.
@@ -9961,19 +9961,19 @@ wls:/soainfra/serverConfig/Servers&gt;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005914"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1732610810"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1732610810"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005914"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1732610810" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1732610810"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005914" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005914"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

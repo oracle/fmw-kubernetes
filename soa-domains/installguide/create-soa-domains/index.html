@@ -12,18 +12,18 @@
     <title>Create Oracle SOA Suite domains :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1732610811" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1732610811" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005915" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1732610811"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005915"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1732610811"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1732610811"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005915"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005915"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1732610811"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005915"></script>
 
     
   </div>
@@ -5883,12 +5883,12 @@ provide in this file.</p>
 <tr>
 <td><code>adminPort</code></td>
 <td>Port number for the Administration Server inside the Kubernetes cluster.</td>
-<td><code>7011</code></td>
+<td><code>7001</code></td>
 </tr>
 <tr>
 <td><code>adminServerSSLPort</code></td>
 <td>SSL port number of the Administration Server inside the Kubernetes cluster.</td>
-<td><code>7012</code></td>
+<td><code>7002</code></td>
 </tr>
 <tr>
 <td><code>adminNodePort</code></td>
@@ -6013,22 +6013,22 @@ provide in this file.</p>
 <tr>
 <td><code>soaManagedServerPort</code></td>
 <td>Port number for each Managed Server in the SOA cluster. This configuration parameter is applicable only for <code>soa</code> and <code>soaosb</code> domain types.</td>
-<td><code>8011</code></td>
+<td><code>7003</code></td>
 </tr>
 <tr>
 <td><code>osbManagedServerPort</code></td>
 <td>Port number for each Managed Server in the Oracle Service Bus cluster. This configuration parameter is applicable only for <code>osb</code> and <code>soaosb</code> domain types.</td>
-<td><code>9011</code></td>
+<td><code>8002</code></td>
 </tr>
 <tr>
 <td><code>soaManagedServerSSLPort</code></td>
 <td>SSL port number for each Managed Server in the SOA cluster. This configuration parameter is applicable only for <code>soa</code> and <code>soaosb</code> domain types.</td>
-<td><code>8012</code></td>
+<td><code>7004</code></td>
 </tr>
 <tr>
 <td><code>osbManagedServerSSLPort</code></td>
 <td>SSL port number for each Managed Server in the Oracle Service Bus cluster. This configuration parameter is applicable only for <code>osb</code> and <code>soaosb</code> domain types.</td>
-<td><code>9012</code></td>
+<td><code>8003</code></td>
 </tr>
 <tr>
 <td><code>namespace</code></td>
@@ -6133,9 +6133,9 @@ created by the create script.</li>
 <pre><code>$ kubectl apply -f &lt;path to output-directory&gt;/weblogic-domains/&lt;domainUID&gt;/domain.yaml
 </code></pre><p>The default domain created by the script has the following characteristics:</p>
 <ul>
-<li>An Administration Server named <code>AdminServer</code> listening on port <code>7011</code>.</li>
+<li>An Administration Server named <code>AdminServer</code> listening on port <code>7001</code>.</li>
 <li>A configured cluster named <code>soa_cluster</code> of size 5.</li>
-<li>Managed Server, named <code>soa_server1</code> listening on port <code>8011</code>.</li>
+<li>Managed Server, named <code>soa_server1</code> listening on port <code>7003</code>.</li>
 <li>Log files that are located in <code>/shared/logs/&lt;domainUID&gt;</code>.</li>
 <li>SOA Infra, SOA Composer, and WorklistApp applications deployed.</li>
 </ul>
@@ -6571,19 +6571,19 @@ soainfra-soa-server1                         1/1     Running     0          50m
     <div class="expand-content" style="display: none;">
         <pre><code>$ kubectl get services -n soans
 NAME                            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                       AGE
-soainfra-adminserver            ClusterIP      None             &lt;none&gt;        30012/TCP,7011/TCP,7012/TCP   54m
-soainfra-cluster-osb-cluster    ClusterIP      10.100.138.57    &lt;none&gt;        9011/TCP,9012/TCP             51m
-soainfra-cluster-soa-cluster    ClusterIP      10.99.117.240    &lt;none&gt;        8011/TCP,8012/TCP             51m
-soainfra-osb-server1            ClusterIP      None             &lt;none&gt;        9011/TCP,9012/TCP             51m
-soainfra-osb-server2            ClusterIP      10.108.50.145    &lt;none&gt;        9011/TCP,9012/TCP             51m
-soainfra-osb-server3            ClusterIP      10.108.71.8      &lt;none&gt;        9011/TCP,9012/TCP             51m
-soainfra-osb-server4            ClusterIP      10.100.1.144     &lt;none&gt;        9011/TCP,9012/TCP             51m
-soainfra-osb-server5            ClusterIP      10.108.57.147    &lt;none&gt;        9011/TCP,9012/TCP             51m
-soainfra-soa-server1            ClusterIP      None             &lt;none&gt;        8011/TCP,8012/TCP             51m
-soainfra-soa-server2            ClusterIP      10.97.165.179    &lt;none&gt;        8011/TCP,8012/TCP             51m
-soainfra-soa-server3            ClusterIP      10.98.160.126    &lt;none&gt;        8011/TCP,8012/TCP             51m
-soainfra-soa-server4            ClusterIP      10.105.164.133   &lt;none&gt;        8011/TCP,8012/TCP             51m
-soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;        8011/TCP,8012/TCP             51m
+soainfra-adminserver            ClusterIP      None             &lt;none&gt;        30012/TCP,7001/TCP,7002/TCP   54m
+soainfra-cluster-osb-cluster    ClusterIP      10.100.138.57    &lt;none&gt;        8002/TCP,8003/TCP             51m
+soainfra-cluster-soa-cluster    ClusterIP      10.99.117.240    &lt;none&gt;        7003/TCP,7004/TCP             51m
+soainfra-osb-server1            ClusterIP      None             &lt;none&gt;        8002/TCP,8003/TCP             51m
+soainfra-osb-server2            ClusterIP      10.108.50.145    &lt;none&gt;        8002/TCP,8003/TCP             51m
+soainfra-osb-server3            ClusterIP      10.108.71.8      &lt;none&gt;        8002/TCP,8003/TCP             51m
+soainfra-osb-server4            ClusterIP      10.100.1.144     &lt;none&gt;        8002/TCP,8003/TCP             51m
+soainfra-osb-server5            ClusterIP      10.108.57.147    &lt;none&gt;        8002/TCP,8003/TCP             51m
+soainfra-soa-server1            ClusterIP      None             &lt;none&gt;        7003/TCP,7004/TCP             51m
+soainfra-soa-server2            ClusterIP      10.97.165.179    &lt;none&gt;        7003/TCP,7004/TCP             51m
+soainfra-soa-server3            ClusterIP      10.98.160.126    &lt;none&gt;        7003/TCP,7004/TCP             51m
+soainfra-soa-server4            ClusterIP      10.105.164.133   &lt;none&gt;        7003/TCP,7004/TCP             51m
+soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;        7003/TCP,7004/TCP             51m
 </code></pre>
     </div>
 </div>
@@ -10508,19 +10508,19 @@ soainfra-soa-server5            ClusterIP      10.109.168.179   &lt;none&gt;    
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1732610811"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005915"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1732610811"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1732610811"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005915"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1732610811" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1732610811"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005915" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005915"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
