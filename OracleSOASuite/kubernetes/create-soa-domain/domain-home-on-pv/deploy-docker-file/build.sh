@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 # Script to build a Docker image for Oracle SOA suite artifacts.
@@ -11,14 +11,14 @@ Usage: build.sh -t [tag]
 Builds a Docker Image with Oracle SOA/OSB artifacts
 Parameters:
    -h: view usage
-   -t: tag for image, default is 12.2.1.4
+   -t: tag for image, default is release-version
 EOF
 exit $1
 }
 #=============================================================
 #== MAIN starts here...
 #=============================================================
-TAG="12.2.1.4"
+TAG="release-version"
 while getopts "ht:" optname; do
   case "$optname" in
     "h")
@@ -53,6 +53,9 @@ fi
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
+
+echo "Creating directories soa or osb for completeness of image to be used for deploy artifacts...."
+mkdir -p soa osb 
 buildCmd="docker build $BUILD_OPTS --force-rm=true $PROXY_SETTINGS -t $IMAGE_NAME -f $DOCKERFILE_NAME ."
 
 # BUILD THE IMAGE (replace all environment variables)

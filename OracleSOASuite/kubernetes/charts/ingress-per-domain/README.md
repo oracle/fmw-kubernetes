@@ -75,21 +75,21 @@ wlsDomain:
   domainUID: soainfra
   secureEnabled: false
   adminServerName: AdminServer
-  adminServerPort: 7011
-  adminServerSSLPort: 7012
+  adminServerPort: 7001
+  adminServerSSLPort: 7002
   adminSecurePort: 9002
   soaClusterName: soa_cluster
-  soaManagedServerPort: 8011
-  soaManagedServerSSLPort: 8012
+  soaManagedServerPort: 7003
+  soaManagedServerSSLPort: 7004
   osbClusterName: osb_cluster
-  osbManagedServerPort: 9011
-  osbManagedServerSSLPort: 9012
+  osbManagedServerPort: 8002
+  osbManagedServerSSLPort: 8003
 
 # Host Specific Values
 hostName:
-  admin: admin.org
-  soa: soa.org
-  osb: osb.org
+  admin: admin.domain.org
+  soa: soa.domain.org
+  osb: osb.domain.org
 
 ```
 ## Uninstalling the chart
@@ -106,18 +106,18 @@ The following table lists the configurable parameters of this chart and their de
 | `sslType` | Type of Configuration. values are `NONSSL` , `SSL` and `E2ESSL`. | `NONSSL` |
 | `secureEnabled` | Secure Administration enabled in SOA domain | `false` |
 | `domainType` | Type of SOA Domain. values are `soa` or `osb` or`soaosb`. | `soa` |
-| `hostName.admin` | Admin host name. | `admin.org` |
-| `hostName.soa` | Soa host name. | `soa.org` |
-| `hostName.osb` | Osb host name. | `osb.org` |
+| `hostName.admin` | Admin host name. | `admin.domain.org` |
+| `hostName.soa` | Soa host name. | `soa.domain.org` |
+| `hostName.osb` | Osb host name. | `osb.domain.org` |
 | `wlsDomain.domainUID` | DomainUID of the Soa domain. | `soainfra` |
 | `wlsDomain.soaClusterName` | Cluster name in the SOA domain. | `soa_cluster` |
 | `wlsDomain.osbClusterName` | Cluster name in the OSB domain. | `osb_cluster` |
 | `wlsDomain.adminServerPort` | Port number of the Admin servers in the Soa domain cluster . | `7001` |
 | `wlsDomain.adminServerSSLPort` | Port number of the Admin servers in the Soa domain cluster . | `7002` |
 | `wlsDomain.adminSecurePort` | Port number of the Secure Administration servers in the Soa domain cluster and not configurable. | `9002` |
-| `wlsDomain.soaManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `8001` |
-| `wlsDomain.soaManagedServerSSLPort` | SSL Port number of the managed servers in the Soa domain cluster. | `8002` |
-| `wlsDomain.osbManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `9001` |
-| `wlsDomain.osbManagedServerSSLPort` | Port number of the managed servers in the Soa domain cluster. | `9002` |
+| `wlsDomain.soaManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `7003` |
+| `wlsDomain.soaManagedServerSSLPort` | SSL Port number of the managed servers in the Soa domain cluster. | `7004` |
+| `wlsDomain.osbManagedServerPort` | Port number of the managed servers in the Soa domain cluster. | `8002` |
+| `wlsDomain.osbManagedServerSSLPort` | Port number of the managed servers in the Soa domain cluster. | `8003` |
 
 >**NOTE:** The input values `domainUID` and `clusterName` will be used to generate the Kubernetes `serviceName` of the WLS cluster with the format `domainUID-cluster-clusterName`.

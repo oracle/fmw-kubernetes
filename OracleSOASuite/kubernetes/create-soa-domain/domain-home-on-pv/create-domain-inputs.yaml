@@ -8,10 +8,13 @@ version: create-weblogic-sample-domain-inputs-v1
 sslEnabled: false
 
 # Port number for admin server
-adminPort: 7011
+adminPort: 7001
 
 # SSL Port number for admin server
-adminServerSSLPort: 7012
+adminServerSSLPort: 7002
+
+# Administation Port number for admin server
+adminAdministrationPort: 9002
 
 # Name of the Admin Server
 adminServerName: AdminServer
@@ -51,10 +54,14 @@ soaClusterName: soa_cluster
 soaManagedServerNameBase: soa_server
 
 # Port number for each SOA managed server
-soaManagedServerPort: 8011
+soaManagedServerPort: 7003
 
 # SSL Port number for each SOA managed server
-soaManagedServerSSLPort: 8012
+soaManagedServerSSLPort: 7004
+
+# Administation Port number for SOA managed server
+soaAdministrationPort: 9004
+
 # END: Configuration for SOA cluster
 
 # BEGIN: Configuration for OSB cluster
@@ -66,15 +73,18 @@ osbClusterName: osb_cluster
 osbManagedServerNameBase: osb_server
 
 # Port number for each OSB managed server
-osbManagedServerPort: 9011
+osbManagedServerPort: 8002
 
 # SSL Port number for each OSB managed server
-osbManagedServerSSLPort: 9012
+osbManagedServerSSLPort: 8003
+
+# Administation Port number for OSB managed server
+osbAdministrationPort: 9007
+
 # END: Configuration for OSB cluster
 
 # SOA Suite image.
 # The operator requires SOA Suite image.
-# Refer to https://oracle.github.io/fmw-kubernetes/soa-domains/userguide/prepare-your-environment/#obtaining-the-soa-suite-docker-image/  for details on how to obtain or create the image.
 image: soasuite:release-version
 
 # Image pull policy

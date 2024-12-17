@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 script="${BASH_SOURCE[0]}"
@@ -20,6 +20,7 @@ function deploy {
     tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
     cp $scriptDir/import.properties.template $tmp_dir/import.properties
     sed -i -e "s:%DOMAIN_UID%:${DOMAIN_UID}:g" $tmp_dir/import.properties
+    sed -i -e "s:%PROTOCOL%:${PROTOCOL}:g" $tmp_dir/import.properties
     sed -i -e "s:%ADMIN_SERVER_NAME_SVC%:${ADMIN_SERVER_NAME_SVC}:g" $tmp_dir/import.properties
     sed -i -e "s:%ADMIN_LISTEN_PORT%:${ADMIN_LISTEN_PORT}:g" $tmp_dir/import.properties
     sed -i -e "s:%USERNAME%:$(cat /weblogic-operator/secrets/username):g" $tmp_dir/import.properties
@@ -31,6 +32,15 @@ function deploy {
 }
 
 # Reads the available Oracle Service Bus archives and deploys
+if [[ $PROTOCOL == "t3s" ]]; then
+   echo | openssl s_client -showcerts  -connect ${DOMAIN_UID}-${ADMIN_SERVER_NAME_SVC}:${ADMIN_LISTEN_PORT} 2>/dev/null |  openssl x509  -trustout > /tmp/ssl_cert.crt
+   if [[ -f $JAVA_HOME/lib/security/cacerts ]]; then
+      echo yes | keytool -import -v -trustcacerts -alias osb -file /tmp/ssl_cert.crt -keystore $JAVA_HOME/lib/security/cacerts -keypass changeit -storepass changeit
+   else
+      echo yes | keytool -import -v -trustcacerts -alias osb -file /tmp/ssl_cert.crt -keystore $JAVA_HOME/jre/lib/security/cacerts -keypass changeit -storepass changeit
+   fi
+fi
+
 cd /u01/sbarchives/
 sbars=$(ls *)
 for sbar in $sbars

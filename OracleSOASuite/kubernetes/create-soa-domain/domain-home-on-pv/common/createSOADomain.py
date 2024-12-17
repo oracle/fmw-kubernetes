@@ -9,6 +9,8 @@ import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 class SOAProvisioner:
 
     jrfDone = 0;
+    secureDomain = 'false';
+    domainVersion = '';
     MACHINES = {
         'machine1' : {
             'NMType': 'SSL',
@@ -60,16 +62,14 @@ class SOAProvisioner:
         'serverGroupsToTarget' : [ 'OSB-MGD-SVRS-COMBINED' ]
     }
 
-    FLAG_1412 = 'false'
-
     def __init__(self, oracleHome, javaHome, domainParentDir):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
-        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType)
+    def createSOADomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, adminAdministrationPort, soaAdministrationPort, osbAdministrationPort, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType, adminAdministrationPort, soaAdministrationPort, osbAdministrationPort)
                  
 
         if domainType == "soa" or domainType == "soaosb":
@@ -89,15 +89,29 @@ class SOAProvisioner:
         else:
             print 'persistentStore = '+persistentStore+'...skipping JDBC reconfig'
 
-        # Fix for bug 36654711 until changes comes with WSM template
-        self.updateAppTarget(domainHome,"wsm-pm",adminName)
+        readDomain(domainHome)
+        # Update the default port values for default servers for 14.1.2.0.0 
+        if ( self.domainVersion == "14.1.2.0.0" and self.secureDomain == 'false' ):
+            if ("soa" in domainType and 'soa_server1' in self.SOA_MANAGED_SERVERS ):
+               self.updateDefaultServerParameters(domainHome, sslEnabled, "soa_server1")
+            if "osb" in domainType and 'osb_server1' in self.OSB_MANAGED_SERVERS:
+               self.updateDefaultServerParameters(domainHome, sslEnabled, "osb_server1")
 
+        # Fix for bug 36654711
+        self.updateAppTarget(domainHome,"wsm-pm",adminName)
+        updateDomain()
+        
+
+    def updateDefaultServerParameters(self, domainHome, sslEnabled, serverName):
+        print 'Removing administrationPort and SSL entries for default server ' + serverName
+        cd('/Servers/'+ serverName)
+        set('administrationPort', 0)
+        if (sslEnabled == 'false'):
+           delete(serverName, 'SSL')
 
     def updateAppTarget(self, domainHome, appName, targetName):
         print 'Adding target: '+ targetName+' for '+appName
-        readDomain(domainHome)
         assign("AppDeployment", appName, "Target", targetName)
-        updateDomain()
 
 
     def configureTlogJDBCStore(self, domainHome, domainType):
@@ -431,7 +445,7 @@ class SOAProvisioner:
         return
 
 
-    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled):
+    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled, ms_admin_port):
         # Create managed servers
         for index in range(0, ms_count):
             cd('/')
@@ -441,9 +455,9 @@ class SOAProvisioner:
             create(name, 'Server')
             cd('/Servers/%s/' % name )
             print('Creating managed server: %s' % name);
+            if ( self.secureDomain == 'true'):
+              set('administrationPort', ms_admin_port)
             set('ListenPort', ms_port)
-            if (self.FLAG_1412 == 'true'):
-              set('ListenPortEnabled', true)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
@@ -458,19 +472,17 @@ class SOAProvisioner:
         print ms_servers
         return ms_servers
 
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase,soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType):
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase,soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, soaClusterName, osbClusterName, domainType, adminAdministrationPort, soaAdministrationPort, osbAdministrationPort):
         baseTemplate = self.replaceTokens(self.JRF_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
         setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
-        domainVersion = cmo.getDomainVersion()
+        self.domainVersion = cmo.getDomainVersion()
         if prodMode == 'true':
-            if (domainVersion == "14.1.2.0.0" and secureMode == 'true'):
+            if (self.domainVersion == "14.1.2.0.0" and secureMode == 'true'):
                setOption('ServerStartMode', 'secure')
-            elif (domainVersion == "14.1.2.0.0" and secureMode == 'false'):
-               setOption('ServerStartMode', 'prod')
-               self.FLAG_1412 = 'true'
+               self.secureDomain = 'true'
             else:
                setOption('ServerStartMode', 'prod')
         else:
@@ -486,8 +498,8 @@ class SOAProvisioner:
         print 'Creating Admin Server...'
         cd('/Servers/AdminServer')
         set('ListenPort', admin_port)
-        if ( self.FLAG_1412 == 'true'):
-            set('ListenPortEnabled', true)
+        if ( self.secureDomain == 'true'):
+            set('administrationPort', int(adminAdministrationPort))
         set('Name', adminName)
         self.ADMIN_SERVER_NAME = adminName
         cmo.setWeblogicPluginEnabled(true)
@@ -511,7 +523,7 @@ class SOAProvisioner:
             print '\nCreating cluster...' + soaClusterName
             cd('/')
             cl=create(soaClusterName, 'Cluster')
-            self.SOA_MANAGED_SERVERS = self.createManagedServers(ms_count, soaManagedNameBase, ms_port, soaClusterName, self.SOA_MANAGED_SERVERS, managedSSLPort, sslEnabled)
+            self.SOA_MANAGED_SERVERS = self.createManagedServers(ms_count, soaManagedNameBase, ms_port, soaClusterName, self.SOA_MANAGED_SERVERS, managedSSLPort, sslEnabled, int(soaAdministrationPort))
             print 'Created managed Servers for cluster..... ' + soaClusterName
         elif domainType == "osb":
             ms_port = int(osbManagedServerPort)
@@ -519,7 +531,7 @@ class SOAProvisioner:
             print '\nCreating cluster...' + osbClusterName
             cd('/')
             cl=create(osbClusterName, 'Cluster')
-            self.OSB_MANAGED_SERVERS = self.createManagedServers(ms_count, osbManagedNameBase, ms_port, osbClusterName, self.OSB_MANAGED_SERVERS, managedSSLPort, sslEnabled)
+            self.OSB_MANAGED_SERVERS = self.createManagedServers(ms_count, osbManagedNameBase, ms_port, osbClusterName, self.OSB_MANAGED_SERVERS, managedSSLPort, sslEnabled, int(osbAdministrationPort))
             print 'Created managed Servers for cluster..... ' + osbClusterName
        
         # Creating additional cluster and managed servers
@@ -528,7 +540,7 @@ class SOAProvisioner:
             cd('/')
             cl=create(osbClusterName, 'Cluster')
             # Creating  managed servers for additional cluster
-            self.OSB_MANAGED_SERVERS = self.createManagedServers(ms_count, osbManagedNameBase, int(osbManagedServerPort), osbClusterName, self.OSB_MANAGED_SERVERS, int(osbManagedServerSSLPort), sslEnabled)
+            self.OSB_MANAGED_SERVERS = self.createManagedServers(ms_count, osbManagedNameBase, int(osbManagedServerPort), osbClusterName, self.OSB_MANAGED_SERVERS, int(osbManagedServerSSLPort), sslEnabled, int(osbAdministrationPort))
             print 'Created managed Servers for additional cluster..... ' + osbClusterName
 
         # Create Node Manager
@@ -830,7 +842,7 @@ class SOAProvisioner:
 # Entry point to the script #
 #############################
 
-def usage():
+def usage(status=0):
     print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> -name <domain-name> ' + \
           '-user <domain-user> -password <domain-password> ' + \
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
@@ -840,10 +852,11 @@ def usage():
           '-soaManagedServerSSLPort <soaManagedServerSSLPort> -osbManagedServerSSLPort <osbManagedServerSSLPort> ' \
           '-prodMode <prodMode> -managedServerCount <managedCount> -secureMode <secureMode> '  \
           '-soaClusterName <soaClusterName> -osbClusterName <osbClusterName> ' \
+          '-adminAdministrationPort <adminAdministrationPort> -soaAdministrationPort <soaAdministrationPort> -osbAdministrationPort <osbAdministrationPort> ' \
           '-domainType <soa|osb|soaosb|soab2b|soaosbb2b> ' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
           '-t3ChannelPort <t3 channel port> -persistentStore <jdbc|file>'
-    sys.exit(0)
+    sys.exit(status)
 
 # Uncomment for Debug only
 #print str(sys.argv[0]) + " called with the following sys.argv array:"
@@ -851,7 +864,7 @@ def usage():
 #    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
 
 if len(sys.argv) < 17:
-    usage()
+    usage(1)
 
 #oracleHome will be passed by command line parameter -oh.
 oracleHome = None
@@ -873,6 +886,9 @@ exposeAdminT3Channel = None
 t3ChannelPort = None
 t3ChannelPublicAddress = None
 persistentStore = 'jdbc'
+adminAdministrationPort = '9002'
+soaAdministrationPort = '9004'
+osbAdministrationPort = '9007'
 
 i = 1
 while i < len(sys.argv):
@@ -963,10 +979,19 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-persistentStore':
         persistentStore = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-adminAdministrationPort':
+        adminAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-soaAdministrationPort':
+        soaAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-osbAdministrationPort':
+        osbAdministrationPort = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
-        usage()
+        usage(1)
         sys.exit(1)
 
 provisioner = SOAProvisioner(oracleHome, javaHome, domainParentDir)
-provisioner.createSOADomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode,secureMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner.createSOADomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, soaManagedNameBase, osbManagedNameBase, soaManagedServerPort, osbManagedServerPort, soaManagedServerSSLPort, osbManagedServerSSLPort, prodMode,secureMode, managedCount, soaClusterName, osbClusterName, sslEnabled, domainType, adminAdministrationPort, soaAdministrationPort, osbAdministrationPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
