@@ -97,7 +97,7 @@ function WebLogicMonitoringExporter {
   echo "!!! WARNING !!! This will be triggering the Domain restart...."
   ${KUBERNETES_CLI:-kubectl} patch domain ${domainUID} -n ${domainNamespace} --patch-file ${scriptDir}/config/config.yaml --type=merge
   sleep 10
-  sh ${scriptDir}/scripts/waitForDomain.sh -d ${domainUID} -n ${domainNamespace} -p "Completed"
+  sh ${scriptDir}/scripts/waitForDomain.sh -d ${domainUID} -n ${domainNamespace} -p "Completed" -i
 }
 
 

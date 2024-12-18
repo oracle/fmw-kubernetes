@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -191,6 +191,21 @@ function createFiles {
       weblogicImagePullSecretPrefix=${enabledPrefix}
       imagePullSecretPrefix=${enabledPrefix}
     fi
+    if [[ $secureEnabled == "true" ]]; then
+       adminDeployPort=${adminAdministrationPort}
+       adminProtocol="t3s"
+    else
+       adminDeployPort=${adminPort}
+       adminProtocol="t3"
+    fi
+    if [[ $sslEnabled == "true" ]]; then
+       soaDeployPort=${soaManagedServerSSLPort}
+       soaProtocol="https"
+    else
+       soaDeployPort=${soaManagedServerPort}
+       soaProtocol="http"
+    fi
+    
      # Must escape the ':' value in image for sed to properly parse and replace
     image=$(echo ${image} | sed -e "s/\:/\\\:/g")
     
@@ -208,10 +223,12 @@ function createFiles {
     sed -i -e "s:%WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%:${weblogicImagePullSecretPrefix}:g" ${createJobOutput}
     sed -i -e "s:%DOMAIN_UID%:${domainUID}:g" ${createJobOutput}
     sed -i -e "s:%DOMAIN_NAME%:${domainName}:g" ${createJobOutput}
+    sed -i -e "s:%ADMIN_PROTOCOL%:${adminProtocol}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_PROTOCOL%:${soaProtocol}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME_SVC%:${adminServerNameSVC}:g" ${createJobOutput}
-    sed -i -e "s:%ADMIN_PORT%:${adminPort}:g" ${createJobOutput}
+    sed -i -e "s:%ADMIN_PORT%:${adminDeployPort}:g" ${createJobOutput}
     sed -i -e "s:%SOA_DEPLOY_PREFIX%:${soaDeployPrefix}:g" ${createJobOutput}
-    sed -i -e "s:%SOA_MANAGED_SERVER_PORT%:${soaManagedServerPort}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_MANAGED_SERVER_PORT%:${soaDeployPort}:g" ${createJobOutput}
     sed -i -e "s:%OSB_DEPLOY_PREFIX%:${osbDeployPrefix}:g" ${createJobOutput}
     sed -i -e "s:%SOA_CLUSTER_NAME%:${soaClusterNameSVC}:g" ${createJobOutput}
     sed -i -e "s:%OSB_CLUSTER_NAME%:${osbClusterName}:g" ${createJobOutput}

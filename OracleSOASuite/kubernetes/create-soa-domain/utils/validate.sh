@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -78,6 +78,15 @@ function validateSSLPortsSpecified {
   fi  
 }
 
+#
+# Validate SSL port value is specified ?
+#
+function validateAdministrationPortsSpecified {
+  if [ "${secureEnabled}" =  "true" ]; then
+    validateInputParamsSpecified \
+	  ${1}
+  fi  
+}
 
 #
 # Validate ConfiguredManagedServerCount is non zero value
@@ -143,6 +152,9 @@ function validateCommonInputs_SOA {
   validateSSLPortsSpecified \
 	adminServerSSLPort
 
+  validateAdministrationPortsSpecified \
+	adminAdministrationPort
+
   validateSOASuiteDomainType
   validatePersistentStoreType
 
@@ -156,6 +168,9 @@ function validateCommonInputs_SOA {
  
     validateSSLPortsSpecified \
 	  soaManagedServerSSLPort
+
+    validateAdministrationPortsSpecified \
+	soaAdministrationPort
 
     validateClusterName_SOA \
       soaClusterName \
@@ -175,6 +190,9 @@ function validateCommonInputs_SOA {
 
     validateSSLPortsSpecified \
 	  osbManagedServerSSLPort
+
+    validateAdministrationPortsSpecified \
+	osbAdministrationPort
 
     validateClusterName_SOA \
       osbClusterName \

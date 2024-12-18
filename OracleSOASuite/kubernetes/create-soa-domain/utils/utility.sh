@@ -55,9 +55,27 @@ function createFiles_SOA {
     exposeAdminNodePortPrefix="${disabledPrefix}"
   fi
 
-  if [ -z "${secureEnabled}" ]; then
+  # Setting default values
+  if [ -z "${sslEnabled}" ]; then
     sslEnabled="false"
   fi
+
+  if [ -z "${secureEnabled}" ]; then
+    secureEnabled="false"
+  fi
+
+  if [ -z "${adminAdministrationPort}" ]; then
+    adminAdministrationPort="9002"
+  fi
+
+  if [ -z "${soaAdministrationPort}" ]; then
+    soaAdministrationPort="9004"
+  fi
+
+  if [ -z "${osbAdministrationPort}" ]; then
+    osbAdministrationPort="9007"
+  fi
+
 
   if [ "${secureEnabled}" == "true" ] && [ "${productionEnabled}" == "true" ]; then 
     sslEnabled="true"
@@ -137,6 +155,9 @@ function createFiles_SOA {
     sed -i -e "s:%SSL_ENABLED%:${sslEnabled}:g" ${domainPropertiesOutput}
     sed -i -e "s:%PRODUCTION_MODE_ENABLED%:${productionModeEnabled}:g" ${domainPropertiesOutput}
     sed -i -e "s:%SECURE_ENABLED%:${secureEnabled}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%SOA_ADMINISTRATION_PORT%:${soaAdministrationPort}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%OSB_ADMINISTRATION_PORT%:${osbAdministrationPort}:g" ${domainPropertiesOutput}
     sed -i -e "s:%CLUSTER_TYPE%:${clusterType}:g" ${domainPropertiesOutput}
     sed -i -e "s:%JAVA_OPTIONS%:${javaOptions}:g" ${domainPropertiesOutput}
     sed -i -e "s:%T3_CHANNEL_PORT%:${t3ChannelPort}:g" ${domainPropertiesOutput}
@@ -194,6 +215,9 @@ function createFiles_SOA {
     sed -i -e "s:%SSL_ENABLED%:${sslEnabled}:g" ${createJobOutput}
     sed -i -e "s:%PRODUCTION_MODE_ENABLED%:${productionModeEnabled}:g" ${createJobOutput}
     sed -i -e "s:%SECURE_ENABLED%:${secureEnabled}:g" ${createJobOutput}
+    sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${createJobOutput}
+    sed -i -e "s:%SOA_ADMINISTRATION_PORT%:${soaAdministrationPort}:g" ${createJobOutput}
+    sed -i -e "s:%OSB_ADMINISTRATION_PORT%:${osbAdministrationPort}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME%:${adminServerName}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME_SVC%:${adminServerNameSVC}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_PORT%:${adminPort}:g" ${createJobOutput}
