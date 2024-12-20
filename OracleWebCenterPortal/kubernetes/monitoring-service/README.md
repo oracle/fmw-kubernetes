@@ -3,8 +3,10 @@ Using the `WebLogic Monitoring Exporter` you can scrape runtime information from
 
 ## Prerequisites
 
-- Have Docker and a Kubernetes cluster running and have `kubectl` installed and configured.
+- Have Docker and a Kubernetes cluster running and have `${KUBERNETES_CLI:-kubectl}` installed and configured.
 - Have Helm installed.
+- Before installing kube-prometheus-stack (Prometheus, Grafana and Alertmanager), refer [link](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#uninstall-helm-chart) and cleanup if any older CRDs for monitoring services exists in your Kubernetes cluster.
+  **Note**: Make sure no existing monitoring services is running in the Kubernetes cluster before cleanup. If you do not want to cleanup monitoring services CRDs, refer [link](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart) for upgrading the CRDs.
 - An OracleWebCenterPortal domain deployed by `weblogic-operator` is running in the Kubernetes cluster.
 
 ## Set up monitoring for OracleWebCenterPortal domain 
@@ -18,102 +20,53 @@ Set up the WebLogic Monitoring Exporter that will collect WebLogic Server metric
 
 ## Set up manually
 
-### Deploy Prometheus and Grafana
+### Install kube-prometheus-stack
 
-Refer to the compatibility matrix of [Kube Prometheus](https://github.com/coreos/kube-prometheus#kubernetes-compatibility-matrix) and clone the [release](https://github.com/coreos/kube-prometheus/releases) version of the `kube-prometheus` repository according to the Kubernetes version of your cluster.
+Refer to [link](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) and install the Kube Prometheus stack.
 
-1. Clone the `kube-prometheus` repository:
+1. Get Helm Repository Info for the `kube-prometheus`:
     ```
-    $ git clone https://github.com/coreos/kube-prometheus.git
+    $ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    $ helm repo update
     ```
 
-1. Change to folder `kube-prometheus` and enter the following commands to create the namespace and CRDs, and then wait for their availability before creating the remaining resources:
-
+1. Install the helm chart:
     ```
-    $ cd kube-prometheus
-    $ kubectl create -f manifests/setup
-    $ until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
-    $ kubectl create -f manifests/
+    namespace=monitoring
+    release_name=myrelease
+    prometheusNodePort=32101
+    alertmanagerNodePort=32102
+    grafanaNodePort=32100
+    $ helm install $release_name prometheus-community/kube-prometheus-stack \
+       --namespace $namespace \
+       --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
+       --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
+       --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
+       --wait
     ```
 
 1. `kube-prometheus` requires all nodes in the Kubernetes cluster to be labeled with `kubernetes.io/os=linux`. If any node is not labeled with this, then you need to label it using the following command:
 
     ```
-    $ kubectl label nodes --all kubernetes.io/os=linux
+    $ ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux
     ```
 
-1. Enter the following commands to provide external access for Grafana, Prometheus, and Alertmanager:
+1. With the nodePort values provided during helm install, monitoring serives will be available at:
 
-    ```
-    $ kubectl patch svc grafana -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32100 }]'
-
-    $ kubectl patch svc prometheus-k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32101 }]'
-
-    $ kubectl patch svc alertmanager-main -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/type", "value": "NodePort" },{"op": "replace", "path": "/spec/ports/0/nodePort", "value": 32102 }]'
-    ```
-
-    Note:
     * `32100` is the external port for Grafana
     * `32101` is the external port for Prometheus
     * `32102` is the external port for Alertmanager
 
-### Generate the WebLogic Monitoring Exporter Deployment Package  
+### Use the Monitoring Exporter with WebLogic Kubernetes Operator  
 
-The `wls-exporter.war` package need to be updated and created for each listening ports (Administration Server and Managed Servers) in the domain.
-Set the below environment values based on your environment and run the script `get-wls-exporter.sh` to generate the required WAR files at `${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy`:
-- adminServerPort
-- wlsMonitoringExporterTowcpCluster
-- wcpManagedServerPort
-- wlsMonitoringExporterTowcpPortletCluster
-- wcpPortletManagedServerPort
-
-For example:
+For enabling monitoring exporter, simply add the [monitoringExporter](https://github.com/oracle/weblogic-kubernetes-operator/blob/main/documentation/domains/Domain.md#monitoring-exporter-specification) configuration element in the domain resource.
+Sample configuration available at `${WORKDIR}/monitoring-service/config/config.yaml` can be added to your domain using below command:
 
 ```
-$ cd ${WORKDIR}/monitoring-service/scripts
-$ export adminServerPort=7001 
-$ export wlsMonitoringExporterTowcpCluster=true
-$ export wcpManagedServerPort=8888
-$ export wlsMonitoringExporterTowcpPortletCluster=true
-$ export wcpPortletManagedServerPort=8889
-$ sh get-wls-exporter.sh
+$ kubectl patch domain ${domainUID} -n ${domainNamespace} --patch-file ${WORKDIR}/monitoring-service/config/config.yaml --type=merge
 ```
 
-Verify whether the required WAR files are generated at `${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy`.
-
-```
-$ ls ${WORKDIR}/monitoring-service/scripts/wls-exporter-deploy
-```
-
-### Deploy the WebLogic Monitoring Exporter into the OracleWebCenterPortal domain
-
-Follow these steps to copy and deploy the WebLogic Monitoring Exporter WAR files into the OracleWebCenterPortal Domain. 
-
-**Note**: Replace the `<xxxx>` with appropriate values based on your environment:
-
-```
-$ cd ${WORKDIR}/monitoring-service/scripts
-$ kubectl cp wls-exporter-deploy <namespace>/<admin_pod_name>:/u01/oracle
-$ kubectl cp deploy-weblogic-monitoring-exporter.py <namespace>/<admin_pod_name>:/u01/oracle/wls-exporter-deploy
-$ kubectl exec -it -n <namespace> <admin_pod_name> -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
--domainName <domainUID> -adminServerName <adminServerName> -adminURL <adminURL> \
--wcpClusterName <wcpClusterName> -wlsMonitoringExporterTowcpCluster <wlsMonitoringExporterTowcpCluster> \
--wcpPortletClusterName <wcpPortletClusterName> -wlsMonitoringExporterTowcpPortletCluster <wlsMonitoringExporterTowcpPortletCluster> \
--username <username> -password <password> 
-```
-
-For example:
-
-```
-$ cd ${WORKDIR}/monitoring-service/scripts
-$ kubectl cp wls-exporter-deploy wcpns/wcp-domain-adminserver:/u01/oracle
-$ kubectl cp deploy-weblogic-monitoring-exporter.py wcpns/wcp-domain-adminserver:/u01/oracle/wls-exporter-deploy
-$ kubectl exec -it -n wcpns wcp-domain-adminserver -- /u01/oracle/oracle_common/common/bin/wlst.sh /u01/oracle/wls-exporter-deploy/deploy-weblogic-monitoring-exporter.py \
--domainName wcp-domain -adminServerName -adminserver:7001 \
--wcpClusterName wcp-cluster -wlsMonitoringExporterTowcpCluster true \
--wcpPortletClusterName wcportlet-cluster -wlsMonitoringExporterTowcpPortletCluster true \
--username weblogic -password Welcome1 
-```
+This will trigger the restart of domain. The newly created server pods will have the exporter sidecar. See https://github.com/oracle/weblogic-monitoring-exporter for details.
 
 ### Configure Prometheus Operator 
 
@@ -138,7 +91,7 @@ Perform the below steps for enabling Prometheus to collect the metrics from the 
 
 ```
 $ cd ${WORKDIR}/monitoring-service/manifests
-$ kubectl apply -f .
+$ ${KUBERNETES_CLI:-kubectl} apply -f .
 ```
 
 ### Verify the service discovery of WebLogic Monitoring Exporter
@@ -182,23 +135,17 @@ The following parameters can be provided in the inputs file.
 | `domainUID` | domainUID of the OracleWebCenterPortal domain. | `wcp-domain` |
 | `domainNamespace` | Kubernetes namespace of the OracleWebCenterPortal domain. | `wcpns` |
 | `setupKubePrometheusStack` | Boolean value indicating whether kube-prometheus-stack (Prometheus, Grafana and Alertmanager) to be installed | `true` |
-| `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support and Admission webhook support for PrometheusRules resources is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false`|  |
+| `additionalParamForKubePrometheusStack` | The script install's kube-prometheus-stack with `service.type` as NodePort and values for `service.nodePort` as per the parameters defined in `monitoring-inputs.yaml`. Use `additionalParamForKubePrometheusStack` parameter to further configure with additional parameters as per [values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml). Sample value to disable NodeExporter, Prometheus-Operator TLS support, Admission webhook support for PrometheusRules resources and custom Grafana image repository is `--set nodeExporter.enabled=false --set prometheusOperator.tls.enabled=false --set prometheusOperator.admissionWebhooks.enabled=false --set grafana.image.repository=xxxxxxxxx/grafana/grafana`|  |
 | `monitoringNamespace` | Kubernetes namespace for monitoring setup. | `monitoring` |
+| `monitoringHelmReleaseName` | Helm release name for monitoring resources. | `monitoring` |
 | `adminServerName` | Name of the Administration Server. | `AdminServer` |
-| `adminServerPort` | Port number for the Administration Server inside the Kubernetes cluster. | `7001` |
-| `wcpClusterName` | Name of the wcpCluster. | `wcp-cluster` |
-| `wcpManagedServerPort` | Port number of the managed servers in the wcpCluster. | `8888` |
-| `wlsMonitoringExporterTowcpCluster` | Boolean value indicating whether to deploy WebLogic Monitoring Exporter to wcpCluster. | `false` |
-| `wcpPortletClusterName` | Name of the wcpPortletCluster. | `wcportlet-cluster` |
-| `wcpPortletManagedServerPort` | Port number of the managed servers in the wcpPortletCluster. | `8889` |
-| `wlsMonitoringExporterTowcpPortletCluster` | Boolean value indicating whether to deploy WebLogic Monitoring Exporter to wcpPortletCluster. | `false` |
 | `exposeMonitoringNodePort` | Boolean value indicating if the Monitoring Services (Prometheus, Grafana and Alertmanager) is exposed outside of the Kubernetes cluster. | `false` |
 | `prometheusNodePort` | Port number of the Prometheus outside the Kubernetes cluster. | `32101` |
 | `grafanaNodePort` | Port number of the Grafana outside the Kubernetes cluster. | `32100` |
 | `alertmanagerNodePort` | Port number of the Alertmanager outside the Kubernetes cluster. | `32102` |
-| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server’s user name and password. | `wcp-domain-domain-credentials` |
+| `weblogicCredentialsSecretName` | Name of the Kubernetes secret which has Administration Server's user name and password. | `wcp-domain-domain-credentials` |
 
-Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and deploying WebLogic Monitoring Exporter into the OracleWebCenterPortal domain. Hence make the domain specific values to be same as that used during domain creation.
+Note that the values specified in the `monitoring-inputs.yaml` file will be used to install kube-prometheus-stack (Prometheus, Grafana and Alertmanager) and enabling WebLogic Monitoring Exporter into the OracleWebCenterPortal domain. Hence make the domain specific values to be same as that used during domain creation.
 
 ### Run the setup monitoring script
 
@@ -211,10 +158,8 @@ $ ./setup-monitoring.sh \
 ```
 The script will perform the following steps:
 
-- Helm install `prometheus-community/kube-prometheus-stack` of version "16.5.0" if `setupKubePrometheusStack` is set to `true`.
-- Deploys WebLogic Monitoring Exporter to Administration Server.
-- Deploys WebLogic Monitoring Exporter to `wcpCluster` if `wlsMonitoringExporterTowcpCluster` is set to `true`.
-- Deploys WebLogic Monitoring Exporter to `wcpPortletCluster` if `wlsMonitoringExporterTowcpPortletCluster` is set to `true`.
+- Helm install `prometheus-community/kube-prometheus-stack` if `setupKubePrometheusStack` is set to `true`.
+- Configures Monitoring Exporter as sidecar
 - Exposes the Monitoring Services (Prometheus at `32101`, Grafana at `32100` and Alertmanager at `32102`) outside of the Kubernetes cluster if `exposeMonitoringNodePort` is set to `true`.
 - Imports the WebLogic Server Grafana Dashboard if `setupKubePrometheusStack` is set to `true`.
 
@@ -234,7 +179,7 @@ Sample output:
 ```bash
 $ helm ls -n monitoring
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION
-monitoring      monitoring      1               2021-06-18 12:58:35.177221969 +0000 UTC deployed        kube-prometheus-stack-16.5.0    0.48.0
+monitoring      monitoring      1               2023-03-15 10:31:42.44437202 +0000 UTC  deployed        kube-prometheus-stack-45.7.1    v0.63.0
 $
 ```
 

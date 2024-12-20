@@ -1,0 +1,63 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vnchelper
+  namespace: %NAMESPACE%  
+  labels:
+    application: vnchelper
+spec:
+  # 1 Pods should exist at all times.
+  replicas: 1
+  selector:
+    matchLabels:
+      application: vnchelper
+  template:
+    metadata:
+      labels:
+        application: vnchelper
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: vnchelper
+        image: ghcr.io/oracle/oraclelinux:8
+        imagePullPolicy: %WEBLOGIC_IMAGE_PULL_POLICY%
+        command: ["/bin/sh", "-c", "/bin/bash /u01/vnchelper/scripts/startVNC.sh; sleep infinity"]
+        volumeMounts:
+        - mountPath: /vnc-helper/secrets
+          name: create-vnchelper-secret-volume
+        - mountPath: /u01/vnchelper/scripts
+          name: create-vnchelper-cm-volume
+        - name: pv-volume
+          mountPath: %VOLUME_MOUNT_PATH%
+      volumes:
+      - name: create-vnchelper-secret-volume
+        secret:
+           secretName: vnchelper-scripts-secret 
+      - name: create-vnchelper-cm-volume
+        configMap:
+           name: vnchelper-scripts-cm
+      - name: pv-volume
+        %PVC_PREFIX%persistentVolumeClaim:
+        %PVC_PREFIX%  claimName: %CLAIM_NAME%
+        %EMPTY_PREFIX%emptyDir: {}
+      %IMAGE_PULL_SECRET_PREFIX%imagePullSecrets:
+      %IMAGE_PULL_SECRET_PREFIX%- name: %WEBLOGIC_IMAGE_PULL_SECRET_NAME%		  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    application: vnchelper
+  name: vnchelper
+  namespace: %NAMESPACE%
+spec:
+  ports:
+  - name: vnc-port-tcp
+    protocol: TCP
+    port: 5901
+    targetPort: 5901
+  selector:
+    application: vnchelper
+  type: NodePort

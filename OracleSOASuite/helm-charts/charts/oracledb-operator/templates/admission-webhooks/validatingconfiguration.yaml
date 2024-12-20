@@ -1,0 +1,196 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: {{ include "oracledb-operator.namespace" . }}/{{ include "oracledb-operator.fullname" . }}-serving-cert
+  name: {{ include "oracledb-operator.fullname" . }}-validating-webhook-configuration
+
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-autonomouscontainerdatabase
+  failurePolicy: Fail
+  name: vautonomouscontainerdatabase.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - autonomouscontainerdatabases
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-autonomousdatabase
+  failurePolicy: Fail
+  name: vautonomousdatabase.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - autonomousdatabases
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-autonomousdatabasebackup
+  failurePolicy: Fail
+  name: vautonomousdatabasebackup.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - autonomousdatabasebackups
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-autonomousdatabaserestore
+  failurePolicy: Fail
+  name: vautonomousdatabaserestore.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - autonomousdatabaserestores
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-cdb
+  failurePolicy: Fail
+  name: vcdb.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - cdbs
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-dataguardbroker
+  failurePolicy: Fail
+  name: vdataguardbroker.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - dataguardbrokers
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-oraclerestdataservice
+  failurePolicy: Fail
+  name: voraclerestdataservice.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - oraclerestdataservices
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-pdb
+  failurePolicy: Fail
+  name: vpdb.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pdbs
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: {{ include "oracledb-operator.fullname" . }}-webhook-service
+      namespace: {{ include "oracledb-operator.namespace" . }}
+      path: /validate-database-oracle-com-v1alpha1-singleinstancedatabase
+  failurePolicy: Fail
+  name: vsingleinstancedatabase.kb.io
+  rules:
+  - apiGroups:
+    - database.oracle.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - singleinstancedatabases
+  sideEffects: None

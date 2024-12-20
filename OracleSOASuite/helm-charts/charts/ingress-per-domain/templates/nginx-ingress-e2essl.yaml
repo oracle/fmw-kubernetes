@@ -1,0 +1,172 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "NGINX" }}
+{{- if (eq .Values.sslType "E2ESSL")}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower }}-nginx-e2essl
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+    serviceType: SERVER
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
+spec:
+  ports:
+  {{- if eq .Values.wlsDomain.secureEnabled true }}
+  - port: {{ .Values.wlsDomain.adminSecurePort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminSecurePort }}
+  {{- else }}
+  - port: {{ .Values.wlsDomain.adminServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminServerSSLPort }}
+  {{- end }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-admin
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.admin }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.admin }}'
+    http:
+      paths:
+      - path: 
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-e2essl'
+            port:
+              {{- if eq .Values.wlsDomain.secureEnabled true }}
+              number: {{ .Values.wlsDomain.adminSecurePort }}
+              {{- else }}
+              number: {{ .Values.wlsDomain.adminServerSSLPort }}
+              {{- end }}
+{{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+    serviceType: CLUSTER
+    weblogic.clusterName: {{ .Values.wlsDomain.soaClusterName }}
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.clusterName: {{ .Values.wlsDomain.soaClusterName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-soa
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.soa }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.soa }}'
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerSSLPort  }}
+{{- end }}
+{{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+    serviceType: CLUSTER
+    weblogic.clusterName: {{ .Values.wlsDomain.osbClusterName }}
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.clusterName: {{ .Values.wlsDomain.osbClusterName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-osb
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.osb }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.osb }}'
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+            port:
+              number: {{ .Values.wlsDomain.osbManagedServerSSLPort  }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+

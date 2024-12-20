@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # The version of this inputs file.  Do not modify.
@@ -10,6 +10,9 @@ adminPort: 7001
 
 # SSL Port number for admin server
 adminServerSSLPort: 7002
+
+# Administration Port number for admin server
+adminAdministrationPort: 9002
 
 # Name of the Admin Server
 adminServerName: adminserver
@@ -23,8 +26,8 @@ domainUID: wccinfra
 domainHome: /u01/oracle/user_projects/domains/wccinfra
 
 # Determines which WebLogic Servers the Weblogic Kubernetes Operator will start up
-# Legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
-serverStartPolicy: IF_NEEDED
+# Legal values are "Never", "IfNeeded", or "AdminOnly"
+serverStartPolicy: IfNeeded
 
 
 # Cluster name
@@ -39,6 +42,9 @@ managedServerPort: 16200
 # SSL Port number for each managed server
 managedServerSSLPort: 16201
 
+# Administration Port number for managed server
+managedServerAdministrationPort: 9200
+
 # Number of managed servers to generate for the domain
 configuredManagedServerCount: 5
 
@@ -50,7 +56,7 @@ initialManagedServerReplicas: 3
 # Update the image according to WebCenter Content Release version
 # For Example : PS4 = wccontent:12.2.1.4.0
 #
-image: oracle/wccontent:12.2.1.4.0
+image: oracle/wccontent:release-version
 
 
 # Image pull policy
@@ -63,6 +69,11 @@ imagePullPolicy: IfNotPresent
 
 # Boolean indicating if production mode is enabled for the domain
 productionModeEnabled: true
+
+# Boolean indicating if secure is enabled for the domain.
+# This value has significance only with 14.1.2.0.0.
+# This value has no significance in dev mode i.e., when productionModeEnabled is false.
+secureEnabled: false
 
 # Name of the Kubernetes secret for the Admin Server's username and password
 # The name must be lowercase.
@@ -173,7 +184,7 @@ createDomainFilesDir: wlst
 rcuSchemaPrefix: <your_schema_prefix>
 
 # The database URL
-rcuDatabaseURL: <your_db_host>:<your_db_port>/<your_db_service>
+rcuDatabaseURL: <your_db_host>:<your_db_port>/<your_db_service> 
 
 # The kubernetes secret containing the database credentials
 rcuCredentialsSecret: wccinfra-rcu-credentials

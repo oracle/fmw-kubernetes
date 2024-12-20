@@ -1,0 +1,17 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+
+terraform {
+  backend "s3" {
+    bucket   = "<bucket_name>"
+    key      = "<bucket_dir>/terraform.tfstate"
+    region   = "<region>"
+    endpoint = "<object_storage_endpoint>"
+    shared_credentials_file     = "<aws_compatible_credentials_file>"
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    force_path_style            = true
+  }
+}
+

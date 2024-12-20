@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c)  2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # Function to generate the properties and yaml files for creating a domain
@@ -55,6 +55,14 @@ function createFiles_WCP {
     exposeAnyChannelPrefix="${enabledPrefix}"
   else
     exposeAdminNodePortPrefix="${disabledPrefix}"
+  fi
+
+  if [ -z "${secureEnabled}" ]; then
+    sslEnabled="false"
+  fi
+
+  if [ "${secureEnabled}" == "true" ] && [ "${productionEnabled}" == "true" ]; then 
+    sslEnabled="true"
   fi
 
   if [ "${istioEnabled}" == "true" ]; then
@@ -127,6 +135,10 @@ function createFiles_WCP {
     sed -i -e "s:%CLUSTER_NAME%:${clusterName}:g" ${domainPropertiesOutput}
     sed -i -e "s:%SSL_ENABLED%:${sslEnabled}:g" ${domainPropertiesOutput}
     sed -i -e "s:%PRODUCTION_MODE_ENABLED%:${productionModeEnabled}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%SECURE_ENABLED%:${secureEnabled}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%MANAGED_ADMINISTRATION_PORT%:${managedAdministrationPort}:g" ${domainPropertiesOutput}
+    sed -i -e "s:%PORTLET_ADMINISTRATION_PORT%:${portletAdministrationPort}:g" ${domainPropertiesOutput}
     sed -i -e "s:%CLUSTER_TYPE%:${clusterType}:g" ${domainPropertiesOutput}
     sed -i -e "s;%JAVA_OPTIONS%;${javaOptions};g" ${domainPropertiesOutput}
     sed -i -e "s:%T3_CHANNEL_PORT%:${t3ChannelPort}:g" ${domainPropertiesOutput}
@@ -194,6 +206,10 @@ function createFiles_WCP {
     sed -i -e "s:%DOMAIN_HOME%:${domainHome}:g" ${createJobOutput}
     sed -i -e "s:%SSL_ENABLED%:${sslEnabled}:g" ${createJobOutput}
     sed -i -e "s:%PRODUCTION_MODE_ENABLED%:${productionModeEnabled}:g" ${createJobOutput}
+    sed -i -e "s:%SECURE_ENABLED%:${secureEnabled}:g" ${createJobOutput}
+    sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${createJobOutput}
+    sed -i -e "s:%MANAGED_ADMINISTRATION_PORT%:${managedAdministrationPort}:g" ${createJobOutput}
+    sed -i -e "s:%PORTLET_ADMINISTRATION_PORT%:${portletAdministrationPort}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME%:${adminServerName}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME_SVC%:${adminServerNameSVC}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_PORT%:${adminPort}:g" ${createJobOutput}

@@ -1,0 +1,57 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    weblogic.domainUID: %DOMAIN_UID%
+    weblogic.domainName: %DOMAIN_NAME%
+    app: %DOMAIN_UID%-domain-upgrade
+  name: %DOMAIN_UID%-domain-upgrade
+  namespace: %NAMESPACE%
+spec:
+  containers:
+  - args:
+    - sleep
+    - infinity
+    image: %WEBLOGIC_IMAGE%
+    imagePullPolicy: %WEBLOGIC_IMAGE_PULL_POLICY%
+    name: %DOMAIN_UID%-domain-upgrade
+    volumeMounts:
+    - mountPath: /u01/scripts
+      name: domain-upgrade-cm-volume
+    - mountPath: %DOMAIN_ROOT_DIR%
+      name: domain-storage-volume
+    - mountPath: /weblogic-operator/rcu-secrets
+      name: rcu-credentials-volume
+    env:
+    - name: DOMAIN_UID
+      value: "%DOMAIN_UID%"
+    - name: DOMAIN_ROOT_DIR
+      value: "%DOMAIN_ROOT_DIR%"
+    - name: DOMAIN_HOME_DIR
+      value: "%DOMAIN_HOME%"
+    - name: DOMAIN_NAME
+      value: "%DOMAIN_NAME%"
+    - name: CONNECTION_STRING
+      value: "%CONNECTION_STRING%"
+    - name: RCUPREFIX
+      value: "%RCUPREFIX%"
+    - name: DOMAIN_TYPE
+      value: "%DOMAIN_TYPE%"
+    - name: SECURE_ENABLED
+      value: "%SECURE_ENABLED%"
+  volumes:
+  - name: domain-upgrade-cm-volume
+    configMap:
+      name: %DOMAIN_UID%-domain-upgrade-pod-cm
+  - name: domain-storage-volume
+    persistentVolumeClaim:
+      claimName: %DOMAIN_PVC_NAME%
+  - name: rcu-credentials-volume
+    secret:
+      secretName: %RCU_CREDENTIALS_SECRET_NAME%
+  %WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%imagePullSecrets:
+  %WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%- name: %WEBLOGIC_IMAGE_PULL_SECRET_NAME%
+

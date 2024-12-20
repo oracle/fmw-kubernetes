@@ -1,0 +1,77 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is a template for RCU Pod
+#
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    run: rcu
+    {{- include "soa-suite.labels" . | nindent 4 }}
+  name: {{ .Values.domain.domainName }}-rcu-delete
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded  
+spec:
+  template:
+    metadata:
+      labels:
+        weblogic.domainUID: {{ .Values.domain.domainName }}
+        weblogic.domainName: {{ .Values.domain.domainName }}
+        app: {{ .Values.domain.domainName }}-rcu-delete
+        {{- include "soa-suite.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- if .Values.domain.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.domain.imagePullSecrets }}
+      {{- end }}
+      serviceAccountName: {{ include "soa-suite.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.domain.securityContext | nindent 8 }}
+      volumes:
+      - name: delete-rcu-job-cm-volume
+        configMap:
+            name: {{ .Values.domain.domainName }}-delete-rcu-job-cm
+      - name: rcu-secret-volume
+        secret:
+         {{- if .Values.oracledb.credentials.secretName }}
+          secretName: {{ .Values.oracledb.credentials.secretName }}
+         {{- else }}
+          secretName: {{ .Values.domain.domainName }}-db-credentials
+         {{- end }}
+      containers:
+      - command: ["/bin/bash"]
+        args: [/u01/scripts/dropRepository.sh, $(connectString), $(schemaPrefix), $(domainType), $(customVariables)]
+        image: "{{ .Values.domain.image.repository }}:{{ .Values.domain.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.domain.image.pullPolicy }}
+        name: {{ .Chart.Name }}-rcu
+        env:
+          - name: connectString
+            value: "{{ (include "soa-suite.databaseUrl" .) }}"
+          - name: schemaPrefix
+            value: {{ .Values.domain.rcuSchema.prefix }}
+          - name: schemaProfileType
+            value: {{ .Values.domain.rcuSchema.profileType }}
+          - name: domainType
+            value: {{ .Values.domain.type }}
+          - name: schemaPassword
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.domain.rcuSchema.credentials.secretName }}
+                name: {{ .Values.domain.rcuSchema.credentials.secretName }}
+                {{- else }}
+                name: {{ .Values.domain.domainName }}-rcu-credentials
+                {{- end }}
+                key: password
+          - name: customVariables
+            value: "SOA_PROFILE_TYPE=$(schemaProfileType),HEALTHCARE_INTEGRATION=NO"
+        volumeMounts:
+        - name: rcu-secret-volume
+          mountPath: "/rcu-secret"
+        - name: delete-rcu-job-cm-volume
+          mountPath: "/u01/scripts"

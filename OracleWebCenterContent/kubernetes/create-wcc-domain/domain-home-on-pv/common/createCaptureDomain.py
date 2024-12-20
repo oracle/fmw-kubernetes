@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -6,23 +6,25 @@ import sys
 
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
-class Capture12214Provisioner:
+class CaptureProvisioner:
 
+    secureDomain = 'false';
     MANAGED_SERVERS = []
 
     CLUSTER = 'capture_cluster'
     CAPTURE_SERVER_BASENAME = 'capture_server'
     CAPTURE_SERVER_PORT = 16400
     CAPTURE_SERVER_SSL_PORT = 16401
+    CAPTURE_SERVER_ADMINISTRATION_PORT = 9164
 
-    JRF_12214_TEMPLATES = {
+    JRF_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar'
         ],
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR' ]
     }
 
-    CAPTURE_12214_TEMPLATES = {
+    CAPTURE_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/wccapture/common/templates/wls/oracle.capture_template.jar'
         ],
@@ -35,22 +37,24 @@ class Capture12214Provisioner:
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def extendCaptureDomain(self, domainParentDir, db, dbPrefix, dbPassword, prodMode, managedCount, sslEnabled):
+    def extendCaptureDomain(self, domainParentDir, db, dbPrefix, dbPassword, prodMode, secureMode, managedCount, sslEnabled):
 
         print '================================================================='
         print '    WebCenter Capture WebLogic Operator Domain Extension Script  '
-        print '                         12.2.1.4.0                              '
         print '================================================================='
         
         print 'Extending Domain with Capture...'
         ms_count = int(managedCount)
-        self.extendDomain(domainParentDir, ms_count, db, dbPrefix, dbPassword)
+        self.extendDomain(domainParentDir, ms_count, db, dbPrefix, dbPassword, prodMode, secureMode)
         print 'Domain Extension with Capture is done...'
 
-    def extendDomain(self, domainHome, ms_count, db, dbPrefix, dbPassword):
+    def extendDomain(self, domainHome, ms_count, db, dbPrefix, dbPassword, prodMode, secureMode):
         print 'Extending domain at ' + domainHome
         print 'Database  ' + db
         readDomain(domainHome)
+        domainVersion = cmo.getDomainVersion()
+        if (domainVersion == "14.1.2.0.0" and prodMode == 'true' and secureMode == 'true'):
+            self.secureDomain = 'true'
 
         # Create Capture cluster
         # ======================
@@ -61,11 +65,11 @@ class Capture12214Provisioner:
         # Create Capture Managed servers
         print 'Creating Capture Managed Servers...'
 
-        self.MANAGED_SERVERS = self.createManagedServers(ms_count, self.CAPTURE_SERVER_BASENAME, self.CAPTURE_SERVER_PORT, self.CLUSTER, self.MANAGED_SERVERS, self.CAPTURE_SERVER_SSL_PORT, sslEnabled)
+        self.MANAGED_SERVERS = self.createManagedServers(ms_count, self.CAPTURE_SERVER_BASENAME, self.CAPTURE_SERVER_PORT, self.CLUSTER, self.MANAGED_SERVERS, self.CAPTURE_SERVER_SSL_PORT, sslEnabled, self.CAPTURE_SERVER_ADMINISTRATION_PORT)
         print 'Capture Managed servers created...'
 
         print 'Applying Capture domain extension templates...'
-        for extensionTemplate in self.CAPTURE_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.CAPTURE_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'Capture Extension Templates added...'
@@ -75,8 +79,8 @@ class Capture12214Provisioner:
 
         print 'Targeting Server Groups...'
 
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.CAPTURE_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.CAPTURE_TEMPLATES['serverGroupsToTarget'])
         self.targetCaptureServers(serverGroupsToTarget)
         
 
@@ -115,7 +119,7 @@ class Capture12214Provisioner:
     # Helper Methods                                                          #
     ###########################################################################
         
-    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled):
+    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled, ms_admin_port):
         # Create Managed servers
         for index in range(0, ms_count):
             print 'Creating Managed servers...'
@@ -127,6 +131,8 @@ class Capture12214Provisioner:
             cd('/Servers/%s/' % name )
             print('Managed server name is %s' % name);
             set('ListenPort', ms_port)
+            if (self.secureDomain == 'true'):
+              set('administrationPort', ms_admin_port)     
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
@@ -136,8 +142,8 @@ class Capture12214Provisioner:
               print 'Enabling SSL for Managed server...'
               create(name, 'SSL')
               cd('/Servers/' + name+ '/SSL/' + name)
-              set('ListenPort', managedServerSSLPort)
               set('Enabled', 'True')
+              set('ListenPort', managedServerSSLPort)
         print ms_servers
         return ms_servers
 
@@ -204,7 +210,7 @@ class Capture12214Provisioner:
 def usage():
     print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> -name <domain-name>' + \
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' + \
-          '-prodMode <prodMode> -managedServerCount <managedCount> -sslEnabled <sslEnabled> '
+          '-prodMode <prodMode> -secureMode <secureMode> -managedServerCount <managedCount> -sslEnabled <sslEnabled> '
     sys.exit(0)
 
 # Uncomment for Debug only
@@ -256,6 +262,9 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-secureMode':
+        secureMode = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-managedServerCount':
         managedCount = sys.argv[i + 1]
         i += 2
@@ -267,5 +276,5 @@ while i < len(sys.argv):
         usage()
         sys.exit(1)
 
-provisioner = Capture12214Provisioner(oracleHome, javaHome, domainParentDir, domainName, prodMode, managedCount, sslEnabled)
-provisioner.extendCaptureDomain(domainParentDir, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, prodMode, managedCount, sslEnabled)
+provisioner = CaptureProvisioner(oracleHome, javaHome, domainParentDir, domainName, prodMode, managedCount, sslEnabled)
+provisioner.extendCaptureDomain(domainParentDir, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, prodMode, secureMode, managedCount, sslEnabled)

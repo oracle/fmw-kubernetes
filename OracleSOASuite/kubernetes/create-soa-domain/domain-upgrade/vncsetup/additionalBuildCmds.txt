@@ -1,0 +1,8 @@
+[final-build-commands]
+USER root
+RUN microdnf -y install libXext libXrender libXtst tigervnc-server xterm xorg-x11-fonts-misc.noarch oracle-epel-release-el8 dnf \
+    && dnf -y groupinstall "base-x" "Xfce" \
+    && dnf -y clean all \
+    && rm -rf /var/cache/yum/* 
+USER oracle
+

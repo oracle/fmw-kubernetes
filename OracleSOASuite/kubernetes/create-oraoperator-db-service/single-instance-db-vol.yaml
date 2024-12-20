@@ -1,0 +1,17 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: single-instance-db-vol
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  #Configure the host_path value as per the requirement
+  hostPath:
+    path: <host_path>
+    

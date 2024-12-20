@@ -1,0 +1,63 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+
+# Properties to generate TF variables file for cluster creation from property file oci.props
+#
+# Copy this file to oci.props and update it with custom attribute value, see example values provided for each property
+#
+
+#OCI Identity Variables. OCID's can be obtained from the user info page in the OCI console
+#tenancy_id="ocid1.tenancy.oc1..xxxxyyyyzzzz"
+#compartment_id=ocid=ocid1.compartment.oc1..xxxxyyyyzzzz
+#user_id=ocid1.user.oc1..xxxxyyyyzzzz
+#fingerprint=a6:c8:49:a4:fb:66:64:01:10:xx:xx:xx
+#api_private_key_path=/scratch/<user>/.oci/oci_api_key.pem
+tenancy_id=
+compartment_id=
+user_id=
+fingerprint=
+api_private_key_path=
+
+
+#name of tfvars file (no extention) to generate
+#tfvars.filename=myocneclustertf
+tfvars.filename=
+
+
+#Common OCI resource variables
+#region=us-phoenix-1
+#availability_domain_id=PJzM:PHX-AD-2
+#prefix=vk
+region=
+availability_domain_id=
+prefix=
+
+#Compute instance specific variables, path to private SSH key
+#ssh_public_key_path=/home/$USER/.ssh/id_rsa.pub
+#ssh_private_key_path=/home/$USER/.ssh/id_rsa
+ssh_public_key_path=
+ssh_private_key_path=
+
+#Bastion specific variables, path to private SSH key
+#bastion_private_key_path=/home/$USER/.ssh/id_rsa
+bastion_private_key_path=
+
+#OCNE Overrides
+#control_plane_node_count=3
+#worker_node_count=3
+#environment_name=myenvironment
+#kubernetes_name=mycluster
+#ocne_version=1.9
+control_plane_node_count=
+worker_node_count=
+environment_name=
+kubernetes_name=
+ocne_version=
+
+#location for opentofu installation
+#opentofu.installdir=/scratch/<user>/myopentofutest
+opentofu.installdir=
+
+#installer.type=opentofu
+installer.type=opentofu
+
