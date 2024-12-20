@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -104,7 +104,7 @@ function initialize {
   # Validate the required files exist
   validateErrors=false
 
-  validateKubectlAvailable
+  #validateKubectlAvailable
 
   if [ -z "${valuesInputFile}" ]; then
     validationError "You must use the -i option to specify the name of the inputs parameter file (a modified copy of kubernetes/create-wcsites-domain/domain-home-on-pv/create-domain-inputs.yaml)."
@@ -141,6 +141,14 @@ function initialize {
   getKubernetesClusterIP
   if [ -z "${t3PublicAddress}" ]; then
     t3PublicAddress="${K8S_IP}"
+  fi
+  
+  if [ -z "${secureEnabled}" ]; then
+    sslEnabled="false"
+  fi
+
+  if [ "${secureEnabled}" == "true" ] && [ "${productionModeEnabled}" == "true" ]; then
+    sslEnabled="true"
   fi
 }
 
@@ -256,19 +264,25 @@ function createDomainHome {
   	if [ $loadBalancerType == "traefik" ] ; then
     export LB_SETTINGS="\  clusterService:\n\
       annotations: \n\
-        traefik.ingress.kubernetes.io/affinity: \"true\"\n\
-        traefik.ingress.kubernetes.io/session-cookie-name: sticky"
-    fi
-    sed -i -e "/clusterName: ${clusterName}/a ${LB_SETTINGS}" ${dcrOutput}
+        traefik.ingress.kubernetes.io/service.sticky.cookie: \"true\"\n\
+        traefik.ingress.kubernetes.io/service.sticky.cookie.name: sticky"
+    sed -i -e "/clusterName: ${clusterName}/a ${LB_SETTINGS}" ${dcrOutput}    
+    fi 
   fi
-  
+ 
   #Replacing LoadBalancer parameters in script file.
   sed -i -e "s:%LOAD_BALANCER_HOSTNAME%:${loadBalancerHostName}:g" ${createJobOutput}
   sed -i -e "s:%LOAD_BALANCER_PORTNUMBER%:${loadBalancerPortNumber}:g" ${createJobOutput}
   sed -i -e "s:%LOAD_BALANCER_PROTOCOL%:${loadBalancerProtocol}:g" ${createJobOutput}
   sed -i -e "s:%UNICAST_PORTNUMBER%:${unicastPort}:g" ${createJobOutput}
   sed -i -e "s:%SITES_SAMPLES%:${sitesSamples}:g" ${createJobOutput}
+  
+  sed -i -e "s:%SECURE_ENABLED%:${secureEnabled}:g" ${createJobOutput}
 
+  # updating Administration ports for AdminServer and Managed Server
+  sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${createJobOutput}
+  sed -i -e "s:%MANAGED_SERVER_ADMINISTRATION_PORT%:${managedServerAdministrationPort}:g" ${createJobOutput} 
+  
   #replacing tokens for delete-domain-job
   sed -i -e "s|%CUSTOM_CONNECTION_STRING%|${rcuDatabaseURL}|g" ${deleteJobOutput}
   sed -i -e "s:%CUSTOM_RCUPREFIX%:${rcuSchemaPrefix}:g" ${deleteJobOutput}

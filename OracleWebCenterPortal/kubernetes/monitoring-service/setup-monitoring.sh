@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # setup-monitoring.sh
@@ -77,22 +77,29 @@ function installKubePrometheusStack {
   echo "Setup prometheus-community/kube-prometheus-stack in progress"   
   if [ ${exposeMonitoringNodePort} == "true" ]; then
    
-     helm install ${monitoringNamespace} prometheus-community/kube-prometheus-stack \
+     helm install ${monitoringHelmReleaseName} prometheus-community/kube-prometheus-stack \
        --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set prometheus.service.type=NodePort --set prometheus.service.nodePort=${prometheusNodePort} \
        --set alertmanager.service.type=NodePort --set alertmanager.service.nodePort=${alertmanagerNodePort} \
        --set grafana.adminPassword=admin --set grafana.service.type=NodePort  --set grafana.service.nodePort=${grafanaNodePort} \
-       --version "16.5.0" \
-       --atomic --wait
+       --wait
   else
-     helm install ${monitoringNamespace}  prometheus-community/kube-prometheus-stack \
+     helm install ${monitoringHelmReleaseName}  prometheus-community/kube-prometheus-stack \
        --namespace ${monitoringNamespace} ${additionalParamForKubePrometheusStack} \
        --set grafana.adminPassword=admin \
-       --version "16.5.0" \
-       --atomic --wait
+       --wait
   fi
   exitIfError $? "ERROR: prometheus-community/kube-prometheus-stack install failed."
 }
+
+function WebLogicMonitoringExporter {
+  echo "Configuring WebLogic Monitoring Exporter as a sidecar...."
+  echo "!!! WARNING !!! This will be triggering the Domain restart...."
+  ${KUBERNETES_CLI:-kubectl} patch domain ${domainUID} -n ${domainNamespace} --patch-file ${scriptDir}/config/config.yaml --type=merge
+  sleep 10
+  sh ${scriptDir}/scripts/waitForDomain.sh -d ${domainUID} -n ${domainNamespace} -p "Completed"
+}
+
 
 #Parse the inputs
 while getopts "hi:" opt; do
@@ -130,14 +137,14 @@ rm ${exportValuesFile}
 
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then 
-   if test "$(kubectl get namespace ${monitoringNamespace} --ignore-not-found | wc -l)" = 0; then
-     echo "The namespace ${monitoringNamespace} for install prometheus-community/kube-promethues-stack does not exist. Creating the namespace ${monitoringNamespace}"
-     kubectl create namespace ${monitoringNamespace} 
+   if test "$(${KUBERNETES_CLI:-kubectl} get namespace ${monitoringNamespace} --ignore-not-found | wc -l)" = 0; then
+     echo "The namespace ${monitoringNamespace} for install prometheus-community/kube-prometheus-stack does not exist. Creating the namespace ${monitoringNamespace}"
+     ${KUBERNETES_CLI:-kubectl} create namespace ${monitoringNamespace} 
    fi
    echo -e "Monitoring setup in  ${monitoringNamespace} in progress.......\n"
 
    # Create the namespace and CRDs, and then wait for them to be availble before creating the remaining resources
-   kubectl label nodes --all kubernetes.io/os=linux --overwrite=true
+   ${KUBERNETES_CLI:-kubectl} label nodes --all kubernetes.io/os=linux --overwrite=true
 
    echo "Setup prometheus-community/kube-prometheus-stack started"
    installKubePrometheusStack
@@ -146,37 +153,28 @@ if [ "${setupKubePrometheusStack}" = "true" ]; then
    echo "Setup prometheus-community/kube-prometheus-stack completed"
 fi
 
-export username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
-export password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
-
-# Setting up the WebLogic Monitoring Exporter
-echo "Deploy WebLogic Monitoring Exporter started"
-script=${scriptDir}/scripts/deploy-weblogic-monitoring-exporter.sh
-sh ${script} 
-exitIfError $? "ERROR: $script failed."
-echo "Deploy WebLogic Monitoring Exporter completed"
+export username=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.username}'|base64 --decode`
+export password=`${KUBERNETES_CLI:-kubectl}  get secrets ${weblogicCredentialsSecretName} -n ${domainNamespace} -o=jsonpath='{.data.password}'|base64 --decode`
 
 
 # Deploy servicemonitors
 serviceMonitor=${scriptDir}/manifests/wls-exporter-ServiceMonitor.yaml
 cp "${serviceMonitor}.template" "${serviceMonitor}"
-sed -i -e "s/release: monitoring/release: ${monitoringNamespace}/g" ${serviceMonitor}
+sed -i -e "s/release: monitoring/release: ${monitoringHelmReleaseName}/g" ${serviceMonitor}
 sed -i -e "s/user: %USERNAME%/user: `echo -n $username|base64 -w0`/g" ${serviceMonitor}
 sed -i -e "s/password: %PASSWORD%/password: `echo -n $password|base64 -w0`/g" ${serviceMonitor}
 sed -i -e "s/namespace:.*/namespace: ${domainNamespace}/g" ${serviceMonitor}
 sed -i -e "s/weblogic.domainName:.*/weblogic.domainName: ${domainUID}/g" ${serviceMonitor}
 sed -i -e "$!N;s/matchNames:\n    -.*/matchNames:\n    - ${domainNamespace}/g;P;D" ${serviceMonitor}
 
-kubectl apply -f ${serviceMonitor}
+${KUBERNETES_CLI:-kubectl} apply -f ${serviceMonitor}
 
+WebLogicMonitoringExporter
 
 if [ "${setupKubePrometheusStack}" = "true" ]; then
    # Deploying  WebLogic Server Grafana Dashboard
    echo "Deploying WebLogic Server Grafana Dashboard...."
-   grafanaEndpointIP=$(kubectl get endpoints ${monitoringNamespace}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].addresses[].ip}")
-   grafanaEndpointPort=$(kubectl get endpoints ${monitoringNamespace}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].ports[].port}")
-   grafanaEndpoint="${grafanaEndpointIP}:${grafanaEndpointPort}"
-   curl --noproxy "*" -X POST -H "Content-Type: application/json" -d @config/weblogic-server-dashboard.json http://admin:admin@${grafanaEndpoint}/api/dashboards/db
+   sh ${scriptDir}/scripts/deploy-weblogic-server-grafana-dashboard.sh
    echo ""
    echo "Deployed WebLogic Server Grafana Dashboard successfully"
    echo ""

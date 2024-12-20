@@ -1,10 +1,10 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # The version of this inputs file.  Do not modify.
 version: create-weblogic-sample-domain-inputs-v1
 
-# SSL is disabled by default. Select true to enable SSL.
+# Select true to enable SSL. If secureEnabled is set to true, sslEnabled will be set to true by default.
 sslEnabled: false
 
 # Include portlet server cluster
@@ -15,6 +15,9 @@ adminPort: 7001
 
 # SSL Port number for admin server
 adminServerSSLPort: 7002
+
+# Administration Port number for admin server
+adminAdministrationPort: 9002
 
 # Name of the Admin Server
 adminServerName: AdminServer
@@ -28,8 +31,8 @@ domainUID: wcp-domain
 domainHome: /u01/oracle/user_projects/domains/$domainUID
 
 # Determines which WebLogic Servers the operator will start up
-# Legal values are "NEVER", "IF_NEEDED", or "ADMIN_ONLY"
-serverStartPolicy: IF_NEEDED
+# Legal values are "Never", "IfNeeded", or "AdminOnly"
+serverStartPolicy: IfNeeded
 
 # Cluster name
 clusterName: wcp-cluster
@@ -49,6 +52,9 @@ managedServerPort: 8888
 # SSL Port number for each managed server
 managedServerSSLPort: 8788
 
+# Administration Port number for each managed server
+managedAdministrationPort: 9008
+
 # Portlet cluster name
 portletClusterName: wcportlet-cluster
 
@@ -60,13 +66,17 @@ portletServerPort: 8889
 
 # SSL Port number for each managed server
 portletServerSSLPort: 8789
+
+# Administration Port number for each portlet server
+portletAdministrationPort: 9009
+
 # WebCenter Portal Docker image.
 # To build WebCenter Portal images refer  https://oracle.github.io/fmw-kubernetes/wcportal-domains/installguide/prepare-your-environment/#build-oracle-webcenter-portal-image
 # Update the image according to WebCenter Portal Release version
-# For Example : PS4 = oracle/wcportal:12.2.1.4
+# For Example : PS4 = oracle/wcportal:14.1.2.0
 #
 # Below value is just an sample image name and version
-image: oracle/wcportal:12.2.1.4
+image: oracle/wcportal:14.1.2.0
 
 # Image pull policy
 # Legal values are "IfNotPresent", "Always", or "Never"
@@ -78,6 +88,11 @@ imagePullPolicy: IfNotPresent
 
 # Boolean indicating if production mode is enabled for the domain
 productionModeEnabled: true
+
+# Boolean indicating if secure is enabled for the domain.
+# This value has significance only with 14.1.2.0.0.
+# This value has no significance in dev mode i.e., when productionModeEnabled is false.
+secureEnabled: false
 
 # Name of the Kubernetes secret for the Admin Server's username and password
 # The name must be lowercase.
@@ -100,7 +115,7 @@ httpAccessLogInLogHome: true
 t3ChannelPort: 30012
 
 # Public address for T3Channel of the NetworkAccessPoint.  This value should be set to the
-# kubernetes server address, which you can get by running "kubectl cluster-info".  If this
+# kubernetes server address, which you can get by running "${KUBERNETES_CLI:-kubectl} cluster-info".  If this
 # value is not set to that address, WLST will not be able to connect from outside the
 # kubernetes cluster.
 #t3PublicAddress:
@@ -117,14 +132,13 @@ exposeAdminNodePort: false
 # Name of the domain namespace
 namespace: wcpns
 
-# If sslEnabled is set to 'true', then comment out the above javaOptions param and uncomment the below javaOptions line.
+#Java Option for WebLogic Server
+javaOptions: -Dweblogic.StdoutDebugEnabled=false
+
+# If sslEnabled is set to 'true' or secureEnabled is set to 'true', then comment out the above javaOptions param and uncomment the below javaOptions line.
 # To enable SSL, you need to add -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true if sslEnabled is true.
 # The reason is the WebLogic generated Demo certificate's host name is different from that of the runtime container.
 #javaOptions: -Dweblogic.StdoutDebugEnabled=false -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true
-
-
-#Java Option for WebLogic Server
-javaOptions: -Dweblogic.StdoutDebugEnabled=false
 
 # Name of the persistent volume claim
 # If not specified, the value is derived from the domainUID as <domainUID>-weblogic-sample-pvc

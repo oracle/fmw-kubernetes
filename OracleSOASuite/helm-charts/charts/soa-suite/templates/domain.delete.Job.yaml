@@ -1,0 +1,53 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.domain.domainName }}-delete-soa-infra-domain-job
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+spec:  
+  template:
+    metadata:
+      labels:
+        weblogic.domainUID: {{ .Values.domain.domainName }}
+        weblogic.domainName: {{ .Values.domain.domainName }}
+        app: {{ .Values.domain.domainName }}-delete-soa-infra-domain-job
+    spec:
+      {{- if .Values.domain.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.domain.imagePullSecrets }}
+      {{- end }}
+      serviceAccountName: {{ include "soa-suite.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.domain.podSecurityContext | nindent 8 }}
+      restartPolicy: Never
+      containers:
+        - name: delete-soa-infra-domain-job
+          image: "{{ .Values.domain.image.repository }}:{{ .Values.domain.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7001
+          volumeMounts:
+          - mountPath: {{ .Values.domain.rootDir }}
+            name: soa-infra-domain-storage-volume
+          command:
+            - /bin/bash
+            - -c
+            - echo "Backup of ${DOMAIN_ROOT} and cleanup in progress...." && sleep 10 && cd ${DOMAIN_ROOT} && TMP_DIR=$(date +%Y%m%d_%H%M%S) ; [ -d "${DOMAIN_ROOT}/applications" ] && cd ${DOMAIN_ROOT} && mkdir -p ${TMP_DIR} && mv applications ${TMP_DIR}; [ -d "${DOMAIN_ROOT}/domains" ] && cd ${DOMAIN_ROOT} && mkdir -p ${TMP_DIR} && mv domains ${TMP_DIR}; [ -d "${DOMAIN_ROOT}/logs" ] && cd ${DOMAIN_ROOT} && mkdir -p ${TMP_DIR} && mv logs ${TMP_DIR}; [ -d "${DOMAIN_ROOT}/stores" ] && cd ${DOMAIN_ROOT} && mkdir -p ${TMP_DIR} && mv stores ${TMP_DIR}; echo "Backup taken at $TMP_DIR and cleanup done"
+          env:
+            - name: DOMAIN_ROOT
+              value: "{{ .Values.domain.rootDir }}"
+            - name: DOMAIN_DIR
+              value: "{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}"
+            - name: DOMAIN_LOGS_DIR
+              value: "{{ .Values.domain.rootDir }}/logs/{{ .Values.domain.domainName }}"
+      volumes:
+        - name: soa-infra-domain-storage-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.domain.domainName }}-domain-pvc

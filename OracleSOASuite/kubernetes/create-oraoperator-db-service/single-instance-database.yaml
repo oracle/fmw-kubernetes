@@ -1,0 +1,47 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: database.oracle.com/v1alpha1
+kind: SingleInstanceDatabase
+metadata:
+  name: single-instance-database
+  namespace: default
+spec:
+  
+  ## Use only alphanumeric characters for sid up to a maximum of 8 characters
+  sid: ORCL1
+  
+  ## Secret containing SIDB password mapped to secretKey. secretKey defaults to oracle_pwd
+  adminPassword:
+    secretName: db-admin-secret 
+    keepSecret: true
+
+
+  ## Database image details
+  ## Base DB images are available at container-registry.oracle.com or build from https://github.com/oracle/docker-images/tree/main/OracleDatabase/SingleInstance
+  ## Build patched DB images from https://github.com/oracle/docker-images/tree/main/OracleDatabase/SingleInstance/extensions/patching
+  ## Prebuilt DB support (https://github.com/oracle/docker-images/tree/main/OracleDatabase/SingleInstance/extensions/prebuiltdb)
+  image:
+    pullFrom: container-registry.oracle.com/database/enterprise:latest 
+    pullSecrets: container-reg-credential
+
+  ## size is the required minimum size of the persistent volume
+  ## Specify storageClass for dynamic volume provisioning and set volumeName to an empty string
+  ## accessMode can only accept one of ReadWriteOnce, ReadWriteMany
+  ## If provisioning static volume, then specify the volumeName for binding to a specific PV and set storageClass to an empty string to disable automatic volume provisioning
+  ## set ownership/permissions for writing to datafiles volume. This is usually needed for NFS volumes, "setWritePermissions: true"
+  persistence:
+    size: 50Gi
+    storageClass: ""
+    accessMode: "ReadWriteOnce"
+    setWritePermissions: true
+    datafilesVolumeName: "single-instance-db-vol"
+
+
+  ## Count of Database Pods. Only one pod will have the DB mounted and open.
+  ## The other replica pods will have instance up and will mount and open the DB if the primary pod dies
+  ## For "ReadWriteOnce" AccessMode, all the replicas will schedule on the same node that has the storage attached
+  ## For minimal downtime during patching set the count of replicas > 1
+  ## Express edition can only have one replica and does not support patching
+  replicas: 1
+  

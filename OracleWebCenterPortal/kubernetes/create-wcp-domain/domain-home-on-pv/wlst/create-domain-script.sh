@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 export DOMAIN_HOME=${DOMAIN_HOME_DIR}
@@ -25,6 +25,7 @@ wlst.sh -skipWLSModuleScanning \
         -managedNameBase ${CUSTOM_MANAGED_BASE_NAME} \
         -managedServerPort ${CUSTOM_MANAGEDSERVER_PORT} \
         -prodMode ${CUSTOM_PRODUCTION_MODE} \
+        -secureMode ${CUSTOM_SECURE_MODE} \
         -managedServerCount ${CUSTOM_MANAGED_SERVER_COUNT} \
         -clusterName ${CUSTOM_CLUSTER_NAME} \
         -exposeAdminT3Channel ${EXPOSE_T3_CHANNEL_PREFIX} \
@@ -37,4 +38,7 @@ wlst.sh -skipWLSModuleScanning \
         -portletServerSSLPort ${PORTLET_SERVER_SSL_PORT}\
         -portletServerNameBase ${PORTLET_SERVER_NAME_BASE}\
         -portletClusterName ${PORTLET_CLUSTER_NAME}\
+        -adminAdministrationPort ${CUSTOM_ADMIN_ADMINISTRATION_PORT} \
+        -managedAdministrationPort ${CUSTOM_MANAGED_ADMINISTRATION_PORT} \
+        -portletAdministrationPort ${CUSTOM_PORTLET_ADMINISTRATION_PORT} \
         -t3ChannelPort ${T3_CHANNEL_PORT}

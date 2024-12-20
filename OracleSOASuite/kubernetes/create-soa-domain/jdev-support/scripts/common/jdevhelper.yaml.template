@@ -1,0 +1,55 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jdevhelper
+  namespace: %NAMESPACE%  
+  labels:
+    application: jdevhelper
+spec:
+  # 1 Pods should exist at all times.
+  replicas: 1
+  selector:
+    matchLabels:
+      application: jdevhelper
+  template:
+    metadata:
+      labels:
+        application: jdevhelper
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: jdevhelper
+        image: oracle/soajdeveloper:14.1.2.0.0
+        imagePullPolicy: %WEBLOGIC_IMAGE_PULL_POLICY%
+        args:
+          - sleep
+          - infinity
+        volumeMounts:
+        - name: pv-volume
+          mountPath: %VOLUME_MOUNT_PATH%
+      volumes:
+      - name: pv-volume
+        %PVC_PREFIX%persistentVolumeClaim:
+        %PVC_PREFIX%  claimName: %CLAIM_NAME%
+        %EMPTY_PREFIX%emptyDir: {}
+      %IMAGE_PULL_SECRET_PREFIX%imagePullSecrets:
+      %IMAGE_PULL_SECRET_PREFIX%- name: %WEBLOGIC_IMAGE_PULL_SECRET_NAME%		  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    application: jdevhelper
+  name: jdevhelper
+  namespace: %NAMESPACE%
+spec:
+  ports:
+  - name: vnc-port-tcp
+    protocol: TCP
+    port: 5901
+    targetPort: 5901
+  selector:
+    application: jdevhelper
+  type: NodePort

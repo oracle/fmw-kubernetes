@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -6,23 +6,25 @@ import sys
 
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
-class WCCADF12214Provisioner:
-
+class WCCADFProvisioner:
+    
+    secureDomain = 'false';
     MANAGED_SERVERS = []
 
     CLUSTER = 'wccadf_cluster'
     WCCADF_SERVER_BASENAME = 'wccadf_server'
     WCCADF_SERVER_PORT = 16225
     WCCADF_SERVER_SSL_PORT = 16226
+    WCCADF_SERVER_ADMINISTRATION_PORT = 9225
 
-    JRF_12214_TEMPLATES = {
+    JRF_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar'
         ],
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR' ]
     }
 
-    WCCADF_12214_TEMPLATES = {
+    WCCADF_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/wccontent/common/templates/wls/oracle.ucm.cs_adf_template.jar'
         ],
@@ -35,23 +37,25 @@ class WCCADF12214Provisioner:
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def extendWCCADFDomain(self, domainParentDir, domainUser, domainPassword, db, dbPrefix, dbPassword, prodMode, managedCount, sslEnabled):
+    def extendWCCADFDomain(self, domainParentDir, domainUser, domainPassword, db, dbPrefix, dbPassword, prodMode, secureMode, managedCount, sslEnabled):
 
         print '================================================================='
         print '    WebCenter WCCADF WebLogic Operator Domain Extension Script   '
-        print '                         12.2.1.4.0                              '
         print '================================================================='
         
         print 'Extending Domain with WCCAF-UI...'
         ms_count = int(managedCount)
-        self.extendDomain(domainParentDir, domainUser, domainPassword, ms_count, db, dbPrefix, dbPassword)
+        self.extendDomain(domainParentDir, domainUser, domainPassword, ms_count, db, dbPrefix, dbPassword, prodMode, secureMode)
         print 'Domain Extension is done...'
 
 
-    def extendDomain(self, domainHome, domainUser, domainPassword, ms_count, db, dbPrefix, dbPassword):
+    def extendDomain(self, domainHome, domainUser, domainPassword, ms_count, db, dbPrefix, dbPassword, prodMode, secureMode):
         print 'Extending domain at ' + domainHome
         print 'Database  ' + db
         readDomain(domainHome)
+        domainVersion = cmo.getDomainVersion()
+        if (domainVersion == "14.1.2.0.0" and prodMode == 'true' and secureMode == 'true'):
+            self.secureDomain = 'true'
 
         # Create wccadf cluster
         # ======================
@@ -62,11 +66,11 @@ class WCCADF12214Provisioner:
         # Create wccadf Managed servers
         print 'Creating wccadf Managed Servers...'
 
-        self.MANAGED_SERVERS = self.createManagedServers(ms_count, self.WCCADF_SERVER_BASENAME, self.WCCADF_SERVER_PORT, self.CLUSTER, self.MANAGED_SERVERS, self.WCCADF_SERVER_SSL_PORT, sslEnabled)
+        self.MANAGED_SERVERS = self.createManagedServers(ms_count, self.WCCADF_SERVER_BASENAME, self.WCCADF_SERVER_PORT, self.CLUSTER, self.MANAGED_SERVERS, self.WCCADF_SERVER_SSL_PORT, sslEnabled, self.WCCADF_SERVER_ADMINISTRATION_PORT )
         print 'wccadf Managed servers created...'
 
         print 'Applying wccadf domain extension templates...'
-        for extensionTemplate in self.WCCADF_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.WCCADF_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'WCCADF Extension Templates added...'
@@ -92,8 +96,8 @@ class WCCADF12214Provisioner:
 
         print 'Targeting Server Groups...'
 
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.WCCADF_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.WCCADF_TEMPLATES['serverGroupsToTarget'])
         self.targetWCCADFServers(serverGroupsToTarget)
         
 
@@ -122,7 +126,7 @@ class WCCADF12214Provisioner:
     # Helper Methods                                                          #
     ###########################################################################
 
-    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled):
+    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled, ms_admin_port):
         # Create managed servers
         for index in range(0, ms_count):
             print 'Creating Managed servers...'
@@ -134,6 +138,8 @@ class WCCADF12214Provisioner:
             cd('/Servers/%s/' % name )
             print('Managed server name is %s' % name);
             set('ListenPort', ms_port)
+            if (self.secureDomain == 'true'):
+              set('administrationPort', ms_admin_port)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
@@ -143,8 +149,8 @@ class WCCADF12214Provisioner:
               print 'Enabling SSL for Managed server...'
               create(name, 'SSL')
               cd('/Servers/' + name+ '/SSL/' + name)
-              set('ListenPort', managedServerSSLPort)
               set('Enabled', 'True')
+              set('ListenPort', managedServerSSLPort)  
         print ms_servers
         return ms_servers
 
@@ -224,7 +230,7 @@ def usage():
     print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> -name <domain-name>' + \
           '-user <domain-user> -password <domain-password> ' + \
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' + \
-          '-prodMode <prodMode> -managedServerCount <managedCount> -sslEnabled <sslEnabled> '
+          '-prodMode <prodMode> -secureMode <secureMode> -managedServerCount <managedCount> -sslEnabled <sslEnabled> '
     sys.exit(0)
 
 # Uncomment for Debug only
@@ -286,6 +292,9 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-secureMode':
+        secureMode = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-managedServerCount':
         managedCount = sys.argv[i + 1]
         i += 2
@@ -297,5 +306,5 @@ while i < len(sys.argv):
         usage()
         sys.exit(1)
 
-provisioner = WCCADF12214Provisioner(oracleHome, javaHome, domainParentDir, domainName, prodMode, managedCount, sslEnabled)
-provisioner.extendWCCADFDomain(domainParentDir, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, prodMode, managedCount, sslEnabled)
+provisioner = WCCADFProvisioner(oracleHome, javaHome, domainParentDir, domainName, prodMode, managedCount, sslEnabled)
+provisioner.extendWCCADFDomain(domainParentDir, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, prodMode, secureMode, managedCount, sslEnabled)

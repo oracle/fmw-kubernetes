@@ -1,0 +1,21 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.domain.domainName }}-create-rcu-job-cm
+  labels:
+    weblogic.domainName: {{ .Values.domain.domainName }}
+    weblogic.domainUID: {{ .Values.domain.domainName }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-weight": "-12"
+data:
+  {{- $files := .Files }}
+  {{- range tuple "createRepository.sh" "dropRepository.sh" }}
+  {{ . }}: |-
+{{ $files.Get . | indent 8 }}
+  {{- end }}

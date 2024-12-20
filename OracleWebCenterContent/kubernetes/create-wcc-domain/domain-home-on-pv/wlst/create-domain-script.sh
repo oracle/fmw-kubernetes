@@ -1,8 +1,16 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 export DOMAIN_HOME=${DOMAIN_HOME_DIR}
+
+function exitIfError {
+  if [ "$1" != "0" ]; then
+    echo "$2"
+    exit $1
+  fi
+}
+
 
 # Create the domain
 if [ -z "${JAVA_HOME}" ]; then
@@ -24,6 +32,7 @@ wlst.sh -skipWLSModuleScanning \
         -managedNameBase ${CUSTOM_MANAGED_BASE_NAME} \
         -managedServerPort ${CUSTOM_MANAGEDSERVER_PORT} \
         -prodMode ${CUSTOM_PRODUCTION_MODE} \
+	-secureMode ${CUSTOM_SECURE_MODE} \
         -managedServerCount ${CUSTOM_MANAGED_SERVER_COUNT} \
         -clusterName ${CUSTOM_CLUSTER_NAME} \
         -exposeAdminT3Channel ${EXPOSE_T3_CHANNEL_PREFIX} \
@@ -31,7 +40,11 @@ wlst.sh -skipWLSModuleScanning \
         -t3ChannelPort ${T3_CHANNEL_PORT} \
         -sslEnabled ${SSL_ENABLED} \
         -adminServerSSLPort ${ADMIN_SERVER_SSL_PORT} \
+        -adminAdministrationPort ${CUSTOM_ADMIN_ADMINISTRATION_PORT} \
+        -managedServerAdministrationPort ${CUSTOM_MANAGED_SERVER_ADMINISTRATION_PORT} \
         -managedServerSSLPort ${MANAGED_SERVER_SSL_PORT}
+
+exitIfError $?
 
 # call respective Domain creation python file for additional components - ipm, capture and adfui.
 if [ "${IPM_ENABLED}" == "true" ]
@@ -47,9 +60,12 @@ then
         -rcuPrefix ${CUSTOM_RCUPREFIX} \
         -rcuSchemaPwd `cat /weblogic-operator/rcu-secrets/password` \
         -prodMode ${CUSTOM_PRODUCTION_MODE} \
+	-secureMode ${CUSTOM_SECURE_MODE} \
         -managedServerCount ${CUSTOM_MANAGED_SERVER_COUNT} \
         -sslEnabled ${SSL_ENABLED} 
 fi
+
+exitIfError $?
 
 if [ "${CAPTURE_ENABLED}" == "true" ]
 then
@@ -78,9 +94,12 @@ then
         -rcuPrefix ${CUSTOM_RCUPREFIX} \
         -rcuSchemaPwd `cat /weblogic-operator/rcu-secrets/password` \
         -prodMode ${CUSTOM_PRODUCTION_MODE} \
+	-secureMode ${CUSTOM_SECURE_MODE} \
         -managedServerCount ${CUSTOM_MANAGED_SERVER_COUNT} \
         -sslEnabled ${SSL_ENABLED} 
 fi
+
+exitIfError $?
 
 if [ "${ADFUI_ENABLED}" == "true" ]
 then
@@ -97,6 +116,9 @@ then
         -rcuPrefix ${CUSTOM_RCUPREFIX} \
         -rcuSchemaPwd `cat /weblogic-operator/rcu-secrets/password` \
         -prodMode ${CUSTOM_PRODUCTION_MODE} \
+	-secureMode ${CUSTOM_SECURE_MODE} \
         -managedServerCount ${CUSTOM_MANAGED_SERVER_COUNT} \
         -sslEnabled ${SSL_ENABLED} 
 fi
+
+exitIfError $?

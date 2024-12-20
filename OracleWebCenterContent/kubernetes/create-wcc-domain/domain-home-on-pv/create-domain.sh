@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -103,7 +103,8 @@ function initialize {
   # Validate the required files exist
   validateErrors=false
 
-  validateKubectlAvailable
+  #validateKubectlAvailable
+  validateKubernetesCLIAvailable
 
   if [ -z "${valuesInputFile}" ]; then
     validationError "You must use the -i option to specify the name of the inputs parameter file (a modified copy of kubernetes/samples/scripts/create-wcc-domain/domain-home-on-pv/create-domain-inputs.yaml)."
@@ -127,7 +128,7 @@ function initialize {
     validationError "The template file ${deleteJobInput} for deleting a WebLogic domain was not found"
   fi
 
-  dcrInput="${scriptDir}/../../common/domain-template.yaml"
+  dcrInput="${scriptDir}/../utils/wcc-domain-template.yaml"
   if [ ! -f ${dcrInput} ]; then
     validationError "The template file ${dcrInput} for creating the domain resource was not found"
   fi
@@ -186,15 +187,15 @@ function createDomainConfigmap {
  
   # create the configmap and label it properly
   local cmName=${domainUID}-create-fmw-infra-sample-domain-job-cm
-  kubectl create configmap ${cmName} -n $namespace --from-file $externalFilesTmpDir
+  ${KUBERNETES_CLI:-kubectl} create configmap ${cmName} -n $namespace --from-file $externalFilesTmpDir
 
   echo Checking the configmap $cmName was created
-  local num=`kubectl get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
+  local num=`${KUBERNETES_CLI:-kubectl} get cm -n $namespace | grep ${cmName} | wc | awk ' { print $1; } '`
   if [ "$num" != "1" ]; then
     fail "The configmap ${cmName} was not created"
   fi
 
-  kubectl label configmap ${cmName} -n $namespace weblogic.resourceVersion=domain-v2 weblogic.domainUID=$domainUID weblogic.domainName=$domainName
+  ${KUBERNETES_CLI:-kubectl} label configmap ${cmName} -n $namespace weblogic.resourceVersion=domain-v2 weblogic.domainUID=$domainUID weblogic.domainName=$domainName
 
   rm -rf $externalFilesTmpDir
 }
@@ -220,8 +221,18 @@ function createDomainHome {
   sed -i "s/-Xmx512m/-Xmx1024m/" ${dcrOutput}
   
   # Appends new cluster and update cluster name to ibr_cluster
-  sed -n '/- clusterName:/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
-  sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: ibr_cluster/" ${dcrOutput}
+  #sed -n '/- clusterName:/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
+  #sed -i "0,/- clusterName: ${clusterName}/s//- clusterName: ibr_cluster/" ${dcrOutput}
+  
+  sed -i "0,/  name: ${domainUID}-${clusterName}/s//  name: ${domainUID}-$(toDNS1123Legal ${clusterName})/" ${dcrOutput}
+  sed -n '/---/,/# replicas: /{p}' ${dcrOutput} >> ${dcrOutput}
+  sed -i "0,/  name: ${domainUID}-$(toDNS1123Legal ${clusterName})/s//  name: ${domainUID}-$(toDNS1123Legal ibr_cluster)/" ${dcrOutput}
+  
+  sed -i "0,/- name: ${domainUID}-${clusterName}/s//- name: ${domainUID}-$(toDNS1123Legal ${clusterName})/" ${dcrOutput}
+  sed -i "/- name: ${domainUID}-$(toDNS1123Legal ${clusterName})/a\\  - name: ${domainUID}-$(toDNS1123Legal ${clusterName})"  ${dcrOutput}
+  sed -i "0,/- name: ${domainUID}-$(toDNS1123Legal ${clusterName})/s//- name: ${domainUID}-$(toDNS1123Legal ibr_cluster)/" ${dcrOutput}
+
+  sed -i "0,/  clusterName: ${clusterName}/s//  clusterName: ibr_cluster/" ${dcrOutput}
   sed -i "0,/replicas: ${initialManagedServerReplicas}/s//replicas: 1/" ${dcrOutput}
 
   # Update the "- $(CLUSTER_NAME)" in the affinity section to ibr_cluster
@@ -265,12 +276,12 @@ function createDomainHome {
   else
   	echo "\$loadBalancerType is NOT empty"
   	if [ $loadBalancerType == "traefik" ] ; then
-         export LB_SETTINGS="\    clusterService:\n\
+         export LB_SETTINGS="\  clusterService:\n\
          annotations: \n\
             traefik.ingress.kubernetes.io/affinity: \"true\"\n\
             traefik.ingress.kubernetes.io/service.sticky.cookie: \"true\"\n\
             traefik.ingress.kubernetes.io/session-cookie-name: JSESSIONID"
-         export WCCADF_LB_SETTINGS="\    clusterService:\n\
+         export WCCADF_LB_SETTINGS="\  clusterService:\n\
          annotations: \n\
             traefik.ingress.kubernetes.io/affinity: \"true\"\n\
             traefik.ingress.kubernetes.io/service.sticky.cookie: \"true\"\n\
@@ -300,8 +311,15 @@ function createDomainHome {
   sed -i -e "s:%CAPTURE_ENABLED%:${captureEnabled}:g" ${createJobOutput}
   sed -i -e "s:%ADFUI_ENABLED%:${adfuiEnabled}:g" ${createJobOutput}
   
+  # updating secureMode status
+  sed -i -e "s:%SECURE_ENABLED%:${secureEnabled}:g" ${createJobOutput}
+
+  # updating Administration ports for AdminServer and Managed Server
+  sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${createJobOutput}
+  sed -i -e "s:%MANAGED_SERVER_ADMINISTRATION_PORT%:${managedServerAdministrationPort}:g" ${createJobOutput} 
+
   echo Creating the domain by creating the job ${createJobOutput}
-  kubectl create -f ${createJobOutput}
+  ${KUBERNETES_CLI:-kubectl} create -f ${createJobOutput}
 
   echo "Waiting for the job to complete..."
   JOB_STATUS="0"
@@ -310,8 +328,8 @@ function createDomainHome {
   while [ "$JOB_STATUS" != "Completed" -a $count -lt $max ] ; do
     sleep 60
     count=`expr $count + 1`
-    JOBS=`kubectl get pods -n ${namespace} | grep ${JOB_NAME}`
-    JOB_ERRORS=`kubectl logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace} | grep "ERROR:" `
+    JOBS=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME}`
+    JOB_ERRORS=`${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace} | grep "ERROR:" `
     JOB_STATUS=`echo $JOBS | awk ' { print $3; } '`
     JOB_INFO=`echo $JOBS | awk ' { print "pod", $1, "status is", $3; } '`
     echo "status of iteration $count of $max - waiting for 1 min between iterations"
@@ -333,17 +351,17 @@ function createDomainHome {
   if [ "$JOB_STATUS" != "Completed" ]; then
     echo "The create domain job is not showing status completed after waiting 1800 seconds."
     echo "Check the log output for errors."
-    kubectl logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace}
+    ${KUBERNETES_CLI:-kubectl} logs jobs/$JOB_NAME $CONTAINER_NAME -n ${namespace}
     fail "Exiting - the job did not complete within a reasonable time"
   fi
 
   # Check for successful completion in log file
-  JOB_POD=`kubectl get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
-  JOB_STS=`kubectl logs $JOB_POD $CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
+  JOB_POD=`${KUBERNETES_CLI:-kubectl} get pods -n ${namespace} | grep ${JOB_NAME} | awk ' { print $1; } '`
+  JOB_STS=`${KUBERNETES_CLI:-kubectl} logs $JOB_POD $CONTAINER_NAME -n ${namespace} | grep "Successfully Completed" | awk ' { print $1; } '`
   if [ "${JOB_STS}" != "Successfully" ]; then
     echo The log file for the create domain job does not contain a successful completion status
     echo Check the log output for errors
-    kubectl logs $JOB_POD $CONTAINER_NAME -n ${namespace}
+    ${KUBERNETES_CLI:-kubectl} logs $JOB_POD $CONTAINER_NAME -n ${namespace}
     fail "Exiting due to failure - the job log file does not contain a successful completion status!"
   fi
 }

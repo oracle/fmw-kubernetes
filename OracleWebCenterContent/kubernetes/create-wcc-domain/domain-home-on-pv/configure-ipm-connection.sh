@@ -4,19 +4,22 @@
 #
 
 function  usage {
-  echo usage: ${script} -l load_balancer_external_ip -p load_balancer_port [-h]
+  echo usage: ${script} -l load_balancer_external_ip -p load_balancer_port -s ssl_or_ssl_termination [-h]
   echo "  -l load balancer external ip, must be specified."
   echo "  -p load balancer port, must be specified."
+  echo "  -s SSL or SSL termination enabled (true/false), must be specified."
   echo "  -h Help"
   exit $1
 }
 
-while getopts "h:l:p:" opt; do
+while getopts "h:l:p:s:" opt; do
   case $opt in
         l) LoadBalancerExternalIP="${OPTARG}"
         ;;
         p) LoadBalancerPort="${OPTARG}"
         ;;
+        s) SSLEnabled="${OPTARG}"
+	;;
         h) usage 0
         ;;
         *) usage 1
@@ -31,6 +34,11 @@ fi
 
 if [ -z ${LoadBalancerPort} ]; then
   echo "${script}: -p(LoadBalancerPort) must be specified."
+  usage 1
+fi
+
+if [ -z ${SSLEnabled} ]; then
+  echo "${script}: -s(SSLEnabled) must be specified."
   usage 1
 fi
 
@@ -74,9 +82,6 @@ adminUrl=$adminPod:$adminPort
 weblogicCredentialsSecretName=$(grep  'weblogicCredentialsSecretName:' create-domain-inputs.yaml);
 weblogicCredentialsSecretName=${weblogicCredentialsSecretName//*weblogicCredentialsSecretName: /};
 
-sslEnabled=$(grep  'sslEnabled:' create-domain-inputs.yaml);
-sslEnabled=${sslEnabled//*sslEnabled: /};
-
 username=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNS} -o=jsonpath='{.data.username}'|base64 --decode`
 password=`kubectl  get secrets ${weblogicCredentialsSecretName} -n ${domainNS} -o=jsonpath='{.data.password}'|base64 --decode`
 
@@ -89,6 +94,5 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 # Copy the script inside the admin server pod and execute it using wlst
 kubectl cp -n $domainNS ${scriptDir}/common/configureIPMConnection.py $adminPod:/u01/oracle
 
-kubectl exec -n $domainNS -it $adminPod -- /bin/bash -c "wlst.sh configureIPMConnection.py -user $username -password $password -adminUrl $adminUrl -loadbalancerHost $LoadBalancerExternalIP -loadbalancerPort $LoadBalancerPort -sslEnabled $sslEnabled"
-
+kubectl exec -n $domainNS -it $adminPod -- /bin/bash -c "wlst.sh configureIPMConnection.py -user $username -password $password -adminUrl $adminUrl -loadbalancerHost $LoadBalancerExternalIP -loadbalancerPort $LoadBalancerPort -sslEnabled $SSLEnabled"
 

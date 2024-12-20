@@ -1,0 +1,169 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+environments:
+  default:
+    values:
+    - ./values.yaml
+
+---
+commonLabels:
+  fmw-kubernetes: soa-suite
+helmDefaults:
+  timeout: {{ .Values.timeout | default 2400 }}
+  wait: false
+
+
+# Chart repositories
+repositories:
+- name: weblogic-operator
+  url: https://oracle.github.io/weblogic-kubernetes-operator/charts
+{{- if eq ( .Values.loadbalancer.type) "TRAEFIK" }}
+- name: traefik
+  url: https://helm.traefik.io/traefik
+{{- end }}
+{{- if eq ( .Values.loadbalancer.type) "NGINX" }}
+- name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx
+{{- end }}
+{{- if eq ( .Values.certmanager.provision ) true }}
+- name: jetstack
+  url: https://charts.jetstack.io
+{{- end }} 
+
+# Releases to be installed
+releases:
+- name: {{ .Values.certmanager.release_name }}
+  chart: jetstack/cert-manager
+  version: {{ .Values.certmanager.version }}
+  installed: {{ .Values.certmanager.provision | default false }}
+  namespace: {{ .Values.certmanager.namespace | default "cert-manager" }}
+  hooks:
+  - events: ["presync"]
+    showlogs: true
+    command: "/bin/sh"
+    args: [ "-c", "${KUBERNETES_CLI:-kubectl} apply -f https://github.com/cert-manager/cert-manager/releases/download/{{ .Values.certmanager.version }}/cert-manager.crds.yaml" ]
+
+# Oracle Database Operator
+- name: {{ .Values.dboperator.release_name }}
+  chart: ./charts/oracledb-operator
+  installed: {{ .Values.dboperator.provision | default false }}
+  namespace: {{ .Values.dboperator.namespace | default "oracle-database-operator-system" }}
+  needs:
+  - {{ .Values.certmanager.namespace | default "cert-manager" }}/{{ .Values.certmanager.release_name }}
+  hooks:
+  - events: ["postsync"]
+    showlogs: true
+    command: "sleep"
+    args: [15]
+
+# weblogic kubernetes operator
+- name: {{ .Values.wlsoperator.release_name }}
+  chart: weblogic-operator/weblogic-operator
+  version: {{ .Values.wlsoperator.version }}
+  installed: {{ .Values.wlsoperator.provision | default false}}
+  namespace: {{ .Values.wlsoperator.namespace | default "opns" }}
+  values:
+  - ./values/wlsoperator/values.yaml.gotmpl
+  hooks:
+  - events: ["postsync"]
+    showlogs: true
+    command: "sleep"
+    args: [15]
+  - events: ["postsync"]
+    showlogs: true
+    command:  "/bin/bash"
+    args: ["-c","${KUBERNETES_CLI:-kubectl} get all -n {{ .Values.wlsoperator.namespace }}"]
+
+# Oracle SOA Suite Domain
+- name: {{ .Values.domain.release_name | default "soadomain" }}
+  chart: ./charts/soa-suite
+  installed: {{ .Values.domain.provision | default false}}
+  namespace: {{ .Values.domain.namespace | default "soans"}}
+  needs:
+{{- if eq ( .Values.wlsoperator.provision) true }}
+  - {{ .Values.wlsoperator.namespace | default "opns" }}/{{ .Values.wlsoperator.release_name | default "weblogic-operator" }}
+{{- end }}
+{{- if eq ( .Values.oracledb.provision) true }}
+  - {{ .Values.dboperator.namespace | default "oracle-database-operator-system" }}/{{ .Values.dboperator.release_name }}
+{{- end }}
+  values:
+  - ./values/soa-suite/values.yaml.gotmpl
+  - domain:
+      serverStartPolicy: "Never"
+  hooks:
+  - events: ["prepare"]
+    showlogs: true
+    command: "./scripts/createDomainDBNamespace.sh"
+{{- if eq .Values.oracledb.provision true }}
+    args: [{{ .Values.domain.namespace | default "soans"}}, {{ .Values.oracledb.namespaceOverride | default "soans"}}]  
+{{- else }}
+    args: [{{ .Values.domain.namespace | default "soans"}}, "None"]  
+{{- end }}
+  - events: ["postsync"]
+    showlogs: true
+    command: "./scripts/ApplyServerStartPolicy.sh"
+    args: ["-d", {{ .Values.domain.domainName | default "soainfra"}}, "-n", {{ .Values.domain.namespace | default "soans"}}, "-s", {{ .Values.domain.serverStartPolicy | default "IfNeeded"}}]
+  - events: ["postsync"]
+    showlogs: true
+    command: "./scripts/waitForDomain.sh"
+    args: ["-d", {{ .Values.domain.domainName | default "soainfra"}}, "-n", {{ .Values.domain.namespace | default "soans"}}, "-p", "Completed"]
+  - events: ["postsync"]
+    showlogs: true
+    command: "/bin/bash"
+    args: ["-c", "${KUBERNETES_CLI:-kubectl} get all -n {{ .Values.domain.namespace }}"]
+  - events: ["postsync"]
+    showlogs: true
+    command: "./scripts/collectDomainLogs.sh"
+    args: ["-n", {{ .Values.domain.namespace | default "soans"}}]
+{{- if eq .Values.loadbalancer.provision true }}
+  - events: ["postsync"]
+    showlogs: true
+    command: "./scripts/getAppURLs.sh"
+    args: ["-d", {{ .Values.domain.type }}, "-n", {{ .Values.loadbalancer.namespace }}, "-t", {{ .Values.loadbalancer.type }}, "-r", {{ .Values.loadbalancer.release_name }}, "-l", {{ .Values.loadbalancer.hostname | default "null"}}, "-y", {{ .Values.loadbalancer.sslType }}, "-a", {{ .Values.loadbalancer.e2ehostName.admin | default "null" }} , "-s",{{ .Values.loadbalancer.e2ehostName.soa | default "null"}} , "-o",{{ .Values.loadbalancer.e2ehostName.osb | default "null"}}]
+{{- end }}
+  - events: ["preuninstall"]
+    showlogs: true
+    command: "./scripts/stopDomain.sh"
+    args: ["-d",{{ .Values.domain.domainName | default "soainfra"}}, "-n", {{ .Values.domain.namespace | default "soans"}}]
+  - events: ["preuninstall"]
+    showlogs: true
+    command: "./scripts/waitForDomain.sh"
+    args: ["-d",{{ .Values.domain.domainName | default "soainfra"}}, "-n", {{ .Values.domain.namespace | default "soans"}}, "-p", "0", "-i"]
+  - events: ["postuninstall"]
+    showlogs: true
+    command: "./scripts/cleanK8sJobs.sh"
+    args: ["-d",{{ .Values.domain.domainName | default "soainfra"}}, "-n", {{ .Values.domain.namespace | default "soans"}}]
+
+# TRAEFIK/NGINX Controller install
+- name: {{ .Values.loadbalancer.release_name | default "soalb" }}
+{{- if eq ( .Values.loadbalancer.type) "TRAEFIK" }}
+  chart: traefik/traefik
+{{- else }}
+  chart: ingress-nginx/ingress-nginx
+{{- end }}
+  installed: {{ .Values.loadbalancer.provision }}
+  namespace: {{ .Values.loadbalancer.namespace | default "soalbns"}}
+  values:
+    - ./values/{{ lower .Values.loadbalancer.type }}/values.yaml.gotmpl
+    - ./values.yaml
+{{- if eq ( .Values.loadbalancer.type) "TRAEFIK" }}
+    - kubernetes:
+        namespaces:
+        - {{ .Values.loadbalancer.namespace | default "traefik"}}
+        - {{ .Values.domain.namespace | default "soans"}}
+{{- else }}
+{{- if and (eq .Values.loadbalancer.sslType "E2ESSL") (eq .Values.loadbalancer.type "NGINX") }}
+    - controller:
+        extraArgs:
+           enable-ssl-passthrough: true   
+{{- end }}
+{{- end }}   
+
+# TRAEFIK/NGINX Ingress install 
+- name: {{ lower .Values.loadbalancer.release_name }}-ingress-per-domain
+  chart: ./charts/ingress-per-domain 
+  namespace: {{ .Values.domain.namespace | default "soans"}} 
+  values:
+    - ./values.yaml
+    - ./values/ingress-per-domain/values.yaml.gotmpl

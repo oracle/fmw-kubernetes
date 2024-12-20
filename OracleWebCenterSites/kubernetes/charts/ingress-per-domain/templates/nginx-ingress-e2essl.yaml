@@ -1,0 +1,118 @@
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "NGINX" }}
+{{- if (eq .Values.sslType "E2ESSL")}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-e2essl
+  namespace: {{ .Release.Namespace }}
+  labels:
+    serviceType: SERVER
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
+spec:
+  ports:
+  {{- if eq .Values.wlsDomain.secureEnabled true }}
+  - port: {{ .Values.wlsDomain.adminSecurePort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminSecurePort }}
+  {{- else }}
+  - port: {{ .Values.wlsDomain.adminServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.adminServerSSLPort }}
+  {{- end }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.serverName: {{ .Values.wlsDomain.adminServerName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-admin
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.admin }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.admin }}'
+    http:
+      paths:
+      - path: 
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}-nginx-e2essl'
+            port:
+              {{- if eq .Values.wlsDomain.secureEnabled true }}
+              number: {{ .Values.wlsDomain.adminSecurePort }}
+              {{- else }}
+              number: {{ .Values.wlsDomain.adminServerSSLPort  }}
+              {{- end }}
+{{- if or (eq .Values.domainType "wcs") }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+  namespace: {{ .Release.Namespace }}
+  labels:
+    serviceType: CLUSTER
+    weblogic.clusterName: {{ .Values.wlsDomain.wcsitesClusterName }}
+    weblogic.domainName: {{ .Values.wlsDomain.domainUID }}
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+spec:
+  ports:
+  - port: {{ .Values.wlsDomain.wcsitesManagedServerSSLPort }}
+    protocol: TCP
+    targetPort: {{ .Values.wlsDomain.wcsitesManagedServerSSLPort }}
+  selector:
+    weblogic.domainUID: {{ .Values.wlsDomain.domainUID }}
+    weblogic.clusterName: {{ .Values.wlsDomain.wcsitesClusterName }}
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx-e2essl-wcs
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  tls:
+  - hosts:
+    - '{{ .Values.hostName.wcs }}'
+    secretName: {{ .Values.wlsDomain.domainUID }}-tls-cert
+  rules:
+  - host: '{{ .Values.hostName.wcs }}'
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wcsitesClusterName | lower | replace "_" "-" }}-nginx-e2essl'
+            port:
+              number: {{ .Values.wlsDomain.wcsitesManagedServerSSLPort }}            
+{{- end }}
+
+{{- end }}
+{{- end }}
+

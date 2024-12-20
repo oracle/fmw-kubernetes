@@ -1,0 +1,57 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+
+# Load balancer type. Supported values are: TRAEFIK,NGINX
+type: TRAEFIK
+
+# SSL configuration Type. Supported Values are : NONSSL,SSL,E2ESSL
+sslType: NONSSL
+
+# domainType. Supported values are: osb,soa,soaosb
+domainType: soa
+
+#WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: soainfra
+  secureEnabled: false
+  adminServerName: AdminServer
+  adminSecurePort: 9002
+  adminServerPort: 7001
+  adminServerSSLPort: 7002
+  soaClusterName: soa_cluster
+  soaManagedServerPort: 7003
+  soaManagedServerSSLPort: 7004
+  osbClusterName: osb_cluster
+  osbManagedServerPort: 8002
+  osbManagedServerSSLPort: 8003
+
+# Host  specific values
+hostName:
+  admin: admin.domain.org
+  soa: soa.domain.org
+  osb: osb.domain.org
+ 
+
+# Ngnix specific values
+nginx:
+  hostname:
+  connectTimeout: 1800
+  readTimeout: 1800
+  sendTimeout: 1800
+  cookieExpires: 172800
+  cookieMaxAge: 172800
+
+traefik: 
+  hostname:
+
+
+tls:
+  secretName:
+  certCommonName: "*.domain.org"
+  validityDays: 365

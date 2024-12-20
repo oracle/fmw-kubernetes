@@ -1,0 +1,58 @@
+########## BEGIN DOCKERFILE ##########
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+ARG BUILD_ID="1.0.0"
+FROM container-registry.oracle.com/java/jdk:17 as jdk_build
+ARG BUILD_ID
+LABEL com.oracle.soa.jdeveloper.buildid=$BUILD_ID
+USER root
+RUN dnf update \
+#&& dnf install libXext libXrender libXtst tigervnc-server matchbox-window-manager xterm xorg-x11-fonts-misc.noarch \
+&& dnf install libXext libXrender libXtst tigervnc-server xterm xorg-x11-fonts-misc.noarch oracle-epel-release-el8 \
+&& dnf groupinstall "base-x" \
+&& dnf groupinstall "Xfce" \
+&& dnf clean all
+
+RUN if [ -z "$(getent group oracle)" ]; then groupadd oracle || exit 1 ; fi \
+ && if [ -z "$(getent group root)" ]; then groupadd root || exit 1 ; fi \
+ && if [ -z "$(getent passwd oracle)" ]; then useradd -g root oracle || exit 1; fi \
+ && mkdir -p /u01 \
+ && chown oracle:root /u01 \
+ && chmod 775 /u01 \
+ && mkdir -p /u01/oracle \
+ && mkdir -p /u01/oracle/oraInventory \
+ && chown oracle:root /u01/oracle/oraInventory \
+ && chown oracle:root /u01/oracle
+
+FROM jdk_build as jdev_build
+ARG BUILD_ID
+LABEL com.oracle.soa.jdeveloper.buildid=$BUILD_ID
+ENV ORACLE_HOME=/u01/oracle 
+
+COPY --chown=oracle:root fmw_14.1.2.0.0_soa_quickstart_generic.jar fmw_14.1.2.0.0_soa_quickstart_generic2.jar jdev.response  /tmp/jdev/
+COPY --chown=oracle:root oraInst.loc /u01/oracle/
+
+USER oracle
+
+RUN echo "INSTALLING SOA QUICKSTART" \
+  && $JAVA_HOME/bin/java -Xmx1024m -jar /tmp/jdev/fmw_14.1.2.0.0_soa_quickstart_generic.jar \
+    -silent ORACLE_HOME=/u01/oracle \
+    -responseFile /tmp/jdev/jdev.response \
+    -invPtrLoc /u01/oracle/oraInst.loc \
+    -ignoreSysPrereqs -force -novalidation   \	
+  && test $? -eq 0 \
+  && rm -rf /tmp/jdev/* \
+  && chmod -R g+r /u01/oracle \
+  || (grep -vh "NOTIFICATION" /tmp/OraInstall*/install*.log && exit 1)
+
+FROM jdk_build as final_build
+ARG BUILD_ID
+LABEL com.oracle.soa.jdeveloper.buildid=$BUILD_ID
+ENV ORACLE_HOME=/u01/oracle
+USER oracle
+COPY --from=jdev_build --chown=oracle:root /u01/oracle /u01/oracle/
+WORKDIR ${ORACLE_HOME}
+CMD ["sh", "-c", "sleep infinity"]
+
+########## END DOCKERFILE ##########

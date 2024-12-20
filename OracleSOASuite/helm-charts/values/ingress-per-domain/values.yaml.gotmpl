@@ -1,0 +1,60 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+# Default values for ingress-per-domain.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+
+# Load balancer type. Supported values are: TRAEFIK,NGINX
+type: {{ .Values | get "loadbalancer.type" "TRAEFIK" }}
+
+# SSL configuration Type. Supported Values are : NONSSL,SSL,E2ESSL
+sslType: {{ .Values | get "loadbalancer.sslType" "NONSSL" }}
+
+# domainType. Supported values are: osb,soa,soaosb
+domainType: {{ .Values | get "domain.type" "soaosb" }}
+
+#WLS domain as backend to the load balancer
+wlsDomain:
+  domainUID: {{ .Values | get "domain.domainName" "soainfra" }}
+  secureEnabled: {{ .Values | get "domain.secureEnabled" "false" }} 
+  adminSecurePort: 9002
+  adminServerName: {{ .Values | get "domain.admin.name" "AdminServer" }}
+  adminServerPort: {{ .Values | get "domain.admin.listenPort" 7011 }}
+  adminServerSSLPort: {{ .Values | get "domain.admin.sslListenPort" 7012 }}
+  soaClusterName: {{ .Values | get "domain.soaCluster.name" "soa_cluster" }}
+  soaManagedServerPort: {{ .Values | get "domain.soaCluster.managedServers.listenPort" 8011 }}
+  soaManagedServerSSLPort: {{ .Values | get "domain.soaCluster.managedServers.sslListenPort" 8012 }}
+  osbClusterName: {{ .Values | get "domain.osbCluster.name" "osb_cluster" }}
+  osbManagedServerPort: {{ .Values | get "domain.osbCluster.managedServers.listenPort" 9011 }}
+  osbManagedServerSSLPort: {{ .Values | get "domain.osbCluster.managedServers.sslListenPort" 9012 }}
+
+# Host  specific values
+hostName:
+  admin: {{ .Values | get "loadbalancer.e2ehostName.admin"}}
+  soa: {{ .Values | get "loadbalancer.e2ehostName.soa"}}
+  osb: {{ .Values | get "loadbalancer.e2ehostName.osb"}}
+ 
+
+# Ngnix specific values
+nginx:
+  hostname: {{ .Values | get "loadbalancer.hostname"}}
+  connectTimeout: 1800
+  readTimeout: 1800
+  sendTimeout: 1800
+  cookieExpires: 172800
+  cookieMaxAge: 172800
+
+# Traefik specfic values
+traefik:
+  hostname: {{ .Values | get "loadbalancer.hostname"}}
+
+
+tls:
+  secretName:
+  certCommonName: '{{ .Values | get "loadbalancer.certCommonName" }}'
+  validityDays: 365
+
+

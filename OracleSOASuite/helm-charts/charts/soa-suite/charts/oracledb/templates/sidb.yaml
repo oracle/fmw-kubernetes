@@ -1,0 +1,55 @@
+#
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+
+apiVersion: database.oracle.com/v1alpha1
+kind: SingleInstanceDatabase
+metadata:
+  name: {{ include "oracledb-fullname" . }}
+  namespace: {{ include "oracledb-namespace" . }}
+{{- include "oracledb-labels" . | nindent 2 }}
+spec:
+  
+  ## Use only alphanumeric characters for sid
+  sid: {{ .Values.oracle_sid }}
+
+  ## DB edition.
+  edition: {{ .Values.oracle_edition }}
+
+  ## Secret containing SIDB password mapped to secretKey 
+  adminPassword:
+  {{- if .Values.credentials.secretName }}
+    secretName: {{ .Values.credentials.secretName }}
+  {{- else }}
+    secretName: {{ template "oracledb-fullname" . }}
+  {{- end }}
+    secretKey: password
+
+  ## DB character set
+  charset: {{ .Values.oracle_characterset }}
+
+  ## PDB name
+  pdbName: {{ .Values.oracle_pdb }}
+
+  ## Enable/Disable ArchiveLog. Should be true to allow DB cloning
+  archiveLog: {{ .Values.enable_archivelog }}
+
+  ## Database image details
+  image:
+    pullFrom: {{ .Values.image }}
+    pullSecrets: {{ .Values.imagePullSecrets }}
+
+  ## size is the required minimum size of the persistent volume
+  ## storageClass is specified for automatic volume provisioning
+  ## accessMode can only accept one of ReadWriteOnce, ReadWriteMany
+  #
+  persistence:
+    size: {{ .Values.persistence.size }}
+    ## oci-bv applies to OCI block volumes. Use "standard" storageClass for dynamic provisioning in Minikube. Update as appropriate for other cloud service providers
+    storageClass: {{ .Values.persistence.storageClass }}
+    accessMode: {{ .Values.persistence.accessMode }}
+    volumeName: {{ .Values.persistence.volumeName }}
+
+  ## Count of Database Pods.
+  replicas: {{ .Values.replicas }}
