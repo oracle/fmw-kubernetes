@@ -2979,31 +2979,10 @@ then
            replace_value OAA_EMAIL_USER $ANS $RSPFILE
            replace_value OAA_SMS_USER $ANS $RSPFILE
       fi 
-
-      echo -n "Do you wish to add existing users in LDAP in User Search base to OAA_USER_GROUP (y/n) : "
-      read ANS
-      if  check_yes $ANS
-      then
-         OAA_ADD_USERS_LDAP=true
-      else
-         OAA_ADD_USERS_LDAP=false
-      fi  
-      replace_value OAA_ADD_USERS_LDAP $OAA_ADD_USERS_LDAP $RSPFILE      
-
 fi
 
 if [ "$INSTALL_OUA" = "true" ] 
 then
-   echo -n "Do you wish set ldap param obpsftid to all existing users in OAA_USER_GROUP (y/n) : "
-   read ANS
-   if  check_yes $ANS
-   then
-      OAA_ADD_USERS_OUA_OBJ=true
-   else
-      OAA_ADD_USERS_OUA_OBJ=false
-   fi  
-   replace_value OAA_ADD_USERS_OUA_OBJ $OAA_ADD_USERS_OUA_OBJ $RSPFILE      
-   
    echo -n "Enter Number of OUA DRSS Servers to start  [$OAA_DRSS_REPLICAS]:"
    read ANS
 

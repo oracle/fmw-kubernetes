@@ -512,16 +512,31 @@ fi
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    scale_cluster $OAMNS $OAM_DOMAIN_NAME oam-cluster $OAM_SERVER_INITIAL
+    scale_cluster $OAMNS $OAM_DOMAIN_NAME oam-cluster $OAM_SERVER_INITIAL 
     update_progress
 fi
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-    scale_cluster $OAMNS $OAM_DOMAIN_NAME policy-cluster $OAM_SERVER_INITIAL
+    scale_cluster $OAMNS $OAM_DOMAIN_NAME policy-cluster $OAM_SERVER_INITIAL    
     update_progress
 fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    validate_scaling $OAMNS $OAM_DOMAIN_NAME oam-cluster $OAM_SERVER_INITIAL
+    update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+    validate_scaling $OAMNS $OAM_DOMAIN_NAME policy-cluster $OAM_SERVER_INITIAL
+    update_progress
+fi
+
 
 new_step
 if [ $STEPNO -gt $PROGRESS ]
