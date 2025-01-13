@@ -94,7 +94,7 @@ fi
 
 USER=`encode_pwd ${OAM_OAMADMIN_USER}:${OAM_OAMADMIN_PWD}`
 
-ADMIN_URL=http://$K8_WORKER_HOST1:$OAM_ADMIN_K8
+ADMIN_URL=http://$OAM_ADMIN_LBR_HOST:$OAM_ADMIN_LBR_PORT
 
 echo "Deleting OAuth Client  "
 printf "\nDeleting OAuth Client  " >> $LOG
@@ -110,12 +110,16 @@ curl --location --request DELETE "$ADMIN_URL/oam/services/rest/ssa/api/v1/oauthp
 --header "Authorization: Basic $USER" >> $LOG 2>&1
 
 echo "Deleting Authentication Policy"
-printf "\nDeleting Authentication Policy" >> $LOG
+printf "\nDeleting Authentication Policy\n" >> $LOG
 delete_auth_policy $LOG
 
 echo "Deleting Authentication Scheme"
-printf "\nDeleting Authentication Scheme" >> $LOG
+printf "\nDeleting Authentication Scheme\n" >> $LOG
 delete_auth_scheme $LOG
+
+echo "Deleting Authentication Module"
+printf "\nDeleting Authentication Module\n" >> $LOG
+delete_auth_module $LOG
 
 
 if [ $PROGRESS -gt 14 ]

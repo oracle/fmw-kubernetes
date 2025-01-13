@@ -69,7 +69,7 @@ fi
 
 if [ $? -gt 0 ]
 then
-    echo "Pre-req checks Failed - Resolve issues before continuing or restart with -ignorePrereqs"
+    echo "Pre-req checks Failed - Resolve issues before continuing or restart with -i option to ignore pre-requisite checks."
     exit 1
 fi
 

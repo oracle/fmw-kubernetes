@@ -321,6 +321,12 @@ then
        update_progress
    fi
 
+   new_step
+   if [ $STEPNO -gt $PROGRESS ]
+   then
+        validate_scaling $OIGNS $OIG_DOMAIN_NAME oim-cluster 1
+        update_progress
+   fi
 else
 
    # Initialise Domain
@@ -738,6 +744,20 @@ new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    scale_cluster $OIGNS $OIG_DOMAIN_NAME soa-cluster $OIG_SERVER_INITIAL
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   validate_scaling $OIGNS $OIG_DOMAIN_NAME oim-cluster $OIG_SERVER_INITIAL
+   update_progress
+fi
+
+new_step
+if [ $STEPNO -gt $PROGRESS ]
+then
+   validate_scaling $OIGNS $OIG_DOMAIN_NAME soa-cluster $OIG_SERVER_INITIAL
    update_progress
 fi
 

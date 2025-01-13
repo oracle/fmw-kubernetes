@@ -312,6 +312,7 @@ perform_initial_start()
      check_running $OIGNS soa-server1
  
      scale_cluster $OIGNS $OIG_DOMAIN_NAME oim-cluster 1 
+     validate_scaling $OIGNS $OIG_DOMAIN_NAME oim-cluster 1
      kubectl logs -n $OIGNS $OIG_DOMAIN_NAME-oim-server1 -c weblogic-server | grep -q "BootStrap configuration Successfull"
      if [ "$?" = "0" ]
      then 

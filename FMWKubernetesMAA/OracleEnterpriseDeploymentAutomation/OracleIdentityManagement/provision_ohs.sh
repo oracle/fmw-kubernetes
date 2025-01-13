@@ -169,6 +169,13 @@ then
     new_step
     if [ $STEPNO -gt $PROGRESS ]
     then
+      update_mod_wl_ohs $OHS_HOST1 $OHS1_NAME
+      update_progress
+    fi
+
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
       start_ohs $OHS_HOST1 $OHS1_NAME
       update_progress
     fi
@@ -242,6 +249,14 @@ then
       start_nm $OHS_HOST2 
       update_progress
     fi
+
+    new_step
+    if [ $STEPNO -gt $PROGRESS ]
+    then
+      update_mod_wl_ohs $OHS_HOST2 $OHS2_NAME
+      update_progress
+    fi
+
 
     new_step
     if [ $STEPNO -gt $PROGRESS ]
