@@ -10,6 +10,19 @@ Review the latest changes and known issues for Oracle Identity Governance on Kub
 
 | Date | Version | Change |
 | --- | --- | --- |
+| January, 2025 | 25.1.1 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the January 2025 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | This release contains the following changes:
+| | | Support for WebLogic Kubernetes Operator 4.2.10.|
+| | | If upgrading to January 25 (25.1.1) from October 22 (22.4.1) or later, you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.2.10|
+| | | 2. Patch the OIG container image to January 25|
+| | | 3. If you are upgrading to Kubernetes 1.29 or later, you must upgrade the ingress. See [Upgrading the ingress](../patch-and-upgrade/upgrade-an-ingress).
+| | | If upgrading to January 25 (25.1.1) from a release prior to October 22 (22.4.1), you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.2.10|
+| | | 2. Patch the OIG container image to January 25|
+| | | 3. Upgrade the Ingress|
+| | | 4. Upgrade Elasticsearch and Kibana|
+| | | See [Patch and Upgrade](../patch-and-upgrade) for these instructions.
 | October, 2024 | 24.4.1 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the October 2024 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | This release contains the following changes:
 | | | + Ingress now uses ingressClassName instead of the deprecated kubernetes.io/ingress.class. See, [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation).|

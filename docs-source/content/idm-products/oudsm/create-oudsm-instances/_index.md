@@ -198,7 +198,7 @@ You can create OUDSM instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oudsm_cpu
-     tag: 12.2.1.4-jdk8-ol8-<October'24>
+     tag: 12.2.1.4-jdk8-ol8-<January'25>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -272,7 +272,7 @@ You can create OUDSM instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudsmns \
-   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol8-<October'24> \
+   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol8-<January'25> \
    --set imagePullSecrets[0].name="orclcred" \
    oudsm oudsm
    ```

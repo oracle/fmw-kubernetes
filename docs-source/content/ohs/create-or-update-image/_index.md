@@ -58,7 +58,7 @@ To set up the WebLogic Image Tool:
 	
    where X.X.X is the latest release referenced on the [releases page](https://github.com/oracle/weblogic-image-tool/releases/latest).
 	
->Note: You must use WebLogic Image Tool 1.14.2 or later.
+   >Note: You must use WebLogic Image Tool 1.14.2 or later.
 
 	
 1. Unzip the release ZIP file in the `imagetool-setup` directory.
@@ -102,7 +102,7 @@ To validate the setup of the WebLogic Image Tool:
 The WebLogic Image Tool creates a temporary Docker context directory, prefixed by `wlsimgbuilder_temp`, every time the tool runs. Under normal circumstances, this context directory will be deleted. However, if the process is aborted or the tool is unable to remove the directory, it is safe for you to delete it manually. By default, the WebLogic Image Tool creates the Docker context directory under the user's home directory. If you prefer to use a different directory for the temporary context, set the environment variable `WLSIMG_BLDDIR`:
 
 ``` bash
-$ export WLSIMG_BLDDIR="/path/to/buid/dir"
+$ export WLSIMG_BLDDIR="/path/to/build/dir"
 ```
 
 ##### WebLogic Image Tool cache

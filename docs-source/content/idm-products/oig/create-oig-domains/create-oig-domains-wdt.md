@@ -27,7 +27,7 @@ title = "b. Create OIG domains using WDT Models"
 	
 ### Introduction
 
-This section demonstrates the creation of an OIG domain home using sample WebLogic Deploy Tooling (WDT) model files.
+This section demonstrates the creation of an OIG 12.2.1.4 domain home using sample WebLogic Deploy Tooling (WDT) model files.
 
 From WebLogic Kubernetes Operator version 4.1.2 onwards, you can provide a section, `domain.spec.configuration.initializeDomainOnPV`, to automatically initialize an OIG domain on a persistent volume when it is first deployed. This eliminates the need to pre-create your OIG domain using sample WebLogic Scripting Tool (WLST) offline scripts.
 
@@ -311,7 +311,7 @@ In this section you generate the required WDT models for the OIG domain, along w
 	```
    domainUID: governancedomain
    domainHome: /u01/oracle/user_projects/domains/governancedomain
-   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
    imagePullSecretName: orclcred
    logHome: /u01/oracle/user_projects/domains/logs/governancedomain
    namespace: oigns
@@ -395,7 +395,7 @@ In this section you generate the required WDT models for the OIG domain, along w
    export datasourceType="generic"
    export edgInstall="false"
    export domainHome="/u01/oracle/user_projects/domains/governancedomain"
-   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>"
+   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
    export imagePullSecretName="orclcred"
    export logHome="/u01/oracle/user_projects/domains/logs/governancedomain"
    export exposeAdminT3Channel="false"
@@ -773,7 +773,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
      domainHomeSourceType: PersistentVolume
 
      # The WebLogic Server image that the Operator uses to start the domain
-     image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>"
+     image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
 
      # imagePullPolicy defaults to "Always" if image version is :latest
      imagePullPolicy: IfNotPresent
@@ -811,7 +811,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
 	  domainHomeSourceType: PersistentVolume
 
 	  # The WebLogic Server image that the Operator uses to start the domain
-	  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>"
+	  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
 
 	  # imagePullPolicy defaults to "Always" if image version is :latest
 	  imagePullPolicy: IfNotPresent
@@ -853,7 +853,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
 			#DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
 			- name: compat-connector-init
 			  # OIG Product image, same as spec.image mentioned above
-			  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>"
+			  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
 			  imagePullPolicy: IfNotPresent
 			  command: [ "/bin/bash", "-c", "mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory", "mkdir -p  /u01/oracle/user_projects/domains/wdt-logs"]
 			  volumeMounts:
@@ -1243,7 +1243,7 @@ In this section you deploy the OIG domain using the `domain.yaml`.
 	  Failure Retry Interval Seconds:  120
 	  Failure Retry Limit Minutes:     1440
 	  Http Access Log In Log Home:     true
-	  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>
+	  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
 	  Image Pull Policy:               IfNotPresent
 	  Image Pull Secrets:
 		 Name:                             orclcred
@@ -1279,7 +1279,7 @@ In this section you deploy the OIG domain using the `domain.yaml`.
 			  -c
 			  mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
 			  mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-			Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>
+			Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
 			Image Pull Policy:  IfNotPresent
 			Name:               compat-connector-init
 			Volume Mounts:

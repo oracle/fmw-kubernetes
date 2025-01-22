@@ -1,6 +1,7 @@
 #!/bin/bash
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
 
 set -eu
 set -o pipefail
@@ -37,7 +38,7 @@ initGlobals() {
 
   KUBERNETES_CLI=${KUBERNETES_CLI:-kubectl}
 
-  TIMEOUT_SECS_DEFAULT=1000
+  TIMEOUT_SECS_DEFAULT=2400
   TIMEOUT_SECS=$TIMEOUT_SECS_DEFAULT
 
   EXPECTED_STATE=0
@@ -117,7 +118,7 @@ processCommandLine() {
     val="${2:-}"
 
     case "$key" in
-      -q|-i|'-?') 
+      -q|-i|'-?')
          shift
          ;;
 
@@ -212,7 +213,6 @@ sortAIImagesUnitTest() {
 }
 sortAIImagesUnitTest
 
-
 getDomainValue() {
   # get domain value specified by $2 and put in env var named by $1
   #   - if get fails, and global EXPECTED_STATE is "Completed", then echo an Error and exit script non-zero
@@ -246,7 +246,7 @@ getClusterValue() {
   local ljpath="{$3}"
   local attvalue
   set +e
-  attvalue=$(${KUBERNETES_CLI} -n ${DOMAIN_NAMESPACE} get cluster.v1.weblogic.oracle ${cname} -o=jsonpath="$ljpath" 2>&1)
+  attvalue=$(${KUBERNETES_CLI} -n ${DOMAIN_NAMESPACE} get cluster ${cname} -o=jsonpath="$ljpath" 2>&1)
   if [ $? -ne 0 ]; then
     if [ "$EXPECTED_STATE" = "Completed" ]; then
       trace "Error: Could not obtain '$ljpath' from cluster '${cname}' in namespace '${DOMAIN_NAMESPACE}'. Is your cluster resource deployed? Err='$attvalue'"
@@ -256,7 +256,7 @@ getClusterValue() {
       attvalue=''
     fi
   fi
-  # echo "DEBUG ${KUBERNETES_CLI} -n ${DOMAIN_NAMESPACE} get cluster.v1.weblogic.oracle ${cname} -o=jsonpath=\"$ljpath\" 2>&1"
+  # echo "DEBUG ${KUBERNETES_CLI} -n ${DOMAIN_NAMESPACE} get cluster ${cname} -o=jsonpath=\"$ljpath\" 2>&1"
   # echo "DEBUG   = '$attvalue'"
   eval "$__retvar='$attvalue'"
   set -e
@@ -308,10 +308,10 @@ getDomainInfo() {
   getDomainValue    domain_info_observed_generation    ".status.observedGeneration"
   getDomainValue    domain_info_condition_completed    ".status.conditions[?(@.type==\"Completed\")].status" # "True" when complete
 
-  domain_info_clusters=$( echo "$domain_info_clusters" | sed 's/"name"//g' | tr -d '[]{}:' | sortlist | sed 's/,/ /g') # convert to sorted space separated list
+  domain_info_clusters=$( echo "$domain_info_clusters" | sed 's/"name"//g' | tr -d '[]{}:' | sortlist | sed 's/,/ /') # convert to sorted space separated list
 
   # gather observed and goal generation for each cluster:
-  cl_info_observed_generations=""
+    cl_info_observed_generations=""
   cl_info_goal_generations=""
   local lgen
   local cl
@@ -345,7 +345,7 @@ getPodInfo() {
   # get interesting info about each pod in DOMAIN_NAMESPACE with DOMAIN_UID
   # output: stdout in the form "var=;value; var2=;value; ..." (one line per pod)
   #
-  # NOTE: ljpath must correspond with the regex below and column headers below 
+  # NOTE: ljpath must correspond with the regex below and column headers below
 
   local ljpath=''
   ljpath+='{range .items[*]}'
@@ -598,3 +598,5 @@ main() {
 initGlobals
 processCommandLine "${@}"
 main
+ 
+

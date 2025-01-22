@@ -2,10 +2,10 @@
 title: "Introduction"
 weight: 1
 pre : "<b>1. </b>"
-description: "The WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance. Follow the instructions in this guide to set up Oracle Identity Governance domains on Kubernetes."
+description: "The WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance 12.2.1.4. Follow the instructions in this guide to set up Oracle Identity Governance domains on Kubernetes."
 ---
 
-The WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance (OIG).
+The WebLogic Kubernetes Operator supports deployment of Oracle Identity Governance (OIG) 12.2.1.4.
 
 In this release, OIG domains are supported using the “domain on a persistent volume”
 [model](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/) only, where the domain home is located in a persistent volume (PV).
@@ -37,7 +37,9 @@ The main benefits of WDT are:
 
 ### Current production release
 
-The current production release for the Oracle Identity Governance domain deployment on Kubernetes is [24.4.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.1.8.
+The current production release for the Oracle Identity Governance domain deployment on Kubernetes is [25.1.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.2.10.
+
+For 4.1.X WebLogic Kubernetes Operator refer to [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/idm-products/oig/)
 
 For 4.0.X WebLogic Kubernetes Operator refer to [Version 23.3.1](https://oracle.github.io/fmw-kubernetes/23.3.1/idm-products/oig/)
 
@@ -53,7 +55,7 @@ See [here](../prerequisites#limitations) for limitations in this release.
 
 ### Getting started
 
-This documentation explains how to configure OIG on a Kubernetes cluster where no other Oracle Identity Management products will be deployed. For detailed information about this type of deployment, start at [Prerequisites](../prerequisites) and follow this documentation sequentially. Please note that this documentation does not explain how to configure a Kubernetes cluster given the product can be deployed on any compliant Kubernetes vendor.
+This documentation explains how to configure OIG 12.2.1.4 on a Kubernetes cluster where no other Oracle Identity Management products will be deployed. For detailed information about this type of deployment, start at [Prerequisites](../prerequisites) and follow this documentation sequentially. Please note that this documentation does not explain how to configure a Kubernetes cluster given the product can be deployed on any compliant Kubernetes vendor.
 
 If you are deploying multiple Oracle Identity Management products on the same Kubernetes cluster, then you must follow the Enterprise Deployment Guide outlined in [Enterprise Deployments](../../enterprise-deployments). 
 Please note, you also have the option to follow the Enterprise Deployment Guide even if you are only installing OIG and no other Oracle Identity Management products.
@@ -67,6 +69,7 @@ Please note, you also have the option to follow the Enterprise Deployment Guide 
 
 To view documentation for an earlier release, see:
 
+* [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/idm-products/oig/)
 * [Version 24.3.1](https://oracle.github.io/fmw-kubernetes/24.3.1/idm-products/oig/)
 * [Version 24.2.1](https://oracle.github.io/fmw-kubernetes/24.2.1/idm-products/oig/)
 * [Version 24.1.1](https://oracle.github.io/fmw-kubernetes/24.1.1/idm-products/oig/)

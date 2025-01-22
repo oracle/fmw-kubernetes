@@ -7,7 +7,7 @@ description: "System requirements and limitations for deploying and running OHS 
 
 ### Introduction
 
-This document provides information about the system requirements and limitations for deploying and running Oracle HTTP Server (OHS) on Kubernetes.
+This document provides information about the system requirements and limitations for deploying and running Oracle HTTP Server (OHS) 12.2.1.4 on Kubernetes.
 
 ### System requirements for OHS on Kubernetes
 
@@ -16,7 +16,7 @@ This document provides information about the system requirements and limitations
    * The Kubernetes cluster must have sufficient nodes and resources.
    * A supported container engine must be installed and running on the Kubernetes cluster.
    * The Kubernetes cluster and container engine must meet the minimum version requirements outlined in document ID 3058838.1 on [My Oracle Support](https://support.oracle.com).
-   * The system clocks on node of the Kubernetes cluster must be synchronized. Run the `date` command simultaneously on all the nodes in each cluster and then syncrhonize accordingly.
+   * The system clocks on node of the Kubernetes cluster must be synchronized. Run the `date` command simultaneously on all the nodes in each cluster and then synchronize accordingly.
  
 
 **Note**: This documentation does not tell you how to install a Kubernetes cluster, the container engine, or how to push container images to a container registry. 

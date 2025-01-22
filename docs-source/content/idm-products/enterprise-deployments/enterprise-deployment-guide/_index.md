@@ -6,7 +6,7 @@ description: "The Enterprise Deployment Guide shows how to deploy the entire Ora
 ### Enterprise Deployment Guide
 
 
-The [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/index.html) is a step by step guide that describes how to deploy the entire Oracle Identity and Access Management Suite in a production environment. It incorporates best practices learned over many years to ensure that your Identity and Access Management deployment maintains the highest levels of Availability and Security.
+The [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/index.html) is a step by step guide that describes how to deploy the entire Oracle Identity and Access Management 12.2.1.4 Suite in a production environment. It incorporates best practices learned over many years to ensure that your Identity and Access Management deployment maintains the highest levels of Availability and Security.
  
 It includes:
  

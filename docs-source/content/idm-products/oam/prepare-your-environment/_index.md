@@ -5,7 +5,7 @@ pre : "<b>4. </b>"
 description: "Sample for creating an OAM domain home on an existing PV or
 PVC, and the domain resource YAML file for deploying the generated OAM domain."
 ---
-To prepare for Oracle Access Management deployment in a Kubernetes environment, complete the following steps:
+To prepare for Oracle Access Management 12.2.1.4 deployment in a Kubernetes environment, complete the following steps:
 
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
 1. [Obtain the OAM container image](#obtain-the-oam-container-image)
@@ -40,9 +40,9 @@ Check that all the nodes in the Kubernetes cluster are running.
 
 	```
     NAME                  STATUS   ROLES                  AGE   VERSION
-    node/worker-node1     Ready    <none>                 17h   v1.28.3+3.el8
-    node/worker-node2     Ready    <none>                 17h   v1.28.3+3.el8
-    node/master-node      Ready    control-plane,master   23h   v1.28.3+3.el8
+    node/worker-node1     Ready    <none>                 17h   v1.29.9+3.el8
+    node/worker-node2     Ready    <none>                 17h   v1.29.9+3.el8
+    node/master-node      Ready    control-plane,master   23h   v1.29.9+3.el8
 
     NAME                                     READY   STATUS    RESTARTS   AGE
     pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -69,7 +69,7 @@ The OAM Kubernetes deployment requires access to an OAM container image. The ima
 #### Prebuilt OAM container image
 
 
-The prebuilt OAM October 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OAM January 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Access Management 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oam_cpu` and accept the license agreement.
 
@@ -206,7 +206,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.8 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.2.10 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -220,7 +220,7 @@ OAM domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator i
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.8 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.2.10 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -426,7 +426,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<October'24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
    ```
    
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -438,7 +438,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol8-<October'24> -n oamns -- sleep infinity
+   $ kubectl run helper --image oracle/oam:12.2.1.4-jdk8-ol8-<January'25> -n oamns -- sleep infinity
    ```
    
    The output will look similar to the following:

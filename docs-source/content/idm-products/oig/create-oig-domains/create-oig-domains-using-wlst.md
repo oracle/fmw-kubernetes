@@ -24,7 +24,7 @@ title = "a. Create OIG domains using WLST scripts"
 	
 ### Introduction
 
-The OIG deployment scripts demonstrate the creation of an OIG domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.
+The OIG 12.2.1.4 deployment scripts demonstrate the creation of an OIG domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.
 
 **Note**: If you want to create the OIG domain using WDT models, skip the steps below and go to [Create OIG Domains Using WDT Models](../create-oig-domains-wdt).
 
@@ -72,7 +72,7 @@ The sample scripts for Oracle Identity Governance domain deployment are availabl
    ```
    domainUID: governancedomain
    domainHome: /u01/oracle/user_projects/domains/governancedomain
-   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: oig-domain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/governancedomain
@@ -176,7 +176,7 @@ generated artifacts:
    export initialManagedServerReplicas="1"
    export managedServerNameBase="oim_server"
    export managedServerPort="14000"
-   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>"
+   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -603,7 +603,7 @@ The default domain created by the script has the following characteristics:
      Failure Retry Interval Seconds:  120
      Failure Retry Limit Minutes:     1440
      Http Access Log In Log Home:     true
-     Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<October'24>
+     Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
      Image Pull Policy:               IfNotPresent
      Image Pull Secrets:
        Name:                           orclcred

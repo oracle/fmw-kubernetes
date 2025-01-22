@@ -7,7 +7,7 @@ description: "System requirements and limitations for deploying and running an O
 
 ### Introduction
 
-This document provides information about the system requirements and limitations for deploying and running OIG domains with the WebLogic Kubernetes Operator 4.1.8.
+This document provides information about the system requirements and limitations for deploying and running OIG 12.2.1.4 domains with the WebLogic Kubernetes Operator 4.2.10.
 
 ### System requirements for OIG domains
 

@@ -23,7 +23,7 @@ This section shows you how to patch or upgrade the the OHS image used by an OHS 
    The output will look similar to the following:
 	
    ```
-   Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-jdk8-ol8-<version>
+   Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<version>
    Image ID:      9a7199ac903114793d6ad1f320010c3dbd59a39ad9bc987d926d3422a68603e7
    ```
 
@@ -37,7 +37,7 @@ This section shows you how to patch or upgrade the the OHS image used by an OHS 
    For example:
 	
    ```
-   $ kubectl set image deployment/ohs-domain -n ohsns ohs=container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-jdk8-ol8-<new> 
+   $ kubectl set image deployment/ohs-domain -n ohsns ohs=container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<new> 
    ```
 	
    The output will look similar to the following:
@@ -107,7 +107,7 @@ This section shows you how to patch or upgrade the the OHS image used by an OHS 
    The output will look similar to the following:
 	
    ```
-   Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-jdk8-ol8-<new>
+   Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<new>
    Image ID:      118c5c3713ddd6804cb699ecd0c7bd4a26ebf7e1427c5351c63244b5eb74ca94
    ```
 	

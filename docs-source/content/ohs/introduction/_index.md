@@ -7,11 +7,11 @@ description: "Oracle HTTP Server deployment is supported on Kubernetes. Follow t
 
 ## Introduction
 
-Oracle HTTP Server (OHS) is supported for deployment on Kubernetes.
+Oracle HTTP Server (OHS) 12.2.1.4 is supported for deployment on Kubernetes.
 
 ### Current production release
 
-The current production release for the Oracle HTTP Server 12.2.1.4 deployment on Kubernetes is [24.4.1](https://github.com/oracle/fmw-kubernetes/releases).
+The current production release for the Oracle HTTP Server 12.2.1.4 deployment on Kubernetes is [25.1.1](https://github.com/oracle/fmw-kubernetes/releases).
 
 ### Recent changes and known issues
 
@@ -80,7 +80,7 @@ In this example:
 
 + SSL is terminated at the load balancer.
 + The load balancer communicates with OHS via the OHS nodeport using HTTP. 
-+ OAM is deployed on it's own Kubernetes cluster.
++ Oracle WebLogic Server is deployed on it's own Kubernetes cluster.
 + OHS communicates with the WebLogic Administration and WebLogic Managed Servers using the HTTP port of the Ingress controller configured for WebLogic Server.
 
 **Note**: The load balancer is optional and you can connect direct to the OHS nodeport if required, either from workstations outside the firewall, or internally from other applications.
@@ -90,5 +90,9 @@ In this example:
 For detailed information about the above deployments, start at [Prerequisites](../prerequisites) and follow this documentation sequentially. 
 
 
+### Documentation for earlier releases
 
+To view documentation for an earlier release, see:
+
+* [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/ohs/)
 
