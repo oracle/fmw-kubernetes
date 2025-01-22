@@ -80,7 +80,7 @@ Whilst the pod is in `0/1 ` status, you can check what is happening by running:
 $ kubectl logs -f <pod> -n <namespace>
 ```
 
-For example
+For example:
 
 ```
 $ kubectl logs -f ohs-domain-d5b648bc5-vkp4s -n ohsns

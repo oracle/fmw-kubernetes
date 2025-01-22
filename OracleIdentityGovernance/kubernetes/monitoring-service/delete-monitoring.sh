@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # delete-monitoring.sh
@@ -63,7 +63,15 @@ function usage {
 
 
 function deletePrometheusGrafana {
-   helm delete ${monitoringNamespace}  --namespace ${monitoringNamespace}
+   helm delete ${monitoringHelmReleaseName}  --namespace ${monitoringNamespace}
+}
+
+function uninstallWebLogicMonitoringExporter {
+  echo "Removing the monitoringExporter spec from domain...." 
+  echo "!!!! WARNING !!!! Domain restart will be triggered...."
+  ${KUBERNETES_CLI:-kubectl} -n ${domainNamespace} patch domain ${domainUID} --type=json -p='[{"op": "remove", "path": "/spec/monitoringExporter"}]'
+  sleep 10
+  sh ${scriptDir}/scripts/waitForDomain.sh -d ${domainUID} -n ${domainNamespace} -p "Completed"
 }
 
 #Parse the inputs
@@ -104,10 +112,8 @@ rm ${exportValuesFile}
 echo "Undeploy WebLogic Monitoring Exporter started"
 serviceMonitor=${scriptDir}/manifests/wls-exporter-ServiceMonitor.yaml
 ${KUBERNETES_CLI:-kubectl} delete --ignore-not-found=true -f ${serviceMonitor}
-script=${scriptDir}/scripts/undeploy-weblogic-monitoring-exporter.sh
-sh ${script}
+uninstallWebLogicMonitoringExporter
 if [ "$?" != "0" ]; then
-  echo "ERROR: $script failed."
   echo "Undeploy WebLogic Monitoring Exporter completed with errors. Review the logs and rerun"
 else
   echo "Undeploy WebLogic Monitoring Exporter completed."

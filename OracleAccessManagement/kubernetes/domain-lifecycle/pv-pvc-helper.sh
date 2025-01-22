@@ -16,7 +16,7 @@ initGlobals() {
   claimName=""
   mountPath=""
   namespace="default"
-  image="ghcr.io/oracle/oraclelinux:8-slim"
+  image="ghcr.io/oracle/oraclelinux:8"
   imagePullPolicy="IfNotPresent"
   pullsecret=""
   runAsRoot=""
@@ -46,7 +46,7 @@ usage() {
 
     [-n | --namespace]                : Domain namespace. Default is 'default'.
 
-    [-i | --image]                    : Container image for the helper pod (optional). Default is 'ghcr.io/oracle/oraclelinux:8-slim'.
+    [-i | --image]                    : Container image for the helper pod (optional). Default is 'ghcr.io/oracle/oraclelinux:8'.
 
     [-u | --imagePullPolicy]          : Image pull policy for the helper pod (optional). Default is 'IfNotPresent'.
 
@@ -173,7 +173,6 @@ createPod() {
   template=$(echo "$template" | sed -e "s:%NAMESPACE%:${namespace}:g;\
     s:%WEBLOGIC_IMAGE_PULL_POLICY%:${imagePullPolicy}:g;\
     s:%WEBLOGIC_IMAGE_PULL_SECRET_NAME%:${pullsecret}:g;\
-    s:%WEBLOGIC_IMAGE_PULL_SECRET_PREFIX%:${pullsecretPrefix}:g;\
     s:%CLAIM_NAME%:${claimName}:g;s:%VOLUME_MOUNT_PATH%:${mountPath}:g;\
     s:%RUN_AS_ROOT_PREFIX%:${runAsRoot}:g;\
     s?image:.*?image: ${image}?g")

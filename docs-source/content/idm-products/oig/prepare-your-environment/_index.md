@@ -5,7 +5,7 @@ pre = "<b>4. </b>"
 description = "Preparation to deploy OIG on Kubernetes"
 +++
 
-To prepare for Oracle Identity Governance deployment in a Kubernetes environment, complete the following steps:
+To prepare for Oracle Identity Governance 12.2.1.4 deployment in a Kubernetes environment, complete the following steps:
 
 1. [Check the Kubernetes cluster is ready](#check-the-kubernetes-cluster-is-ready)
 1. [Obtain the OIG container image](#obtain-the-oig-container-image)
@@ -36,9 +36,9 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains
 	
    ```
    NAME                  STATUS   ROLES    AGE   VERSION
-   node/worker-node1     Ready    <none>   17h   v1.28.3+3.el8
-   node/worker-node2     Ready    <none>   17h   v1.28.3+3.el8
-   node/master-node      Ready    master   23h   v1.28.3+3.el8
+   node/worker-node1     Ready    <none>   17h   v1.29.9+3.el8
+   node/worker-node2     Ready    <none>   17h   v1.29.9+3.el8
+   node/master-node      Ready    master   23h   v1.29.9+3.el8
 
    NAME                                     READY   STATUS    RESTARTS   AGE
    pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -57,7 +57,7 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains
 
 ### Obtain the OIG container image
 
-The OIG Kubernetes deployment requires access to an OIG container image. The image can be obtained in the following ways:
+The OIG 12.2.1.4 Kubernetes deployment requires access to an OIG container image. The image can be obtained in the following ways:
 
 - Prebuilt OIG container image
 - Build your own OIG container image using WebLogic Image Tool
@@ -66,7 +66,7 @@ The OIG Kubernetes deployment requires access to an OIG container image. The ima
 #### Prebuilt OIG container image
 
 
-The latest prebuilt OIG July 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The latest prebuilt OIG January 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
 
@@ -202,7 +202,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.8 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.2.10 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -216,7 +216,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.1.8 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.2.10 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -420,7 +420,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<July`24> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January`25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
    If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
@@ -432,7 +432,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-<July`24> -n oigns -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-<January`25> -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:

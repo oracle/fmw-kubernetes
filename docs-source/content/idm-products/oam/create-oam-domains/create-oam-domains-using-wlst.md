@@ -19,7 +19,7 @@ title = "a. Create OAM domains using WLST scripts"
 	
 ### Introduction
 
-The OAM deployment scripts demonstrate the creation of an OAM domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.
+The OAM deployment scripts demonstrate the creation of an OAM 12.2.1.4 domain home on an existing Kubernetes persistent volume (PV) and persistent volume claim (PVC). The scripts also generate the domain YAML file, which can then be used to start the Kubernetes artifacts of the corresponding domain.
 
 **Note**: If you want to create the OAM domain using WDT models, skip the steps below and go to [Create OAM Domains Using WDT Models](../create-oam-domains-using-wdt-models).
 
@@ -65,7 +65,7 @@ The sample scripts for Oracle Access Management domain deployment are available 
    ```bash   
    domainUID: accessdomain
    domainHome: /u01/oracle/user_projects/domains/accessdomain
-   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<October'24>
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: accessdomain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/accessdomain
@@ -164,7 +164,7 @@ generated artifacts:
    export initialManagedServerReplicas="2"
    export managedServerNameBase="oam_server"
    export managedServerPort="14100"
-   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<October'24>"
+   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -552,7 +552,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Failure Retry Interval Seconds:  120
      Failure Retry Limit Minutes:     1440
      Http Access Log In Log Home:     true
-     Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<October'24>
+     Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25>
      Image Pull Policy:               IfNotPresent
      Image Pull Secrets:
        Name:                           orclcred

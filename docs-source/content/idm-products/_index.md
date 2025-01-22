@@ -6,7 +6,7 @@ description=  "This document lists all the Oracle Identity Management products d
 
 ### Oracle Fusion Middleware on Kubernetes
 
-Oracle supports the deployment of the following Oracle Identity Management products on Kubernetes. Click on the appropriate document link below to get started on configuring the product.
+Oracle supports the deployment of the following Oracle Identity Management 12.2.1.4 products on Kubernetes. Click on the appropriate document link below to get started on configuring the product.
 
 Please note the following:
 

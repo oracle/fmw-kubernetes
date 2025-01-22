@@ -6,6 +6,6 @@ description: "Oracle Unified Directory Services Manager provides an interface fo
 
 ### Oracle Unified Directory Services Manager on Kubernetes
 
-Oracle supports the deployment of Oracle Unified Directory Services Manager on Kubernetes. See the following sections:
+Oracle supports the deployment of Oracle Unified Directory Services Manager 12.2.1.4 on Kubernetes. See the following sections:
 
 {{% children style="h4" descriptions="true" %}}

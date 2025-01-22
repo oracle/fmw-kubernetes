@@ -12,7 +12,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     nginx.ingress.kubernetes.io/enable-access-log: 'false'
-    nginx.ingress.kubernetes.io/proxy-buffer-size: '2000k'  
+    nginx.ingress.kubernetes.io/proxy-buffer-size: '2000k'
 spec:
   ingressClassName: nginx
   rules:
@@ -116,7 +116,7 @@ spec:
           service:
             name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}'
             port:
-              number: {{ .Values.wlsDomain.oamManagedServerPort }}              
+              number: {{ .Values.wlsDomain.oamManagedServerPort }}
       - path: /
         pathType: ImplementationSpecific
         backend:

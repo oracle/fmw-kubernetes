@@ -5,6 +5,6 @@ description: "The WebLogic Kubernetes Operator supports deployment of Oracle Acc
 
 ### Oracle Access Management on Kubernetes
 
-Oracle supports the deployment of Oracle Access Management on Kubernetes. See the following sections:
+Oracle supports the deployment of Oracle Access Management 12.2.1.4 on Kubernetes. See the following sections:
 
 {{% children style="h4" descriptions="true" %}}
