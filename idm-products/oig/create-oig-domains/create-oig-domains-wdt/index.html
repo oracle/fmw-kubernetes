@@ -12,18 +12,18 @@
     <title>b. Create OIG domains using WDT Models :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1734005914" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005914" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1737609009" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1737609009" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1737609009"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005914"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005914"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1737609009"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1737609009"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005914"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1737609009"></script>
 
     
   </div>
@@ -5878,7 +5878,7 @@
 </li>
 </ol>
 <h3 id="introduction">Introduction</h3>
-<p>This section demonstrates the creation of an OIG domain home using sample WebLogic Deploy Tooling (WDT) model files.</p>
+<p>This section demonstrates the creation of an OIG 12.2.1.4 domain home using sample WebLogic Deploy Tooling (WDT) model files.</p>
 <p>From WebLogic Kubernetes Operator version 4.1.2 onwards, you can provide a section, <code>domain.spec.configuration.initializeDomainOnPV</code>, to automatically initialize an OIG domain on a persistent volume when it is first deployed. This eliminates the need to pre-create your OIG domain using sample WebLogic Scripting Tool (WLST) offline scripts.</p>
 <p>With WLST offline scripts it is required to deploy a separate Kubernetes job that creates the domain on a persistent volume, and then deploy the domain with a custom resource YAML. The RCU schema also had to be created and patched manually beforehand. Now, starting from Apr'24 release onwards, using WDT models, all the required information is specified in the domain custom resource YAML file, eliminating the requirement for running a separate Kubernetes job.  With WDT models, the WebLogic Kubernetes Operator will create the PersistentVolume (PV) and PersistenVolumeClaim (PVC), create the RCU schemas and patch them, then create the OIG domain on the persistent volume, prior to starting the servers.</p>
 <p><strong>Note</strong>: This is a one time only initialization. After the domain is created, subsequent updates to this section in the domain resource YAML file will not recreate or update the WebLogic domain. Subsequent domain lifecycle updates must be controlled by the WebLogic Server Administration Console, Enterprise Manager Console, WebLogic Scripting Tool (WLST), or other mechanisms.</p>
@@ -6067,7 +6067,7 @@ weblogicDomainStorageSize: 10G
 <p>For example:</p>
 <pre><code>domainUID: governancedomain
 domainHome: /u01/oracle/user_projects/domains/governancedomain
-image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October'24&gt;
+image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;
 imagePullSecretName: orclcred
 logHome: /u01/oracle/user_projects/domains/logs/governancedomain
 namespace: oigns
@@ -6282,7 +6282,7 @@ export t3ChannelPort=&quot;30012&quot;
 export datasourceType=&quot;generic&quot;
 export edgInstall=&quot;false&quot;
 export domainHome=&quot;/u01/oracle/user_projects/domains/governancedomain&quot;
-export image=&quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October'24&gt;&quot;
+export image=&quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
 export imagePullSecretName=&quot;orclcred&quot;
 export logHome=&quot;/u01/oracle/user_projects/domains/logs/governancedomain&quot;
 export exposeAdminT3Channel=&quot;false&quot;
@@ -6687,7 +6687,7 @@ spec:
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October'24&gt;&quot;
+  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
 
   # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
   imagePullPolicy: IfNotPresent
@@ -6732,7 +6732,7 @@ spec:
    domainHomeSourceType: PersistentVolume
 
    # The WebLogic Server image that the Operator uses to start the domain
-   image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October'24&gt;&quot;
+   image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
 
    # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
    imagePullPolicy: IfNotPresent
@@ -6774,7 +6774,7 @@ spec:
          #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
          - name: compat-connector-init
            # OIG Product image, same as spec.image mentioned above
-           image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October'24&gt;&quot;
+           image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
            imagePullPolicy: IfNotPresent
            command: [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory&quot;, &quot;mkdir -p  /u01/oracle/user_projects/domains/wdt-logs&quot;]
            volumeMounts:
@@ -7113,7 +7113,7 @@ governancedomain-oim-server1   1/1     Running   0          5m22s
    Failure Retry Interval Seconds:  <span style="color:#ae81ff">120</span>
    Failure Retry Limit Minutes:     <span style="color:#ae81ff">1440</span>
    Http Access Log In Log Home:     true
-   Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October<span style="color:#e6db74">&#39;24&gt;
+   Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#e6db74">&#39;25&gt;
 </span><span style="color:#e6db74">   Image Pull Policy:               IfNotPresent
 </span><span style="color:#e6db74">   Image Pull Secrets:
 </span><span style="color:#e6db74">      Name:                             orclcred
@@ -7149,7 +7149,7 @@ governancedomain-oim-server1   1/1     Running   0          5m22s
 </span><span style="color:#e6db74">           -c
 </span><span style="color:#e6db74">           mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
 </span><span style="color:#e6db74">           mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-</span><span style="color:#e6db74">         Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;October&#39;</span>24&gt;
+</span><span style="color:#e6db74">         Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January&#39;</span>25&gt;
          Image Pull Policy:  IfNotPresent
          Name:               compat-connector-init
          Volume Mounts:
@@ -11225,19 +11225,19 @@ governancedomain-soa-server1                                1/1     Running     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1737609010"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1734005914"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005914"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1737609010"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005914" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005914"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1737609010" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1737609010"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

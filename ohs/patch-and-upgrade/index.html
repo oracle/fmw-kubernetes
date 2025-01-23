@@ -12,18 +12,18 @@
     <title>Patch and Upgrade :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1737609010" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1737609010"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005915"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005915"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1737609010"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1737609010"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005915"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1737609010"></script>
 
     
   </div>
@@ -5841,14 +5841,14 @@
 </code></pre><p>For example:</p>
 <pre><code>$ kubectl describe pod ohs-domain-d5b648bc5-qsgts -n ohsns | grep Image
 </code></pre><p>The output will look similar to the following:</p>
-<pre><code>Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-jdk8-ol8-&lt;version&gt;
+<pre><code>Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-&lt;version&gt;
 Image ID:      9a7199ac903114793d6ad1f320010c3dbd59a39ad9bc987d926d3422a68603e7
 </code></pre></li>
 <li>
 <p>Run the following command to update the container with the new image:</p>
 <pre><code>$ kubectl set image deployment/ohs-domain -n &lt;namespace&gt; ohs=&lt;new_image&gt; 
 </code></pre><p>For example:</p>
-<pre><code>$ kubectl set image deployment/ohs-domain -n ohsns ohs=container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-jdk8-ol8-&lt;new&gt; 
+<pre><code>$ kubectl set image deployment/ohs-domain -n ohsns ohs=container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-&lt;new&gt; 
 </code></pre><p>The output will look similar to the following:</p>
 <pre><code>deployment.apps/ohs-domain image updated
 </code></pre><p>This command will perform a rolling restart of the OHS container by shutting down the existing OHS container and starting a new one.</p>
@@ -5877,7 +5877,7 @@ ohs-domain-5c9c9879d-kpt9j   1/1     Running   0          6m40s
 </code></pre><p>For example:</p>
 <pre><code>$ kubectl describe pod ohs-domain-5c9c9879d-kpt9j -n ohsns | grep Image
 </code></pre><p>The output will look similar to the following:</p>
-<pre><code>Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-jdk8-ol8-&lt;new&gt;
+<pre><code>Image:         container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-&lt;new&gt;
 Image ID:      118c5c3713ddd6804cb699ecd0c7bd4a26ebf7e1427c5351c63244b5eb74ca94
 </code></pre></li>
 </ol>
@@ -9801,19 +9801,19 @@ Image ID:      118c5c3713ddd6804cb699ecd0c7bd4a26ebf7e1427c5351c63244b5eb74ca94
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1737609010"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1737609010"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005915" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005915"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1737609010" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1737609010"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
