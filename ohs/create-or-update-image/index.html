@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1734005915" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1734005915" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1737609010" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1737609010" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1737609010"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1734005915"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1734005915"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1737609010"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1737609010"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1734005915"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1737609010"></script>
 
     
   </div>
@@ -5882,12 +5882,10 @@ $ cd /scratch/imagetool-setup
 <p>Download the latest version of the WebLogic Image Tool from the <a href="https://github.com/oracle/weblogic-image-tool/releases/latest">releases page</a>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ wget https://github.com/oracle/weblogic-image-tool/releases/download/release-X.X.X/imagetool.zip
 </code></pre></div><p>where X.X.X is the latest release referenced on the <a href="https://github.com/oracle/weblogic-image-tool/releases/latest">releases page</a>.</p>
-</li>
-</ol>
 <blockquote>
 <p>Note: You must use WebLogic Image Tool 1.14.2 or later.</p>
 </blockquote>
-<ol>
+</li>
 <li>
 <p>Unzip the release ZIP file in the <code>imagetool-setup</code> directory.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ unzip imagetool.zip
@@ -5916,7 +5914,7 @@ cache   create  help    rebase  update
 </ol>
 <h5 id="weblogic-image-tool-build-directory">WebLogic Image Tool build directory</h5>
 <p>The WebLogic Image Tool creates a temporary Docker context directory, prefixed by <code>wlsimgbuilder_temp</code>, every time the tool runs. Under normal circumstances, this context directory will be deleted. However, if the process is aborted or the tool is unable to remove the directory, it is safe for you to delete it manually. By default, the WebLogic Image Tool creates the Docker context directory under the user&rsquo;s home directory. If you prefer to use a different directory for the temporary context, set the environment variable <code>WLSIMG_BLDDIR</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WLSIMG_BLDDIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path/to/buid/dir&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WLSIMG_BLDDIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path/to/build/dir&#34;</span>
 </code></pre></div><h5 id="weblogic-image-tool-cache">WebLogic Image Tool cache</h5>
 <p>The WebLogic Image Tool maintains a local file cache store. This store is used to look up where the OHS and JDK installers, and OHS patches reside in the local file system. By default, the cache store is located in the user&rsquo;s <code>$HOME/cache</code> directory. Under this directory, the lookup information is stored in the <code>.metadata</code> file. All automatically downloaded patches also reside in this directory. You can change the default cache store location by setting the environment variable <code>WLSIMG_CACHEDIR</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export WLSIMG_CACHEDIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/path/to/cachedir&#34;</span>
@@ -10042,19 +10040,19 @@ oracle/ohs:12.2.1.4-db19          12.2.1.4.0   b051804ba15f    3 months ago     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1737609010"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1734005915"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1734005915"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1737609010"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1737609010"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1734005915" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1734005915"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1737609010" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1737609010"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
