@@ -23,6 +23,7 @@ It is expected that there will be a down time during the upgrade of the Kubernet
  For example, you can upgrade from 1.x to 1.x+1, but not from 1.x to 1.x+2.
  To upgrade a Kubernetes version, first all the master nodes of the Kubernetes cluster must be  upgraded sequentially, followed by the sequential upgrade of each worker node.
 
+*  See [here](https://v1-31.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/) for Kubernetes official documentation to upgrade from 1.30 to 1.31
 *  See [here](https://v1-30.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/) for Kubernetes official documentation to upgrade from 1.29 to 1.30
 *  See [here](https://v1-29.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/) for Kubernetes official documentation to upgrade from 1.28 to 1.29
 *  See [here](https://v1-28.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/) for Kubernetes official documentation to upgrade from 1.27 to 1.28

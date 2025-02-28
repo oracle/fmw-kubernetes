@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -91,23 +91,31 @@ class SOAProvisioner:
 
         readDomain(domainHome)
         # Update the default port values for default servers for 14.1.2.0.0 
-        if ( self.domainVersion == "14.1.2.0.0" and self.secureDomain == 'false' ):
+        if ( self.domainVersion == "14.1.2.0.0" ):
             if ("soa" in domainType and 'soa_server1' in self.SOA_MANAGED_SERVERS ):
-               self.updateDefaultServerParameters(domainHome, sslEnabled, "soa_server1")
+               self.updateDefaultServerParameters(domainHome, sslEnabled, "soa_server1", soaManagedServerPort, soaManagedServerSSLPort, soaAdministrationPort)
             if "osb" in domainType and 'osb_server1' in self.OSB_MANAGED_SERVERS:
-               self.updateDefaultServerParameters(domainHome, sslEnabled, "osb_server1")
+               self.updateDefaultServerParameters(domainHome, sslEnabled, "osb_server1", osbManagedServerPort, osbManagedServerSSLPort, osbAdministrationPort)
 
         # Fix for bug 36654711
         self.updateAppTarget(domainHome,"wsm-pm",adminName)
         updateDomain()
         
 
-    def updateDefaultServerParameters(self, domainHome, sslEnabled, serverName):
+    def updateDefaultServerParameters(self, domainHome, sslEnabled, serverName, ms_port, ms_ssl_port , ms_admin_port):
         print 'Removing administrationPort and SSL entries for default server ' + serverName
         cd('/Servers/'+ serverName)
-        set('administrationPort', 0)
+        if (self.secureDomain == 'true'):
+           set('administrationPort', int(ms_admin_port))
+        else:
+           set('administrationPort', 0)
+        set('ListenPort', int(ms_port))
         if (sslEnabled == 'false'):
            delete(serverName, 'SSL')
+        else:
+           cd('/Servers/' + serverName + '/SSL/' + serverName)
+           set('ListenPort', int(ms_ssl_port))
+           set('Enabled', 'True')
 
     def updateAppTarget(self, domainHome, appName, targetName):
         print 'Adding target: '+ targetName+' for '+appName

@@ -121,10 +121,10 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 
 You must download the required Oracle SOA Suite installation binaries and patches as listed below from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. In these steps, this directory is `download location`.
 
-The installation binaries and patches required for release 24.4.2 are:
+The installation binaries and patches required for release 25.1.2 are:
 
 * JDK:  
-    * jdk-8u431-linux-x64.tar.gz
+    * jdk-8u441-linux-x64.tar.gz
 
 * Fusion Middleware Infrastructure installer:  
     * fmw_12.2.1.4.0_infrastructure.jar
@@ -139,31 +139,33 @@ In this release, Oracle B2B is not supported to be configured, but the installer
 {{% /notice %}}
 
 * Fusion Middleware Infrastructure patches:
-    * p28186730_1394217_Generic.zip (OPATCH 13.9.4.2.17 FOR EM 13.5 AND FMW/WLS 12.2.1.4.0 AND 14.1.1.0.0)
-    * p37087476_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.240922)
-    * p37103277_122140_Generic.zip (FMW THIRDPARTY BUNDLE PATCH 12.2.1.4.240925)
+    * p28186730_1394218_Generic.zip (OPATCH 13.9.4.2.17 FOR EM 13.5 AND FMW/WLS 12.2.1.4.0 AND 14.1.1.0.0)
+    * p37453807_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.250107)
+    * p37374672_122140_Generic.zip (FMW Thirdparty Bundle Patch 12.2.1.4.241210)
     * p36316422_122140_Generic.zip (OPSS BUNDLE PATCH 12.2.1.4.240220)
     * p37035947_122140_Generic.zip (OWSM BUNDLE PATCH 12.2.1.4.240908)
-    * p37028738_122140_Generic.zip (ADF BUNDLE PATCH 12.2.1.4.240905)
-    * p37049907_122140_Generic.zip (Coherence 12.2.1.4 Cumulative Patch 23 (12.2.1.4.23))
+    * p37388935_122140_Generic.zip (ADF BUNDLE PATCH 12.2.1.4.241212)
+    * p37351860_122140_Generic.zip (Coherence 12.2.1.4 Cumulative Patch 24 (12.2.1.4.24))
     * p33093748_122140_Generic.zip (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)
     * p37056593_122140_Generic.zip (OCT 2024 CLONING SPU FOR FMW 12.2.1.4.0)
-    * p35965629_122140_Linux-x86-64.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 CPU JAN 2024)
-    * p36926636_122140_Generic.zip (JDBC 19.24 BUNDLE PATCH 12.2.1.4.240814)
-    * p36851321_122140_Generic.zip (RDA release 24.4-20241015 for FMW 12.2.1.4.0)
-    * p36964687_122140_Generic.zip (WEBCENTER CORE BUNDLE PATCH 12.2.1.4.240819)
+    * p35965629_122140_Generic.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 - SIZE OPTIMIZED FOR JAN 2024)
+    * p37258699_122140_Generic.zip (JDBC19.25 BUNDLE PATCH 12.2.1.4.241107)
+    * p37202255_122140_Generic.zip (RDA release 25.1-2025121 for FMW 12.2.1.4.0)
+    * p37284722_122140_Generic.zip (WebCenter Core Bundle Patch 12.2.1.4.241114)
+    * p37297691_122140_Generic.zip OSS 19C BUNDLE PATCH 12.2.1.4.241119
+    * p36789759_122140_Generic.zip FMW PLATFORM BUNDLE PATCH 12.2.1.4.240812
     * p34065178_122140_Generic.zip (OVD One Off)
-    * p34542329_122140_Generic.zip (EM One Off)
-    * p34765492_122140_Generic.zip (EM One Off)
     * p36426672_122140_Generic.zip (WLS One Off)
     * p34809489_122140_Generic.zip (JDEV One Off)
+    * p34542329_122140_Generic.zip (EM One Off)
+    * p34765492_122140_Generic.zip (EM One Off)
 
 * Oracle SOA Suite and Oracle Service Bus patches
-    * p37082056_122140_Generic.zip (SOA BUNDLE PATCH 12.2.1.4.240919)
+    * p37389582_122140_Generic.zip (SOA Bundle Patch 12.2.1.4.241212)
     * p36918958_122140_Generic.zip (OSB BUNDLE PATCH 12.2.1.4.240805)
     * p33404495_122140_Generic.zip (SOA One-off)
     * p32827327_122140_Generic.zip (OSB One-off)
-    * p31713053_122140_Linux-x86-64.zip (One-off patch)
+    * p31713053_122140_Generic.zip (One-off patch)
 
 ##### Update required build files
 
@@ -193,7 +195,7 @@ The following files in the code repository location `<imagetool-setup-location>/
 1. Add a JDK package to the WebLogic Image Tool cache:
 
     ``` bash
-    $ imagetool cache addInstaller --type jdk --version 8u431 --path <download location>/jdk-8u431-linux-x64.tar.gz
+    $ imagetool cache addInstaller --type jdk --version 8u441 --path <download location>/jdk-8u441-linux-x64.tar.gz
     ```
 
 1. Add the downloaded installation binaries to the WebLogic Image Tool cache:
@@ -211,52 +213,55 @@ The following files in the code repository location `<imagetool-setup-location>/
 1. Add the downloaded OPatch patch to the WebLogic Image Tool cache:
 
     ``` bash
-    $ imagetool cache addEntry --key 28186730_13.9.4.2.17 --value <download location>/p28186730_1394217_Generic.zip
+    $ imagetool cache addEntry --key 28186730_13.9.4.2.18 --value <download location>/p28186730_13942178Generic.zip
     ```
 
 1. Append the `--opatchBugNumber` flag and the OPatch patch key to the `create` command in the `buildArgs` file:
 
     ``` bash
-    --opatchBugNumber 28186730_13.9.4.2.17
+    --opatchBugNumber 28186730_13.9.4.2.18
     ```
 
 1. Add the downloaded product patches to the WebLogic Image Tool cache:  
 
     ``` bash   
-
-    $ imagetool cache addEntry --key 37087476_12.2.1.4.0 --value <download location>/p37087476_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 37103277_12.2.1.4.0 --value <download location>/p37103277_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 36316422_12.2.1.4.0 --value <download location>/p36316422_122140_Generic.zip 
-
-    $ imagetool cache addEntry --key 37035947_12.2.1.4.0 --value <download location>/p37035947_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 37028738_12.2.1.4.0 --value <download location>/p37028738_122140_Generic.zip 
-
-    $ imagetool cache addEntry --key 37049907_12.2.1.4.0 --value <download location>/p37049907_122140_Generic.zip 
-
-    $ imagetool cache addEntry --key 33093748_12.2.1.4.0 --value <download location>/p33093748_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 37056593_12.2.1.4.0 --value <download location>/p37056593_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 35965629_12.2.1.4.0 --value <download location>/p35965629_122140_Linux-x86-64.zip
-
-    $ imagetool cache addEntry --key 36926636_12.2.1.4.0 --value <download location>/p36926636_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 36851321_12.2.1.4.0 --value <download location>/p36851321_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 36964687_12.2.1.4.0 --value <download location>/p36964687_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 34065178_12.2.1.4.0 --value <download location>/p34065178_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 34542329_12.2.1.4.0 --value <download location>/p34542329_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 34765492_12.2.1.4.0 --value <download location>/p34765492_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 36426672_12.2.1.4.0 --value <download location>/p36426672_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 34809489_12.2.1.4.0 --value <download location>/p34809489_122140_Generic.zip
+        $ imagetool cache addEntry --key 37453807_12.2.1.4.0 --value <download location>/p37453807_122140_Generic.zip
+	
+        $ imagetool cache addEntry --key 37374672_12.2.1.4.0 --value <download location>/p37374672_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 36316422_12.2.1.4.0 --value <download location>/p36316422_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37035947_12.2.1.4.0 --value <download location>/p37035947_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37388935_12.2.1.4.0 --value <download location>/p37388935_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37351860_12.2.1.4.0 --value <download location>/p37351860_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 33093748_12.2.1.4.0 --value <download location>/p33093748_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37056593_12.2.1.4.0 --value <download location>/p37056593_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 35965629_12.2.1.4.0 --value <download location>/p35965629_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37258699_12.2.1.4.0 --value <download location>/p37258699_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37202255_12.2.1.4.0 --value <download location>/p37202255_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37284722_12.2.1.4.0 --value <download location>/p37284722_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 37297691_12.2.1.4.0 --value <download location>/p37297691_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 36789759_12.2.1.4.0 --value <download location>/p36789759_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 34065178_12.2.1.4.0 --value <download location>/p34065178_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 36426672_12.2.1.4.0 --value <download location>/p36426672_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 34809489_12.2.1.4.0 --value <download location>/p34809489_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 34542329_12.2.1.4.0 --value <download location>/p34542329_122140_Generic.zip
+    
+	$ imagetool cache addEntry --key 34765492_12.2.1.4.0 --value <download location>/p34765492_122140_Generic.zip
 
     ```
 
@@ -265,14 +270,14 @@ The following files in the code repository location `<imagetool-setup-location>/
    Sample `--patches` list for the product patches added in to the cache:
 
       ```
-      --patches 37087476_12.2.1.4.0,37103277_12.2.1.4.0,36316422_12.2.1.4.0,37035947_12.2.1.4.0,37028738_12.2.1.4.0,37049907_12.2.1.4.0,33093748_12.2.1.4.0,37056593_12.2.1.4.0,35965629_12.2.1.4.0,36926636_12.2.1.4.0,36851321_12.2.1.4.0,36964687_12.2.1.4.0,34065178_12.2.1.4.0,34542329_12.2.1.4.0,34765492_12.2.1.4.0,36426672_12.2.1.4.0,34809489_12.2.1.4.0  
+      --patches 37453807_12.2.1.4.0,37374672_12.2.1.4.0,36316422_12.2.1.4.0,37035947_12.2.1.4.0,37388935_12.2.1.4.0,37351860_12.2.1.4.0,33093748_12.2.1.4.0,37056593_12.2.1.4.0,35965629_12.2.1.4.0,37258699_12.2.1.4.0,37202255_12.2.1.4.0,37284722_12.2.1.4.0,37297691_12.2.1.4.0,36789759_12.2.1.4.0,34065178_12.2.1.4.0,36426672_12.2.1.4.0,34809489_12.2.1.4.0,34542329_12.2.1.4.0,34765492_12.2.1.4.0
       ```
 
     Example `buildArgs` file after appending the OPatch patch and product patches:
 
     ```
     create
-    --jdkVersion 8u431
+    --jdkVersion 8u441
     --type soa_osb_b2b
     --version 12.2.1.4.0
     --tag oracle/soasuite:12.2.1.4.0
@@ -282,7 +287,7 @@ The following files in the code repository location `<imagetool-setup-location>/
     --additionalBuildCommands <imagetool-setup-location>/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
     --additionalBuildFiles <imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
     --installerResponseFile <imagetool-setup-location>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response,<imagetool-setup-location>/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/b2b.response
-    --patches 37087476_12.2.1.4.0,37103277_12.2.1.4.0,36316422_12.2.1.4.0,37035947_12.2.1.4.0,37028738_12.2.1.4.0,37049907_12.2.1.4.0,33093748_12.2.1.4.0,37056593_12.2.1.4.0,35965629_12.2.1.4.0,36926636_12.2.1.4.0,36851321_12.2.1.4.0,36964687_12.2.1.4.0,34065178_12.2.1.4.0,34542329_12.2.1.4.0,34765492_12.2.1.4.0,36426672_12.2.1.4.0,34809489_12.2.1.4.0  
+    --patches 37453807_12.2.1.4.0,37374672_12.2.1.4.0,36316422_12.2.1.4.0,37035947_12.2.1.4.0,37388935_12.2.1.4.0,37351860_12.2.1.4.0,33093748_12.2.1.4.0,37056593_12.2.1.4.0,35965629_12.2.1.4.0,37258699_12.2.1.4.0,37202255_12.2.1.4.0,37284722_12.2.1.4.0,37297691_12.2.1.4.0,36789759_12.2.1.4.0,34065178_12.2.1.4.0,36426672_12.2.1.4.0,34809489_12.2.1.4.0,34542329_12.2.1.4.0,34765492_12.2.1.4.0    
     ```
     >Note: In the `buildArgs` file:  
     > * `--jdkVersion` value must match the `--version` value used in the `imagetool cache addInstaller` command for `--type jdk`.  
@@ -498,7 +503,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
 1. Enter the following command to add the OPatch patch to the WebLogic Image Tool cache:
 
    ```bash
-   $ imagetool cache addEntry --key 28186730_13.9.4.2.17 --value <download location>/p28186730_1394217_Generic.zip
+   $ imagetool cache addEntry --key 28186730_13.9.4.2.18 --value <download location>/p28186730_1394218_Generic.zip
    ```
 1. Execute the `imagetool cache addEntry` command for each patch to add the required patch(es) to the WebLogic Image Tool cache. For example, to add patch `p30761841_122140_Generic.zip`:
 
@@ -560,7 +565,7 @@ After [setting up the WebLogic Image Tool]({{< relref "/soa-domains/create-or-up
       Oracle Home       : /u01/oracle
       Central Inventory : /u01/oracle/oraInventory
         from           : /u01/oracle/oraInst.loc
-      OPatch version    : 13.9.4.2.17
+      OPatch version    : 13.9.4.2.18
       OUI version       : 13.9.4.0.0
       Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
 

@@ -18,7 +18,7 @@ After the Oracle SOA Suite domain is set up, you can:
 Using the `WebLogic Monitoring Exporter` you can scrape runtime information from a running Oracle SOA Suite instance and monitor them using Prometheus and Grafana.
 
 #### Set up monitoring
-Follow [these steps](https://github.com/oracle/fmw-kubernetes/blob/v24.4.2/OracleSOASuite/kubernetes/monitoring-service/README.md) to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see [here](https://github.com/oracle/weblogic-monitoring-exporter).
+Follow [these steps](https://github.com/oracle/fmw-kubernetes/blob/v25.1.2/OracleSOASuite/kubernetes/monitoring-service/README.md) to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see [here](https://github.com/oracle/weblogic-monitoring-exporter).
 
 ### Publish WebLogic Server logs into Elasticsearch
 
