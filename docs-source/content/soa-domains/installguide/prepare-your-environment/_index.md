@@ -60,7 +60,7 @@ Obtain dependent images and add them to your local registry.
 1. Pull the operator image:
 
     ```bash
-    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.9
+    $ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.13
     ```
 
 ### Set up the code repository to deploy Oracle SOA Suite domains
@@ -69,19 +69,19 @@ Oracle SOA Suite domain deployment on Kubernetes leverages the WebLogic Kubernet
 
 1. Create a working directory to set up the source code:
     ```bash
-    $ mkdir $HOME/soa_24.4.2
-    $ cd $HOME/soa_24.4.2
+    $ mkdir $HOME/soa_25.1.2
+    $ cd $HOME/soa_25.1.2
     ```
 1. Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA [repository](https://github.com/oracle/fmw-kubernetes.git). Required artifacts are available at `OracleSOASuite/kubernetes`.
 
     ``` bash
     $ git clone https://github.com/oracle/fmw-kubernetes.git
-    $ export WORKDIR=$HOME/soa_24.4.2/fmw-kubernetes/OracleSOASuite/kubernetes
+    $ export WORKDIR=$HOME/soa_25.1.2/fmw-kubernetes/OracleSOASuite/kubernetes
     ```
 
 ### Obtain the Oracle SOA Suite Docker image
 
-The Oracle SOA Suite image with the latest bundle patch and required interim patches is prebuilt by Oracle and includes Oracle SOA Suite 12.2.1.4.0, the July Patch Set Update (PSU), and other fixes released with the Critical Patch Update (CPU) program. The Oracle Container Registry hosts container images based on both Oracle Linux 7 (ol7) and 8 (ol8). These are the only images supported for production deployments. Obtain the Oracle SOA Suite images using either of the following methods:
+The Oracle SOA Suite image with the latest bundle patch and required interim patches is prebuilt by Oracle and includes Oracle SOA Suite 12.2.1.4.0, the January Patch Set Update (PSU), and other fixes released with the Critical Patch Update (CPU) program. The Oracle Container Registry hosts container images based on Oracle Linux 8 (ol8). These are the only images supported for production deployments. Obtain the Oracle SOA Suite images using either of the following methods:
 
 1. Download from Oracle Container Registry: 
     
@@ -93,31 +93,31 @@ The Oracle SOA Suite image with the latest bundle patch and required interim pat
         $ docker login container-registry.oracle.com
         ```
 
-    - Pull the Oracle Linux 7 or 8 based images:
+    - Pull the Oracle Linux 8 based images:
 
         For example:
 
         ```bash
-        $ docker pull container-registry.oracle.com/middleware/soasuite_cpu:12.2.1.4-jdk8-<ol7 or ol8>-<TAG>
+        $ docker pull container-registry.oracle.com/middleware/soasuite_cpu:12.2.1.4-jdk8-<ol8>-<TAG>
         ```
 
 1. Download from My Oracle Support:
-    - Download patch [37153681](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=37153681) for Oracle Linux 7 based container image or [37153750](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=37153750) for Oracle Linux 8 based container image from My Oracle Support (MOS).
+    - Download patch [37480757](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?patchId=37480757) for Oracle Linux 8 based container image from My Oracle Support (MOS).
     - Unzip the downloaded patch zip file.
     - Load the image archive using the `docker load` command.
 
         For example:
         ```bash
-        $ docker load < soasuite-12.2.1.4-jdk8-<ol7 or ol8>-<TAG>.tar
-          Loaded image: oracle/soasuite:12.2.1.4-jdk8-<ol7 or ol8>-<TAG>
+        $ docker load < soasuite-12.2.1.4-jdk8-<ol8>-<TAG>.tar
+          Loaded image: oracle/soasuite:12.2.1.4-jdk8-<ol8>-<TAG>
         $
         ```
-    - Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `1687e36e-b0b8-4f60-ba60-a6527fb16af5` for Oracle Linux 7 based container image and `0d29fb87-6f55-4cb7-aded-a60d3f6d4c3e` for Oracle Linux 8 based container image.
+    - Run the `docker inspect` command to verify that the downloaded image is the latest released image. The value of label `com.oracle.weblogic.imagetool.buildid` must match to `a8ff92a6-fea6-4cc4-aba0-c1ef36fd8c18` for Oracle Linux 8 based container image.
 
         For example:
         ```bash
-        $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}' oracle/soasuite:12.2.1.4-jdk8-ol7-241016.161006
-            1687e36e-b0b8-4f60-ba60-a6527fb16af5
+        $ docker inspect --format='{{ index .Config.Labels "com.oracle.weblogic.imagetool.buildid" }}' oracle/soasuite:12.2.1.4-jdk8-ol8-250115.095053
+            a8ff92a6-fea6-4cc4-aba0-c1ef36fd8c18
         $
         ```
 
@@ -135,7 +135,7 @@ In the following example commands to install the WebLogic Kubernetes Operator, `
   $ kubectl create namespace opns
   $ kubectl create serviceaccount -n opns op-sa
   $ helm repo add weblogic-operator https://oracle.github.io/weblogic-kubernetes-operator/charts --force-update 
-  $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --version 4.2.9 --namespace opns --set serviceAccount=op-sa --set "javaLoggingLevel=FINE" --wait
+  $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --version 4.2.13 --namespace opns --set serviceAccount=op-sa --set "javaLoggingLevel=FINE" --wait
   ```
 This Helm release deploys the operator with the default behavior of managing Oracle SOA Suite domains in all Kubernetes namespaces with the label `weblogic-operator=enabled`.
 
@@ -187,7 +187,7 @@ For details, see [Prepare to run a domain](https://oracle.github.io/weblogic-kub
     $ ./create-weblogic-credentials.sh -u weblogic -p Welcome1 -n soans -d soainfra -s soainfra-domain-credentials
   ```
 
-  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v4.2.9/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
+  For more details, see [this document](https://github.com/oracle/weblogic-kubernetes-operator/blob/v4.2.13/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md).
 
   You can check the secret with the `kubectl get secret` command.
 

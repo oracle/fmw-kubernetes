@@ -419,15 +419,15 @@ Refer to the official [documentation](https://kubernetes.io/docs/setup/#producti
 
 1. Create a working directory to set up the source code:
     ```bash
-    $ mkdir $HOME/soa_24.4.2
-    $ cd $HOME/soa_24.4.2
+    $ mkdir $HOME/soa_25.1.2
+    $ cd $HOME/soa_25.1.2
     ```
 
 1. Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA [repository](https://github.com/oracle/fmw-kubernetes.git). Required artifacts are available at `OracleSOASuite/kubernetes`.
 
     ``` bash
     $ git clone https://github.com/oracle/fmw-kubernetes.git
-    $ export WORKDIR=$HOME/soa_24.4.2/fmw-kubernetes/OracleSOASuite/kubernetes
+    $ export WORKDIR=$HOME/soa_25.1.2/fmw-kubernetes/OracleSOASuite/kubernetes
     ```
 
 #### 3.2 Get required Docker images and add them to your local registry
@@ -435,7 +435,7 @@ Refer to the official [documentation](https://kubernetes.io/docs/setup/#producti
 1. Pull the WebLogic Kubernetes Operator image:
 
     ```shell
-    $ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.9
+    $ podman pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.13
     ```
 
 1. Obtain the Oracle Database image and Oracle SOA Suite Docker image from the [Oracle Container Registry](https://container-registry.oracle.com):
@@ -486,7 +486,7 @@ Refer to the official [documentation](https://kubernetes.io/docs/setup/#producti
    ```shell
    $ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator \
      --namespace opns \
-     --version 4.2.9 \
+     --version 4.2.13 \
      --set serviceAccount=op-sa \
      --wait
    ```
@@ -503,7 +503,7 @@ Refer to the official [documentation](https://kubernetes.io/docs/setup/#producti
    $ kubectl logs -n opns -c weblogic-operator deployments/weblogic-operator
    ```
 
-The WebLogic Kubernetes Operator v4.2.9 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.
+The WebLogic Kubernetes Operator v4.2.13 has been installed. Continue with the load balancer and Oracle SOA Suite domain setup.
 
 ### 5. Install the Traefik (ingress-based) load balancer
 

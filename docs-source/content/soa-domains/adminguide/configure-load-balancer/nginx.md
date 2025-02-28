@@ -202,7 +202,7 @@ Follow these steps to set up NGINX as a load balancer for an Oracle SOA Suite do
 1. Create an ingress for the domain in the domain namespace by using the sample Helm chart. Here path-based routing is used for ingress. Sample values for default configuration are shown in the file `${WORKDIR}/charts/ingress-per-domain/values.yaml`. By default, `type` is `TRAEFIK` , `sslType` is `NONSSL`, and `domainType` is `soa`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml`.   
 If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. Update the template YAML file for the NGINX load balancer located at `${WORKDIR}/charts/ingress-per-domain/templates/nginx-ingress.yaml`.
 
-   > Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v24.2.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration) for all the configuration parameters.
+   > Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v25.1.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration) for all the configuration parameters.
 
    ```bash
     $ cd ${WORKDIR}

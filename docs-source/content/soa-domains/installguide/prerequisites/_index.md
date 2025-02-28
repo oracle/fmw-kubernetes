@@ -10,17 +10,17 @@ This section provides information about the system requirements, limitations, li
 
 ### System requirements for Oracle SOA Suite domains
 
-Release 24.4.2 has the following system requirements:
+Release 25.1.2 has the following system requirements:
 
-* Kubernetes 1.24.0+, 1.25.0+, 1.26.2+, 1.27.2+, 1.28.2+, 1.29.1+ and 1.30.1+ (check with `kubectl version`).
+* Kubernetes 1.24.0+, 1.25.0+, 1.26.2+, 1.27.2+, 1.28.2+, 1.29.1+, 1.30.1+ and 1.31.1+ (check with `kubectl version`).
 * Docker 19.03.11+ (check with `docker version`) or CRI-O 1.20.2+ (check with `crictl version | grep RuntimeVersion`).
 * Flannel networking v0.13.0-amd64 or later (check with `docker images | grep flannel`), Calico networking v3.16.1 or later.
 * Helm 3.10.2+ (check with `helm version --client --short`).
-* WebLogic Kubernetes Operator 4.2.9 (see the [operator releases 4.2.9](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v4.2.9) pages).
+* WebLogic Kubernetes Operator 4.2.13 (see the [operator releases 4.2.13](https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v4.2.13) pages).
 * You must have the `cluster-admin` role to install the operator. The operator does not need the `cluster-admin` role at runtime.
   For more information, see the role-based access control (RBAC) [documentation](https://oracle.github.io/weblogic-kubernetes-operator/security/rbac/).
 * We do not currently support running SOA in non-Linux containers.
-* Container images based on Oracle Linux 8 are now supported. My Oracle Support and the Oracle Container Registry host container images based on both Oracle Linux 7 and 8.
+* Container images based on Oracle Linux 8 are now supported. My Oracle Support and the Oracle Container Registry host container images based on Oracle Linux 8.
 * Additionally, see the Oracle SOA Suite [documentation](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/insoa/preparing-install-and-configure-product.html#GUID-E2D4D481-BE80-4600-8078-FD9C03A30210) for other requirements, such as database version.
 
 See [here]({{< relref "/soa-domains/appendix/soa-cluster-sizing-info.md" >}}) for resource sizing information for Oracle SOA Suite domains set up on a Kubernetes cluster.

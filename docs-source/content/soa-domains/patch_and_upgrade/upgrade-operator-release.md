@@ -13,7 +13,7 @@ To upgrade the WebLogic Kubernetes operator, use the `helm upgrade` command with
 $ cd ${WORKDIR}
 $ helm upgrade \
   --reuse-values \
-  --version 4.2.9 \
+  --version 4.2.13 \
   --namespace weblogic-operator-namespace \
   --wait \
   weblogic-kubernetes-operator \
@@ -26,7 +26,7 @@ $ helm upgrade \
 
 When you upgrade a 3.x operator to 4.0, the upgrade process creates a WebLogic Domain resource conversion webhook deployment and its associated resources in the same namespace. If the conversion webhook deployment already exists in another namespace, then a new conversion webhook deployment is not created. The webhook automatically and transparently upgrades the existing WebLogic Domains from the 3.x schema to the 4.0 schema. For more information, see [WebLogic Domain resource conversion webhook](https://oracle.github.io/weblogic-kubernetes-operator/managing-operators/conversion-webhook/).
 
-If you have a single WebLogic Kubernetes Operator per Kubernetes cluster (most common use case), you can upgrade directly from any 3.x operator release to 4.2.9. The Helm chart for 4.2.9 automatically installs the schema conversion webhook.
+If you have a single WebLogic Kubernetes Operator per Kubernetes cluster (most common use case), you can upgrade directly from any 3.x operator release to 4.2.13. The Helm chart for 4.2.13 automatically installs the schema conversion webhook.
 
 If there is more than one WebLogic Kubernetes Operator in a single Kubernetes cluster:
 

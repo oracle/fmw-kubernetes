@@ -156,7 +156,7 @@ Sample values for default configuration are shown in the file `${WORKDIR}/charts
 By default, `type` is `TRAEFIK`, `sslType` is `NONSSL`, and `domainType` is `soa`. These values can be overridden by passing values through the command line or can be edited in the sample file `values.yaml` based on the type of configuration (NONSSL, SSL, and E2ESSL).  
 If needed, you can update the ingress YAML file to define more path rules (in section `spec.rules.host.http.paths`) based on the domain application URLs that need to be accessed. The template YAML file for the Traefik (ingress-based) load balancer is located at `${WORKDIR}/charts/ingress-per-domain/templates/traefik-ingress.yaml`.
 
-> Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v24.4.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration) for all the configuration parameters.
+> Note: See [here](https://github.com/oracle/fmw-kubernetes/blob/v25.1.2/OracleSOASuite/kubernetes/charts/ingress-per-domain/README.md#configuration) for all the configuration parameters.
 
 1. Choose an appropriate `LOADBALANCER_HOSTNAME` for accessing the Oracle SOA Suite domain application URLs.
 
