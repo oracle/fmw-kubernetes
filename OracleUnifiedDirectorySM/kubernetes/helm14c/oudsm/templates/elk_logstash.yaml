@@ -1,0 +1,83 @@
+#
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+{{- if .Values.elk.IntegrationEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "oudsm.fullname" . }}-logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+      - name: {{ include "oudsm.fullname" . }}-logstash
+        env:
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-pw-elastic
+              key: password
+        image: {{ .Values.elk.logStashImage }}
+        ports:
+          - containerPort: 5044
+            name: logstash
+        command:
+        - logstash
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: {{ include "oudsm.fullname" . }}-pipeline
+          mountPath: /usr/share/logstash/pipeline/
+        - name : {{ include "oudsm.fullname" . }}-pv
+          mountPath: /u01/oracle/user_projects
+        - mountPath: /usr/share/logstash/config/logstash.yml
+          subPath: logstash.yml
+          name: config-volume
+        - mountPath: /usr/share/logstash/config/certs
+          name: elk-cert
+      volumes:
+      - name: {{ include "oudsm.fullname" . }}-pipeline
+        configMap:
+      {{- if .Values.elk.logstashConfigMap }}
+          name: {{ .Values.elk.logstashConfigMap }}
+      {{- else }}
+          name: {{ include "oudsm.fullname" . }}-logstash-configmap
+          items:
+          - key: logstash-config.conf
+            path: logstash-config.conf
+      {{- end }}
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: elk.crt
+            path: elk.crt
+          name: {{ include "oudsm.fullname" . }}-logstash-configmap
+        name: elk-cert
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: logstash.yml
+            path: logstash.yml
+          name: {{ include "oudsm.fullname" . }}-logstash-configmap
+        name: config-volume
+      - name: shared-logs
+        emptyDir: {}
+      - name: {{ include "oudsm.fullname" . }}-pv
+        persistentVolumeClaim:
+          claimName: {{ include "oudsm.fullname" . }}-pvc
+    {{- with .Values.elk.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+    {{- end }}
+
+{{- end }}

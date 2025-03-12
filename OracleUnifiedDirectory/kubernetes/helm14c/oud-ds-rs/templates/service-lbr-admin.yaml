@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+spec:
+  type:  {{ .Values.service.lbrtype }}
+  ports:
+    - port: {{ .Values.oudPorts.adminhttps }}
+      name: adminhttps
+      targetPort: adminhttps
+      protocol: TCP
+      {{- if eq .Values.service.lbrtype "NodePort" }}
+      nodePort: {{ .Values.oudPorts.nodePorts.adminhttps }}
+      {{ end }}
+    - port: {{ .Values.oudPorts.adminldaps }}
+      name: adminldaps
+      targetPort: adminldaps
+      protocol: TCP
+      {{- if eq .Values.service.lbrtype "NodePort" }}
+      nodePort: {{ .Values.oudPorts.nodePorts.adminldaps }}
+      {{ end }}
+  selector:
+    {{- include "oud-ds-rs.selectorLabels" . | nindent 4 }}

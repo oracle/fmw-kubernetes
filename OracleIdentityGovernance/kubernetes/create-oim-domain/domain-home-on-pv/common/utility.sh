@@ -204,7 +204,6 @@ function createFiles_OIG {
     sed -i -e "s:%MANAGED_SERVER_NAME_BASE%:${managedServerNameBase}:g" ${domainPropertiesOutput}
     sed -i -e "s:%CONFIGURED_MANAGED_SERVER_COUNT%:${configuredManagedServerCount}:g" ${domainPropertiesOutput}
     sed -i -e "s:%CLUSTER_NAME%:${clusterName}:g" ${domainPropertiesOutput}
-    sed -i -e "s:%SSL_ENABLED%:${sslEnabled}:g" ${domainPropertiesOutput}
     sed -i -e "s:%PRODUCTION_MODE_ENABLED%:${productionModeEnabled}:g" ${domainPropertiesOutput}
     sed -i -e "s:%CLUSTER_TYPE%:${clusterType}:g" ${domainPropertiesOutput}
     sed -i -e "s;%JAVA_OPTIONS%;${javaOptions};g" ${domainPropertiesOutput}
@@ -271,7 +270,6 @@ function createFiles_OIG {
     sed -i -e "s:%DOMAIN_UID%:${domainUID}:g" ${createJobOutput}
     sed -i -e "s:%DOMAIN_NAME%:${domainName}:g" ${createJobOutput}
     sed -i -e "s:%DOMAIN_HOME%:${domainHome}:g" ${createJobOutput}
-    sed -i -e "s:%SSL_ENABLED%:${sslEnabled}:g" ${createJobOutput}
     sed -i -e "s:%PRODUCTION_MODE_ENABLED%:${productionModeEnabled}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME%:${adminServerName}:g" ${createJobOutput}
     sed -i -e "s:%ADMIN_SERVER_NAME_SVC%:${adminServerNameSVC}:g" ${createJobOutput}

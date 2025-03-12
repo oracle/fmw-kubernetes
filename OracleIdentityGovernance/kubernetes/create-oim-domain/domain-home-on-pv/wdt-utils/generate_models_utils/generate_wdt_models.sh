@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
@@ -20,6 +20,10 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../../../../common/utility.sh
 source ${scriptDir}/../../../../common/validate.sh
 
+administrationPortEnabled=false
+sslEnabled=false
+adminServerSSLPort=7002
+adminAdministrationPort=9002
 
 function usage {
   echo usage: ${script} -o dir -i file [-h]
@@ -183,6 +187,26 @@ function validateOIGDatasourceType {
 }
 
 #
+# Function to validate OAM version
+#
+
+function validateAppVersion {
+  if [ ! -z ${appVersion} ]; then
+    case ${appVersion} in
+      "12c")
+      ;;
+      "14c")
+      ;;
+      *)
+        validationError "Invalid appVersion: ${appVersion}. Valid values are: 12c or 14c"
+      ;;
+    esac
+  else
+    validationError "appVersion cannot be empty or null, valid values are: 12c or 14c"
+  fi
+  failIfValidationErrors
+}
+#
 # Function to validate the common input parameters for OIG
 #
 function validateInputs_OIG {
@@ -206,7 +230,9 @@ function validateInputs_OIG {
     adminPort \
     initialManagedServerReplicas \
     t3ChannelPort \
-    adminNodePort
+    adminNodePort \
+    adminServerSSLPort \
+    adminAdministrationPort
 
   if [ ! "${sample_name}" == "fmw-domain-home-in-image" ]; then
     validateIntegerInputParamsSpecified configuredManagedServerCount
@@ -216,10 +242,13 @@ function validateInputs_OIG {
     productionModeEnabled \
     exposeAdminT3Channel \
     exposeAdminNodePort \
-    edgInstall
+    edgInstall \
+    administrationPortEnabled \
+    sslEnabled
 
   export requiredInputsVersion="create-weblogic-sample-domain-inputs-v1"
   validateVersion
+  validateAppVersion
   validateDomainUid
   validateNamespace
   validateAdminServerName
@@ -242,7 +271,7 @@ soaManagedServerNameBase='soa_server'
 oimCluster='oim_cluster'
 soaCluster='soa_cluster'
 
-server_definition_oim="            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
+server_definition_oim_12c="            ListenPort: '@@PROP:Server.oim_server.ListenPort@@'
             CoherenceClusterSystemResource: defaultCoherenceCluster
             Cluster: <OIM_CLUSTER_NAME>
             JTAMigratableTarget:
@@ -257,7 +286,7 @@ server_definition_oim="            ListenPort: '@@PROP:Server.oim_server.ListenP
                      TunnelingEnabled: true
                      HttpEnabledForThisProtocol: true"
 
-server_definition_soa="            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
+server_definition_soa_12c="            ListenPort: '@@PROP:Server.soa_server.ListenPort@@'
             CoherenceClusterSystemResource: defaultCoherenceCluster
             Cluster: <SOA_CLUSTER_NAME>
             JTAMigratableTarget:
@@ -267,19 +296,35 @@ server_definition_soa="            ListenPort: '@@PROP:Server.soa_server.ListenP
             NumOfRetriesBeforeMsiMode: 0
             RetryIntervalBeforeMsiMode: 1"
 
+ssl_model="            SSL:
+                Enabled: true
+                ListenPort: '@@PROP:Server.<SERVER_NAME>.SSLListenPort@@'"
+
 function appendServers {
 
     for (( i = 1; i <= $configuredManagedServerCount; i++ ))
     do
         #append server definition for oim_servers
         echo -e "        ${managedServerNameBase}${i}:" >> ${outputModel}
-        echo -e "${server_definition_oim}" | sed "s/<OIM_CLUSTER_NAME>/${oimCluster}/g" >> ${outputModel}
+        echo -e "${server_definition_oim_12c}" | sed "s/<OIM_CLUSTER_NAME>/${oimCluster}/g" >> ${outputModel}
+        if [[ "${appVersion}" == "14c" ]]; then
+            echo -e "            AdministrationPort: '@@PROP:Server.oim_server.AdministrationPort@@'" >> ${outputModel}
+        fi
+        if [[ "${sslEnabled}" == "true" ]]; then
+            echo -e "${ssl_model}" | sed "s/<SERVER_NAME>/oim_server/g" >> ${outputModel}
+        fi
         sed -i -e "s:<OIM_SERVER_NAME>:${managedServerNameBase}${i}:g" ${outputModel}
         sed -i -e "s:<SERVER_COUNT>:${i}:g" ${outputModel}
 
         #append server definition for soa_servers
         echo -e "        ${soaManagedServerNameBase}${i}:" >> ${outputModel}
-        echo -e "${server_definition_soa}" | sed "s/<SOA_CLUSTER_NAME>/${soaCluster}/g" >> ${outputModel}
+        echo -e "${server_definition_soa_12c}" | sed "s/<SOA_CLUSTER_NAME>/${soaCluster}/g" >> ${outputModel}
+        if [[ "${appVersion}" == "14c" ]]; then
+            echo -e "            AdministrationPort: '@@PROP:Server.soa_server.AdministrationPort@@'" >> ${outputModel}
+        fi
+        if [[ "${sslEnabled}" == "true" ]]; then
+            echo -e "${ssl_model}" | sed "s/<SERVER_NAME>/soa_server/g" >> ${outputModel}
+        fi
         sed -i -e "s:<SOA_SERVER_NAME>:${soaManagedServerNameBase}${i}:g" ${outputModel}
         sed -i -e "s:<SERVER_COUNT>:${i}:g" ${outputModel}
     done
@@ -331,6 +376,17 @@ cp ${inputPropertyFile} ${outputPropertyFile}
 
 #replace property file values
 sed -i -e "s:%ADMIN_SERVER_PORT%:${adminPort}:g" ${outputPropertyFile}
+sed -i -e "s:%ADMIN_SSL_PORT%:${adminServerSSLPort}:g" ${outputPropertyFile}
+sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${outputPropertyFile}
+
+
+#append admin port and ssl bits for admin server
+if [[ "${appVersion}" == "14c" ]]; then
+    echo -e "            AdministrationPort: '@@PROP:Server.AdminServer.AdministrationPort@@'" >> ${outputModel}
+fi
+if [[ "${sslEnabled}" == "true" ]]; then
+    echo -e "${ssl_model}" | sed "s/<SERVER_NAME>/AdminServer/g" >> ${outputModel}
+fi
 
 # call function to append server definitions based on user inputs
 appendServers

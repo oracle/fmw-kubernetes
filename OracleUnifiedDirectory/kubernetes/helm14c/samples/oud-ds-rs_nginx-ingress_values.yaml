@@ -1,0 +1,134 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl
+#
+#
+# Configuration for additional TCP ports to be exposed through Ingress
+# Format for each port would be like:
+# <PortNumber>: <Namespace>/<Service>:<Service Port>
+tcp: 
+  # Map 1389 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port
+  1389: %NAMESPACE%/%DEPLOYMENT_NAME%-lbr-ldap:ldap
+  # Map 1636 TCP port to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port
+  1636: %NAMESPACE%/%DEPLOYMENT_NAME%-lbr-ldap:ldaps
+  # Map specific ports for LDAP and LDAPS communication from individual Services/Pods
+  # To redirect requests on 3890 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-0:ldap
+  3890: %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-0:ldap
+  # To redirect requests on 6360 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldaps-0:ldap
+  6360: %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-0:ldaps
+  # To redirect requests on 3891 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-1:ldap
+  3891: %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-1:ldap
+  # To redirect requests on 6361 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldaps-1:ldap
+  6361: %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-1:ldaps
+  # To redirect requests on 3892 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-2:ldap
+  3892: %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-2:ldap
+  # To redirect requests on 6362 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldaps-2:ldap
+  6362: %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-2:ldaps
+  # To redirect requests on 4440 port to %NAMESPACE%/%DEPLOYMENT_NAME%-0:adminldaps
+  4440: %NAMESPACE%/%DEPLOYMENT_NAME%-0:adminldaps
+  # To redirect requests on 4441 port to %NAMESPACE%/%DEPLOYMENT_NAME%-1:adminldaps
+  4441: %NAMESPACE%/%DEPLOYMENT_NAME%-1:adminldaps
+  # To redirect requests on 4442 port to %NAMESPACE%/%DEPLOYMENT_NAME%-2:adminldaps
+  4442: %NAMESPACE%/%DEPLOYMENT_NAME%-2:adminldaps
+  # Map 1888 TCP port to LBR Admin service to get requests handled through any available POD/Endpoint serving Admin HTTPS Port
+  1888: %NAMESPACE%/%DEPLOYMENT_NAME%-lbr-admin:adminhttps
+  # To redirect requests on 8880 port to %NAMESPACE%/%DEPLOYMENT_NAME%-0:adminhttps
+  8880: %NAMESPACE%/%DEPLOYMENT_NAME%-0:adminhttps
+  # To redirect requests on 8881 port to %NAMESPACE%/%DEPLOYMENT_NAME%-1:adminhttps
+  8881: %NAMESPACE%/%DEPLOYMENT_NAME%-1:adminhttps
+  # To redirect requests on 8882 port to %NAMESPACE%/%DEPLOYMENT_NAME%-2:adminhttps
+  8882: %NAMESPACE%/%DEPLOYMENT_NAME%-2:adminhttps
+  # Map 1080 TCP port to LBR HTTP service to get requests handled through any available POD/Endpoint serving HTTP Port
+  1080: %NAMESPACE%/%DEPLOYMENT_NAME%-lbr-http:http
+  # To redirect requests on 8080 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-0:http
+  8080: %NAMESPACE%/%DEPLOYMENT_NAME%-http-0:http
+  # To redirect requests on 8081 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-1:http
+  8081: %NAMESPACE%/%DEPLOYMENT_NAME%-http-1:http
+  # To redirect requests on 8082 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-2:http
+  8082: %NAMESPACE%/%DEPLOYMENT_NAME%-http-2:http
+  # Map 1081 TCP port to LBR HTTP service to get requests handled through any available POD/Endpoint serving HTTP Port
+  1081: %NAMESPACE%/%DEPLOYMENT_NAME%-lbr-http:https
+  # To redirect requests on 8100 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-0:https
+  8100: %NAMESPACE%/%DEPLOYMENT_NAME%-http-0:https
+  # To redirect requests on 8101 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-1:https
+  8101: %NAMESPACE%/%DEPLOYMENT_NAME%-http-1:https
+  # To redirect requests on 8102 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-2:https
+  8102: %NAMESPACE%/%DEPLOYMENT_NAME%-http-2:https
+
+controller:
+  extraArgs:
+    default-ssl-certificate: %NAMESPACE%/%DEPLOYMENT_NAME%-tls-cert
+#  In case, specific image of nginx is requried to be used, following attributes can be changed.
+#  image:
+#    repository: %NGINX-INGRESS-CONTROLLER_IMAGE_REPO%
+#    tag: "%NGINX-INGRESS-CONTROLLER_IMAGE_TAG%"
+  service:
+    # To configure Ingress Controller Service as LoadBalancer type of Service
+    # Based on the Kubernetes configuration, External LoadBalancer would be linked to the Ingress Controller Service
+    type: LoadBalancer
+    # Configuration for NodePort to be used for Ports exposed through Ingress
+    # If NodePorts are not defied/configured, Node Port would be assigend automatically by Kubernetes
+    # These NodePorts are helpful while accessing services directly through Ingress and without having External Load Balancer.
+# To avoid port conflicts, through sample values file, let's have these NodePorts assigned automatically
+#     nodePorts:
+#       # For HTTP Interface exposed through LoadBalancer/Ingress
+#       http: 30080
+#       # For HTTPS Interface exposed through LoadBalancer/Ingress
+#       https: 30443
+#       tcp:
+#         # For LDAP Interface referring to LBR LDAP services serving LDAP port
+#         1389: 31389
+#         # For LDAPS Interface referring to LBR LDAP services serving LDAPS port
+#         1636: 31636
+#         # For LDAP Interface from specific service %DEPLOYMENT_NAME%-ldap-0
+#         3890: 30890
+#         # For LDAPS Interface from specific service %DEPLOYMENT_NAME%-ldap-0
+#         6360: 30360
+#         # For LDAP Interface from specific service %DEPLOYMENT_NAME%-ldap-1
+#         3891: 30891
+#         # For LDAPS Interface from specific service %DEPLOYMENT_NAME%-ldap-1
+#         6361: 30361
+#         # For LDAP Interface from specific service %DEPLOYMENT_NAME%-ldap-2
+#         3892: 30892
+#         # For LDAPS Interface from specific service %DEPLOYMENT_NAME%-ldap-2
+#         6362: 30362
+#         # For LDAPS Interface referring to LBR Admin services serving adminldaps port
+#         1444: 31444
+#         # For Admin LDAPS Interface from specific service %DEPLOYMENT_NAME%-0
+#         4440: 30440
+#         # For Admin LDAPS Interface from specific service %DEPLOYMENT_NAME%-1
+#         4441: 30441
+#         # For Admin LDAPS Interface from specific service %DEPLOYMENT_NAME%-2
+#         4442: 30442
+#         # For HTTPS Interface referring to LBR Admin services serving adminhttps port
+#         1888: 31888
+#         # For Admin HTTPS Interface from specific service %DEPLOYMENT_NAME%-0
+#         8880: 30880
+#         # For Admin HTTPS Interface from specific service %DEPLOYMENT_NAME%-1
+#         8881: 30881
+#         # For Admin HTTPS Interface from specific service %DEPLOYMENT_NAME%-2
+#         8882: 30882
+#         # For HTTP Interface referring to LBR HTTP services serving http port
+#         1080: 31080
+#         # For HTTP Interface from specific service %DEPLOYMENT_NAME%-http-0
+#         8080: 30800
+#         # For HTTP Interface from specific service %DEPLOYMENT_NAME%-http-1
+#         8081: 30801
+#         # For HTTP Interface from specific service %DEPLOYMENT_NAME%-http-2
+#         8082: 30802
+#         # For HTTPS Interface referring to LBR HTTP services serving https port
+#         1081: 31081
+#         # For HTTPS Interface from specific service %DEPLOYMENT_NAME%-http-0
+#         8100: 30810
+#         # For HTTPS Interface from specific service %DEPLOYMENT_NAME%-http-1
+#         8101: 30811
+#         # For HTTPS Interface from specific service %DEPLOYMENT_NAME%-http-2
+#         8102: 30812
+
+# In case, specific image of nginx is requried to be used, following attributes can be changed.
+# defaultBackend:
+#   image:
+#     repository: %NGINX-INGRESS-BACKEND_IMAGE_REPO%
+#     tag: "%NGINX-INGRESS-BACKEND_IMAGE_TAG%"

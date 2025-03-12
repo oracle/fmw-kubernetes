@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- range $replicaN := until (.Values.replicaCount| int) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaN }}
+  labels:
+    {{- include "oud-ds-rs.labels" $root | nindent 4 }}
+spec:
+  type: {{ $root.Values.service.type }}
+  clusterIP: None
+  ports:
+    - port: {{ $root.Values.oudPorts.adminldaps }}
+      name: adminldaps
+      targetPort: adminldaps
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.adminhttps }}
+      name: adminhttps
+      targetPort: adminhttps
+      protocol: TCP
+    - port: {{ $root.Values.oudPorts.replication }}
+      name: replication
+      targetPort: replication
+      protocol: TCP
+  selector:
+    {{- include "oud-ds-rs.selectorLabels" $root | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaN }}
+{{- end }}

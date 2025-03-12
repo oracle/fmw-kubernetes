@@ -28,6 +28,27 @@ function validateOAMDatasourceType {
 }
 
 #
+# Function to validate OAM version
+#
+
+function validateOAMVersion {
+  if [ ! -z ${oamVersion} ]; then
+    case ${oamVersion} in
+      "12c")
+      ;;
+      "14c")
+      ;;
+      *)
+        validationError "Invalid oamVersion: ${oamVersion}. Valid values are: 12c or 14c"
+      ;;
+    esac
+  else
+    validationError "oamVersion cannot be empty or null, valid values are: 12c or 14c"
+  fi
+  failIfValidationErrors
+}
+
+#
 # Function to validate the common input parameters for OAM
 #
 #

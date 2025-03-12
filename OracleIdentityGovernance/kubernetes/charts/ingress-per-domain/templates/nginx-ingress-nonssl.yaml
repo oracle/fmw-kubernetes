@@ -44,6 +44,13 @@ spec:
             name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /management
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}              
       - path: /ws_utc
         pathType: ImplementationSpecific
         backend:
