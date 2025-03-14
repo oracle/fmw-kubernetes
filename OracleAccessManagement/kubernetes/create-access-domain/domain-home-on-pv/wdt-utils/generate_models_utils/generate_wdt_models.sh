@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
@@ -20,6 +20,10 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../../../../common/utility.sh
 source ${scriptDir}/../../../../common/validate.sh
 
+administrationPortEnabled=false
+sslEnabled=false
+adminServerSSLPort=7002
+adminAdministrationPort=9002
 
 function usage {
   echo usage: ${script} -o dir -i file [-h]
@@ -183,6 +187,27 @@ function validateOAMDatasourceType {
 }
 
 #
+# Function to validate OAM version
+#
+
+function validateAppVersion {
+  if [ ! -z ${appVersion} ]; then
+    case ${appVersion} in
+      "12c")
+      ;;
+      "14c")
+      ;;
+      *)
+        validationError "Invalid appVersion: ${appVersion}. Valid values are: 12c or 14c"
+      ;;
+    esac
+  else
+    validationError "appVersion cannot be empty or null, valid values are: 12c or 14c"
+  fi
+  failIfValidationErrors
+}
+
+#
 # Function to validate the common input parameters for OAM
 #
 function validateInputs_OAM {
@@ -206,7 +231,9 @@ function validateInputs_OAM {
     adminPort \
     initialManagedServerReplicas \
     t3ChannelPort \
-    adminNodePort
+    adminNodePort \
+    adminServerSSLPort \
+    adminAdministrationPort
 
   if [ ! "${sample_name}" == "fmw-domain-home-in-image" ]; then
     validateIntegerInputParamsSpecified configuredManagedServerCount
@@ -216,10 +243,13 @@ function validateInputs_OAM {
     productionModeEnabled \
     exposeAdminT3Channel \
     exposeAdminNodePort \
-    edgInstall
+    edgInstall \
+    administrationPortEnabled \
+    sslEnabled
 
   export requiredInputsVersion="create-weblogic-sample-domain-inputs-v1"
   validateVersion
+  validateAppVersion
   validateDomainUid
   validateNamespace
   validateAdminServerName
@@ -242,19 +272,24 @@ policyServerNameBase='oam_policy_mgr'
 oamCluster='oam_cluster'
 policyCluster='policy_cluster'
 
-server_definition_oam="            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
+server_definition_oam_12c="            ListenPort: '@@PROP:Server.oam_server.ListenPort@@'
             CoherenceClusterSystemResource: defaultCoherenceCluster
             Cluster: <OAM_CLUSTER_NAME>
             ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_server.ListenAddress@@<SERVER_COUNT>'
             NumOfRetriesBeforeMsiMode: 0
             RetryIntervalBeforeMsiMode: 1"
 
-server_definition_policy="            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
+server_definition_policy_12c="            ListenPort: '@@PROP:Server.oam_policy_mgr.ListenPort@@'
             CoherenceClusterSystemResource: defaultCoherenceCluster
             Cluster: <POLICY_CLUSTER_NAME>
             ListenAddress: '@@ENV:DOMAIN_UID@@-@@PROP:Server.oam_policy_mgr.ListenAddress@@<SERVER_COUNT>'
             NumOfRetriesBeforeMsiMode: 0
             RetryIntervalBeforeMsiMode: 1"
+
+ssl_model="            SSL:
+                Enabled: true
+                ListenPort: '@@PROP:Server.<SERVER_NAME>.SSLListenPort@@'"
+
 enable_admin_chanel="            NetworkAccessPoint: 
                 'T3Channel': 
                     PublicPort: '@@PROP:Server.AdminServer.T3Channel.PublicPort@@' 
@@ -267,18 +302,29 @@ function appendServers {
     do
         #append server definition for oam_servers
         echo -e "        ${managedServerNameBase}${i}:" >> ${outputModel}
-        echo -e "${server_definition_oam}" | sed "s/<OAM_CLUSTER_NAME>/${oamCluster}/g" >> ${outputModel}
+        echo -e "${server_definition_oam_12c}" | sed "s/<OAM_CLUSTER_NAME>/${oamCluster}/g" >> ${outputModel}
+        if [[ "${appVersion}" == "14c" ]]; then
+            echo -e "            AdministrationPort: '@@PROP:Server.oam_server.AdministrationPort@@'" >> ${outputModel}
+        fi
+        if [[ "${sslEnabled}" == "true" ]]; then
+            echo -e "${ssl_model}" | sed "s/<SERVER_NAME>/oam_server/g" >> ${outputModel}
+        fi
         sed -i -e "s:<OAM_SERVER_NAME>:${managedServerNameBase}${i}:g" ${outputModel}
         sed -i -e "s:<SERVER_COUNT>:${i}:g" ${outputModel}
 
         #append server definition for policy_servers
         echo -e "        ${policyServerNameBase}${i}:" >> ${outputModel}
-        echo -e "${server_definition_policy}" | sed "s/<POLICY_CLUSTER_NAME>/${policyCluster}/g" >> ${outputModel}
+        echo -e "${server_definition_policy_12c}" | sed "s/<POLICY_CLUSTER_NAME>/${policyCluster}/g" >> ${outputModel}
+        if [[ "${appVersion}" == "14c" ]]; then
+            echo -e "            AdministrationPort: '@@PROP:Server.oam_policy_mgr.AdministrationPort@@'" >> ${outputModel}
+        fi
+        if [[ "${sslEnabled}" == "true" ]]; then
+            echo -e "${ssl_model}" | sed "s/<SERVER_NAME>/oam_policy_mgr/g" >> ${outputModel}
+        fi
         sed -i -e "s:<POLICY_SERVER_NAME>:${policyServerNameBase}${i}:g" ${outputModel}
         sed -i -e "s:<SERVER_COUNT>:${i}:g" ${outputModel}
     done
 }
-
 
 #validate inputs
 validateInputs_OAM
@@ -325,6 +371,9 @@ cp ${inputPropertyFile} ${outputPropertyFile}
 
 #replace property file values
 sed -i -e "s:%ADMIN_SERVER_PORT%:${adminPort}:g" ${outputPropertyFile}
+sed -i -e "s:%ADMIN_SSL_PORT%:${adminServerSSLPort}:g" ${outputPropertyFile}
+sed -i -e "s:%ADMIN_ADMINISTRATION_PORT%:${adminAdministrationPort}:g" ${outputPropertyFile}
+
 
 enabledPrefix=""     # uncomment the feature
 disabledPrefix="# "  # comment out the feature
@@ -352,6 +401,14 @@ else
     exposeAdminNodePortPrefix="${disabledPrefix}"
 fi
 
+
+#append admin port and ssl bits for admin server
+if [[ "${appVersion}" == "14c" ]]; then
+    echo -e "            AdministrationPort: '@@PROP:Server.AdminServer.AdministrationPort@@'" >> ${outputModel}
+fi
+if [[ "${sslEnabled}" == "true" ]]; then
+    echo -e "${ssl_model}" | sed "s/<SERVER_NAME>/AdminServer/g" >> ${outputModel}
+fi
 
 # call function to append server definitions based on user inputs
 appendServers

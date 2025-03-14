@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2023, Oracle and/or its affiliates.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description
@@ -23,6 +23,27 @@ function validateOAMDatasourceType {
     esac
   else
     validationError "datasourceType cannot be empty or null, valid values are: agl or generic"
+  fi
+  failIfValidationErrors
+}
+
+#
+# Function to validate OAM version
+#
+
+function validateOAMVersion {
+  if [ ! -z ${oamVersion} ]; then
+    case ${oamVersion} in
+      "12c")
+      ;;
+      "14c")
+      ;;
+      *)
+        validationError "Invalid oamVersion: ${oamVersion}. Valid values are: 12c or 14c"
+      ;;
+    esac
+  else
+    validationError "oamVersion cannot be empty or null, valid values are: 12c or 14c"
   fi
   failIfValidationErrors
 }

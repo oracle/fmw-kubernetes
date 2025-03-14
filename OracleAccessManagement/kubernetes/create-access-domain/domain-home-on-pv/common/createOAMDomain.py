@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2023, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -6,9 +6,10 @@ import sys
 
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
-class OAM12214Provisioner:
+class OAMProvisioner:
 
     jrfDone = 0;
+    domainVersion = '';
     MACHINES = {
         'machine1' : {
             'NMType': 'SSL',
@@ -25,13 +26,13 @@ class OAM12214Provisioner:
     ADDL_MANAGED_SERVERS_GRP = [ 'OAM-POLICY-MANAGED-SERVER' ]
     ADDL_CLUSTER = 'policy_cluster'
     ADDL_MANAGED_SERVER_BASENAME = 'oam_policy_mgr'
-    ADDL_MANAGED_SERVER_PORT = 15100
+    ADDL_MANAGED_SERVER_PORT = 14150
 
 
     WLS_BASE_TEMPLATE_NAME = 'Basic WebLogic Server Domain'
-    OAM_12214_TEMPLATE_NAME = 'Oracle Access Management Suite'
+    OAM_TEMPLATE_NAME = 'Oracle Access Management Suite'
 
-    WLS_12214_TEMPLATES = {
+    WLS_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar'
     }
 
@@ -65,9 +66,39 @@ class OAM12214Provisioner:
             '@@ORACLE_HOME@@/idm/common/templates/wls/oracle.oam_12.2.2.0.0_template.jar'
         ]
     }
+
+    OAM_EXTENSION_1412_TEMPLATES = {
+        'extensionTemplates' : [
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wc_skin_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wc_composer_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.opss.rest_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wsmjksmgmt_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wsmagent_template.jar',
+            '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls_schema.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.security.sso_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wsmpolicyattachment_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.state-management.memory-provider-template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf.ws.core_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.cie.runtime_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.ums.client_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.opss_jrf_metadata_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.adf.template.jar',
+            '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls_coherence_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.clickhistory_template.jar',
+            '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls_jrf.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_base_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wsm.console.core_template.jar',
+            '@@ORACLE_HOME@@//idm/common/templates/applications/oracle.idm.common_template_14.1.2.jar',
+            '@@ORACLE_HOME@@/idm/common/templates/applications/oracle.idm.ids.config.ui_template_14.1.2.jar',
+            '@@ORACLE_HOME@@/idm/common/templates/wls/oracle.oam_template.jar'
+        ]
+    }
+
+
     
     
-    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
+    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, administrationPortEnabled, adminName, adminAdministrationPort, oamManagedServerSSLPort, oamAdministrationPort, policyManagedServerSSLPort, policyAdministrationPort, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
@@ -75,43 +106,51 @@ class OAM12214Provisioner:
 
 
 
-    def createOAMDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType,
-                          dstype, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
-        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType)
-        self.extendOamDomain(domainHome, db, dbPrefix, dbPassword, managedNameBase, managedServerPort, managedCount, clusterName, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+    def createOAMDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, oamManagedServerSSLPort, policyManagedServerSSLPort, sslEnabled, prodMode, managedCount, clusterName, domainType, administrationPortEnabled, adminAdministrationPort, oamAdministrationPort, policyAdministrationPort, dstype, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, sslEnabled, clusterName, domainType, administrationPortEnabled, adminAdministrationPort)
+        
+        self.extendOamDomain(domainHome, db, dbPrefix, dbPassword, oamManagedServerSSLPort, policyManagedServerSSLPort, managedNameBase, managedServerPort, managedCount, clusterName, sslEnabled, dstype, administrationPortEnabled, oamAdministrationPort, policyAdministrationPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
 
 
-    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, ms_listenAddress):
+    def createManagedServers(self, ms_count, managedNameBase, ms_port, ms_oam_admin_port, sslEnabled, administrationPortEnabled,  ms_oam_ssl_port, cluster_name, ms_servers, ms_listenAddress):
         # Create managed servers
         for index in range(0, ms_count):
             cd('/')
             msIndex = index+1
             cd('/')
             name = '%s%s' % (managedNameBase, msIndex)
-  	    listenAddress = '%s%s%s' % ('oamk8namespace',ms_listenAddress,msIndex)
+            listenAddress = '%s%s%s' % ('oamk8namespace', ms_listenAddress, msIndex)
             create(name, 'Server')
             cd('/Servers/%s/' % name )
             print('managed server name is %s' % name);
             set('ListenPort', ms_port)
             set('ListenAddress',listenAddress)
-	    set('Name', name)	
+            if self.domainVersion.strip().startswith('14.1.2') and str(administrationPortEnabled).strip().lower() == 'true':
+                set('administrationPort', ms_oam_admin_port)
+            set('Name', name)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
             cmo.setWeblogicPluginEnabled(true)
             ms_servers.append(name)
+            if (str(sslEnabled).strip().lower() == 'true'):
+              print 'Enabling SSL for Managed server...'
+              create(name, 'SSL')
+              cd('/Servers/' + name+ '/SSL/' + name)
+              set('ListenPort', ms_oam_ssl_port)
+              set('Enabled', 'True')
         print ms_servers
         return ms_servers
 
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType):
-        baseTemplate = self.replaceTokens(self.WLS_12214_TEMPLATES['baseTemplate'])
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, sslEnabled, clusterName, domainType, administrationPortEnabled, adminAdministrationPort):
+        baseTemplate = self.replaceTokens(self.WLS_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
         
         setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
         setOption('AppDir', self.domainParentDir + '/applications')
-
+        self.domainVersion = cmo.getDomainVersion()
         if (prodMode == 'true'):
             setOption('ServerStartMode', 'prod')
         else:
@@ -119,14 +158,25 @@ class OAM12214Provisioner:
         set('Name', domainName)
 
         admin_port = int(adminListenPort)
+        adminSSLport = int(adminServerSSLPort)
 
         # Create Admin Server
         # =======================
         print 'Creating Admin Server...'
         cd('/Servers/AdminServer')
         set('ListenPort', admin_port)
+        if self.domainVersion.strip().startswith('14.1.2') and str(administrationPortEnabled).strip().lower() == 'true':
+            set('administrationPort', int(adminAdministrationPort))
         set('Name', adminName)
         cmo.setWeblogicPluginEnabled(true)
+        if (str(sslEnabled).strip().lower() == 'true'):
+            print('Enabling SSL for Admin server...')
+            cd('/Servers/' + adminName)
+            create(adminName, 'SSL')
+            cd('/Servers/' + adminName + '/SSL/' + adminName)
+            set('ListenPort', adminSSLport)
+            set('Enabled', 'True')
+
 
         # Define the user password for weblogic
         # =====================================
@@ -160,7 +210,6 @@ class OAM12214Provisioner:
         setOption('OverwriteDomain', 'true')
         domainHome = self.domainParentDir + '/' + domainName
         print 'Will create Base domain at ' + domainHome
-
         print 'Writing base domain...'
         writeDomain(domainHome)
         closeTemplate()
@@ -172,6 +221,7 @@ class OAM12214Provisioner:
         print 'Extending domain at ' + domainHome
         print 'Database  ' + db
         readDomain(domainHome)
+        self.domainVersion = cmo.getDomainVersion()
         setOption('AppDir', self.domainParentDir + '/applications')
 
         print 'ExposeAdminT3Channel %s with %s:%s ' % (exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
@@ -181,13 +231,26 @@ class OAM12214Provisioner:
         self.applyExtensionTemplates()
         print 'Extension Templates added'
         return
-        
+
     def applyExtensionTemplates(self):
         print 'Apply Extension templates'
-        for extensionTemplate in self.OAM_EXTENSION_12214_TEMPLATES['extensionTemplates']:
-            addTemplate(self.replaceTokens(extensionTemplate))
+        print 'Extending domain ' + self.domainVersion
+        # Check domain version
+        if self.domainVersion.strip().startswith('14.1.2'):
+            for extensionTemplate in self.OAM_EXTENSION_1412_TEMPLATES['extensionTemplates']:
+                addTemplate(self.replaceTokens(extensionTemplate))
+
+        elif self.domainVersion.strip().startswith('12.2.1.4'):
+            for extensionTemplate in self.OAM_EXTENSION_12214_TEMPLATES['extensionTemplates']:
+                addTemplate(self.replaceTokens(extensionTemplate))
+
+        else:
+            for extensionTemplate in self.OAM_EXTENSION_12214_TEMPLATES['extensionTemplates']:
+                addTemplate(self.replaceTokens(extensionTemplate))
+
         return
-        
+
+
     def configureJDBCTemplates(self,db,dbPrefix,dbPassword):
         print 'Configuring the Service Table DataSource...'
         fmwDb = 'jdbc:oracle:thin:@' + db
@@ -232,7 +295,7 @@ class OAM12214Provisioner:
         set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
-    def extendOamDomain(self, domainHome, db, dbPrefix, dbPassword, managedNameBase, managedServerPort, managedCount, clusterName, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort):
+    def extendOamDomain(self, domainHome, db, dbPrefix, dbPassword, oamManagedServerSSLPort, policyManagedServerSSLPort, managedNameBase, managedServerPort, managedCount, clusterName, sslEnabled, dstype, administrationPortEnabled, oamAdministrationPort, policyAdministrationPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort):
         self.readAndApplyExtensionTemplates(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
         print 'Extension Templates added'
 
@@ -251,12 +314,17 @@ class OAM12214Provisioner:
         print 'Configuring Managed Servers ...'
         ms_port    = int(managedServerPort)
         ms_count   = int(managedCount)
+        ms_oam_ssl_port = int(oamManagedServerSSLPort)
+        ms_policy_ssl_port = int(policyManagedServerSSLPort)
+        ms_oam_admin_port = int(oamAdministrationPort)
+        ms_policy_admin_port = int(policyAdministrationPort)
+
         # Creating oam servers
         oam_listenAddress='-oam-server' 
-        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, clusterName, self.MANAGED_SERVERS, oam_listenAddress)
+        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, ms_oam_ssl_port, sslEnabled, administrationPortEnabled, ms_oam_admin_port, clusterName, self.MANAGED_SERVERS, oam_listenAddress)
         # Creating policy managers
-	policy_listenAddress='-oam-policy-mgr'
-        self.ADDL_MANAGED_SERVERS = self.createManagedServers(ms_count, self.ADDL_MANAGED_SERVER_BASENAME, self.ADDL_MANAGED_SERVER_PORT, self.ADDL_CLUSTER, self.ADDL_MANAGED_SERVERS, policy_listenAddress)
+        policy_listenAddress = '-oam-policy-mgr'
+        self.ADDL_MANAGED_SERVERS = self.createManagedServers(ms_count, self.ADDL_MANAGED_SERVER_BASENAME, self.ADDL_MANAGED_SERVER_PORT, ms_policy_ssl_port, sslEnabled, administrationPortEnabled, ms_policy_admin_port, self.ADDL_CLUSTER, self.ADDL_MANAGED_SERVERS, policy_listenAddress)
 
         print 'Targeting Server Groups...'
         cd('/')
@@ -455,9 +523,10 @@ class OAM12214Provisioner:
 def usage():
     print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> -name <domain-name> ' + \
           '-user <domain-user> -password <domain-password> ' + \
-          '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
-          '-adminListenPort <adminListenPort> -adminName <adminName> ' \
-          '-managedNameBase <managedNameBase> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
+          '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> -administrationPortEnabled <administrationPortEnabled> ' \
+          '-adminListenPort <adminListenPort> -adminServerSSLPort <adminServerSSLPort> -adminAdministrationPort <adminAdministrationPort> -adminName <adminName> ' \
+          '-managedNameBase <managedNameBase> -oamManagedServerSSLPort <oamManagedServerSSLPort>  -policyManagedServerSSLPort <policyManagedServerSSLPort> ' \
+          '-oamAdministrationPort <oamAdministrationPort> -policyAdministrationPort <policyAdministrationPort> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
           '-managedServerCount <managedCount> -clusterName <clusterName>' \
           '-domainType <oam>' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
@@ -492,6 +561,14 @@ rcuSchemaPassword = None
 exposeAdminT3Channel = None
 t3ChannelPort = None
 t3ChannelPublicAddress = None
+administrationPortEnabled = false
+adminAdministrationPort = '9002'
+oamAdministrationPort = '9508'
+policyAdministrationPort = '9509'
+sslEnabled = false
+adminServerSSLPort = '7002'
+oamManagedServerSSLPort = '14101'
+policyManagedServerSSLPort = '14151'
 
 i = 1
 while i < len(sys.argv):
@@ -558,10 +635,34 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-datasourceType':
         dstype = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-sslEnabled':
+        sslEnabled = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-adminServerSSLPort':
+        adminServerSSLPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-oamManagedServerSSLPort':
+        oamManagedServerSSLPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-policyManagedServerSSLPort':
+        policyManagedServerSSLPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-administrationPortEnabled':
+        administrationPortEnabled = sys.argv[i + 1]
+        i += 2   
+    elif sys.argv[i] == '-adminAdministrationPort':
+        adminAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-oamAdministrationPort':
+        oamAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-policyAdministrationPort':
+        policyAdministrationPort = sys.argv[i + 1]
+        i += 2 
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = OAM12214Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName)
-provisioner.createOAMDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner = OAMProvisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, administrationPortEnabled, adminAdministrationPort, adminName, managedNameBase, managedServerPort, oamManagedServerSSLPort, oamAdministrationPort, policyManagedServerSSLPort, policyAdministrationPort, prodMode, managedCount, clusterName)
+provisioner.createOAMDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, oamManagedServerSSLPort, policyManagedServerSSLPort, sslEnabled, prodMode, managedCount, clusterName, domainType, administrationPortEnabled, adminAdministrationPort, oamAdministrationPort, policyAdministrationPort, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
