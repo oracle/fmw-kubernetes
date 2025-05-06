@@ -7,7 +7,7 @@ description = "Install and Configure Connectors."
 
 1. Download the Connector you are interested in from [Oracle Identity Manager Connector Downloads](https://www.oracle.com/middleware/technologies/identity-management/oim-connectors-downloads.html).
 
-1. Copy the connector zip file to a staging directory on the master node e.g. `<workdir>/stage` and unzip it:
+1. Copy the connector zip file to a staging directory on the administrative host e.g. `<workdir>/stage` and unzip it:
 
    ```bash
    $ cp $HOME/Downloads/<connector>.zip <workdir>/<stage>/

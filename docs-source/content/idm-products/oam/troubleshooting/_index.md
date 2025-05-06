@@ -94,8 +94,8 @@ If the domain creation fails while creating domain resources using the `domain.y
    a. Create a helper pod:
 
    ```
-	kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January`25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
-	```
+   kubectl run --image=container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<YYMMDD> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oamns -- sleep infinity
+   ```
 
 	b. Clean down the failed domain creation by following steps 1-3 in [Delete the OAM domain home](manage-oam-domains/delete-domain-home). 
 	

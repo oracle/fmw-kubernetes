@@ -84,15 +84,9 @@ Follow these post install configuration steps.
    accessdomain-adminserver                                 1/1     Terminating   0          27m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          24m
    accessdomain-oam-server1                                 1/1     Terminating   0          24m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          108m
    ```
 
    The Administration Server pod and Managed Server pods will move to a STATUS of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
-   
-   ```
-   NAME                                                     READY   STATUS      RESTARTS   AGE
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          109m
-   ```
    
 1. Start the domain using the following command:
 
@@ -123,7 +117,6 @@ Follow these post install configuration steps.
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-introspector-mckp2                          1/1     Running     0          8s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          110m
    ```
    
    The Administration Server pod will start followed by the OAM Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with `READY` status `1/1`:
@@ -133,7 +126,6 @@ Follow these post install configuration steps.
    accessdomain-adminserver                                 1/1     Running     0          5m38s
    accessdomain-oam-policy-mgr1                             1/1     Running     0          2m51s
    accessdomain-oam-server1                                 1/1     Running     0          2m50s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          116m
    ```
 
 
@@ -143,7 +135,7 @@ Exclude all Oracle Access Management (OAM) clusters (including Policy Manager an
 
 From 12.2.1.3.0 onwards, OAM server-side session management uses the database and does not require coherence cluster to be established. In some environments, warnings and errors are observed due to default coherence cluster initialized by WebLogic. To avoid or fix these errors, exclude all of the OAM clusters from default WebLogic Server coherence cluster using the following steps:
 
-1. Login to the WebLogic Server Console at `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
+1. Login to the WebLogic Server Console at `https://${HOSTNAME}:${PORT}/console`.
 1. Click **Lock & Edit**.
 1. In **Domain Structure**, expand **Environment** and select **Coherence Clusters**.
 1. Click **defaultCoherenceCluster** and select the **Members** tab.
@@ -157,7 +149,7 @@ For production environments, the following WebLogic Server tuning parameters mus
 
 #### Add Minimum Thread constraint to worker manager "OAPOverRestWM"
 
-1. Login to the WebLogic Server Console at `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
+1. Login to the WebLogic Server Console at `https://${HOSTNAME}:${PORT}/console`.
 1. Click **Lock & Edit**.
 1. In **Domain Structure**, click **Deployments**. 
 1. On the **Deployments** page click **Next** until you see **oam_server**.
@@ -178,7 +170,7 @@ For production environments, the following WebLogic Server tuning parameters mus
 1. Click on **Release Configuration** and then **Log Out**.
 
 #### oamDS DataSource Tuning
-1. Login to the WebLogic Server Console at `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
+1. Login to the WebLogic Server Console at `https://${HOSTNAME}:${PORT}/console`.
 1. Click **Lock & Edit**.
 1. In **Domain Structure**, Expand **Services** and click **Data Sources**.
 1. Click on **oamDS**.
@@ -188,7 +180,7 @@ For production environments, the following WebLogic Server tuning parameters mus
 
 ### Enable Virtualization
 
-1. Log in to Oracle Enterprise Manager Fusion Middleware Control at `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/em`
+1. Log in to Oracle Enterprise Manager Fusion Middleware Control at `https://${HOSTNAME}:${PORT}/em`
 1. Click **WebLogic Domain** > **Security** > **Security Provider Configuration**.
 1. Expand Security Store Provider.
 1. Expand Identity Store Provider.
@@ -238,15 +230,9 @@ For the above changes to take effect, you must restart the OAM domain:
    accessdomain-adminserver                                 1/1     Terminating   0          27m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          24m
    accessdomain-oam-server1                                 1/1     Terminating   0          24m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          108m
    ```
 
-   The Administration Server pod and Managed Server pods will move to a STATUS of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
-   
-   ```
-   NAME                                                     READY   STATUS      RESTARTS   AGE
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          109m
-   ```
+   The Administration Server pod and Managed Server pods will move to a STATUS of `Terminating`. After a few minutes, run the command again and the pods should have disappeared.
    
 1. Start the domain using the following command:
 
@@ -277,7 +263,6 @@ For the above changes to take effect, you must restart the OAM domain:
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-introspector-mckp2                          1/1     Running     0          8s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          110m
    ```
    
    The Administration Server pod will start followed by the OAM Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with `READY` status `1/1`:
@@ -287,5 +272,4 @@ For the above changes to take effect, you must restart the OAM domain:
    accessdomain-adminserver                                 1/1     Running     0          5m38s
    accessdomain-oam-policy-mgr1                             1/1     Running     0          2m51s
    accessdomain-oam-server1                                 1/1     Running     0          2m50s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          116m
    ```

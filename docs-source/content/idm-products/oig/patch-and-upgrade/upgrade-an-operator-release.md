@@ -6,7 +6,7 @@ description: "Instructions on how to update the WebLogic Kubernetes Operator ver
 
 These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.x release family as additional versions are released.
 
-1. On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
+1. On the administrative host, download the new WebLogic Kubernetes Operator source code from the operator github project:
 
    ```bash
    $ mkdir <workdir>/weblogic-kubernetes-operator-4.X.X

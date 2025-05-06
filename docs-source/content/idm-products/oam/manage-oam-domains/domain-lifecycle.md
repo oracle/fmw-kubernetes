@@ -33,7 +33,7 @@ The default OAM deployment starts the Administration Server (`AdminServer`), one
 
 The deployment also creates, but doesn't start, four extra OAM Managed Servers (`oam-server2` to `oam-server5`) and four more OAM Policy Manager servers (`oam_policy_mgr2` to `oam_policy_mgr5`).
 
-All these servers are visible in the WebLogic Server Console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` by navigating to *Domain Structure* > *oamcluster* > *Environment* > *Servers*.
+All these servers are visible in the WebLogic Server Console `https://${HOSTNAME}:${PORT}/console` by navigating to *Domain Structure* > *oamcluster* > *Environment* > *Servers*.
 
 To view the running servers using kubectl, run the following command:
 
@@ -54,7 +54,6 @@ NAME                                                     READY   STATUS      RES
 accessdomain-adminserver                                 1/1     Running     0          3h29m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h21m
 accessdomain-oam-server1                                 1/1     Running     0          3h21m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          55m
 ```
 
 ### Starting/Scaling up OAM Managed Servers
@@ -134,7 +133,6 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    accessdomain-oam-server1                                 1/1     Running     0          3h25m
    accessdomain-oam-server2                                 0/1     Running     0          3h25m
    accessdomain-oam-server3                                 0/1     Pending     0          9s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          59m
    ```
    
    Two new pods (`accessdomain-oam-server2` and `accessdomain-oam-server3`) are started, but currently have a `READY` status of `0/1`. This means `oam_server2` and `oam_server3` are not currently running but are in the process of starting. The servers will take several minutes to start so keep executing the command until `READY` shows `1/1`:
@@ -146,8 +144,6 @@ The number of OAM Managed Servers running is dependent on the `replicas` paramet
    accessdomain-oam-server1                                 1/1     Running     0          3h29m
    accessdomain-oam-server2                                 1/1     Running     0          3h29m
    accessdomain-oam-server3                                 1/1     Running     0          3m45s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          63m
-
    ```
    
    **Note**: To check what is happening during server startup when `READY` is `0/1`, run the following command to view the log of the pod that is starting:
@@ -231,7 +227,6 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    accessdomain-oam-server1                                 1/1     Running       0          3h37m
    accessdomain-oam-server2                                 1/1     Running       0          3h37m
    accessdomain-oam-server3                                 1/1     Terminating   0          11m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          71m
    ```
    
    One pod now has a `STATUS` of `Terminating` (`accessdomain-oam-server3`). The server will take a minute or two to stop. Once terminated the other pod (`accessdomain-oam-server2`) will move to `Terminating` and then stop. Keep executing the command until the pods have disappeared:
@@ -241,7 +236,6 @@ As mentioned in the previous section, the number of OAM Managed Servers running 
    accessdomain-adminserver                                 1/1     Running     0          3h48m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h40m
    accessdomain-oam-server1                                 1/1     Running     0          3h40m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          74m
    ```
 
 ### Starting/Scaling up OAM Policy Managed Servers
@@ -303,7 +297,6 @@ The number of OAM Policy Managed Servers running is dependent on the `replicas` 
    accessdomain-oam-policy-mgr2                             1/1     Running     0          3h35m
    accessdomain-oam-policy-mgr3                             1/1     Running     0          4m18s
    accessdomain-oam-server1                                 1/1     Running     0          3h35m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          69m
    ```
 
 
@@ -345,7 +338,6 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    accessdomain-oam-policy-mgr2                             1/1     Running       0          3h41m
    accessdomain-oam-policy-mgr3                             1/1     Terminating   0          10m
    accessdomain-oam-server1                                 1/1     Running       0          3h41m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          75m
    ```
    
    The pods will take a minute or two to stop, so keep executing the command until the pods has disappeared:
@@ -355,7 +347,6 @@ As mentioned in the previous section, the number of OAM Policy Managed Servers r
    accessdomain-adminserver                                 1/1     Running     0          3h50m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          3h42m
    accessdomain-oam-server1                                 1/1     Running     0          3h42m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          76m
    ```
 
 
@@ -428,15 +419,10 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    accessdomain-adminserver                                 1/1     Terminating   0          3h52m
    accessdomain-oam-policy-mgr1                             1/1     Terminating   0          3h44m
    accessdomain-oam-server1                                 1/1     Terminating   0          3h44m
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          78m
    ```
    
-   The Administration Server pods and Managed Server pods will move to a `STATUS` of `Terminating`. After a few minutes, run the command again and the pods should have disappeared:
+   The Administration Server pods and Managed Server pods will move to a `STATUS` of `Terminating`. After a few minutes, run the command again and the pods should have disappeared.
 
-   ```
-   NAME                                                     READY   STATUS      RESTARTS   AGE
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          80m
-   ```
 
 1. To start the Administration Server and Managed Servers up again, repeat the previous steps but change  `serverStartPolicy: Never` to `IfNeeded` as follows:
 
@@ -469,7 +455,6 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    ```
    NAME                                                     READY   STATUS      RESTARTS   AGE
    accessdomain-introspector-jwqxw                          1/1     Running     0          10s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          81m
    ```
    
    The Administration Server pod will start followed by the OAM Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with `READY` status `1/1` :
@@ -479,7 +464,6 @@ To stop all the OAM Managed Servers and the Administration Server in one operati
    accessdomain-adminserver                                 1/1     Running     0          10m
    accessdomain-oam-policy-mgr1                             1/1     Running     0          7m35s
    accessdomain-oam-server1                                 1/1     Running     0          7m35s
-   nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          92m
    ```
 
 ### Domain lifecycle sample scripts

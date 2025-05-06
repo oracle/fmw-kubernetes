@@ -83,7 +83,7 @@ When a container is started, it needs to mount that volume. The physical volume 
 
 The example below uses an NFS mounted volume (`<persistent_volume>/governancedomainpv`). Other volume types can also be used. See the official Kubernetes documentation for Volumes.
 
-**Note**: The persistent volume directory needs to be accessible to both the master and worker node(s). In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS.   
+**Note**: The persistent volume directory needs to be accessible to the worker nodes. In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS.   
     
 To create the persistent volume run the following commands:
 
@@ -94,38 +94,30 @@ To create the persistent volume run the following commands:
    $ sudo chown -R 1000:0 <persistent_volume>/governancedomainpv
    ```
 
-   For example,
+   For example:
    
    ```bash
    $ mkdir -p /scratch/shared/governancedomainpv
    $ sudo chown -R 1000:0 /scratch/shared/governancedomainpv
    ```
 
-1. On the master node run the following command to ensure it is possible to read and write to the persistent volume:
+1. On the administrative host run the following command to ensure it is possible to read and write to the persistent volume:
+
+   **Note**: The following assumes the user creating the file has userid `1000` or is part of group `0`.
 
    ```bash
    cd <persistent_volume>/governancedomainpv
-   touch file.txt
-   ls filemaster.txt
+   touch fileadmin.txt
+   ls fileadmin.txt
    ```
 
    For example:
    
    ```bash
    cd /scratch/shared/governancedomainpv
-   touch filemaster.txt
-   ls filemaster.txt
+   touch fileadmin.txt
+   ls fileadmin.txt
    ```
-
-1. On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
-
-   ```bash
-   cd /scratch/shared/governancedomainpv
-   ls filemaster.txt
-   touch fileworker1.txt
-   ls fileworker1.txt
-   ```
-1. Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it’s possible to read and write from each node to the persistent volume, delete the files created.
 
    For more information on PV and PVC requirements, see [Domain on Persistent Volume (PV)](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/usage/#references).
 
@@ -311,7 +303,7 @@ In this section you generate the required WDT models for the OIG domain, along w
 	```
    domainUID: governancedomain
    domainHome: /u01/oracle/user_projects/domains/governancedomain
-   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
+   image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>
    imagePullSecretName: orclcred
    logHome: /u01/oracle/user_projects/domains/logs/governancedomain
    namespace: oigns
@@ -395,7 +387,7 @@ In this section you generate the required WDT models for the OIG domain, along w
    export datasourceType="generic"
    export edgInstall="false"
    export domainHome="/u01/oracle/user_projects/domains/governancedomain"
-   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
+   export image="container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>"
    export imagePullSecretName="orclcred"
    export logHome="/u01/oracle/user_projects/domains/logs/governancedomain"
    export exposeAdminT3Channel="false"
@@ -773,7 +765,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
      domainHomeSourceType: PersistentVolume
 
      # The WebLogic Server image that the Operator uses to start the domain
-     image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
+     image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>"
 
      # imagePullPolicy defaults to "Always" if image version is :latest
      imagePullPolicy: IfNotPresent
@@ -811,7 +803,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
 	  domainHomeSourceType: PersistentVolume
 
 	  # The WebLogic Server image that the Operator uses to start the domain
-	  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
+	  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>"
 
 	  # imagePullPolicy defaults to "Always" if image version is :latest
 	  imagePullPolicy: IfNotPresent
@@ -853,7 +845,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
 			#DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
 			- name: compat-connector-init
 			  # OIG Product image, same as spec.image mentioned above
-			  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>"
+			  image: "container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>"
 			  imagePullPolicy: IfNotPresent
 			  command: [ "/bin/bash", "-c", "mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory", "mkdir -p  /u01/oracle/user_projects/domains/wdt-logs"]
 			  volumeMounts:
@@ -1243,7 +1235,7 @@ In this section you deploy the OIG domain using the `domain.yaml`.
 	  Failure Retry Interval Seconds:  120
 	  Failure Retry Limit Minutes:     1440
 	  Http Access Log In Log Home:     true
-	  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
+	  Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>
 	  Image Pull Policy:               IfNotPresent
 	  Image Pull Secrets:
 		 Name:                             orclcred
@@ -1279,7 +1271,7 @@ In this section you deploy the OIG domain using the `domain.yaml`.
 			  -c
 			  mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
 			  mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-			Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25>
+			Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25>
 			Image Pull Policy:  IfNotPresent
 			Name:               compat-connector-init
 			Volume Mounts:

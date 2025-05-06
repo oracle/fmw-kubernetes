@@ -21,7 +21,7 @@ For example:
 
 + `https://loadbalancer.example.com` - if OAM URL's are accessed directly via a load balancer URL, with hostname `loadbalancer.example.com` and port `443`.
 + `https://ohs.example.com:4443` - if OAM URL's are accessed directly via an OHS URL, with hostname `ohs.example.com` and port `4443`.
-+ `https://masternode.example.com:31501` - if OAM URL's are accessed directly via the ingress controller, with hostname `masternode.example.com` and port `31501`.
++ `https://oam.example.com:31501` - if OAM URL's are accessed directly via the ingress controller, with hostname `oam.example.com` and port `31501`.
 
 
 In the following examples change `{HOSTNAME}:${PORT}` accordingly.
@@ -159,12 +159,12 @@ To change the WebGate agent to use OAP:
 
    a) `OAMServerCommunicationMode` from `HTTPS` to `OAP`. For example `OAMServerCommunicationMode=OAP`
    
-   b) `OAMRestEndPointHostName=<hostname>` to the `{$MASTERNODE-HOSTNAME}`. For example `OAMRestEndPointHostName=masternode.example.com`
+   b) `OAMRestEndPointHostName=<hostname>` to the hostname the ingress controller is deployed. For example `OAMRestEndPointHostName=oam.example.com`
 
 1. In the **Server Lists** section click *Add* to add a new server with the following values:
 
    * `Access Server`: `Other`
-   * `Host Name`: `<{$MASTERNODE-HOSTNAME}>`
+   * `Host Name`: to the hostname the ingress controller is deployed. For example `oam.example.com`
    * `Host Port`: `<oamoap-service NodePort>`
 
    **Note**: To find the value for `Host Port` run the following:

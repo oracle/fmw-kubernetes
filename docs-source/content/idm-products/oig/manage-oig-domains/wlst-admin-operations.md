@@ -128,7 +128,7 @@ wls:/governancedomain/serverConfig/Servers>
 
 ### Performing WLST administration via SSL
 
-1. By default the SSL port is not enabled for the Administration Server or OIG Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WebLogic Administration console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` and navigate to **Lock & Edit** -> **Environment** ->**Servers** -> **server_name** ->**Configuration** -> **General** -> **SSL Listen Port Enabled** -> **Provide SSL Port** ( For Administration Server: 7002 and for OIG Managed Server (oim_server1): 14101) - > **Save** -> **Activate Changes**.
+1. By default the SSL port is not enabled for the Administration Server or OIG Managed Servers. To configure the SSL port for the Administration Server and Managed Servers login to WebLogic Administration console `https://${HOSTNAME}:${PORT}/console` and navigate to **Lock & Edit** -> **Environment** ->**Servers** -> **server_name** ->**Configuration** -> **General** -> **SSL Listen Port Enabled** -> **Provide SSL Port** ( For Administration Server: 7002 and for OIG Managed Server (oim_server1): 14101) - > **Save** -> **Activate Changes**.
 
    **Note**: If configuring the OIG Managed Servers for SSL you must enable SSL on the same port for all servers (oim_server1 through oim_server4)
 

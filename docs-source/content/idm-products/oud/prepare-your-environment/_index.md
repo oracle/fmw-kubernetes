@@ -15,7 +15,7 @@ description = "Prepare your environment"
 
 As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unified-directory-on-kubernetes) a Kubernetes cluster should have already been configured.
 
-1. Run the following command on the master node to check the cluster and worker nodes are running:
+1. Run the following command on the administrative host to check the cluster and worker nodes are running:
 
    ```bash
    $ kubectl get nodes,pods -n kube-system
@@ -25,9 +25,9 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unif
 
    ```
    NAME                  STATUS   ROLES                  AGE   VERSION
-   node/worker-node1     Ready    <none>                 17h   v1.29.9+3.el8
-   node/worker-node2     Ready    <none>                 17h   v1.29.9+3.el8
-   node/master-node      Ready    control-plane,master   23h   v1.29.9+3.el8
+   node/worker-node1     Ready    <none>                 17h   v1.30.3+1.el8
+   node/worker-node2     Ready    <none>                 17h   v1.30.3+1.el8
+   node/master-node      Ready    control-plane,master   23h   v1.30.3+1.el8
 
    NAME                                     READY   STATUS    RESTARTS   AGE
    pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -54,7 +54,7 @@ The OUD Kubernetes deployment requires access to an OUD container image. The ima
 #### Prebuilt OUD container image
 
 
-The prebuilt OUD January 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The prebuilt OUD April 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oud_cpu` and accept the license agreement.
 
@@ -62,7 +62,7 @@ You can use this image in the following ways:
 
 - Pull the container image from the Oracle Container Registry automatically during the OUD Kubernetes deployment.
 - Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.
-- Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node. 
+- Manually pull the container image from the Oracle Container Registry and manually stage it on each worker node. 
 
 #### Build your own OUD container image using WebLogic Image Tool
 
@@ -71,9 +71,9 @@ You can build your own OUD container image using the WebLogic Image Tool. This i
 You can use an image built with WebLogic Image Tool in the following ways:
 
 - Manually upload them to your own container registry. 
-- Manually stage them on the master node and each worker node.
+- Manually stage them on each worker node.
 
-**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
+**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
 
 
 ### Create a persistent volume directory
@@ -84,7 +84,7 @@ As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes c
 
 In this example `/scratch/shared/` is a shared directory accessible from all nodes.
    
-1. On the master node run the following command to create a `user_projects` directory:
+1. On the administrative host run the following command to create a `user_projects` directory:
 
    ```bash 
    $ cd <persistent_volume>
@@ -100,32 +100,24 @@ In this example `/scratch/shared/` is a shared directory accessible from all nod
    $ sudo chown -R 1000:0 oud_user_projects
    ```
    
-1. On the master node run the following to ensure it is possible to read and write to the persistent volume:
+1. On the administrative host the following to ensure it is possible to read and write to the persistent volume:
    
+	**Note**: The following assumes the user creating the file has userid `1000` or is part of group `0`.
    ```
    $ cd <persistent_volume>/oud_user_projects
-   $ touch file.txt
-   $ ls filemaster.txt
+   $ touch fileadmin.txt
+   $ ls fileadamin.txt
    ```
    
    For example:
    
    ```bash
    $ cd /scratch/shared/oud_user_projects
-   $ touch filemaster.txt
-   $ ls filemaster.txt
+   $ touch fileadmin.txt
+   $ ls fileadamin.txt
    ```
    
-   On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
-   
-   ```bash
-   $ cd /scratch/shared/oud_user_projects
-   $ ls filemaster.txt
-   $ touch fileworker1.txt
-   $ ls fileworker1.txt
-   ```
-   
-   Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it's possible to read and write from each node to the persistent volume, delete the files created.
+
 
 ### Setup the code repository to deploy OUD
 

@@ -20,8 +20,8 @@ Follow these post install configuration steps.
 	For OIG domains created with WDT:
 
    ```bash
-	$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/
-	```
+   $ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/
+   ```
    
 1. Create a `setUserOverrides.sh` with the following contents:
 
@@ -128,9 +128,7 @@ Follow these post install configuration steps.
 
 ### Set OIMFrontendURL using MBeans
 
-1. Login to Oracle Enterprise Manager using the following URL:
-
-   `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/em`
+1. Login to Oracle Enterprise Manager using `https://${HOSTNAME}:${PORT}/em` or if using a load balancer `https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
 
 1. Click the Target Navigation icon in the top left of the screen and navigate to the following:
 
@@ -141,7 +139,7 @@ Follow these post install configuration steps.
 1. Enter a new value for the `OimFrontEndURL` attribute, in the format:
 
    * If using an External LoadBalancer for your ingress: `https://${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`
-   * If using NodePort for your ingress: `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
+   * If using NodePort for your ingress: `https://${HOSTNAME}:${PORT}`
   
    If using HTTP instead of HTTPS for your ingress, change the URL appropriately.
 

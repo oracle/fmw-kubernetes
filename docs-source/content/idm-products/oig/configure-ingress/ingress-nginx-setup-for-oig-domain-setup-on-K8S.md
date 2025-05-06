@@ -7,7 +7,7 @@ description: "Steps to set up an Ingress for NGINX to direct traffic to the OIG 
 
 The instructions below explain how to set up NGINX as an ingress for the OIG domain with non-SSL termination.
 
-**Note**: All the steps below should be performed on the **master** node.
+**Note**: All the steps below should be performed on the administrative host.
 
 1. [Install NGINX](#install-nginx)
 
@@ -59,18 +59,18 @@ Use helm to install NGINX.
 1. Create a Kubernetes namespace for NGINX by running the following command:
 
    ```bash
-   $ kubectl create namespace nginx
+   $ kubectl create namespace mynginxns
    ```
 
    The output will look similar to the following:
 
    ```
-   namespace/nginx created
+   namespace/mynginxns created
    ```
 
 #### Install NGINX using helm
 
-If you can connect directly to the master node IP address from a browser, then install NGINX with the `--set controller.service.type=NodePort` parameter.
+If you can connect directly to the master or worker node IP address from a browser, then install NGINX with the `--set controller.service.type=NodePort` parameter.
 
 If you are using a Managed Service for your Kubernetes cluster,for example Oracle Kubernetes Engine (OKE) on Oracle Cloud Infrastructure (OCI), and connect from a browser to the Load Balancer IP address, then use the `--set controller.service.type=LoadBalancer` parameter. This instructs the Managed Service to setup a Load Balancer to direct traffic to the NGINX ingress.
 
@@ -79,7 +79,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    a) Using NodePort
 
    ```bash
-   $ helm install nginx-ingress -n nginx --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
+   $ helm install nginx-ingress -n mynginxns --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
    ``` 
 
    The output will look similar to the following:
@@ -87,16 +87,16 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    ```
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
-   NAMESPACE: nginx
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    NOTES:
    The ingress-nginx controller has been installed.
    Get the application URL by running these commands:
-     export HTTP_NODE_PORT=$(kubectl --namespace nginx get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-ingress-nginx-controller)
-     export HTTPS_NODE_PORT=$(kubectl --namespace nginx get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
-     export NODE_IP=$(kubectl --namespace nginx get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
+     export HTTP_NODE_PORT=$(kubectl --namespace mynginxns get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-ingress-nginx-controller)
+     export HTTPS_NODE_PORT=$(kubectl --namespace mynginxns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
+     export NODE_IP=$(kubectl --namespace mynginxns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
 
      echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
      echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
@@ -144,7 +144,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    b) Using LoadBalancer
 
    ```bash
-   $ helm install nginx-ingress -n nginx --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
+   $ helm install nginx-ingress -n mynginxns --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
    ```   
 
    The output will look similar to the following:
@@ -152,14 +152,14 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    ```
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
-   NAMESPACE: nginx
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    NOTES:
    The nginx-ingress controller has been installed.
    It may take a few minutes for the LoadBalancer IP to be available.
-   You can watch the status by running 'kubectl --namespace nginx get services -o wide -w nginx-ingress-controller'
+   You can watch the status by running 'kubectl --namespace mynginxns get services -o wide -w nginx-ingress-controller'
 
    An example Ingress that makes use of the controller:
 
@@ -299,7 +299,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 1. Find the NodePort of NGINX using the following command (only if you installed NGINX using NodePort):
 
    ```bash
-   $ kubectl get services -n nginx -o jsonpath=”{.spec.ports[0].nodePort}” nginx-ingress-ingress-nginx-controller
+   $ kubectl get services -n mynginxns -o jsonpath=”{.spec.ports[0].nodePort}” nginx-ingress-ingress-nginx-controller
    ```
 
    The output will look similar to the following:
@@ -370,10 +370,10 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
 
 1. To confirm that the new ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the `WebLogic ReadyApp framework`:
 
-   **Note**: If using a load balancer for your ingress replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
+   **Note**: If using a load balancer for your ingress replace `${HOSTNAME}:${PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
 
    ```bash
-   $ curl -v http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/weblogic/ready
+   $ curl -v http://${HOSTNAME}:${PORT}/weblogic/ready
    ```
    
    For example:
@@ -381,25 +381,25 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    a) For NodePort
    
    ```bash
-   $ curl -v http://masternode.example.com:31530/weblogic/ready
+   $ curl -v http://oam.example.com:31530/weblogic/ready
    ```
 
    b) For LoadBalancer
 
    ```bash
-   $ curl -v http://masternode.example.com:80/weblogic/ready
+   $ curl -v http://oam.example.com:80/weblogic/ready
    ```
    
    The output will look similar to the following:
    
    ```
-   $ curl -v http://masternode.example.com:31530/weblogic/ready
-   * About to connect() to masternode.example.com port 31530 (#0)
+   $ curl -v http://oam.example.com:31530/weblogic/ready
+   * About to connect() to oam.example.com port 31530 (#0)
    *   Trying X.X.X.X...
-   * Connected to masternode.example.com (X.X.X.X) port 31530 (#0)
+   * Connected to oam.example.com (X.X.X.X) port 31530 (#0)
    > GET /weblogic/ready HTTP/1.1
    > User-Agent: curl/7.29.0
-   > Host: masternode.example.com:31530
+   > Host: oam.example.com:31530
    > Accept: */*
    >
    < HTTP/1.1 200 OK
@@ -408,7 +408,7 @@ If you are using a Managed Service for your Kubernetes cluster,for example Oracl
    < Content-Length: 0
    < Connection: keep-alive
    <
-   * Connection #0 to host masternode.example.com left intact
+   * Connection #0 to host oam.example.com left intact
    ```
 
 ### Verify that you can access the domain URL

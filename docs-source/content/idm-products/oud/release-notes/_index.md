@@ -10,6 +10,9 @@ Review the latest changes and known issues for Oracle Unified Directory on Kuber
 
 | Date | Version | Change |
 | --- | --- | --- |
+| April, 2025 | 25.2.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the April 2025 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | This release contains no changes other than support for the April Patch Set Update.
+| | | To upgrade to April 25 (25.2.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | January, 2025 | 25.1.1 | Supports Oracle Unified Directory 12.2.1.4 domain deployment using the January 2025 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | This release contains no changes other than support for the January Patch Set Update.
 | | | To upgrade to January 25 (25.1.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
