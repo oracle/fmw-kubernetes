@@ -37,7 +37,7 @@ The main benefits of WDT are:
 
 ### Current production release
 
-The current production release for the Oracle Access Management domain deployment on Kubernetes is [25.1.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.2.10.
+The current production release for the Oracle Access Management domain deployment on Kubernetes is [25.2.1](https://github.com/oracle/fmw-kubernetes/releases). This release uses the WebLogic Kubernetes Operator version 4.2.10.
 
 For 4.1.X WebLogic Kubernetes Operator refer to [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/idm-products/oam/)
 
@@ -74,6 +74,7 @@ If you intend to use Oracle HTTP Server (OHS) and Oracle WebGate, and want to de
 
 To view documentation for an earlier release, see:
 
+* [Version 25.1.1](https://oracle.github.io/fmw-kubernetes/25.1.1/idm-products/oam/)
 * [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/idm-products/oam/)
 * [Version 24.3.1](https://oracle.github.io/fmw-kubernetes/24.3.1/idm-products/oam/)
 * [Version 24.2.1](https://oracle.github.io/fmw-kubernetes/24.2.1/idm-products/oam/)

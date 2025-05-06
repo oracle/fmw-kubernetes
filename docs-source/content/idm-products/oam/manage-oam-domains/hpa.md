@@ -304,7 +304,6 @@ In the following example an HPA resource is created, targeted at the cluster res
    accessdomain-adminserver                                 0/1     Running     0               141m
    accessdomain-oam-policy-mgr1                             0/1     Running     0               138m
    accessdomain-oam-server1                                 1/1     Running     0               138m
-   nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running     0               4h33m
    ```
    
    In the above, only `accessdomain-oam-server1` is running.
@@ -408,7 +407,6 @@ In the following example an HPA resource is created, targeted at the cluster res
    accessdomain-oam-server1                                 1/1     Running       0               149m
    accessdomain-oam-server2                                 1/1     Running       0               14m
    accessdomain-oam-server3                                 0/1     Terminating   0               14m
-   nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running       0               4h45m
    ```
      
    Eventually, all the servers except `oam-server1` will disappear:
@@ -418,7 +416,6 @@ In the following example an HPA resource is created, targeted at the cluster res
    accessdomain-adminserver                                 1/1     Running     0              154m
    accessdomain-oam-policy-mgr1                             1/1     Running     0              151m
    accessdomain-oam-server1                                 1/1     Running     0              151m
-   nginx-ingress-ingress-nginx-controller-5f9bdf4c9-f5trt   1/1     Running     0              4h47m
    ```
 
 

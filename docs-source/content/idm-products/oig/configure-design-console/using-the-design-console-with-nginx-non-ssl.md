@@ -23,9 +23,9 @@ Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your 
 
 If you haven't already configured an NGINX ingress controller (Non-SSL) for OIG, follow [Using an Ingress with NGINX (non-SSL)](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s).
 
-Make sure you know the master hostname and ingress port for NGINX before proceeding e.g `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`.
+Make sure you know the hostname and port for the NGINX ingress controller before proceeding e.g `http://${HOSTNAME}:${PORT}`.
 
-**Note**: In all steps below if you are using a load balancer for your ingress instead of NodePort then replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}.
+**Note**: In all steps below if you are using a load balancer for your ingress instead of NodePort then replace `${HOSTNAME}:${PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
 
 ### Setup routing rules for the Design Console ingress
 
@@ -113,7 +113,7 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 
 ### Update the T3 channel
 
-1. Log in to the WebLogic Console using `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
+1. Log in to the WebLogic Console using `http://${HOSTNAME}:${PORT}/console`.
 
 1. Navigate to **Environment**, click **Servers**, and then select **oim_server1**.
 
@@ -123,9 +123,9 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 
 1. Click **Lock and Edit**.
 
-1. Set the **External Listen Address** to the ingress controller hostname `${MASTERNODE-HOSTNAME}`.
+1. Set the **External Listen Address** to the ingress controller hostname `${HOSTNAME}`.
 
-1. Set the **External Listen Port** to the ingress controller port `${MASTERNODE-PORT}`. 
+1. Set the **External Listen Port** to the ingress controller port `${PORT}`. 
 
 1. Click **Save**.
 
@@ -206,7 +206,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25> bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -304,7 +304,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25> bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -379,7 +379,7 @@ The Design Console can be run from a container using X windows emulation.
    * `User ID`: `xelsysadm`
    * `Password`: `<password>`.
 
-    where `<url>` is `http://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`
+    where `<url>` is `http://${HOSTNAME}:${PORT}`
 
 1. If successful the Design Console will be displayed.
 

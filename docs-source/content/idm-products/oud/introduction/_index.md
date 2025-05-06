@@ -21,7 +21,7 @@ This project has several key features to assist you with deploying and managing 
 
 ### Current production release
 
-The current production release for the Oracle Unified Directory 12c PS4 (12.2.1.4.0) deployment on Kubernetes is [25.1.1](https://github.com/oracle/fmw-kubernetes/releases).
+The current production release for the Oracle Unified Directory 12c PS4 (12.2.1.4.0) deployment on Kubernetes is [25.2.1](https://github.com/oracle/fmw-kubernetes/releases).
 
 ### Recent changes and known issues
 
@@ -43,6 +43,7 @@ Please note, you also have the option to follow the Enterprise Deployment Guide 
 
 To view documentation for an earlier release, see:
 
+* [Version 25.1.1](https://oracle.github.io/fmw-kubernetes/25.1.1/idm-products/oud/)
 * [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/idm-products/oud/)
 * [Version 24.3.1](https://oracle.github.io/fmw-kubernetes/24.3.1/idm-products/oud/)
 * [Version 24.2.1](https://oracle.github.io/fmw-kubernetes/24.2.1/idm-products/oud/)

@@ -119,7 +119,7 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
    
    ```bash
-   $ helm delete nginx-ingress -n oamns
+   $ helm delete nginx-ingress -n mynginxns
    ```
    
 1. Delete the OAM namespace:

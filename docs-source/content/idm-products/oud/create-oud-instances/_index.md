@@ -60,7 +60,7 @@ namespace/oudns created
 
 ### Create a Kubernetes secret for the container registry
 
-Create a Kubernetes secret to stores the credentials for the container registry where the OUD image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.
+Create a Kubernetes secret to stores the credentials for the container registry where the OUD image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the worker nodes, you can skip this step.
 
 1. Run the following command to create the secret:
 
@@ -199,7 +199,7 @@ You can create OUD instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol8-<January'25>
+     tag: 12.2.1.4-jdk8-ol8-<April'25>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -222,7 +222,7 @@ You can create OUD instances using one of the following methods:
    cronJob:
      kubectlImage:
        repository: bitnami/kubectl
-       tag: 1.28.3
+       tag: 1.30.3
        pullPolicy: IfNotPresent
  
      imagePullSecrets:
@@ -245,7 +245,7 @@ You can create OUD instances using one of the following methods:
       ```
   
    
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.28.3` set to `1.28.3`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.30.3` set to `1.30.3`.
    * If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:
    
       ```
@@ -259,7 +259,7 @@ You can create OUD instances using one of the following methods:
 	  cronJob:
 	    kubectlImage:
           repository: container-registry.example.com/bitnami/kubectl
-          tag: 1.28.3
+          tag: 1.30.3
 	      pullPolicy: IfNotPresent
 	   
 	  busybox:
@@ -313,9 +313,9 @@ You can create OUD instances using one of the following methods:
 	  The following caveats exist:
    
       * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
-	  * If you have an existing storageClass that supports dynamic storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl get storageclass`". The `provisioner` can be ignored.
+	   * If you have an existing storageClass that supports dynamic storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in "`kubectl get storageclass`". The `provisioner` can be ignored.
 	  
-   * For `resources`, `limits` and `requests`, the example CPU and memory values shown are for development environments only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE).
+      * For `resources`, `limits` and `requests`, the example CPU and memory values shown are for development environments only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in [Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE).
 
       **Note**: Limits and requests for CPU resources are measured in CPU units. One CPU in Kubernetes is equivalent to 1 vCPU/Core for cloud providers, and 1 hyperthread on bare-metal Intel processors. An "`m`" suffix in a CPU attribute indicates ‘milli-CPU’, so 500m is 50% of a CPU. Memory can be expressed in various units, where one Mi is one IEC unit mega-byte (1024^2), and one Gi is one IEC unit giga-byte (1024^3). For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/), [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/), and [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/).
    
@@ -390,10 +390,10 @@ You can create OUD instances using one of the following methods:
    $ helm install --namespace oudns \
    --set oudConfig.rootUserPassword=<password> \
    --set persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects \
-   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<January'25> \
+   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<April'25> \
    --set oudConfig.sampleData="200" \
    --set oudConfig.resources.limits.cpu="1",oudConfig.resources.limits.memory="8Gi",oudConfig.resources.requests.cpu="500m",oudConfig.resources.requests.memory="4Gi" \
-   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.28.3 \
+   --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.30.3 \
    --set cronJob.imagePullSecrets[0].name="dockercred" \
    --set imagePullSecrets[0].name="orclcred" \
    oud-ds-rs oud-ds-rs
@@ -403,11 +403,11 @@ You can create OUD instances using one of the following methods:
 
    * Replace `<password>` with a the relevant password.
    * `sampleData: "200"` will load 200 sample users into the default baseDN `dc=example,dc=com`. If you do not want sample data, remove this entry. If `sampleData` is set to `1,000,000` users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: `--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60`.
-   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.28.3` set to `1.28.3`.
+   * The `<version>` in *kubectlImage* `tag:` should be set to the same version as your Kubernetes version (`kubectl version`). For example if your Kubernetes version is `1.30.3` set to `1.30.3`.
    * If using using NFS for your persistent volume then use:
    
         ```
-		--set persistence.networkstorage.nfs.path=<persistent_volume>/oud_user_projects,persistence.networkstorage.nfs.server:<NFS IP address>` \
+		--set persistence.networkstorage.nfs.path=<persistent_volume>/oud_user_projects,persistence.networkstorage.nfs.server:<NFS IP address> \
 		--set persistence.storageClassCreate="true",persistence.storageClass="oud-sc",persistence.provisioner="kubernetes.io/is-default-class" \
 		```
       * If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
@@ -876,7 +876,7 @@ Once all the PODs created are visible as `READY` (i.e. `1/1`), you can verify yo
    
    ```bash
    NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
-   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.28.3   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
+   oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.30.3   controller-uid=700ab9f7-6094-488a-854d-f1b914de5f61
    ```
    
 

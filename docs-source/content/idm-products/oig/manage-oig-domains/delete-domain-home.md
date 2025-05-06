@@ -147,7 +147,7 @@ Sometimes in production, but most likely in testing environments, you might want
    For example:
    
    ```bash
-   $ kubectl delete namespace nginxssl
+   $ kubectl delete namespace mynginxns
    ```
    
    

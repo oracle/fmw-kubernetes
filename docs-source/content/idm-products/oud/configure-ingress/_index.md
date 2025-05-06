@@ -75,13 +75,13 @@ Use Helm to install NGINX.
    For example:
    
    ```bash
-   $ kubectl create namespace mynginx
+   $ kubectl create namespace mynginxns
    ```
    
    The output will look similar to the following:
    
    ```
-   namespace/mynginx created
+   namespace/mynginxns created
    ```
    
 
@@ -148,7 +148,7 @@ Use Helm to install NGINX.
    For example:
    
    ```bash
-   $ helm install --namespace mynginx \
+   $ helm install --namespace mynginxns \
    --values nginx-ingress-values-override.yaml \
    lbr-nginx stable/ingress-nginx
    ```
@@ -158,14 +158,14 @@ Use Helm to install NGINX.
    ```
    NAME: lbr-nginx
    LAST DEPLOYED: <DATE>
-   NAMESPACE: mynginx
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    NOTES:
    The ingress-nginx controller has been installed.
    It may take a few minutes for the LoadBalancer IP to be available.
-   You can watch the status by running 'kubectl --namespace mynginx get services -o wide -w lbr-nginx-ingress-nginx-controller'
+   You can watch the status by running 'kubectl --namespace mynginxns get services -o wide -w lbr-nginx-ingress-nginx-controller'
 
    An example Ingress that makes use of the controller:
 
@@ -307,7 +307,7 @@ If required, an nginx-ingress deployment can be updated/upgraded with following 
    For example:
    
    ```bash
-   $ helm upgrade --namespace mynginx \
+   $ helm upgrade --namespace mynginxns \
    --values nginx-ingress-values-override.yaml \
    lbr-nginx stable/ingress-nginx 
    ```

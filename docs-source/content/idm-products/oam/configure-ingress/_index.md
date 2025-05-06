@@ -70,19 +70,82 @@ Use helm to install NGINX.
    Update Complete. ⎈ Happy Helming!⎈
    ```
 
+### Create a Kubernetes namespace for NGINX
+
+Create a Kubernetes namespace for the NGINX deployment by running the following command:
+
+```
+kubectl create namespace <namespace>
+```
+
+For example:
+
+```
+kubectl create namespace mynginxns
+```
+
+The output will look similar to the following:
+
+```
+namespace/mynginxns created
+```
+
 
 ### Generate a SSL Certificate
 
 This section should only be followed if you want to configure your ingress for SSL.
 
-1. Generate a private key and certificate signing request (CSR) using a tool of your choice. Send the CSR to your certificate authority (CA) to generate the certificate.
+For production environments it is recommended to use a commercially available certificate, traceable to a trusted Certificate Authority.
 
-   If you want to use a certificate for testing purposes you can generate a self signed certificate using openssl:
+For sandbox environments, you can generate your own self-signed certificates.
+
+**Note**: Using self-signed certificates you will get certificate errors when accessing the ingress controller via a browser.
+
+#### Using a Third Party CA for Generating Certificates
+
+If you are configuring the ingress controller to use SSL, you must use a wildcard certificate to prevent issues with the Common Name (CN) in the certificate. A wildcard certificate is a certificate that protects the primary domain and it's sub-domains. It uses a wildcard character (*) in the CN, for example `*.yourdomain.com`.
+
+How you generate the key and certificate signing request for a wildcard certificate will depend on your Certificate Authority. Contact your Certificate Authority vendor for details.
+
+In order to configure the ingress controller for SSL you require the following files:
+
++ The private key for your certificate, for example `oam.key`.
++ The certificate, for example oam.crt in PEM format.
++ The trusted certificate authority (CA) certificate, for example `rootca.crt` in PEM format.
++ If there are multiple trusted CA certificates in the chain, you need all the certificates in the chain, for example `rootca1.crt`, `rootca2.crt` etc.
+
+Once you have received the files, perform the following steps:
+
+1. On the administrative host, create a `$WORKDIR>/ssl` directory and navigate to the folder:
+
+   ```
+   mkdir $WORKDIR>/ssl
+   cd $WORKDIR>/ssl
+   ```	
+
+1. Copy the files listed above to the `$WORKDIR>/ssl` directory.
+
+1. If your CA has multiple certificates in a chain, create a `bundle.pem` that contains all the CA certificates:
+
+   ```
+   cat rootca.pem rootca1.pem rootca2.pem >>bundle.pem
+   ```
+
+#### Using Self-Signed Certificates
+
+1. On the administrative host, create a `$WORKDIR>/ssl` directory and navigate to the folder:
+
+   ```
+   mkdir $WORKDIR>/ssl
+   cd $WORKDIR>/ssl
+   ```	
+
+1. Run the following command to create the self-signed certificate:
 
    ```bash
    $ mkdir <workdir>/ssl
    $ cd <workdir>/ssl
-   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<nginx-hostname>"
+   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout oam.key -out oam.crt -subj "/CN=<hostname>"
    ```
    
    For example:
@@ -90,10 +153,8 @@ This section should only be followed if you want to configure your ingress for S
    ```bash
    $ mkdir /scratch/OAMK8S/ssl
    $ cd /scratch/OAMK8S/ssl
-   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=masternode.example.com"
+   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout oam.key -out oam.crt -subj "/CN=oam.example.com"
    ```
-
-   **Note**: The `CN` should match the host.domain of the master node in order to prevent hostname problems during certificate verification.
    
    The output will look similar to the following:
    
@@ -104,17 +165,22 @@ This section should only be followed if you want to configure your ingress for S
    writing new private key to 'tls.key'
    -----
    ```
-   
-2. Create a secret for SSL by running the following command:
+
+### Create a Kubernetes Secret for SSL
+
+
+Run the following command to create a Kubernetes secret for SSL:
 
    ```bash
-   $ kubectl -n oamns create secret tls <domain_uid>-tls-cert --key <workdir>/tls.key --cert <workdir>/tls.crt
+   $ kubectl -n mynginxns create secret tls <domain_uid>-tls-cert --key $WORKDIR>/ssl/oam.key --cert $WORKDIR>/ssl/oam.crt
    ```
    
+	**Note**: If you have multiple CA certificates in the chain use `--cert <workdir>/bundle.crt`.
+	
    For example:
    
    ```bash
-   $ kubectl -n oamns create secret tls accessdomain-tls-cert --key /scratch/OAMK8S/ssl/tls.key --cert /scratch/OAMK8S/ssl/tls.crt
+   $ kubectl -n mynginxns create secret tls accessdomain-tls-cert --key /scratch/OAMK8S/ssl/oam.key --cert /scratch/OAMK8S/ssl/oam.crt
    ```
    
    The output will look similar to the following:
@@ -124,11 +190,11 @@ This section should only be followed if you want to configure your ingress for S
    ```
 	
 	
-### Create an ingress controller 
+### Install the ingress controller 
 
-In this section you create an ingress controller. 
+In this section you install the ingress controller. 
 
-If you can connect directly to the master node IP address from a browser, then install NGINX with the `--set controller.service.type=NodePort` parameter.
+If you can connect directly to a worker node IP address from a browser, then install NGINX with the `--set controller.service.type=NodePort` parameter.
 
 If you are using a Managed Service for your Kubernetes cluster, for example Oracle Kubernetes Engine (OKE) on Oracle Cloud Infrastructure (OCI), and connect from a browser to the Load Balancer IP address, then use the `--set controller.service.type=LoadBalancer` parameter. This instructs the Managed Service to setup a Load Balancer to direct traffic to the NGINX ingress.
 
@@ -142,12 +208,22 @@ The following sections show how to install the ingress with SSL or without SSL. 
 1. To configure the ingress controller to use SSL, run the following command:
 
    ```bash
-   $ helm install nginx-ingress -n <domain_namespace> --set controller.service.nodePorts.http=<http_port> --set controller.service.nodePorts.https=<https_port> --set controller.extraArgs.default-ssl-certificate=<domain_namespace>/<ssl_secret> --set controller.service.type=<type> --set controller.config.use-forwarded-headers=true --set controller.config.enable-underscores-in-headers=true --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress \
+   -n <domain_namespace> \
+   --set controller.service.nodePorts.http=<http_port> \
+   --set controller.service.nodePorts.https=<https_port> \
+   --set controller.extraArgs.default-ssl-certificate=<domain_namespace>/<ssl_secret> \
+   --set controller.service.type=<type> \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx \
+   --version 4.7.2
    ```
 	
 	where:
 	
-	+ `<domain_namespace>` is your namespace, for example `oamns`.
+	+ `<domain_namespace>` is your namespace, for example `mynginxns`.
 	+ `<http_port>` is the HTTP port that you want the controller to listen on, for example `30777`.
 	+ `<https_port>` is the HTTPS port that you want the controller to listen on, for example `30443`.
 	+ `<type>` is the controller type. If using NodePort set to `NodePort`. If using a managed service set to `LoadBalancer`. If using `LoadBalancer` remove `--set controller.service.nodePorts.http=<http_port>` and `--set controller.service.nodePorts.https=<https_port>`.
@@ -157,7 +233,16 @@ The following sections show how to install the ingress with SSL or without SSL. 
    For example:
 	
    ```bash
-   $ helm install nginx-ingress -n oamns --set controller.service.nodePorts.http=30777 --set controller.service.nodePorts.https=30443 --set controller.extraArgs.default-ssl-certificate=oamns/accessdomain-tls-cert --set controller.service.type=NodePort --set controller.config.use-forwarded-headers=true --set controller.config.enable-underscores-in-headers=true --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
+   $ helm install nginx-ingress -n mynginxns \
+   --set controller.service.nodePorts.http=30777 \
+   --set controller.service.nodePorts.https=30443 \
+   --set controller.extraArgs.default-ssl-certificate=mynginxns/accessdomain-tls-cert \
+   --set controller.service.type=NodePort \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx \
+   --version 4.7.2
    ```
    
     
@@ -167,7 +252,7 @@ The following sections show how to install the ingress with SSL or without SSL. 
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
 
-   NAMESPACE: oamns
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -176,7 +261,7 @@ The following sections show how to install the ingress with SSL or without SSL. 
    Get the application URL by running these commands:
      export HTTP_NODE_PORT=30777
      export HTTPS_NODE_PORT=30443
-     export NODE_IP=$(kubectl --namespace oamns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
+     export NODE_IP=$(kubectl --namespace mynginxns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
 
      echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
      echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
@@ -228,19 +313,35 @@ The following sections show how to install the ingress with SSL or without SSL. 
 1. To configure the ingress controller without SSL, run the following command:
 
    ```bash
-   $ helm install nginx-ingress -n <domain_namespace> --set controller.service.nodePorts.http=<http_port> --set controller.service.type=NodePort --set controller.config.use-forwarded-headers=true --set controller.config.enable-underscores-in-headers=true --set controller.admissionWebhooks.enabled=false stable/ingress-nginx
+   $ helm install nginx-ingress \
+   -n <domain_namespace> \
+   --set controller.service.nodePorts.http=<http_port> \
+   --set controller.service.type=NodePort \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx
+   --version 4.7.2
    ```
 	
 	where:
 	
-	+ `<domain_namespace>` is your namespace, for example `oamns`.
+	+ `<domain_namespace>` is your namespace, for example `mynginxns`.
 	+ `<http_port>` is the HTTP port that you want the controller to listen on, for example `30777`.
 	+ `<type>` is the controller type. If using NodePort set to `NodePort`. If using a managed service set to `LoadBalancer`. If using `LoadBalancer` remove `--set controller.service.nodePorts.http=<http_port>`.
 	
    For example:
 	
    ```bash
-   $ helm install nginx-ingress -n oamns --set controller.service.nodePorts.http=30777 --set controller.service.type=NodePort --set controller.config.use-forwarded-headers=true --set controller.config.enable-underscores-in-headers=true --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
+   $ helm install nginx-ingress \
+   -n mynginxns \
+   --set controller.service.nodePorts.http=30777 \
+   --set controller.service.type=NodePort \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx \
+   --version 4.7.2
    ```
     
    The output will look similar to the following:
@@ -249,7 +350,7 @@ The following sections show how to install the ingress with SSL or without SSL. 
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
 
-   NAMESPACE: oamns
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
@@ -257,8 +358,8 @@ The following sections show how to install the ingress with SSL or without SSL. 
    The nginx-ingress controller has been installed.
    Get the application URL by running these commands:
      export HTTP_NODE_PORT=30777
-     export HTTPS_NODE_PORT=$(kubectl --namespace oamns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
-     export NODE_IP=$(kubectl --namespace oamns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
+     export HTTPS_NODE_PORT=$(kubectl --namespace mynginxns get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller)
+     export NODE_IP=$(kubectl --namespace mynginxns get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
 
      echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
      echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
@@ -483,7 +584,7 @@ The following sections show how to install the ingress with SSL or without SSL. 
 	NAME                 CLASS   HOSTS                   ADDRESS   PORTS   AGE
    oamadmin-ingress     nginx   admin.example.com                 80      14s
    oamruntime-ingress   nginx   runtime.example.com               80      14s
-	```
+   ```
 	
 1. Run the following command to check the ingress:
 
@@ -631,7 +732,7 @@ The following sections show how to install the ingress with SSL or without SSL. 
    $ curl -v http://${HOSTNAME}:${PORT}/oamconsole
    ```
 	
-	The `${HOSTNAME}:${PORT}` to use depends on the value set for `hostName.enabled`. If `hostName.enabled: false` use the hostname and port where the ingress controller is installed, for example `http://masternode.example.com:30777`. 
+	The `${HOSTNAME}:${PORT}` to use depends on the value set for `hostName.enabled`. If `hostName.enabled: false` use the hostname and port where the ingress controller is installed, for example `http://oam.example.com:30777`. 
 	
 	If using `hostName.enabled: true` then you can only access via the admin hostname, for example `https://admin.example.com/oamconsole`. **Note**: You can only access via the admin URL if it is currently accessible and routing correctly to the ingress host and port.
 	
@@ -640,14 +741,14 @@ The following sections show how to install the ingress with SSL or without SSL. 
 
 
    ```bash
-   $ curl -v http://masternode.example.com:30777/oamconsole
+   $ curl -v http://oam.example.com:30777/oamconsole
    ```
    
    The output will look similar to the following. You should receive a `302 Moved Temporarily` message:
    
    ```
    > GET /oamconsole HTTP/1.1
-   > Host: masternode.example:30777
+   > Host: oam.example:30777
    > User-Agent: curl/7.61.1
    > Accept: */*
    >
@@ -656,7 +757,7 @@ The following sections show how to install the ingress with SSL or without SSL. 
    < Content-Type: text/html
    < Content-Length: 333
    < Connection: keep-alive
-   < Location: http://masternode.example.com:30777/oamconsole/
+   < Location: http://oam.example.com:30777/oamconsole/
    < X-Content-Type-Options: nosniff
    < X-Frame-Options: DENY
    <
@@ -664,9 +765,9 @@ The following sections show how to install the ingress with SSL or without SSL. 
    <body bgcolor="#FFFFFF">
    <p>This document you requested has moved
    temporarily.</p>
-   <p>It's now at <a href="http://masternode.example.com:30777/oamconsole/">http://masternode.example.com:30777/oamconsole/</a>.</p>
+   <p>It's now at <a href="http://oam.example.com:30777/oamconsole/">http://oam.example.com:30777/oamconsole/</a>.</p>
    </body></html>
-   * Connection #0 to host doc-master.lcma.susengdev2phx.oraclevcn.com left intact
+   * Connection #0 to host oam.example.com left intact
    ```
    
 #### Verify that you can access the domain URLs

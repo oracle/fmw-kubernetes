@@ -24,7 +24,7 @@ Configure an NGINX ingress (SSL) to allow Design Console to connect to your Kube
 
 If you haven't already configured an NGINX ingress controller (SSL) for OIG, follow [Using an Ingress with NGINX (SSL)](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl).
 
-Make sure you know the master hostname and ingress port for NGINX before proceeding e.g `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`. Also make sure you know the Kubernetes secret for SSL that was generated e.g `governancedomain-tls-cert`.
+Make sure you know the hostname and port for the NGINX ingress controller before proceeding e.g `https://${HOSTNAME}:${PORT}`. Also make sure you know the Kubernetes secret for SSL that was generated e.g `governancedomain-tls-cert`.
 
 
 ### Setup routing rules for the Design Console ingress
@@ -117,7 +117,7 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
    
 ### Update the T3 channel
 
-1. Log in to the WebLogic Console using `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console`.
+1. Log in to the WebLogic Console using `https://${HOSTNAME}:${PORT}/console`.
 
 1. Navigate to **Environment**, click **Servers**, and then select **oim_server1**.
 
@@ -127,9 +127,9 @@ Make sure you know the master hostname and ingress port for NGINX before proceed
 
 1. Click **Lock and Edit**.
 
-1. Set the **External Listen Address** to the ingress controller hostname `${MASTERNODE-HOSTNAME}`.
+1. Set the **External Listen Address** to the ingress controller hostname `${HOSTNAME}`.
   
-1. Set the **External Listen Port** to the ingress controller port `${MASTERNODE-PORT}`. 
+1. Set the **External Listen Port** to the ingress controller port `${PORT}`. 
 
 1. Click **Save**.
 
@@ -174,9 +174,9 @@ The instructions below should be performed on the client where Design Console is
 
 1. Import the CA certificate into the java keystore
 
-   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.
+   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.
 
-   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.
+   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.
 
    Import the certificate using the following command:
 
@@ -225,7 +225,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25> bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -278,9 +278,9 @@ The Design Console can be run from a container using X windows emulation.
    
 1. Copy the Ingress CA certificate into the container
 
-   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
+   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
 
-   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
+   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
    
    **Note**: You will have to copy the certificate over to the worker node where the oigdc image is created before running the following.
 
@@ -357,7 +357,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'25> bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'25> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -410,9 +410,9 @@ The Design Console can be run from a container using X windows emulation.
    
 1. Copy the Ingress CA certificate into the container
 
-   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
+   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate) you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container
 
-   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
+   If in [Generate SSL Certificate](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate) you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container
 
    **Note**: You will have to copy the certificate over to the worker node where the oigdc image is created before running the following.
 
@@ -466,6 +466,6 @@ The Design Console can be run from a container using X windows emulation.
    * `User ID`: `xelsysadm`
    * `Password`: `<password>`.
 
-    where `<url>` is  where `<url>` is `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}`.
+    where `<url>` is  where `<url>` is `https://${HOSTNAME}:${PORT}`.
 
 1. If successful the Design Console will be displayed.

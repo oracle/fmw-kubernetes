@@ -8,71 +8,150 @@ description: "Steps to set up an Ingress for NGINX to direct traffic to the OIG 
 
 The instructions below explain how to set up NGINX as an ingress for the OIG domain with SSL termination.
 
-**Note**: All the steps below should be performed on the **master** node.
+**Note**: All the steps below should be performed on the administrative host.
 
-1. [Create a SSL certificate](#create-a-ssl-certificate)
+1. [Install the NGINX repository](#install-the-nginx-repository)
 
-    a. [Generate SSL certificate](#generate-ssl-certificate)
-	
-	b. [Create a Kubernetes secret for SSL](#create-a-kubernetes-secret-for-ssl)
-	
-1. [Install NGINX](#install-nginx)
+1. [Create a namespace](#create-a-namespace)
 
-    a. [Configure the repository](#configure-the-repository)
+1. [Generate a SSL certificate](#generate-a-ssl-certificate)
+
+1. [Create a Kubernetes secret for SSL](#create-a-kubernetes-secret-for-ssl)
+
+1. [Install the NGINX Controller](#install-the-nginx-controller)
+
+1. [Preparing the ingress values.yaml](#preparing-the-ingress-valuesyaml)
 	
-	b. [Create a namespace](#create-a-namespace)
-	
-	c. [Install NGINX using helm](#install-nginx-using-helm)
-	
-1. [Create an ingress for the domain](#create-an-ingress-for-the-domain)
+1. [Creating the ingress](#creating-the-ingress)
+
 1. [Verify that you can access the domain URL](#verify-that-you-can-access-the-domain-url)
 
-### Create a SSL certificate
 
-#### Generate SSL certificate
 
-1. Generate a private key and certificate signing request (CSR) using a tool of your choice. Send the CSR to your certificate authority (CA) to generate the certificate.
+#### Install the NGINX repository
 
-   If you want to use a certificate for testing purposes you can generate a self signed certificate using openssl:
+1. Add the Helm chart repository for installing NGINX using the following command:
 
    ```bash
-   $ mkdir <workdir>/ssl
-   $ cd <workdir>/ssl
-   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=<nginx-hostname>"
+   $ helm repo add stable https://kubernetes.github.io/ingress-nginx
    ```
-   
-   For example:
-   
-   ```bash
-   $ mkdir /scratch/OIGK8S/ssl
-   $ cd /scratch/OIGK8S/ssl
-   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=masternode.example.com"
-   ```
-
-   **Note**: The `CN` should match the host.domain of the master node in order to prevent hostname problems during certificate verification.
    
    The output will look similar to the following:
    
    ```
+   "stable" has been added to your repositories
+   ```
+
+1. Update the repository using the following command:
+
+   ```bash
+   $ helm repo update
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   Hang tight while we grab the latest from your chart repositories...
+   ...Successfully got an update from the "stable" chart repository
+   Update Complete. Happy Helming!
+   ```
+
+
+
+#### Create a namespace
+
+1. Create a Kubernetes namespace for NGINX:
+
+   ```bash
+   $ kubectl create namespace mynginxns
+   ```
+
+   The output will look similar to the following:
+
+   ```
+   namespace/mynginxns created
+   ```
+### Generate a SSL certificate
+
+For production environments it is recommended to use a commercially available certificate, traceable to a trusted Certificate Authority. For sandbox environments, you can generate your own self-signed certificates.
+
+#### Using a Third Party CA for Generating Certificates
+
+Generate a private key and certificate signing request (CSR) using a tool of your choice. Send the CSR to your certificate authority (CA) to generate the certificate.
+
+If you are configuring the ingress controller to use SSL, you must use a wildcard certificate to prevent issues with the Common Name (CN) in the certificate. A wildcard certificate is a certificate that protects the primary domain and it's sub-domains. It uses a wildcard character (`*`) in the CN, for example `*.yourdomain.com`.
+
+How you generate the key and certificate signing request for a wildcard certificate will depend on your Certificate Authority. Contact your Certificate Authority vendor for details.
+
+In order to configure the ingress controller for SSL you require the following files:
+
++ The private key for your certificate, for example `oig.key`.
++ The certificate, for example `oig.crt` in PEM format.
++ The trusted certificate authority (CA) certificate, for example `rootca.crt` in PEM format.
++ If there are multiple trusted CA certificates in the chain, you need all the certificates in the chain, for example `rootca1.crt`, `rootca2.crt` etc.
+
+Once you have received the files, perform the following steps:
+
+1. On the administrative host, create a $WORKDIR>/ssl directory and navigate to the folder:
+
+   ```
+	$ mkdir $WORKDIR>/ssl
+	$ cd $WORKDIR>/ssl
+   ```
+1. Copy the files listed above to the `$WORKDIR>/ssl` directory.
+
+1. If your CA has multiple certificates in a chain, create a `bundle.pem` that contains all the CA certificates:
+   
+   ```
+   $ cat rootca.pem rootca1.pem rootca2.pem >>bundle.pem
+   ```
+	
+#### Using Self-Signed Certificates
+
+1. On the administrative host, create a $WORKDIR>/ssl directory and navigate to the folder:
+
+   ```
+	$ mkdir $WORKDIR>/ssl
+	$ cd $WORKDIR>/ssl
+   ```
+	
+1. Run the following command to create the self-signed certificate:
+
+   ```
+   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout oig.key -out oig.crt -subj "/CN=<hostname>"
+   ```
+	
+	For example:
+	
+   ```
+   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout oig.key -out oig.crt -subj "/CN=oig.example.com"
+   ```
+
+   The output will look similar to the following:
+
+   ```
    Generating a 2048 bit RSA private key
    ..........................................+++
    .......................................................................................................+++
-   writing new private key to 'tls.key'
+   writing new private key to 'oig.key'
    -----
-   ```
+	```
 
-#### Create a Kubernetes secret for SSL
+
+
+  
+### Create a Kubernetes secret for SSL
 
 1. Create a secret for SSL containing the SSL certificate by running the following command:
 
    ```bash
-   $ kubectl -n oigns create secret tls <domain_uid>-tls-cert --key <workdir>/tls.key --cert <workdir>/tls.crt
+   $ kubectl -n mynginxns create secret tls <domain_uid>-tls-cert --key $WORKDIR/ssl/oig.key --cert $WORKDIR/ssl/oig.crt
    ```
    
    For example:
    
    ```bash
-   $ kubectl -n oigns create secret tls governancedomain-tls-cert --key /scratch/OIGK8S/ssl/tls.key --cert /scratch/OIGK8S/ssl/tls.crt
+   $ kubectl -n mynginxns create secret tls governancedomain-tls-cert --key /scratch/OIGK8S/ssl/oig.key --cert /scratch/OIGK8S/ssl/oig.crt
    ```
    
    The output will look similar to the following:
@@ -111,55 +190,11 @@ The instructions below explain how to set up NGINX as an ingress for the OIG dom
 
    ```
    
-### Install NGINX
 
-Use helm to install NGINX.
 
-#### Configure the repository
+### Install the NGINX Controller
 
-1. Add the Helm chart repository for installing NGINX using the following command:
-
-   ```bash
-   $ helm repo add stable https://kubernetes.github.io/ingress-nginx
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   "stable" has been added to your repositories
-   ```
-
-1. Update the repository using the following command:
-
-   ```bash
-   $ helm repo update
-   ```
-   
-   The output will look similar to the following:
-   
-   ```
-   Hang tight while we grab the latest from your chart repositories...
-   ...Successfully got an update from the "stable" chart repository
-   Update Complete. Happy Helming!
-   ```
-
-#### Create a namespace
-
-1. Create a Kubernetes namespace for NGINX:
-
-   ```bash
-   $ kubectl create namespace nginxssl
-   ```
-
-   The output will look similar to the following:
-
-   ```
-   namespace/nginxssl created
-   ```
-
-#### Install NGINX using helm
-
-If you can connect directly to the master node IP address from a browser, then install NGINX with the `--set controller.service.type=NodePort` parameter.
+If you can connect directly to a worler node IP address from a browser, then install NGINX with the `--set controller.service.type=NodePort` parameter.
 
 If you are using a Managed Service for your Kubernetes cluster, for example Oracle Kubernetes Engine (OKE) on Oracle Cloud Infrastructure (OCI), and connect from a browser to the Load Balancer IP address, then use the `--set controller.service.type=LoadBalancer` parameter. This instructs the Managed Service to setup a Load Balancer to direct traffic to the NGINX ingress.
 
@@ -168,24 +203,56 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    a) Using NodePort
 
    ```bash
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=NodePort --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
+   helm install nginx-ingress \
+   -n <domain_namespace> \
+   --set controller.service.nodePorts.http=<http_port> \
+   --set controller.service.nodePorts.https=<https_port> \
+   --set controller.extraArgs.default-ssl-certificate=<domain_namespace>/<ssl_secret> \
+   --set controller.service.type=<type> \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx \
+   --version 4.7.2
    ```    
    
+   Where:
+   + `<domain_namespace>` is your namespace, for example `mynginxns`.
+   + `<http_port>` is the HTTP port that you want the controller to listen on, for example `30777`.
+   + `<https_port>` is the HTTPS port that you want the controller to listen on, for example `30443`.
+   + `<type>` is the controller type. If using NodePort set to `NodePort`. If using a managed service set to `LoadBalancer`. If using `LoadBalancer` remove `--set controller.service.nodePorts.http=<http_port>` and `--set controller.service.nodePorts.https=<https_port>`.
+   + `<ssl_secret>` is the secret you created in [Generate a SSL Certificate](#generate-a-ssl-certificate).
+	
+   For example:
+	
+   ```
+	helm install nginx-ingress -n mynginxns \
+   --set controller.service.nodePorts.http=30777 \
+   --set controller.service.nodePorts.https=30443 \
+   --set controller.extraArgs.default-ssl-certificate=mynginxns/accessdomain-tls-cert \
+   --set controller.service.type=NodePort \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx \
+   --version 4.7.2
+   ```
+	
    The output will look similar to the following:
    
    ```
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
-   NAMESPACE: nginxssl
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    NOTES:
    The nginx-ingress controller has been installed.
    Get the application URL by running these commands:
-     export HTTP_NODE_PORT=$(kubectl --namespace nginxssl get services -o jsonpath="{.spec.ports[0].nodePort}" nginx-ingress-controller)
-     export HTTPS_NODE_PORT=$(kubectl --namespace nginxssl get services -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-controller)
-     export NODE_IP=$(kubectl --namespace nginxssl get nodes -o jsonpath="{.items[0].status.addresses[1].address}")
+    export HTTP_NODE_PORT=30777
+    export HTTPS_NODE_PORT=30443
+    export NODE_IP=$(kubectl --namespace mynginxns get nodes -o jsonpath="{.items[0].status.addresses[1].address}
 
      echo "Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP."
      echo "Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS."
@@ -232,26 +299,33 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 
    b) Using LoadBalancer
 
-   ```bash
-   $ helm install nginx-ingress -n nginxssl --set controller.extraArgs.default-ssl-certificate=oigns/governancedomain-tls-cert  --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false stable/ingress-nginx --version 4.7.2
-   ```    
+   ```
+	helm install nginx-ingress -n mynginxns \
+   --set controller.extraArgs.default-ssl-certificate=mynginxns/governancedomain-tls-cert \
+   --set controller.service.type=LoadBalancer \
+   --set controller.config.use-forwarded-headers=true \
+   --set controller.config.enable-underscores-in-headers=true \
+   --set controller.admissionWebhooks.enabled=false \
+   stable/ingress-nginx \
+   --version 4.7.2
+   ```
    
    The output will look similar to the following:
    
    ```
    NAME: nginx-ingress
    LAST DEPLOYED: <DATE>
-   NAMESPACE: nginxssl
+   NAMESPACE: mynginxns
    STATUS: deployed
    REVISION: 1
    TEST SUITE: None
    NOTES:
    The ingress-nginx controller has been installed.
    It may take a few minutes for the LoadBalancer IP to be available.
-   You can watch the status by running 'kubectl --namespace nginxssl get services -o wide -w nginx-ingress-ingress-nginx-controller'
-
+   You can watch the status by running 'kubectl --namespace mynginxns get services -o wide -w nginx-ingress-ingress-nginx-controller'
+   
    An example Ingress that makes use of the controller:
-
+   
      apiVersion: networking.k8s.io/v1
      kind: Ingress
      metadata:
@@ -270,15 +344,14 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
                    service:
                    name: exampleService
                    port: 80
-
+   
        # This section is only required if TLS is to be enabled for the Ingress
        tls:
            - hosts:
                - www.example.com
              secretName: example-tls
-
    If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
-
+   
      apiVersion: v1
      kind: Secret
      metadata:
@@ -289,8 +362,8 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
        tls.key: <base64 encoded key>
      type: kubernetes.io/tls
    ```
-
-#### Setup routing rules for the domain
+   
+### Preparing the ingress values.yaml
 
 1. Setup routing rules by running the following commands:
 
@@ -335,13 +408,13 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
      nginxTimeOut: 180
    ```
 
-#### Create an ingress for the domain
+#### Creating the ingress
 
 1. Create an Ingress for the domain (`governancedomain-nginx`), in the domain namespace by using the sample Helm chart:
 
    ```bash
    $ cd $WORKDIR
-   $ helm install governancedomain-nginx kubernetes/charts/ingress-per-domain --namespace oigns --values kubernetes/charts/ingress-per-domain/values.yaml
+   $ helm install governancedomain-nginx kubernetes/charts/ingress-per-domain --namespace <domain_namespace> --values kubernetes/charts/ingress-per-domain/values.yaml
    ```
    
    **Note**: The `$WORKDIR/kubernetes/charts/ingress-per-domain/templates/nginx-ingress-ssl.yaml` has `nginx.ingress.kubernetes.io/enable-access-log` set to `false`. If you want to enable access logs then set this value to `true` before executing the command. Enabling access-logs can cause issues with disk space if not regularly maintained. 
@@ -382,18 +455,7 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
    NAME                     CLASS    HOSTS   ADDRESS   PORTS   AGE
    governancedomain-nginx   <none>   *       x.x.x.x   80      49s
    ```
-   
-1. Find the node port of NGINX using the following command:
 
-   ```bash
-   $ kubectl get services -n nginxssl -o jsonpath="{.spec.ports[1].nodePort}" nginx-ingress-ingress-nginx-controller
-   ```
-
-   The output will look similar to the following:
-
-   ```
-   32033
-   ```
 
 1. Run the following command to check the ingress:
 
@@ -461,39 +523,39 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
      Normal  Sync    18s (x2 over 38s)  nginx-ingress-controller  Scheduled for sync
    ```
 
-1. To confirm that the new Ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the `WebLogic ReadyApp framework`:
+1. To confirm that the new ingress is successfully routing to the domain's server pods, run the following command to send a request to the URL for the `WebLogic ReadyApp framework`:
 
-   **Note**: If using a load balancer for your ingress replace `${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
+   **Note**: If using a load balancer for your ingress replace `${HOSTNAME}:${PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
 
    ```bash
-   $ curl -v -k https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/weblogic/ready
+   $ curl -v -k https://${HOSTNAME}:${PORT}/weblogic/ready
    ```
    
    For example:
    
    ```bash
-   $ curl -v -k  https://masternode.example.com:32033/weblogic/ready
+   $ curl -v -k  https://oig.example.com:30443/weblogic/ready
    ```
    
    The output will look similar to the following:
    
    ```
-   $ curl -v -k https://masternode.example.com:32033/weblogic/ready
-   * About to connect() to X.X.X.X port 32033 (#0)
+   $ curl -v -k https://oig.example.com:30443/weblogic/ready
+   * About to connect() to X.X.X.X port 30433 (#0)
    *   Trying X.X.X.X...
-   * Connected to masternode.example.com (X.X.X.X) port 32033 (#0)
+   * Connected to oig.example.com (X.X.X.X) port 30433 (#0)
    * Initializing NSS with certpath: sql:/etc/pki/nssdb
    * skipping SSL peer certificate verification
    * SSL connection using TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
    * Server certificate:
-   *       subject: CN=masternode.example.com
+   *       subject: CN=oig.example.com
    *       start date: <DATE>
    *       expire date: <DATE>
-   *       common name: masternode.example.com
-   *       issuer: CN=masternode.example.com
+   *       common name: oig.example.com
+   *       issuer: CN=oig.example.com
    > GET /weblogic/ready HTTP/1.1
    > User-Agent: curl/7.29.0
-   > Host: X.X.X.X:32033
+   > Host: X.X.X.X:30433
    > Accept: */*
    >
    < HTTP/1.1 200 OK
@@ -508,4 +570,4 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 
 #### Verify that you can access the domain URL
 
-After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 32033) as per [Validate Domain URLs ](../../validate-domain-urls)
+After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 30433) as per [Validate Domain URLs ](../../validate-domain-urls)

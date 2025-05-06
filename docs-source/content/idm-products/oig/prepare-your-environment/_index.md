@@ -26,7 +26,7 @@ To prepare for Oracle Identity Governance 12.2.1.4 deployment in a Kubernetes en
 
 As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains) a Kubernetes cluster should have already been configured.
 
-1. Run the following command on the master node to check the cluster and worker nodes are running:
+1. Run the following command on the administrative node to check the cluster and worker nodes are running:
     
    ```bash
    $ kubectl get nodes,pods -n kube-system
@@ -36,9 +36,9 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oig-domains
 	
    ```
    NAME                  STATUS   ROLES    AGE   VERSION
-   node/worker-node1     Ready    <none>   17h   v1.29.9+3.el8
-   node/worker-node2     Ready    <none>   17h   v1.29.9+3.el8
-   node/master-node      Ready    master   23h   v1.29.9+3.el8
+   node/worker-node1     Ready    <none>   17h   v1.30.3+1.el8
+   node/worker-node2     Ready    <none>   17h   v1.30.3+1.el8
+   node/master-node      Ready    master   23h   v1.30.3+1.el8
 
    NAME                                     READY   STATUS    RESTARTS   AGE
    pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -66,7 +66,7 @@ The OIG 12.2.1.4 Kubernetes deployment requires access to an OIG container image
 #### Prebuilt OIG container image
 
 
-The latest prebuilt OIG January 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
+The latest prebuilt OIG April 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.. 
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oig_cpu` and accept the license agreement.
 
@@ -74,7 +74,7 @@ You can use this image in the following ways:
 
 - Pull the container image from the Oracle Container Registry automatically during the OIG Kubernetes deployment.
 - Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.
-- Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node. 
+- Manually pull the container image from the Oracle Container Registry and manually stage it on each worker node. 
 
 
 #### Build your own OIG container image using WebLogic Image Tool
@@ -85,13 +85,13 @@ You can build your own OIG container image using the WebLogic Image Tool. This i
 You can use an image built with WebLogic Image Tool in the following ways:
 
 - Manually upload them to your own container registry.
-- Manually stage them on the master node and each worker node. 
+- Manually stage them on each worker node. 
 
-**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
+**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
 
 ### Setup the code repository to deploy OIG domains
 
-Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. For deploying the OIG domains, you need to set up the deployment scripts on the **master** node as below:
+Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. For deploying the OIG domains, you need to set up the deployment scripts on the administrative host as below:
 
 1. Create a working directory to setup the source code.
 
@@ -160,7 +160,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
 
 ### Install the WebLogic Kubernetes Operator
 
-1. On the **master** node run the following command to create a namespace for the operator:
+1. On the administrative host run the following command to create a namespace for the operator:
 
    ```bash
    $ kubectl create namespace <sample-kubernetes-operator-ns>
@@ -355,7 +355,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
 
 In this section you create a secret that stores the credentials for the container registry where the OIG image is stored. 
 
-If you are not using a container registry and have loaded the images on each of the master and worker nodes, then there is no need to create the registry secret.
+If you are not using a container registry and have loaded the images on each of worker nodes, then there is no need to create the registry secret.
 
 1. Run the following command to create the secret:
 
@@ -420,10 +420,10 @@ Before following the steps in this section, make sure that the database and list
    For example:
 	
    ```bash
-   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January`25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   $ kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April`25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
-   If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:
+   If you are not using a container registry and have loaded the image on each of worker nodes, run the following command:
    
    ```bash
    $ kubectl run helper --image <image> -n oigns -- sleep infinity
@@ -432,7 +432,7 @@ Before following the steps in this section, make sure that the database and list
    For example:
    
    ```bash
-   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-<January`25> -n oigns -- sleep infinity
+   $ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-<April`25> -n oigns -- sleep infinity
    ```
 	
    The output will look similar to the following:
@@ -841,12 +841,14 @@ When a container is started, it needs to mount that volume. The physical volume 
    
 The example below uses an NFS mounted volume (<persistent_volume>/governancedomainpv). Other volume types can also be used. See the official [Kubernetes documentation for Volumes](https://kubernetes.io/docs/concepts/storage/volumes/).
    
-**Note**: The persistent volume directory needs to be accessible to both the master and worker node(s). In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS. 
+**Note**: The persistent volume directory needs to be accessible to each worker node. In this example `/scratch/shared/governancedomainpv` is accessible from all nodes via NFS. 
 
 
 
 1. Make a backup copy of the `create-pv-pvc-inputs.yaml` file and create required directories:
    
+	**Note**: The following assumes the user creating the file has userid `1000` or is part of group `0`.
+	
    ```bash
    $ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
    $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
@@ -855,6 +857,7 @@ The example below uses an NFS mounted volume (<persistent_volume>/governancedoma
    $ sudo chown -R 1000:0 <persistent_volume>/governancedomainpv
    ```
 
+   
    For example:
 	
    ```bash
@@ -867,32 +870,22 @@ The example below uses an NFS mounted volume (<persistent_volume>/governancedoma
    
    
    
-1. On the master node run the following command to ensure it is possible to read and write to the persistent volume:
+1. On the administrative host run the following command to ensure it is possible to read and write to the persistent volume:
 
    ```bash 
    cd <persistent_volume>/governancedomainpv
-   touch file.txt
-   ls filemaster.txt
+   touch fileadmin.txt
+   ls fileadmin.txt
    ```
    
    For example:
    
    ```bash
    cd /scratch/shared/governancedomainpv
-   touch filemaster.txt
-   ls filemaster.txt
+   touch fileadmin.txt
+   ls fileadadmin.txt
    ```
-   
-   On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
-   
-   ```bash
-   cd /scratch/shared/governancedomainpv
-   ls filemaster.txt
-   touch fileworker1.txt
-   ls fileworker1.txt
-   ```
-   
-   Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it's possible to read and write from each node to the persistent volume, delete the files created.
+
    
 
 1. Navigate to `$WORKDIR/kubernetes/create-weblogic-domain-pv-pvc`:

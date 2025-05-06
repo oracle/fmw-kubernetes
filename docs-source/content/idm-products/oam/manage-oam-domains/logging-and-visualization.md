@@ -139,19 +139,19 @@ You will also need the BASE64 version of the Certificate Authority (CA) certific
 1. Run the following command to get the `Domain Home` and `Log Home` of your domain:
 
    ```bash
-	$ kubectl describe domains <domain_uid> -n <domain_namespace> | egrep "Domain Home: | Log Home:"
-	```
+   $ kubectl describe domains <domain_uid> -n <domain_namespace> | egrep "Domain Home: | Log Home:"
+   ```
 	
 	For example:
 	
-	```bash
-	$ kubectl describe domains accessdomain -n oamns  | egrep "Domain Home: | Log Home:"
-	```
+   ```bash
+   $ kubectl describe domains accessdomain -n oamns  | egrep "Domain Home: | Log Home:"
+   ```
 	
 	The output will look similar to the following:
 	
-	```
-	Domain Home:                     /u01/oracle/user_projects/domains/accessdomain
+   ```
+   Domain Home:                     /u01/oracle/user_projects/domains/accessdomain
    Http Access Log In Log Home:     true
    Log Home:                           /u01/oracle/user_projects/domains/logs/accessdomain
    ```

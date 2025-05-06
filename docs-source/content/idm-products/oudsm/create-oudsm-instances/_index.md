@@ -52,7 +52,7 @@ namespace/oudsmns created
 
 ### Create a Kubernetes secret for the container registry
 
-Create a Kubernetes secret that stores the credentials for the container registry where the OUDSM image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.
+Create a Kubernetes secret that stores the credentials for the container registry where the OUDSM image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the worker nodes, you can skip this step.
 
 1. Run the following command to create the secret:
 
@@ -91,7 +91,7 @@ As referenced in [Prerequisites](../prerequisites) the nodes in the Kubernetes c
 
 In this example `/scratch/shared/` is a shared directory accessible from all nodes.
    
-1. On the master node run the following command to create a `user_projects` directory:
+1. On the administrative host run the following command to create a `user_projects` directory:
 
    ```bash 
    $ cd <persistent_volume>
@@ -107,32 +107,23 @@ In this example `/scratch/shared/` is a shared directory accessible from all nod
    $ sudo chown -R 1000:0 oudsm_user_projects
    ```
    
-1. On the master node run the following to ensure it is possible to read and write to the persistent volume:
+1. On the administrative host run the following to ensure it is possible to read and write to the persistent volume:
+
+   **Note**: The following assumes the user creating the file has userid `1000` or is part of group `0`.
    
    ```
    $ cd <persistent_volume>/oudsm_user_projects
-   $ touch file.txt
-   $ ls filemaster.txt
+   $ touch fileadmin.txt
+   $ ls fileadmin.txt
    ```
    
    For example:
    
    ```bash
    $ cd /scratch/shared/oudsm_user_projects
-   $ touch filemaster.txt
-   $ ls filemaster.txt
+   $ touch fileadmin.txt
+   $ ls fileadmin.txt
    ```
-   
-   On the first worker node run the following to ensure it is possible to read and write to the persistent volume:
-   
-   ```bash
-   $ cd /scratch/shared/oudsm_user_projects
-   $ ls filemaster.txt
-   $ touch fileworker1.txt
-   $ ls fileworker1.txt
-   ```
-   
-   Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it's possible to read and write from each node to the persistent volume, delete the files created.
 
 
 
@@ -198,7 +189,7 @@ You can create OUDSM instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oudsm_cpu
-     tag: 12.2.1.4-jdk8-ol8-<January'25>
+     tag: 12.2.1.4-jdk8-ol8-<April'25>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -272,7 +263,7 @@ You can create OUDSM instances using one of the following methods:
 
    ```bash
    $ helm install --namespace oudsmns \
-   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol8-<January'25> \
+   --set oudsm.adminUser=weblogic,oudsm.adminPass=<password>,persistence.filesystem.hostPath.path=/scratch/shared/oudsm_user_projects,image.repository=container-registry.oracle.com/middleware/oudsm_cpu,image.tag=12.2.1.4-jdk8-ol8-<April'25> \
    --set imagePullSecrets[0].name="orclcred" \
    oudsm oudsm
    ```

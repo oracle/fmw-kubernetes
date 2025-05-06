@@ -27,7 +27,7 @@ The default OIG deployment starts the Administration Server (`AdminServer`), one
 
 The deployment also creates, but doesn't start, four extra OIG Managed Servers (`oim-server2` to `oim-server5`) and four more SOA Managed Servers (`soa_server2` to `soa_server5`).
 
-All these servers are visible in the WebLogic Server Administration Console `https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console` by navigating to **Domain Structure** > **governancedomain** > **Environment** > **Servers**.
+All these servers are visible in the WebLogic Server Administration Console `https://${HOSTNAME}:${PORT}/console` by navigating to **Domain Structure** > **governancedomain** > **Environment** > **Servers**.
 
 To view the running servers using kubectl, run the following command:
 

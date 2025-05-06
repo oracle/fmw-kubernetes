@@ -65,7 +65,7 @@ The sample scripts for Oracle Access Management domain deployment are available 
    ```bash   
    domainUID: accessdomain
    domainHome: /u01/oracle/user_projects/domains/accessdomain
-   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25>
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: accessdomain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/accessdomain
@@ -94,16 +94,16 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `domainUID` | Unique ID that will be used to identify this particular domain. Used as the name of the generated WebLogic domain as well as the name of the Kubernetes domain resource. This ID must be unique across all domains in a Kubernetes cluster. This ID cannot contain any character that is not valid in a Kubernetes service name. | `accessdomain` |
 | `domainType` | Type of the domain. Mandatory input for OAM domains. You must provide one of the supported domain type value: `oam` (deploys an OAM domain)| `oam`
 | `exposeAdminNodePort` | Boolean indicating if the Administration Server is exposed outside of the Kubernetes cluster. | `false` |
-| `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `true` |
+| `exposeAdminT3Channel` | Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster. | `false` |
 | `image` | OAM container image. The operator requires OAM 12.2.1.4. Refer to [Obtain the OAM container image](../prepare-your-environment#obtain-the-oam-container-image) for details on how to obtain or create the image. | `oracle/oam:12.2.1.4.0` |
 | `imagePullPolicy` | WebLogic container image pull policy. Legal values are `IfNotPresent`, `Always`, or `Never` | `IfNotPresent` |
-| `imagePullSecretName` | Name of the Kubernetes secret to access the container registry to pull the OAM container image. The presence of the secret will be validated when this parameter is specified. |  |
+| `imagePullSecretName` | Name of the Kubernetes secret to access the container registry to pull the OAM container image. The presence of the secret will be validated when this parameter is specified. | `orclcred` |
 | `includeServerOutInPodLog` | Boolean indicating whether to include the server .out to the pod's stdout. | `true` |
 | `initialManagedServerReplicas` | Number of Managed Servers to initially start for the domain. | `2` |
 | `javaOptions` | Java options for starting the Administration Server and Managed Servers. A Java option can have references to one or more of the following pre-defined variables to obtain WebLogic domain information: `$(DOMAIN_NAME)`, `$(DOMAIN_HOME)`, `$(ADMIN_NAME)`, `$(ADMIN_PORT)`, and `$(SERVER_NAME)`. | `-Dweblogic.StdoutDebugEnabled=false` |
 | `logHome` | The in-pod location for the domain log, server logs, server out, and Node Manager log files. If not specified, the value is derived from the `domainUID` as `/shared/logs/<domainUID>`. | `/u01/oracle/user_projects/domains/logs/accessdomain` |
 | `managedServerNameBase` | Base string used to generate Managed Server names. | `oam_server` |
-| `managedServerPort` | Port number for each Managed Server. | `8001` |
+| `managedServerPort` | Port number for each Managed Server. | `14100` |
 | `namespace` | Kubernetes namespace in which to create the domain. | `oamns` |
 | `persistentVolumeClaimName` | Name of the persistent volume claim created to host the domain home. If not specified, the value is derived from the `domainUID` as `<domainUID>-weblogic-sample-pvc`. | `accessdomain-domain-pvc` |
 | `productionModeEnabled` | Boolean indicating if production mode is enabled for the domain. | `true` |
@@ -113,8 +113,8 @@ A full list of parameters in the `create-domain-inputs.yaml` file are shown belo
 | `weblogicCredentialsSecretName` | Name of the Kubernetes secret for the Administration Server's user name and password. If not specified, then the value is derived from the `domainUID` as `<domainUID>-weblogic-credentials`. | `accessdomain-domain-credentials` |
 | `weblogicImagePullSecretName` | Name of the Kubernetes secret for the container registry, used to pull the WebLogic Server image. |   |
 | `serverPodCpuRequest`, `serverPodMemoryRequest`, `serverPodCpuCLimit`, `serverPodMemoryLimit` |  The maximum amount of compute resources allowed, and minimum amount of compute resources required, for each server pod. Please refer to the Kubernetes documentation on `Managing Compute Resources for Containers` for details. | Resource requests and resource limits are not specified. |
-| `rcuSchemaPrefix` | The schema prefix to use in the database, for example `OAM1`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `OAM1` |
-| `rcuDatabaseURL` | The database URL. | `oracle-db.default.svc.cluster.local:1521/devpdb.k8s` |
+| `rcuSchemaPrefix` | The schema prefix to use in the database, for example `OAM1`.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas. | `OAMPD` |
+| `rcuDatabaseURL` | The database URL. | `xxxxx.example.com:1521/oampdb1.example.com` |
 | `rcuCredentialsSecret` | The Kubernetes secret containing the database credentials. | `accessdomain-rcu-credentials` |
 | `datasourceType` | Type of JDBC datasource applicable for the OAM domain. Legal values are `agl` and `generic`. Choose `agl` for Active GridLink datasource and `generic` for Generic datasource. For enterprise deployments, Oracle recommends that you use GridLink data sources to connect to Oracle RAC databases. See the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/preparing-existing-database-enterprise-deployment.html#GUID-E3705EFF-AEF2-4F75-B5CE-1A829CDF0A1F) for further details. | `generic` |
 
@@ -164,7 +164,7 @@ generated artifacts:
    export initialManagedServerReplicas="2"
    export managedServerNameBase="oam_server"
    export managedServerPort="14100"
-   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25>"
+   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -242,6 +242,12 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
    
    ```bash
    $ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain
+   ```
+   
+1. Take a backup of the `domain.yaml`:
+
+   ```
+   $ cp domain.yaml domain.yaml.orig
    ```
    
 1. Edit the `domain.yaml` file and inside `name: accessdomain-oam-cluster`, add the memory setting as below: 
@@ -552,7 +558,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Failure Retry Interval Seconds:  120
      Failure Retry Limit Minutes:     1440
      Http Access Log In Log Home:     true
-     Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<January'25>
+     Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
      Image Pull Policy:               IfNotPresent
      Image Pull Secrets:
        Name:                           orclcred

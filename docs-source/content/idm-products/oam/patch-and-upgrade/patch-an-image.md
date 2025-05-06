@@ -34,7 +34,7 @@ In all of the above cases, the WebLogic Kubernetes Operator will restart the Adm
    imagePullPolicy: IfNotPresent
    ```
    
-   If you are not using a container registry and have loaded the image on each of the master and worker nodes, update the `image` <tag> to point at the new image:
+   If you are not using a container registry and have loaded the image on each of the worker nodes, update the `image` <tag> to point at the new image:
    
    ```
    domainHomeInImage: false
@@ -60,7 +60,7 @@ In all of the above cases, the WebLogic Kubernetes Operator will restart the Adm
    $ kubectl patch domain accessdomain -n oamns --type merge  -p '{"spec":{"image":"container-registry.oracle.com/middleware/oam_cpu:<tag>"}}'
    ```
    
-   For example, if you are not using a container registry and have loaded the image on each of the master and worker nodes:
+   For example, if you are not using a container registry and have loaded the image on each worker nodes:
    
    ```bash
    $ kubectl patch domain accessdomain -n oamns --type merge  -p '{"spec":{"image":"oracle/oam:<tag>"}}'
