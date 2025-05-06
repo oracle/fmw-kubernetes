@@ -12,18 +12,18 @@
     <title>Validate domain URLs :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746530773" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746530773"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746530773"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746530773"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746530773"></script>
 
     
   </div>
@@ -5850,10 +5850,10 @@
 	<p>In this section you validate the OIG domain URLs that are accessible via the NGINX ingress.</p>
 <p>Make sure you know the master hostname and port before proceeding.</p>
 <h4 id="validate-the-oig-domain-urls-via-the-ingress">Validate the OIG domain urls via the ingress</h4>
-<p>Launch a browser and access the following URL&rsquo;s. Use <code>http</code> or <code>https</code> depending on whether you configured your ingress for non-ssl or ssl.</p>
+<p>Launch a browser and access the following URL&rsquo;s. Use <code>http</code> or <code>https</code> depending on whether you configured your ingress for non-SSL or SSL.</p>
 <p>Login to the WebLogic Administration Console and Oracle Enterprise Manager Console with the WebLogic username and password (<code>weblogic/&lt;password&gt;</code>).</p>
 <p>Login to Oracle Identity Governance with the xelsysadm username and password (<code>xelsysadm/&lt;password&gt;</code>).</p>
-<p><strong>Note</strong>: If using a load balancer for your ingress replace <code>${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}</code> with <code>${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}</code>.</p>
+<p><strong>Note</strong>: If using a load balancer for your ingress replace <code>${HOSTNAME}:${PORT}</code> with <code>${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}</code>.</p>
 <table>
 <thead>
 <tr>
@@ -5864,24 +5864,24 @@
 <tbody>
 <tr>
 <td>WebLogic Administration Console</td>
-<td><code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console</code></td>
+<td><code>https://${HOSTNAME}:${PORT}/console</code></td>
 </tr>
 <tr>
 <td>Oracle Enterprise Manager Console</td>
-<td><code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/em</code></td>
+<td><code>https://${HOSTNAME}:${PORT}/em</code></td>
 </tr>
 <tr>
 <td>Oracle Identity System Administration</td>
-<td><code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/sysadmin</code></td>
+<td><code>https://${HOSTNAME}:${PORT}/sysadmin</code></td>
 </tr>
 <tr>
 <td>Oracle Identity Self Service</td>
-<td><code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/identity</code></td>
+<td><code>https://${HOSTNAME}:${PORT}/identity</code></td>
 </tr>
 </tbody>
 </table>
 <p><strong>Note</strong>: WebLogic Administration Console and Oracle Enterprise Manager Console should only be used to monitor the servers in the OIG domain. To control the Administration Server and OIG Managed Servers (start/stop) you must use Kubernetes. See <a href="../manage-oig-domains/domain-lifecycle">Domain Life Cycle </a> for more information.</p>
-<p>The browser will give certificate errors if you used a self signed certifcate and have not imported it into the browsers Certificate Authority store. If this occurs you can proceed with the connection and ignore the errors.</p>
+<p>The browser will give certificate errors if you used a self signed certificate and have not imported it into the browsers Certificate Authority store. If this occurs you can proceed with the connection and ignore the errors.</p>
 <p>After the URL&rsquo;s have been verified follow <a href="../post-install-config">Post install configuration</a>.</p>
 
 
@@ -9807,19 +9807,19 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746530773"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746530773"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746530773" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746530773"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

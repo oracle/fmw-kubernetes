@@ -823,7 +823,7 @@ If you do not want to expose additional ports and perform WLST administration op
       
       <guid>/fmw-kubernetes/idm-products/oud/patch-and-upgrade/</guid>
       <description>In this section you learn how to upgrade OUD from a previous version. Follow the section relevant to the version you are upgrading from.
- Upgrading to January 25 (25.1.1) from April 23 (23.2.1) or later Upgrading to January 25 (25.1.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to January 25 (25.1.1) from July 22 (22.3.1) Upgrading to January 25 (25.1.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
+ Upgrading to April 25 (25.2.1) from April 23 (23.2.1) or later Upgrading to April 25 (25.2.1) from October 22 (22.4.1) or January 23 (23.1.1) Upgrading to April 25 (25.2.1) from July 22 (22.3.1) Upgrading to April 25 (25.2.1) from releases prior to July 22 (22.3.1) Upgrading Elasticsearch and Kibana  Note: If on July 22 (22.</description>
     </item>
     
     <item>
@@ -943,8 +943,7 @@ You can update the deployment with a new OUDSM container image using one of the 
       <description>Follow these post install configuration steps.
  Create a Server Overrides File Set OIMFrontendURL using MBeans  Create a Server Overrides File   Navigate to the following directory:
 cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/output/weblogic-domains/governancedomain For OIG domains created with WDT:
-$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/ ``
-  Create a setUserOverrides.sh with the following contents:
+$ cd $WORKDIR/kubernetes/create-oim-domain/domain-home-on-pv/   Create a setUserOverrides.sh with the following contents:
 DERBY_FLAG=false JAVA_OPTIONS=&amp;quot;${JAVA_OPTIONS} -Djava.net.preferIPv4Stack=true&amp;quot; MEM_ARGS=&amp;quot;-Xms8192m -Xmx8192m&amp;quot;   Copy the setUserOverrides.sh file to the Administration Server pod:
 $ chmod 755 setUserOverrides.sh $ kubectl cp setUserOverrides.</description>
     </item>
@@ -968,7 +967,7 @@ $ mkdir /scratch/OAMK8S/weblogic-kubernetes-operator-4.X.X $ cd /scratch/OAMK8S/
       
       <guid>/fmw-kubernetes/idm-products/oig/patch-and-upgrade/upgrade-an-operator-release/</guid>
       <description>These instructions apply to upgrading operators from 3.X.X to 4.X, or from within the 4.x release family as additional versions are released.
-  On the master node, download the new WebLogic Kubernetes Operator source code from the operator github project:
+  On the administrative host, download the new WebLogic Kubernetes Operator source code from the operator github project:
 $ mkdir &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.X.X $ cd &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X For example:
 $ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X $ cd /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X $ git clone https://github.com/oracle/weblogic-kubernetes-operator.git --branch v4.X.X This will create the directory &amp;lt;workdir&amp;gt;/weblogic-kubernetes-operator-4.</description>
     </item>
@@ -980,7 +979,7 @@ $ mkdir /scratch/OIGK8S/weblogic-kubernetes-operator-4.X.X $ cd /scratch/OIGK8S/
       
       <guid>/fmw-kubernetes/idm-products/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s/</guid>
       <description>Setting up an ingress for NGINX for the OIG domain on Kubernetes (non-SSL) The instructions below explain how to set up NGINX as an ingress for the OIG domain with non-SSL termination.
-Note: All the steps below should be performed on the master node.
+Note: All the steps below should be performed on the administrative host.
   Install NGINX
 a. Configure the repository
 b. Create a namespace
@@ -1057,7 +1056,7 @@ c. Verify the pods</description>
       
       <guid>/fmw-kubernetes/idm-products/oig/post-install-config/install_and_configure_connectors/</guid>
       <description>Download the connector   Download the Connector you are interested in from Oracle Identity Manager Connector Downloads.
-  Copy the connector zip file to a staging directory on the master node e.g. &amp;lt;workdir&amp;gt;/stage and unzip it:
+  Copy the connector zip file to a staging directory on the administrative host e.g. &amp;lt;workdir&amp;gt;/stage and unzip it:
 $ cp $HOME/Downloads/&amp;lt;connector&amp;gt;.zip &amp;lt;workdir&amp;gt;/&amp;lt;stage&amp;gt;/ $ cd &amp;lt;workdir&amp;gt;/&amp;lt;stage&amp;gt; $ unzip &amp;lt;connector&amp;gt;.zip $ chmod -R 755 * For example:
 $ cp $HOME/Downloads/Exchange-12.2.1.3.0.zip /scratch/OIGK8S/stage/ $ cd /scratch/OIGK8S/stage/ $ unzip exchange-12.2.1.3.0.zip $ chmod -R 755 *   Copy OIG connectors There are two options to copy OIG Connectors to your Kubernetes cluster:</description>
     </item>
@@ -1111,7 +1110,7 @@ To determine if this step is required for the version you are upgrading from, re
 Download the latest code repository Download the latest code repository as follows:
   Create a working directory to setup the source code.
 $ mkdir &amp;lt;workdir&amp;gt; For example:
-$ mkdir /scratch/OUDSMK8SJan25   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
+$ mkdir /scratch/OUDSMK8SApr25   Download the latest OUDSM deployment scripts from the OUDSM repository.</description>
     </item>
     
     <item>
@@ -1121,13 +1120,12 @@ $ mkdir /scratch/OUDSMK8SJan25   Download the latest OUDSM deployment scripts fr
       
       <guid>/fmw-kubernetes/idm-products/oig/configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl/</guid>
       <description>Setting up an ingress for NGINX for the OIG domain on Kubernetes The instructions below explain how to set up NGINX as an ingress for the OIG domain with SSL termination.
-Note: All the steps below should be performed on the master node.
-  Create a SSL certificate
-a. Generate SSL certificate
-b. Create a Kubernetes secret for SSL
-  Install NGINX
-a. Configure the repository
-b. Create a namespace</description>
+Note: All the steps below should be performed on the administrative host.
+  Install the NGINX repository
+  Create a namespace
+  Generate a SSL certificate
+  Create a Kubernetes secret for SSL
+  Install the NGINX Controller</description>
     </item>
     
     <item>

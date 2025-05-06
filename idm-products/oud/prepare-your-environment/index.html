@@ -12,18 +12,18 @@
     <title>Prepare Your Environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746530773" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746530773" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746530773"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746530773"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746530773"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746530773"></script>
 
     
   </div>
@@ -5860,13 +5860,13 @@
 <p>As per the <a href="../prerequisites/#system-requirements-for-oracle-unified-directory-on-kubernetes">Prerequisites</a> a Kubernetes cluster should have already been configured.</p>
 <ol>
 <li>
-<p>Run the following command on the master node to check the cluster and worker nodes are running:</p>
+<p>Run the following command on the administrative host to check the cluster and worker nodes are running:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get nodes,pods -n kube-system
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME                  STATUS   ROLES                  AGE   VERSION
-node/worker-node1     Ready    &lt;none&gt;                 17h   v1.29.9+3.el8
-node/worker-node2     Ready    &lt;none&gt;                 17h   v1.29.9+3.el8
-node/master-node      Ready    control-plane,master   23h   v1.29.9+3.el8
+node/worker-node1     Ready    &lt;none&gt;                 17h   v1.30.3+1.el8
+node/worker-node2     Ready    &lt;none&gt;                 17h   v1.30.3+1.el8
+node/master-node      Ready    control-plane,master   23h   v1.30.3+1.el8
 
 NAME                                     READY   STATUS    RESTARTS   AGE
 pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -5890,29 +5890,29 @@ pod/kube-scheduler-master                1/1     Running   0          21h
 <li>Build your own OUD container image using WebLogic Image Tool</li>
 </ul>
 <h4 id="prebuilt-oud-container-image">Prebuilt OUD container image</h4>
-<p>The prebuilt OUD January 2025 container image can be downloaded from <a href="https://container-registry.oracle.com">Oracle Container Registry</a>. This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program..</p>
+<p>The prebuilt OUD April 2025 container image can be downloaded from <a href="https://container-registry.oracle.com">Oracle Container Registry</a>. This image is prebuilt by Oracle and includes Oracle Unified Directory 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program..</p>
 <p><strong>Note</strong>: Before using this image you must login to <a href="https://container-registry.oracle.com">Oracle Container Registry</a>, navigate to <code>Middleware</code> &gt; <code>oud_cpu</code> and accept the license agreement.</p>
 <p>You can use this image in the following ways:</p>
 <ul>
 <li>Pull the container image from the Oracle Container Registry automatically during the OUD Kubernetes deployment.</li>
 <li>Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.</li>
-<li>Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node.</li>
+<li>Manually pull the container image from the Oracle Container Registry and manually stage it on each worker node.</li>
 </ul>
 <h4 id="build-your-own-oud-container-image-using-weblogic-image-tool">Build your own OUD container image using WebLogic Image Tool</h4>
 <p>You can build your own OUD container image using the WebLogic Image Tool. This is recommended if you need to apply one off patches to a <a href="#prebuilt-oud-container-image">Prebuilt OUD container image</a>. For more information about building your own container image with WebLogic Image Tool, see <a href="../create-or-update-image/">Create or update image</a>.</p>
 <p>You can use an image built with WebLogic Image Tool in the following ways:</p>
 <ul>
 <li>Manually upload them to your own container registry.</li>
-<li>Manually stage them on the master node and each worker node.</li>
+<li>Manually stage them on each worker node.</li>
 </ul>
-<p><strong>Note</strong>: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html">Enterprise Deployment Guide</a>.</p>
+<p><strong>Note</strong>: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the worker nodes. Details of this can be found in the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html">Enterprise Deployment Guide</a>.</p>
 <h3 id="create-a-persistent-volume-directory">Create a persistent volume directory</h3>
 <p><strong>Note</strong>: This section should not be followed if using block storage.</p>
 <p>As referenced in <a href="../prerequisites">Prerequisites</a> the nodes in the Kubernetes cluster must have access to a persistent volume such as a Network File System (NFS) mount or a shared file system.</p>
 <p>In this example <code>/scratch/shared/</code> is a shared directory accessible from all nodes.</p>
 <ol>
 <li>
-<p>On the master node run the following command to create a <code>user_projects</code> directory:</p>
+<p>On the administrative host run the following command to create a <code>user_projects</code> directory:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;persistent_volume&gt;
 $ mkdir oud_user_projects   
 $ sudo chown -R 1000:0 oud_user_projects
@@ -5922,21 +5922,16 @@ $ mkdir oud_user_projects
 $ sudo chown -R 1000:0 oud_user_projects
 </code></pre></div></li>
 <li>
-<p>On the master node run the following to ensure it is possible to read and write to the persistent volume:</p>
+<p>On the administrative host the following to ensure it is possible to read and write to the persistent volume:</p>
+<p><strong>Note</strong>: The following assumes the user creating the file has userid <code>1000</code> or is part of group <code>0</code>.</p>
 <pre><code>$ cd &lt;persistent_volume&gt;/oud_user_projects
-$ touch file.txt
-$ ls filemaster.txt
+$ touch fileadmin.txt
+$ ls fileadamin.txt
 </code></pre><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/shared/oud_user_projects
-$ touch filemaster.txt
-$ ls filemaster.txt
-</code></pre></div><p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/shared/oud_user_projects
-$ ls filemaster.txt
-$ touch fileworker1.txt
-$ ls fileworker1.txt
-</code></pre></div><p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it&rsquo;s possible to read and write from each node to the persistent volume, delete the files created.</p>
-</li>
+$ touch fileadmin.txt
+$ ls fileadamin.txt
+</code></pre></div></li>
 </ol>
 <h3 id="setup-the-code-repository-to-deploy-oud">Setup the code repository to deploy OUD</h3>
 <p>Oracle Unified Directory deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory containers using the Helm charts provided.  To deploy Oracle Unified Directory on Kubernetes you should set up the deployment scripts as below:</p>
@@ -9887,19 +9882,19 @@ $ git clone https://github.com/oracle/fmw-kubernetes.git
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746530773"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746530773"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746530773"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746530773" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746530773"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

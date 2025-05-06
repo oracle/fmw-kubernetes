@@ -12,18 +12,18 @@
     <title>a. Domain Life Cycle :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745440" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746530772" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746530772" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746530772"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745440"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746530772"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746530772"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746530772"></script>
 
     
   </div>
@@ -5878,7 +5878,7 @@
 <h3 id="view-existing-oam-servers">View existing OAM servers</h3>
 <p>The default OAM deployment starts the Administration Server (<code>AdminServer</code>), one OAM Managed Server (<code>oam_server1</code>) and one OAM Policy Manager server (<code>oam_policy_mgr1</code>).</p>
 <p>The deployment also creates, but doesn&rsquo;t start, four extra OAM Managed Servers (<code>oam-server2</code> to <code>oam-server5</code>) and four more OAM Policy Manager servers (<code>oam_policy_mgr2</code> to <code>oam_policy_mgr5</code>).</p>
-<p>All these servers are visible in the WebLogic Server Console <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console</code> by navigating to <em>Domain Structure</em> &gt; <em>oamcluster</em> &gt; <em>Environment</em> &gt; <em>Servers</em>.</p>
+<p>All these servers are visible in the WebLogic Server Console <code>https://${HOSTNAME}:${PORT}/console</code> by navigating to <em>Domain Structure</em> &gt; <em>oamcluster</em> &gt; <em>Environment</em> &gt; <em>Servers</em>.</p>
 <p>To view the running servers using kubectl, run the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n &lt;domain_namespace&gt;
 </code></pre></div><p>For example:</p>
@@ -5888,7 +5888,6 @@
 accessdomain-adminserver                                 1/1     Running     0          3h29m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h21m
 accessdomain-oam-server1                                 1/1     Running     0          3h21m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          55m
 </code></pre><h3 id="startingscaling-up-oam-managed-servers">Starting/Scaling up OAM Managed Servers</h3>
 <p>The number of OAM Managed Servers running is dependent on the <code>replicas</code> parameter configured for the oam-cluster. To start more OAM Managed Servers perform the following steps:</p>
 <ol>
@@ -5942,7 +5941,6 @@ accessdomain-oam-policy-mgr1                             1/1     Running     0  
 accessdomain-oam-server1                                 1/1     Running     0          3h25m
 accessdomain-oam-server2                                 0/1     Running     0          3h25m
 accessdomain-oam-server3                                 0/1     Pending     0          9s
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          59m
 </code></pre><p>Two new pods (<code>accessdomain-oam-server2</code> and <code>accessdomain-oam-server3</code>) are started, but currently have a <code>READY</code> status of <code>0/1</code>. This means <code>oam_server2</code> and <code>oam_server3</code> are not currently running but are in the process of starting. The servers will take several minutes to start so keep executing the command until <code>READY</code> shows <code>1/1</code>:</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE
 accessdomain-adminserver                                 1/1     Running     0          3h37m
@@ -5950,8 +5948,6 @@ accessdomain-oam-policy-mgr1                             1/1     Running     0  
 accessdomain-oam-server1                                 1/1     Running     0          3h29m
 accessdomain-oam-server2                                 1/1     Running     0          3h29m
 accessdomain-oam-server3                                 1/1     Running     0          3m45s
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          63m
-
 </code></pre><p><strong>Note</strong>: To check what is happening during server startup when <code>READY</code> is <code>0/1</code>, run the following command to view the log of the pod that is starting:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl logs &lt;pod&gt; -n &lt;domain_namespace&gt;
 </code></pre></div><p>For example:</p>
@@ -6007,13 +6003,11 @@ accessdomain-oam-policy-mgr1                             1/1     Running       0
 accessdomain-oam-server1                                 1/1     Running       0          3h37m
 accessdomain-oam-server2                                 1/1     Running       0          3h37m
 accessdomain-oam-server3                                 1/1     Terminating   0          11m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          71m
 </code></pre><p>One pod now has a <code>STATUS</code> of <code>Terminating</code> (<code>accessdomain-oam-server3</code>). The server will take a minute or two to stop. Once terminated the other pod (<code>accessdomain-oam-server2</code>) will move to <code>Terminating</code> and then stop. Keep executing the command until the pods have disappeared:</p>
 <pre><code>NAME                                            READY   STATUS      RESTARTS   AGE
 accessdomain-adminserver                                 1/1     Running     0          3h48m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h40m
 accessdomain-oam-server1                                 1/1     Running     0          3h40m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          74m
 </code></pre></li>
 </ol>
 <h3 id="startingscaling-up-oam-policy-managed-servers">Starting/Scaling up OAM Policy Managed Servers</h3>
@@ -6057,7 +6051,6 @@ accessdomain-oam-policy-mgr1                             1/1     Running     0  
 accessdomain-oam-policy-mgr2                             1/1     Running     0          3h35m
 accessdomain-oam-policy-mgr3                             1/1     Running     0          4m18s
 accessdomain-oam-server1                                 1/1     Running     0          3h35m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          69m
 </code></pre></li>
 </ol>
 <h3 id="stoppingscaling-down-oam-policy-managed-servers">Stopping/Scaling down OAM Policy Managed Servers</h3>
@@ -6085,13 +6078,11 @@ accessdomain-oam-policy-mgr1                             1/1     Running       0
 accessdomain-oam-policy-mgr2                             1/1     Running       0          3h41m
 accessdomain-oam-policy-mgr3                             1/1     Terminating   0          10m
 accessdomain-oam-server1                                 1/1     Running       0          3h41m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          75m
 </code></pre><p>The pods will take a minute or two to stop, so keep executing the command until the pods has disappeared:</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE
 accessdomain-adminserver                                 1/1     Running     0          3h50m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          3h42m
 accessdomain-oam-server1                                 1/1     Running     0          3h42m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          76m
 </code></pre></li>
 </ol>
 <h3 id="stopping-and-starting-the-administration-server-and-managed-servers">Stopping and Starting the Administration Server and Managed Servers</h3>
@@ -6142,11 +6133,8 @@ nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0  
 accessdomain-adminserver                                 1/1     Terminating   0          3h52m
 accessdomain-oam-policy-mgr1                             1/1     Terminating   0          3h44m
 accessdomain-oam-server1                                 1/1     Terminating   0          3h44m
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running       0          78m
-</code></pre><p>The Administration Server pods and Managed Server pods will move to a <code>STATUS</code> of <code>Terminating</code>. After a few minutes, run the command again and the pods should have disappeared:</p>
-<pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          80m
-</code></pre></li>
+</code></pre><p>The Administration Server pods and Managed Server pods will move to a <code>STATUS</code> of <code>Terminating</code>. After a few minutes, run the command again and the pods should have disappeared.</p>
+</li>
 <li>
 <p>To start the Administration Server and Managed Servers up again, repeat the previous steps but change  <code>serverStartPolicy: Never</code> to <code>IfNeeded</code> as follows:</p>
 <pre><code>...
@@ -6168,13 +6156,11 @@ nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0  
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE
 accessdomain-introspector-jwqxw                          1/1     Running     0          10s
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          81m
 </code></pre><p>The Administration Server pod will start followed by the OAM Managed Servers pods. This process will take several minutes, so keep executing the command until all the pods are running with <code>READY</code> status <code>1/1</code> :</p>
 <pre><code>NAME                                                     READY   STATUS      RESTARTS   AGE  
 accessdomain-adminserver                                 1/1     Running     0          10m
 accessdomain-oam-policy-mgr1                             1/1     Running     0          7m35s
 accessdomain-oam-server1                                 1/1     Running     0          7m35s
-nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0          92m
 </code></pre></li>
 </ol>
 <h3 id="domain-lifecycle-sample-scripts">Domain lifecycle sample scripts</h3>
@@ -10104,19 +10090,19 @@ nginx-ingress-ingress-nginx-controller-76fb7678f-k8rhq   1/1     Running     0  
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746530772"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746530772"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746530772"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745440" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745440"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746530772" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746530772"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
