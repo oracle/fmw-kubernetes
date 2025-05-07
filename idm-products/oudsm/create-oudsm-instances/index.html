@@ -12,18 +12,18 @@
     <title>Create Oracle Unified Directory Services Manager Instances :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541586" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541586"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541586"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541586"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541586"></script>
 
     
   </div>
@@ -5888,7 +5888,7 @@
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>namespace/oudsmns created
 </code></pre><h3 id="create-a-kubernetes-secret-for-the-container-registry">Create a Kubernetes secret for the container registry</h3>
-<p>Create a Kubernetes secret that stores the credentials for the container registry where the OUDSM image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.</p>
+<p>Create a Kubernetes secret that stores the credentials for the container registry where the OUDSM image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the worker nodes, you can skip this step.</p>
 <ol>
 <li>
 <p>Run the following command to create the secret:</p>
@@ -5919,7 +5919,7 @@
 <p>In this example <code>/scratch/shared/</code> is a shared directory accessible from all nodes.</p>
 <ol>
 <li>
-<p>On the master node run the following command to create a <code>user_projects</code> directory:</p>
+<p>On the administrative host run the following command to create a <code>user_projects</code> directory:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;persistent_volume&gt;
 $ mkdir oudsm_user_projects   
 $ sudo chown -R 1000:0 oudsm_user_projects
@@ -5929,21 +5929,16 @@ $ mkdir oudsm_user_projects
 $ sudo chown -R 1000:0 oudsm_user_projects
 </code></pre></div></li>
 <li>
-<p>On the master node run the following to ensure it is possible to read and write to the persistent volume:</p>
+<p>On the administrative host run the following to ensure it is possible to read and write to the persistent volume:</p>
+<p><strong>Note</strong>: The following assumes the user creating the file has userid <code>1000</code> or is part of group <code>0</code>.</p>
 <pre><code>$ cd &lt;persistent_volume&gt;/oudsm_user_projects
-$ touch file.txt
-$ ls filemaster.txt
+$ touch fileadmin.txt
+$ ls fileadmin.txt
 </code></pre><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/shared/oudsm_user_projects
-$ touch filemaster.txt
-$ ls filemaster.txt
-</code></pre></div><p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd /scratch/shared/oudsm_user_projects
-$ ls filemaster.txt
-$ touch fileworker1.txt
-$ ls fileworker1.txt
-</code></pre></div><p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it&rsquo;s possible to read and write from each node to the persistent volume, delete the files created.</p>
-</li>
+$ touch fileadmin.txt
+$ ls fileadmin.txt
+</code></pre></div></li>
 </ol>
 <h3 id="the-oudsm-helm-chart">The oudsm Helm chart</h3>
 <p>The <code>oudsm</code> Helm chart allows you to create or deploy Oracle Unified Directory Services Manager instances along with Kubernetes objects in a specified namespace.</p>
@@ -5987,7 +5982,7 @@ $ helm install --namespace &lt;namespace&gt; \
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oudsm_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol8-&lt;January&#39;<span style="color:#ae81ff">25</span><span style="color:#e6db74">&gt;
+  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol8-&lt;April&#39;<span style="color:#ae81ff">25</span><span style="color:#e6db74">&gt;
 </span><span style="color:#e6db74">  pullPolicy: IfNotPresent</span>
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
@@ -6047,7 +6042,7 @@ $ helm install --namespace &lt;namespace&gt; \
 </span><span style="color:#ae81ff"></span>&lt;release_name&gt; oudsm
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace oudsmns <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set oudsm.adminUser<span style="color:#f92672">=</span>weblogic,oudsm.adminPass<span style="color:#f92672">=</span>&lt;password&gt;,persistence.filesystem.hostPath.path<span style="color:#f92672">=</span>/scratch/shared/oudsm_user_projects,image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oudsm_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol8-&lt;January<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set oudsm.adminUser<span style="color:#f92672">=</span>weblogic,oudsm.adminPass<span style="color:#f92672">=</span>&lt;password&gt;,persistence.filesystem.hostPath.path<span style="color:#f92672">=</span>/scratch/shared/oudsm_user_projects,image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oudsm_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol8-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>oudsm oudsm
 </code></pre></div><p>The following caveats exist:</p>
@@ -10389,19 +10384,19 @@ $ rm -rf *
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541586"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541586"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541586" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541586"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

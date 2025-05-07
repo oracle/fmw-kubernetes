@@ -12,18 +12,18 @@
     <title>Create Oracle Unified Directory Instances :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541586" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541586"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541586"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541586"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541586"></script>
 
     
   </div>
@@ -5898,7 +5898,7 @@
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>namespace/oudns created
 </code></pre><h3 id="create-a-kubernetes-secret-for-the-container-registry">Create a Kubernetes secret for the container registry</h3>
-<p>Create a Kubernetes secret to stores the credentials for the container registry where the OUD image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the master and worker nodes, you can skip this step.</p>
+<p>Create a Kubernetes secret to stores the credentials for the container registry where the OUD image is stored. This step must be followed if using Oracle Container Registry or your own private container registry. If you are not using a container registry and have loaded the images on each of the worker nodes, you can skip this step.</p>
 <ol>
 <li>
 <p>Run the following command to create the secret:</p>
@@ -5997,7 +5997,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">image</span>:
   <span style="color:#66d9ef">repository</span>: container-registry.oracle.com/middleware/oud_cpu
-  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol8-&lt;January&#39;<span style="color:#ae81ff">25</span><span style="color:#e6db74">&gt;
+  <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">12.2.1.4</span>-jdk8-ol8-&lt;April&#39;<span style="color:#ae81ff">25</span><span style="color:#e6db74">&gt;
 </span><span style="color:#e6db74">  pullPolicy: IfNotPresent</span>
 <span style="color:#66d9ef">imagePullSecrets</span>:
   - <span style="color:#66d9ef">name</span>: orclcred
@@ -6020,7 +6020,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
 <span style="color:#66d9ef">cronJob</span>:
   <span style="color:#66d9ef">kubectlImage</span>:
     <span style="color:#66d9ef">repository</span>: bitnami/kubectl
-    <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">1.28.3</span>
+    <span style="color:#66d9ef">tag</span>: <span style="color:#ae81ff">1.30.3</span>
     <span style="color:#66d9ef">pullPolicy</span>: IfNotPresent
  
   <span style="color:#66d9ef">imagePullSecrets</span>:
@@ -6038,7 +6038,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
   <span style="color:#66d9ef">timeout</span>: <span style="color:#ae81ff">60</span>
 </code></pre></div></li>
 <li>
-<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.28.3</code> set to <code>1.28.3</code>.</p>
+<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.30.3</code> set to <code>1.30.3</code>.</p>
 </li>
 <li>
 <p>If you are not using Oracle Container Registry or your own container registry for your OUD container image, then you can remove the following:</p>
@@ -6050,7 +6050,7 @@ of configuration parameters and their default values is shown in <a href="(#appe
 <pre><code>cronJob:
   kubectlImage:
     repository: container-registry.example.com/bitnami/kubectl
-    tag: 1.28.3
+    tag: 1.30.3
     pullPolicy: IfNotPresent
 	   
 busybox:
@@ -6092,12 +6092,16 @@ busybox:
   <span style="color:#66d9ef">provisioner</span>:  oracle.com/oci
 </code></pre></div><p>The following caveats exist:</p>
 <ul>
-<li>If you want to create your own storage class, set <code>storageClassCreate: true</code>. If <code>storageClassCreate: true</code> it is recommended to set <code>storageClass</code> to a value of your choice, and <code>provisioner</code> to the provisioner supported by your cloud vendor.</li>
-<li>If you have an existing storageClass that supports dynamic storage, set <code>storageClassCreate: false</code> and <code>storageClass</code> to the NAME value returned in &ldquo;<code>kubectl get storageclass</code>&rdquo;. The <code>provisioner</code> can be ignored.</li>
-</ul>
+<li>
+<p>If you want to create your own storage class, set <code>storageClassCreate: true</code>. If <code>storageClassCreate: true</code> it is recommended to set <code>storageClass</code> to a value of your choice, and <code>provisioner</code> to the provisioner supported by your cloud vendor.</p>
+</li>
+<li>
+<p>If you have an existing storageClass that supports dynamic storage, set <code>storageClassCreate: false</code> and <code>storageClass</code> to the NAME value returned in &ldquo;<code>kubectl get storageclass</code>&rdquo;. The <code>provisioner</code> can be ignored.</p>
 </li>
 <li>
 <p>For <code>resources</code>, <code>limits</code> and <code>requests</code>, the example CPU and memory values shown are for development environments only. For Enterprise Deployments, please review the performance recommendations and sizing requirements in <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-resources-oracle-cloud-infrastructure-deployment.html#GUID-2E3C8D01-43EB-4691-B1D6-25B1DC2475AE">Enterprise Deployment Guide for Oracle Identity and Access Management in a Kubernetes Cluster</a>.</p>
+</li>
+</ul>
 <p><strong>Note</strong>: Limits and requests for CPU resources are measured in CPU units. One CPU in Kubernetes is equivalent to 1 vCPU/Core for cloud providers, and 1 hyperthread on bare-metal Intel processors. An &ldquo;<code>m</code>&rdquo; suffix in a CPU attribute indicates ‘milli-CPU’, so 500m is 50% of a CPU. Memory can be expressed in various units, where one Mi is one IEC unit mega-byte (1024^2), and one Gi is one IEC unit giga-byte (1024^3). For more information, see <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">Resource Management for Pods and Containers</a>, <a href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/">Assign Memory Resources to Containers and Pods</a>, and <a href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a>.</p>
 <p><strong>Note</strong>: The parameters above are also utilized by the Kubernetes Horizontal Pod Autoscaler (HPA). For more details on HPA, see <a href="../manage-oud-containers/hpa">Kubernetes Horizontal Pod Autoscaler</a>.</p>
 </li>
@@ -6157,10 +6161,10 @@ It is recommended to choose the option covering your minimal requirements. Allow
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install --namespace oudns <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set oudConfig.rootUserPassword<span style="color:#f92672">=</span>&lt;password&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set persistence.filesystem.hostPath.path<span style="color:#f92672">=</span>/scratch/shared/oud_user_projects <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oud_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol8-&lt;January<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set image.repository<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oud_cpu,image.tag<span style="color:#f92672">=</span>12.2.1.4-jdk8-ol8-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set oudConfig.sampleData<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;200&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set oudConfig.resources.limits.cpu<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>,oudConfig.resources.limits.memory<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8Gi&#34;</span>,oudConfig.resources.requests.cpu<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;500m&#34;</span>,oudConfig.resources.requests.memory<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;4Gi&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--set cronJob.kubectlImage.repository<span style="color:#f92672">=</span>bitnami/kubectl,cronJob.kubectlImage.tag<span style="color:#f92672">=</span>1.28.3 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--set cronJob.kubectlImage.repository<span style="color:#f92672">=</span>bitnami/kubectl,cronJob.kubectlImage.tag<span style="color:#f92672">=</span>1.30.3 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set cronJob.imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;dockercred&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--set imagePullSecrets<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orclcred&#34;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>oud-ds-rs oud-ds-rs
@@ -6173,11 +6177,11 @@ It is recommended to choose the option covering your minimal requirements. Allow
 <p><code>sampleData: &quot;200&quot;</code> will load 200 sample users into the default baseDN <code>dc=example,dc=com</code>. If you do not want sample data, remove this entry. If <code>sampleData</code> is set to <code>1,000,000</code> users or greater, then you must add the following entries to the yaml file to prevent inconsistencies in dsreplication: <code>--set deploymentConfig.startupTime=720,deploymentConfig.period=120,deploymentConfig.timeout=60</code>.</p>
 </li>
 <li>
-<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.28.3</code> set to <code>1.28.3</code>.</p>
+<p>The <code>&lt;version&gt;</code> in <em>kubectlImage</em> <code>tag:</code> should be set to the same version as your Kubernetes version (<code>kubectl version</code>). For example if your Kubernetes version is <code>1.30.3</code> set to <code>1.30.3</code>.</p>
 </li>
 <li>
 <p>If using using NFS for your persistent volume then use:</p>
-<pre><code>--set persistence.networkstorage.nfs.path=&lt;persistent_volume&gt;/oud_user_projects,persistence.networkstorage.nfs.server:&lt;NFS IP address&gt;` \
+<pre><code>--set persistence.networkstorage.nfs.path=&lt;persistent_volume&gt;/oud_user_projects,persistence.networkstorage.nfs.server:&lt;NFS IP address&gt; \
 --set persistence.storageClassCreate=&quot;true&quot;,persistence.storageClass=&quot;oud-sc&quot;,persistence.provisioner=&quot;kubernetes.io/is-default-class&quot; \
 </code></pre><pre><code>* If you want to create your own storage class, set `storageClassCreate: true`. If `storageClassCreate: true` it is recommended to set `storageClass` to a value of your choice, and `provisioner` to the provisioner supported by your cloud vendor.
 * If you have an existing storageClass that supports dynamic storage, set `storageClassCreate: false` and `storageClass` to the NAME value returned in &quot;`kubectl get storageclass`&quot;. The `provisioner` can be ignored. 
@@ -6644,7 +6648,7 @@ oud-pod-cron-job   */30 * * * *   False     <span style="color:#ae81ff">0</span>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get job -n oudns -o wide
 </code></pre></div><p>The output will look similar to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">NAME                        COMPLETIONS   DURATION   AGE     CONTAINERS        IMAGES                   SELECTOR
-oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.28.3   controller-uid<span style="color:#f92672">=</span>700ab9f7-6094-488a-854d-f1b914de5f61
+oud-pod-cron-job-27586680   1/1           1s         5m36s   cron-kubectl      bitnami/kubectl:1.30.3   controller-uid<span style="color:#f92672">=</span>700ab9f7-6094-488a-854d-f1b914de5f61
 </code></pre></div></li>
 </ol>
 <h4 id="disabling-the-cronjob">Disabling the cronjob</h4>
@@ -11438,19 +11442,19 @@ $ rm -rf *
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541586"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541586"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541586" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541586"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

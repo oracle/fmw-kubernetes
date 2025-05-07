@@ -12,18 +12,18 @@
     <title>Prerequisites :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541586" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541586"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541586"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541586"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541586"></script>
 
     
   </div>
@@ -5847,18 +5847,25 @@
 	<h3 id="introduction">Introduction</h3>
 <p>This document provides information about the system requirements and limitations for deploying and running Oracle HTTP Server (OHS) 12.2.1.4 on Kubernetes.</p>
 <h3 id="system-requirements-for-ohs-on-kubernetes">System requirements for OHS on Kubernetes</h3>
+<h4 id="kubernetes-requirements">Kubernetes Requirements</h4>
 <ul>
 <li>A running Kubernetes cluster that meets the following requirements:
 <ul>
-<li>The Kubernetes cluster must have sufficient nodes and resources.</li>
-<li>A supported container engine must be installed and running on the Kubernetes cluster.</li>
 <li>The Kubernetes cluster and container engine must meet the minimum version requirements outlined in document ID 3058838.1 on <a href="https://support.oracle.com">My Oracle Support</a>.</li>
+<li>An administrative host from which to deploy the products. This host could be a Kubernetes Control host, a Kubernetes Worker host, or an independent host. This host must have kubectl deployed using the same version as your cluster.</li>
+<li>The Kubernetes cluster must have sufficient nodes and resources.</li>
+<li>A supported container engine such as CRI-O or Docker must be installed and running on the Kubernetes cluster.</li>
 <li>The system clocks on node of the Kubernetes cluster must be synchronized. Run the <code>date</code> command simultaneously on all the nodes in each cluster and then synchronize accordingly.</li>
 </ul>
 </li>
 </ul>
-<p><strong>Note</strong>: This documentation does not tell you how to install a Kubernetes cluster, the container engine, or how to push container images to a container registry.</p>
+<p><strong>Note</strong>: This documentation does not tell you how to install a Kubernetes cluster or the container engine.</p>
 <p>Please refer to your vendor specific documentation for this information.</p>
+<h4 id="container-registry-requirements">Container Registry Requirements</h4>
+<p>If your Kubernetes cluster does not have network access to <a href="https://container-registry.oracle.com/">Oracle Container Registry</a>, then you must have your own container registry to store the OHS container images.</p>
+<p>Your container registry must be accessible from all nodes in the Kubernetes cluster.</p>
+<p>Alternatively if you don’t have your own container registry, you can load the images on each worker node in the cluster. Loading the images on each worker node is not recommended as it incurs a large administrative overhead.</p>
+<p><strong>Note</strong>: This documentation does not tell you how to install a container registry. Please refer to your vendor specific documentation for this information.</p>
 <h3 id="oracle-access-management-prerequisites">Oracle Access Management prerequisites</h3>
 <p>If you intend to use OHS with Oracle WebGate and Oracle Access Management (OAM), then Oracle Access Management must have been deployed beforehand, either in an on-premises environment, or in a Kubernetes cluster.
 You must have an understanding of Oracle Access Management and Oracle WebGate before proceeding.</p>
@@ -9803,19 +9810,19 @@ You must have an understanding of Oracle Access Management and Oracle WebGate be
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541586"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541586"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541586" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541586"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

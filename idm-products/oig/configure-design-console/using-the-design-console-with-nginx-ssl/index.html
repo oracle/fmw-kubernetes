@@ -12,18 +12,18 @@
     <title>b. Using Design Console with NGINX(SSL) :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745440" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541585" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541585"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745440"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541585"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541585"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541585"></script>
 
     
   </div>
@@ -5885,7 +5885,7 @@
 </ol>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>If you haven&rsquo;t already configured an NGINX ingress controller (SSL) for OIG, follow <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl">Using an Ingress with NGINX (SSL)</a>.</p>
-<p>Make sure you know the master hostname and ingress port for NGINX before proceeding e.g <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}</code>. Also make sure you know the Kubernetes secret for SSL that was generated e.g <code>governancedomain-tls-cert</code>.</p>
+<p>Make sure you know the hostname and port for the NGINX ingress controller before proceeding e.g <code>https://${HOSTNAME}:${PORT}</code>. Also make sure you know the Kubernetes secret for SSL that was generated e.g <code>governancedomain-tls-cert</code>.</p>
 <h3 id="setup-routing-rules-for-the-design-console-ingress">Setup routing rules for the Design Console ingress</h3>
 <ol>
 <li>
@@ -5956,7 +5956,7 @@ Events:
 <h3 id="update-the-t3-channel">Update the T3 channel</h3>
 <ol>
 <li>
-<p>Log in to the WebLogic Console using <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}/console</code>.</p>
+<p>Log in to the WebLogic Console using <code>https://${HOSTNAME}:${PORT}/console</code>.</p>
 </li>
 <li>
 <p>Navigate to <strong>Environment</strong>, click <strong>Servers</strong>, and then select <strong>oim_server1</strong>.</p>
@@ -5971,10 +5971,10 @@ Events:
 <p>Click <strong>Lock and Edit</strong>.</p>
 </li>
 <li>
-<p>Set the <strong>External Listen Address</strong> to the ingress controller hostname <code>${MASTERNODE-HOSTNAME}</code>.</p>
+<p>Set the <strong>External Listen Address</strong> to the ingress controller hostname <code>${HOSTNAME}</code>.</p>
 </li>
 <li>
-<p>Set the <strong>External Listen Port</strong> to the ingress controller port <code>${MASTERNODE-PORT}</code>.</p>
+<p>Set the <strong>External Listen Port</strong> to the ingress controller port <code>${PORT}</code>.</p>
 </li>
 <li>
 <p>Click <strong>Save</strong>.</p>
@@ -6001,8 +6001,8 @@ $ ./restartServer.sh -s oim_server1 -d &lt;domain_uid&gt; -n &lt;domain_namespac
 <ol>
 <li>
 <p>Import the CA certificate into the java keystore</p>
-<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate">Generate SSL Certificate</a> you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.</p>
-<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate">Generate SSL Certificate</a> you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.</p>
+<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate">Generate SSL Certificate</a> you requested a certificate from a Certificate Authority (CA), then you must import the CA certificate (e.g cacert.crt) that signed your certificate, into the java truststore used by Design Console.</p>
+<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate">Generate SSL Certificate</a> you generated a self-signed certicate (e.g tls.crt), you must import the self-signed certificate into the java truststore used by Design Console.</p>
 <p>Import the certificate using the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ keytool -import -trustcacerts -alias dc -file &lt;certificate&gt; -keystore $JAVA_HOME/jre/lib/security/cacerts
 </code></pre></div><p>where <code>&lt;certificate&gt;</code> is the CA certificate, or self-signed certicate.</p>
@@ -6030,7 +6030,7 @@ $ ./restartServer.sh -s oim_server1 -d &lt;domain_uid&gt; -n &lt;domain_namespac
 </code></pre></div><p>Then execute the following command to start a container to run Design Console:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -u root --name oigdcbase -it &lt;image&gt; bash
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; bash
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; bash
 </code></pre></div><p>This will take you into a bash shell inside the container:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash-4.2#
 </code></pre></div></li>
@@ -6060,8 +6060,8 @@ $ ./restartServer.sh -s oim_server1 -d &lt;domain_uid&gt; -n &lt;domain_namespac
 </code></pre></div></li>
 <li>
 <p>Copy the Ingress CA certificate into the container</p>
-<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate">Generate SSL Certificate</a> you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container</p>
-<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate">Generate SSL Certificate</a> you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container</p>
+<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate">Generate SSL Certificate</a> you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container</p>
+<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate">Generate SSL Certificate</a> you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container</p>
 <p><strong>Note</strong>: You will have to copy the certificate over to the worker node where the oigdc image is created before running the following.</p>
 <p>Run the following command outside the container:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;workdir&gt;/ssl
@@ -6104,7 +6104,7 @@ bash-4.2# sh xlclient.sh
 </code></pre></div><p>Then execute the following command to start a container to run Design Console:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ podman run -u root --name oigdcbase -it &lt;image&gt; bash
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; bash
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt; bash
 </code></pre></div><p>This will take you into a bash shell inside the container:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash-4.2#
 </code></pre></div></li>
@@ -6134,8 +6134,8 @@ bash-4.2# sh xlclient.sh
 </code></pre></div></li>
 <li>
 <p>Copy the Ingress CA certificate into the container</p>
-<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate">Generate SSL Certificate</a> you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container</p>
-<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-ssl-certificate">Generate SSL Certificate</a> you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container</p>
+<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate">Generate SSL Certificate</a> you requested a certificate from a Certificate Authority (CA), then you must copy the CA certificate (e.g cacert.crt) that signed your certificate, into the container</p>
+<p>If in <a href="../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s-ssl#generate-a-ssl-certificate">Generate SSL Certificate</a> you generated a self-signed certicate (e.g tls.crt), you must copy the self-signed certificate into the container</p>
 <p><strong>Note</strong>: You will have to copy the certificate over to the worker node where the oigdc image is created before running the following.</p>
 <p>Run the following command outside the container:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd &lt;workdir&gt;/ssl
@@ -6171,7 +6171,7 @@ bash-4.2# sh xlclient.sh
 <li><code>User ID</code>: <code>xelsysadm</code></li>
 <li><code>Password</code>: <code>&lt;password&gt;</code>.</li>
 </ul>
-<p>where <code>&lt;url&gt;</code> is  where <code>&lt;url&gt;</code> is <code>https://${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}</code>.</p>
+<p>where <code>&lt;url&gt;</code> is  where <code>&lt;url&gt;</code> is <code>https://${HOSTNAME}:${PORT}</code>.</p>
 </li>
 <li>
 <p>If successful the Design Console will be displayed.</p>
@@ -10103,19 +10103,19 @@ bash-4.2# sh xlclient.sh
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541585"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541585"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745440" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745440"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541585" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541585"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>b. Create OIG domains using WDT Models :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745440" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541585" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541585"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745440"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541585"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541585"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541585"></script>
 
     
   </div>
@@ -5917,37 +5917,28 @@
 <p>Domain on persistent volume (Domain on PV) is an operator <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/">domain home source type</a>, which requires that the domain home exists on a persistent volume.</p>
 <p>When a container is started, it needs to mount that volume. The physical volume should be on a shared disk accessible by all the Kubernetes worker nodes because it is not known on which worker node the container will be started. In the case of Oracle Identity and Access Management, the persistent volume does not get erased when a container stops. This enables persistent configurations.</p>
 <p>The example below uses an NFS mounted volume (<code>&lt;persistent_volume&gt;/governancedomainpv</code>). Other volume types can also be used. See the official Kubernetes documentation for Volumes.</p>
-<p><strong>Note</strong>: The persistent volume directory needs to be accessible to both the master and worker node(s). In this example <code>/scratch/shared/governancedomainpv</code> is accessible from all nodes via NFS.</p>
+<p><strong>Note</strong>: The persistent volume directory needs to be accessible to the worker nodes. In this example <code>/scratch/shared/governancedomainpv</code> is accessible from all nodes via NFS.</p>
 <p>To create the persistent volume run the following commands:</p>
 <ol>
 <li>
 <p>Create the required directories:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p &lt;persistent_volume&gt;/governancedomainpv
 $ sudo chown -R 1000:0 &lt;persistent_volume&gt;/governancedomainpv
-</code></pre></div><p>For example,</p>
+</code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p /scratch/shared/governancedomainpv
 $ sudo chown -R 1000:0 /scratch/shared/governancedomainpv
 </code></pre></div></li>
 <li>
-<p>On the master node run the following command to ensure it is possible to read and write to the persistent volume:</p>
+<p>On the administrative host run the following command to ensure it is possible to read and write to the persistent volume:</p>
+<p><strong>Note</strong>: The following assumes the user creating the file has userid <code>1000</code> or is part of group <code>0</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd &lt;persistent_volume&gt;/governancedomainpv
-touch file.txt
-ls filemaster.txt
+touch fileadmin.txt
+ls fileadmin.txt
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/shared/governancedomainpv
-touch filemaster.txt
-ls filemaster.txt
-</code></pre></div></li>
-<li>
-<p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/shared/governancedomainpv
-ls filemaster.txt
-touch fileworker1.txt
-ls fileworker1.txt
-</code></pre></div></li>
-<li>
-<p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it’s possible to read and write from each node to the persistent volume, delete the files created.</p>
-<p>For more information on PV and PVC requirements, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/usage/#references">Domain on Persistent Volume (PV)</a>.</p>
+touch fileadmin.txt
+ls fileadmin.txt
+</code></pre></div><p>For more information on PV and PVC requirements, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-on-pv/usage/#references">Domain on Persistent Volume (PV)</a>.</p>
 </li>
 </ol>
 <h4 id="create-kubernetes-secrets-for-the-domain-and-rcu">Create Kubernetes secrets for the domain and RCU</h4>
@@ -6067,7 +6058,7 @@ weblogicDomainStorageSize: 10G
 <p>For example:</p>
 <pre><code>domainUID: governancedomain
 domainHome: /u01/oracle/user_projects/domains/governancedomain
-image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;
+image: container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;
 imagePullSecretName: orclcred
 logHome: /u01/oracle/user_projects/domains/logs/governancedomain
 namespace: oigns
@@ -6282,7 +6273,7 @@ export t3ChannelPort=&quot;30012&quot;
 export datasourceType=&quot;generic&quot;
 export edgInstall=&quot;false&quot;
 export domainHome=&quot;/u01/oracle/user_projects/domains/governancedomain&quot;
-export image=&quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
+export image=&quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;&quot;
 export imagePullSecretName=&quot;orclcred&quot;
 export logHome=&quot;/u01/oracle/user_projects/domains/logs/governancedomain&quot;
 export exposeAdminT3Channel=&quot;false&quot;
@@ -6687,7 +6678,7 @@ spec:
   domainHomeSourceType: PersistentVolume
 
   # The WebLogic Server image that the Operator uses to start the domain
-  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
+  image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;&quot;
 
   # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
   imagePullPolicy: IfNotPresent
@@ -6732,7 +6723,7 @@ spec:
    domainHomeSourceType: PersistentVolume
 
    # The WebLogic Server image that the Operator uses to start the domain
-   image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
+   image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;&quot;
 
    # imagePullPolicy defaults to &quot;Always&quot; if image version is :latest
    imagePullPolicy: IfNotPresent
@@ -6774,7 +6765,7 @@ spec:
          #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
          - name: compat-connector-init
            # OIG Product image, same as spec.image mentioned above
-           image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
+           image: &quot;container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;&quot;
            imagePullPolicy: IfNotPresent
            command: [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory&quot;, &quot;mkdir -p  /u01/oracle/user_projects/domains/wdt-logs&quot;]
            volumeMounts:
@@ -7113,7 +7104,7 @@ governancedomain-oim-server1   1/1     Running   0          5m22s
    Failure Retry Interval Seconds:  <span style="color:#ae81ff">120</span>
    Failure Retry Limit Minutes:     <span style="color:#ae81ff">1440</span>
    Http Access Log In Log Home:     true
-   Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#e6db74">&#39;25&gt;
+   Image:                           container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April<span style="color:#e6db74">&#39;25&gt;
 </span><span style="color:#e6db74">   Image Pull Policy:               IfNotPresent
 </span><span style="color:#e6db74">   Image Pull Secrets:
 </span><span style="color:#e6db74">      Name:                             orclcred
@@ -7149,7 +7140,7 @@ governancedomain-oim-server1   1/1     Running   0          5m22s
 </span><span style="color:#e6db74">           -c
 </span><span style="color:#e6db74">           mkdir -p  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory
 </span><span style="color:#e6db74">           mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-</span><span style="color:#e6db74">         Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January&#39;</span>25&gt;
+</span><span style="color:#e6db74">         Image:              container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April&#39;</span>25&gt;
          Image Pull Policy:  IfNotPresent
          Name:               compat-connector-init
          Volume Mounts:
@@ -11225,19 +11216,19 @@ governancedomain-soa-server1                                1/1     Running     
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541586"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541586"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745440" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745440"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541586" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541586"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
