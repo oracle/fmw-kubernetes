@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541586" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541586"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541586"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541586"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541586"></script>
 
     
   </div>
@@ -5888,13 +5888,13 @@
 <p>As per the <a href="../prerequisites/#system-requirements-for-oig-domains">Prerequisites</a> a Kubernetes cluster should have already been configured.</p>
 <ol>
 <li>
-<p>Run the following command on the master node to check the cluster and worker nodes are running:</p>
+<p>Run the following command on the administrative node to check the cluster and worker nodes are running:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get nodes,pods -n kube-system
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME                  STATUS   ROLES    AGE   VERSION
-node/worker-node1     Ready    &lt;none&gt;   17h   v1.29.9+3.el8
-node/worker-node2     Ready    &lt;none&gt;   17h   v1.29.9+3.el8
-node/master-node      Ready    master   23h   v1.29.9+3.el8
+node/worker-node1     Ready    &lt;none&gt;   17h   v1.30.3+1.el8
+node/worker-node2     Ready    &lt;none&gt;   17h   v1.30.3+1.el8
+node/master-node      Ready    master   23h   v1.30.3+1.el8
 
 NAME                                     READY   STATUS    RESTARTS   AGE
 pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -5918,24 +5918,24 @@ pod/kube-scheduler-master                1/1     Running   0          21h
 <li>Build your own OIG container image using WebLogic Image Tool</li>
 </ul>
 <h4 id="prebuilt-oig-container-image">Prebuilt OIG container image</h4>
-<p>The latest prebuilt OIG January 2025 container image can be downloaded from <a href="https://container-registry.oracle.com">Oracle Container Registry</a>. This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program..</p>
+<p>The latest prebuilt OIG April 2025 container image can be downloaded from <a href="https://container-registry.oracle.com">Oracle Container Registry</a>. This image is prebuilt by Oracle and includes Oracle Identity Governance 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program..</p>
 <p><strong>Note</strong>: Before using this image you must login to <a href="https://container-registry.oracle.com">Oracle Container Registry</a>, navigate to <code>Middleware</code> &gt; <code>oig_cpu</code> and accept the license agreement.</p>
 <p>You can use this image in the following ways:</p>
 <ul>
 <li>Pull the container image from the Oracle Container Registry automatically during the OIG Kubernetes deployment.</li>
 <li>Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.</li>
-<li>Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node.</li>
+<li>Manually pull the container image from the Oracle Container Registry and manually stage it on each worker node.</li>
 </ul>
 <h4 id="build-your-own-oig-container-image-using-weblogic-image-tool">Build your own OIG container image using WebLogic Image Tool</h4>
 <p>You can build your own OIG container image using the WebLogic Image Tool. This is recommended if you need to apply one off patches to a <a href="#prebuilt-oig-container-image">Prebuilt OIG container image</a>. For more information about building your own container image with WebLogic Image Tool, see <a href="../create-or-update-image/">Create or update image</a>.</p>
 <p>You can use an image built with WebLogic Image Tool in the following ways:</p>
 <ul>
 <li>Manually upload them to your own container registry.</li>
-<li>Manually stage them on the master node and each worker node.</li>
+<li>Manually stage them on each worker node.</li>
 </ul>
-<p><strong>Note</strong>: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html">Enterprise Deployment Guide</a>.</p>
+<p><strong>Note</strong>: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the worker nodes. Details of this can be found in the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html">Enterprise Deployment Guide</a>.</p>
 <h3 id="setup-the-code-repository-to-deploy-oig-domains">Setup the code repository to deploy OIG domains</h3>
-<p>Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. For deploying the OIG domains, you need to set up the deployment scripts on the <strong>master</strong> node as below:</p>
+<p>Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogic Kubernetes Operator infrastructure. For deploying the OIG domains, you need to set up the deployment scripts on the administrative host as below:</p>
 <ol>
 <li>
 <p>Create a working directory to setup the source code.</p>
@@ -5974,7 +5974,7 @@ $ kubectl delete crd domains.weblogic.oracle
 <h3 id="install-the-weblogic-kubernetes-operator">Install the WebLogic Kubernetes Operator</h3>
 <ol>
 <li>
-<p>On the <strong>master</strong> node run the following command to create a namespace for the operator:</p>
+<p>On the administrative host run the following command to create a namespace for the operator:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace &lt;sample-kubernetes-operator-ns&gt;
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace opns
@@ -6087,7 +6087,7 @@ No LimitRange resource.
 </ol>
 <h3 id="create-a-kubernetes-secret-for-the-container-registry">Create a Kubernetes secret for the container registry</h3>
 <p>In this section you create a secret that stores the credentials for the container registry where the OIG image is stored.</p>
-<p>If you are not using a container registry and have loaded the images on each of the master and worker nodes, then there is no need to create the registry secret.</p>
+<p>If you are not using a container registry and have loaded the images on each of worker nodes, then there is no need to create the registry secret.</p>
 <ol>
 <li>
 <p>Run the following command to create the secret:</p>
@@ -6128,11 +6128,11 @@ No LimitRange resource.
 <p>If using Oracle Container Registry or your own container registry for your OIG container image, run the following command to create a helper pod to run RCU:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run --image<span style="color:#f92672">=</span>&lt;image_name-from-registry&gt; --image-pull-policy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;apiVersion&#34;: &#34;v1&#34;, &#34;spec&#34;:{&#34;imagePullSecrets&#34;: [{&#34;name&#34;: &#34;orclcred&#34;}]}}&#39;</span> helper -n &lt;domain_namespace&gt; -- sleep infinity
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run --image<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#e6db74">`</span>25&gt; --image-pull-policy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;apiVersion&#34;: &#34;v1&#34;,&#34;spec&#34;:{&#34;imagePullSecrets&#34;: [{&#34;name&#34;: &#34;orclcred&#34;}]}}&#39;</span> helper -n oigns -- sleep infinity
-</code></pre></div><p>If you are not using a container registry and have loaded the image on each of the master and worker nodes, run the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run --image<span style="color:#f92672">=</span>container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-&lt;April<span style="color:#e6db74">`</span>25&gt; --image-pull-policy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IfNotPresent&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;apiVersion&#34;: &#34;v1&#34;,&#34;spec&#34;:{&#34;imagePullSecrets&#34;: [{&#34;name&#34;: &#34;orclcred&#34;}]}}&#39;</span> helper -n oigns -- sleep infinity
+</code></pre></div><p>If you are not using a container registry and have loaded the image on each of worker nodes, run the following command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run helper --image &lt;image&gt; -n oigns -- sleep infinity
 </code></pre></div><p>For example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#e6db74">`</span>25&gt; -n oigns -- sleep infinity
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl run helper --image oracle/oig:12.2.1.4-jdk8-ol8-&lt;April<span style="color:#e6db74">`</span>25&gt; -n oigns -- sleep infinity
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>pod/helper created
 </code></pre></li>
@@ -6422,10 +6422,11 @@ type: Opaque
 <p>A persistent volume is the same as a disk mount but is inside a container. A Kubernetes persistent volume is an arbitrary name (determined in this case, by Oracle) that is mapped to a physical volume on a disk.</p>
 <p>When a container is started, it needs to mount that volume. The physical volume should be on a shared disk accessible by all the Kubernetes worker nodes because it is not known on which worker node the container will be started. In the case of Identity and Access Management, the persistent volume does not get erased when a container stops. This enables persistent configurations.</p>
 <p>The example below uses an NFS mounted volume (&lt;persistent_volume&gt;/governancedomainpv). Other volume types can also be used. See the official <a href="https://kubernetes.io/docs/concepts/storage/volumes/">Kubernetes documentation for Volumes</a>.</p>
-<p><strong>Note</strong>: The persistent volume directory needs to be accessible to both the master and worker node(s). In this example <code>/scratch/shared/governancedomainpv</code> is accessible from all nodes via NFS.</p>
+<p><strong>Note</strong>: The persistent volume directory needs to be accessible to each worker node. In this example <code>/scratch/shared/governancedomainpv</code> is accessible from all nodes via NFS.</p>
 <ol>
 <li>
 <p>Make a backup copy of the <code>create-pv-pvc-inputs.yaml</code> file and create required directories:</p>
+<p><strong>Note</strong>: The following assumes the user creating the file has userid <code>1000</code> or is part of group <code>0</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
 $ cp create-pv-pvc-inputs.yaml create-pv-pvc-inputs.yaml.orig
 $ mkdir output
@@ -6439,21 +6440,15 @@ $ mkdir -p /scratch/shared/governancedomainpv
 $ sudo chown -R 1000:0 /scratch/shared/governancedomainpv
 </code></pre></div></li>
 <li>
-<p>On the master node run the following command to ensure it is possible to read and write to the persistent volume:</p>
+<p>On the administrative host run the following command to ensure it is possible to read and write to the persistent volume:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd &lt;persistent_volume&gt;/governancedomainpv
-touch file.txt
-ls filemaster.txt
+touch fileadmin.txt
+ls fileadmin.txt
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/shared/governancedomainpv
-touch filemaster.txt
-ls filemaster.txt
-</code></pre></div><p>On the first worker node run the following to ensure it is possible to read and write to the persistent volume:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /scratch/shared/governancedomainpv
-ls filemaster.txt
-touch fileworker1.txt
-ls fileworker1.txt
-</code></pre></div><p>Repeat the above for any other worker nodes e.g fileworker2.txt etc. Once proven that it&rsquo;s possible to read and write from each node to the persistent volume, delete the files created.</p>
-</li>
+touch fileadmin.txt
+ls fileadadmin.txt
+</code></pre></div></li>
 <li>
 <p>Navigate to <code>$WORKDIR/kubernetes/create-weblogic-domain-pv-pvc</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-weblogic-domain-pv-pvc
@@ -10515,19 +10510,19 @@ Events:        &lt;none&gt;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541586"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541586"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541586" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541586"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

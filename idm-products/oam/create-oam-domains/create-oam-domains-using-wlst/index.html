@@ -12,18 +12,18 @@
     <title>a. Create OAM domains using WLST scripts :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745440" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541585" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541585"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745440"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541585"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541585"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541585"></script>
 
     
   </div>
@@ -5918,7 +5918,7 @@ rcuCredentialsSecret: &lt;kubernetes_rcu_secret&gt;
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">domainUID: accessdomain
 domainHome: /u01/oracle/user_projects/domains/accessdomain
-image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;January<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt;
+image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;April<span style="color:#960050;background-color:#1e0010">&#39;</span>25&gt;
 imagePullSecretName: orclcred
 weblogicCredentialsSecretName: accessdomain-credentials
 logHome: /u01/oracle/user_projects/domains/logs/accessdomain
@@ -6007,7 +6007,7 @@ rcuCredentialsSecret: accessdomain-rcu-credentials
 <tr>
 <td><code>exposeAdminT3Channel</code></td>
 <td>Boolean indicating if the T3 administrative channel is exposed outside the Kubernetes cluster.</td>
-<td><code>true</code></td>
+<td><code>false</code></td>
 </tr>
 <tr>
 <td><code>image</code></td>
@@ -6022,7 +6022,7 @@ rcuCredentialsSecret: accessdomain-rcu-credentials
 <tr>
 <td><code>imagePullSecretName</code></td>
 <td>Name of the Kubernetes secret to access the container registry to pull the OAM container image. The presence of the secret will be validated when this parameter is specified.</td>
-<td></td>
+<td><code>orclcred</code></td>
 </tr>
 <tr>
 <td><code>includeServerOutInPodLog</code></td>
@@ -6052,7 +6052,7 @@ rcuCredentialsSecret: accessdomain-rcu-credentials
 <tr>
 <td><code>managedServerPort</code></td>
 <td>Port number for each Managed Server.</td>
-<td><code>8001</code></td>
+<td><code>14100</code></td>
 </tr>
 <tr>
 <td><code>namespace</code></td>
@@ -6102,12 +6102,12 @@ rcuCredentialsSecret: accessdomain-rcu-credentials
 <tr>
 <td><code>rcuSchemaPrefix</code></td>
 <td>The schema prefix to use in the database, for example <code>OAM1</code>.  You may wish to make this the same as the domainUID in order to simplify matching domains to their RCU schemas.</td>
-<td><code>OAM1</code></td>
+<td><code>OAMPD</code></td>
 </tr>
 <tr>
 <td><code>rcuDatabaseURL</code></td>
 <td>The database URL.</td>
-<td><code>oracle-db.default.svc.cluster.local:1521/devpdb.k8s</code></td>
+<td><code>xxxxx.example.com:1521/oampdb1.example.com</code></td>
 </tr>
 <tr>
 <td><code>rcuCredentialsSecret</code></td>
@@ -6154,7 +6154,7 @@ export configuredManagedServerCount=&quot;5&quot;
 export initialManagedServerReplicas=&quot;2&quot;
 export managedServerNameBase=&quot;oam_server&quot;
 export managedServerPort=&quot;14100&quot;
-export image=&quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;&quot;
+export image=&quot;container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;&quot;
 export imagePullPolicy=&quot;IfNotPresent&quot;
 export imagePullSecretName=&quot;orclcred&quot;
 export productionModeEnabled=&quot;true&quot;
@@ -6225,6 +6225,10 @@ The following files were generated:
 </code></pre></div><p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $WORKDIR/kubernetes/create-access-domain/domain-home-on-pv/output/weblogic-domains/accessdomain
 </code></pre></div></li>
+<li>
+<p>Take a backup of the <code>domain.yaml</code>:</p>
+<pre><code>$ cp domain.yaml domain.yaml.orig
+</code></pre></li>
 <li>
 <p>Edit the <code>domain.yaml</code> file and inside <code>name: accessdomain-oam-cluster</code>, add the memory setting as below:</p>
 <pre><code>  serverPod:
@@ -6482,7 +6486,7 @@ Spec:
   Failure Retry Interval Seconds:  120
   Failure Retry Limit Minutes:     1440
   Http Access Log In Log Home:     true
-  Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;January'25&gt;
+  Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-&lt;April'25&gt;
   Image Pull Policy:               IfNotPresent
   Image Pull Secrets:
     Name:                           orclcred
@@ -10571,19 +10575,19 @@ helper                                           1/1     Running     0          
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541585"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541585"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745440" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745440"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541585" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541585"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

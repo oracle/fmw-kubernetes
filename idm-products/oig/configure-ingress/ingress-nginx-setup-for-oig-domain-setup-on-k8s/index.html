@@ -12,18 +12,18 @@
     <title>a. Using an Ingress with NGINX (non-SSL) :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745440" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745440" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541585" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541585" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541585"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745440"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541585"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541585"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745440"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541585"></script>
 
     
   </div>
@@ -5857,7 +5857,7 @@
 
 <h3 id="setting-up-an-ingress-for-nginx-for-the-oig-domain-on-kubernetes-non-ssl">Setting up an ingress for NGINX for the OIG domain on Kubernetes (non-SSL)</h3>
 <p>The instructions below explain how to set up NGINX as an ingress for the OIG domain with non-SSL termination.</p>
-<p><strong>Note</strong>: All the steps below should be performed on the <strong>master</strong> node.</p>
+<p><strong>Note</strong>: All the steps below should be performed on the administrative host.</p>
 <ol>
 <li>
 <p><a href="#install-nginx">Install NGINX</a></p>
@@ -5896,32 +5896,32 @@ Update Complete. Happy Helming!
 <ol>
 <li>
 <p>Create a Kubernetes namespace for NGINX by running the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace nginx
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create namespace mynginxns
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>namespace/nginx created
+<pre><code>namespace/mynginxns created
 </code></pre></li>
 </ol>
 <h4 id="install-nginx-using-helm">Install NGINX using helm</h4>
-<p>If you can connect directly to the master node IP address from a browser, then install NGINX with the <code>--set controller.service.type=NodePort</code> parameter.</p>
+<p>If you can connect directly to the master or worker node IP address from a browser, then install NGINX with the <code>--set controller.service.type=NodePort</code> parameter.</p>
 <p>If you are using a Managed Service for your Kubernetes cluster,for example Oracle Kubernetes Engine (OKE) on Oracle Cloud Infrastructure (OCI), and connect from a browser to the Load Balancer IP address, then use the <code>--set controller.service.type=LoadBalancer</code> parameter. This instructs the Managed Service to setup a Load Balancer to direct traffic to the NGINX ingress.</p>
 <ol>
 <li>
 <p>To install NGINX use the following helm command depending on if you are using <code>NodePort</code> or <code>LoadBalancer</code>:</p>
 <p>a) Using NodePort</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n nginx --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx --version 4.7.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n mynginxns --set controller.service.type<span style="color:#f92672">=</span>NodePort --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx --version 4.7.2
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME: nginx-ingress
 LAST DEPLOYED: &lt;DATE&gt;
-NAMESPACE: nginx
+NAMESPACE: mynginxns
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 NOTES:
 The ingress-nginx controller has been installed.
 Get the application URL by running these commands:
-  export HTTP_NODE_PORT=$(kubectl --namespace nginx get services -o jsonpath=&quot;{.spec.ports[0].nodePort}&quot; nginx-ingress-ingress-nginx-controller)
-  export HTTPS_NODE_PORT=$(kubectl --namespace nginx get services -o jsonpath=&quot;{.spec.ports[1].nodePort}&quot; nginx-ingress-ingress-nginx-controller)
-  export NODE_IP=$(kubectl --namespace nginx get nodes -o jsonpath=&quot;{.items[0].status.addresses[1].address}&quot;)
+  export HTTP_NODE_PORT=$(kubectl --namespace mynginxns get services -o jsonpath=&quot;{.spec.ports[0].nodePort}&quot; nginx-ingress-ingress-nginx-controller)
+  export HTTPS_NODE_PORT=$(kubectl --namespace mynginxns get services -o jsonpath=&quot;{.spec.ports[1].nodePort}&quot; nginx-ingress-ingress-nginx-controller)
+  export NODE_IP=$(kubectl --namespace mynginxns get nodes -o jsonpath=&quot;{.items[0].status.addresses[1].address}&quot;)
 
   echo &quot;Visit http://$NODE_IP:$HTTP_NODE_PORT to access your application via HTTP.&quot;
   echo &quot;Visit https://$NODE_IP:$HTTPS_NODE_PORT to access your application via HTTPS.&quot;
@@ -5965,18 +5965,18 @@ If TLS is enabled for the Ingress, a Secret containing the certificate and key m
     tls.key: &lt;base64 encoded key&gt;
   type: kubernetes.io/tls
 </code></pre><p>b) Using LoadBalancer</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n nginx --set controller.service.type<span style="color:#f92672">=</span>LoadBalancer --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx --version 4.7.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm install nginx-ingress -n mynginxns --set controller.service.type<span style="color:#f92672">=</span>LoadBalancer --set controller.admissionWebhooks.enabled<span style="color:#f92672">=</span>false stable/ingress-nginx --version 4.7.2
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>NAME: nginx-ingress
 LAST DEPLOYED: &lt;DATE&gt;
-NAMESPACE: nginx
+NAMESPACE: mynginxns
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 NOTES:
 The nginx-ingress controller has been installed.
 It may take a few minutes for the LoadBalancer IP to be available.
-You can watch the status by running 'kubectl --namespace nginx get services -o wide -w nginx-ingress-controller'
+You can watch the status by running 'kubectl --namespace mynginxns get services -o wide -w nginx-ingress-controller'
 
 An example Ingress that makes use of the controller:
 
@@ -6088,7 +6088,7 @@ governancedomain-nginx   &lt;none&gt;   *       x.x.x.x   80      47s
 </code></pre></li>
 <li>
 <p>Find the NodePort of NGINX using the following command (only if you installed NGINX using NodePort):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get services -n nginx -o jsonpath<span style="color:#f92672">=</span>”<span style="color:#f92672">{</span>.spec.ports<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.nodePort<span style="color:#f92672">}</span>” nginx-ingress-ingress-nginx-controller
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get services -n mynginxns -o jsonpath<span style="color:#f92672">=</span>”<span style="color:#f92672">{</span>.spec.ports<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span>.nodePort<span style="color:#f92672">}</span>” nginx-ingress-ingress-nginx-controller
 </code></pre></div><p>The output will look similar to the following:</p>
 <pre><code>31530
 </code></pre></li>
@@ -6144,21 +6144,21 @@ Events:
 </code></pre></li>
 <li>
 <p>To confirm that the new ingress is successfully routing to the domain&rsquo;s server pods, run the following command to send a request to the URL for the <code>WebLogic ReadyApp framework</code>:</p>
-<p><strong>Note</strong>: If using a load balancer for your ingress replace <code>${MASTERNODE-HOSTNAME}:${MASTERNODE-PORT}</code> with <code>${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -v http://<span style="color:#e6db74">${</span>MASTERNODE-HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>MASTERNODE-PORT<span style="color:#e6db74">}</span>/weblogic/ready
+<p><strong>Note</strong>: If using a load balancer for your ingress replace <code>${HOSTNAME}:${PORT}</code> with <code>${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -v http://<span style="color:#e6db74">${</span>HOSTNAME<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>PORT<span style="color:#e6db74">}</span>/weblogic/ready
 </code></pre></div><p>For example:</p>
 <p>a) For NodePort</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -v http://masternode.example.com:31530/weblogic/ready
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -v http://oam.example.com:31530/weblogic/ready
 </code></pre></div><p>b) For LoadBalancer</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -v http://masternode.example.com:80/weblogic/ready
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -v http://oam.example.com:80/weblogic/ready
 </code></pre></div><p>The output will look similar to the following:</p>
-<pre><code>$ curl -v http://masternode.example.com:31530/weblogic/ready
-* About to connect() to masternode.example.com port 31530 (#0)
+<pre><code>$ curl -v http://oam.example.com:31530/weblogic/ready
+* About to connect() to oam.example.com port 31530 (#0)
 *   Trying X.X.X.X...
-* Connected to masternode.example.com (X.X.X.X) port 31530 (#0)
+* Connected to oam.example.com (X.X.X.X) port 31530 (#0)
 &gt; GET /weblogic/ready HTTP/1.1
 &gt; User-Agent: curl/7.29.0
-&gt; Host: masternode.example.com:31530
+&gt; Host: oam.example.com:31530
 &gt; Accept: */*
 &gt;
 &lt; HTTP/1.1 200 OK
@@ -6167,7 +6167,7 @@ Events:
 &lt; Content-Length: 0
 &lt; Connection: keep-alive
 &lt;
-* Connection #0 to host masternode.example.com left intact
+* Connection #0 to host oam.example.com left intact
 </code></pre></li>
 </ol>
 <h3 id="verify-that-you-can-access-the-domain-url">Verify that you can access the domain URL</h3>
@@ -10095,19 +10095,19 @@ Events:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541585"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745440"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745440"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541585"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541585"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745440" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745440"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541585" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541585"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

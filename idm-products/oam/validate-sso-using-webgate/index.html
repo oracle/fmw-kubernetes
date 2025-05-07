@@ -12,18 +12,18 @@
     <title>Validate a Basic SSO Flow using WebGate Registration  :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1740745441" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1740745441" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1746541586" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1746541586" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1746541586"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1740745441"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1746541586"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1746541586"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1740745441"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1746541586"></script>
 
     
   </div>
@@ -5862,7 +5862,7 @@
 <ul>
 <li><code>https://loadbalancer.example.com</code> - if OAM URL&rsquo;s are accessed directly via a load balancer URL, with hostname <code>loadbalancer.example.com</code> and port <code>443</code>.</li>
 <li><code>https://ohs.example.com:4443</code> - if OAM URL&rsquo;s are accessed directly via an OHS URL, with hostname <code>ohs.example.com</code> and port <code>4443</code>.</li>
-<li><code>https://masternode.example.com:31501</code> - if OAM URL&rsquo;s are accessed directly via the ingress controller, with hostname <code>masternode.example.com</code> and port <code>31501</code>.</li>
+<li><code>https://oam.example.com:31501</code> - if OAM URL&rsquo;s are accessed directly via the ingress controller, with hostname <code>oam.example.com</code> and port <code>31501</code>.</li>
 </ul>
 <p>In the following examples change <code>{HOSTNAME}:${PORT}</code> accordingly.</p>
 <ol>
@@ -5989,13 +5989,13 @@ $ ./EditHttpConf -w &lt;OHS_DOMAIN_HOME&gt;/config/fmwconfig/components/OHS/ohs1
 <li>
 <p>In the <strong>User Defined Parameters</strong> change:</p>
 <p>a) <code>OAMServerCommunicationMode</code> from <code>HTTPS</code> to <code>OAP</code>. For example <code>OAMServerCommunicationMode=OAP</code></p>
-<p>b) <code>OAMRestEndPointHostName=&lt;hostname&gt;</code> to the <code>{$MASTERNODE-HOSTNAME}</code>. For example <code>OAMRestEndPointHostName=masternode.example.com</code></p>
+<p>b) <code>OAMRestEndPointHostName=&lt;hostname&gt;</code> to the hostname the ingress controller is deployed. For example <code>OAMRestEndPointHostName=oam.example.com</code></p>
 </li>
 <li>
 <p>In the <strong>Server Lists</strong> section click <em>Add</em> to add a new server with the following values:</p>
 <ul>
 <li><code>Access Server</code>: <code>Other</code></li>
-<li><code>Host Name</code>: <code>&lt;{$MASTERNODE-HOSTNAME}&gt;</code></li>
+<li><code>Host Name</code>: to the hostname the ingress controller is deployed. For example <code>oam.example.com</code></li>
 <li><code>Host Port</code>: <code>&lt;oamoap-service NodePort&gt;</code></li>
 </ul>
 <p><strong>Note</strong>: To find the value for <code>Host Port</code> run the following:</p>
@@ -9953,19 +9953,19 @@ Events:                   &lt;none&gt;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1746541586"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1740745441"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1740745441"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1746541586"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1746541586"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1740745441" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1740745441"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1746541586" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1746541586"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
