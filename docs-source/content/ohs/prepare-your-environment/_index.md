@@ -22,7 +22,7 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oam-domains
 
 Check that all the nodes in the Kubernetes cluster are running.
 
-1. Run the following command on the master node to check the cluster and worker nodes are running:
+1. Run the following command on the administrative host to check the cluster and worker nodes are running:
     
    ```bash
    $ kubectl get nodes,pods -n kube-system
@@ -32,9 +32,9 @@ Check that all the nodes in the Kubernetes cluster are running.
 
    ```
     NAME                  STATUS   ROLES                  AGE   VERSION
-    node/worker-node1     Ready    <none>                 17h   v1.28.3+3.el8
-    node/worker-node2     Ready    <none>                 17h   v1.28.3+3.el8
-    node/master-node      Ready    control-plane,master   23h   v1.28.3+3.el8
+    node/worker-node1     Ready    <none>                 17h   v1.30.3+1.el8
+    node/worker-node2     Ready    <none>                 17h   v1.30.3+1.el8
+    node/master-node      Ready    control-plane,master   23h   v1.30.3+1.el8
 
     NAME                                     READY   STATUS    RESTARTS   AGE
     pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -61,7 +61,7 @@ The OHS Kubernetes deployment requires access to an OHS container image. The ima
 ### Prebuilt OHS container image
 
 
-The prebuilt OHS January 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle HTTP Server 12.2.1.4.0, the January 2025 Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OHS April 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle HTTP Server 12.2.1.4.0, the April 2025 Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `ohs_cpu` and accept the license agreement.
 
@@ -503,7 +503,7 @@ In this section you prepare the `ohs.yaml` file ready for OHS deployment.
        spec:
          containers:
          - name: ohs
-           image: container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<January'25>
+           image: container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<April'25>
            env:
              - name: DEPLOY_WG
                value: "true"
