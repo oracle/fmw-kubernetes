@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 export DOMAIN_HOME=${DOMAIN_HOME_DIR}
@@ -42,3 +42,37 @@ wlst.sh -skipWLSModuleScanning \
         -soaManagedServerSSLPort ${SOA_MANAGED_SERVER_SSL_PORT} \
         -osbManagedServerSSLPort ${OSB_MANAGED_SERVER_SSL_PORT} \
         -persistentStore ${PERSISTENCE_STORE}
+
+wlstCmdVal=$?
+
+if [ $wlstCmdVal -ne 0 ]; then
+   echo "ERROR: Domain creation failed. Please check the logs"
+   exit 1
+else
+   #For BUG-37807693
+   export OH=/u01/oracle
+   JAR_FILE="$OH/oracle_common/modules/oracle.adf.share/adf-share-support.jar"
+   SCRIPT_TO_CHECK="DomainConfigGraalLibUpdate.sh"
+   if [ -f $JAR_FILE ]; then
+	echo "adf-share-support.jar is available, Checking availability of script DomainConfigGraalLibUpdate.sh"
+	FILE_PATH=$(jar tf "$JAR_FILE" | grep "$SCRIPT_TO_CHECK")
+	if [ -n "$FILE_PATH" ]; then
+	   echo "File path of DomainConfigGraalLibUpdate.sh - $FILE_PATH"
+	   cd /tmp
+           jar xvf $JAR_FILE $FILE_PATH
+	   chmod +x $FILE_PATH
+	   echo $OH | /tmp/$FILE_PATH
+           retVal=$?
+           if [ $retVal -ne 0 ]; then
+              echo "ERROR: DomainConfigGraalLibUpdate.sh execution failed. Please check the logs"
+              exit 1
+           else
+              echo "DomainConfigGraalLibUpdate.sh script execution completed"
+           fi
+        else
+	   echo "Script DomainConfigGraalLibUpdate.sh not available"
+	fi
+   else
+      echo "$JAR_FILE not available"
+   fi
+fi
