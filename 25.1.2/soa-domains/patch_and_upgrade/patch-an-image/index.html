@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Create a patched Oracle SOA Suite image using the WebLogic Image Tool.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Patch an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/patch-an-image/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -567,7 +567,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
-        
+        parent
         
         
         ">
@@ -591,7 +591,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/patch-an-image/" title="Patch an image" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/patch-an-image/">
         <b>a. </b>Patch an image
         
@@ -955,7 +955,19 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/'>Patch and upgrade</a> > Patch an image
+          
+         
+          
+         
           
          
           
@@ -966,7 +978,15 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#apply-the-patched-oracle-soa-suite-image">Apply the patched Oracle SOA Suite image</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1002,7 @@
           
             <h1>
               
-              Categories
+              Patch an image
             </h1>
           
 
@@ -990,17 +1010,139 @@
 
 
 
-
-
-
+<p>Oracle releases Oracle SOA Suite images regularly with the latest bundle and recommended interim patches in My Oracle Support (MOS). However, if you need to create images with new bundle and interim patches, you can build these images using the WebLogic Image Tool.</p>
+<p>If you have access to the Oracle SOA Suite patches, you can patch an existing Oracle SOA Suite image with a bundle patch and interim patches. Oracle recommends that you use the WebLogic Image Tool to patch the Oracle SOA Suite image.</p>
+<blockquote>
+<p><strong>Recommendations:</strong></p>
 <ul>
-	
+<li>Use the WebLogic Image Tool <a href="/fmw-kubernetes/25.1.2/soa-domains/create-or-update-image/#create-an-image">create</a> feature for patching the Oracle SOA Suite Docker image with a bundle patch and multiple interim patches. This is the recommended approach because it optimizes the size of the image.</li>
+<li>Use the WebLogic Image Tool <a href="/fmw-kubernetes/25.1.2/soa-domains/create-or-update-image/#update-an-image">update</a> feature  for patching the Oracle SOA Suite Docker image with a single interim patch. Note that the patched image size may increase considerably due to additional image layers introduced by the patch application tool.</li>
 </ul>
+</blockquote>
+<h3 id="apply-the-patched-oracle-soa-suite-image">Apply the patched Oracle SOA Suite image</h3>
+<p>To update an Oracle SOA Suite domain with a patched image, first make sure the patched image is pulled or created and available on the nodes in your Kubernetes cluster.
+Once the patched image is available, you can follow these steps to update the Oracle SOA Suite domain with a patched image:</p>
+<ul>
+<li><a href="#stop-all-servers">Stop all servers</a></li>
+<li><a href="#update-user-permissions-of-the-domain-pv-storage">Update user permissions of the domain PV storage</a></li>
+<li><a href="#address-post-installation-requirements">Address post-installation requirements</a></li>
+<li><a href="#apply-the-patched-image">Apply the patched image</a></li>
+</ul>
+<h4 id="stop-all-servers">Stop all servers</h4>
+<blockquote>
+<p><strong>Note</strong>: The following steps are applicable only for non-Zero Downtime Patching. For Zero Downtime Patching, go to <a href="#address-post-installation-requirements">Address post-installation requirements</a>.</p>
+</blockquote>
+<p>Before applying the patch, stop all servers in the domain:</p>
+<ol>
+<li>
+<p>In the <code>domain.yaml</code> configuration file, update the <code>spec.serverStartPolicy</code> field value to <code>NEVER</code> (for Operator 3.x) or <code>Never</code> (for Operator 4.x).</p>
+</li>
+<li>
+<p>Shut down the domain (stop all servers) by applying the updated <code>domain.yaml</code> file:</p>
+<pre><code>$ kubectl apply -f domain.yaml
+</code></pre></li>
+</ol>
+<h4 id="update-user-permissions-of-the-domain-pv-storage">Update user permissions of the domain PV storage</h4>
+<p>The Oracle SOA Suite image for release 24.1.2 has an oracle user with UID 1000, with the default group set to <code>root</code>. Before applying the patched image, update the user permissions of the domain persistent volume (PV) to set the group to <code>root</code>:</p>
+<pre><code>$ sudo chown -R 1000:0 /scratch/k8s_dir/SOA
+</code></pre><h4 id="address-post-installation-requirements">Address post-installation requirements</h4>
+<p>If the patches in the patched Oracle SOA Suite image have any post-installation steps, follow these steps:</p>
+<ul>
+<li><a href="#create-a-kubernetes-pod-with-domain-home-access">Create a Kubernetes pod with domain home access</a></li>
+<li><a href="#perform-post-installation-steps">Perform post-installation steps</a></li>
+</ul>
+<h5 id="create-a-kubernetes-pod-with-domain-home-access">Create a Kubernetes pod with domain home access</h5>
+<ol>
+<li>
+<p>Get domain home persistence volume claim details for the Oracle SOA Suite domain.</p>
+<p>For example, to list the persistent volume claim details in the namespace <code>soans</code>:</p>
+<pre><code>$ kubectl get pvc -n soans   
+</code></pre><p>Sample output showing the persistent volume claim is <code>soainfra-domain-pvc</code>:</p>
+<pre><code>NAME                  STATUS   VOLUME               CAPACITY   ACCESS MODES   STORAGECLASS                    AGE
+soainfra-domain-pvc   Bound    soainfra-domain-pv   10Gi       RWX            soainfra-domain-storage-class   xxd
+</code></pre></li>
+<li>
+<p>Create a YAML <code>soapostinstall.yaml</code> using the domain home persistence volume claim.</p>
+<p>For example, using <code>soainfra-domain-pvc</code> per the sample output:</p>
+<blockquote>
+<p>Note: Replace <code>soasuite:12.2.1.4-30761841</code> with the patched image in the following sample YAML:</p>
+</blockquote>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+     run: soapostinstall
+  name: soapostinstall
+  namespace: soans
+spec:
+ containers:
+ - image: soasuite:12.2.1.4-30761841
+   name: soapostinstall
+   command: [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;sleep infinity&quot;]
+   imagePullPolicy: IfNotPresent
+   volumeMounts:
+   - name: soainfra-domain-storage-volume
+     mountPath: /u01/oracle/user_projects
+ volumes:
+ - name: soainfra-domain-storage-volume
+   persistentVolumeClaim:
+    claimName: soainfra-domain-pvc
+</code></pre></li>
+<li>
+<p>Apply the YAML to create the Kubernetes pod:</p>
+<pre><code>$ kubectl apply -f soapostinstall.yaml
+</code></pre></li>
+</ol>
+<h5 id="perform-post-installation-steps">Perform post-installation steps</h5>
+<p>If you need to perform any post-installation steps on the domain home:</p>
+<ol>
+<li>
+<p>Start a bash shell in the <code>soapostinstall</code> pod:</p>
+<pre><code>$ kubectl exec -it -n soans soapostinstall -- bash
+</code></pre><p>This opens a bash shell in the running <code>soapostinstall</code> pod:</p>
+<pre><code>[oracle@soapostinstall oracle]$
+</code></pre></li>
+<li>
+<p>Use the bash shell of the <code>soapostinstall</code> pod and perform the required  steps on the domain home.</p>
+</li>
+<li>
+<p>After successful completion of the post-installation steps, you can delete the <code>soapostinstall</code> pod:</p>
+<pre><code>$ kubectl delete -f  soapostinstall.yaml
+</code></pre></li>
+</ol>
+<h4 id="apply-the-patched-image">Apply the patched image</h4>
+<p>After completing the required SOA schema upgrade and post-installation steps, start up the domain:</p>
+<ol>
+<li>
+<p>In the <code>domain.yaml</code> configuration file, update the <code>image</code> field value with the patched image:<br>
+For example:</p>
+<pre><code>  image: soasuite:12.2.1.4-30761841
+</code></pre></li>
+<li>
+<p>In case of non-Zero Downtime Patching, update the <code>spec.serverStartPolicy</code> field value to <code>IF_NEEDED</code> (for Operator 3.x) or <code>IfNeeded</code> (for Operator 4.x) in <code>domain.yaml</code>.</p>
+</li>
+<li>
+<p>Apply the updated <code>domain.yaml</code> configuration file to start up the domain.</p>
+<pre><code>$ kubectl apply -f domain.yaml
+</code></pre><blockquote>
+<p><strong>Note</strong>: In case of non-Zero Downtime Patching, the complete domain startup happens, as the servers in the domain were stopped earlier. For Zero Downtime Patching, the servers in the domain are rolling restarted.</p>
+</blockquote>
+</li>
+<li>
+<p>Verify the domain is updated with the patched image:</p>
+<pre><code>$ kubectl describe domain &lt;domainUID&gt; -n &lt;domain-namespace&gt;|grep &quot;Image:&quot;
+</code></pre><p>Sample output:</p>
+<pre><code>$ kubectl describe domain soainfra -n soans |grep &quot;Image:&quot;
+Image:                          soasuite:12.2.1.4-30761841
+$
+</code></pre></li>
+</ol>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1175,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1190,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1375,6 +1518,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1387,6 +1531,7 @@
             
             
                 
+                    
                     
                 
                 
@@ -1403,6 +1548,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1770,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1803,4 @@
 
   </body>
 </html>
+

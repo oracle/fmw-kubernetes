@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Understand the system requirements, limitations, licensing, and pricing for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes Operator, including the SOA cluster sizing.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Requirements and pricing :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/installguide/prerequisites/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -127,7 +127,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/installguide/" title="Install Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -154,8 +154,8 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/installguide/prerequisites/" title="Requirements and pricing" class="dd-item 
-        
-        
+        parent
+        active
         
         ">
       <a href="/fmw-kubernetes/25.1.2/soa-domains/installguide/prerequisites/">
@@ -955,7 +955,19 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/installguide/'>Install Guide</a> > Requirements and pricing
+          
+         
+          
+         
           
          
           
@@ -966,7 +978,17 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#system-requirements-for-oracle-soa-suite-domains">System requirements for Oracle SOA Suite domains</a></li>
+        <li><a href="#limitations">Limitations</a></li>
+        <li><a href="#pricing-and-licensing">Pricing and licensing</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1004,7 @@
           
             <h1>
               
-              Categories
+              Requirements and pricing
             </h1>
           
 
@@ -991,11 +1013,94 @@
 
 
 
-
-
+	<p>This section provides information about the system requirements, limitations, licensing, and pricing for deploying and running Oracle SOA Suite domains with the WebLogic Kubernetes Operator.</p>
+<h3 id="system-requirements-for-oracle-soa-suite-domains">System requirements for Oracle SOA Suite domains</h3>
+<p>Release 25.1.2 has the following system requirements:</p>
 <ul>
-	
+<li>Kubernetes 1.24.0+, 1.25.0+, 1.26.2+, 1.27.2+, 1.28.2+, 1.29.1+, 1.30.1+ and 1.31.1+ (check with <code>kubectl version</code>).</li>
+<li>Docker 19.03.11+ (check with <code>docker version</code>) or CRI-O 1.20.2+ (check with <code>crictl version | grep RuntimeVersion</code>).</li>
+<li>Flannel networking v0.13.0-amd64 or later (check with <code>docker images | grep flannel</code>), Calico networking v3.16.1 or later.</li>
+<li>Helm 3.10.2+ (check with <code>helm version --client --short</code>).</li>
+<li>WebLogic Kubernetes Operator 4.2.13 (see the <a href="https://github.com/oracle/weblogic-kubernetes-operator/releases/tag/v4.2.13">operator releases 4.2.13</a> pages).</li>
+<li>You must have the <code>cluster-admin</code> role to install the operator. The operator does not need the <code>cluster-admin</code> role at runtime.
+For more information, see the role-based access control (RBAC) <a href="https://oracle.github.io/weblogic-kubernetes-operator/security/rbac/">documentation</a>.</li>
+<li>We do not currently support running SOA in non-Linux containers.</li>
+<li>Container images based on Oracle Linux 8 are now supported. My Oracle Support and the Oracle Container Registry host container images based on Oracle Linux 8.</li>
+<li>Additionally, see the Oracle SOA Suite <a href="https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/insoa/preparing-install-and-configure-product.html#GUID-E2D4D481-BE80-4600-8078-FD9C03A30210">documentation</a> for other requirements, such as database version.</li>
 </ul>
+<p>See <a href="/fmw-kubernetes/25.1.2/soa-domains/appendix/soa-cluster-sizing-info/">here</a> for resource sizing information for Oracle SOA Suite domains set up on a Kubernetes cluster.</p>
+<h3 id="limitations">Limitations</h3>
+<p>Compared to running a WebLogic Server domain in Kubernetes using the operator, the
+following limitations currently exist for Oracle SOA Suite domains:</p>
+<ul>
+<li>In this release, Oracle SOA Suite domains are supported using the
+<a href="https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/choosing-a-model/">domain on a persistent volume model</a> only, where the domain home is located in a persistent volume (PV).</li>
+<li>The &ldquo;domain in image&rdquo; and &ldquo;model in image&rdquo; models are not supported. Also, &ldquo;WebLogic Deploy Tooling (WDT)&rdquo; based deployments are currently not supported.</li>
+<li>Only configured clusters are supported.  Dynamic clusters are not supported for
+Oracle SOA Suite domains.  Note that you can still use all of the scaling features,
+but you need to define the maximum size of your cluster at domain creation time. Mixed clusters (configured servers targeted to a dynamic cluster) are not supported.</li>
+<li>The <a href="https://github.com/oracle/weblogic-logging-exporter">WebLogic Logging Exporter</a> project has been archived. Users are encouraged to use Fluentd or Logstash.</li>
+<li>The <a href="https://github.com/oracle/weblogic-monitoring-exporter">WebLogic Monitoring Exporter</a> currently supports WebLogic MBean trees only. Support for JRF and Oracle SOA Suite MBeans is not available. Also, a metrics dashboard specific to Oracle SOA Suite is not available. Instead, use the WebLogic Server dashboard to monitor the Oracle SOA Suite server metrics in Grafana.</li>
+<li>Some features such as multicast, multitenancy, production redeployment, and Node Manager (although it is used internally for the liveness probe and to start WebLogic Server instances) are not supported in this release.</li>
+<li>Features such as Java Messaging Service whole server migration and consensus leasing are not supported in this release.</li>
+<li>Maximum availability architecture (Oracle SOA Suite EDG setup) is available for preview.</li>
+<li>Enabling or disabling the memory resiliency for Oracle Service Bus using the Enterprise Manager Console is not supported in this release.</li>
+<li>Zero downtime upgrade (ZDT) of the domain is not supported.</li>
+</ul>
+<p>For up-to-date information about the features of WebLogic Server that are supported in Kubernetes environments, see My Oracle Support Doc ID 2349228.1.</p>
+<h3 id="pricing-and-licensing">Pricing and licensing</h3>
+<p>The WebLogic Kubernetes Operator and Oracle Linux are open source and free; WebLogic Server requires licenses in any environment. All WebLogic Server licenses are suitable for deploying WebLogic to containers and Kubernetes, including free single desktop Oracle Technology Network (OTN) developer licenses. See the following sections for more detailed information:</p>
+<ul>
+<li><a href="#oracle-soa-suite">Oracle SOA Suite</a></li>
+<li><a href="#oracle-linux">Oracle Linux</a></li>
+<li><a href="#oracle-java">Oracle Java</a></li>
+<li><a href="#weblogic-kubernetes-operator">WebLogic Kubernetes Operator</a></li>
+<li><a href="#oracle-soa-suite-images">Oracle SOA Suite images</a></li>
+<li><a href="#additional-references">Additional references</a></li>
+</ul>
+<h4 id="oracle-soa-suite">Oracle SOA Suite</h4>
+<p>Oracle SOA Suite is licensed as an option to Oracle WebLogic Suite. Valid licenses are needed in at least one of the following combinations:</p>
+<ul>
+<li>WebLogic Suite and Oracle SOA Suite</li>
+<li>WebLogic Suite and Oracle Service Bus</li>
+<li>WebLogic Suite and Oracle BPEL Engine</li>
+</ul>
+<p>For more information, see the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/fmwlc/oracle-fusion-middleware-options.html#GUID-19E4223F-1F98-433E-BC7C-2BAC2568964F">Fusion Middleware Licensing Information User Manual - Oracle SOA Suite</a> and the following sections.</p>
+<h4 id="oracle-linux">Oracle Linux</h4>
+<p>Oracle Linux is under open source license and is completely free to download and use.</p>
+<p>Note that Oracle SOA Suite licenses that include support do not include customer entitlements for direct access to Oracle Linux support or Unbreakable Linux Network (to directly access the standalone Oracle Linux patches). The latest Oracle Linux patches are included with the latest <a href="">Oracle SOA Suite images</a>.</p>
+<h4 id="oracle-java">Oracle Java</h4>
+<p>Oracle support for Java is included with Oracle SOA Suite licenses when Java is used for running WebLogic and Coherence servers or clients.</p>
+<p>For more information, see the <a href="https://docs.oracle.com/en/middleware/fusion-middleware/fmwlc/oracle-fusion-middleware.html#GUID-4980E65A-22C8-429D-81C5-86223C362E78">Fusion Middleware Licensing Information User Manual</a>.</p>
+<h4 id="oracle-soa-suite-images">Oracle SOA Suite images</h4>
+<p>Oracle provides two different types of Oracle SOA Suite images:</p>
+<ul>
+<li>
+<p><em>Critical Patch Update (CPU) images:</em>
+Images with the latest Oracle SOA Suite, Fusion Middleware Infrastructure, Coherence PSUs, and other fixes released by the Critical Patch Update (CPU) program. CPU images are intended for production use.</p>
+</li>
+<li>
+<p><em>General Availability (GA) images:</em>
+Images that are not intended for production use and do not include Oracle SOA Suite, WebLogic, Fusion Middleware Infrastructure, or Coherence PSUs.</p>
+</li>
+</ul>
+<p>All Oracle SOA Suite licenses, including free Oracle Technology Network (OTN) developer licenses, include access to the latest General Availability (GA) Oracle SOA Suite images, which bundle Java SE.</p>
+<p>Customers with access to Oracle SOA Suite support additionally have:</p>
+<ul>
+<li>Access to Critical Patch Update (CPU) Oracle SOA Suite images, which bundle Java SE.</li>
+<li>Access to Oracle SOA Suite patches.</li>
+<li>Oracle support for Oracle SOA Suite images.</li>
+</ul>
+<h4 id="weblogic-kubernetes-operator">WebLogic Kubernetes Operator</h4>
+<p>The WebLogic Kubernetes Operator is open source and free, licensed under the Universal Permissive license (UPL), Version 1.0. For support details, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/introduction/get-help/">Get help</a>.</p>
+<h4 id="additional-references">Additional references</h4>
+<ul>
+<li><a href="https://www.oracle.com/middleware/technologies/ias/oracleas-supported-virtualization.html">Supported Virtualization and Partitioning Technologies for Oracle Fusion Middleware</a> (search for keyword &lsquo;Kubernetes&rsquo;)</li>
+<li><a href="https://www.oracle.com/a/tech/docs/running-and-licensing-programs-in-containers-and-kubernetes.pdf">Running and Licensing Oracle Programs in Containers and Kubernetes</a></li>
+</ul>
+
+
+
 
 
 <footer class=" footline" >
@@ -1033,8 +1138,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1153,42 @@
             
             
                 
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
                     
                 
                 
@@ -1067,36 +1206,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
                         
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
                     
                 
                 
@@ -1622,8 +1733,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/installguide/" title="Install Guide"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/installguide/prepare-your-environment/" title="Prepare your environment" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

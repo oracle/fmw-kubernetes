@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Clean up the Oracle SOA Suite domain setup.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Uninstall :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/cleanup-domain-setup/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -681,7 +681,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/cleanup-domain-setup/" title="Uninstall" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/cleanup-domain-setup/">
         <b>6. </b>Uninstall
         
@@ -955,7 +955,13 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > Uninstall
+          
+         
           
          
           
@@ -966,7 +972,15 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +996,7 @@
           
             <h1>
               
-              Categories
+              Uninstall
             </h1>
           
 
@@ -990,17 +1004,89 @@
 
 
 
-
-
-
-<ul>
-	
-</ul>
-
+<p>Learn how to clean up the Oracle SOA Suite domain setup.</p>
+<h4 id="remove-the-domain">Remove the domain</h4>
+<ol>
+<li>
+<p>Remove the domain&rsquo;s ingress (for example, Traefik ingress) using Helm:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall soa-domain-ingress -n sample-domain1-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall soainfra-traefik -n soans
+</code></pre></div></li>
+<li>
+<p>Remove the domain resources by using the sample <code>delete-weblogic-domain-resources.sh</code> script present at <code>${WORKDIR}/delete-domain</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/delete-domain
+$ ./delete-weblogic-domain-resources.sh -d sample-domain1
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/delete-domain
+$ ./delete-weblogic-domain-resources.sh -d soainfra
+</code></pre></div></li>
+<li>
+<p>Use <code>kubectl</code> to confirm that the server pods and domain resource are deleted:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n sample-domain1-ns
+$ kubectl get domains -n sample-domain1-ns
+$ kubectl get clusters -n sample-domain1-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get pods -n soans
+$ kubectl get domains -n soans
+$ kubectl get clusters -n soans
+</code></pre></div></li>
+</ol>
+<h4 id="drop-the-rcu-schemas">Drop the RCU schemas</h4>
+<p>Follow <a href="/fmw-kubernetes/25.1.2/soa-domains/installguide/prepare-your-environment/#drop-schemas">these steps</a> to drop the RCU schemas created for Oracle SOA Suite domains.</p>
+<h4 id="remove-the-domain-namespace">Remove the domain namespace</h4>
+<ol>
+<li>
+<p>Configure the installed ingress load balancer (for example, Traefik) to stop managing the ingresses in the domain namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm upgrade traefik traefik/traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --namespace traefik <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --reuse-values <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --set <span style="color:#e6db74">&#34;kubernetes.namespaces={traefik}&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --wait
+</code></pre></div></li>
+<li>
+<p>Delete the domain namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace sample-domain1-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace soans
+</code></pre></div></li>
+</ol>
+<h4 id="remove-the-operator">Remove the operator</h4>
+<ol>
+<li>
+<p>Remove the operator:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall sample-weblogic-operator -n sample-weblogic-operator-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall weblogic-kubernetes-operator -n opns
+</code></pre></div></li>
+<li>
+<p>Remove the operator&rsquo;s namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace sample-weblogic-operator-ns
+</code></pre></div><p>For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace opns
+</code></pre></div></li>
+</ol>
+<h4 id="remove-the-load-balancer">Remove the load balancer</h4>
+<ol>
+<li>
+<p>Remove the installed ingress based load balancer (for example, Traefik):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm uninstall traefik -n traefik
+</code></pre></div></li>
+<li>
+<p>Remove the Traefik namespace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete namespace traefik
+</code></pre></div></li>
+</ol>
+<h4 id="delete-the-domain-home">Delete the domain home</h4>
+<p>To remove the domain home that is generated using the <code>create-domain.sh</code> script, with appropriate privileges manually delete the contents of the storage attached to the domain home persistent volume (PV).</p>
+<p>For example, for the domain&rsquo;s persistent volume of type <code>host_path</code>:</p>
+<pre><code>$ rm -rf /scratch/k8s_dir/SOA/*
+</code></pre>
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1119,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1134,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1455,6 +1542,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1470,6 +1558,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1713,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/create-or-update-image/" title="Create or update an image"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/edg-guide/" title="Enterprise Deployment Guide" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1746,4 @@
 
   </body>
 </html>
+

@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Upgrade the underlying Kubernetes cluster version in a running SOA Kubernetes environment.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Upgrade a Kubernetes cluster :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -567,7 +567,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/" title="Patch and upgrade" class="dd-item 
-        
+        parent
         
         
         ">
@@ -629,7 +629,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/" title="Upgrade a Kubernetes cluster" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/upgrade-k8s-cluster/">
         <b>c. </b>Upgrade a Kubernetes cluster
         
@@ -955,7 +955,19 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/'>Patch and upgrade</a> > Upgrade a Kubernetes cluster
+          
+         
+          
+         
           
          
           
@@ -966,7 +978,16 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#upgrade-the-kubernetes-version">Upgrade the Kubernetes version</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1003,7 @@
           
             <h1>
               
-              Categories
+              Upgrade a Kubernetes cluster
             </h1>
           
 
@@ -990,17 +1011,34 @@
 
 
 
+<p>These instructions describe how to upgrade a Kubernetes cluster created using <code>kubeadm</code> on which an Oracle SOA Suite domain is deployed. A rolling upgrade approach is used to upgrade nodes (master and worker) of the Kubernetes cluster.</p>
 
+<div class="notices warning" ><p>It is expected that there will be a down time during the upgrade of the Kubernetes cluster as the nodes need to be drained as part of the upgrade process.</p>
+</div>
 
-
+<h3 id="prerequisites">Prerequisites</h3>
 <ul>
-	
+<li>Review <a href="/fmw-kubernetes/25.1.2/soa-domains/installguide/prerequisites/#system-requirements-for-oracle-soa-suite-domains">Prerequisites</a> and ensure that your Kubernetes cluster is ready for upgrade. Make sure your environment meets all prerequisites.</li>
+<li>Make sure the database used for the SOA domain deployment is up and running during the upgrade process.</li>
+</ul>
+<h3 id="upgrade-the-kubernetes-version">Upgrade the Kubernetes version</h3>
+<p>An upgrade of Kubernetes is supported from one MINOR version to the next MINOR version, or between PATCH versions of the same MINOR.
+For example, you can upgrade from 1.x to 1.x+1, but not from 1.x to 1.x+2.
+To upgrade a Kubernetes version, first all the master nodes of the Kubernetes cluster must be  upgraded sequentially, followed by the sequential upgrade of each worker node.</p>
+<ul>
+<li>See <a href="https://v1-31.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">here</a> for Kubernetes official documentation to upgrade from 1.30 to 1.31</li>
+<li>See <a href="https://v1-30.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">here</a> for Kubernetes official documentation to upgrade from 1.29 to 1.30</li>
+<li>See <a href="https://v1-29.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">here</a> for Kubernetes official documentation to upgrade from 1.28 to 1.29</li>
+<li>See <a href="https://v1-28.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">here</a> for Kubernetes official documentation to upgrade from 1.27 to 1.28</li>
+<li>See <a href="https://v1-27.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">here</a> for Kubernetes official documentation to upgrade from 1.26 to 1.27</li>
+<li>See <a href="https://v1-26.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">here</a> for Kubernetes official documentation to upgrade from 1.25 to 1.26</li>
 </ul>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1071,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1086,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1375,6 +1414,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1387,6 +1427,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1420,6 +1463,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1438,6 +1482,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1669,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/patch_and_upgrade/upgrade-operator-release/" title="Upgrade an operator release"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/create-or-update-image/" title="Create or update an image" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1702,4 @@
 
   </body>
 </html>
+

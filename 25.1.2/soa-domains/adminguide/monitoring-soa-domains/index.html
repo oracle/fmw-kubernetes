@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Monitor an Oracle SOA Suite domain and publish the WebLogic Server logs to Elasticsearch.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Monitor a domain and publish logs :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/adminguide/monitoring-soa-domains/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -235,7 +235,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -390,7 +390,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/monitoring-soa-domains/" title="Monitor a domain and publish logs" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/monitoring-soa-domains/">
         <b> </b>Monitor a domain and publish logs
         
@@ -955,7 +955,19 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/'>Administration Guide</a> > Monitor a domain and publish logs
+          
+         
+          
+         
           
          
           
@@ -966,7 +978,17 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#monitor-the-oracle-soa-suite-instance-using-prometheus-and-grafana">Monitor the Oracle SOA Suite instance using Prometheus and Grafana</a></li>
+        <li><a href="#publish-weblogic-server-logs-into-elasticsearch">Publish WebLogic Server logs into Elasticsearch</a></li>
+        <li><a href="#publish-soa-server-diagnostics-logs-into-elasticsearch">Publish SOA server diagnostics logs into Elasticsearch</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1004,7 @@
           
             <h1>
               
-              Categories
+              Monitor a domain and publish logs
             </h1>
           
 
@@ -990,17 +1012,106 @@
 
 
 
-
-
-
+<p>After the Oracle SOA Suite domain is set up, you can:</p>
 <ul>
-	
+<li><a href="#monitor-the-oracle-soa-suite-instance-using-prometheus-and-grafana">Monitor the Oracle SOA Suite instance using Prometheus and Grafana</a></li>
+<li><a href="#publish-weblogic-server-logs-into-elasticsearch">Publish WebLogic Server logs into Elasticsearch</a></li>
+<li><a href="#publish-soa-server-diagnostics-logs-into-elasticsearch">Publish SOA server diagnostics logs into Elasticsearch</a></li>
 </ul>
+<h3 id="monitor-the-oracle-soa-suite-instance-using-prometheus-and-grafana">Monitor the Oracle SOA Suite instance using Prometheus and Grafana</h3>
+<p>Using the <code>WebLogic Monitoring Exporter</code> you can scrape runtime information from a running Oracle SOA Suite instance and monitor them using Prometheus and Grafana.</p>
+<h4 id="set-up-monitoring">Set up monitoring</h4>
+<p>Follow <a href="https://github.com/oracle/fmw-kubernetes/blob/v25.1.2/OracleSOASuite/kubernetes/monitoring-service/README.md">these steps</a> to set up monitoring for an Oracle SOA Suite instance. For more details on WebLogic Monitoring Exporter, see <a href="https://github.com/oracle/weblogic-monitoring-exporter">here</a>.</p>
+<h3 id="publish-weblogic-server-logs-into-elasticsearch">Publish WebLogic Server logs into Elasticsearch</h3>
+<p>WebLogic Server logs can be published to Elasticsearch using <code>Fluentd</code>. See <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/weblogic-domain/">Fluentd configuration steps</a>.</p>
+<h3 id="publish-soa-server-diagnostics-logs-into-elasticsearch">Publish SOA server diagnostics logs into Elasticsearch</h3>
+<p>This section shows you how to publish diagnostics logs to Elasticsearch and view them in Kibana. For publishing operator logs, see <a href="https://oracle.github.io/weblogic-kubernetes-operator/samples/elastic-stack/operator/">this sample</a>.</p>
+<h4 id="prerequisites">Prerequisites</h4>
+<p>If you have not already set up Elasticsearch and Kibana for logs collection, refer to <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/master/kubernetes/samples/scripts/elasticsearch-and-kibana/README.md">this document</a> and complete the setup.</p>
+<h4 id="publish-to-elasticsearch">Publish to Elasticsearch</h4>
+<p>The diagnostics or other logs can be pushed to Elasticsearch server using logstash pod. The logstash pod should have access to the shared domain home or the log location. In case of the Oracle SOA Suite domain, the persistent volume of the domain home can be used in the logstash pod. To create the logstash pod, follow these steps:</p>
+<ol>
+<li>
+<p>Get the domain home persistence volume claim details of the domain home of the Oracle SOA Suite domain. The following command lists the persistent volume claim details in the namespace - <code>soans</code>. In the example below, the persistent volume claim is <code>soainfra-domain-pvc</code>:</p>
+<pre><code>$ kubectl get pvc -n soans   
+</code></pre><p>Sample output:</p>
+<pre><code>NAME                  STATUS   VOLUME               CAPACITY   ACCESS MODES   STORAGECLASS                    AGE
+soainfra-domain-pvc   Bound    soainfra-domain-pv   10Gi       RWX            soainfra-domain-storage-class   xxd
+</code></pre></li>
+<li>
+<p>Create the logstash configuration file (<code>logstash.conf</code>). Below is a sample logstash configuration to push diagnostic logs of all servers available at DOMAIN_HOME/servers/&lt;server_name&gt;/logs/<!-- raw HTML omitted -->-diagnostic.log:</p>
+<pre><code>input {                                                                                                                
+  file {                                                                                                               
+    path =&gt; &quot;/u01/oracle/user_projects/domains/soainfra/servers/**/logs/*-diagnostic.log&quot;                                          
+    start_position =&gt; beginning                                                                                        
+  }                                                                                                                    
+}                                                                                                                         
+filter {                                                                                                               
+  grok {                                                                                                               
+    match =&gt; [ &quot;message&quot;, &quot;&lt;%{DATA:log_timestamp}&gt; &lt;%{WORD:log_level}&gt; &lt;%{WORD:thread}&gt; &lt;%{HOSTNAME:hostname}&gt; &lt;%{HOSTNAME:servername}&gt; &lt;%{DATA:timer}&gt; &lt;&lt;%{DATA:kernel}&gt;&gt; &lt;&gt; &lt;%{DATA:uuid}&gt; &lt;%{NUMBER:timestamp}&gt; &lt;%{DATA:misc}&gt; &lt;%{DATA:log_number}&gt; &lt;%{DATA:log_message}&gt;&quot; ]                                                                                        
+  }                                                                                                                    
+}                                                                                                                         
+output {                                                                                                               
+  elasticsearch {                                                                                                      
+    hosts =&gt; [&quot;elasticsearch.default.svc.cluster.local:9200&quot;]                                                          
+  }                                                                                                                    
+}
+</code></pre></li>
+<li>
+<p>Copy the <code>logstash.conf</code> into <code>/u01/oracle/user_projects/domains</code> so that it can be used for logstash deployment, using the Administration Server pod (for example <code>soainfra-adminserver</code> pod in namespace <code>soans</code>):</p>
+<pre><code>$ kubectl cp logstash.conf  soans/soainfra-adminserver:/u01/oracle/user_projects/domains --namespace soans
+</code></pre></li>
+<li>
+<p>Create a deployment YAML (<code>logstash.yaml</code>) for the logstash pod using the domain home persistence volume claim. Make sure to point the logstash configuration file to the correct location (for example, copy logstash.conf to /u01/oracle/user_projects/domains/logstash.conf) and also the correct domain home persistence volume claim. Below is a sample logstash deployment YAML:</p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash-soa
+  namespace: soans
+spec:
+  selector:
+    matchLabels:
+      app: logstash-soa
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: logstash-soa
+    spec:
+      volumes:
+      - name: soainfra-domain-storage-volume
+        persistentVolumeClaim:
+          claimName: soainfra-domain-pvc
+      - name: shared-logs
+        emptyDir: {}
+      containers:
+      - name: logstash
+        image: logstash:6.6.0
+        command: [&quot;/bin/sh&quot;]
+        args: [&quot;/usr/share/logstash/bin/logstash&quot;, &quot;-f&quot;, &quot;/u01/oracle/user_projects/domains/logstash.conf&quot;]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /u01/oracle/user_projects
+          name: soainfra-domain-storage-volume
+        - name: shared-logs
+          mountPath: /shared-logs
+        ports:
+        - containerPort: 5044
+          name: logstash
+</code></pre></li>
+<li>
+<p>Deploy logstash to start publish logs to Elasticsearch:</p>
+<pre><code>$ kubectl create -f  logstash.yaml
+</code></pre></li>
+<li>
+<p>Now, you can view the diagnostics logs using Kibana with index pattern &ldquo;logstash-*&rdquo;.</p>
+</li>
+</ol>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1144,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1159,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1133,6 +1245,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1148,34 +1261,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
                     
                 
                 
@@ -1184,28 +1271,6 @@
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
                     
                         
             
@@ -1255,10 +1320,65 @@
             
         
                     
+            
+        
+                    
                         
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1742,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/enablingt3/" title="Expose the T3/T3S protocol" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1775,4 @@
 
   </body>
 </html>
+

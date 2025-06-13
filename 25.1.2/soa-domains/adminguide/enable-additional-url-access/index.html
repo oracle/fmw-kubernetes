@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Extend an existing ingress to enable additional application URL access for Oracle SOA Suite domains.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Enable additional URL access :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/adminguide/enable-additional-url-access/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -235,7 +235,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -352,7 +352,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/enable-additional-url-access/" title="Enable additional URL access" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/enable-additional-url-access/">
         <b> </b>Enable additional URL access
         
@@ -955,7 +955,19 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/'>Administration Guide</a> > Enable additional URL access
+          
+         
+          
+         
           
          
           
@@ -966,7 +978,7 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents"></nav>
     </div>
 </div>
 
@@ -982,7 +994,7 @@
           
             <h1>
               
-              Categories
+              Enable additional URL access
             </h1>
           
 
@@ -990,17 +1002,97 @@
 
 
 
-
-
-
-<ul>
-	
-</ul>
+<p>This section provides information about how to extend an existing ingress (Non-SSL and SSL termination) to enable additional application URL access for Oracle SOA Suite domains.</p>
+<p>The ingress per domain created in the steps in <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/configure-load-balancer/">Set up a load balancer</a> exposes the application paths defined in template YAML files present at <code>${WORKDIR}/charts/ingress-per-domain/templates/</code>.</p>
+<p>To extend an existing ingress with additional application URL access:</p>
+<ol>
+<li>
+<p>Update the template YAML file at <code>${WORKDIR}/charts/ingress-per-domain/templates/</code> to define additional path rules.</p>
+<p>For example, to extend an existing NGINX-based ingress with additional paths <code>/path1</code> and <code>/path2</code> of an Oracle SOA Suite cluster, update <code>nginx-ingress-nonssl.yaml</code>, <code>nginx-ingress-ssl.yaml</code>, or <code>nginx-ingress-e2essl.yaml</code> accordingly with additional paths:</p>
+<pre><code># Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+{{- if eq .Values.type &quot;NGINX&quot; }}
+{{- if (eq .Values.sslType &quot;NONSSL&quot;) }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+.
+.
+spec:
+  rules:
+  - host: '{{ .Values.nginx.hostname }}'
+    http:
+      paths:
+      # Add new paths -- start
+      - path: /path1
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace &quot;_&quot; &quot;-&quot; }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort  }}
+      - path: /path2
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace &quot;_&quot; &quot;-&quot; }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort  }}
+      # Add new paths -- end
+      - path: /console
+        backend:
+.
+.
+{{- end }}
+</code></pre></li>
+<li>
+<p>Get the Helm release name for the ingress installed in your domain namespace:</p>
+<pre><code>$ helm ls -n &lt;domain_namespace&gt;
+</code></pre><p>For example, in the <code>soans</code> namespace:</p>
+<pre><code>$ helm ls -n soans
+</code></pre><p>Sample output, showing the Helm release name for a NGINX-based ingress as <code>soa-nginx-ingress</code>:</p>
+<pre><code>NAME                  NAMESPACE       REVISION        UPDATED                               STATUS        CHART                 APP VERSION
+soa-nginx-ingress     soans            1        2021-02-17 13:42:03.252742314 +0000 UTC  deployed  ingress-per-domain-0.1.0     1.0
+$
+</code></pre></li>
+<li>
+<p>To extend the existing ingress per domain with additional paths defined in the template YAML, use the <code>helm upgrade</code> command:</p>
+<pre><code>$ cd ${WORKDIR}
+$ helm upgrade &lt;helm_release_for_ingress&gt; \
+    charts/ingress-per-domain \
+    --namespace &lt;domain_namespace&gt; \
+    --reuse-values
+</code></pre><blockquote>
+<p><strong>Note</strong>: <code>helm_release_for_ingress</code> is the ingress name used in the corresponding helm install command for the ingress installation.</p>
+</blockquote>
+<p>Sample command for a NGINX-based ingress <code>soa-nginx-ingress</code> in the <code>soans</code> namespace:</p>
+<pre><code>$ cd ${WORKDIR}
+$ helm upgrade soa-nginx-ingress \
+    charts/ingress-per-domain \
+    --namespace soans \
+    --reuse-values
+</code></pre><p>This will upgrade the existing ingress to pick up the additional paths updated in the template YAML.</p>
+</li>
+<li>
+<p>Verify that additional paths are updated into the existing ingress.</p>
+<p>a. Get the existing ingress deployed in the domain namespace:</p>
+<pre><code>$ kubectl get ingress -n &lt;domain_namespace&gt;
+</code></pre><p>For example, in the <code>soans</code> namespace:</p>
+<pre><code>$ kubectl get ingress -n soans
+</code></pre><p>Sample output, showing the existing ingress as <code>soainfra-nginx</code>:</p>
+<pre><code>NAME               CLASS    HOSTS         ADDRESS        PORTS     AGE
+soainfra-nginx   &lt;none&gt;   domain1.org  10.109.211.160   80, 443    xxd
+</code></pre><p>b. Describe the ingress object and verify that new paths are available and pointing to desired backends.</p>
+<p>Sample command and output, showing path and backend details for <code>/path1</code> and <code>/path2</code>:</p>
+<pre><code>$ kubectl describe ingress soainfra-nginx -n soans|grep path
+                                     /path1                     soainfra-cluster-soa-cluster:7003 (172.17.0.19:7003,172.17.0.20:7003)
+                                     /path2                     soainfra-cluster-soa-cluster:7003 (172.17.0.19:7003,172.17.0.20:7003)
+</code></pre></li>
+</ol>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1125,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1140,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1133,6 +1226,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1148,18 +1242,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
+                        
                     
                 
                 
@@ -1168,9 +1252,6 @@
                     
                     
 
-                    
-            
-        
                     
                         
             
@@ -1204,9 +1285,6 @@
             
         
                     
-            
-        
-                    
                         
             
             
@@ -1223,10 +1301,33 @@
             
         
                     
+            
+        
+                    
                         
             
             
                 
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1723,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/configure-load-balancer/apache/" title="Apache web tier"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/configuring-custom-ssl-certificates/" title="Configure SSL certificates" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1756,4 @@
 
   </body>
 </html>
+

@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Deploy Oracle SOA Suite and Oracle Service Bus composite applications from Oracle JDeveloper to Oracle SOA Suite in the WebLogic Kubernetes Operator environment.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Deploy using JDeveloper :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -235,7 +235,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -429,7 +429,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
-        
+        parent
         
         
         ">
@@ -453,7 +453,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/">
         <b>a. </b>Deploy using JDeveloper
         
@@ -955,7 +955,25 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/'>Deploy composite applications</a> > Deploy using JDeveloper
+          
+         
+          
+         
+          
+         
           
          
           
@@ -966,7 +984,15 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#deploy-oracle-soa-suite-and-oracle-service-bus-composite-applications-to-oracle-soa-suite-from-jdeveloper">Deploy Oracle SOA Suite and Oracle Service Bus composite applications to Oracle SOA Suite from JDeveloper</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1008,7 @@
           
             <h1>
               
-              Categories
+              Deploy using JDeveloper
             </h1>
           
 
@@ -990,17 +1016,167 @@
 
 
 
+<p>Learn how to deploy Oracle SOA Suite and Oracle Service Bus composite applications from Oracle JDeveloper (running outside the Kubernetes network) to an Oracle SOA Suite instance in the WebLogic Kubernetes Operator environment.</p>
 
+<div class="notices note" ><p>Use JDeveloper for development and test environments only. For a production environment, you should deploy using Application Control and WLST methods.</p>
+</div>
 
+<h3 id="deploy-oracle-soa-suite-and-oracle-service-bus-composite-applications-to-oracle-soa-suite-from-jdeveloper">Deploy Oracle SOA Suite and Oracle Service Bus composite applications to Oracle SOA Suite from JDeveloper</h3>
+<p>To deploy Oracle SOA Suite and Oracle Service Bus composite applications from Oracle JDeveloper, the Administration Server must be configured to expose a T3 channel. The WebLogic Kubernetes Operator provides an option to expose a T3 channel for the Administration Server using the <code>exposeAdminT3Channel</code> setting during domain creation, then the matching T3 service can be used to connect. By default, when <code>exposeAdminT3Channel</code> is set, the WebLogic Kubernetes Operator environment exposes the  <code>NodePort</code> for the T3 channel of the <code>NetworkAccessPoint</code> at <code>30012</code> (use <code>t3ChannelPort</code> to configure the port to a different value).</p>
+<p>If you miss enabling <code>exposeAdminT3Channel</code> during domain creation, follow <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/enablingt3/#expose-t3t3s-for-administration-server">Expose a T3/T3S Channel for the Administration Server</a>  to expose a T3 channel manually.</p>
+<p><img src="/fmw-kubernetes/images/soa-domains/SOA_Composites_Deploy_using_Jdev.png" alt="SOA Composite Deployment Model"></p>
+<h4 id="prerequisites">Prerequisites</h4>
+<ol>
+<li>
+<p>Get the Kubernetes cluster master address and verify the T3 port that will be used for creating application server connections. Use the following command to get the T3 port:</p>
+<pre><code>$ kubectl get service &lt;domainUID&gt;-&lt;AdministrationServerName&gt;-external -n  &lt;namespace&gt;-o jsonpath='{.spec.ports[0].nodePort}'
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl get service soainfra-adminserver-external -n  soans -o jsonpath='{.spec.ports[0].nodePort}'
+</code></pre></li>
+<li>
+<p>Oracle SOA Suite in the WebLogic Kubernetes Operator environment is deployed in a <em>Reference Configuration domain</em>. If a SOA project is developed in Classic mode JDeveloper displays a Mismatch notification in the Deploy Composite Wizard.  By default, JDeveloper is in Classic mode. To develop SOA projects in Reference Configuration mode, you must manually enable this feature in JDeveloper:
+a. From the File menu, select <strong>Tools</strong>, then <strong>Preferences</strong>.
+b. Select <strong>Reference Configuration Settings</strong>.
+c. Select <strong>Enable Reference Configuration settings in adapters</strong>.</p>
+<p><img src="/fmw-kubernetes/images/soa-domains/JDEV_Reference_Config_Settings.png" alt="Enable Reference Configuration"></p>
+</li>
+<li>
+<p>JDeveloper needs to access the Servers during deployment. In the WebLogic Kubernetes Operator environment, Administration and Managed Servers are pods and cannot be accessed directly by JDeveloper. As a workaround, you must configure the reachability of the Managed Servers:</p>
+
+<div class="notices note" ><p>The Managed Server T3 port is not exposed by default and opening this will have a security risk as the authentication method here is based on a userid/password. It is not recommended to do this on production instances.</p>
+</div>
 
 <ul>
-	
+<li>
+<p>Decide on an external IP address to be used to configure access to the Managed Servers. Master or worker node IP address can be used to configure Managed Server reachability. In these steps, the Kubernetes cluster master IP is used for demonstration.</p>
+</li>
+<li>
+<p>Get the pod names of the Administration Server and Managed Servers (that is, <code>&lt;domainUID&gt;-&lt;server name&gt;</code>), which will be used to map in <code>/etc/hosts</code>.</p>
+</li>
+<li>
+<p>Update <code>/etc/hosts</code> (or in Windows, <code>C:\Windows\System32\Drivers\etc\hosts</code>) on the host where JDeveloper is running with the entries below, where</p>
+<pre><code>&lt;Master IP&gt; &lt;Administration Server pod name&gt;
+&lt;Master IP&gt; &lt;Managed Server1 pod name&gt;
+&lt;Master IP&gt; &lt;Managed Server2 pod name&gt;
+</code></pre><p>Sample /etc/hosts entries looks as follows, where <code>X.X.X.X</code> is the master node IP address:</p>
+<pre><code>X.X.X.X soainfra-adminserver
+X.X.X.X soainfra-soa-server1  
+X.X.X.X soainfra-soa-server2
+</code></pre></li>
+<li>
+<p>Get the Kubernetes service name of the Oracle SOA Suite cluster to access externally with the master IP (or external IP):</p>
+<pre><code>$ kubectl get service &lt;domainUID&gt;-cluster-&lt;soa-cluster&gt; -n &lt;namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl get service soainfra-cluster-soa-cluster -n soans
+</code></pre></li>
+<li>
+<p>Create a Kubernetes service to expose the Oracle SOA Suite cluster service (<code>&lt;domainUID&gt;-cluster-&lt;soa-cluster&gt;</code>) externally with same port as the Managed Server:</p>
+<pre><code>$ kubectl expose service  &lt;domainUID&gt;-cluster-&lt;soa-cluster&gt; --name &lt;domainUID&gt;-&lt;soa-cluster&gt;-ext --external-ip=&lt;Master IP&gt; -n &lt;namespace&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl expose service  soainfra-cluster-soa-cluster --name soainfra-cluster-soa-cluster-ext --external-ip=X.X.X.X -n soans
+</code></pre>
+<div class="notices warning" ><p>In a production environment, exposing the SOA cluster service with an external IP address is not recommended, as it can cause message drops on the SOA Managed Servers.</p>
+</div>
+
+</li>
 </ul>
+</li>
+</ol>
+<h4 id="create-an-application-server-connection-in-jdeveloper">Create an application server connection in JDeveloper</h4>
+<ol>
+<li>
+<p>Create a new application server connection (for example <code>wls-k8s-op-connection</code>) in JDeveloper:
+<img src="/fmw-kubernetes/images/soa-domains/CreateApplicationServerConnection.jpg" alt="Create Application Server Connection"></p>
+</li>
+<li>
+<p>In the configuration page, provide the WebLogic Hostname as the Kubernetes Master Address.</p>
+</li>
+<li>
+<p>Update the Port as the T3 port (default is <code>30012</code>) obtained in <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/#prerequisites">Prerequisites</a>.</p>
+</li>
+<li>
+<p>Enter the WebLogic Domain value (<code>domainUID</code>).</p>
+</li>
+<li>
+<p>Test the connection to verify it is successful.
+<img src="/fmw-kubernetes/images/soa-domains/CreateApplicationServerConnectionTestConnection.jpg" alt="Create Application Server Connection"></p>
+</li>
+</ol>
+<h4 id="deploy-soa-composite-applications-using-jdeveloper">Deploy SOA composite applications using JDeveloper</h4>
+<ol>
+<li>
+<p>In JDeveloper, right-click the SOA project you want to deploy and select <strong>Deploy</strong> to display the deployment wizard.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Deployment_Start.png" alt="Deploy Project"></p>
+</li>
+<li>
+<p>In the Deployment Action page, select <strong>Deploy to Application Server</strong> and click <strong>Next</strong>.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Select_Deployment_Action.png" alt="Deployment Action"></p>
+</li>
+<li>
+<p>In the Deployment Configuration page, select the appropriate options and click <strong>Next</strong>.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Deploy_Configuration.png" alt="Deployment Configuration"></p>
+</li>
+<li>
+<p>In the Select server page, select the application server connection (<code>wls-k8s-op-connection</code>) that was created earlier and click <strong>Next</strong>.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Select_Application_Server.png" alt="Application Servers"></p>
+</li>
+<li>
+<p>If the <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/#prerequisites">Prerequisites</a> were configured correctly, the lookup discovers the Managed Servers for deploying the composite.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Server_Lookup.png" alt="Look Up Server"></p>
+</li>
+<li>
+<p>Using the application server connection, the Managed Servers (Oracle SOA Suite cluster) are listed on the SOA Servers page. Select the Oracle SOA Suite cluster and click <strong>Next</strong>.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Target_soa_servers.png" alt="Target Server"></p>
+</li>
+<li>
+<p>On the Summary page, click <strong>Finish</strong> to start deploying the composites to the Oracle SOA Suite cluster.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Deployment_Summary.png" alt="Deploy Summary"></p>
+<p><img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Deploying_Progress.png" alt="Deploying Progress"></p>
+</li>
+<li>
+<p>Verify logs on JDeveloper to confirm successful deployment.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_Deploy_Success_Status.png" alt="Deploying Status"></p>
+</li>
+<li>
+<p>Enter the soa-infra URLs in a browser to confirm the composites are deployed on both servers of the Oracle SOA Suite cluster.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_soainfra_server1.png" alt="SOA URL 1"></p>
+<p><img src="/fmw-kubernetes/images/soa-domains/JDEV_SOA_soainfra_server2.png" alt="SOA URL 2"></p>
+</li>
+</ol>
+<h4 id="deploy-oracle-service-bus-composite-applications-using-jdeveloper">Deploy Oracle Service Bus composite applications using JDeveloper</h4>
+<ol>
+<li>
+<p>In JDeveloper, right-click the Oracle Service Bus project you want to deploy and select <strong>Deploy</strong> to display the deployment wizard.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_Deployment_Start.png" alt="Deploy Project"></p>
+</li>
+<li>
+<p>In the Deployment Action page, select <strong>Deploy to Application Server</strong> and click <strong>Next</strong>.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_Select_Deployment_Action.png" alt="Deployment Action"></p>
+</li>
+<li>
+<p>In the Select Server page, select the application server connection (<code>wls-k8s-op-connection</code>) that was created earlier and click <strong>Next</strong>.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_Select_Application_Server.png" alt="Application Servers"></p>
+</li>
+<li>
+<p>On the Summary page, click <strong>Finish</strong> to start deploying the composites to the Oracle Service Bus cluster.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_Deployment_Summary.png" alt="Deploy Summary"></p>
+<p><img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_Deploying_Progress.png" alt="Deploying Progress"></p>
+</li>
+<li>
+<p>In JDeveloper, verify logs to confirm successful deployment.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_Deploy_Success_Status.png" alt="Deploying Status"></p>
+</li>
+<li>
+<p>In the Oracle Service Bus Console, click <strong>Launch Test Console</strong> to verify that the Oracle Service Bus composite application is deployed successfully.
+<img src="/fmw-kubernetes/images/soa-domains/JDEV_OSB_servicebus_launch_test_console.png" alt="Service Bus console"></p>
+</li>
+</ol>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1209,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1224,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1133,6 +1310,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1148,34 +1326,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
                     
                 
                 
@@ -1184,28 +1336,6 @@
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
                     
                         
             
@@ -1255,6 +1385,9 @@
             
         
                     
+            
+        
+                    
                         
             
             
@@ -1284,6 +1417,9 @@
                     
 
                     
+            
+        
+                    
                         
             
             
@@ -1304,6 +1440,56 @@
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1808,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1841,4 @@
 
   </body>
 </html>
+

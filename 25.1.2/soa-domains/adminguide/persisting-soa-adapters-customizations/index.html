@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Persist the customizations done for Oracle SOA Suite adapters.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Persist adapter customizations :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -235,7 +235,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -519,7 +519,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/" title="Persist adapter customizations" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/persisting-soa-adapters-customizations/">
         <b></b>Persist adapter customizations
         
@@ -955,7 +955,19 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/'>Administration Guide</a> > Persist adapter customizations
+          
+         
+          
+         
           
          
           
@@ -966,7 +978,16 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#method-1-customize-the-adapter-file-using-the-weblogic-administration-console">Method 1: Customize the Adapter file using the WebLogic Administration Console:</a></li>
+        <li><a href="#method-2-customize-the-adapter-file-on-the-worker-node">Method 2: Customize the Adapter file on the Worker Node:</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1003,7 @@
           
             <h1>
               
-              Categories
+              Persist adapter customizations
             </h1>
           
 
@@ -990,17 +1011,78 @@
 
 
 
-
-
-
-<ul>
-	
-</ul>
+<p>The lifetime for any customization done in a file on a server pod is up to the lifetime of that pod. The changes are not persisted once the pod goes down or is restarted.</p>
+<p>For example, the following configuration updates <code>DbAdapter.rar</code> to create a new connection instance and creates data source CoffeeShop on the Administration Console for the same with <code>jdbc/CoffeeShopDS</code>.</p>
+<p>File location: <code>/u01/oracle/soa/soa/connectors/DbAdapter.rar</code></p>
+<pre><code>&lt;connection-instance&gt;
+  &lt;jndi-name&gt;eis/DB/CoffeeShop&lt;/jndi-name&gt;
+  &lt;connection-properties&gt;
+    &lt;properties&gt;
+      &lt;property&gt;
+        &lt;name&gt;XADataSourceName&lt;/name&gt;
+        &lt;value&gt;jdbc/CoffeeShopDS&lt;/value&gt;
+      &lt;/property&gt;
+      &lt;property&gt;
+        &lt;name&gt;DataSourceName&lt;/name&gt;
+	    &lt;value&gt;&lt;/value&gt;
+      &lt;/property&gt;
+      &lt;property&gt;
+        &lt;name&gt;PlatformClassName&lt;/name&gt;
+	    &lt;value&gt;org.eclipse.persistence.platform.database.Oracle10Platform&lt;/value&gt;
+      &lt;/property&gt;
+    &lt;/properties&gt;
+   &lt;/connection-properties&gt;
+&lt;/connection-instance&gt;
+</code></pre><p>If you need to persist the customizations for any of the adapter files under the SOA Oracle Home in the server pod, use one of the following methods.</p>
+<h3 id="method-1-customize-the-adapter-file-using-the-weblogic-administration-console">Method 1: Customize the Adapter file using the WebLogic Administration Console:</h3>
+<ol>
+<li>
+<p>Log in to the WebLogic Administration Console, and go to <strong>Deployments</strong> &gt; <strong>ABC.rar</strong> &gt; <strong>Configuration</strong> &gt; <strong>Outbound Connection Pools</strong>.</p>
+</li>
+<li>
+<p>Click <strong>New</strong> to create a new connection, then provide a new connection name, and click <strong>Finish</strong>.</p>
+</li>
+<li>
+<p>Go back to the new connection, update the properties as required, and save.</p>
+</li>
+<li>
+<p>Under <strong>Deployments</strong>, select <strong>ABC.rar</strong>, then <strong>Update</strong>.</p>
+<p>This step asks for the <code>Plan.xml</code> location. This location by default will be in <code>${ORACLE_HOME}/soa/soa</code> which is not under Persistent Volume (PV). Therefore, provide the domain&rsquo;s PV location such as <code>{DOMAIN_HOME}/soainfra/servers</code>.<br>
+Now the <code>Plan.xml</code> will be persisted under this location for each Managed Server.</p>
+</li>
+</ol>
+<h3 id="method-2-customize-the-adapter-file-on-the-worker-node">Method 2: Customize the Adapter file on the Worker Node:</h3>
+<ol>
+<li>
+<p>Copy <code>ABC.rar</code> from the server pod to a PV path:</p>
+<pre><code>$ kubectl cp &lt;namespace&gt;/&lt;SOA Managed Server pod name&gt;:&lt;full path of .rar file&gt;  &lt;destination path inside PV&gt;
+</code></pre><p>For example:</p>
+<pre><code>$ kubectl cp soans/soainfra-soa-server1:/u01/oracle/soa/soa/connectors/ABC.rar ${DockerVolume}/domains/soainfra/servers/ABC.rar
+</code></pre><p>or
+do a normal file copy between these locations after entering (using <code>kubectl exec</code>) in to the Managed Server pod.</p>
+</li>
+<li>
+<p>Unrar <code>ABC.rar</code>.</p>
+</li>
+<li>
+<p>Update the new connection details in the <code>weblogic-ra.xml</code> file under <code>META_INF</code>.</p>
+</li>
+<li>
+<p>In the WebLogic Administration Console, under <strong>Deployments</strong>, select <strong>ABC.rar</strong>, then <strong>Update</strong>.</p>
+</li>
+<li>
+<p>Select the <code>ABC.rar</code> path as the new location, which is <code>${DOMAIN_HOME}/user_projects/domains/soainfra/servers/ABC.rar</code> and click <strong>Update</strong>.</p>
+</li>
+<li>
+<p>Verify that the <code>plan.xml</code> or updated <code>.rar</code> should be persisted in the PV.</p>
+</li>
+</ol>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1115,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1130,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1133,6 +1216,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1148,133 +1232,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
                     
                 
                 
@@ -1355,6 +1314,138 @@
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1713,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/" title="Deploy using composites in a persistent volume or image"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/performing-wlst-operations/" title="Perform WLST operations" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1746,4 @@
 
   </body>
 </html>
+

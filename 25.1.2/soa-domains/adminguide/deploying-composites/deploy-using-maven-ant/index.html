@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Hugo 0.72.0" />
-    <meta name="description" content="">
+    <meta name="description" content="Deploy Oracle SOA Suite and Oracle Service Bus composite applications using the Maven and Ant based approach in an Oracle SOA Suite deployment.">
 
 
     <link rel="icon" href="/fmw-kubernetes/25.1.2/images/favicon.png" type="image/png">
 
-    <title>Categories :: Oracle Fusion Middleware on Kubernetes</title>
+    <title>Deploy using Maven and Ant :: Oracle Fusion Middleware on Kubernetes</title>
 
     
     <link href="/fmw-kubernetes/25.1.2/css/nucleus.css?1749815215" rel="stylesheet">
@@ -37,7 +37,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/fmw-kubernetes/25.1.2/categories/">
+  <body class="" data-url="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
     <nav id="sidebar" class="">
 
 
@@ -81,7 +81,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" class="dd-item 
-        
+        parent
         
         
         ">
@@ -235,7 +235,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/" title="Administration Guide" class="dd-item 
-        
+        parent
         
         
         ">
@@ -429,7 +429,7 @@
   
     
     <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/" title="Deploy composite applications" class="dd-item 
-        
+        parent
         
         
         ">
@@ -472,7 +472,7 @@
  
   
     
-      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item ">
+      <li data-nav-id="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/" title="Deploy using Maven and Ant" class="dd-item active">
         <a href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-using-maven-ant/">
         <b>b. </b>Deploy using Maven and Ant
         
@@ -955,7 +955,25 @@
             
           
           
-            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > Categories
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/fmw-kubernetes/25.1.2/'>Oracle Fusion Middleware on Kubernetes</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/'>Oracle SOA Suite</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/'>Administration Guide</a> > <a href='/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/'>Deploy composite applications</a> > Deploy using Maven and Ant
+          
+         
+          
+         
+          
+         
           
          
           
@@ -966,7 +984,17 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#create-a-composite-deployment-container">Create a composite deployment container</a></li>
+        <li><a href="#maven-based-build-and-deploy">Maven based build and deploy</a></li>
+        <li><a href="#ant-based-build-and-deploy">Ant based build and deploy</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
     </div>
 </div>
 
@@ -982,7 +1010,7 @@
           
             <h1>
               
-              Categories
+              Deploy using Maven and Ant
             </h1>
           
 
@@ -990,17 +1018,227 @@
 
 
 
+<p>Learn how to deploy Oracle SOA Suite and Oracle Service Bus composite applications using the Maven and Ant based approach in an Oracle SOA Suite in WebLogic Kubernetes Operator environment.</p>
+<p>Before deploying composite applications, we need to create a Kubernetes pod in the same cluster where the Oracle SOA Suite domain is running, so that composite applications can be deployed using the internal Kubernetes Service for the Administration Server URL.</p>
+<p>Place the SOA/Oracle Service Bus composite project at a share location (for example at <code>/share/soa-deploy</code>) mounted at <code>/composites</code> inside container.
+Make sure to provide <code>oracle</code> user <em>( uid: 1000 and gid: 0)</em> permission to directory <code>/share/soa-deploy</code>, so that it is accessible and writable inside the container.</p>
+<pre><code>$ sudo chown -R 1000:0 /share/soa-deploy
+</code></pre><p>Follow the steps in this section to create a container and then use it to deploy Oracle SOA Suite and Oracle Service Bus composite applications using Maven or Ant.</p>
+<h3 id="create-a-composite-deployment-container">Create a composite deployment container</h3>
+<p>Before creating a Kubernetes pod, make sure that the Oracle SOA Suite Docker image is available on a node, or you can create an image pull secret so that the pod can pull the Docker image on the host where it gets created.</p>
+<ol>
+<li>
+<p>Create an image pull secret to pull image <code>soasuite:12.2.1.4</code> by the Kubernetes pod:</p>
+<pre><code>$ kubectl create secret docker-registry image-secret -n soans --docker-server=your-registry.com --docker-username=xxxxxx --docker-password=xxxxxxx  --docker-email=my@company.com
+</code></pre></li>
+<li>
+<p>Create a PersistentVolume and PersistentVolumeClaim (<code>soadeploy-pv.yaml</code> and <code>soadeploy-pvc.yaml</code>) with sample composites for build and deploy placed at <code>/share/soa-deploy</code>.</p>
+<p>a) Create a PersistentVolume with the sample provided (<code>soadeploy-pv.yaml</code>), which uses NFS (you can use <code>hostPath</code> or any other supported PV type):</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: soadeploy-pv
+spec:
+  storageClassName: soadeploy-storage-class
+  capacity:
+   storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  # Valid values are Retain, Delete or Recycle
+  persistentVolumeReclaimPolicy: Retain
+  # hostPath:
+  nfs:
+    server: X.X.X.X
+    path: &quot;/share/soa-deploy&quot;
+</code></pre><p>b) Apply the YAML:</p>
+<pre><code>$ kubectl apply -f soadeploy-pv.yaml
+</code></pre><p>c) Create a PersistentVolumeClaim (<code>soadeploy-pvc.yaml</code>):</p>
+<pre><code>kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: soadeploy-pvc
+  namespace: soans
+spec:
+  storageClassName: soadeploy-storage-class
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi      
+</code></pre><p>d) Apply the YAML:</p>
+<pre><code>$ kubectl apply -f soadeploy-pvc.yaml
+</code></pre></li>
+<li>
+<p>Create a composite deploy pod using <code>soadeploy.yaml</code> to mount the composites inside pod at <code>/composites</code>:</p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: soadeploy
+  name: soadeploy
+  namespace: soans
+spec:
+  imagePullSecrets:
+  - name: image-secret
+  containers:
+  - image: soasuite:12.2.1.4
+    name: soadeploy
+    env:
+    - name: M2_HOME
+      value: /u01/oracle/oracle_common/modules/org.apache.maven_3.2.5
+    command: [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;echo 'export PATH=$PATH:$M2_HOME/bin' &gt;&gt; $HOME/.bashrc; sleep infinity&quot;]
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - name: mycomposite
+      mountPath: /composites
+  volumes:
+  - name: mycomposite
+    persistentVolumeClaim:
+       claimName: soadeploy-pvc
+</code></pre></li>
+<li>
+<p>Create the pod:</p>
+<pre><code>$ kubectl apply -f soadeploy.yaml
+</code></pre></li>
+<li>
+<p>Once the Kubernetes pod is deployed, exec into the pod to perform Maven/Ant based build and deploy:</p>
+<pre><code>$ kubectl exec -it -n soans soadeploy -- bash
+</code></pre></li>
+</ol>
+<h3 id="maven-based-build-and-deploy">Maven based build and deploy</h3>
+<blockquote>
+<p>Note: Make sure to execute these commands inside the <code>soadeploy</code> pod.</p>
+</blockquote>
+<p>Set up proxy details for Maven to pull dependencies from the internet.</p>
+<p>If your environment is not running behind a proxy, then skip this step. Otherwise, replace <code>REPLACE-WITH-PROXY-HOST</code>, <code>REPLACE-WITH-PROXY-PORT</code> and the value for <code>nonProxyHosts</code> attribute per your environment and create the <code>settings.xml</code>:</p>
+<pre><code>$ mkdir $HOME/.m2
+$ cat &lt;&lt;EOF &gt; $HOME/.m2/settings.xml
+&lt;settings&gt;
+&lt;proxies&gt;
+&lt;proxy&gt;
+&lt;active&gt;true&lt;/active&gt;
+&lt;protocol&gt;http&lt;/protocol&gt;
+&lt;host&gt;REPLACE-WITH-PROXY-HOST&lt;/host&gt;
+&lt;port&gt;REPLACE-WITH-PROXY-PORT&lt;/port&gt;
+&lt;nonProxyHosts&gt;soainfra-cluster-soa-cluster|soainfra-adminserver&lt;/nonProxyHosts&gt;
+&lt;/proxy&gt;
+&lt;/proxies&gt;
+&lt;/settings&gt;
+EOF
+</code></pre><h4 id="for-oracle-soa-suite-composite-applications">For Oracle SOA Suite composite applications</h4>
+<ol>
+<li>
+<p>Set up the environment for Maven:</p>
+<pre><code>#Perform Maven Sync
+$ cd /u01/oracle/oracle_common/plugins/maven/com/oracle/maven/oracle-maven-sync/12.2.1/
+$ mvn install:install-file \
+    -DpomFile=oracle-maven-sync-12.2.1.pom \
+    -Dfile=oracle-maven-sync-12.2.1.jar
 
+#install Maven plugin
+$ mvn help:describe \
+    -Dplugin=com.oracle.maven:oracle-maven-sync \
+    -Ddetail
 
+#push libraries into internal repository
+$ mvn com.oracle.maven:oracle-maven-sync:push \
+    -DoracleHome=/u01/oracle \
+    -DtestingOnly=false
 
-<ul>
-	
-</ul>
+$ mvn archetype:crawl \
+    -Dcatalog=$HOME/.m2/archetype-catalog.xml \
+    -DarchetypeArtifactId=oracle-soa-application \
+    -DarchetypeVersion=12.2.1-4-0
+</code></pre></li>
+<li>
+<p>Build the SOA Archive (SAR) for your sample deployment available at <code>/composites/mavenproject/my-soa-app</code>:</p>
+<pre><code>$ cd /composites/mavenproject/my-soa-app
+$ mvn package
+</code></pre><p>The SAR will be generated at <code>/composites/mavenproject/my-soa-app/my-project/target/sca_my-project.jar</code>.</p>
+</li>
+<li>
+<p>Deploy into the Oracle SOA Suite instance. For example, if the instance URL is <code>http://soainfra-cluster-soa-cluster:7003</code> with credentials <code>username</code>: weblogic and <code>password</code>: Welcome1, enter the following commands:</p>
+<pre><code>$ cd /composites/mavenproject/my-soa-app
+$ mvn pre-integration-test \
+    -DoracleServerUrl=http://soainfra-cluster-soa-cluster:7003 \
+    -DsarLocation=/composites/mavenproject/my-soa-app/my-project/target/sca_my-project.jar \
+    -Doverwrite=true \
+    -DforceDefault=true \
+    -Dcomposite.partition=default \
+    -Duser=weblogic  -Dpassword=Welcome1
+</code></pre></li>
+</ol>
+<h4 id="for-oracle-service-bus-composite-applications">For Oracle Service Bus composite applications</h4>
+<ol>
+<li>
+<p>Set up the environment for Maven:</p>
+<pre><code>#Perform Maven Sync
+$ cd /u01/oracle/oracle_common/plugins/maven/com/oracle/maven/oracle-maven-sync/12.2.1/
+$ mvn install:install-file \
+    -DpomFile=oracle-maven-sync-12.2.1.pom \
+    -Dfile=oracle-maven-sync-12.2.1.jar
+
+#push libraries into internal repository
+$ mvn com.oracle.maven:oracle-maven-sync:push \
+    -DoracleHome=$ORACLE_HOME
+$ mvn archetype:crawl \
+    -Dcatalog=$HOME/.m2/archetype-catalog.xml
+
+#Verify the mvn setup
+$ mvn help:describe \
+    -DgroupId=com.oracle.servicebus.plugin \
+    -DartifactId=oracle-servicebus-plugin \
+    -Dversion=12.2.1-4-0
+</code></pre></li>
+<li>
+<p>Build the Oracle Service Bus Archive (<code>sbconfig.sbar</code>)</p>
+<p>Build <code>sbconfig.sbar</code> for your sample deployment, available at <code>/composites/mavenproject/HelloWorldSB</code>:</p>
+<pre><code>$ cd /composites/mavenproject/HelloWorldSB
+$ mvn com.oracle.servicebus.plugin:oracle-servicebus-plugin:package
+</code></pre><p>The Oracle Service Bus Archive (SBAR) will be generated at <code>/composites/mavenproject/HelloWorldSB/.data/maven/sbconfig.sbar</code>.</p>
+</li>
+<li>
+<p>Deploy the generated <code>sbconfig.sbar</code> into the Oracle Service Bus instance. For example, if the Administration URL is <code>http://soainfra-adminserver:7001</code> with credentials <code>username</code>: weblogic and <code>password</code>: Welcome1, enter the following commands:
+:</p>
+<pre><code>$ cd /composites/mavenproject/HelloWorldSB
+$ mvn pre-integration-test   \
+    -DoracleServerUrl=t3://soainfra-adminserver:7001 \
+    -DoracleUsername=weblogic -DoraclePassword=Welcome1
+</code></pre></li>
+</ol>
+<h3 id="ant-based-build-and-deploy">Ant based build and deploy</h3>
+<blockquote>
+<p>Note: Make sure to execute these commands inside the <code>soadeploy</code> pod.</p>
+</blockquote>
+<h4 id="for-oracle-soa-suite-composite-applications-1">For Oracle SOA Suite composite applications</h4>
+<ol>
+<li>
+<p>Build an Oracle SOA Suite composite application using Ant. For example, if the composite application to be deployed is available at  <code>/composites/antproject/Project</code>, enter the following commands:</p>
+<pre><code>$ cd /u01/oracle/soa/bin
+$ ant -f ant-sca-package.xml \
+      -DcompositeDir=/composites/antproject/Project \
+      -DcompositeName=Project \
+      -Drevision=0.1
+</code></pre><p>The SOA Archive is generated at <code>/composites/antproject/Project/deploy/sca_Project_rev0.1.jar</code>, which will be used for deploying.</p>
+</li>
+<li>
+<p>Deploy into the Oracle SOA Suite instance using Ant:</p>
+<pre><code>$ cd /u01/oracle/soa/bin
+$ ant -f ant-sca-deploy.xml \
+      -DserverURL=http://soainfra-cluster-soa-cluster:7003  \
+      -DsarLocation=/composites/antproject/Project/deploy/sca_Project_rev0.1.jar \
+      -Doverwrite=true \
+      -Duser=weblogic -Dpassword=Welcome1
+</code></pre></li>
+</ol>
+<h4 id="for-oracle-service-bus-composite-applications-1">For Oracle Service Bus composite applications</h4>
+<p>See <a href="https://docs.oracle.com/en/middleware/soa-suite/service-bus/12.2.1.4/develop/importing-and-exporting-resources-and-configurations.html#GUID-B4B84A13-FDED-4A2B-8AD8-597B92DC12E9">Developing Services Using Oracle Service Bus</a> to deploy Oracle Service Bus composite applications using Ant.</p>
 
 
 <footer class=" footline" >
 	
 </footer>
+
 
         
         </div> 
@@ -1033,8 +1271,6 @@
             
                 
                     
-                        
-                        
                     
                 
                 
@@ -1050,6 +1286,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1133,6 +1372,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1148,34 +1388,8 @@
             
                 
                     
-                
-                
-
-                    
-                    
-                    
-
-                    
                         
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
-            
-            
-                
                     
                 
                 
@@ -1184,28 +1398,6 @@
                     
                     
 
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
                     
                         
             
@@ -1255,34 +1447,8 @@
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
             
         
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
                     
                         
             
@@ -1320,6 +1486,91 @@
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -1622,8 +1873,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/supportjdev/" title="Deploy using JDeveloper"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/" title="Oracle SOA Suite" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/fmw-kubernetes/25.1.2/soa-domains/adminguide/deploying-composites/deploy-artifacts/" title="Deploy using composites in a persistent volume or image" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
@@ -1653,3 +1906,4 @@
 
   </body>
 </html>
+
