@@ -1,0 +1,119 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is a response file for the Fusion Middleware Upgrade Assistant.
+# Individual component upgrades are performed in the order they are described here.
+# Each upgrade is introduced by a section header containing the name of the
+# component and name of the upgrade plugin. The form of the section header is
+# [ComponentName.PluginName]
+# These names can be found in the Upgrade Descriptor files for the components.
+
+# Individual input lines consist of a name, an equal sign, and a value.
+# The name is in two parts separated by a period.  The first part is the "name"
+# attribute from the Descriptor File XML tag by which the plugin refers to the value.
+# The second part of the name identifies a field within that value.  Some input
+# types have only one field, while other types can have half a dozen.   Do not
+# intermix input lines that apply to different XML tags.
+
+[GENERAL]
+# This is the file format version number.  Do not change the next line.
+fileFormatVersion = 3
+
+# The next section contains information for accessing a WebLogic Server domain.
+[UAWLSINTERNAL.UAWLS]
+pluginInstance = 1
+
+# Specifies the WebLogic Server domain directory:
+UASVR.path = %DOMAIN_HOME%
+
+[OPSS.OPSS_SCHEMA_PLUGIN]
+pluginInstance = 2
+
+OPSS.databaseType = Oracle Database
+OPSS.databaseConnectionString = //%CONNECTION_STRING%
+OPSS.schemaConnectionString = //%CONNECTION_STRING%
+OPSS.schemaUserName = %RCUPREFIX%_OPSS
+OPSS.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+OPSS.dbaUserName = %SYS_USERNAME% as sysdba
+OPSS.cleartextDbaPassword = %SYS_PASSWORD%
+
+[MDS.SCHEMA_UPGRADE]
+pluginInstance = 3
+MDS.databaseType = Oracle Database
+MDS.databaseConnectionString = //%CONNECTION_STRING%
+MDS.schemaConnectionString = //%CONNECTION_STRING%
+MDS.schemaUserName = %RCUPREFIX%_MDS
+MDS.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+MDS.dbaUserName = %SYS_USERNAME% as sysdba
+MDS.cleartextDbaPassword = %SYS_PASSWORD%
+
+%ESS_SCHEMA_PREFIX%[ESS.ESS_SCHEMA]
+%ESS_SCHEMA_PREFIX%pluginInstance = 9
+%ESS_SCHEMA_PREFIX%ESS.databaseType = Oracle Database
+%ESS_SCHEMA_PREFIX%ESS.databaseConnectionString = //%CONNECTION_STRING%
+%ESS_SCHEMA_PREFIX%ESS.schemaConnectionString = //%CONNECTION_STRING%
+%ESS_SCHEMA_PREFIX%ESS.schemaUserName = %RCUPREFIX%_ESS
+%ESS_SCHEMA_PREFIX%ESS.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+%ESS_SCHEMA_PREFIX%ESS.dbaUserName = %SYS_USERNAME% as sysdba
+%ESS_SCHEMA_PREFIX%ESS.cleartextDbaPassword = %SYS_PASSWORD%
+
+[IAU.AUDIT_SCHEMA_PLUGIN]
+pluginInstance = 12
+
+IAU.databaseType = Oracle Database
+IAU.databaseConnectionString = //%CONNECTION_STRING%
+IAU.schemaConnectionString = //%CONNECTION_STRING%
+IAU.schemaUserName = %RCUPREFIX%_IAU
+IAU.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+IAU.dbaUserName = %SYS_USERNAME% as sysdba
+IAU.cleartextDbaPassword = %SYS_PASSWORD%
+
+[FMWCONFIG.CIE_SCHEMA_PLUGIN]
+pluginInstance = 8
+
+STB.databaseType = Oracle Database
+STB.databaseConnectionString = %CONNECTION_STRING%
+STB.schemaConnectionString = %CONNECTION_STRING%
+STB.schemaUserName = %RCUPREFIX%_STB
+STB.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+STB.dbaUserName = %SYS_USERNAME% as sysdba
+STB.cleartextDbaPassword = %SYS_PASSWORD%
+
+[SOA.SOA1]
+pluginInstance = 13
+
+SOAINFRA.databaseType = Oracle Database
+SOAINFRA.databaseConnectionString = //%CONNECTION_STRING%
+SOAINFRA.schemaConnectionString = //%CONNECTION_STRING%
+SOAINFRA.schemaUserName = %RCUPREFIX%_SOAINFRA
+SOAINFRA.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+SOAINFRA.dbaUserName = %SYS_USERNAME% as sysdba
+SOAINFRA.cleartextDbaPassword = %SYS_PASSWORD%
+
+[UCSUMS.UCSUMS_SCHEMA_PLUGIN]
+pluginInstance = 6
+UMS.databaseType = Oracle Database
+UMS.databaseConnectionString = //%CONNECTION_STRING%
+UMS.schemaConnectionString = //%CONNECTION_STRING%
+UMS.schemaUserName = %RCUPREFIX%_UMS
+UMS.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+UMS.dbaUserName = %SYS_USERNAME% as sysdba
+UMS.cleartextDbaPassword = %SYS_PASSWORD%
+
+[WLS.WLS]
+pluginInstance = 4
+
+WLS.databaseType = Oracle Database
+WLS.databaseConnectionString = //%CONNECTION_STRING%
+WLS.schemaConnectionString = //%CONNECTION_STRING%
+WLS.schemaUserName = %RCUPREFIX%_WLS
+WLS.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+WLS.dbaUserName = %SYS_USERNAME% as sysdba
+WLS.cleartextDbaPassword = %SYS_PASSWORD%
+WLS_RUNTIME.databaseType = Oracle Database
+WLS_RUNTIME.databaseConnectionString = //%CONNECTION_STRING%
+WLS_RUNTIME.schemaConnectionString = //%CONNECTION_STRING%
+WLS_RUNTIME.schemaUserName = %RCUPREFIX%_WLS_RUNTIME
+WLS_RUNTIME.cleartextSchemaPassword = %SCHEMA_PASSWORD%
+WLS_RUNTIME.dbaUserName = %SYS_USERNAME% as sysdba
+WLS_RUNTIME.cleartextDbaPassword = %SYS_PASSWORD%

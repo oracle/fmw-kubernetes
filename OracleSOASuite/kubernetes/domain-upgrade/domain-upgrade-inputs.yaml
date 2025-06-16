@@ -1,0 +1,48 @@
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# The version of this inputs file.  Do not modify.
+version: domain-upgrade-soainfra-inputs-v1
+
+
+# Unique ID of the domain.
+domainUID: soainfra
+
+# Domain Type - osb,soa,soaosb
+domainType: soa
+
+# Home of the WebLogic domain
+domainHome: "/u01/oracle/user_projects/domains/soainfra"
+
+# OracleSOASuite image for upgrade.
+image: "soasuite:release-version"
+
+# Image pull policy
+# Legal values are "IfNotPresent", "Always", or "Never"
+imagePullPolicy: IfNotPresent
+
+# Name of the Kubernetes secret to access the container registry to pull the OracleSOASuite image
+# The presence of the secret will be validated when this parameter is enabled.
+#imagePullSecretName:
+
+# Name of the domain namespace
+namespace: soans
+
+# Name of the persistent volume claim used by the Domain home.
+persistentVolumeClaimName: soainfra-domain-pvc
+
+# Mount path of the domain persistent volume.
+domainPVMountPath: "/u01/oracle/user_projects"
+
+# The RCU schema prefix 
+rcuSchemaPrefix: SOA1
+
+# The database URL
+rcuDatabaseURL: "xxxxx.example.com:1521/xxxxx.example.com"
+
+# The kubernetes secret containing the database credentials
+rcuCredentialsSecret: soainfra-rcu-credentials
+
+# Boolean indicating if secure to be enabled for the domain.
+secureEnabled: false
+

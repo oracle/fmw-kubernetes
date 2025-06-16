@@ -1,0 +1,69 @@
+# This is a response file for the Fusion Middleware Upgrade Assistant.
+# Individual component upgrades are performed in the order they are described here.
+# Each upgrade is introduced by a section header containing the name of the
+# component and name of the upgrade plugin. The form of the section header is
+# [ComponentName.PluginName]
+# These names can be found in the Upgrade Descriptor files for the components.
+
+# Individual input lines consist of a name, an equal sign, and a value.
+# The name is in two parts separated by a period.  The first part is the "name"
+# attribute from the Descriptor File XML tag by which the plugin refers to the value.
+# The second part of the name identifies a field within that value.  Some input
+# types have only one field, while other types can have half a dozen.   Do not
+# intermix input lines that apply to different XML tags.
+
+[GENERAL]
+# This is the file format version number.  Do not change the next line.
+fileFormatVersion = 3
+
+# The next section contains information for accessing a WebLogic Server domain.
+[UAWLSINTERNAL.UAWLS]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 1
+
+# Specifies the WebLogic Server domain directory:
+UASVR.path = %DOMAIN_HOME%
+
+# The next section contains the information for performing a mid-tier
+# upgrade on Oracle JRF, as described in the Upgrade
+# Descriptor file located at
+#   /u01/oracle/oracle_common/plugins/upgrade/jrfua.xml
+# Do not change the next line.
+[JRF.JRF_CONFIG_PLUGIN]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 5
+
+# The next section contains the information for performing a mid-tier
+# upgrade on System Components Infrastructure, as described in the Upgrade
+# Descriptor file located at
+#   /u01/oracle/oracle_common/plugins/upgrade/syscomp.xml
+# Do not change the next line.
+[CAM.SYSCOMP]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 10
+
+# The next section contains the information for performing a mid-tier
+# upgrade on Oracle Web Services Manager, as described in the Upgrade
+# Descriptor file located at
+#   /u01/oracle/oracle_common/plugins/upgrade/wsm.xml
+# Do not change the next line.
+[WSM.WSMPLUGIN]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 11
+
+# The next section contains the information for performing a mid-tier
+# upgrade on User Messaging Service, as described in the Upgrade
+# Descriptor file located at
+#   /u01/oracle/oracle_common/plugins/upgrade/usermessaging.xml
+# Do not change the next line.
+[UCSUMS.UCSUMS_CONFIGURATION_PLUGIN]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 7
+# Specifies a choice from a collection of values,
+# "Is this correct?"
+REMOTE_COPY_CHOICE.choose = REMOTE_COPY_CHOICE3
