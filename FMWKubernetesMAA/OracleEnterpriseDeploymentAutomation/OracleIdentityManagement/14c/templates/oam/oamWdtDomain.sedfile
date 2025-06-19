@@ -1,0 +1,49 @@
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of functions and procedures to provision and Configure Oracle Identity Governance
+#
+#
+# Usage: not invoked Directly
+#
+/oam_cluster/,/cpu/ {
+/cpu:/a\        ephemeral-storage: 10Gi 
+}
+/oam_cluster/,/requests/ {
+/requests:/a\        ephemeral-storage: 10Gi 
+}
+/oam_cluster/,/serverPod/ {
+/serverPod:/a\    livenessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    readinessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60
+}
+/policy_cluster/,/replicas/ {
+/replicas:/a\  serverPod:\
+\    livenessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    readinessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    resources: \
+\      limits: \
+\        cpu: "<OAM_MAX_CPU>" \
+\        ephemeral-storage: 10Gi \
+\        memory: <OAM_MAX_MEMORY> \
+\      requests: \
+\        cpu: <OAM_CPU> \
+\        ephemeral-storage: 10Gi \
+\        memory: <OAM_MEMORY>
+}
+

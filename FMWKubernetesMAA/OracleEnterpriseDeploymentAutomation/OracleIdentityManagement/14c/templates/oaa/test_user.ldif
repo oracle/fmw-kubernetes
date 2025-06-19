@@ -1,0 +1,38 @@
+#!/bin/bash
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of Creating an OAA Schemas
+#
+dn: cn=<OAA_USER>,<LDAP_USER_SEARCHBASE>
+changetype: add
+objectClass: orclUserV2
+objectClass: oblixorgperson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: oblixPersonPwdPolicy
+objectClass: orclAppIDUser
+objectClass: orclUser
+objectClass: orclIDXPerson
+objectClass: top
+objectClass: OIMPersonPwdPolicy
+givenName: <OAA_USER>
+uid: <OAA_USER>
+orclIsEnabled: ENABLED
+sn: <OAA_USER>
+userPassword: <OAA_USER_PWD>
+mail: <OAA_USER_EMAIL>
+mobile: 9876543210
+description: OAA Test User
+orclSAMAccountName: <OAA_USER>
+cn: <OAA_USER>
+postalCode: <OAA_USER_POSTCODE>
+obpasswordchangeflag: false
+obpsftid: true
+ds-pwp-password-policy-dn: cn=FAPolicy,cn=pwdPolicies,cn=Common,cn=Products,cn=OracleContext,<LDAP_SEARCHBASE>
+
+dn:cn=<OAA_USER_GROUP>,<LDAP_GROUP_SEARCHBASE>
+changetype: modify
+add: uniqueMember
+uniqueMember: cn=<OAA_USER>,<LDAP_USER_SEARCHBASE>

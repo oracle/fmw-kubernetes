@@ -1,0 +1,366 @@
+# Copyright (c) 2025, Oracle and/or its affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+# This is an example of a responsefile for the create_infra.sh script
+# Please use .ocipwd file to key in the sensitive information.
+#
+# Note: the values for the following variables MUST be unique within the specified compartment otherwise
+# unexpected results may occur.
+#   VCN_DISPLAY_NAME
+#   OKE_CLUSTER_DISPLAY_NAME
+#   BASTION_INSTANCE_DISPLAY_NAME
+#   WEBHOST_PREFIX
+#   WEBTIER1_MOUNT_TARGET_DISPLAY_NAME
+#   WEBTIER2_MOUNT_TARGET_DISPLAY_NAME
+#   OKE_MOUNT_TARGET_DISPLAY_NAME
+#   LBR_LOG_GROUP_NAME
+#   PUBLIC_LBR_DISPLAY_NAME
+#   INT_LBR_DISPLAY_NAME
+#   K8_LBR_DISPLAY_NAME
+#   DB_HOSTNAME_PREFIX
+#   DNS_DOMAIN_NAME
+#   All of the FS_xxx_DISPLAY_NAME values
+
+
+
+
+########################################
+#  MANDATORY PARAMETERS
+########################################
+
+# Note: The following variables MUST be reviewed and set to appropriate values. 
+
+# What directory to store the script log files and output files
+WORKDIR="/home/opc/workdir/OKE"
+
+# From "oci iam region list --output table", for example us-ashburn-1. 
+REGION="<your-region>"
+
+# The name of the compartment to create all resource in
+COMPARTMENT_NAME="<your-compartment-name>"
+
+SSL_COUNTRY="<country>"
+SSL_STATE="<state>"
+SSL_LOCALE="<city>"
+SSL_ORG="<company>"
+SSL_ORGUNIT="<organization>"
+
+# The combination of DB_NAME + DB_SUFFIX needs to be a unique value within the DB_DOMAIN.
+DB_NAME="idmdb"
+DB_SUFFIX="edg"
+
+# Which init.ora/SGA memory parameters to use for the database? Options include "dev", "small", "medium",
+# and "large". See table 10-3 in the EDG for details.
+DB_MEMORY_CONFIG="dev"
+
+# Configuration of the DNS zone (this section must remain at here within the file)
+DNS_DOMAIN_NAME="example.com"
+DNS_ZONE_TYPE="PRIMARY"
+DNS_SCOPE="PRIVATE"
+DNS_INTERNAL_LBR_DNS_HOSTNAME="loadbalancer.$DNS_DOMAIN_NAME"
+
+# Do you wish to configure/tune the database? Note that this requires the script to poll the status of the database
+# before it can proceed. This will cause the script to wait 2+ hours until the database becomes available. 
+CONFIGURE_DATABASE="true"
+CREATE_OAM_PDB="true"
+OAM_PDB_NAME="oampdb"
+OAM_SERVICE_NAME="oamsvc.$DNS_DOMAIN_NAME"
+CREATE_OIG_PDB="true"
+OIG_PDB_NAME="oigpdb"
+OIG_SERVICE_NAME="oigsvc.$DNS_DOMAIN_NAME"
+CREATE_OAA_PDB="false"
+OAA_PDB_NAME="oaapdb"
+OAA_SERVICE_NAME="oaasvc.$DNS_DOMAIN_NAME"
+CREATE_OIRI_PDB="false"
+OIRI_PDB_NAME="oiripdb"
+OIRI_SERVICE_NAME="oirisvc.$DNS_DOMAIN_NAME"
+
+# OCI images names to use for the underlying OS instances. Note that they default to use the same as defined for the
+# Bastion host but each can be set separately if desired.
+BASTION_IMAGE_NAME="Oracle-Linux-8"
+
+# OCI Shape from which various Hosts and Nodepools are created.
+DEFAULT_HOST_SHAPE="VM.Standard.E4.Flex"
+
+# Which helm version to download and install to the bastion node
+# Please pass "latest" for using the lastest version available.
+HELM_VER="3.15.4"
+
+# OS user and group to use for the OHS software on the Webhosts
+OHS_SOFTWARE_OWNER="opc"
+OHS_SOFTWARE_GROUP="opc"
+
+# Do you wish to automatically configure the Bastion host with the changes (OS packages, helm kubernetes, etc...)
+# as described in the EDG? This can hang/fail if there is a proxy server between the machine running the scripts
+# and the bastion host.
+CONFIGURE_BASTION="true"
+
+# Do you wish to automatically configure the Web hosts with the changes (Os packages, firewall, NFS, etc...)
+# as described in the EDG? This can hang/fail if there is a proxy server between the machine running the scripts
+# and the bastion/jumpbox host.
+CONFIGURE_WEBHOSTS="true"
+
+
+
+########################################
+#  OPTIONAL PARAMETERS
+########################################
+
+
+# All changes below this point are optional. If not changed the values will use the value as listed in
+# the EDG or reasonable defaults if the EDG does not specify a value.
+
+# Do not change the OCI_CLI_REGION unless you know what you are doing!
+export OCI_CLI_REGION=$REGION
+
+# Please choose the Cluster Type - STD / ENH
+OKE_CLUSTER_TYPE="STD"
+
+# Port numbers configuration
+OAM_ADMIN_SERVICE_PORT="30701"
+OAM_POLICY_SERVICE_PORT="30510"
+OAM_SERVER_SERVICE_PORT="30410"
+OIG_ADMIN_SERVICE_PORT="30711"
+OIG_SERVER_SERVICE_PORT="30140"
+SOA_SERVER_SERICE_PORT="30801"
+OUDSM_SERVER_SERVICE_PORT="30901"
+INGRESS_SERVICE_PORT="30777"
+OHS_NON_SSL_PORT="7777"
+PUBLIC_LBR_NON_SSL_PORT="80"
+PUBLIC_LBR_SSL_PORT="443"
+
+# Subnet configuration
+VCN_SUBNET_CIDR="10.0.0.0/16"
+BASTION_SUBNET_CIDR="10.0.1.0/29"
+WEB_SUBNET_CIDR="10.0.2.0/28"
+LBR1_SUBNET_CIDR="10.0.4.0/24"
+LBR2_SUBNET_CIDR="10.0.5.0/24"
+DB_SUBNET_CIDR="10.0.11.0/24"
+OKE_NODE_SUBNET_CIDR="10.0.10.0/24"
+OKE_API_SUBNET_CIDR="10.0.0.0/28"
+OKE_SVCLB_SUBNET_CIDR="10.0.20.0/24"
+
+# VCN configuration
+VCN_DISPLAY_NAME="idm-oke-vcn"
+VCN_PRIVATE_ROUTE_TABLE_DISPLAY_NAME="oke-private-rt"
+VCN_PUBLIC_ROUTE_TABLE_DISPLAY_NAME="oke-public-rt"
+VCN_DNS_LABEL="oke"
+VCN_INTERNET_GATEWAY_DISPLAY_NAME="oke-igw"
+VCN_NAT_GATEWAY_DISPLAY_NAME="oke-nat"
+VCN_SERVICE_GATEWAY_DISPLAY_NAME="oke-sgw"
+
+# OKE configuration
+OKE_CLUSTER_DISPLAY_NAME="oke-cluster"
+OKE_CLUSTER_VERSION="v1.29.1"
+OKE_MOUNT_TARGET_AD="ad1"
+OKE_PODS_CIDR="10.244.0.0/16"
+OKE_SERVICES_CIDR="10.96.0.0/16"
+OKE_NETWORK_TYPE="FLANNEL_OVERLAY"
+OKE_API_SUBNET_DISPLAY_NAME="oke-k8sApiEndpoint-subnet"
+OKE_API_DNS_LABEL="apidns"
+OKE_API_SECLIST_DISPLAY_NAME="oke-k8sApiEndpoint-seclist"
+OKE_NODE_SUBNET_DISPLAY_NAME="oke-node-subnet"
+OKE_NODE_DNS_LABEL="nodedns"
+OKE_NODE_SECLIST_DISPLAY_NAME="oke-node-seclist"
+OKE_SVCLB_SUBNET_DISPLAY_NAME="oke-svclb-subnet"
+OKE_SVCLBR_DNS_LABEL="svclbdns"
+OKE_SVCLBR_SECLIST_DISPLAY_NAME="oke-svclb-seclist"
+OKE_NODE_POOL_DISPLAY_NAME="pool1"
+OKE_NODE_POOL_SIZE="3"
+OKE_NODE_POOL_SHAPE="$DEFAULT_HOST_SHAPE"
+OKE_NODE_POOL_SHAPE_CONFIG="'{\"memoryInGBs\": 32.0, \"ocpus\": 2.0}'"
+
+# Configuration of bastion host
+BASTION_PRIVATE_SECLIST_DISPLAY_NAME="bastion-private-seclist"
+BASTION_PUBLIC_SECLIST_DISPLAY_NAME="bastion-public-seclist"
+BASTION_SETUP_SECLIST_DISPLAY_NAME="bastion-setup-seclist"
+BASTION_ROUTE_TABLE_DISPLAY_NAME="bastion-route-table"
+BASTION_SUBNET_DISPLAY_NAME="bastion-subnet"
+BASTION_DNS_LABEL="bastionsubnet"
+BASTION_INSTANCE_DISPLAY_NAME="idm-bastion"
+BASTION_AD="ad1"
+BASTION_INSTANCE_SHAPE="$DEFAULT_HOST_SHAPE"
+BASTION_SHAPE_CONFIG="'{\"memoryInGBs\": 16.0, \"ocpus\": 1.0, \"baselineOcpuUtilization\": \"BASELINE_1_8\"}'"
+BASTION_PUBLIC_IP="true"
+BASTION_HOSTNAME="idm-bastion"
+BASTION_ELK_PORT=31920
+BASTION_KIBANA_PORT=31800
+
+# Configuration of OHS and WebTier
+WEBHOST_SERVERS=2         # Minimum of 2. Please increase them as per your requirement.
+WEBHOST_PREFIX="webhost"
+WEBHOST_SHAPE="$DEFAULT_HOST_SHAPE"
+WEBHOST_SHAPE_CONFIG="'{\"memoryInGBs\": 16.0, \"ocpus\": 1.0, \"baselineOcpuUtilization\": \"BASELINE_1_8\"}'"
+WEBHOST_PUBLIC_IP="false"
+OHS_SECLIST_DISPLAY_NAME="ohs-seclist"
+WEB_PUBLIC_SECLIST_DISPLAY_NAME="web-public-seclist"
+WEB_ROUTE_TABLE_DISPLAY_NAME="web-route-table"
+WEB_SUBNET_DISPLAY_NAME="web-subnet"
+WEB_DNS_LABEL="websubnet"
+WEB_PROHIBIT_PUBLIC_IP="true"
+WEBHOST1_AD="ad1"
+WEBHOST1_PRODUCTS_PATH="/u02/private/oracle/products"
+WEBHOST1_CONFIG_PATH="/u02/private/oracle/config"
+WEBHOST2_AD="ad2"
+WEBHOST2_PRODUCTS_PATH="/u02/private/oracle/products"
+WEBHOST2_CONFIG_PATH="/u02/private/oracle/config"
+
+# Configuration of file systems and mount targets
+NFS_IAMPV_EXPORT_PATH="/exports/IAMPVS"
+WEBHOST1_MOUNT_TARGET_DISPLAY_NAME="webhost1-mt"
+WEBHOST2_MOUNT_TARGET_DISPLAY_NAME="webhost2-mt"
+OKE_MOUNT_TARGET_DISPLAY_NAME="oke-mt"
+PV_SECLIST_DISPLAY_NAME="pv-seclist"
+FS_WEBBINARIES1_DISPLAY_NAME="webbinaries1"
+FS_WEBBINARIES1_PATH="/exports/IAMBINARIES/webbinaries1"
+FS_WEBBINARIES2_DISPLAY_NAME="webbinaries2"
+FS_WEBBINARIES2_PATH="/exports/IAMBINARIES/webbinaries2"
+FS_WEBCONFIG1_DISPLAY_NAME="webconfig1"
+FS_WEBCONFIG1_PATH="/exports/IAMCONFIG/webconfig1"
+FS_WEBCONFIG2_DISPLAY_NAME="webconfig2"
+FS_WEBCONFIG2_PATH="/exports/IAMCONFIG/webconfig2"
+FS_OAMPV_DISPLAY_NAME="oampv"
+FS_OAMPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oampv"
+FS_OAMPV_LOCAL_MOUNTPOINT="/nfs_volumes/oampv"
+FS_OIGPV_DISPLAY_NAME="oigpv"
+FS_OIGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oigpv"
+FS_OIGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oigpv"
+FS_OUDPV_DISPLAY_NAME="oudpv"
+FS_OUDPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oudpv"
+FS_OUDPV_LOCAL_MOUNTPOINT="/nfs_volumes/oudpv"
+FS_OUDCONFIGPV_DISPLAY_NAME="oudconfigpv"
+FS_OUDCONFIGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oudconfigpv"
+FS_OUDCONFIGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oudconfigpv"
+FS_OUDSMPV_DISPLAY_NAME="oudsmpv"
+FS_OUDSMPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oudsmpv"
+FS_OUDSMPV_LOCAL_MOUNTPOINT="/nfs_volumes/oudsmpv"
+FS_OIRIPV_DISPLAY_NAME="oiripv"
+FS_OIRIPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oiripv"
+FS_OIRIPV_LOCAL_MOUNTPOINT="/nfs_volumes/oiripv"
+FS_DINGPV_DISPLAY_NAME="dingpv"
+FS_DINGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/dingpv"
+FS_DINGPV_LOCAL_MOUNTPOINT="/nfs_volumes/dingpv"
+FS_WORKPV_DISPLAY_NAME="workpv"
+FS_WORKPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/workpv"
+FS_WORKPV_LOCAL_MOUNTPOINT="/nfs_volumes/workpv"
+FS_OAACONFIGPV_DISPLAY_NAME="oaaconfigpv"
+FS_OAACONFIGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaaconfigpv"
+FS_OAACONFIGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaaconfigpv"
+FS_OAACREDPV_DISPLAY_NAME="oaacredpv"
+FS_OAACREDPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaacredpv"
+FS_OAACREDPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaacredpv"
+FS_OAAVAULTPV_DISPLAY_NAME="oaavaultpv"
+FS_OAAVAULTPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaavaultpv"
+FS_OAAVAULTPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaavaultpv"
+FS_OAALOGPV_DISPLAY_NAME="oaalogpv"
+FS_OAALOGPV_NFS_PATH="$NFS_IAMPV_EXPORT_PATH/oaalogpv"
+FS_OAALOGPV_LOCAL_MOUNTPOINT="/nfs_volumes/oaalogpv"
+FS_IMAGES_DISPLAY_NAME="images"
+FS_IMAGES_NFS_PATH="/exports/IMAGES/images"
+FS_IMAGES_LOCAL_MOUNTPOINT="/images"
+
+# Configuration of SSL certificate used for the load balancers
+SSL_CERT_VALIDITY_DAYS="750"
+SSL_CERT_BITS="2048"
+SSL_CN="*.$DNS_DOMAIN_NAME"
+
+# Configuration of internal load balancer networks
+LBR1_AD="ad1"
+LBR1_DISPLAY_NAME="lbr-subnet1"
+LBR1_DNS_LABEL="lbrsubnet1"
+LBR2_AD="ad2"
+LBR2_DISPLAY_NAME="lbr-subnet2"
+LBR2_DNS_LABEL="lbrsubnet2"
+
+# Log group to store access/error logs
+LBR_LOG_GROUP_NAME="Default_Group"
+
+# Configuration public load balancer
+PUBLIC_LBR_ACCESS_LOG_DISPLAY_NAME="public_loadbalancer_access"
+PUBLIC_LBR_ERROR_LOG_DISPLAY_NAME="public_loadbalancer_error"
+PUBLIC_LBR_CERTIFICATE_NAME="loadbalancer"
+PUBLIC_LBR_DISPLAY_NAME="public-loadbalancer"
+PUBLIC_LBR_PRIVATE="false"
+PUBLIC_LBR_ROUTE_TABLE_DISPLAY_NAME="lbr-route-table"
+PUBLIC_LBR_SECLIST_DISPLAY_NAME="public-lbr-seclist"
+PUBLIC_LBR_SHAPE="flexible"
+PUBLIC_LBR_SHAPE_DETAILS="'{\"minimumBandwidthInMbps\": 10, \"maximumBandwidthInMbps\": 100}'"
+PUBLIC_LBR_IADADMIN_DISPLAY_NAME="iadadmin"
+PUBLIC_LBR_IADADMIN_HOSTNAME="iadadmin.$DNS_DOMAIN_NAME"
+PUBLIC_LBR_IADADMIN_LISTENER_DISPLAY_NAME="iadadmin"
+PUBLIC_LBR_IGDADMIN_DISPLAY_NAME="igdadmin"
+PUBLIC_LBR_IGDADMIN_HOSTNAME="igdadmin.$DNS_DOMAIN_NAME"
+PUBLIC_LBR_IGDADMIN_LISTENER_DISPLAY_NAME="igdadmin"
+PUBLIC_LBR_LOGIN_DISPLAY_NAME="login"
+PUBLIC_LBR_LOGIN_HOSTNAME="login.$DNS_DOMAIN_NAME"
+PUBLIC_LBR_LOGIN_LISTENER_DISPLAY_NAME="login"
+PUBLIC_LBR_PROV_DISPLAY_NAME="prov"
+PUBLIC_LBR_PROV_HOSTNAME="prov.$DNS_DOMAIN_NAME"
+PUBLIC_LBR_PROV_LISTENER_DISPLAY_NAME="prov"
+PUBLIC_LBR_OHS_SERVERS_BS_NAME="ohs_servers"
+PUBLIC_LBR_OHS_SERVERS_BS_POLICY="WEIGHTED_ROUND_ROBIN"
+PUBLIC_LBR_OHS_SERVERS_BS_PROTOCOL="HTTP"
+PUBLIC_LBR_OHS_SERVERS_BS_URI_PATH="/health-check.html"
+
+# Configuration of internal load balancer
+INT_LBR_ACCESS_LOG_DISPLAY_NAME="internal_loadbalancer_access"
+INT_LBR_ERROR_LOG_DISPLAY_NAME="internal_loadbalancer_error"
+INT_LBR_CERTIFICATE_NAME="loadbalancer"
+INT_LBR_PRIVATE="true"
+INT_LBR_SHAPE="flexible"
+INT_LBR_SHAPE_DETAILS="'{\"minimumBandwidthInMbps\": 10, \"maximumBandwidthInMbps\": 100}'"
+INT_LBR_DISPLAY_NAME="internal-loadbalancer"
+INT_LBR_IADADMIN_DISPLAY_NAME=$PUBLIC_LBR_IADADMIN_LISTENER_DISPLAY_NAME
+INT_LBR_IADADMIN_HOSTNAME=$PUBLIC_LBR_IADADMIN_HOSTNAME
+INT_LBR_IADADMIN_LISTENER_DISPLAY_NAME=$PUBLIC_LBR_IADADMIN_LISTENER_DISPLAY_NAME
+INT_LBR_IGDADMIN_DISPLAY_NAME=$PUBLIC_LBR_IGDADMIN_DISPLAY_NAME
+INT_LBR_IGDADMIN_HOSTNAME=$PUBLIC_LBR_IGDADMIN_HOSTNAME
+INT_LBR_IGDADMIN_LISTENER_DISPLAY_NAME=$PUBLIC_LBR_IGDADMIN_LISTENER_DISPLAY_NAME
+INT_LBR_IGDINTERNAL_DISPLAY_NAME="igdinternal"
+INT_LBR_IGDINTERNAL_HOSTNAME="igdinternal.$DNS_DOMAIN_NAME"
+INT_LBR_IGDINTERNAL_LISTENER_DISPLAY_NAME="igdinternal"
+INT_LBR_LOGIN_DISPLAY_NAME=$PUBLIC_LBR_LOGIN_DISPLAY_NAME
+INT_LBR_LOGIN_HOSTNAME=$PUBLIC_LBR_LOGIN_HOSTNAME
+INT_LBR_LOGIN_LISTENER_DISPLAY_NAME=$PUBLIC_LBR_LOGIN_LISTENER_DISPLAY_NAME
+INT_LBR_PROV_DISPLAY_NAME=$PUBLIC_LBR_PROV_DISPLAY_NAME
+INT_LBR_PROV_HOSTNAME=$PUBLIC_LBR_PROV_HOSTNAME
+INT_LBR_PROV_LISTENER_DISPLAY_NAME=$PUBLIC_LBR_PROV_DISPLAY_NAME
+INT_LBR_OHS_SERVERS_BS_NAME="ohs_servers"
+INT_LBR_OHS_SERVERS_BS_POLICY="WEIGHTED_ROUND_ROBIN"
+INT_LBR_OHS_SERVERS_BS_PROTOCOL="HTTP"
+INT_LBR_OHS_SERVERS_BS_URI_PATH="/health-check.html"
+
+# Configuration of the network load balancer
+K8_LBR_DISPLAY_NAME="k8workers"
+K8_LBR_PRIVATE="true"
+K8_LBR_PRESERVE_SRC_DEST="false"
+K8_LBR_K8_WORKERS_BS_NAME="kubernetes_workers"
+K8_LBR_K8_WORKERS_BS_POLICY="FIVE_TUPLE"
+K8_LBR_K8_WORKERS_BS_PRESERVE_SRC="true"
+K8_LBR_LISTENER_DISPLAY_NAME="k8workers"
+
+# Configuration of the database
+DB_SUBNET_DISPLAY_NAME="db-subnet"
+DB_SUBNET_DNS_LABEL="dbsubnet"
+DB_SUBNET_PROHIBIT_PUBLIC_IP="true"
+DB_SECLIST_DISPLAY_NAME="db-seclist"
+DB_ROUTE_TABLE_DISPLAY_NAME="db-route-table"
+DB_SQLNET_PORT="1521"
+DB_AD="ad1"
+DB_CPU_COUNT="8"
+DB_EDITION="ENTERPRISE_EDITION_EXTREME_PERFORMANCE"
+DB_HOSTNAME_PREFIX="edgdb-"
+DB_VERSION="19.0.0.0"
+DB_DISPLAY_NAME="Identity-Management-Database"
+DB_INITIAL_STORAGE="256"
+DB_LICENSE="BRING_YOUR_OWN_LICENSE"
+DB_NODE_COUNT="2"
+DB_SHAPE="$DEFAULT_HOST_SHAPE"
+DB_STORAGE_MGMT="ASM"
+DB_TIMEZONE="UTC"
+
+# Freeform TAGS can be mentioned one after the other with OCI_TAGS="KEY:Value"
+# Please note ": are not allowed to be part of either the Key or its Value for this implementation.
+OCI_TAGS="CreatedBy:ABCD WXYZ"
+OCI_TAGS="ProjectNo:PR1234"
+
