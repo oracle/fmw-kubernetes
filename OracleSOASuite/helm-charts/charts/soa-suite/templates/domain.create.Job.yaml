@@ -1,0 +1,151 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.domain.domainName }}-create-soa-infra-domain-job
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+    #"helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+spec:  
+  template:
+    metadata:
+      labels:
+        weblogic.domainUID: {{ .Values.domain.domainName }}
+        weblogic.domainName: {{ .Values.domain.domainName }}
+        app: {{ .Values.domain.domainName }}-create-soa-infra-domain-job
+    spec:
+      {{- if .Values.domain.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.domain.imagePullSecrets }}
+      {{- end }}
+      serviceAccountName: {{ include "soa-suite.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.domain.podSecurityContext | nindent 8 }}
+      restartPolicy: Never
+      {{- if eq .Values.domain.storage.type "nfs" }}
+      initContainers:
+        - name: fix-pvc-owner
+          image: "{{ .Values.domain.image.repository }}:{{ .Values.domain.image.tag | default .Chart.AppVersion }}"
+          command: ["sh", "-c", "chown 1000:0 {{ .Values.domain.rootDir }}/. && find {{ .Values.domain.rootDir }}/. -maxdepth 1 ! -name '.snapshot' ! -name '.' -print0 | xargs -r -0 chown -R 1000:0"]
+          volumeMounts:
+          - name: soa-infra-domain-storage-volume
+            mountPath: {{ .Values.domain.rootDir }}
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+      {{- end }}
+      containers:
+        - name: create-soa-infra-domain-job
+          image: "{{ .Values.domain.image.repository }}:{{ .Values.domain.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7001
+          volumeMounts:
+          - mountPath: {{ .Values.domain.scriptDir }}
+            name: create-soa-infra-domain-job-cm-volume
+          - mountPath: {{ .Values.domain.rootDir }}
+            name: soa-infra-domain-storage-volume
+          - mountPath: /weblogic-operator/secrets
+            name: soa-infra-credentials-volume
+          - mountPath: /weblogic-operator/rcu-secrets
+            name: rcu-credentials-volume
+#          command: ["/bin/sh"]
+#          args: ["{{ .Values.domain.scriptDir }}/create-domain-job.sh"]
+#          command: ["/bin/bash", "-c", "sleep infinity" ]
+          command: ["/bin/bash", "-c", "if [[ ! -f \"{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}/domainmarker\" ]]; then /bin/bash {{ .Values.domain.scriptDir }}/create-domain-job.sh; fi"]
+          env:
+            - name: DOMAIN_UID
+              value: "{{ .Values.domain.domainName }}"
+            - name: ADMIN_SERVER_NAME_SVC
+              value: "{{ .Values.domain.admin.name }}"
+            - name: T3_CHANNEL_PORT
+              value: "{{ or .Values.domain.t3Channel.port 30012 }}"
+            - name: T3_PUBLIC_ADDRESS
+              value: "{{ or .Values.domain.t3Channel.publicIp "0.0.0.0" }}"
+            - name: MANAGED_SERVER_NAME_BASE_SVC
+              value: "soa-server"
+            - name: CREATE_DOMAIN_SCRIPT_DIR
+              value: "{{ .Values.domain.scriptDir }}"
+            - name: DOMAIN_ROOT_DIR
+              value: "{{ .Values.domain.rootDir }}"
+            - name: DOMAIN_HOME_DIR
+              value: "{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}"
+            - name: DOMAIN_LOGS_DIR
+              value: "{{ .Values.domain.rootDir }}/logs/{{ .Values.domain.domainName }}"
+            - name: CUSTOM_DOMAIN_NAME
+              value: "{{ .Values.domain.domainName }}"
+            - name: CUSTOM_ADMIN_LISTEN_PORT
+              value: "{{ .Values.domain.admin.listenPort }}"
+            - name: CUSTOM_ADMIN_NAME
+              value: "{{ .Values.domain.admin.name }}"
+            # - name: CUSTOM_ADMIN_HOST
+            #   value: "%CUSTOM_ADMIN_HOST%"
+            - name: CUSTOM_SOA_MANAGED_BASE_NAME
+              value: "{{ .Values.domain.soaCluster.managedServers.name }}"
+            - name: CUSTOM_SOA_MANAGEDSERVER_PORT
+              value: "{{ .Values.domain.soaCluster.managedServers.listenPort }}"
+            - name: CUSTOM_SOA_CLUSTER_NAME
+              value: "{{ .Values.domain.soaCluster.name }}"
+            - name: CUSTOM_OSB_MANAGED_BASE_NAME
+              value: "{{ .Values.domain.osbCluster.managedServers.name }}"
+            - name: CUSTOM_OSB_MANAGEDSERVER_PORT
+              value: "{{ .Values.domain.osbCluster.managedServers.listenPort }}"
+            - name: CUSTOM_OSB_CLUSTER_NAME
+              value: "{{ .Values.domain.osbCluster.name }}"
+            - name: CUSTOM_MANAGED_SERVER_COUNT
+              value: "{{ .Values.domain.maxManagedServerCount }}"
+            - name: CUSTOM_RCUPREFIX
+              value: "{{ .Values.domain.rcuSchema.prefix }}"
+            - name: CUSTOM_PRODUCTION_MODE
+              value: "{{ .Values.domain.productionMode }}"
+            - name: CUSTOM_SECURE_MODE
+              value: "{{ .Values.domain.secureEnabled }}"
+            - name: CUSTOM_ADMIN_ADMINISTRATION_PORT
+              value: "{{ .Values.domain.admin.administrationPort }}"
+            - name: CUSTOM_SOA_ADMINISTRATION_PORT
+              value: "{{ .Values.domain.soaCluster.managedServers.administrationPort }}"
+            - name: CUSTOM_OSB_ADMINISTRATION_PORT
+              value: "{{ .Values.domain.osbCluster.managedServers.administrationPort }}"
+            - name: CUSTOM_CONNECTION_STRING
+              value: "{{ (include "soa-suite.databaseUrl" .) }}"
+            - name: EXPOSE_T3_CHANNEL_PREFIX
+              value: "{{ .Values.domain.t3Channel.exposed }}"
+            - name: DOMAIN_TYPE
+              value: "{{ .Values.domain.type }}"
+            - name: SSL_ENABLED
+              value: "{{ .Values.domain.sslEnabled }}"
+            - name: ADMIN_SERVER_SSL_PORT
+              value: "{{ .Values.domain.admin.sslListenPort }}"
+            - name: SOA_MANAGED_SERVER_SSL_PORT
+              value: "{{ .Values.domain.soaCluster.managedServers.sslListenPort }}"
+            - name: OSB_MANAGED_SERVER_SSL_PORT
+              value: "{{ .Values.domain.osbCluster.managedServers.sslListenPort }}"
+            - name: PERSISTENCE_STORE
+              value: "{{ .Values.domain.persistenceStore }}"
+      volumes:
+        - name: create-soa-infra-domain-job-cm-volume
+          configMap:
+            name: {{ .Values.domain.domainName }}-create-soa-infra-domain-job-cm
+        - name: soa-infra-domain-storage-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.domain.domainName }}-domain-pvc
+        - name: soa-infra-credentials-volume
+          secret:
+            {{- if .Values.domain.credentials.secretName }}
+            secretName: {{ .Values.domain.credentials.secretName }}
+            {{- else }}
+            secretName: {{ .Values.domain.domainName }}-domain-credentials
+            {{- end }}
+        - name: rcu-credentials-volume
+          secret:
+            {{- if .Values.domain.rcuSchema.credentials.secretName }}
+            secretName: {{ .Values.domain.rcuSchema.credentials.secretName }}
+            {{- else }}
+            secretName: {{ .Values.domain.domainName }}-rcu-credentials
+            {{- end }}

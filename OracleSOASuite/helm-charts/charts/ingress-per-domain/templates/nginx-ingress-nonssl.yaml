@@ -1,0 +1,154 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "NGINX" }}
+{{- if (eq .Values.sslType "NONSSL") }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-nginx
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
+    nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
+  labels:
+{{ include "common.labels" . | indent 4 }}
+spec:
+  rules:
+  - host: '{{ .Values.nginx.hostname }}'
+    http:
+      paths:
+      - path: /console
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /management
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /em
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /weblogic/ready
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- if or (eq .Values.domainType "soa") }}
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") }}
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.osbManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+      - path: /soa-infra
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+      - path: /soa/composer
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+      - path: /integration/worklistapp
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+      - path: /servicebus
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+      - path: /testconsole
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+      - path: /xbusrouting
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+      - path: /xbustransform
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+      - path: /ess
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+      {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+      - path: /EssHealthCheck
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.soaManagedServerPort }}
+      {{- end }}
+     
+{{- end }}
+{{- end }}
+

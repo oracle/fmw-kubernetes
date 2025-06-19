@@ -1,4 +1,4 @@
-# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 apiVersion: batch/v1
 kind: Job
@@ -71,6 +71,8 @@ spec:
               value: "%CUSTOM_RCUPREFIX%"
             - name: CUSTOM_PRODUCTION_MODE
               value: "%PRODUCTION_MODE_ENABLED%"
+            - name: CUSTOM_SECURE_MODE
+              value: "%SECURE_ENABLED%"
             - name: CUSTOM_CONNECTION_STRING
               value: "%CUSTOM_CONNECTION_STRING%"
             - name: EXPOSE_T3_CHANNEL_PREFIX
@@ -81,6 +83,10 @@ spec:
               value: "%MANAGED_SERVER_SSL_PORT%"
             - name: SSL_ENABLED
               value: "%SSL_ENABLED%"
+            - name: CUSTOM_ADMIN_ADMINISTRATION_PORT
+              value: "%ADMIN_ADMINISTRATION_PORT%"
+            - name: CUSTOM_MANAGED_SERVER_ADMINISTRATION_PORT
+              value: "%MANAGED_SERVER_ADMINISTRATION_PORT%"
             - name: IPM_ENABLED
               value: "%IPM_ENABLED%"
             - name: CAPTURE_ENABLED

@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2024, Oracle  and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle  and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -7,6 +7,7 @@ import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
 
 class OIMProvisioner:
+    domainVersion = '';
     MACHINES = {
         'machine1': {
             'NMType': 'SSL',
@@ -38,7 +39,7 @@ class OIMProvisioner:
     SOA_SERVERS = {
         'soa_server1': {
             'ListenAddress': '',
-            'ListenPort': 8001,
+            'ListenPort': 7003,
             'Machine': 'machine1',
             'Cluster': 'soa_cluster'
         }
@@ -65,7 +66,26 @@ class OIMProvisioner:
         'serverGroupsToTarget': ['JRF-MAN-SVR', 'WSMPM-MAN-SVR']
     }
 
+    JRF_TEMPLATES = {
+        'baseTemplate': '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
+        'extensionTemplates': [
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf.ws.async_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.wsmpm_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.ums_template.jar',
+            '@@ORACLE_HOME@@/em/common/templates/wls/oracle.em_wls_template.jar'
+        ],
+        'serverGroupsToTarget': ['JRF-MAN-SVR', 'WSMPM-MAN-SVR']
+    }
+
     SOA_12214_TEMPLATES = {
+        'extensionTemplates': [
+            '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa_template.jar'
+        ],
+        'serverGroupsToTarget': ['SOA-MGD-SVRS']
+    }
+
+    SOA_TEMPLATES = {
         'extensionTemplates': [
             '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa_template.jar'
         ],
@@ -76,33 +96,35 @@ class OIMProvisioner:
         'serverGroupsToTarget': ['OIM-MGD-SVRS']
     }
 
-    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase,
-                 managedServerPort, prodMode, managedCount, clusterName):
+    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, oimManagedServerSSLPort, soaManagedServerSSLPort, managedNameBase,
+                 managedServerPort, prodMode, managedCount, clusterName, domainName):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
+        self.domainName = domainName
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createOimDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName,
-                        managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType,
-                        frontEndHost, frontEndHttpPort, dstype, exposeAdminT3Channel=None, t3ChannelPublicAddress=None,
+    def createOimDomain(self, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, oimManagedServerSSLPort, soaManagedServerSSLPort, 
+                        managedNameBase, managedServerPort, prodMode, managedCount, clusterName, sslEnabled, domainType, administrationPortEnabled, adminAdministrationPort, oimAdministrationPort, 
+                        soaAdministrationPort, frontEndHost, frontEndHttpPort, dstype, domainName, exposeAdminT3Channel=None, t3ChannelPublicAddress=None,
                         t3ChannelPort=None):
+                        
+        domainHome = self.createBaseDomain(user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, 
+                         prodMode, managedCount, sslEnabled, domainType, administrationPortEnabled, adminAdministrationPort, domainName)
 
-        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminName, managedNameBase,
-                                           managedServerPort, prodMode, managedCount, clusterName, domainType)
-
-        self.extendOimDomain(domainHome, db, dbPrefix, dbPassword, user, password, adminListenPort, adminName,
-                             managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType,
-                             frontEndHost, frontEndHttpPort, dstype, exposeAdminT3Channel, t3ChannelPublicAddress,
-                             t3ChannelPort)
-
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminName, managedNameBase,
-                         managedServerPort, prodMode, managedCount, clusterName, domainType):
+        self.extendOimDomain(domainHome, db, dbPrefix, dbPassword, user, password, adminListenPort, adminServerSSLPort, adminName, oimManagedServerSSLPort, soaManagedServerSSLPort,
+                             managedNameBase, managedServerPort, prodMode, managedCount, clusterName, sslEnabled, domainType, administrationPortEnabled, adminAdministrationPort, 
+                             oimAdministrationPort, soaAdministrationPort, frontEndHost, frontEndHttpPort, dstype,
+                             exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort, domainName)
+                             
+    def createBaseDomain(self, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, 
+                         prodMode, managedCount, sslEnabled, domainType, administrationPortEnabled, adminAdministrationPort, domainName):
         selectTemplate('Basic WebLogic Server Domain')
         loadTemplates()
         showTemplates()
         setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
+        self.domainVersion = cmo.getDomainVersion()    
         setOption('AppDir', self.domainParentDir + '/applications')
 
         if (prodMode == 'true'):
@@ -111,17 +133,29 @@ class OIMProvisioner:
             setOption('ServerStartMode', 'dev')
 
         set('Name', domainName)
-
         admin_port = int(adminListenPort)
         ms_port = int(managedServerPort)
         ms_count = int(managedCount)
+        adminSSLport = int(adminServerSSLPort)    
 
         # =======================
         print 'Creating Admin Server...'
         cd('/Servers/AdminServer')
         set('ListenPort', admin_port)
+        print('domainVersion_admin:' + str(self.domainVersion))  
+        if self.domainVersion.strip().startswith('14.1.2'):
+          set('administrationPort', int(adminAdministrationPort))
+
         set('Name', adminName)
         cmo.setWeblogicPluginEnabled(true)
+        if (str(sslEnabled).strip().lower() == 'true'):
+            print('Enabling SSL for Admin server...')
+            cd('/Servers/' + adminName)
+            create(adminName, 'SSL')
+            cd('/Servers/' + adminName + '/SSL/' + adminName)
+            set('ListenPort', adminSSLport)
+            set('Enabled', 'True')
+    
 
         # Define the user password for weblogic
         # =====================================
@@ -151,9 +185,9 @@ class OIMProvisioner:
         print 'Base domain created at ' + domainHome
         return domainHome
 
-    def extendOimDomain(self, domainHome, db, dbPrefix, dbPassword, user, password, adminListenPort, adminName,
-                        managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType,
-                        frontEndHost, frontEndHttpPort, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort,
+    def extendOimDomain(self, domainHome, db, dbPrefix, dbPassword, user, password, adminListenPort, adminServerSSLPort, adminName, oimManagedServerSSLPort, soaManagedServerSSLPort,
+                        managedNameBase, managedServerPort, prodMode, managedCount, clusterName, sslEnabled, domainType, administrationPortEnabled, adminAdministrationPort, oimAdministrationPort, 
+                        soaAdministrationPort, frontEndHost, frontEndHttpPort, dstype, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort, domainName
                         ):
         print 'Extending domain at ' + domainHome
         fmwDb = 'jdbc:oracle:thin:@' + db
@@ -161,12 +195,21 @@ class OIMProvisioner:
         selectTemplate('Oracle Identity Manager')
         loadTemplates()
         showTemplates()
+        
+        #setOption('DomainName', domainName)
+        #setOption('JavaHome', self.javaHome)         
         setOption('AppDir', self.domainParentDir + '/applications')
+        self.domainVersion = cmo.getDomainVersion()
         if 'true' == exposeAdminT3Channel:
             self.enable_admin_channel(t3ChannelPublicAddress, t3ChannelPort)
 
         admin_port = int(adminListenPort)
         ms_port = int(managedServerPort)
+        ms_oim_ssl_port = int(oimManagedServerSSLPort)
+        ms_soa_ssl_port = int(soaManagedServerSSLPort)
+        ms_oim_admin_port = int(oimAdministrationPort)
+        ms_soa_admin_port = int(soaAdministrationPort)
+
         ms_count = int(managedCount)
         ms_t3_port = 14002
         oim_listenAddress = '-oim-server'
@@ -198,8 +241,8 @@ class OIMProvisioner:
         set('ListenPort', int(ms_t3_port))
         set('PublicPort', int(ms_t3_port))
         cmo.setHttpEnabledForThisProtocol(true)
-        cmo.setTunnelingEnabled(true)
-
+        cmo.setTunnelingEnabled(true)   
+        
         for index in range(1, ms_count):
             cd('/')
             msIndex = index + 1
@@ -208,9 +251,12 @@ class OIMProvisioner:
             listenAddress = '%s%s%s' % ('oimk8namespace', oim_listenAddress, msIndex)
             create(name, 'Server')
             cd('/Servers/%s/' % name)
-            print('managed server name is %s' % name);
+            print('managed server name is %s' % name)
             set('ListenPort', ms_port)
-            set('ListenAddress', listenAddress)
+            set('ListenAddress', listenAddress)            
+            if self.domainVersion.strip().startswith('14.1.2'):
+              set('administrationPort', ms_oim_admin_port)
+            set('Name', name)             
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', clusterName)
@@ -220,7 +266,14 @@ class OIMProvisioner:
             set('ListenPort', int(ms_t3_port))
             set('PublicPort', int(ms_t3_port))
             cmo.setHttpEnabledForThisProtocol(true)
-            cmo.setTunnelingEnabled(true)
+            cmo.setTunnelingEnabled(true)            
+            if (str(sslEnabled).strip().lower() == 'true'):
+              print 'Enabling SSL for Managed server...'
+              cd('/Servers/%s/' % name )
+              create(name, 'SSL')            
+              cd('/Servers/' + name+ '/SSL/' + name)              
+              set('ListenPort', ms_oim_ssl_port)
+              set('Enabled', 'True')           
             self.OIM_MANAGED_SERVERS.append(name)
         print self.OIM_MANAGED_SERVERS
 
@@ -228,7 +281,7 @@ class OIMProvisioner:
         soa_ms_count = ms_count
         soa_managedNameBase = 'soa_server'
         soa_listenAddress = '-soa-server'
-        soa_ms_port = 8001
+        soa_ms_port = 7003
 
         cd('/')
         cd('/Server/soa_server1')
@@ -251,13 +304,22 @@ class OIMProvisioner:
             listenAddress = '%s%s%s' % ('oimk8namespace', soa_listenAddress, msIndex)
             create(name, 'Server')
             cd('/Servers/%s/' % name)
-            print('managed server name is %s' % name);
+            print('managed server name is %s' % name)
             set('ListenPort', soa_ms_port)
-            set('ListenAddress', listenAddress)
+            set('ListenAddress', listenAddress)            
+            if self.domainVersion.strip().startswith('14.1.2'):
+              set('administrationPort', ms_soa_admin_port)   
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', soa_cluster_name)
             cmo.setWeblogicPluginEnabled(true)
+            if (str(sslEnabled).strip().lower() == 'true'):
+              print 'Enabling SSL for Managed server...'
+              cd('/Servers/%s/' % name )         
+              create(name, 'SSL')
+              cd('/Servers/' + name+ '/SSL/' + name)                   
+              set('ListenPort', ms_soa_ssl_port)
+              set('Enabled', 'True')          
             self.SOA_MANAGED_SERVERS.append(name)
         print self.SOA_MANAGED_SERVERS
 
@@ -268,6 +330,8 @@ class OIMProvisioner:
 
         for managedName in self.OIM_MANAGED_SERVERS:
             assign('Server', managedName, 'Cluster', clusterName)
+
+
 
         print('front end host :' + frontEndHost)
         print('front end HTTP Port :' + frontEndHttpPort)
@@ -288,7 +352,7 @@ class OIMProvisioner:
 
         # Targeting Server Groups
         print('Targeting SOA Server Groups...')
-        serverGroupsToTarget = list(self.SOA_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.SOA_TEMPLATES['serverGroupsToTarget'])
         cd('/')
         self.targetSOAServers(serverGroupsToTarget)
 
@@ -980,7 +1044,37 @@ class OIMProvisioner:
             # set long url
             cd('/JdbcSystemResource/WLSSchemaDataSource/JdbcResource/WLSSchemaDataSource/JdbcDriverParams/NO_NAME')
             cmo.setUrl(fmwDb_agl)
+  ## Adding WLSschema tracking bug#36224461 )
+        if self.domainVersion.strip().startswith('14.1.2'):
+          cd('/JdbcSystemResource/WLSRuntimeSchemaDataSource/JdbcResource/WLSRuntimeSchemaDataSource/JdbcDriverParams/NO_NAME')
+          cmo.setUrl(fmwDb)
+          cmo.setDriverName('oracle.jdbc.OracleDriver')
+          set('PasswordEncrypted', dbPassword)
+          cd('Properties/NO_NAME/Property/user')
+          cmo.setValue(dbPrefix + '_WLS')
 
+          # for agl datasource configuration
+          if dstype == "agl":
+            print("creating agl datasource for WLSRuntimeSchemaDataSource")
+            cd('/JdbcSystemResource/WLSRuntimeSchemaDataSource/JdbcResource/WLSRuntimeSchemaDataSource')
+            create('WLSRuntimeSchemaDataSource', 'JDBCOracleParams')
+            cd('/JdbcSystemResource/WLSRuntimeSchemaDataSource/JdbcResource/WLSRuntimeSchemaDataSource/JDBCOracleParams/NO_NAME_0')
+            set('FanEnabled', 'true')
+            set('ActiveGridlink', 'True')
+
+            cd('/JDBCSystemResource/WLSRuntimeSchemaDataSource/JdbcResource/WLSRuntimeSchemaDataSource/JDBCConnectionPoolParams/NO_NAME_0')
+            set('MaxCapacity', 300)
+            set('TestFrequencySeconds', 0)
+            set('TestConnectionsOnReserve', 'true')
+            set('TestTableName', 'SQL ISVALID')
+
+            # configure Global Transaction Protocol
+            cd('/JdbcSystemResource/WLSRuntimeSchemaDataSource/JdbcResource/WLSRuntimeSchemaDataSource/JdbcDataSourceParams/NO_NAME')
+            set('GlobalTransactionsProtocol', 'None')
+
+            # set long url
+            cd('/JdbcSystemResource/WLSRuntimeSchemaDataSource/JdbcResource/WLSRuntimeSchemaDataSource/JdbcDriverParams/NO_NAME')
+            cmo.setUrl(fmwDb_agl)
 
 
         cd('/')
@@ -1103,7 +1197,9 @@ def usage():
     print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> -name <domain-name> ' + \
           '-user <domain-user> -password <domain-password> ' + \
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
-          '-adminListenPort <adminListenPort> -adminName <adminName> ' \
+          '-sslEnabled <sslEnabled> -administrationPortEnabled <administrationPortEnabled> ' \
+          '-adminListenPort <adminListenPort> -adminServerSSLPort <adminServerSSLPort> -adminName <adminName> ' \
+          '-oimManagedServerSSLPort <oimManagedServerSSLPort> -soaManagedServerSSLPort <soaManagedServerSSLPort> ' \
           '-managedNameBase <managedNameBase> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
           '-managedServerCount <managedCount> -clusterName <clusterName>' \
           '-domainType <soa|osb|bpm|soaosb>' \
@@ -1142,6 +1238,15 @@ t3ChannelPort = None
 t3ChannelPublicAddress = None
 frontEndHost = None
 frontEndHttpPort = None
+administrationPortEnabled = false
+adminAdministrationPort = '9002'
+oimAdministrationPort = '9010'
+soaAdministrationPort = '9004'
+sslEnabled = false
+adminServerSSLPort = '7002'
+oimManagedServerSSLPort = '14001'
+soaManagedServerSSLPort = '7004'
+
 
 i = 1
 while i < len(sys.argv):
@@ -1175,8 +1280,17 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-adminListenPort':
         adminListenPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-adminServerSSLPort':
+        adminServerSSLPort = sys.argv[i + 1]	
+        i += 2    
     elif sys.argv[i] == '-adminName':
         adminName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-oimManagedServerSSLPort':
+        oimManagedServerSSLPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-soaManagedServerSSLPort':
+        soaManagedServerSSLPort = sys.argv[i + 1]
         i += 2
     elif sys.argv[i] == '-managedNameBase':
         managedNameBase = sys.argv[i + 1]
@@ -1202,6 +1316,9 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-t3ChannelPort':
         t3ChannelPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-sslEnabled':
+        sslEnabled = sys.argv[i + 1]
+        i += 2            
     elif sys.argv[i] == '-exposeAdminT3Channel':
         exposeAdminT3Channel = sys.argv[i + 1]
         i += 2
@@ -1214,14 +1331,26 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-datasourceType':
         dstype = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-administrationPortEnabled':
+        administrationPortEnabled = sys.argv[i + 1]
+        i += 2             
+    elif sys.argv[i] == '-adminAdministrationPort':
+        adminAdministrationPort = sys.argv[i + 1]
+        i += 2        
+    elif sys.argv[i] == '-oimAdministrationPort':
+        oimAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-soaAdministrationPort':
+        soaAdministrationPort = sys.argv[i + 1]
+        i += 2        
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = OIMProvisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase,
-                             managedServerPort, prodMode, managedCount, clusterName)
-provisioner.createOimDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword,
-                            adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount,
-                            clusterName, domainType, frontEndHost, frontEndHttpPort, dstype, exposeAdminT3Channel,
+provisioner = OIMProvisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, oimManagedServerSSLPort, soaManagedServerSSLPort, managedNameBase,
+                             managedServerPort, prodMode, managedCount, clusterName, domainName)
+provisioner.createOimDomain(domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword,
+                            adminListenPort, adminServerSSLPort, adminName, oimManagedServerSSLPort, soaManagedServerSSLPort,  managedNameBase, managedServerPort, prodMode, managedCount,
+                            clusterName, sslEnabled, domainType, administrationPortEnabled, adminAdministrationPort, oimAdministrationPort, soaAdministrationPort, frontEndHost, frontEndHttpPort, dstype, domainName, exposeAdminT3Channel,
                             t3ChannelPublicAddress, t3ChannelPort)

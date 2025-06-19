@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 #
@@ -10,7 +10,7 @@
 # Load balancer type. Supported values are: TRAEFIK,NGINX
 type: TRAEFIK
 
-# SSL configuration Type. Supported Values are : NONSSL
+# SSL configuration Type. Supported Values are : NONSSL,SSL,E2ESSL
 sslType: NONSSL
 
 # domainType. Supported values are: wcs
@@ -19,13 +19,19 @@ domainType: wcs
 #WLS domain as backend to the load balancer
 wlsDomain:
   domainUID: wcsitesinfra
-  adminServerName: AdminServer
+  secureEnabled: false
+  adminServerName: adminserver
+  adminSecurePort: 9002
   adminServerPort: 7001
-  adminServerSSLPort: 
+  adminServerSSLPort: 7002
   wcsitesClusterName: wcsites-cluster
-  wcsitesManagedServerPort: 8001
-  wcsitesManagedServerSSLPort: 
+  wcsitesManagedServerPort: 7103
+  wcsitesManagedServerSSLPort: 7104
 
+# Host  specific values
+hostName:
+  admin: admin.domain.org
+  wcs: wcsites.domain.org
  
 
 # Ngnix specific values

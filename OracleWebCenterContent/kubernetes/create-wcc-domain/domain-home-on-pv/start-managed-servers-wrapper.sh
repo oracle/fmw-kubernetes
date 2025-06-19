@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
@@ -205,12 +205,12 @@ if [[ true  == "$ipmAppEnabled" || true  == "$wccadfEnabled" ]]; then
 fi
 
 #STOP
-kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "NEVER" }]'
+kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "Never" }]'
 
 sleep 2m
 
 #START
-kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IF_NEEDED" }]'
+kubectl patch domain $domainUID -n $domainNS --type='json' -p='[{"op": "replace", "path": "/spec/serverStartPolicy", "value": "IfNeeded" }]'
 
 echo "Please monitor server pods status at console using kubectl get pod -n $domainNS"
 

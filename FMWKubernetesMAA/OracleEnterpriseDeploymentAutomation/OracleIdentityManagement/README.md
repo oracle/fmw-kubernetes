@@ -81,7 +81,7 @@ The scripts perform the following actions:
 * Configure SSO integration in the Governance domain [Configuring SSO Integration in the Governance Domain](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-323F65C5-3BE9-4D64-AE87-96E589F8B2B7).
 * Enable OAM Notifications as described in [Enabling OAM Notifications](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-010C785C-0F08-44DE-9D96-4A88F28E202C).
 * Update the Match Attribute as described in [Updating the Value of MatchLDAPAttribute in oam-config.xml](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-76DA4F90-F680-435A-A7D4-C257A7D366B3).
-* Update the TAP Endpoint as described in [Updating the TapEndpoint URL](https://docs-uat.us.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-68065DA4-E2D3-479C-8A2B-AD19EDE290B7).
+* Update the TAP Endpoint as described in [Updating the TapEndpoint URL](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-68065DA4-E2D3-479C-8A2B-AD19EDE290B7).
 * Copy the WebGate artifacts to Oracle HTTP Server, if desired.
 * Run Reconciliation Jobs as described in [Running the Reconciliation Jobs](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-B44989D1-1E86-4EF3-BCBD-A490113E4BB8).
 * Configure Oracle Unified Messaging with Email/SMS server details as described in [Managing the Notification Service](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-governance.html#GUID-89B15DCA-B712-4415-BAC2-E42728CA22BA).
@@ -272,7 +272,7 @@ These parameters are used to specify the type of Kubernetes deployment and the n
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
 |**USE\_REGISTRY** | `false` | Set to `true` to obtain images from a Container Registry.|
-| **USE\_INGESS** | `true` | Set to true if using and ingress controller|
+| **USE\_INGRESS** | `true` | Set to true if using and ingress controller|
 |**IMAGE\_TYPE** | `crio` | Set to `crio` or `docker` depending on your container engine.|
 |**OPER\_ENABLE\_SECRET** | `false` | Set to `true` or `false` depending on your wish to set the secret for oparator install.|
 
@@ -451,6 +451,9 @@ This table lists the parameters which are common to all LDAP type of deployments
 
 | **Parameter** | **Sample Value** | **Comments** |
 | --- | --- | --- |
+|**LDAP\_EXTERNAL\_HOST** |  | The fully qualified name of the external host running the ldap server. |
+|**LDAP\_EXTERNAL\_PORT** |  | The port number of the external host running the ldap server.|
+|**LDAP\_PROTOCOL** |  | The ldap protocal used for communicating with the ldap server.|
 |**LDAP\_OAMADMIN\_USER** | `oamadmin` | The name of the user you want to create for the OAM administration tasks.|
 |**LDAP\_ADMIN\_USER** | `cn=oudadmin` | The name of the OUD administrator user.|
 |**LDAP\_ADMIN\_PWD** | *`<password>`* | The password you want to use for the OUD administrator user.|
@@ -622,8 +625,8 @@ These parameters determine how OIRI is provisioned and configured.
 |**OIRI\_OIG\_XELSYSADM\_USER** |`xelsysadm`| Set to an OIM Administrator , used to create users in OIG.|
 |**OIRI\_OIG\_USER\_PWD** |`mypassword`| Password of the OIRI_OIG_XELSYSADM_USER. |
 |**OIRI\_OIG\_XELL\_FILE=** | If your OIG is not inside Kubernetes, you need to manually acquire the [OIG rest certificate](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/installing-and-configuring-oracle-identity-role-intelligence.html#GUID-B37680A8-5A03-4E55-B373-5BDC2AD4AAB6).   Set this parameter to the location of that file.  Leave blank if OIG is in Kubernetes.|
-|**OIRI\_CREATE\_OIG_\USER** |`true`| Set to true to allow the automation scripts to create the OIRI users in OIG. |
-|**OIRI\_SET\_OIG_\COMPLIANCE** |`true`| Set to true to allow the automation scripts place OIG in compliance mode. |
+|**OIRI\_CREATE\_OIG\_USER** |`true`| Set to true to allow the automation scripts to create the OIRI users in OIG. |
+|**OIRI\_SET\_OIG\_COMPLIANCE** |`true`| Set to true to allow the automation scripts place OIG in compliance mode. |
 
 ### OAA Parameters
 These parameters determine how OAA is provisioned and configured.
@@ -661,8 +664,6 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_API\_PWD** |`oaapassword`| The password to be used for OAA API interactions.|
 |**OAA\_POLICY\_PWD** |`oaapassword`| The password to be used for OAA policy interactions.|
 |**OAA\_FACT\_PWD** |`oaapassword`| The password to be used for OAA keystores for factor interactions.|
-|**OAA\_ADD\_USERS\_LDAP** |`true`| Set to `true` if you wish to add existing users in LDAP in User Search base to OAA_USER_GROUP.|
-|**OAA\_ADD\_USERS\_OUA\_OBJ** |`true`| Set to `true` if you wish to set ldap parameter obpsftid to all existing users in OAA_USER_GROUP.|
 
 
 #### OAA Filesystem Vault Parameters
@@ -703,7 +704,7 @@ These parameters determine how OAA is provisioned and configured.
 |**OAA\_EMAIL\_PWD** |`umspassword`| The password you use to connect to the UMS server.|
 |**OAA\_SMS\_SERVER** |`http://$OIG_DOMAIN_NAME-cluster-soa-cluster.$OIGNS.svc.cluster.local:8001/ucs/messaging/webservice`| The entry point of the Oracle Unified Messaging server you use to send SMS messages. This is usually the same as **OAA\_EMAIL\_SERVER**. |
 |**OAA\_SMS\_USER** |`weblogic`| The user name you use to connect to the UMS server.|
-|**OAA\_SMS_\PWD** |`umspassword`| The password you use to connect to the UMS server.|
+|**OAA\_SMS\_\PWD** |`umspassword`| The password you use to connect to the UMS server.|
 
 
 #### Test User Parameters

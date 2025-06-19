@@ -1,0 +1,49 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "TRAEFIK" }}
+{{- if (eq .Values.sslType "E2ESSL") }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: HostSNI(`{{ .Values.hostName.admin }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+      {{- if eq .Values.wlsDomain.secureEnabled true }}
+      port: {{ .Values.wlsDomain.adminSecurePort }}
+      {{- else }}
+      port: {{ .Values.wlsDomain.adminServerSSLPort }}
+      {{- end }}
+      weight: 3
+      terminationDelay: 400
+  {{- if or (eq .Values.domainType "soa") (eq .Values.domainType "soaosb") }}
+  - match: HostSNI(`{{ .Values.hostName.soa }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.soaManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  {{- end }}
+  {{- if or (eq .Values.domainType "osb") (eq .Values.domainType "soaosb") }}
+  - match: HostSNI(`{{ .Values.hostName.osb }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.osbClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.osbManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  {{- end }}
+  tls:
+    passthrough: true
+
+{{- end }}
+{{- end }}
+

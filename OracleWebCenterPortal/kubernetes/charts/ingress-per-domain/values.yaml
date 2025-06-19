@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 #
@@ -6,31 +6,41 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 #
-# Load balancer type.  Supported values are: TRAEFIK, NGINX
+
+# Load balancer type. Supported values are: TRAEFIK,NGINX
 type: TRAEFIK
 
-# Type of Configuration Supported Values are : NONSSL, SSL
+# SSL configuration Type. Supported Values are : NONSSL,SSL,E2ESSL
 sslType: NONSSL
 
-# domainType Supported values are soa,osb and soaosb.
+# domainType. Supported values are: wcp,wcpp
 domainType: wcp
 
 #WLS domain as backend to the load balancer
 wlsDomain:
   domainUID: wcp-domain
-  adminServerName: adminserver
+  secureEnabled: false
+  adminServerName: AdminServer
+  adminSecurePort: 9002
   adminServerPort: 7001
-  adminServerSSLPort: 
+  adminServerSSLPort: 7002
   wcpClusterName: wcp-cluster
   wcpManagedServerPort: 8888
-  wcpManagedServerSSLPort: 
-  wcpPortletClusterName: wcportlet-cluster
+  wcpManagedServerSSLPort: 8788
+  wcpPortletClusterName: wcpPortlet-cluster
   wcpPortletManagedServerPort: 8889
-  wcpPortletManagedServerSSLPort: 
+  wcpPortletManagedServerSSLPort: 8789
 
 # Host  specific values
 traefik:
   hostname: domain1.org
+
+# Host  specific values
+hostName:
+  admin: admin.domain.org
+  wcp: wcp.domain.org
+  wcpportlet: wcpportlet.domain.org
+ 
 
 # Ngnix specific values
 nginx:

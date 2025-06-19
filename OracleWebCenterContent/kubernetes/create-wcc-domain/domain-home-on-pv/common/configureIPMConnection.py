@@ -32,26 +32,40 @@ class ConfigureIPMConnection:
         print 'Started enabling HTTP connections to UCM'
 
         cd('/')
-        beginRepositorySession()
-        createPolicySet('ws-client', 'ws-client', 'Domain("*")')
-        attachPolicySetPolicy('oracle/wss10_saml_token_client_policy')
-        commitRepositorySession()
+        try:
+            beginRepositorySession()
+            createPolicySet('ws-client', 'ws-client', 'Domain("*")')
+            attachPolicySetPolicy('oracle/wss10_saml_token_client_policy')
+            commitRepositorySession()
+        except Exception, e:
+            print e
+            abortRepositorySession()
 
-        beginRepositorySession()
-        createPolicySet('ws-service', 'ws-service', 'Domain("*")')
-        attachPolicySetPolicy('oracle/wss_saml_or_username_token_service_policy')
-        commitRepositorySession()
+        try:
+            beginRepositorySession()
+            createPolicySet('ws-service', 'ws-service', 'Domain("*")')
+            attachPolicySetPolicy('oracle/wss_saml_or_username_token_service_policy')
+            commitRepositorySession()
+        except Exception, e:
+	    print e
+            abortRepositorySession()
         
-        grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common_12.1.3/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging", permActions="assert")
-        grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common_12.1.3/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging-vc", permActions="assert")
+        try:
+            grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common_12.1.3/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging", permActions="assert")
+            grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common_12.1.3/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging-vc", permActions="assert")
 
-        grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging", permActions="assert")
-        grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging-vc", permActions="assert")
-
-        serverConfig()
-        cd('SecurityConfiguration/wccinfra/Realms/myrealm/AuthenticationProviders/DefaultAuthenticator')
-        cmo.createUser('IPM_SystemServiceUser','welcome1','')
-        cmo.createUser('IPM_AgentServiceUser','welcome1','')
+            grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging", permActions="assert")
+            grantPermission(codeBaseURL="file:${common.components.home}/modules/oracle.wsm.common/wsm-agent-core.jar", permClass="oracle.wsm.security.WSIdentityPermission", permTarget="resource=imaging-vc", permActions="assert")
+        except Exception, e:
+            print e
+        
+        try:
+            serverConfig()
+            cd('SecurityConfiguration/wccinfra/Realms/myrealm/AuthenticationProviders/DefaultAuthenticator')
+            cmo.createUser('IPM_SystemServiceUser','welcome1','')
+            cmo.createUser('IPM_AgentServiceUser','welcome1','')
+        except Exception, e:
+            print e
         
         print 'Enabled HTTP connections to UCM'
         

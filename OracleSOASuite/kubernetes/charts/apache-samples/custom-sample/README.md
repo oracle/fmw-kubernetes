@@ -24,9 +24,9 @@ The second domain uses the following custom configuration parameters:
 - domainUID: `domain2`
 - clusterName: `cluster-1`
 - adminServerName: `admin-server`
-- adminPort: `7011`
+- adminPort: `7001`
 - adminNodePort: `30702`
-- managedServerPort: `8021`
+- managedServerPort: `7003`
 
 After the domains are successfully created, deploy the sample web application, `testwebapp.war`, on each domain cluster using the WLS Administration Console. The sample web application is located in the `kubernetes/samples/charts/application` directory.
 

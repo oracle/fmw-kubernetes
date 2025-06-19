@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -38,6 +38,13 @@ prepareDomainHomeDir
 source $script
 exitIfError $? "ERROR: $script failed."
 
+# Setting the managed server port, protocol when secureEnabled is true
+MS_PORT=${MANAGED_SERVER_PORT}
+if [ "${CUSTOM_SECURE_MODE}" == "true" ]; then
+  MS_PORT=${MANAGED_SERVER_SSL_PORT}
+  LB_PROTOCOL="https"
+fi
+
 echo "Copying ${CREATE_DOMAIN_SCRIPT_DIR}/server-config-update.sh to PV ${DOMAIN_HOME_DIR}"
 cp ${CREATE_DOMAIN_SCRIPT_DIR}/server-config-update.sh ${DOMAIN_HOME_DIR}
 chmod +x ${DOMAIN_HOME_DIR}/server-config-update.sh
@@ -55,7 +62,7 @@ sed -i -e "s:%SITES_SAMPLES%:${SITES_SAMPLES}:g" ${DOMAIN_HOME_DIR}/server-confi
 
 sed -i -e "s:%SITES_CACHE_PORTS%:${SITES_CACHE_PORTS}:g" ${DOMAIN_HOME_DIR}/server-config-update.sh
 
-sed -i -e "s:%MANAGED_SERVER_PORT%:${MANAGED_SERVER_PORT}:g" ${DOMAIN_HOME_DIR}/server-config-update.sh
+sed -i -e "s:%MANAGED_SERVER_PORT%:${MS_PORT}:g" ${DOMAIN_HOME_DIR}/server-config-update.sh
 
 sed -i -e "s:%SITES_ADMIN_USERNAME%:${SITES_ADMIN_USERNAME}:g" ${DOMAIN_HOME_DIR}/server-config-update.sh
 sed -i -e "s:%SITES_ADMIN_PASSWORD%:${SITES_ADMIN_PASSWORD}:g" ${DOMAIN_HOME_DIR}/server-config-update.sh

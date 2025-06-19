@@ -18,7 +18,7 @@ Download the latest code repository as follows:
    
    For example:
    ```bash
-   $ mkdir /scratch/OUDSMK8SJul24
+   $ mkdir /scratch/OUDSMK8SApr25
    ```
    
 1. Download the latest OUDSM deployment scripts from the OUDSM repository.
@@ -31,7 +31,7 @@ Download the latest code repository as follows:
    For example:
    
    ```bash
-   $ cd /scratch/OUDSMK8SJul24
+   $ cd /scratch/OUDSMK8SApr25
    $ git clone https://github.com/oracle/fmw-kubernetes.git
    ```
 
@@ -44,7 +44,7 @@ Download the latest code repository as follows:
    For example:
    
    ```bash
-   $ export WORKDIR=/scratch/OUDSMK8SJul24/fmw-kubernetes/OracleUnifiedDirectorySM
+   $ export WORKDIR=/scratch/OUDSMK8SApr25/fmw-kubernetes/OracleUnifiedDirectorySM
    ```
 
 ### Undeploy Elasticsearch and Kibana
@@ -53,7 +53,7 @@ From October 22 (22.4.1) onwards, OUDSM logs should be stored on a centralized E
 
 Deployments prior to October 22 (22.4.1) used local deployments of Elasticsearch and Kibana. 
 
-If you are upgrading from July 22 (22.3.1) or earlier, to April 24 (24.2.1), you must first undeploy Elasticsearch and Kibana using the steps below:
+If you are upgrading from July 22 (22.3.1) or earlier, to April 25 (25.2.1), you must first undeploy Elasticsearch and Kibana using the steps below:
 
 1. Navigate to the `$WORKDIR/kubernetes/helm` directory and create a `logging-override-values-uninstall.yaml` with the following:
 

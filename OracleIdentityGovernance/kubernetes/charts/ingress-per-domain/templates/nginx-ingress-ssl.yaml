@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 {{- if eq .Values.type "NGINX" }}
@@ -15,7 +15,6 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: 'sticky'
     nginx.ingress.kubernetes.io/affinity-mode: 'persistent'
     nginx.ingress.kubernetes.io/enable-access-log: 'false'
-    kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/proxy-read-timeout: '{{ .Values.nginx.nginxTimeOut }}'
     nginx.ingress.kubernetes.io/proxy-send-timeout: '{{ .Values.nginx.nginxTimeOut }}'
     nginx.ingress.kubernetes.io/proxy-buffer-size: '2000k'
@@ -25,6 +24,7 @@ metadata:
        more_set_input_headers "WL-Proxy-SSL: true";
     nginx.ingress.kubernetes.io/ingress.allow-http: 'false'
 spec:
+  ingressClassName: nginx
   rules:
   - host:
     http:
@@ -50,6 +50,13 @@ spec:
             name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
             port:
               number: {{ .Values.wlsDomain.adminServerPort }}
+      - path: /management
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+            port:
+              number: {{ .Values.wlsDomain.adminServerPort }}               
       - path: /ws_utc
         pathType: ImplementationSpecific
         backend:

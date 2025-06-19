@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -10,6 +10,7 @@ import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
 class WCSITES12214Provisioner:
 
+    secureDomain = 'false';
     MACHINES = {
         'wcsites_machine' : {
             'NMType': 'SSL',
@@ -42,13 +43,13 @@ class WCSITES12214Provisioner:
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createWCSitesDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
-        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType)
+    def createWCSitesDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, secureMode, managedCount, clusterName, sslEnabled, domainType, adminAdministrationPort, managedServerAdministrationPort, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, clusterName, domainType, adminAdministrationPort, managedServerAdministrationPort)
         
         if domainType == "wcsites":
                 self.extendWcsitesDomain(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
-
-    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers):
+        
+    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled, ms_admin_port):
         # Create managed servers
         for index in range(0, ms_count):
             cd('/')
@@ -59,22 +60,35 @@ class WCSITES12214Provisioner:
             cd('/Servers/%s/' % name )
             print('managed server name is %s' % name);
             set('ListenPort', ms_port)
+            if (self.secureDomain == 'true'):
+              set('administrationPort', ms_admin_port)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
-            set('Machine', machineName)
+            cmo.setWeblogicPluginEnabled(true)
             ms_servers.append(name)
+            if (sslEnabled == 'true'):
+              print 'Enabling SSL for Managed server...'
+              create(name, 'SSL')
+              cd('/Servers/' + name+ '/SSL/' + name)
+              set('Enabled', 'True')
+              set('ListenPort', managedServerSSLPort)
         print ms_servers
         return ms_servers
 
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType):
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, secureMode, managedCount, sslEnabled, clusterName, domainType, adminAdministrationPort, managedServerAdministrationPort):
         baseTemplate = self.replaceTokens(self.JRF_12214_TEMPLATES['baseTemplate'])
         
         readTemplate(baseTemplate)
         setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
-        if (prodMode == 'true'):
-            setOption('ServerStartMode', 'prod')
+        domainVersion = cmo.getDomainVersion()
+        if prodMode == 'true':
+            if (domainVersion == "14.1.2.0.0" and secureMode == 'true'):
+               setOption('ServerStartMode', 'secure')
+               self.secureDomain = 'true'
+            else:
+               setOption('ServerStartMode', 'prod')
         else:
             setOption('ServerStartMode', 'dev')
         set('Name', domainName)
@@ -82,6 +96,8 @@ class WCSITES12214Provisioner:
         admin_port = int(adminListenPort)
         ms_port    = int(managedServerPort)
         ms_count   = int(managedCount)
+        adminSSLport = int(adminServerSSLPort)
+        managedSSLPort = int(managedServerSSLPort)
         
         # Create Admin Server
         # =======================
@@ -89,8 +105,18 @@ class WCSITES12214Provisioner:
         cd('/Servers/AdminServer')
         #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
         set('ListenPort', admin_port)
+        if ( self.secureDomain == 'true'):
+            set('administrationPort', int(adminAdministrationPort))
         set('Name', adminName)
-		
+        cmo.setWeblogicPluginEnabled(true)
+        if (sslEnabled == 'true'):
+            print('Enabling SSL for Admin server...')
+            cd('/Servers/' + adminName)
+            create(adminName, 'SSL')
+            cd('/Servers/' + adminName + '/SSL/' + adminName)
+            set('ListenPort', adminSSLport)
+            set('Enabled', 'True')
+
 		# Define the user password for weblogic
         # =====================================
         cd('/Security/' + domainName + '/User/weblogic')
@@ -116,7 +142,7 @@ class WCSITES12214Provisioner:
                 set(param, self.MACHINES[machine][param])
 
         # Create managed servers
-        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, clusterName, self.MANAGED_SERVERS)
+        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, clusterName, self.MANAGED_SERVERS, managedSSLPort, sslEnabled, int(managedServerAdministrationPort))
         
         setOption('OverwriteDomain', 'true')
         domainHome = self.domainParentDir + '/' + domainName
@@ -325,8 +351,10 @@ def usage():
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
           '-adminListenPort <adminListenPort> -adminName <adminName> ' \
           '-managedNameBase <managedNameBase> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
+          '-adminServerSSLPort <adminServerSSLPort> -managedServerSSLPort <managedServerSSLPort> ' \
           '-managedServerCount <managedCount> -clusterName <clusterName>' \
-          '-domainType <soa|osb|bpm|soaosb>' \
+          '-domainType <soa|osb|bpm|soaosb> -secureMode <secureMode> ' \
+          '-adminAdministrationPort <adminAdministrationPort> -managedServerAdministrationPort <managedServerAdministrationPort> ' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
           '-t3ChannelPort <t3 channel port> -machineName <machineName>' 
     sys.exit(0)
@@ -358,7 +386,8 @@ exposeAdminT3Channel = None
 t3ChannelPort = None
 t3ChannelPublicAddress = None
 machineName = None	
-
+adminAdministrationPort = '9002'
+managedServerAdministrationPort = '9111'
 i = 1
 while i < len(sys.argv):
     if sys.argv[i] == '-oh':
@@ -391,6 +420,9 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-adminListenPort':
         adminListenPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-adminServerSSLPort':
+        adminServerSSLPort = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-adminName':
         adminName = sys.argv[i + 1]
         i += 2
@@ -400,9 +432,15 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-managedServerPort':
         managedServerPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-managedServerSSLPort':
+        managedServerSSLPort = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-secureMode':
+        secureMode = sys.argv[i + 1]
+        i += 2    
     elif sys.argv[i] == '-managedServerCount':
         managedCount = sys.argv[i + 1]
         i += 2
@@ -418,11 +456,20 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-exposeAdminT3Channel':
         exposeAdminT3Channel = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-sslEnabled':
+        sslEnabled = sys.argv[i + 1]
+        i += 2
     elif sys.argv[i] == '-domainType':
         domainType = sys.argv[i + 1]
         i += 2
     elif sys.argv[i] == '-machineName':
         machineName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-adminAdministrationPort':
+        adminAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedServerAdministrationPort':
+        managedServerAdministrationPort = sys.argv[i + 1]
         i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
@@ -431,4 +478,4 @@ while i < len(sys.argv):
 
 
 provisioner = WCSITES12214Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName)
-provisioner.createWCSitesDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName, domainType, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner.createWCSitesDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, secureMode, managedCount, clusterName, sslEnabled, domainType, adminAdministrationPort, managedServerAdministrationPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)

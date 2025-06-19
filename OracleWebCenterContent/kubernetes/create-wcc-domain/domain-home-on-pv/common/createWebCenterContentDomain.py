@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 import os
@@ -6,8 +6,9 @@ import sys
 
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
-class WCContent12214Provisioner:
-
+class WCContentProvisioner:
+ 
+    secureDomain = 'false';
     MACHINES = {
         'machine1' : {
             'NMType': 'SSL',
@@ -22,8 +23,9 @@ class WCContent12214Provisioner:
     ADDL_MANAGED_SERVER_BASENAME = 'ibr_server'
     ADDL_MANAGED_SERVER_PORT = 16250
     ADDL_MANAGED_SERVER_SSL_PORT = 16251
+    ADDL_MANAGED_SERVER_ADMINISTRATION_PORT = 9250
 
-    JRF_12214_TEMPLATES = {
+    JRF_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar',
@@ -35,36 +37,35 @@ class WCContent12214Provisioner:
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR', 'WSMPM-MAN-SVR' ]
     }
 
-    UCM_12214_TEMPLATES = {
+    UCM_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/wccontent/common/templates/wls/oracle.ucm.cs_template.jar'
         ],
         'serverGroupsToTarget' : [ 'UCM-MGD-SVR' ]
     }
 
-    IBR_12214_TEMPLATES = {
+    IBR_TEMPLATES = {
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/wccontent/common/templates/wls/oracle.ucm.ibr_template.jar'
         ],
         'serverGroupsToTarget' : [ 'IBR-MGD-SVR' ]
     }
-    
+
     def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createWCContentDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort,  prodMode, managedCount, clusterName, sslEnabled, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
+    def createWCContentDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort,  prodMode, secureMode,  managedCount, clusterName, sslEnabled, adminAdministrationPort, managedServerAdministrationPort, exposeAdminT3Channel=None, t3ChannelPublicAddress=None, t3ChannelPort=None):
 
 	print '================================================================='
         print '    Oracle WebCenter Content Domain Creation Script    '     
-        print '                         12.2.1.4.0                              '
 	print '================================================================='
 
         print 'Creating Base Domain...'
         domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase,
-                                           managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled)
+                                           managedServerPort, managedServerSSLPort, prodMode, secureMode,  managedCount, clusterName, sslEnabled, adminAdministrationPort, managedServerAdministrationPort)
 
         print 'Extending Domain...'
         self.extendDomain(domainHome, db, dbPrefix, dbPassword, exposeAdminT3Channel, t3ChannelPublicAddress,
@@ -72,14 +73,19 @@ class WCContent12214Provisioner:
         print 'Domain Creation is done...'
 
 
-    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled):
-        baseTemplate = self.replaceTokens(self.JRF_12214_TEMPLATES['baseTemplate'])
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, secureMode, managedCount, clusterName, sslEnabled, adminAdministrationPort, managedServerAdministrationPort):
+        baseTemplate = self.replaceTokens(self.JRF_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
         setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
+        domainVersion = cmo.getDomainVersion()
         if (prodMode == 'true'):
-            setOption('ServerStartMode', 'prod')
+            if (domainVersion == "14.1.2.0.0" and secureMode == 'true'):
+                setOption('ServerStartMode', 'secure')
+                self.secureDomain = 'true'
+            else:
+                setOption('ServerStartMode', 'prod')
         else:
             setOption('ServerStartMode', 'dev')
         set('Name', domainName)
@@ -95,6 +101,8 @@ class WCContent12214Provisioner:
         cd('/Servers/AdminServer')
         #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
         set('ListenPort', admin_port)
+        if ( self.secureDomain == 'true'):
+            set('administrationPort', int(adminAdministrationPort))
         set('Name', adminName)
         cmo.setWeblogicPluginEnabled(true)
         if (sslEnabled == 'true'):
@@ -102,8 +110,8 @@ class WCContent12214Provisioner:
             cd('/Servers/' + adminName)
             create(adminName, 'SSL')
             cd('/Servers/' + adminName + '/SSL/' + adminName)
-            set('ListenPort', adminSSLport)
             set('Enabled', 'True')
+            set('ListenPort', adminSSLport)
 
         # Define the user password for weblogic
         # =====================================
@@ -119,7 +127,7 @@ class WCContent12214Provisioner:
 
         # Create managed servers
         managedSSLPort = int(managedServerSSLPort)
-        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, clusterName, self.MANAGED_SERVERS, managedSSLPort, sslEnabled)
+        self.MANAGED_SERVERS = self.createManagedServers(ms_count, managedNameBase, ms_port, clusterName, self.MANAGED_SERVERS, managedSSLPort, sslEnabled, int(managedServerAdministrationPort))
         print 'Managed servers created...'
 
 	# Creating additional managed servers
@@ -128,7 +136,7 @@ class WCContent12214Provisioner:
         cl=create('ibr_cluster', 'Cluster')
 
         # Creating  managed servers for additional cluster
-        self.ADDL_MANAGED_SERVERS = self.createManagedServers(ms_count, self.ADDL_MANAGED_SERVER_BASENAME, self.ADDL_MANAGED_SERVER_PORT, self.ADDL_CLUSTER, self.ADDL_MANAGED_SERVERS, self.ADDL_MANAGED_SERVER_SSL_PORT, sslEnabled)
+        self.ADDL_MANAGED_SERVERS = self.createManagedServers(ms_count, self.ADDL_MANAGED_SERVER_BASENAME, self.ADDL_MANAGED_SERVER_PORT, self.ADDL_CLUSTER, self.ADDL_MANAGED_SERVERS, self.ADDL_MANAGED_SERVER_SSL_PORT, sslEnabled, self.ADDL_MANAGED_SERVER_ADMINISTRATION_PORT)
         print 'Created managed Servers for additional cluster..... ' + self.ADDL_CLUSTER
 
         # Create Node Manager
@@ -165,15 +173,15 @@ class WCContent12214Provisioner:
             self.enable_admin_channel(t3ChannelPublicAddress, t3ChannelPort)
 
         print 'Applying JRF templates...'
-        for extensionTemplate in self.JRF_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.JRF_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'Applying UCM templates...'
-        for extensionTemplate in self.UCM_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.UCM_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'Applying IBR templates...'
-        for extensionTemplate in self.IBR_12214_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.IBR_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'Extension Templates added...'
@@ -192,11 +200,11 @@ class WCContent12214Provisioner:
 
         print 'Targeting Server Groups...'
 
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.UCM_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.UCM_TEMPLATES['serverGroupsToTarget'])
         self.targetUCMServers(serverGroupsToTarget)
-        serverGroupsToTarget = list(self.JRF_12214_TEMPLATES['serverGroupsToTarget'])
-        serverGroupsToTarget.extend(self.IBR_12214_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget = list(self.JRF_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.IBR_TEMPLATES['serverGroupsToTarget'])
         self.targetIBRServers(serverGroupsToTarget)
 
         print 'Targeting Cluster ...'
@@ -230,7 +238,7 @@ class WCContent12214Provisioner:
     # Helper Methods                                                          #
     ###########################################################################
 
-    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled):
+    def createManagedServers(self, ms_count, managedNameBase, ms_port, cluster_name, ms_servers, managedServerSSLPort, sslEnabled, ms_admin_port):
         # Create managed servers
         for index in range(0, ms_count):
             cd('/')
@@ -241,6 +249,8 @@ class WCContent12214Provisioner:
             cd('/Servers/%s/' % name )
             print('managed server name is %s' % name);
             set('ListenPort', ms_port)
+            if (self.secureDomain == 'true'):
+              set('administrationPort', ms_admin_port)
             set('NumOfRetriesBeforeMSIMode', 0)
             set('RetryIntervalBeforeMSIMode', 1)
             set('Cluster', cluster_name)
@@ -251,8 +261,8 @@ class WCContent12214Provisioner:
               print 'Enabling SSL for Managed server...'
               create(name, 'SSL')
               cd('/Servers/' + name+ '/SSL/' + name)
-              set('ListenPort', managedServerSSLPort)
               set('Enabled', 'True')
+              set('ListenPort', managedServerSSLPort)
         print ms_servers
         return ms_servers
 
@@ -349,7 +359,8 @@ def usage():
           '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
           '-adminListenPort <adminListenPort> -adminName <adminName> ' \
           '-managedNameBase <managedNameBase> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
-          '-managedServerCount <managedCount> -clusterName <clusterName> ' \
+          '-managedServerCount <managedCount> -secureMode <secureMode> -clusterName <clusterName> ' \
+          '-adminAdministrationPort <adminAdministrationPort> -managedServerAdministrationPort <managedServerAdministrationPort> ' \
           '-exposeAdminT3Channel <quoted true or false> -t3ChannelPublicAddress <address of the cluster> ' \
           '-t3ChannelPort <t3 channel port> '
     sys.exit(0)
@@ -381,6 +392,8 @@ rcuSchemaPassword = None
 exposeAdminT3Channel = None
 t3ChannelPort = None
 t3ChannelPublicAddress = None
+adminAdministrationPort = '9002'
+managedServerAdministrationPort = '9200'
 
 i = 1
 while i < len(sys.argv):
@@ -433,6 +446,9 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-prodMode':
         prodMode = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-secureMode':
+        secureMode = sys.argv[i+1]
+        i += 2
     elif sys.argv[i] == '-managedServerCount':
         managedCount = sys.argv[i + 1]
         i += 2
@@ -451,10 +467,16 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-sslEnabled':
         sslEnabled = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-adminAdministrationPort':
+        adminAdministrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedServerAdministrationPort':
+        managedServerAdministrationPort = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = WCContent12214Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled)
-provisioner.createWCContentDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)
+provisioner = WCContentProvisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, managedCount, clusterName, sslEnabled)
+provisioner.createWCContentDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminServerSSLPort, adminName, managedNameBase, managedServerPort, managedServerSSLPort, prodMode, secureMode, managedCount, clusterName, sslEnabled, adminAdministrationPort, managedServerAdministrationPort, exposeAdminT3Channel, t3ChannelPublicAddress, t3ChannelPort)

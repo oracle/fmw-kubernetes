@@ -1,0 +1,12 @@
+Creating a new database instance takes a while. When the status column returns the response Healthy, the Database is open for connections.
+
+
+The database URL used for domain deployment is:
+{{ .Release.Name }}-{{ .Chart.Name }}.{{ include "oracledb-namespace" . }}.svc.cluster.local:1521/{{ .Values.pdb }}
+
+Obtain a quick database status, using the following command:
+
+$ kubectl get singleinstancedatabase {{ include "oracledb-fullname" . }} -n {{ include "oracledb-namespace" . }}
+
+
+Refer https://github.com/oracle/oracle-database-operator/blob/main/docs/sidb/README.md#managing-oracle-single-instance-databases-with-oracle-database-operator-for-kubernetes for details.

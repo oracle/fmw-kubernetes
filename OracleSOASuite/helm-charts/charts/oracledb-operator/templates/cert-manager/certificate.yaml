@@ -1,0 +1,15 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "oracledb-operator.fullname" . }}-serving-cert
+  namespace: {{ include "oracledb-operator.namespace" . }}
+spec:
+  dnsNames:
+  - '{{ include "oracledb-operator.fullname" . }}-webhook-service.{{ include "oracledb-operator.namespace" . }}.svc'
+  - '{{ include "oracledb-operator.fullname" . }}-webhook-service.{{ include "oracledb-operator.namespace" . }}.svc.cluster.local'
+  issuerRef:
+    kind: Issuer
+    name: {{ include "oracledb-operator.fullname" . }}-selfsigned-issuer
+  secretName: webhook-server-cert

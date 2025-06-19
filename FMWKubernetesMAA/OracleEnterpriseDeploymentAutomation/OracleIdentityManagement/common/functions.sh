@@ -737,13 +737,26 @@ scale_cluster()
    CLUSTER=$3 
    REPLICAS=$4
 
-
    ST=$(date +%s)
    print_msg "Updating Cluster $CLUSTER Server Count to $REPLICAS"
 
-   CURRENT=$( kubectl get clusters -n $NAMESPACE ${DOMAIN_NAME}-${CLUSTER} -o jsonpath='{.spec.replicas}'  )
    kubectl patch cluster -n $NAMESPACE ${DOMAIN_NAME}-${CLUSTER} --type=merge -p "{\"spec\":{\"replicas\":$REPLICAS}}" >> $LOGDIR/scale_$CLUSTER.log 2>&1
    print_status $? $LOGDIR/scale_$CLUSTER.log
+
+   ET=$(date +%s)
+   print_time STEP "Update Cluster $CLUSTER Server Count to $REPLICAS" $ST $ET >> $LOGDIR/timings.log
+}
+
+
+validate_scaling ()
+{
+   NAMESPACE=$1
+   DOMAIN_NAME=$2
+   CLUSTER=$3 
+   REPLICAS=$4
+   
+   ST=$(date +%s)
+   print_msg "Validating scaling of cluster $CLUSTER Server Count to $REPLICAS"
 
    case $CLUSTER in
      oam-cluster)
@@ -762,20 +775,24 @@ scale_cluster()
         echo Error
         ;;
    esac
+   sleep 5
+   CURRENT=${CURRENT:-0}
+   CURRENT=$( kubectl get clusters -n $NAMESPACE ${DOMAIN_NAME}-${CLUSTER} -o jsonpath='{.status.readyReplicas}'  )
+   if [ "$CURRENT" = ""  ] || [ -z "$CURRENT" ]; then
+      CURRENT=$( kubectl get clusters -n $NAMESPACE ${DOMAIN_NAME}-${CLUSTER} -o jsonpath='{.status.replicas}'  )
+   fi   
 
-   sleep 60
-
-   if [ $REPLICAS = $CURRENT ]
+   if [ "$REPLICAS" = "$CURRENT" ]
    then
      printf "\t\t\tNo change\n"
    else
-     if [ $REPLICAS -gt $CURRENT ]
+     if [ "$REPLICAS" -gt "$CURRENT" ]
      then
        SCALE_TYP=UP
      else
       SCALE_TYP=DOWN
      fi
-
+ 
      if [ "$SCALE_TYP" = "UP" ]
      then
        for i in $(seq $((CURRENT+1)) $REPLICAS)
@@ -788,11 +805,12 @@ scale_cluster()
          check_stopped $NAMESPACE ${SERVER_NAME}${i}
        done
      fi
-   fi    
-   ET=$(date +%s)
-   print_time STEP "Update Cluster $CLUSTER Server Count to $REPLICAS" $ST $ET >> $LOGDIR/timings.log
-}
+   fi      
 
+ET=$(date +%s)
+print_time STEP "Validating scaling of cluster $CLUSTER Server Count to $REPLICAS" $ST $ET >> $LOGDIR/timings.log
+}
+ 
 # Image Functions
 #
 
@@ -1525,7 +1543,7 @@ get_lbr_certificate()
      print_msg "Obtaining Load Balancer Certificate $LBRHOST:$LBRPORT"
      ST=$(date +%s)
 
-     openssl s_client -connect ${LBRHOST}:${LBRPORT} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > $WORKDIR/${LBRHOST}.pem 2>$LOGDIR/lbr_cert.log
+     openssl s_client -connect ${LBRHOST}:${LBRPORT} -showcerts </dev/null 2>/dev/null| sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > $WORKDIR/${LBRHOST}.pem 2>$LOGDIR/lbr_cert.log 
      print_status $? $LOGDIR/lbr_cert.log
 
      ET=$(date +%s)

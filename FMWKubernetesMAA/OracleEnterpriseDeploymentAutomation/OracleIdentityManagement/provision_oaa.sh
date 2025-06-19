@@ -98,29 +98,9 @@ echo "----------------------------------------------------------------------" >>
 STEPNO=1
 PROGRESS=$(get_progress)
 
-# Create LDAP Users
-#
-if [ $STEPNO -gt $PROGRESS ]
-then
-   create_ldap_entries oud
-   update_progress
-fi
-
-# Add Existig Users to OAA Group
-#
-if [ "$OAA_ADD_USERS_LDAP" = "true" ]
-then
-  new_step
-  if [ $STEPNO -gt $PROGRESS ] 
-  then
-     add_existing_users oud
-     update_progress
-  fi
-fi
 
 # Create Kubernetes Namespace(s)
 #
-new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
    create_namespace $OAANS
@@ -193,58 +173,25 @@ then
    update_progress
 fi
 
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   create_helm_file
-   update_progress
-fi
-
-# Get OAM Certificate
+# Register TAP
 #
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   get_lbr_certificate $OAM_LOGIN_LBR_HOST $OAM_LOGIN_LBR_PORT
-   update_progress
+    register_tap
+    update_progress
 fi
 
-# Create OAA Server Certificates
+# Register TAP for OUA
 #
-new_step
-if [ $STEPNO -gt $PROGRESS ]
+if [ "$INSTALL_OUA" = "true" ]
 then
-   create_server_certs
-   update_progress
-fi
-
-
-# Update Property File
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   prepare_property_file
-   update_progress
-fi
-
-# Enable OAM Auth
-
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   enable_oauth http://$K8_WORKER_HOST1:$OAM_ADMIN_K8 $OAM_OAMADMIN_USER:$OAM_OAMADMIN_PWD
-   update_progress
-fi
-
-
-# Validate OAM Auth
-
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-   validate_oauth 
-   update_progress
+  new_step
+  if [ $STEPNO -gt $PROGRESS ]
+  then
+    register_tap_oua
+    update_progress
+  fi
 fi
 
 if [ "$OAA_CREATE_OHS" = "true" ]
@@ -261,8 +208,6 @@ then
           update_progress
        fi
    fi
-
-
 
    # Add OHS entries for OAA to OAM ohs config files if Ingress is being used
    #
@@ -289,16 +234,13 @@ then
    fi
 fi
 
-# Register TAP for OUA
+# Update Property File
 #
-if [ "$INSTALL_OUA" = "true" ]
+new_step
+if [ $STEPNO -gt $PROGRESS ]
 then
-  new_step
-  if [ $STEPNO -gt $PROGRESS ]
-  then
-    register_tap_oua
-    update_progress
-  fi
+   prepare_property_file
+   update_progress
 fi
 
 # Edit properties file for OUA
@@ -321,7 +263,6 @@ then
    deploy_oaa
    update_progress
 fi
-
 
 # Add OHS entries for OAA to OAM ohs config files if Ingress is not being used
 #
@@ -381,20 +322,16 @@ then
    update_progress
 fi
 
-# Import Snapshot
-#
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   import_snapshot
+   check_running $OAMNS adminserver 0 true
    update_progress
 fi
-# Update URLs
-#
+
 new_step
 if [ $STEPNO -gt $PROGRESS ]
 then
-   check_running $OAMNS adminserver 0 
    update_urls
    update_progress
 fi
@@ -408,68 +345,7 @@ then
     update_progress
 fi
 
-# Register TAP
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    register_tap
-    update_progress
-fi
 
-# Create OAA Agent
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_oaa_agent
-    update_progress
-fi
-
-# Install OAA Plugin
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    install_plugin
-    update_progress
-fi
-
-# Create OAM Authentication Module
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_auth_module
-    update_progress
-fi
-
-# Create OAM Authentication Scheme
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_auth_scheme
-    update_progress
-fi
-
-# Create OAM Authentication Policy
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_auth_policy
-    update_progress
-fi
-
-# Set OAA Cookie Domain
-#
-new_step
-if [ $STEPNO -gt $PROGRESS ]
-then
-    create_cookie_domain
-    update_progress
-fi
 
 # Create Test User
 #
@@ -480,79 +356,36 @@ then
     update_progress
 fi
 
-# Configure DRSS for OUA
+
+# Configure OUA Parameters
 #
 if [ "$INSTALL_OUA" = "true" ]
 then
   new_step
   if [ $STEPNO -gt $PROGRESS ]
   then
-    configure_drss_oua
+    configure_oua
     update_progress
   fi
-fi
+fi      
 
-# Set DRSS parameter for OUA
+# Restart Domain
 #
 if [ "$INSTALL_OUA" = "true" ]
 then
   new_step
   if [ $STEPNO -gt $PROGRESS ]
   then
-    set_drss_param_oua
+    stop_domain $OAMNS $OAM_DOMAIN_NAME
     update_progress
   fi
-fi
-
-# Enable OAM Identity Service
-#
-if [ "$INSTALL_OUA" = "true" ]
-then
-  new_step
-  if [ $STEPNO -gt $PROGRESS ] 
-  then
-      enable_oam_identity_service
-      update_progress
-  fi
-fi  
-
-# Set RequireAuthorizationHeader for OAM
-#
-if [ "$INSTALL_OUA" = "true" ]
-then
-  new_step
-  if [ $STEPNO -gt $PROGRESS ] 
-  then
-      set_oam_authz_header
-      update_progress
-  fi
-fi  
-
-# Set User Identity Store for OAM
-#
-if [ "$INSTALL_OUA" = "true" ]
-then 
   new_step
   if [ $STEPNO -gt $PROGRESS ]
   then
-      set_userid_store
-      update_progress
+    start_domain $OAMNS $OAM_DOMAIN_NAME
+    update_progress
   fi
-fi  
-
-
-# Set ldap attribute to true to all the users in OAA_USER_GROUP
-#
-if [ "$OAA_ADD_USERS_OUA_OBJ" = "true" ] && [ "$INSTALL_OUA" = "true" ]
-then
-  new_step
-  if [ $STEPNO -gt $PROGRESS ] 
-  then
-     set_ldapattr_to_oaausers
-     update_progress
-  fi
-fi  
-
+fi      
 
 FINISH_TIME=`date +%s`
 print_time TOTAL "Create OAA" $START_TIME $FINISH_TIME 

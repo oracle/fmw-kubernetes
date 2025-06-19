@@ -101,6 +101,7 @@ WORK_DIR=/u01/wcs-wls-docker-install/work
 
 #Hostname Parameters
 export WCSITES_ADMIN_HOSTNAME=$(sed -r 's/\./\\\./g' <<< $(hostname -I))
+export WCSITES_ADMIN_HOSTNAME=$(sed -e 's/[[:space:]]*$//'<<<"${WCSITES_ADMIN_HOSTNAME}")
 
 #--------------------------------------------------------------------------------------------
 cd /u01/wcs-wls-docker-install
@@ -108,7 +109,7 @@ cd /u01/wcs-wls-docker-install
 
 sed -i 's,^\(script.rcu.prefix=\).*,\1'$RCU_PREFIX',' bootstrap.properties
 sed -i 's,^\(script.java.path=\).*,\1'$JAVA_HOME',' bootstrap.properties
-sed -i 's,^\(script.oracle.wcsites.hostname=\).*,\1'$WCSITES_ADMIN_HOSTNAME',' bootstrap.properties
+sed -i "s/script.oracle.wcsites.hostname=[^ ]*/script.oracle.wcsites.hostname=$WCSITES_ADMIN_HOSTNAME/" bootstrap.properties
 sed -i 's,^\(script.oracle.wcsites.portnumber=\).*,\1'$WCSITES_MANAGED_PORT',' bootstrap.properties
 sed -i 's,^\(script.db.user=\).*,\1'$DB_USER',' bootstrap.properties
 sed -i 's,^\(script.db.password=\).*,\1'$DB_PASSWORD',' bootstrap.properties

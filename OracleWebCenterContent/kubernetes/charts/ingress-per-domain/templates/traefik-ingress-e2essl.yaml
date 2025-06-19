@@ -1,0 +1,67 @@
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "TRAEFIK" }}
+{{- if (eq .Values.sslType "E2ESSL") }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ .Values.wlsDomain.domainUID }}-traefik
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: HostSNI(`{{ .Values.hostName.admin }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+      {{- if eq .Values.wlsDomain.secureEnabled true }}
+      port: {{ .Values.wlsDomain.adminSecurePort }}
+      {{- else }}
+      port: {{ .Values.wlsDomain.adminServerSSLPort }}
+      {{- end }}
+      weight: 3
+      terminationDelay: 400
+  - match: HostSNI(`{{ .Values.hostName.ucm }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ucmClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.ucmManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  - match: HostSNI(`{{ .Values.hostName.ibr }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ibrClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.ibrManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  {{- if eq .Values.wlsDomain.ipmEnabled true }}
+  - match: HostSNI(`{{ .Values.hostName.ipm }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.ipmClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.ipmManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  {{- end }}
+  {{- if eq .Values.wlsDomain.captureEnabled true }}
+  - match: HostSNI(`{{ .Values.hostName.capture }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.captureClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.captureManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  {{- end }}
+  {{- if eq .Values.wlsDomain.adfuiEnabled true }}
+  - match: HostSNI(`{{ .Values.hostName.wccadf }}`)
+    services:
+    - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.wccadfClusterName | lower | replace "_" "-" }}'
+      port: {{ .Values.wlsDomain.wccadfManagedServerSSLPort }}
+      weight: 3
+      terminationDelay: 400
+  {{- end }}
+  tls:
+    passthrough: true
+
+{{- end }}
+{{- end }}
+

@@ -299,6 +299,42 @@ start_nm()
 }  
 
 #
+# Update mod_wl_ohs.conf file
+#
+update_mod_wl_ohs()
+{
+   HOSTNAME=$1
+   OHS_NAME=$2
+   print_msg "Update mod_wl_ohs.conf in $HOSTNAME"
+  
+   ST=$(date +%s)
+
+   mod_wl_file="$OHS_DOMAIN/config/fmwconfig/components/OHS/$OHS_NAME/mod_wl_ohs.conf"
+   $SSH ${OHS_USER}@$HOSTNAME "grep -q WLDNSRefreshInterval $mod_wl_file"
+   if [ $? = 0 ]
+   then
+      echo "Already Exists"
+      return
+   fi
+
+   echo $SSH ${OHS_USER}@$HOSTNAME "sed -i '/<IfModule weblogic_module>/a \      WLDNSRefreshInterval 10' $mod_wl_file" \
+   > $LOGDIR/$HOSTNAME/update_mod_wl_ohs.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "sed -i '/<IfModule weblogic_module>/a \      WLDNSRefreshInterval 10' $mod_wl_file" \
+   >> $LOGDIR/$HOSTNAME/update_mod_wl_ohs.log 2>&1
+
+   echo $SSH ${OHS_USER}@$HOSTNAME "grep -q WLDNSRefreshInterval $mod_wl_file" \
+    >> $LOGDIR/$HOSTNAME/update_mod_wl_ohs.log 2>&1
+   $SSH ${OHS_USER}@$HOSTNAME "grep -q WLDNSRefreshInterval $mod_wl_file" \
+    >> $LOGDIR/$HOSTNAME/update_mod_wl_ohs.log 2>&1
+
+   print_status $? $LOGDIR/$HOSTNAME/update_mod_wl_ohs.log
+
+   ET=$(date +%s)
+   print_time STEP "Update mod_wl_ohs.conf $HOSTNAME" $ST $ET >> $LOGDIR/timings.log
+
+}  
+
+#
 # Stop Node Manager
 #
 stop_nm()

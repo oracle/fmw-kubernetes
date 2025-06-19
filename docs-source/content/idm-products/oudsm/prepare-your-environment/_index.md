@@ -15,7 +15,7 @@ description = "Prepare your environment"
 
 As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unified-directory-services-manager-on-kubernetes) a Kubernetes cluster should have already been configured.
 
-1. Run the following command on the master node to check the cluster and worker nodes are running:
+1. Run the following command on the administrative host to check the cluster and worker nodes are running:
 
    ```bash
    $ kubectl get nodes,pods -n kube-system
@@ -25,9 +25,9 @@ As per the [Prerequisites](../prerequisites/#system-requirements-for-oracle-unif
 
    ```
    NAME                  STATUS   ROLES    AGE   VERSION
-   node/worker-node1     Ready    <none>   17h   v1.28.3+3.el8
-   node/worker-node2     Ready    <none>   17h   v1.28.3+3.el8
-   node/master-node      Ready    master   23h   v1.28.3+3.el8
+   node/worker-node1     Ready    <none>   17h   v1.30.3+1.el8
+   node/worker-node2     Ready    <none>   17h   v1.30.3+1.el8
+   node/master-node      Ready    master   23h   v1.30.3+1.el8
 
    NAME                                     READY   STATUS    RESTARTS   AGE
    pod/coredns-66bff467f8-fnhbq             1/1     Running   0          23h
@@ -54,7 +54,7 @@ The Oracle Unified Directory Services Manager (OUDSM) Kubernetes deployment requ
 #### Prebuilt OUDSM container image
 
 
-The prebuilt OUDSM July 2024 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OUDSM April 2025 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle Unified Directory Services Manager 12.2.1.4.0, the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `oudsm_cpu` and accept the license agreement.
 
@@ -62,7 +62,7 @@ You can use this image in the following ways:
 
 - Pull the container image from the Oracle Container Registry automatically during the OUDSM Kubernetes deployment.
 - Manually pull the container image from the Oracle Container Registry and then upload it to your own container registry.
-- Manually pull the container image from the Oracle Container Registry and manually stage it on the master node and each worker node.
+- Manually pull the container image from the Oracle Container Registry and manually stage it on each worker node.
 
 #### Build your own OUDSM container image using WebLogic Image Tool
 
@@ -71,14 +71,14 @@ You can build your own OUDSM container image using the WebLogic Image Tool. This
 You can use an image built with WebLogic Image Tool in the following ways:
 
 - Manually upload them to your own container registry.
-- Manually stage them on the master node and each worker node.
+- Manually stage them on each worker node.
 
-**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the master and worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
+**Note**: This documentation does not tell you how to pull or push the above images into a private container registry, or stage them on the worker nodes. Details of this can be found in the [Enterprise Deployment Guide](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ikedg/procuring-software-enterprise-deployment.html).
 
 
 ### Setup the code repository to deploy OUDSM
 
-Oracle Unified Directory Services Manager deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory Services Manager containers using the Helm charts provided.  To deploy Oracle Unified Directory Services Manager on Kubernetes you should set up the deployment scripts on the **master** node as below:
+Oracle Unified Directory Services Manager deployment on Kubernetes leverages deployment scripts provided by Oracle for creating Oracle Unified Directory Services Manager containers using the Helm charts provided.  To deploy Oracle Unified Directory Services Manager on Kubernetes you should set up the deployment scripts on the administrative host as below:
 
 1. Create a working directory to setup the source code.
 

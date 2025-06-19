@@ -1,9 +1,7 @@
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 image:                                                                                                                                                                                                             
-  name: traefik                                                                                                                                                                                                    
-  tag: 2.6.0                                                                                                                                                                                                       
   pullPolicy: IfNotPresent                                                                                                                                                                                         
 ingressRoute:                                                                                                                                                                                                      
   dashboard:                                                                                                                                                                                                       
@@ -21,15 +19,12 @@ providers:
 ports:                                                                                                                                                                                                             
   traefik:                                                                                                                                                                                                         
     port: 9000                                                                                                                                                                                                     
-    expose: true                                                                                                                                                                                                   
     # The exposed port for this service                                                                                                                                                                            
     exposedPort: 9000                                                                                                                                                                                              
     # The port protocol (TCP/UDP)                                                                                                                                                                                  
     protocol: TCP                                                                                                                                                                                                  
   web:                                                                                                                                                                                                             
     port: 8000                                                                                                                                                                                                     
-    # hostPort: 8000                                                                                                                                                                                               
-    expose: true                                                                                                                                                                                                   
     exposedPort: 30305                                                                                                                                                                                             
     nodePort: 30305                                                                                                                                                                                                
     # The port protocol (TCP/UDP)                                                                                                                                                                                  
@@ -43,8 +38,6 @@ ports:
     # redirectTo: websecure                                                                                                                                                                                        
   websecure:                                                                                                                                                                                                       
     port: 8443                                                                                                                                                                                                     
-#    # hostPort: 8443                                                                                                                                                                                              
-    expose: true                                                                                                                                                                                                   
     exposedPort: 30443                                                                                                                                                                                             
     # The port protocol (TCP/UDP)                                                                                                                                                                                  
     protocol: TCP                                                                                                                                                                                                  

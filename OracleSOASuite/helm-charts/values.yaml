@@ -1,0 +1,169 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Timeout value required to install all the helm releases
+timeout: 3600
+
+# Values for SOA Domaim
+domain:
+   provision: true
+   namespace: soans
+   release_name: soadomain
+   type: soaosb
+   domainName: soainfra
+   productionMode: true
+   secureEnabled: true
+
+   credentials:
+     secretName:
+     username: weblogic
+     password: Welcome1
+   
+   sslEnabled: true
+   javaOptions: "-Dweblogic.StdoutDebugEnabled=false -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true"
+   #javaOptions: "-Dweblogic.StdoutDebugEnabled=false"
+   persistenceStore: jdbc
+
+   image:
+     repository: container-registry.oracle.com/middleware/soasuite
+     pullPolicy: IfNotPresent
+     tag: UPDATE-ME
+   imagePullSecrets: 
+
+   rcuSchema:
+     prefix: SOA
+     profileType: SMALL
+     databaseType: EBR
+     edition: 'ORA$BASE'
+     credentials:
+       secretName:
+       username: "SOA"
+       password: "OraDB1_#OraDB1_#"
+
+   storage:
+     capacity: 10Gi
+     reclaimPolicy: Retain
+     type: hostpath
+     path: /scratch/k8s_dir/SOA
+#     nfs:
+#      server: A.B.C.D
+
+   maxManagedServerCount: 5
+
+   admin:
+    name: AdminServer
+    listenPort: 7001
+    sslListenPort: 7002
+    exposeNodePort: false
+    nodePort: 30701
+    administrationPort: 9002
+
+   soaCluster:
+    name: soa_cluster
+    managedServers:
+      count: 1
+      name: soa_server
+      listenPort: 7003
+      sslListenPort: 7004
+      administrationPort: 9004
+
+   osbCluster:
+    name: osb_cluster
+    managedServers:
+      count: 1
+      name: osb_server
+      listenPort: 8002
+      sslListenPort: 8003
+      administrationPort: 9007
+   
+   rootDir: /u01/oracle/user_projects
+   scriptDir: /u01/weblogic
+   logHomeEnabled: true
+   logHome: /u01/oracle/user_projects/domains/logs
+   includeServerOutInPodLog: true
+   httpAccessLogInLogHome: true
+   serverStartPolicy: IfNeeded
+   serviceAccount:
+     create: true
+     annotations: {}
+     name: "" 
+
+ 
+# Values required for Databse
+oracledb:
+   provision: true
+   namespaceOverride: dbns
+   image: container-registry.oracle.com/database/enterprise:19.3.0.0
+   imagePullSecrets:
+   oracle_sid: ORCLCDB
+   oracle_pdb: ORCLPDB1
+   oracle_characterset: AL32UTF8
+   oracle_edition: enterprise
+   url: 
+   credentials:
+     secretName:
+     username: SYS
+     password: "Oradoc_db1"
+   persistence: 
+     storageClass: nfs-client
+     size: 10Gi 
+     accessMode: "ReadWriteOnce"
+     volumeName: ""
+   
+# Values for Oracle Database Operator
+dboperator:
+   provision: true
+   namespace: oracle-database-operator-system
+   release_name: oracledb-operator
+   version: latest
+
+# Values for cert-manager required for Oracle Database Operator   
+certmanager: 
+   provision: true
+   namespace: cert-manager
+   release_name: cert-manager
+   version: v1.13.0
+
+# Values for WebLogic Kubernetes Operator
+wlsoperator:
+   provision: true
+   namespace: opns
+   release_name: weblogic-operator
+   version: 4.2.9
+   javaLoggingLevel: "WARNING"
+
+# Values for Loadbalancer. Supports NGINX and TRAEFIK
+loadbalancer:
+   provision: true
+   type: TRAEFIK
+   namespace: soalbns
+   release_name: soalb
+   sslType: E2ESSL
+   hostname: soasuite.domain.org
+   certCommonName: "*.domain.org"
+   e2ehostName:
+     admin: admin.domain.org
+     soa: soa.domain.org
+     osb: osb.domain.org
+
+# Customize the NGINX controller helm charts default values.
+# Refer https://github.com/mifonpe/helmfile-example/blob/master/releases/values/common/nginx-ingress-values.yaml for details
+nginx:
+   controller:
+     service:
+       type: NodePort
+     admissionWebhooks:
+       enabled: false
+     allowSnippetAnnotations: true
+     image:
+       allowPrivilegeEscalation: true
+
+# Customize the TRAEFIK contoller helm chart default values
+# Refer https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml for details
+traefik:
+   image:
+     registry: docker.io 
+     repository: traefik
+     tag: ""
+   service:
+     type: NodePort
