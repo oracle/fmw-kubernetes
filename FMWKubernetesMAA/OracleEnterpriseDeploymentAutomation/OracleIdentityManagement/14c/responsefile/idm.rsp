@@ -1,0 +1,587 @@
+# Copyright (c) 2025, Oracle and/or its affiliates.  
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of a responsefile for IDM Provisioning on Kubernetes
+#
+# Version: 6.0
+
+############################################################################################
+#                               CONTROL Parameters                                         #
+############################################################################################
+#
+
+# Products to Deploy
+#
+INSTALL_OHS=true
+INSTALL_INGRESS=true
+INSTALL_OUDSM=false
+INSTALL_WLSOPER=true
+INSTALL_OUD=true
+INSTALL_OAM=true
+INSTALL_OIG=true
+INSTALL_OIRI=true
+INSTALL_OAA=true
+INSTALL_RISK=true
+INSTALL_OUA=true
+INSTALL_ELK=false
+INSTALL_PROM=false
+
+
+# Control Parameters
+#
+USE_REGISTRY=true
+USE_INGRESS=true
+USE_ELK=false
+USE_PROM=false
+ENABLE_DR=false
+ENV_TYPE=OCI
+IMAGE_TYPE=crio
+
+############################################################################################
+#                               GENERIC Parameters                                         #
+############################################################################################
+#
+# Image Download Location
+#
+IMAGE_DIR=/container/images
+
+# Local Work Directories
+
+LOCAL_WORKDIR=/home/opc/workdir
+K8_WORKDIR=/u01/oracle/user_projects/workdir
+
+# Kubernetes Worker Nodes used in OHS configuration and for Configuration calls
+# 
+K8_WORKER_HOST1=work1.example.com
+K8_WORKER_HOST2=work2.example.com
+
+# SSL Certificate Entries - Used when creating Self-Signed Certificates
+#
+SSL_COUNTRY=US
+SSL_ORG="Oracle Corporation"
+SSL_CITY="Redwood City"
+SSL_STATE=California
+
+############################################################################################
+#                               CONTAINER Registry Parameters                              #
+############################################################################################
+#
+# Container Registry
+#
+REGISTRY=iad.ocir.io/mytenancy/idm
+REG_USER=mytenancy/oracleidentitycloudservice/myemail@example.com
+CREATE_REGSECRET=true
+
+# Used for storing the domain images for creating domains via WDT
+#
+WDT_IMAGE_REGISTRY=$REGISTRY
+WDT_IMAGE_REG_USER=mytenancy/oracleidentitycloudservice/myemail@example.com
+
+# GitHub
+#
+GIT_USER=gituser
+CREATE_GITSECRET=true
+
+
+# DockerHub
+#
+DH_USER=dockeruser
+
+
+############################################################################################
+#                               IMAGE Parameters                                           #
+############################################################################################
+#
+# Images
+# 
+OPER_IMAGE=ghcr.io/oracle/weblogic-kubernetes-operator
+OUD_IMAGE=$REGISTRY/oud
+OUDSM_IMAGE=$REGISTRY/oudsm
+OAM_IMAGE=$REGISTRY/oam
+OIG_IMAGE=$REGISTRY/oig
+OIRI_CLI_IMAGE=$REGISTRY/oiri-cli
+OIRI_IMAGE=$REGISTRY/oiri
+OIRI_UI_IMAGE=$REGISTRY/oiri-ui
+OIRI_DING_IMAGE=$REGISTRY/oiri-ding
+OAA_MGT_IMAGE=$REGISTRY/oaa-mgmt
+
+# External Image Repositories
+#
+KUBECTL_REPO=bitnami/kubectl
+BUSYBOX_REPO=docker.io/busybox
+PROM_REPO=
+ELK_REPO=
+#
+#
+# Image Versions
+# 
+OUD_VER=12.2.1.4-jdk8-ol7-DATE
+OUDSM_VER=12.2.1.4-jdk8-ol7-DATE
+OAM_VER=12.2.1.4-jdk8-ol7-DATE
+OIG_VER=12.2.1.4-jdk8-ol7-DATE
+OIRICLI_VER=12.2.1.4-jdk8-ol7-DATE
+OIRI_VER=12.2.1.4-jdk8-ol7-DATE
+OIRIUI_VER=12.2.1.4-jdk8-ol7-DATE
+OIRIDING_VER=12.2.1.4-jdk8-ol7-DATE
+OAA_VER=12.2.1.4-jdk8-ol7-DATE
+OAAMGT_VER=12.2.1.4-jdk8-ol7-DATE
+OPER_VER=4.2.10
+############################################################################################
+#                               NFS Parameters                                             #
+############################################################################################
+#
+PVSERVER=mynfsserver.example.com
+IAM_PVS=/exports/IAMPVS
+PV_MOUNT=/u01/oracle/user_projects
+
+
+############################################################################################
+#                          Elastic Search (ELK) / Kabana Parameters                        #
+############################################################################################
+# Leave blank if you are not using a centralised ELK deployment
+
+ELKNS=elkns
+ELK_HOST=https://elasticsearch-es-http.$ELKNS.svc:9200
+ELK_OPER_VER=2.10.0
+ELK_VER=8.11.0
+ELK_SHARE=$IAM_PVS/elk_data
+ELK_STORAGE=nfs-client
+ELK_USER=logstash_internal
+ELK_API=
+ELK_KIBANA_K8=31800
+ELK_K8=31920
+
+############################################################################################
+#                          Prometheus / Grafana Parameters                                 #
+############################################################################################
+
+PROMNS=monitoring
+#PROM_VER=release-0.10
+PROM_GRAF_K8=30900
+PROM_K8=30901
+PROM_ALERT_K8=30902
+
+############################################################################################
+#                               INGRESS Parameters                                         #
+############################################################################################
+#
+
+INGRESS_TYPE=nginx
+INGRESSNS=ingressns
+INGRESS_ENABLE_TCP=true
+INGRESS_NAME=idmedg
+INGRESS_SSL=false
+INGRESS_SERVICE_TYPE=NodePort
+INGRESS_DOMAIN=example.com
+INGRESS_REPLICAS=2
+
+# Ports
+#
+INGRESS_HTTP=80
+INGRESS_HTTPS=443
+INGRESS_HTTP_K8=30777
+INGRESS_HTTPS_K8=30443
+
+############################################################################################
+#                               GENERIC LDAP Parameters                                    #
+############################################################################################
+#
+LDAP_EXTERNAL_HOST=
+LDAP_EXTERNAL_PORT=
+LDAP_PROTOCOL=
+LDAP_ADMIN_USER=cn=oudadmin
+LDAP_SEARCHBASE=dc=example,dc=com
+LDAP_GROUP_SEARCHBASE=cn=Groups,$LDAP_SEARCHBASE
+LDAP_USER_SEARCHBASE=cn=Users,$LDAP_SEARCHBASE
+LDAP_RESERVE_SEARCHBASE=cn=Reserve,$LDAP_SEARCHBASE
+LDAP_SYSTEMIDS=systemids
+LDAP_OAMADMIN_USER=oamadmin
+LDAP_OIGADMIN_GRP=OIMAdministrators
+LDAP_OAMADMIN_GRP=OAMAdministrators
+LDAP_WLSADMIN_GRP=WLSAdministrators
+LDAP_OAMLDAP_USER=oamLDAP
+LDAP_OIGLDAP_USER=oimLDAP
+LDAP_WLSADMIN_USER=weblogic_iam
+LDAP_XELSYSADM_USER=xelsysadm
+
+############################################################################################
+#                               OUD Parameters                                             #
+############################################################################################
+#
+OUDNS=oudns
+OUD_SHARE=$IAM_PVS/oudpv
+OUD_CONFIG_SHARE=$IAM_PVS/oudconfigpv
+OUD_LOCAL_CONFIG_SHARE=/nfs_volumes/oudconfigpv
+OUD_LOCAL_SHARE=/nfs_volumes/oudpv
+OUD_POD_PREFIX=edg
+OUD_CREATE_NODEPORT=true
+OUD_PWD_EXPIRY=2026-01-02
+
+OUD_REPLICAS=2
+
+OUD_HTTP_K8=30080
+OUD_HTTPS_K8=30443
+OUD_LDAP_K8=31389
+OUD_LDAPS_K8=31636
+OUD_ADMIN_K8=31444
+
+# Pod Resource Allocation
+#
+OUD_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
+OUD_MAX_MEMORY=4Gi # Max Memory pod is allowed to consume.
+OUD_CPU=200m  # Initial CPU Units 1000m = 1 CPU core
+OUD_MEMORY=2Gi  # Initial Memory allocated to pod.
+OUDSERVER_TUNING_PARAMS="-Xms1024m -Xmx2048m "
+
+############################################################################################
+#                               OUDSM Parameters                                           #
+############################################################################################
+#
+OUDSMNS=oudsmns
+OUDSM_USER=weblogic
+OUDSM_SHARE=$IAM_PVS/oudsmpv
+OUDSM_LOCAL_SHARE=/nfs_volumes/oudsmpv
+OUDSM_INGRESS_HOST=oudsm.example.com
+
+# OUDSM Ports
+OUDSM_SERVICE_PORT=30901
+
+############################################################################################
+#                               WEBLOGIC Operator Parameters                               #
+############################################################################################
+#
+OPERNS=opns
+OPER_ACT=operadmin
+OPER_ENABLE_SECRET=false
+
+############################################################################################
+#                               OAM Parameters                                             #
+############################################################################################
+#
+OAMNS=oamns
+OAM_SHARE=$IAM_PVS/oampv
+OAM_LOCAL_SHARE=/nfs_volumes/oampv
+OAM_SERVER_COUNT=5
+OAM_SERVER_INITIAL=2
+OAM_DB_SCAN=db-scan.example.com
+OAM_DB_LISTENER=1521
+OAM_DB_SERVICE=oamsvc.example.com
+OAM_RCU_PREFIX=IAD
+OAM_WEBLOGIC_USER=weblogic
+OAM_DOMAIN_NAME=accessdomain
+OAM_LOGIN_LBR_HOST=login.example.com
+OAM_LOGIN_LBR_PORT=443
+OAM_LOGIN_LBR_PROTOCOL=https
+OAM_ADMIN_LBR_HOST=iadadmin.example.com
+OAM_ADMIN_LBR_PORT=80
+OAM_ADMIN_LBR_PROTOCOL=http
+OAM_COOKIE_DOMAIN=.example.com
+
+OAM_OAP_HOST=0.0.0.0
+OAM_OIG_INTEG=true
+
+OAM_OAMADMIN_USER=$LDAP_OAMADMIN_USER
+
+# Resource Parameters
+# 
+OAMSERVER_JAVA_PARAMS="-Xms2048m -Xmx8192m "
+OAM_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
+OAM_CPU=500m # Initial CPU Units 1000m = 1 CPU core
+OAM_MAX_MEMORY=8Gi # Max Memory pod is allowed to consume.
+OAM_MEMORY=2Gi  # Initial Memory allocated to pod.
+
+# OAM Ports
+#
+OAM_ADMIN_PORT=7001
+OAM_ADMIN_K8=30701
+OAM_ADMIN_T3_K8=30012
+OAM_OAM_K8=30410
+OAM_POLICY_K8=30510
+OAM_OAP_PORT=5575
+OAM_OAP_SERVICE_PORT=30540
+
+############################################################################################
+#                               OIG Parameters                                             #
+############################################################################################
+#
+OIGNS=oigns
+CONNECTOR_DIR=/home/opc/scripts/connectors
+CONNECTOR_VER=OID-12.2.1.3.0
+OIG_SHARE=$IAM_PVS/oigpv
+OIG_LOCAL_SHARE=/nfs_volumes/oigpv
+OIG_SERVER_COUNT=5
+OIG_SERVER_INITIAL=2
+OIG_DOMAIN_NAME=governancedomain
+OIG_DB_SCAN=db-scan.example.com
+OIG_DB_LISTENER=1521
+OIG_DB_SERVICE=oigsvc.example.com
+OIG_RCU_PREFIX=IGD
+OIG_WEBLOGIC_USER=weblogic
+OIG_ADMIN_LBR_HOST=igdadmin.example.com
+OIG_ADMIN_LBR_PORT=80
+OIG_ADMIN_LBR_PROTOCOL=http
+OIG_LBR_HOST=prov.example.com
+OIG_LBR_PORT=443
+OIG_LBR_PROTOCOL=https
+OIG_LBR_INT_HOST=igdinternal.example.com
+OIG_LBR_INT_PORT=7777
+OIG_LBR_INT_PROTOCOL=http
+OIG_ENABLE_T3=true
+OIG_BI_INTEG=false
+OIG_BI_HOST=bi.example.com
+OIG_BI_PORT=443
+OIG_BI_PROTOCOL=https
+OIG_BI_USER=idm_report
+OIG_EMAIL_CREATE=true
+OIG_EMAIL_SERVER=smtp.example.com
+OIG_EMAIL_PORT=25
+OIG_EMAIL_SECURITY=None
+OIG_EMAIL_ADDRESS=email@example.com
+OIG_EMAIL_FROM_ADDRESS=fromaddress@example.com
+OIG_EMAIL_REPLY_ADDRESS=noreplies@example.com
+
+
+# Pod Resource Allocation
+#
+OIMSERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
+SOASERVER_JAVA_PARAMS="-Xms4096m -Xmx8192m "
+OIM_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
+OIM_CPU=500m # Initial CPU Units 1000m = 1 CPU core
+OIM_MAX_MEMORY=8Gi # Max Memory pod is allowed to consume.
+OIM_MEMORY=4Gi  # Initial Memory allocated to pod.
+SOA_MAX_CPU=1 # Max CPU Cores pod is allowed to consume.
+SOA_CPU=1000m # Initial CPU Units 1000m = 1 CPU core
+SOA_MAX_MEMORY=10Gi # Max Memory pod is allowed to consume.
+SOA_MEMORY=4Gi  # Initial Memory allocated to pod.
+
+# OIG Ports
+#
+OIG_ADMIN_PORT=7101
+OIG_ADMIN_K8=30711
+OIG_ADMIN_T3_K8=30012
+OIG_OIM_PORT_K8=30140
+OIG_SOA_PORT_K8=30801
+OIG_OIM_T3_PORT_K8=30712
+
+
+############################################################################################
+#                               OHS Parameters                                             #
+############################################################################################
+# 
+UPDATE_OHS=true
+DEPLOY_WG=true
+COPY_WG_FILES=true
+OHS_USER=opc
+OHS_GRP=opc
+OHS_HOST1=ohs1.example.com
+OHS_HOST2=ohs2.example.com
+OHS_LBR_NETWORK=example.com
+OHS_INSTALLER=fmw_14.1.2.0.0_ohs_linux64.bin
+NM_ADMIN_USER=admin
+NM_PORT=5556
+
+
+OHS_PORT=7777
+OHS_HTTPS_PORT=4443
+OHS_BASE=/u02/private
+OHS_ORACLE_HOME=$OHS_BASE/oracle/products/ohs
+OHS_DOMAIN=$OHS_BASE/oracle/config/domains/ohsDomain
+OHS1_NAME=ohs1
+OHS2_NAME=ohs2
+
+
+############################################################################################
+#                               OIRI Parameters                                            #
+############################################################################################
+# 
+OIRINS=oirins
+DINGNS=dingns
+
+# NFS Parameters
+#
+OIRI_SHARE=$IAM_PVS/oiripv
+OIRI_LOCAL_SHARE=/nfs_volumes/oiripv
+OIRI_SHARE_SIZE=10Gi
+OIRI_DING_SHARE=$IAM_PVS/dingpv
+OIRI_DING_LOCAL_SHARE=/nfs_volumes/dingpv
+OIRI_DING_SHARE_SIZE=10Gi
+OIRI_WORK_LOCAL_SHARE=/nfs_volumes/workpv
+OIRI_WORK_SHARE=$IAM_PVS/workpv
+
+# DB Parameters
+#
+OIRI_DB_SCAN=db-scan.example.com
+OIRI_DB_LISTENER=1521
+OIRI_DB_SERVICE=oirisvc.example.com
+OIRI_RCU_PREFIX=OIRI
+
+OIRI_OIG_DB_SCAN=$OIG_DB_SCAN
+OIRI_OIG_DB_LISTENER=$OIG_DB_LISTENER
+OIRI_OIG_DB_SERVICE=$OIG_DB_SERVICE
+
+# Ingress Parameters
+# 
+OIRI_CREATE_OHS=true
+OIRI_INGRESS_HOST=$OIG_ADMIN_LBR_HOST
+
+# User Parameters
+#
+OIRI_ENG_GROUP=OrclOIRIRoleEngineer
+OIRI_ENG_USER=oiri
+OIRI_SERVICE_USER=oirisvc
+
+# OIG Parameters
+#
+OIRI_OIG_URL=http://$OIG_DOMAIN_NAME-cluster-oim-cluster.$OIGNS.svc.cluster.local:14000
+OIRI_OIG_SERVER=t3://$OIG_DOMAIN_NAME-oim-server1.$OIGNS.svc.cluster.local:14000/
+OIRI_LOAD_DATA=true
+OIRI_OIG_XELSYSADM_USER=$LDAP_XELSYSADM_USER
+OIRI_OIG_XELL_FILE=
+OIRI_CREATE_OIG_USER=true
+OIRI_SET_OIG_COMPLIANCE=true
+
+# Number of Container Instances
+#
+OIRI_REPLICAS=2
+OIRI_UI_REPLICAS=2
+OIRI_SPARK_REPLICAS=2
+
+# Ports 
+#
+OIRI_K8=30305
+OIRI_UI_K8=30306
+
+############################################################################################
+#                               OAA Parameters                                             #
+############################################################################################
+# 
+OAANS=oaans
+OAA_DEPLOYMENT=edg
+OAA_DOMAIN=OAADomain
+
+# NFS Parameters
+#
+OAA_CONFIG_SHARE=$IAM_PVS/oaaconfigpv
+OAA_CRED_SHARE=$IAM_PVS/oaacredpv
+OAA_LOG_SHARE=$IAM_PVS/oaalogpv
+OAA_VAULT_SHARE=$IAM_PVS/oaavaultpv
+OAA_LOCAL_CONFIG_SHARE=/nfs_volumes/oaaconfigpv
+OAA_LOCAL_CRED_SHARE=/nfs_volumes/oaacredpv
+OAA_LOCAL_LOG_SHARE=/nfs_volumes/oaalogpv
+OAA_LOCAL_VAULT_SHARE=/nfs_volumes/oaavaultpv
+
+OAA_VAULT_TYPE=file
+OAA_CREATE_OHS=true
+
+
+# DB Parameters
+#
+OAA_DB_SCAN=db-scan.example.com
+OAA_DB_LISTENER=1521
+OAA_DB_SERVICE=oaasvc.example.com
+OAA_RCU_PREFIX=OAA
+
+# Users/Groups
+#
+OAA_ADMIN_GROUP=OAA-Admin-Role
+OAA_USER_GROUP=OAA-App-User
+OAA_ADMIN_USER=oaaadmin
+OAA_ADD_USERS_LDAP=true
+OAA_ADD_USERS_OUA_OBJ=true
+
+
+# File Vault
+#
+
+# OCI Vault
+#
+OAA_OCI_OPER=
+OAA_OCI_TENANT=
+OAA_OCI_USER=
+OAA_OCI_FP=
+OAA_OCI_COMPARTMENT=
+OAA_OCI_VAULT_ID=
+OAA_OCI_KEY=
+
+# Ingress Parameters
+#
+OAA_ADMIN_HOST=$OAM_ADMIN_LBR_HOST
+OAA_RUNTIME_HOST=$OAM_LOGIN_LBR_HOST
+
+# Test User
+#
+OAA_CREATE_TESTUSER=true
+OAA_USER=oaauser
+OAA_USER_EMAIL=email@example.com
+OAA_USER_POSTCODE=oaauser
+
+
+# Email Server
+#
+OAA_EMAIL_SERVER=http://$OIG_DOMAIN_NAME-cluster-soa-cluster.$OIGNS.svc.cluster.local:8001/ucs/messaging/webservice
+OAA_EMAIL_USER=$OIG_WEBLOGIC_USER
+
+# SMS Server
+#
+OAA_SMS_SERVER=$OAA_EMAIL_SERVER
+OAA_SMS_USER=$OIG_WEBLOGIC_USER
+
+# Number of Container Instances
+#
+OAA_REPLICAS=2
+OAA_ADMIN_REPLICAS=2
+OAA_POLICY_REPLICAS=2
+OAA_SPUI_REPLICAS=2
+OAA_TOTP_REPLICAS=2
+OAA_YOTP_REPLICAS=2
+OAA_FIDO_REPLICAS=2
+OAA_EMAIL_REPLICAS=2
+OAA_SMS_REPLICAS=2
+OAA_PUSH_REPLICAS=2
+OAA_RISK_REPLICAS=2
+OAA_RISKCC_REPLICAS=2
+OAA_DRSS_REPLICAS=2
+OAA_KBA_REPLICAS=2
+
+# Resource Allocations
+#
+OAA_OAA_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_OAA_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_ADMIN_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_ADMIN_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_POLICY_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_POLICY_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_SPUI_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_SPUI_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_TOTP_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_TOTP_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_YOTP_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_YOTP_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_FIDO_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_FIDO_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_EMAIL_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_EMAIL_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_PUSH_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_PUSH_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_SMS_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_SMS_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_KBA_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_KBA_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_CUSTOM_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_CUSTOM_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_DRSS_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_DRSS_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_RISK_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_RISK_MEMORY=1Gi  # Initial Memory allocated to pod.
+OAA_RISKCC_CPU=200m # Initial CPU Units 1000m = 1 CPU core
+OAA_RISKCC_MEMORY=1Gi  # Initial Memory allocated to pod.
+
+
+
+############################################################################################
+#                               INTERNAL  Parameters - DO NOT CHANGE                       #
+############################################################################################
+#
+DELETE_SAMPLES=true
+WLS_CREATION_TYPE=WDT
+SAMPLES_REP="https://github.com/oracle/fmw-kubernetes.git"

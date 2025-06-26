@@ -1,0 +1,60 @@
+# Copyright (c) 2021, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# This is an example of functions and procedures to provision and Configure Oracle Identity Governance
+#
+#
+# Usage: not invoked Directly
+#
+/oim_cluster/,/replicas/ {
+/replicas:/a\  serverPod:\
+\    livenessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    readinessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    env: \
+\    - name: USER_MEM_ARGS \
+\      value: "-Djava.security.egd=file:/dev/./urandom <OIMSERVER_JAVA_PARAMS> " \
+\    resources: \
+\      limits: \
+\        cpu: "<OIM_MAX_CPU>" \
+\        ephemeral-storage: 10Gi \
+\        memory: <OIM_MAX_MEMORY> \
+\      requests: \
+\        cpu: <OIM_CPU> \
+\        ephemeral-storage: 10Gi \
+\        memory: <OIM_MEMORY>
+}
+/soa_cluster/,/replicas/{
+/replicas/a\  serverPod:\
+\    livenessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    readinessProbe: \
+\      failureThreshold: 3 \
+\      initialDelaySeconds: 10 \
+\      periodSeconds: 60 \
+\      timeoutSeconds: 60 \
+\    env: \
+\    - name: USER_MEM_ARGS \
+\      value: "<SOASERVER_JAVA_PARAMS>" \
+\    resources: \
+\      limits: \
+\        cpu: "<SOA_MAX_CPU>" \
+\        ephemeral-storage: 10Gi \
+\        memory: <SOA_MAX_MEMORY> \
+\      requests: \
+\        cpu: <SOA_CPU> \
+\        ephemeral-storage: 10Gi \
+\        memory: <SOA_MEMORY>
+}
+
+
