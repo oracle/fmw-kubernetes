@@ -10,6 +10,13 @@ Review the latest changes and known issues for Oracle Unified Directory Services
 
 | Date | Version | Change |
 | --- | --- | --- |
+| July, 2025 | 25.3.1 | Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the July 2025 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | If upgrading to July 25 (25.3.1) from October 22 (22.4.1) or later, upgrade as follows:|
+| | | 1. Patch the OUDSM container image to July 25|
+| | | If upgrading to July 25 (25.3.1) from July 22 (22.3.1) or earlier, you must upgrade the following in order:|
+| | | 1. Patch the OUDSM container image to July 25|
+| | | 2. Upgrade Elasticsearch and Kibana.|
+| | | To upgrade to July 25 (25.3.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).| 
 | April, 2025 | 25.2.1 | Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the April 2025 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | If upgrading to April 25 (25.2.1) from October 22 (22.4.1) or later, upgrade as follows:|
 | | | 1. Patch the OUDSM container image to April 25|

@@ -10,6 +10,21 @@ Review the latest changes and known issues for Oracle Identity Governance on Kub
 
 | Date | Version | Change |
 | --- | --- | --- |
+| July, 2025 | 25.3.1 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the July 2025 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | This release contains no changes other than support for the July Patch Set Update.
+| | | If upgrading to July 25 (25.3.1) from January 25 (25.1.1), you must upgrade the following in order:
+| | | 1. Patch the OIG container image to July 25|
+| | | 2. If you are upgrading to Kubernetes 1.29 or later, you must upgrade the ingress. See [Upgrading the ingress](../patch-and-upgrade/upgrade-an-ingress).
+| | | If upgrading to July 25 (25.3.1) from October 22 (22.4.1) or later, you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.2.10|
+| | | 2. Patch the OIG container image to July 25|
+| | | 3. If you are upgrading to Kubernetes 1.29 or later, you must upgrade the ingress. See [Upgrading the ingress](../patch-and-upgrade/upgrade-an-ingress).
+| | | If upgrading to July 25 (25.3.1) from a release prior to October 22 (22.4.1), you must upgrade the following in order:
+| | | 1. WebLogic Kubernetes Operator to 4.2.10|
+| | | 2. Patch the OIG container image to July 25|
+| | | 3. Upgrade the Ingress|
+| | | 4. Upgrade Elasticsearch and Kibana|
+| | | See [Patch and Upgrade](../patch-and-upgrade) for these instructions.
 | April, 2025 | 25.2.1 | Supports Oracle Identity Governance 12.2.1.4 domain deployment using the April 2025 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | This release contains no changes other than support for the April Patch Set Update.
 | | | If upgrading to April 25 (25.2.1) from January 25 (25.1.1), you must upgrade the following in order:

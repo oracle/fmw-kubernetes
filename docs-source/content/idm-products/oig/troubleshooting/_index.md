@@ -156,7 +156,7 @@ If the domain creation fails while creation domain resources using the `domain.y
    a. Create a helper pod:
 
    ```
-   kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April`25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
+   kubectl run --image=container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<July`25> --image-pull-policy="IfNotPresent" --overrides='{"apiVersion": "v1","spec":{"imagePullSecrets": [{"name": "orclcred"}]}}' helper -n oigns -- sleep infinity
    ```
 
 	b. Clean down the failed domain creation by following steps 1-3 in [Delete the OIG domain home](../manage-oig-domains/delete-domain-home). 
