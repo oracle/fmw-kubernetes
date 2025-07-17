@@ -199,7 +199,7 @@ You can create OUD instances using one of the following methods:
    ```yaml
    image:
      repository: container-registry.oracle.com/middleware/oud_cpu
-     tag: 12.2.1.4-jdk8-ol8-<April'25>
+     tag: 12.2.1.4-jdk8-ol8-<July'25>
      pullPolicy: IfNotPresent
    imagePullSecrets:
      - name: orclcred
@@ -390,7 +390,7 @@ You can create OUD instances using one of the following methods:
    $ helm install --namespace oudns \
    --set oudConfig.rootUserPassword=<password> \
    --set persistence.filesystem.hostPath.path=/scratch/shared/oud_user_projects \
-   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<April'25> \
+   --set image.repository=container-registry.oracle.com/middleware/oud_cpu,image.tag=12.2.1.4-jdk8-ol8-<July'25> \
    --set oudConfig.sampleData="200" \
    --set oudConfig.resources.limits.cpu="1",oudConfig.resources.limits.memory="8Gi",oudConfig.resources.requests.cpu="500m",oudConfig.resources.requests.memory="4Gi" \
    --set cronJob.kubectlImage.repository=bitnami/kubectl,cronJob.kubectlImage.tag=1.30.3 \

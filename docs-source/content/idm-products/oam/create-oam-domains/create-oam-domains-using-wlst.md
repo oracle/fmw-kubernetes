@@ -65,7 +65,7 @@ The sample scripts for Oracle Access Management domain deployment are available 
    ```bash   
    domainUID: accessdomain
    domainHome: /u01/oracle/user_projects/domains/accessdomain
-   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>
    imagePullSecretName: orclcred
    weblogicCredentialsSecretName: accessdomain-credentials
    logHome: /u01/oracle/user_projects/domains/logs/accessdomain
@@ -164,7 +164,7 @@ generated artifacts:
    export initialManagedServerReplicas="2"
    export managedServerNameBase="oam_server"
    export managedServerPort="14100"
-   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>"
+   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>"
    export imagePullPolicy="IfNotPresent"
    export imagePullSecretName="orclcred"
    export productionModeEnabled="true"
@@ -558,7 +558,7 @@ By default, the java memory parameters assigned to the oam_server cluster are ve
      Failure Retry Interval Seconds:  120
      Failure Retry Limit Minutes:     1440
      Http Access Log In Log Home:     true
-     Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
+     Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>
      Image Pull Policy:               IfNotPresent
      Image Pull Secrets:
        Name:                           orclcred

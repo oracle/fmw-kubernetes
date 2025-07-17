@@ -303,7 +303,7 @@ In this section you generate the required WDT models for the OAM domain, along w
    ```
    domainUID: accessdomain
    domainHome: /u01/oracle/user_projects/domains/accessdomain
-   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
+   image: container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>
    imagePullSecretName: orclcred
    logHome: /u01/oracle/user_projects/domains/logs/accessdomain
    namespace: oamns
@@ -379,7 +379,7 @@ In this section you generate the required WDT models for the OAM domain, along w
    export datasourceType="generic"
    export edgInstall="false"
    export domainHome="/u01/oracle/user_projects/domains/accessdomain"
-   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>"
+   export image="container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>"
    export imagePullSecretName="orclcred"
    export logHome="/u01/oracle/user_projects/domains/logs/accessdomain"
    export exposeAdminT3Channel="false"
@@ -743,7 +743,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
      domainHomeSourceType: PersistentVolume
 
      # The WebLogic Server image that the Operator uses to start the domain
-     image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>"
+     image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>"
 
      # imagePullPolicy defaults to "Always" if image version is :latest
      imagePullPolicy: IfNotPresent
@@ -781,7 +781,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
      domainHomeSourceType: PersistentVolume
    
      # The WebLogic Server image that the Operator uses to start the domain
-     image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>"
+     image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>"
    
      # imagePullPolicy defaults to "Always" if image version is :latest
      imagePullPolicy: IfNotPresent
@@ -823,7 +823,7 @@ In this section you modify the `domain.yaml` file in preparation for creating th
          #DO NOT CHANGE THE NAME OF THIS INIT CONTAINER
          - name: compat-connector-init
            # OAM Product image, same as spec.image mentioned above
-           image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>"
+           image: "container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>"
            imagePullPolicy: IfNotPresent
            command: [ "/bin/bash", "-c", "mkdir -p  /u01/oracle/user_projects/domains/wdt-logs"]
            volumeMounts:
@@ -1273,7 +1273,7 @@ In this section you deploy the OAM domain using the `domain.yaml`.
 	  Failure Retry Interval Seconds:  120
 	  Failure Retry Limit Minutes:     1440
 	  Http Access Log In Log Home:     true
-	  Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
+	  Image:                           container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>
 	  Image Pull Policy:               IfNotPresent
 	  Image Pull Secrets:
 		Name:                             orclcred
@@ -1298,7 +1298,7 @@ In this section you deploy the OAM domain using the `domain.yaml`.
 			/bin/bash
 			-c
 			mkdir -p  /u01/oracle/user_projects/domains/wdt-logs
-		  Image:              container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<April'25>
+		  Image:              container-registry.oracle.com/middleware/oam_cpu:12.2.1.4-jdk8-ol8-<July'25>
 		  Image Pull Policy:  IfNotPresent
 		  Name:               compat-connector-init
 		  Volume Mounts:

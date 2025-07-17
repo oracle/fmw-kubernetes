@@ -11,7 +11,7 @@ Oracle HTTP Server (OHS) 12.2.1.4 is supported for deployment on Kubernetes.
 
 ### Current production release
 
-The current production release for the Oracle HTTP Server 12.2.1.4 deployment on Kubernetes is [25.2.1](https://github.com/oracle/fmw-kubernetes/releases).
+The current production release for the Oracle HTTP Server 12.2.1.4 deployment on Kubernetes is [25.3.1](https://github.com/oracle/fmw-kubernetes/releases).
 
 ### Recent changes and known issues
 
@@ -94,6 +94,7 @@ For detailed information about the above deployments, start at [Prerequisites](.
 
 To view documentation for an earlier release, see:
 
+* [Version 25.2.1](https://oracle.github.io/fmw-kubernetes/25.2.1/ohs/)
 * [Version 25.1.1](https://oracle.github.io/fmw-kubernetes/25.1.1/ohs/)
 * [Version 24.4.1](https://oracle.github.io/fmw-kubernetes/24.4.1/ohs/)
 
