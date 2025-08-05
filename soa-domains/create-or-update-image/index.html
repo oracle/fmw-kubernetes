@@ -12,18 +12,18 @@
     <title>Create or update an image :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1752740719" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1754379115" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1752740719"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1754379115"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1752740719"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1752740719"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1754379115"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1754379115"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1752740719"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1754379115"></script>
 
     
   </div>
@@ -5944,12 +5944,12 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <p>After <a href="/fmw-kubernetes/soa-domains/create-or-update-image/#set-up-the-weblogic-image-tool">setting up the WebLogic Image Tool</a> and required build scripts, follow these steps to use the WebLogic Image Tool to <code>create</code> a new Oracle SOA Suite Docker image.</p>
 <h5 id="download-the-oracle-soa-suite-installation-binaries-and-patches">Download the Oracle SOA Suite installation binaries and patches</h5>
 <p>You must download the required Oracle SOA Suite installation binaries and patches as listed below from the <a href="https://edelivery.oracle.com/">Oracle Software Delivery Cloud</a> and save them in a directory of your choice. In these steps, this directory is <code>download location</code>.</p>
-<p>The installation binaries and patches required for release 25.2.2 are:</p>
+<p>The installation binaries and patches required for release 25.3.2 are:</p>
 <ul>
 <li>
 <p>JDK:</p>
 <ul>
-<li>jdk-8u441-linux-x64.tar.gz</li>
+<li>jdk-8u461-linux-x64.tar.gz</li>
 </ul>
 </li>
 <li>
@@ -5975,38 +5975,38 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <li>
 <p>Fusion Middleware Infrastructure patches:</p>
 <ul>
-<li>p28186730_1394219_Generic.zip (OPATCH 13.9.4.2.19 FOR EM 13.5 AND FMW/WLS 12.2.1.4.0, 14.1.1.0.0, 14.1.2.0.0)</li>
-<li>p37714186_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.250317)</li>
-<li>p37710654_122140_Generic.zip (FMW THIRDPARTY BUNDLE PATCH 12.2.1.4.250314)</li>
-<li>p36316422_122140_Generic.zip (OPSS BUNDLE PATCH 12.2.1.4.240220)</li>
-<li>p37684007_122140_Generic.zip (OWSM BUNDLE PATCH 12.2.1.4.250309)</li>
-<li>p37836334_122140_Generic.zip (ADF BUNDLE PATCH 12.2.1.4.250416)</li>
-<li>p37658278_122140_Generic.zip (Coherence 12.2.1.4 Cumulative Patch 25 (12.2.1.4.25))</li>
-<li>p33093748_122140_Generic.zip (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)</li>
-<li>p37056593_122140_Generic.zip (OCT 2024 CLONING SPU FOR FMW 12.2.1.4.0)</li>
-<li>p35965629_122140_Generic.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 - SIZE OPTIMIZED FOR JAN 2024)</li>
-<li>p37258699_122140_Generic.zip (JDBC19.25 BUNDLE PATCH 12.2.1.4.241107)</li>
-<li>p37506516_122140_Generic.zip (RDA release 25.2-2025415 for FMW 12.2.1.4.0)</li>
-<li>p37284722_122140_Generic.zip (WebCenter Core Bundle Patch 12.2.1.4.241114)</li>
-<li>p37297691_122140_Generic.zip OSS 19C BUNDLE PATCH 12.2.1.4.241119</li>
-<li>p36789759_122140_Generic.zip FMW PLATFORM BUNDLE PATCH 12.2.1.4.240812</li>
-<li>p34065178_122140_Generic.zip (OVD One Off)</li>
-<li>p36426672_122140_Generic.zip (WLS One Off)</li>
+<li>p28186730_1394220_Generic.zip (OPATCH 13.9.4.2.20 FOR EM 13.5 AND FMW/WLS 12.2.1.4.0, 14.1.1.0.0, 14.1.2.0.0)</li>
+<li>p38073767_122140_Generic.zip (OWSM BUNDLE PATCH 12.2.1.4.250613)</li>
+<li>p38015786_122140_Generic.zip (ADF BUNDLE PATCH 12.2.1.4.250530)</li>
+<li>p38156117_122140_Generic.zip (WLS PATCH SET UPDATE 12.2.1.4.250706)</li>
 <li>p34809489_122140_Generic.zip (JDEV One Off)</li>
-<li>p34542329_122140_Generic.zip (EM One Off)</li>
-<li>p34765492_122140_Generic.zip (EM One Off)</li>
+<li>p36789759_122140_Generic.zip (FMW PLATFORM BUNDLE PATCH 12.2.1.4.240812)</li>
+<li>p36316422_122140_Generic.zip (OPSS BUNDLE PATCH 12.2.1.4.240220)</li>
+<li>p38018956_122140_Generic.zip (Coherence 12.2.1.4 Cumulative Patch 26 (12.2.1.4.26))</li>
+<li>p37056593_122140_Generic.zip (OCT 2024 CLONING SPU FOR FMW 12.2.1.4.0)</li>
+<li>p36426672_122140_Generic.zip (WLS One Off)</li>
+<li>p33093748_122140_Generic.zip (FMW PLATFORM 12.2.1.4.0 SPU FOR APRCPU2021)</li>
+<li>p37284722_122140_Generic.zip (WebCenter Core Bundle Patch 12.2.1.4.241114)</li>
 <li>p36946553_122140_Generic.zip (FMWCONTROL BUNDLE PATCH 12.2.1.4.240814)</li>
+<li>p34765492_122140_Generic.zip (EM One Off)</li>
+<li>p34542329_122140_Generic.zip (EM One Off)</li>
+<li>p35965629_122140_Generic.zip (ADR FOR WEBLOGIC SERVER 12.2.1.4.0 - SIZE OPTIMIZED FOR JAN 2024)</li>
+<li>p37887285_122140_Generic.zip (RDA release 25.3-2025715 for FMW 12.2.1.4.0)</li>
+<li>p37925688_122140_Generic.zip (JDBC19.27 BUNDLE PATCH 12.2.1.4.250514)</li>
+<li>p38108218_122140_Generic.zip (FMW Thirdparty Bundle Patch 12.2.1.4.250623)</li>
+<li>p38042142_122140_Generic.zip (OSS 19C BUNDLE PATCH 12.2.1.4.250606)</li>
+<li>p34065178_122140_Generic.zip (OVD One Off)</li>
 </ul>
 </li>
 <li>
 <p>Oracle SOA Suite and Oracle Service Bus patches</p>
 <ul>
-<li>p37680629_122140_Generic.zip (SOA BUNDLE PATCH 12.2.1.4.250307)</li>
-<li>p37518203_122140_Generic.zip (OSB BUNDLE PATCH 12.2.1.4.250124)</li>
+<li>p38154985_122140_Generic.zip (SOA Bundle Patch 12.2.1.4.250704)</li>
+<li>p38059281_122140_Generic.zip (OSB BUNDLE PATCH 12.2.1.4.250611)</li>
+<li>p38163380_122140_Generic.zip (SOA Stack Patch Bundle 12.2.1.4.250708)</li>
 <li>p33404495_122140_Generic.zip (SOA One-off)</li>
 <li>p32827327_122140_Generic.zip (OSB One-off)</li>
 <li>p31713053_122140_Generic.zip (One-off patch)</li>
-<li>p37852500_122140_Generic.zip (SOA Stack Patch Bundle 12.2.1.4.250419)</li>
 </ul>
 </li>
 </ul>
@@ -6035,7 +6035,7 @@ $ cp -rf <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74"
 <ol>
 <li>
 <p>Add a JDK package to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addInstaller --type jdk --version 8u441 --path &lt;download location&gt;/jdk-8u441-linux-x64.tar.gz
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addInstaller --type jdk --version 8u461 --path &lt;download location&gt;/jdk-8u461-linux-x64.tar.gz
 </code></pre></div></li>
 <li>
 <p>Add the downloaded installation binaries to the WebLogic Image Tool cache:</p>
@@ -6050,62 +6050,74 @@ $ imagetool cache addInstaller --type b2b --version 12.2.1.4.0 --path &lt;downlo
 </code></pre></div></li>
 <li>
 <p>Add the downloaded OPatch patch to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.19 --value &lt;download location&gt;/p28186730_1394219_Generic.zip
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.20 --value &lt;download location&gt;/p28186730_1394220_Generic.zip
 </code></pre></div></li>
 <li>
 <p>Append the <code>--opatchBugNumber</code> flag and the OPatch patch key to the <code>create</code> command in the <code>buildArgs</code> file:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--opatchBugNumber 28186730_13.9.4.2.19
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--opatchBugNumber 28186730_13.9.4.2.20
 </code></pre></div></li>
 <li>
 <p>Add the downloaded product patches to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    $ imagetool cache addEntry --key 37714186_12.2.1.4.0 --value &lt;download location&gt;/p37714186_122140_Generic.zip
-   
-    $ imagetool cache addEntry --key 37710654_12.2.1.4.0 --value &lt;download location&gt;/p37710654_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 36316422_12.2.1.4.0 --value &lt;download location&gt;/p36316422_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37684007_12.2.1.4.0 --value &lt;download location&gt;/p37684007_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37836334_12.2.1.4.0 --value &lt;download location&gt;/p37836334_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37658278_12.2.1.4.0 --value &lt;download location&gt;/p37658278_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 33093748_12.2.1.4.0 --value &lt;download location&gt;/p33093748_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37056593_12.2.1.4.0 --value &lt;download location&gt;/p37056593_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 35965629_12.2.1.4.0 --value &lt;download location&gt;/p35965629_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37258699_12.2.1.4.0 --value &lt;download location&gt;/p37258699_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37506516_12.2.1.4.0 --value &lt;download location&gt;/p37506516_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37284722_12.2.1.4.0 --value &lt;download location&gt;/p37284722_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 37297691_12.2.1.4.0 --value &lt;download location&gt;/p37297691_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 36789759_12.2.1.4.0 --value &lt;download location&gt;/p36789759_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 34065178_12.2.1.4.0 --value &lt;download location&gt;/p34065178_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 36426672_12.2.1.4.0 --value &lt;download location&gt;/p36426672_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 34809489_12.2.1.4.0 --value &lt;download location&gt;/p34809489_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 34542329_12.2.1.4.0 --value &lt;download location&gt;/p34542329_122140_Generic.zip
-   
-$ imagetool cache addEntry --key 34765492_12.2.1.4.0 --value &lt;download location&gt;/p34765492_122140_Generic.zip
-
-    $ imagetool cache addEntry --key 36946553_12.2.1.4.0 --value &lt;download location&gt;/p36946553_122140_Generic.zip
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    $ imagetool cache addEntry --key 38073767_12.2.1.4.0 --value &lt;download location&gt;/38073767_122140_Generic.zip
+       
+    $ imagetool cache addEntry --key 38015786_12.2.1.4.0 --value &lt;download location&gt;/38015786_122140_Generic.zip
+       
+    $ imagetool cache addEntry --key 38156117_12.2.1.4.0 --value &lt;download location&gt;/38156117_122140_Generic.zip
+       
+    $ imagetool cache addEntry --key 34809489_12.2.1.4.0 --value &lt;download location&gt;/34809489_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 36789759_12.2.1.4.0 --value &lt;download location&gt;/36789759_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 36316422_12.2.1.4.0 --value &lt;download location&gt;/36316422_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 38018956_12.2.1.4.0 --value &lt;download location&gt;/38018956_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 37056593_12.2.1.4.0 --value &lt;download location&gt;/37056593_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 36426672_12.2.1.4.0 --value &lt;download location&gt;/36426672_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 33093748_12.2.1.4.0 --value &lt;download location&gt;/33093748_122140_Generic.zip
+      
+$ imagetool cache addEntry --key 37284722_12.2.1.4.0 --value &lt;download location&gt;/37284722_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 36946553_12.2.1.4.0 --value &lt;download location&gt;/36946553_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 34765492_12.2.1.4.0 --value &lt;download location&gt;/34765492_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 34542329_12.2.1.4.0 --value &lt;download location&gt;/34542329_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 35965629_12.2.1.4.0 --value &lt;download location&gt;/35965629_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 37887285_12.2.1.4.0 --value &lt;download location&gt;/37887285_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 37925688_12.2.1.4.0 --value &lt;download location&gt;/37925688_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 38108218_12.2.1.4.0 --value &lt;download location&gt;/38108218_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 38042142_12.2.1.4.0 --value &lt;download location&gt;/38042142_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 34065178_12.2.1.4.0 --value &lt;download location&gt;/34065178_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 38154985_12.2.1.4.0 --value &lt;download location&gt;/38154985_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 38059281_12.2.1.4.0 --value &lt;download location&gt;/38059281_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 38163380_12.2.1.4.0 --value &lt;download location&gt;/38163380_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 33404495_12.2.1.4.0 --value &lt;download location&gt;/33404495_122140_Generic.zip
+      
+$ imagetool cache addEntry --key 32827327_12.2.1.4.0 --value &lt;download location&gt;/32827327_122140_Generic.zip
+       
+$ imagetool cache addEntry --key 31713053_12.2.1.4.0 --value &lt;download location&gt;/31713053_122140_Generic.zip
 
 </code></pre></div></li>
 <li>
 <p>Append the <code>--patches</code> flag and the product patch keys to the <code>create</code> command in the <code>buildArgs</code> file. The <code>--patches</code> list must be a comma-separated collection of patch <code>--key</code> values used in the <code>imagetool cache addEntry</code> commands above.</p>
 <p>Sample <code>--patches</code> list for the product patches added in to the cache:</p>
-<pre><code>--patches 37714186_12.2.1.4.0,37710654_12.2.1.4.0,36316422_12.2.1.4.0,37684007_12.2.1.4.0,37836334_12.2.1.4.0,37658278_12.2.1.4.0,33093748_12.2.1.4.0,37056593_12.2.1.4.0,35965629_12.2.1.4.0,37258699_12.2.1.4.0,37506516_12.2.1.4.0,37284722_12.2.1.4.0,37297691_12.2.1.4.0,36789759_12.2.1.4.0,34065178_12.2.1.4.0,36426672_12.2.1.4.0,34809489_12.2.1.4.0,34542329_12.2.1.4.0,34765492_12.2.1.4.0,36946553_12.2.1.4.0 
+<pre><code>--patches 38073767_12.2.1.4.0,38015786_12.2.1.4.0,38156117_12.2.1.4.0,34809489_12.2.1.4.0,36789759_12.2.1.4.0,36316422_12.2.1.4.0,38018956_12.2.1.4.0,37056593_12.2.1.4.0,36426672_12.2.1.4.0,33093748_12.2.1.4.0,37284722_12.2.1.4.0,36946553_12.2.1.4.0,34765492_12.2.1.4.0,34542329_12.2.1.4.0,35965629_12.2.1.4.0,37887285_12.2.1.4.0,37925688_12.2.1.4.0,38108218_12.2.1.4.0,38042142_12.2.1.4.0,34065178_12.2.1.4.0,38154985_12.2.1.4.0,38059281_12.2.1.4.0,38163380_12.2.1.4.0,33404495_12.2.1.4.0,32827327_12.2.1.4.0,31713053_12.2.1.4.0 
 </code></pre><p>Example <code>buildArgs</code> file after appending the OPatch patch and product patches:</p>
 <pre><code>create
---jdkVersion 8u451
+--jdkVersion 8u461
 --type soa_osb_b2b
 --version 12.2.1.4.0
 --tag oracle/soasuite:12.2.1.4.0
@@ -6115,13 +6127,13 @@ $ imagetool cache addEntry --key 34765492_12.2.1.4.0 --value &lt;download locati
 --additionalBuildCommands &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles &lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/container-scripts
 --installerResponseFile &lt;imagetool-setup-location&gt;/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4/install.file,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/soasuite.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/osb.response,&lt;imagetool-setup-location&gt;/docker-images/OracleSOASuite/dockerfiles/12.2.1.4/install/b2b.response
---patches 37714186_12.2.1.4.0,37710654_12.2.1.4.0,36316422_12.2.1.4.0,37684007_12.2.1.4.0,37836334_12.2.1.4.0,37658278_12.2.1.4.0,33093748_12.2.1.4.0,37056593_12.2.1.4.0,35965629_12.2.1.4.0,37258699_12.2.1.4.0,37506516_12.2.1.4.0,37284722_12.2.1.4.0,37297691_12.2.1.4.0,36789759_12.2.1.4.0,34065178_12.2.1.4.0,36426672_12.2.1.4.0,34809489_12.2.1.4.0,34542329_12.2.1.4.0,34765492_12.2.1.4.0,36946553_12.2.1.4.0
+--patches 38073767_12.2.1.4.0,38015786_12.2.1.4.0,38156117_12.2.1.4.0,34809489_12.2.1.4.0,36789759_12.2.1.4.0,36316422_12.2.1.4.0,38018956_12.2.1.4.0,37056593_12.2.1.4.0,36426672_12.2.1.4.0,33093748_12.2.1.4.0,37284722_12.2.1.4.0,36946553_12.2.1.4.0,34765492_12.2.1.4.0,34542329_12.2.1.4.0,35965629_12.2.1.4.0,37887285_12.2.1.4.0,37925688_12.2.1.4.0,38108218_12.2.1.4.0,38042142_12.2.1.4.0,34065178_12.2.1.4.0,38154985_12.2.1.4.0,38059281_12.2.1.4.0,38163380_12.2.1.4.0,33404495_12.2.1.4.0,32827327_12.2.1.4.0,31713053_12.2.1.4.0    
 </code></pre><blockquote>
 <p>Note: In the <code>buildArgs</code> file:</p>
 <ul>
 <li><code>--jdkVersion</code> value must match the <code>--version</code> value used in the <code>imagetool cache addInstaller</code> command for <code>--type jdk</code>.</li>
 <li><code>--version</code> value must match the <code>--version</code> value used in the <code>imagetool cache addInstaller</code> command for <code>--type soa</code>.</li>
-<li><code>--pull</code> always pulls the latest base Linux image <code>oraclelinux:7-slim</code> from the Docker registry. This flag can be removed if you want to use the Linux image <code>oraclelinux:7-slim</code>, which is already available on the host where the SOA image is created.</li>
+<li><code>--pull</code> always pulls the latest base Linux image <code>oraclelinux:8-slim</code> from the Docker registry. This flag can be removed if you want to use the Linux image <code>oraclelinux:8-slim</code>, which is already available on the host where the SOA image is created.</li>
 </ul>
 </blockquote>
 <p>Refer to <a href="https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/">this page</a> for the complete list of options available with the WebLogic Image Tool <code>create</code> command.</p>
@@ -6151,7 +6163,7 @@ $ imagetool cache addEntry --key 34765492_12.2.1.4.0 --value &lt;download locati
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
-FROM ghcr.io/oracle/oraclelinux:7-slim as os_update
+FROM ghcr.io/oracle/oraclelinux:8-slim as os_update
 LABEL com.oracle.weblogic.imagetool.buildid=&quot;b4554a25-22dd-4793-b121-9989bd4be40a&quot;
 USER root
 # Use package manager to make sure that unzip, tar, and other required packages are installed
@@ -6191,12 +6203,12 @@ LABEL com.oracle.weblogic.imagetool.buildid=&quot;b4554a25-22dd-4793-b121-9989bd
 
 ENV JAVA_HOME=/u01/jdk
 
-COPY --chown=oracle:root jdk-8u301-linux-x64.tar.gz /tmp/imagetool/
+COPY --chown=oracle:root jdk-8u461-linux-x64.tar.gz /tmp/imagetool/
 
 USER oracle
 
 
-RUN tar xzf /tmp/imagetool/jdk-8u301-linux-x64.tar.gz -C /u01 \
+RUN tar xzf /tmp/imagetool/jdk-8u461-linux-x64.tar.gz -C /u01 \
 &amp;&amp; $(test -d /u01/jdk* &amp;&amp; mv /u01/jdk* /u01/jdk || mv /u01/graal* /u01/jdk) \
 &amp;&amp; rm -rf /tmp/imagetool \
 &amp;&amp; rm -f /u01/jdk/javafx-src.zip /u01/jdk/src.zip
@@ -6338,7 +6350,7 @@ WORKDIR /u01/oracle
 <ol>
 <li>
 <p>Enter the following command to add the OPatch patch to the WebLogic Image Tool cache:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.19 --value &lt;download location&gt;/p28186730_1394219_Generic.zip
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ imagetool cache addEntry --key 28186730_13.9.4.2.20 --value &lt;download location&gt;/p28186730_1394220_Generic.zip
 </code></pre></div></li>
 <li>
 <p>Execute the <code>imagetool cache addEntry</code> command for each patch to add the required patch(es) to the WebLogic Image Tool cache. For example, to add patch <code>p30761841_122140_Generic.zip</code>:</p>
@@ -6368,11 +6380,11 @@ WORKDIR /u01/oracle
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-        <pre><code>$ imagetool update --fromImage soasuite:12.2.1.4 --chown oracle:root --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.19
+        <pre><code>$ imagetool update --fromImage soasuite:12.2.1.4 --chown oracle:root --tag=soasuite:12.2.1.4-30761841 --patches=30761841_12.2.1.4.0 --opatchBugNumber=28186730_13.9.4.2.20
 
   [INFO   ] Image Tool build ID: bd21dc73-b775-4186-ae03-8219bf02113e
   [INFO   ] Temporary directory used for docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1117031733123594064
-  [INFO   ] Using patch 28186730_13.9.4.2.19 from cache: &lt;downloaded-patches-location&gt;/p28186730_1394217_Generic.zip
+  [INFO   ] Using patch 28186730_13.9.4.2.20 from cache: &lt;downloaded-patches-location&gt;/p28186730_1394220_Generic.zip
   [WARNING] skipping patch conflict check, no support credentials provided
   [WARNING] No credentials provided, skipping validation of patches
   [INFO   ] Using patch 30761841_12.2.1.4.0 from cache: &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
@@ -6401,14 +6413,14 @@ WORKDIR /u01/oracle
   ---&gt; d6d12f02a9be
   Step 7/7 : RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches     &amp;&amp; /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle     &amp;&amp; rm -rf /tmp/imagetool
   ---&gt; Running in a79addca4d2f
-  Oracle Interim Patch Installer version 13.9.4.2.17
+  Oracle Interim Patch Installer version 13.9.4.2.20
   Copyright (c) 2020, Oracle Corporation.  All rights reserved.
 
 
   Oracle Home       : /u01/oracle
   Central Inventory : /u01/oracle/oraInventory
     from           : /u01/oracle/oraInst.loc
-  OPatch version    : 13.9.4.2.19
+  OPatch version    : 13.9.4.2.20
   OUI version       : 13.9.4.0.0
   Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-56-13AM_1.log
 
@@ -6456,7 +6468,7 @@ WORKDIR /u01/oracle
   Oracle Home       : /u01/oracle
   Central Inventory : /u01/oracle/oraInventory
     from           : /u01/oracle/oraInst.loc
-  OPatch version    : 13.9.4.2.19
+  OPatch version    : 13.9.4.2.20
   OUI version       : 13.9.4.0.0
   Log file location : /u01/oracle/cfgtoollogs/opatch/opatch2020-06-01_10-57-19AM_1.log
 
@@ -6499,7 +6511,7 @@ WORKDIR /u01/oracle
 
 [INFO ] Image Tool build ID: f9feea35-c52c-4974-b155-eb7f34d95892
 [INFO ] Temporary directory used for docker build context: &lt;work-directory&gt;/wlstmp/wlsimgbuilder_temp1799120592903014749
-[INFO ] Using patch 28186730_13.9.4.2.17 from cache: &lt;downloaded-patches-location&gt;/p28186730_1394216_Generic.zip
+[INFO ] Using patch 28186730_13.9.4.2.20 from cache: &lt;downloaded-patches-location&gt;/p28186730_1394216_Generic.zip
 [WARNING] skipping patch conflict check, no support credentials provided
 [WARNING] No credentials provided, skipping validation of patches
 [INFO ] Using patch 30761841_12.2.1.4.0 from cache: &lt;downloaded-patches-location&gt;/p30761841_122140_Generic.zip
@@ -10502,19 +10514,19 @@ $ ./buildDockerImage.sh -v 12.2.1.4 -s
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1752740719"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1754379115"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1752740719"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1752740719"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1754379115"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1752740719" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1752740719"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1754379115" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1754379115"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,18 +12,18 @@
     <title>Prepare your environment :: Oracle Fusion Middleware on Kubernetes</title>
 
     
-    <link href="/fmw-kubernetes/css/nucleus.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hybrid.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/featherlight.min.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/auto-complete.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/theme.css?1752740719" rel="stylesheet">
-    <link href="/fmw-kubernetes/css/hugo-theme.css?1752740719" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/nucleus.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/fontawesome-all.min.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hybrid.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/featherlight.min.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/perfect-scrollbar.min.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/auto-complete.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/atom-one-dark-reasonable.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/theme.css?1754379115" rel="stylesheet">
+    <link href="/fmw-kubernetes/css/hugo-theme.css?1754379115" rel="stylesheet">
     
 
-    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1752740719"></script>
+    <script src="/fmw-kubernetes/js/jquery-3.6.0.min.js?1754379115"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1752740719"></script>
-<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1752740719"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/lunr.min.js?1754379115"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/auto-complete.js?1754379115"></script>
 <script type="text/javascript">
     
         var baseurl = "\/fmw-kubernetes\/";
     
 </script>
-<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1752740719"></script>
+<script type="text/javascript" src="/fmw-kubernetes/js/search.js?1754379115"></script>
 
     
   </div>
@@ -5906,7 +5906,7 @@
 </code></pre></div></li>
 <li>
 <p>Pull the operator image:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.15
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker pull ghcr.io/oracle/weblogic-kubernetes-operator:4.2.19
 </code></pre></div></li>
 </ol>
 <h3 id="set-up-the-code-repository-to-deploy-oracle-soa-suite-domains">Set up the code repository to deploy Oracle SOA Suite domains</h3>
@@ -5914,13 +5914,13 @@
 <ol>
 <li>
 <p>Create a working directory to set up the source code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_25.2.2
-$ cd $HOME/soa_25.2.2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir $HOME/soa_25.3.2
+$ cd $HOME/soa_25.3.2
 </code></pre></div></li>
 <li>
 <p>Download the WebLogic Kubernetes Operator source code and  Oracle SOA Suite Kubernetes deployment scripts from the SOA <a href="https://github.com/oracle/fmw-kubernetes.git">repository</a>. Required artifacts are available at <code>OracleSOASuite/kubernetes</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/oracle/fmw-kubernetes.git
-$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_25.2.2/fmw-kubernetes/OracleSOASuite/kubernetes
+$ export WORKDIR<span style="color:#f92672">=</span>$HOME/soa_25.3.2/fmw-kubernetes/OracleSOASuite/kubernetes
 </code></pre></div></li>
 </ol>
 <h3 id="obtain-the-oracle-soa-suite-docker-image">Obtain the Oracle SOA Suite Docker image</h3>
@@ -5982,7 +5982,7 @@ $
 <pre><code>$ kubectl create namespace opns
 $ kubectl create serviceaccount -n opns op-sa
 $ helm repo add weblogic-operator https://oracle.github.io/weblogic-kubernetes-operator/charts --force-update 
-$ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --version 4.2.15 --namespace opns --set serviceAccount=op-sa --set &quot;javaLoggingLevel=FINE&quot; --wait
+$ helm install weblogic-kubernetes-operator weblogic-operator/weblogic-operator --version 4.2.19 --namespace opns --set serviceAccount=op-sa --set &quot;javaLoggingLevel=FINE&quot; --wait
 </code></pre><p>This Helm release deploys the operator with the default behavior of managing Oracle SOA Suite domains in all Kubernetes namespaces with the label <code>weblogic-operator=enabled</code>.</p>
 <h3 id="prepare-the-environment-for-oracle-soa-suite-domains">Prepare the environment for Oracle SOA Suite domains</h3>
 <h4 id="create-a-namespace-for-an-oracle-soa-suite-domain">Create a namespace for an Oracle SOA Suite domain</h4>
@@ -6022,8 +6022,8 @@ $ kubectl create -f output_soainfra/pv-pvcs/soainfra-domain-pvc.yaml
 <h4 id="create-a-kubernetes-secret-with-domain-credentials">Create a Kubernetes secret with domain credentials</h4>
 <p>Create the Kubernetes secrets <code>username</code> and <code>password</code> of the administrative account in the same Kubernetes namespace as the domain:</p>
 <pre><code>  $ cd ${WORKDIR}/create-weblogic-domain-credentials
-  $ ./create-weblogic-credentials.sh -u weblogic -p Welcome1 -n soans -d soainfra -s soainfra-domain-credentials
-</code></pre><p>For more details, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v4.2.15/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md">this document</a>.</p>
+  $ ./create-weblogic-credentials.sh -u username -p password -n soans -d soainfra -s soainfra-domain-credentials
+</code></pre><p>For more details, see <a href="https://github.com/oracle/weblogic-kubernetes-operator/blob/v4.2.19/kubernetes/samples/scripts/create-weblogic-domain-credentials/README.md">this document</a>.</p>
 <p>You can check the secret with the <code>kubectl get secret</code> command.</p>
 <p>For example:</p>
 
@@ -6041,10 +6041,10 @@ $ kubectl create -f output_soainfra/pv-pvcs/soainfra-domain-pvc.yaml
         <pre><code>$ kubectl get secret soainfra-domain-credentials -o yaml -n soans
   apiVersion: v1
   data:
-    password: T3JhZG9jX2RiMQ==
-    sys_password: T3JhZG9jX2RiMQ==
-    sys_username: c3lz
-    username: U09BMQ==
+    password: &lt;password&gt;
+    sys_password: &lt;sys password&gt;
+    sys_username: &lt;sys username&gt;
+    username: &lt;username&gt;
   kind: Secret
   metadata:
     creationTimestamp: &quot;2020-06-25T14:08:16Z&quot;
@@ -6086,10 +6086,10 @@ from this secret.</p>
 <p>Use the provided sample script to create the secret:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd <span style="color:#e6db74">${</span>WORKDIR<span style="color:#e6db74">}</span>/create-rcu-credentials
 $ ./create-rcu-credentials.sh <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  -u SOA1 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  -p Oradoc_db1 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  -a sys <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  -q Oradoc_db1 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -u &lt;username&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -p &lt;password&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -a &lt;sys_username&gt; <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -q &lt;sys_password&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -d soainfra <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -n soans <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -s soainfra-rcu-credentials
@@ -6120,10 +6120,10 @@ $ ./create-rcu-credentials.sh <span style="color:#ae81ff">\
         <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get secret soainfra-rcu-credentials -o yaml -n soans
   apiVersion: v1
   data:
-    password: T3JhZG9jX2RiMQ<span style="color:#f92672">==</span>
-    sys_password: T3JhZG9jX2RiMQ<span style="color:#f92672">==</span>
-    sys_username: c3lz
-    username: U09BMQ<span style="color:#f92672">==</span>
+    password: &lt;password&gt;
+    sys_password: &lt;sys_password&gt;
+    sys_username: &lt;sys_username&gt;
+    username: &lt;username&gt;
   kind: Secret
   metadata:
     creationTimestamp: <span style="color:#e6db74">&#34;2020-06-25T14:08:16Z&#34;</span>
@@ -6168,7 +6168,7 @@ those schemas.  You must set up the database before you create your domain. Ther
 <p>The RCU pod requires that you create a secret in the same namespace as the RCU pod that contains the database&rsquo;s SYSDBA username and password in its <code>sys_username</code> and <code>sys_password</code> fields, and also contains a password of your choice for RCU schemas in its <code>password</code> field.</p>
 <p>For example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n default create secret generic oracle-rcu-secret <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  --from-literal<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;sys_username=sys&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --from-literal<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;sys_username=MY_SYS_USERNAME&#39;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --from-literal<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;sys_password=MY_SYS_PASSWORD&#39;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  --from-literal<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;password=MY_RCU_SCHEMA_PASSWORD&#39;</span>
 </code></pre></div><p>To create the database schemas for Oracle SOA Suite, run the <code>create-rcu-schema.sh</code> script.</p>
@@ -6206,7 +6206,7 @@ NOTE: The c, p, i, u, and o arguments are ignored <span style="color:#66d9ef">if
 
 
 $ ./create-rcu-schema.sh <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  -s SOA1 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -s &lt;username&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -t soaosb <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -d oracle-db.default.svc.cluster.local:1521/devpdb.k8s <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -n default <span style="color:#ae81ff">\
@@ -6259,7 +6259,7 @@ NOTE: The c, p, i, u, and o arguments are ignored <span style="color:#66d9ef">if
 
 
 $ ./drop-rcu-schema.sh <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>  -s SOA1 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -s &lt;username&gt; <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -t soaosb <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -d oracle-db.default.svc.cluster.local:1521/devpdb.k8s <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>  -n default <span style="color:#ae81ff">\
@@ -10195,19 +10195,19 @@ You must specify one of these using the <code>-t</code> flag.</li>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/fmw-kubernetes/js/clipboard.min.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/jquery.sticky.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/featherlight.min.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/highlight.pack.js?1752740720"></script>
+    <script src="/fmw-kubernetes/js/clipboard.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/perfect-scrollbar.jquery.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/jquery.sticky.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/featherlight.min.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/highlight.pack.js?1754379115"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/learn.js?1752740720"></script>
-    <script src="/fmw-kubernetes/js/hugo-learn.js?1752740720"></script>
+    <script src="/fmw-kubernetes/js/modernizr.custom-3.6.0.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/learn.js?1754379115"></script>
+    <script src="/fmw-kubernetes/js/hugo-learn.js?1754379115"></script>
 
-    <link href="/fmw-kubernetes/mermaid/mermaid.css?1752740720" rel="stylesheet" />
-    <script src="/fmw-kubernetes/mermaid/mermaid.js?1752740720"></script>
+    <link href="/fmw-kubernetes/mermaid/mermaid.css?1754379115" rel="stylesheet" />
+    <script src="/fmw-kubernetes/mermaid/mermaid.js?1754379115"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
