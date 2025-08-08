@@ -24,11 +24,11 @@ Refer to the configuration parameters below to understand the information that y
 #### Configuration parameters
 
 * If SSL is disabled in the source environment, then you can not enable secure mode directly during upgrade process. Hence do not set `secureEnabled` to true as this will result in unexpected behaviour. You can perform below steps to enable secure domain:
-	- First upgrade to non-secure 14.1.2 domain using the domain upgrade scripts.
-	- Post upgrade, once the servers are up and running, refer to [Enable Secure domain post upgrade](#enable-secure-domain-post-upgrade) to enable the secure domain.
+       - First upgrade to non-secure 14.1.2 domain using the domain upgrade scripts.
+       - Post upgrade, once the servers are up and running, refer to [Enable Secure domain post upgrade](#enable-secure-domain-post-upgrade) to enable the secure domain.
 
-* If SSL is enabled in the source environment then you can set `secureEnabled` to `true` to enable secure domain during the upgrade process.
- 
+* If SSL is enabled in the source environment then you can set `secureEnabled` to `true` to enable secure domain during the upgrade process. 
+
 The following parameters can be provided in the inputs file.
 
 | Parameter | Definition | Default |
@@ -84,11 +84,9 @@ $ cd $WORKDIR
 $ helm upgrade REPLACE-WITH-INGRESS-PER-DOMAIN-RELEASE-NAME charts/ingress-per-domain \
   --reuse-values --set wlsDomain.secureEnabled=true 
 ```
-
 #### Enable secure domain post upgrade
 
 Perform the below steps to enable the secure domain in a non-SSL OracleSOASuite 14.1.2 domain:
-
 
 * Connect to an Administration Server using WebLogic Remote console.
 * In the **Edit Tree**, go to **Environment**, then **Domain** and enable the `Secured Production Mode` toggle on Domain screen.
@@ -105,3 +103,5 @@ Perform the below steps to enable the secure domain in a non-SSL OracleSOASuite 
 * Perform domain full shutdown and restart. Refer [Full domain restarts](https://oracle.github.io/weblogic-kubernetes-operator/managing-domains/domain-lifecycle/startup/#full-domain-restarts) for details.
 
 > **Note** : Once you have enabled "Secured Production Mode", existing ingress to access the domain URLs will not work. Refer to [Upgrade ingress](#upgrade-ingress) for details. 
+
+

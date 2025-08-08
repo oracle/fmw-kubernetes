@@ -31,6 +31,7 @@ try:
   print 'Preparing to update domain '+ domainName
   updateDomain()
   print 'Domain upgrade completed ....'
+  closeDomain()
 except Exception, e:
   if 'The domain is already at the current version' in str(e):
      print "Domain " + domainName + " already upgraded to current version."

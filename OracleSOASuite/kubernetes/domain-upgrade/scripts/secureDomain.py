@@ -24,11 +24,11 @@ try:
    create('NO_NAME_0', 'SecureMode')
    cd('SecureMode/NO_NAME_0')
    set('SecureModeEnabled', true)
-   updateDomain()
 except:
    dumpStack()
 print 'Preparing to update domain...'
 cd('/')
 updateDomain()
+closeDomain()
 sys.exit(0)
 

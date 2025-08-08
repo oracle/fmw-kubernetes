@@ -101,7 +101,7 @@ See [SOA on Kubernetes documentation](https://docs.oracle.com/en/middleware/soa-
 
 #### Prepare for domain
 
-See [SOA on Kubernetes documentation](https://docs.oracle.com/en/middleware/soa-suite/soa/14.1.2/soakn/prepare-your-environment.html) for preparing the environment for Oracle SOA Suite domains. 
+See [SOA on Kubernetes documentation](https://docs.oracle.com/en/middleware/soa-suite/soa/14.1.2/soakn/prepare-your-environment.html) for preparing the environment for Oracle SOA Suite domains.
 
 Addtionally see below steps:
 

@@ -56,6 +56,7 @@ try:
    print 'Preparing to update domain...'
    cd('/')
    updateDomain()
+   closeDomain()
 except:
    dumpStack()
    print 'Updating the JDBC data source for schema ' + wlsRuntimeUser + ' failed'
