@@ -1,0 +1,45 @@
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# The version of this inputs file.  Do not modify.
+version: domain-upgrade-governancedomain-inputs-v1
+
+
+# Unique ID of the domain.
+domainUID: governancedomain
+
+# Domain Type - oig
+domainType: oig
+
+# Home of the WebLogic domain
+domainHome: "/u01/oracle/user_projects/domains/governancedomain"
+
+# OracleIdentityGovernance image for upgrade.
+image: "oracle/oig:release-version"
+
+# Image pull policy
+# Legal values are "IfNotPresent", "Always", or "Never"
+imagePullPolicy: IfNotPresent
+
+# Name of the Kubernetes secret to access the container registry to pull the OracleIdentityGovernance image
+# The presence of the secret will be validated when this parameter is enabled.
+#imagePullSecretName:
+
+# Name of the domain namespace
+namespace: oigns
+
+# Name of the persistent volume claim used by the Domain home.
+persistentVolumeClaimName: governancedomain-domain-pvc
+
+# Mount path of the domain persistent volume.
+domainPVMountPath: "/u01/oracle/user_projects/domains"
+
+# The RCU schema prefix 
+rcuSchemaPrefix: OIGPD
+
+# The database URL
+rcuDatabaseURL: "xxxxx.example.com:1521/oigpdb1.example.com"
+
+# The kubernetes secret containing the database credentials
+rcuCredentialsSecret: governancedomain-rcu-credentials
+

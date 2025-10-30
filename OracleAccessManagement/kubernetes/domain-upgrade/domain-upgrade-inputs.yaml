@@ -1,0 +1,45 @@
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# The version of this inputs file.  Do not modify.
+version: domain-upgrade-accessdomain-inputs-v1
+
+
+# Unique ID of the domain.
+domainUID: accessdomain
+
+# Domain Type - oam
+domainType: oam
+
+# Home of the WebLogic domain
+domainHome: "/u01/oracle/user_projects/domains/accessdomain"
+
+# OracleAccessManagement image for upgrade.
+image: "oracle/oam:release-version"
+
+# Image pull policy
+# Legal values are "IfNotPresent", "Always", or "Never"
+imagePullPolicy: IfNotPresent
+
+# Name of the Kubernetes secret to access the container registry to pull the OracleAccessManagement image
+# The presence of the secret will be validated when this parameter is enabled.
+#imagePullSecretName:
+
+# Name of the domain namespace
+namespace: oamns
+
+# Name of the persistent volume claim used by the Domain home.
+persistentVolumeClaimName: accessdomain-domain-pvc
+
+# Mount path of the domain persistent volume.
+domainPVMountPath: "/u01/oracle/user_projects/domains"
+
+# The RCU schema prefix 
+rcuSchemaPrefix: OAMPD
+
+# The database URL
+rcuDatabaseURL: "xxxxx.example.com:1521/oampdb1.example.com"
+
+# The kubernetes secret containing the database credentials
+rcuCredentialsSecret: accessdomain-rcu-credentials
+
