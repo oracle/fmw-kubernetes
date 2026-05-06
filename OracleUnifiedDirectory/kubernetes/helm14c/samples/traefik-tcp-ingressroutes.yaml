@@ -1,0 +1,408 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# ================================
+# LDAP LBR (1389)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldap-lbr
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldap1389
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-lbr-ldap
+          port: ldap
+---
+# ================================
+# LDAPS LBR (1636)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldaps-lbr
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldaps1636
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-lbr-ldap
+          port: ldaps
+  tls:
+    passthrough: true
+
+---
+# ================================
+# LDAP PODS (3890–3892)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldap-0
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldap3890
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-ldap-0
+          port: ldap
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldap-1
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldap3891
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-ldap-1
+          port: ldap
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldap-2
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldap3892
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-ldap-2
+          port: ldap
+
+---
+# ================================
+# LDAPS PODS (6360–6362)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldaps-0
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldaps6360
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-ldap-0
+          port: ldaps
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldaps-1
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldaps6361
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-ldap-1
+          port: ldaps
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-ldaps-2
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - ldaps6362
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-ldap-2
+          port: ldaps
+  tls:
+    passthrough: true
+
+---
+# ================================
+# ADMIN LDAPS PODS (4440–4442)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-admin-0
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin4440
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-0
+          port: adminldaps
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-admin-1
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin4441
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-1
+          port: adminldaps
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-admin-2
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin4442
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-2
+          port: adminldaps
+  tls:
+    passthrough: true
+
+---
+# ================================
+# ADMIN LBR (1888)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-admin-lbr
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin1888
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-lbr-admin
+          port: adminhttps
+  tls:
+    passthrough: true
+
+---
+# ================================
+# ADMIN HTTPS PODS (8880–8882)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-adminhttps-0
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin8880
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-0
+          port: adminhttps
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-adminhttps-1
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin8881
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-1
+          port: adminhttps
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-adminhttps-2
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - admin8882
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-2
+          port: adminhttps
+  tls:
+    passthrough: true
+
+---
+# ================================
+# HTTP LBR (1080)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-http-lbr
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - http1080
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-lbr-http
+          port: http
+
+---
+# ================================
+# HTTP PODS (8080–8082)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-http-0
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - http8080
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-http-0
+          port: http
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-http-1
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - http8081
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-http-1
+          port: http
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-http-2
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - http8082
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-http-2
+          port: http
+
+---
+# ================================
+# HTTPS LBR (1081)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-https-lbr
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - https1081
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-lbr-http
+          port: https
+  tls:
+    passthrough: true
+
+---
+# ================================
+# HTTPS PODS (8100–8102)
+# ================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-https-0
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - https8100
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-http-0
+          port: https
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-https-1
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - https8101
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-http-1
+          port: https
+  tls:
+    passthrough: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: %DEPLOYMENT_NAME%-https-2
+  namespace: %NAMESPACE%
+spec:
+  entryPoints:
+    - https8102
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: %DEPLOYMENT_NAME%-http-2
+          port: https
+  tls:
+    passthrough: true

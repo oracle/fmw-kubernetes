@@ -1,5 +1,8 @@
 ---
-title: "b. Using an Ingress with NGINX (SSL)"
+title: "With SSL"
+draft: false
+weight: 2
+pre: "<b>ii. </b>"
 description: "Steps to set up an Ingress for NGINX to direct traffic to the OIG domain using SSL."
 ---
 
@@ -570,4 +573,4 @@ If you are using a Managed Service for your Kubernetes cluster, for example Orac
 
 #### Verify that you can access the domain URL
 
-After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 30433) as per [Validate Domain URLs ](../../validate-domain-urls)
+After setting up the NGINX ingress, verify that the domain applications are accessible through the NGINX ingress port (for example 30433) as per [Validate Domain URLs ](../../../validate-domain-urls)

@@ -1,0 +1,112 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "traefik") -}}
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-http-ingressroute-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  {{- if .Values.ingress.http.traefikAnnotations }}
+  annotations:
+    {{- toYaml .Values.ingress.http.traefikAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.tlsEnabled }}
+  entryPoints:
+    - websecure
+  {{- else }}
+  entryPoints:
+    - web
+  {{- end }}
+  routes:
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 0) }}
+{{- if ($root.Values.ingress.http.host) }}
+  {{- if ($root.Values.ingress.http.domain) }}
+    - match: Host(`{{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.http.domain }}`) && PathPrefix(`/`)
+  {{ else }}
+    - match: Host(`{{ $root.Values.ingress.http.host }}-{{ $replicaIndx }}`) && PathPrefix(`/`)
+  {{- end }}
+{{ else }}
+    - match: Host(`{{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}`) && PathPrefix(`/`)
+{{- end }}
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" $root }}-http-{{ $replicaIndx }}
+          port: {{ $root.Values.ingress.http.backendPort }}
+          {{- if eq (lower $root.Values.ingress.http.backendPort) "https" }}
+          scheme: https
+          serversTransport: backend-http-transport
+          {{ else }}
+          scheme: http
+          {{- end }}
+{{- end }}
+{{- if (.Values.ingress.http.host) }}
+  {{- if (.Values.ingress.http.domain) }}
+    - match: Host(`{{ .Values.ingress.http.host }}.{{ .Values.ingress.http.domain }}`) && PathPrefix(`/`)
+  {{ else }}
+    - match: Host(`{{ .Values.ingress.http.host }}`) && PathPrefix(`/`)
+  {{- end }}
+{{ else }}
+    - match: Host(`{{ include "oud-ds-rs.fullname" . }}-http`) && PathPrefix(`/`)
+{{- end }}
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+          port: {{ $root.Values.ingress.http.backendPort | default "http" }}
+          {{- if eq (lower $root.Values.ingress.http.backendPort) "https" }}
+          scheme: https
+          serversTransport: backend-http-transport
+          {{ else }}
+          scheme: http
+          {{- end }}
+    - match: PathPrefix(`/rest/v1/directory`)
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+          port: {{ $root.Values.ingress.http.backendPort | default "http" }}
+          {{- if eq (lower $root.Values.ingress.http.backendPort) "https" }}
+          scheme: https
+          serversTransport: backend-http-transport
+          {{ else }}
+          scheme: http
+          {{- end }}
+    - match: PathPrefix(`/iam/directory`)
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" . }}-lbr-http
+          port: {{ $root.Values.ingress.http.backendPort | default "http" }}
+          {{- if eq (lower $root.Values.ingress.http.backendPort) "https" }}
+          scheme: https
+          serversTransport: backend-http-transport          
+          {{ else }}
+          scheme: http
+          {{- end }}
+  tls:
+    secretName: {{ if .Values.ingress.tlsSecret }}{{ .Values.ingress.tlsSecret }}{{ else }}{{ include "oud-ds-rs.fullname" . }}-tls-cert{{ end }}
+{{- if eq (lower $root.Values.ingress.http.backendPort) "https" }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: {{ .Release.Namespace }}
+spec:
+  defaultCertificate:
+    secretName:  {{ if .Values.ingress.tlsSecret }}{{ .Values.ingress.tlsSecret }}{{ else }}{{ include "oud-ds-rs.fullname" . }}-tls-cert{{ end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: backend-http-transport
+  namespace: {{ .Release.Namespace }}
+spec:
+  insecureSkipVerify: true
+{{- end }}
+{{- end }}
+

@@ -61,7 +61,7 @@ The OHS Kubernetes deployment requires access to an OHS container image. The ima
 ### Prebuilt OHS container image
 
 
-The prebuilt OHS January 2026 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle HTTP Server 12.2.1.4.0, the January 2026 Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
+The prebuilt OHS April 2026 container image can be downloaded from [Oracle Container Registry](https://container-registry.oracle.com). This image is prebuilt by Oracle and includes Oracle HTTP Server 12.2.1.4.0, the April 2026 Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.
 
 **Note**: Before using this image you must login to [Oracle Container Registry](https://container-registry.oracle.com), navigate to `Middleware` > `ohs_cpu` and accept the license agreement.
 
@@ -503,7 +503,7 @@ In this section you prepare the `ohs.yaml` file ready for OHS deployment.
        spec:
          containers:
          - name: ohs
-           image: container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<January 26>
+           image: container-registry.oracle.com/middleware/ohs_cpu:12.2.1.4-db19-jdk8-ol8-<April 26>
            env:
              - name: DEPLOY_WG
                value: "true"

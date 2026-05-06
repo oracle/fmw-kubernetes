@@ -1,0 +1,89 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "traefik") -}}
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "oud-ds-rs.fullname" . }}-admin-ingressroute-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oud-ds-rs.labels" . | nindent 4 }}
+  {{- if .Values.ingress.admin.traefikAnnotations }}
+  annotations:
+    {{- toYaml .Values.ingress.admin.traefikAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.tlsEnabled }}
+  entryPoints:
+    - websecure
+  {{- else }}
+  entryPoints:
+    - web
+  {{- end }}
+  routes:
+    # Service for admin pod (root path)
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 0) }}
+{{- if ($root.Values.ingress.admin.host) }}
+  {{- if ($root.Values.ingress.admin.domain) }}
+    - match: Host(`{{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.admin.domain }}`) && PathPrefix(`/`)
+  {{ else }}
+    - match: Host(`{{ $root.Values.ingress.admin.host }}-{{ $replicaIndx }}`) && PathPrefix(`/`)
+  {{- end }}
+{{ else }}
+    - match: Host(`{{ include "oud-ds-rs.fullname" $root }}-admin-{{ $replicaIndx }}`) && PathPrefix(`/`)
+{{- end }}
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" $root }}-{{ $replicaIndx }}
+          port: adminhttps
+          scheme: https
+          serversTransport: backend-admin-transport
+    {{- end }}
+{{- if (.Values.ingress.admin.host) }}
+  {{- if (.Values.ingress.admin.domain) }}
+    - match: Host(`{{ .Values.ingress.admin.host }}.{{ .Values.ingress.admin.domain }}`) && PathPrefix(`/`)
+  {{ else }}
+    - match: Host(`{{ .Values.ingress.admin.host }}`) && PathPrefix(`/`)
+  {{- end }}
+{{ else }}
+    - match: Host(`{{ include "oud-ds-rs.fullname" . }}-admin`) && PathPrefix(`/`)
+{{- end }}
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+          port: adminhttps
+          scheme: https
+          serversTransport: backend-admin-transport
+
+    - match: PathPrefix(`/rest/v1/admin`)
+      kind: Rule
+      services:
+        - name: {{ include "oud-ds-rs.fullname" . }}-lbr-admin
+          port: adminhttps
+          scheme: https
+          serversTransport: backend-admin-transport
+  tls:
+    secretName: {{ if .Values.ingress.tlsSecret }}{{ .Values.ingress.tlsSecret }}{{ else }}{{ include "oud-ds-rs.fullname" . }}-tls-cert{{ end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: {{ .Release.Namespace }}
+spec:
+  defaultCertificate:
+    secretName:  {{ if .Values.ingress.tlsSecret }}{{ .Values.ingress.tlsSecret }}{{ else }}{{ include "oud-ds-rs.fullname" . }}-tls-cert{{ end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: backend-admin-transport
+  namespace: {{ .Release.Namespace }}
+spec:
+  insecureSkipVerify: true
+{{- end }}

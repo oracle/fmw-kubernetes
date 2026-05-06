@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 cur_dir=`dirname $(readlink -f "$0")`
@@ -39,9 +39,10 @@ echo "OAM_NAMESPACE: $OAM_NAMESPACE"
 echo "INGRESS: $INGRESS "
 echo "INGRESS_NAME: $INGRESS_NAME"
 
-
 if [ $INGRESS == "nginx" ]; then
-	ING_TYPE=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services $INGRESS_NAME-ingress-nginx-controller -o jsonpath="{.spec.type}"`
+        ING_TYPE=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services $INGRESS_NAME-ingress-nginx-controller -o jsonpath="{.spec.type}"`
+elif [ $INGRESS == "traefik" ]; then
+        ING_TYPE=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services $INGRESS_NAME-traefik -o jsonpath="{.spec.type}"`
 else
 	 echo "Error: Invalid INGRESS : $INGRESS"		
  exit 1 
@@ -50,8 +51,10 @@ fi
 echo "ING_TYPE : $ING_TYPE "
 
 if [ $ING_TYPE == "NodePort" ]; then
-	if [ $INGRESS == "nginx" ]; then
-	 LBR_PORT=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[1].nodePort}" $INGRESS_NAME-ingress-nginx-controller`
+        if [ $INGRESS == "nginx" ]; then
+         LBR_PORT=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[1].nodePort}" $INGRESS_NAME-ingress-nginx-controller`
+	elif [ $INGRESS == "traefik" ]; then
+	 LBR_PORT=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get services -o jsonpath="{.spec.ports[1].nodePort}" $INGRESS_NAME-traefik`
 	else
 	 echo "Error: Invalid INGRESS : $INGRESS"	
 	 exit 1 
@@ -66,6 +69,8 @@ fi
 if [ $ING_TYPE == "LoadBalancer" ]; then
   if [ $INGRESS == "nginx" ]; then	
 	LBR_HOST=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get service $INGRESS_NAME-ingress-nginx-controller | grep controller | awk '{ print $4 }' | tr -d '\n'`
+  elif [ $INGRESS == "traefik" ]; then	
+	LBR_HOST=`${KUBERNETES_CLI:-kubectl} --namespace $OAM_NAMESPACE get service $INGRESS_NAME-traefik | grep controller | awk '{ print $4 }' | tr -d '\n'`
   else 
     echo "Error: Invalid INGRESS : $INGRESS"	
 	exit 1 	

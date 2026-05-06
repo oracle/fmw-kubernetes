@@ -1,10 +1,10 @@
 # An Ingress per domain chart
-This chart is for deploying an Ingress resource in front of a WebLogic domain cluster for using Oracle Identity Governance Design Console. We support the Ingress type: NGINX .
+This chart is for deploying an Ingress resource in front of a WebLogic domain cluster for using Oracle Identity Governance Design Console. We support the Ingress type: NGINX or TRAEFIK.
 
 ## Prerequisites
 - Have Docker and a Kubernetes cluster running and have `kubectl` installed and configured.
 - Have Helm installed.
-- The corresponding Ingress controller, NGINX, is installed in the Kubernetes cluster.
+- The corresponding Ingress controller, NGINX or Traefik, is installed in the Kubernetes cluster.
 - A WebLogic domain cluster deployed by `weblogic-operator` is running in the Kubernetes cluster.
 
 ## Installing the chart
@@ -46,7 +46,7 @@ The following table lists the configurable parameters of this chart and their de
 
 | Parameter | Description | Default |
 | --- | --- | --- |
-| `type` | Type of Ingress controller. Legal value is `NGINX` . | `NGINX` |
+| `type` | Type of Ingress controller. Legal value is `NGINX` or `TRAEFIK` . | `NGINX` |
 | `tls` | Mode of Ingress controller. Legal values are `NONSSL` or `SSL`. | `NONSSL` |
 | `secretName` | TLS secret name if the mode is `SSL` | `dc-tls-cert` |
 | `wlsDomain.domainUID` | DomainUID of the Oracle WebLogic Server domain. | `domain1` |

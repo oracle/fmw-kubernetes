@@ -1,0 +1,249 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "TRAEFIK" }}
+{{- if (eq .Values.sslType "NONSSL") }}
+{{- if .Values.hostName.enabled }}
+{{- if .Values.hostName.admin }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oamadmin-ingressroute
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/console`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/consolehelp`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/rreg/rreg`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/em`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/management`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oamconsole`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/dms`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oam/services/rest`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/iam/admin/config`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oam/admin/api`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/iam/admin/diag`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oam/services`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/iam/admin`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oam/services/rest/11.1.2.0.0`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oam/services/rest/ssa`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.adminServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/access`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.policyClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.policyManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+{{- end }}
+{{- if .Values.hostName.runtime }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oamruntime-ingressroute
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/ms_oauth`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/oam/services/rest/auth`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/oam/services/rest/access`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/oamfed`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/otpfp/`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/oauth2`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/oam`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/.well-known/openid-configuration`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/.well-known/oidc-configuration`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/CustomConsent`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+  - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/iam/access`)
+    kind: Rule
+    services:
+    - name: {{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oamClusterName | lower | replace "_" "-" }}
+      port: {{ .Values.wlsDomain.oamManagedServerPort }}
+      sticky:
+        cookie:
+          name: OAMSESSION
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

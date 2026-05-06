@@ -1,0 +1,48 @@
+# Copyright (c) 2020, 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+image:                                                                                                                                                                                                             
+  pullPolicy: IfNotPresent                                                                                                                                                                                         
+ingressRoute:                                                                                                                                                                                                      
+  dashboard:                                                                                                                                                                                                       
+    enabled: true                                                                                                                                                                                                  
+    # Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)                                                                                                                                   
+    annotations: {}                                                                                                                                                                                                
+    # Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)                                                                                                                            
+    labels: {}                                                                                                                                                                                                     
+providers:                                                                                                                                                                                                         
+  kubernetesCRD:                                                                                                                                                                                                   
+    enabled: true                                                                                                                                                                                                  
+  kubernetesIngress:                                                                                                                                                                                               
+    enabled: true                                                                                                                                                                                                  
+    # IP used for Kubernetes Ingress endpoints                                                                                                                                                                     
+ports:                                                                                                                                                                                                             
+  traefik:                                                                                                                                                                                                         
+    port: 9000                                                                                                                                                                                                     
+    # The exposed port for this service                                                                                                                                                                            
+    exposedPort: 9000                                                                                                                                                                                              
+    # The port protocol (TCP/UDP)                                                                                                                                                                                  
+    protocol: TCP                                                                                                                                                                                                  
+  web:                                                                                                                                                                                                             
+    port: 8000                                                                                                                                                                                                     
+    exposedPort: 30305                                                                                                                                                                                             
+    nodePort: 30305                                                                                                                                                                                                
+    # The port protocol (TCP/UDP)                                                                                                                                                                                  
+    protocol: TCP                                                                                                                                                                                                  
+    # Use nodeport if set. This is useful if you have configured Traefik in a                                                                                                                                      
+    # LoadBalancer                                                                                                                                                                                                 
+    # nodePort: 32080                                                                                                                                                                                              
+    # Port Redirections                                                                                                                                                                                            
+    # Added in 2.2, you can make permanent redirects via entrypoints.                                                                                                                                              
+    # https://docs.traefik.io/routing/entrypoints/#redirection                                                                                                                                                     
+    # redirectTo: websecure                                                                                                                                                                                        
+  websecure:                                                                                                                                                                                                       
+    port: 8443                                                                                                                                                                                                     
+    exposedPort: 30443                                                                                                                                                                                             
+    # The port protocol (TCP/UDP)                                                                                                                                                                                  
+    protocol: TCP                                                                                                                                                                                                  
+    nodePort: 30443                                                                                                                                                                                                
+additionalArguments:
+  - "--log.level=INFO"
+
+

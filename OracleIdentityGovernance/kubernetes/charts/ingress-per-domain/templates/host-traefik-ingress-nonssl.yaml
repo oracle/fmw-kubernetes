@@ -1,0 +1,390 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+{{- if eq .Values.type "TRAEFIK" }}
+{{- if (eq .Values.sslType "NONSSL") }}
+{{- if .Values.hostName.enabled }}
+
+{{- if .Values.hostName.admin }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oigadmin-ingressroute
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/console`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.adminServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/consolehelp`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.adminServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/em`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.adminServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/management`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.adminServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/oim`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/sysadmin`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/admin`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/dms`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-{{ .Values.wlsDomain.adminServerName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.adminServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/soa-infra`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/ws_utc`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/identity`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/OIGUI`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/FacadeWebApp`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.admin }}`) && PathPrefix(`/SchedulerService-web`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+{{- end }}
+
+{{- if .Values.hostName.runtime }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oigruntime-ingressroute
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/identity`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/HTTPClnt`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/reqsvc`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/FacadeWebApp`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/iam`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`{{ .Values.hostName.runtime }}`) && PathPrefix(`/OIGUI`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+{{- end }}
+
+{{- if .Values.hostName.internal }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oiginternal-ingressroute
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/wsm-pm`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/sodcheck`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/role-sod`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/workflowservice`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/callbackResponseService`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/spml-xsd`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/spmlws`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/reqsvc`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/soa-infra`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/ws_utc`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/ucs`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/provisioning-callback`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/CertificationCallbackService`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/IdentityAuditCallbackService`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/soa/composer`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/integration`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/sdpmessaging/userprefs-ui`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.soaClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.soaManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+    - match: Host(`oiginternal-ingress`) && PathPrefix(`/iam`)
+      kind: Rule
+      services:
+        - name: '{{ .Values.wlsDomain.domainUID }}-cluster-{{ .Values.wlsDomain.oimClusterName | lower | replace "_" "-" }}'
+          port: {{ .Values.wlsDomain.oimManagedServerPort }}
+          sticky:
+            cookie:
+              name: sticky-cookie
+              httpOnly: true
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
