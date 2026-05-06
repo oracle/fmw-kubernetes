@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -66,7 +66,7 @@ service:
 
 ingress:
   enabled: true
-  # Supported values: nginx
+  # Supported values: nginx, traefik
   type: nginx
   className: nginx
   # Configuration for Ingress rules about Data HTTP/HTTPS interfaces
@@ -95,6 +95,8 @@ ingress:
     domain:
     # Backend Port to be used. Either http or https
     backendPort: http
+    # Traefik specific annotations for the HTTP IngressRoute
+    traefikAnnotations: {}
   # Configuration for Ingress rules about Admin HTTPS interface
   admin:
     nginxAnnotations:
@@ -117,6 +119,8 @@ ingress:
     # domain name to be used with Ingress Rules.
     # In ingress rules, hosts would be configured as <host>.<domain>, <host>-0.<domain>, <host>-1.<domain>, etc.
     domain:
+    # Traefik specific annotations for the Admin IngressRoute
+    traefikAnnotations: {}
   # SSL/TLS configuration for the Ingress
   # Flag to decide whether to force TLS/HTTPS or not
   tlsEnabled: true

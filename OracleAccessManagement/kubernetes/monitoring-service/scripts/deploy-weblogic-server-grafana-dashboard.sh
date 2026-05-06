@@ -23,7 +23,7 @@ adminServerPodName="${domainUID}-$(toDNS1123Legal ${adminServerName})"
 grafanaEndpointIP=$(${KUBERNETES_CLI:-kubectl} get endpoints ${monitoringHelmReleaseName}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].addresses[].ip}")
 grafanaEndpointPort=$(${KUBERNETES_CLI:-kubectl} get endpoints ${monitoringHelmReleaseName}-grafana -n ${monitoringNamespace}  -o=jsonpath="{.subsets[].ports[].port}")
 grafanaEndpoint="${grafanaEndpointIP}:${grafanaEndpointPort}"
-${KUBERNETES_CLI:-kubectl} cp $scriptDir/../config/weblogic-server-dashboard.json ${domainNamespace}/${adminServerPodName}:/tmp/weblogic-server-dashboard.json
+${KUBERNETES_CLI:-kubectl} cp $scriptDir/../config/weblogic-server-dashboard.json ${domainNamespace}/${adminServerPodName}:/tmp/weblogic-server-dashboard.json -c weblogic-server
 EXEC_DEPLOY="${KUBERNETES_CLI:-kubectl} exec -it -c weblogic-server -n ${domainNamespace} ${adminServerPodName} -- curl --noproxy \"*\" -X POST -H \"Content-Type: application/json\" -d @/tmp/weblogic-server-dashboard.json http://admin:admin@${grafanaEndpoint}/api/dashboards/db"
 echo "Deploying WebLogic Server Grafana Dashboard in progress...."
 eval ${EXEC_DEPLOY}

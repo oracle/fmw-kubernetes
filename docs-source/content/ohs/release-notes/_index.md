@@ -10,6 +10,7 @@ Review the latest changes and known issues for Oracle HTTP Server on Kubernetes.
 
 | Date | Version | Change |
 | --- | --- | --- |
+| April 2026 | 26.2.1 | Supports Oracle HTTP Server 12.2.1.4 deployment using the April 2026 container image which contains the April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.||
 | January 2026 | 26.1.1 | Supports Oracle HTTP Server 12.2.1.4 deployment using the January 2026 container image which contains the January Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.||
 | October 2025 | 25.4.1 | Supports Oracle HTTP Server 12.2.1.4 deployment using the October 2025 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.||
 | July 2025 | 25.3.1 | Supports Oracle HTTP Server 12.2.1.4 deployment using the July 2025 container image which contains the July Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.||

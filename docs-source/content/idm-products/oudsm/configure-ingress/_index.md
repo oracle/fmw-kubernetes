@@ -8,22 +8,30 @@ description=  "This document provides steps to configure an ingress controller t
 
 
 1. [Introduction](#introduction)
-1. [Install NGINX](#install-nginx)
+1. [Using NGINX](#using-nginx)
 
     a. [Configure the repository](#configure-the-repository)
 	
-	b. [Create a namespace](#create-a-namespace)
+	  b. [Create a namespace](#create-a-namespace)
 	
-	c. [Install NGINX using helm](#install-nginx-using-helm)
+	  c. [Install NGINX using helm](#install-nginx-using-helm)
+
+1. [Using Traefik](#using-traefik)
+
+    a. [Configure the repository](#configure-the-repository)
+	
+	  b. [Create a namespace](#create-a-namespace)
+	
+	  c. [Install Traefik using helm](#install-traefik-using-helm)
 	
 1. [Access to interfaces through ingress](#access-to-interfaces-through-ingress)
 
 
 ### Introduction
 
-The instructions below explain how to set up NGINX as an ingress for OUDSM.
+The instructions below explain how to set up NGINX or Traefik as an ingress for OUDSM.
 
-### Install NGINX 
+### Using NGINX 
 
 Use Helm to install NGINX.
 
@@ -180,7 +188,116 @@ Use Helm to install NGINX.
        tls.key: <base64 encoded key>
      type: kubernetes.io/tls
    ```
+
+### Using Traefik 
+
+Use Helm to install Traefik.
+
+#### Configure the repository
+
+1. Add the Helm chart repository for installing Traefik using the following command:
+
+   ```bash
+   $ helm repo add traefik https://helm.traefik.io/traefik --force-update
+   ```
    
+   The output will look similar to the following:
+
+   ```
+   "traefik" has been added to your repositories
+   ```
+   
+1. Update the repository using the following command:
+
+   ```bash
+   $ helm repo update
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   Hang tight while we grab the latest from your chart repositories...
+   ...Successfully got an update from the "traefik" chart repository
+   Update Complete. Happy Helming!
+   ```
+   
+
+#### Create a namespace
+
+1. Create a Kubernetes namespace for Traefik:
+
+   ```bash
+   $ kubectl create namespace <namespace>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl create namespace traefik
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   namespace/traefik created
+   ```
+   
+
+#### Install Traefik using helm
+
+1. Create a `$WORKDIR/kubernetes/helm/traefik-ingress-values-override.yaml` that contains the following:
+
+   **Note**: The configuration below deploys an ingress using LoadBalancer. If you prefer to use NodePort, change the configuration accordingly. For more details about Traefik configuration see: [Traefik Ingress Controller](https://github.com/traefik/traefik-helm-chart/blob/master/traefik/VALUES.md).
+
+    ```yaml
+    ingressRoute:
+      dashboard:
+        enabled: true 
+    providers:
+      kubernetesCRD:
+        enabled: true 
+      kubernetesIngress:
+        enabled: true
+    ports:
+      traefik:
+        port: 9000
+        exposedPort: 9000
+        protocol: TCP
+      web:
+        port: 8000
+        exposedPort: 30080
+        nodePort: 30080
+        protocol: TCP  
+      websecure:
+        port: 8443
+        exposedPort: 30443
+        nodePort: 30443
+        protocol: TCP 
+    service:
+      spec:
+        type: LoadBalancer
+    ```
+
+1. To install and configure Traefik ingress issue the following command:
+
+   ```bash
+   $ helm install traefik --namespace <namespace> \
+   --values traefik-ingress-values-override.yaml \
+   traefik/traefik
+   ```
+
+   Where:
+   * `traefik` is your deployment name
+   * `traefik/traefik` is the chart reference
+
+   For example:
+   
+   ```bash
+   $ helm install --namespace traefik \
+   --values traefik-ingress-values-override.yaml \
+   traefik traefik/traefik
+   ```
+      
 ### Access to interfaces through ingress
 
 Using the Helm chart, ingress objects are created according to configuration. The following table details the rules configured in ingress object(s) for access to Oracle Unified Directory Services Manager Interfaces through ingress.

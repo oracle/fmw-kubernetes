@@ -1,0 +1,258 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+image:                                                                                                                                                       
+  pullPolicy: IfNotPresent                                                                                                                                   
+ingressRoute:                                                                                                                                                
+  dashboard:                                                                                                                                                 
+    enabled: true                                                                                                                                            
+    # Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)                                                                             
+    annotations: {}                                                                                                                                          
+    # Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)                                                                      
+    labels: {}                                                                                                                                               
+providers:                                                                                                                                                   
+  kubernetesCRD:                                                                                                                                             
+    enabled: true                                                                                                                                            
+  kubernetesIngress:                                                                                                                                         
+    enabled: true                                                                                                                                            
+    # IP used for Kubernetes Ingress endpoints         
+    
+ports:
+  traefik:
+    port: 9000
+    exposedPort: 9000
+    protocol: TCP
+
+  web:
+    port: 8000
+    exposedPort: 30305
+    nodePort: 30305
+    protocol: TCP
+
+  websecure:
+    port: 8443
+    exposedPort: 30443
+    nodePort: 30443
+    protocol: TCP
+    tls:
+      enabled: true
+      
+  # The port 1389 TCP port will be mapped to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port
+  ldap1389:
+    port: 1389
+    exposedPort: 1389
+    protocol: TCP
+    expose:
+      default: true
+
+  # The port 1636 TCP port will be mapped to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port
+  ldaps1636:
+    port: 1636
+    exposedPort: 1636
+    protocol: TCP
+    expose:
+      default: true
+
+  # Map specific ports for LDAP and LDAPS communication from individual Services/Pods
+  # This port will be used to redirect requests on 3890 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-0:ldap
+  ldap3890:
+    port: 3890
+    exposedPort: 3890
+    protocol: TCP
+    expose:
+      default: true
+
+  # This port will be used to redirect requests on 6360 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldaps-0:ldap
+  ldaps6360:
+    port: 6360
+    exposedPort: 6360
+    protocol: TCP    
+    expose:
+      default: true
+
+  # This port will be used to redirect requests on 3891 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-1:ldap
+  ldap3891:
+    port: 3891
+    exposedPort: 3891
+    protocol: TCP
+    expose:
+      default: true
+
+  # This port will be used to redirect requests on 6361 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldaps-1:ldap
+  ldaps6361:
+    port: 6361
+    exposedPort: 6361
+    protocol: TCP  
+    expose:
+      default: true
+
+  # This port will be used to redirect requests on 3892 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldap-2:ldap  
+  ldap3892:
+    port: 3892
+    exposedPort: 3892
+    protocol: TCP
+    expose:
+      default: true
+
+  # This port will be used to redirect requests on 6362 port to %NAMESPACE%/%DEPLOYMENT_NAME%-ldaps-2:ldap
+  ldaps6362:
+    port: 6362
+    exposedPort: 6362
+    protocol: TCP  
+    expose:
+      default: true
+
+  # This port will be used to redirect requests on 4440 port to %NAMESPACE%/%DEPLOYMENT_NAME%-0:adminldaps
+  admin4440:
+    port: 4440
+    exposedPort: 4440
+    protocol: TCP
+    expose:
+      default: true
+
+  # To redirect requests on 4441 port to %NAMESPACE%/%DEPLOYMENT_NAME%-1:adminldaps
+  admin4441:
+    port: 4441
+    exposedPort: 4441
+    protocol: TCP
+    expose:
+      default: true
+
+  # To redirect requests on 4442 port to %NAMESPACE%/%DEPLOYMENT_NAME%-2:adminldaps
+  admin4442:
+    port: 4442
+    exposedPort: 4442
+    protocol: TCP
+    expose:
+      default: true
+
+  # To 1888 TCP port to LBR Admin service to get requests handled through any available POD/Endpoint serving Admin HTTPS Port 
+  admin1888:
+    port: 1888
+    exposedPort: 1888
+    protocol: TCP
+    expose:
+      default: true
+
+  # To redirect requests on 8880 port to %NAMESPACE%/%DEPLOYMENT_NAME%-0:adminhttps
+  admin8880:
+    port: 8880
+    exposedPort: 8880
+    protocol: TCP
+    expose:
+      default: true
+ 
+  # To redirect requests on 8881 port to %NAMESPACE%/%DEPLOYMENT_NAME%-1:adminhttps
+  admin8881:
+    port: 8881
+    exposedPort: 8881
+    protocol: TCP
+    expose:
+      default: true
+  
+  # To redirect requests on 8882 port to %NAMESPACE%/%DEPLOYMENT_NAME%-2:adminhttps
+  admin8882:
+    port: 8882
+    exposedPort: 8882
+    protocol: TCP
+    expose:
+      default: true
+  
+  # Map 1080 TCP port to LBR HTTP service to get requests handled through any available POD/Endpoint serving HTTP Port
+  http1080:
+    port: 1080
+    exposedPort: 1080
+    protocol: TCP
+    expose:
+      default: true
+  
+  # To redirect requests on 8080 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-0:http
+  http8080:
+    port: 8080
+    exposedPort: 8080
+    protocol: TCP
+    expose:
+      default: true
+    
+  # To redirect requests on 8081 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-1:http    
+  http8081:
+    port: 8081
+    exposedPort: 8081
+    protocol: TCP
+    expose:
+      default: true
+
+  # To redirect requests on 8082 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-2:http
+  http8082:
+    port: 8082
+    exposedPort: 8082
+    protocol: TCP
+    expose:
+      default: true
+  
+  # Map 1081 TCP port to LBR HTTP service to get requests handled through any available POD/Endpoint serving HTTP Port
+  https1081:
+    port: 1081
+    exposedPort: 1081
+    protocol: TCP
+    expose:
+      default: true
+  
+  # To redirect requests on 8100 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-0:https
+  https8100:
+    port: 8100
+    exposedPort: 8100
+    protocol: TCP
+    expose:
+      default: true
+ 
+  # To redirect requests on 8101 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-1:https
+  https8101:
+    port: 8101
+    exposedPort: 8101
+    protocol: TCP
+    expose:
+      default: true
+  
+  # To redirect requests on 8102 port to %NAMESPACE%/%DEPLOYMENT_NAME%-http-2:https
+  https8102:
+    port: 8102
+    exposedPort: 8102
+    protocol: TCP
+    expose:
+      default: true
+  
+additionalArguments:
+  - "--log.level=INFO"
+# Traefik Helm values for custom TCP ports + standard web/websecure entrypoints
+# Replace namespaces/service names only in the Kubernetes CRDs, not here.
+  - --providers.kubernetescrd
+  - --providers.kubernetesingress=true
+  - --entrypoints.web.address=:8000
+  - --entrypoints.websecure.address=:8443
+  - --entrypoints.ldap1389.address=:1389
+  - --entrypoints.ldaps1636.address=:1636
+  - --entrypoints.ldap3890.address=:3890
+  - --entrypoints.ldap3891.address=:3891
+  - --entrypoints.ldap3892.address=:3892
+  - --entrypoints.ldaps6360.address=:6360
+  - --entrypoints.ldaps6361.address=:6361
+  - --entrypoints.ldaps6362.address=:6362
+  - --entrypoints.admin4440.address=:4440
+  - --entrypoints.admin4441.address=:4441
+  - --entrypoints.admin4442.address=:4442
+  - --entrypoints.admin1888.address=:1888
+  - --entrypoints.admin8880.address=:8880
+  - --entrypoints.admin8881.address=:8881
+  - --entrypoints.admin8882.address=:8882
+  - --entrypoints.http1080.address=:1080
+  - --entrypoints.http8080.address=:8080
+  - --entrypoints.http8081.address=:8081
+  - --entrypoints.http8082.address=:8082
+  - --entrypoints.https1081.address=:1081
+  - --entrypoints.https8100.address=:8100
+  - --entrypoints.https8101.address=:8101
+  - --entrypoints.https8102.address=:8102
+
+service:
+  type: LoadBalancer

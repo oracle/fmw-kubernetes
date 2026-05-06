@@ -6,13 +6,21 @@ description=  "This document provides steps to configure an ingress controller t
 +++
 
 1. [Introduction](#introduction)
-1. [Install NGINX](#install-nginx)
+1. [Using NGINX](#using-nginx)
 
-    a. [Configure the repository](#configure-the-repository)
+   a. [Configure the repository](#configure-the-repository)
 	
 	b. [Create a namespace](#create-a-namespace)
 	
 	c. [Install NGINX using helm](#install-nginx-using-helm)
+
+1. [Using Traefik](#using-traefik)
+
+   a. [Configure the repository](#configure-the-repository)
+	
+	b. [Create a namespace](#create-a-namespace)
+	
+	c. [Install Traefik using helm](#install-traefik-using-helm)
 	
 1. [Access to interfaces through ingress](#access-to-interfaces-through-ingress)
 
@@ -27,11 +35,11 @@ description=  "This document provides steps to configure an ingress controller t
 
 ### Introduction
 
-The instructions below explain how to set up NGINX as an ingress for OUD.
+The instructions below explain how to set up NGINX or Traefik as an ingress for OUD.
 
 By default the ingress configuration only supports HTTP and HTTPS ports. To allow LDAP and LDAPS communication over TCP, configuration is required at the ingress controller/implementation level.
 
-### Install NGINX 
+### Using NGINX 
 
 Use Helm to install NGINX.
 
@@ -311,7 +319,226 @@ If required, an nginx-ingress deployment can be updated/upgraded with following 
    --values nginx-ingress-values-override.yaml \
    lbr-nginx stable/ingress-nginx 
    ```
+
+### Using TRAEFIK 
+
+Use Helm to install Traefik.
+
+#### Configure the repository
+
+1. Add the Helm chart repository for installing Traefik using the following command:
+
+   ```bash
+   $ helm repo add traefik https://helm.traefik.io/traefik --force-update
+   ```
    
+   The output will look similar to the following:
+
+   ```
+   "traefik" has been added to your repositories
+   ```
+   
+1. Update the repository using the following command:
+
+   ```bash
+   $ helm repo update
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   Hang tight while we grab the latest from your chart repositories...
+   ...Successfully got an update from the "traefik" chart repository
+   Update Complete. Happy Helming!
+   ```
+   
+
+#### Create a namespace
+
+1. Create a Kubernetes namespace for Traefik:
+
+   ```bash
+   $ kubectl create namespace <namespace>
+   ```
+   
+   For example:
+   
+   ```bash
+   $ kubectl create namespace traefik 
+   ```
+   
+   The output will look similar to the following:
+   
+   ```
+   namespace/traefik created
+   ```
+   
+
+#### Install Traefik using helm
+
+1. Create a `$WORKDIR/kubernetes/helm/traefik-ingress-values-override.yaml` that contains the following:
+
+   **Note**: The configuration below:
+
+   *  Assumes that you have `oud-ds-rs` installed with value `oud-ds-rs` as a deployment/release name in the namespace `oudns`. If using a different deployment name and/or namespace change appropriately.
+   * Deploys an ingress using LoadBalancer. If you prefer to use NodePort, change the configuration accordingly. For more details about Traefik configuration see: [Traefik Ingress Controller](https://github.com/traefik/traefik-helm-chart/blob/master/traefik/VALUES.md).
+
+   ```yaml
+   # Configuration for additional TCP ports to be exposed through Ingress
+   ports:
+      traefik:
+         port: 9000
+         exposedPort: 9000
+         protocol: TCP
+
+      web:
+         port: 8000
+         exposedPort: 30080
+         nodePort: 30080
+         protocol: TCP
+
+      websecure:
+         port: 8443
+         exposedPort: 30443
+         nodePort: 30443
+         protocol: TCP
+         tls:
+            enabled: true
+            
+      # The port 1389 TCP port will be mapped to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAP Port
+      ldap1389:
+         port: 1389
+         exposedPort: 1389
+         nodePort: 31389
+         protocol: TCP
+         expose:
+            default: true
+
+      # The port 1636 TCP port will be mapped to LBR LDAP service to get requests handled through any available POD/Endpoint serving LDAPS Port
+      ldaps1636:
+         port: 1636
+         exposedPort: 1636
+         nodePort: 31636
+         protocol: TCP
+         expose:
+            default: true
+
+   additionalArguments:
+      - "--log.level=INFO"
+      # Traefik Helm values for custom TCP ports + standard web/websecure entrypoints
+      # Replace namespaces/service names only in the Kubernetes CRDs, not here.
+      - --providers.kubernetescrd
+      - --providers.kubernetesingress=true
+      - --entrypoints.web.address=:8000
+      - --entrypoints.websecure.address=:8443
+      - --entrypoints.ldap1389.address=:1389
+      - --entrypoints.ldaps1636.address=:1636
+
+   service:
+      spec:
+         type: LoadBalancer
+   ```
+   
+1. To install and configure Traefik Ingress issue the following command:
+
+   ```bash
+   $ helm install traefik --namespace <namespace> \
+   --values traefik-ingress-values-override.yaml \
+   traefik/traefik
+   ```
+
+   Where:
+   * `traefik` is your deployment name
+   * `traefik/traefik` is the chart reference
+
+   For example:
+   
+   ```bash
+   $ helm install --namespace traefik \
+   --values traefik-ingress-values-override.yaml \
+   traefik traefik/traefik
+   ```
+
+1. Create a `$WORKDIR/kubernetes/helm/traefik-tcp-ingressroutes.yaml, for exposing the additional TCP ports through IngressRouteTCP:
+
+   ```yaml
+   # ================================
+   # LDAP LBR (1389)
+   # ================================
+   apiVersion: traefik.io/v1alpha1
+   kind: IngressRouteTCP
+   metadata:
+   name: oud-ds-rs-ldap-lbr
+   namespace: oudns
+   spec:
+   entryPoints:
+      - ldap1389
+   routes:
+      - match: HostSNI(`*`)
+         services:
+         - name: oud-ds-rs-lbr-ldap
+            port: ldap
+   ---
+   # ================================
+   # LDAPS LBR (1636)
+   # ================================
+   apiVersion: traefik.io/v1alpha1
+   kind: IngressRouteTCP
+   metadata:
+   name: oud-ds-rs-ldaps-lbr
+   namespace: oudns
+   spec:
+   entryPoints:
+      - ldaps1636
+   routes:
+      - match: HostSNI(`*`)
+         services:
+         - name: oud-ds-rs-lbr-ldap
+            port: ldaps
+   tls:
+      passthrough: true
+   ```   
+
+1. To install the IngressRouteTCP issue the following command:
+
+```
+$ kubectl create -f traefik-tcp-ingressroutes.yaml
+```
+
+##### Optional: Command `helm upgrade` to update nginx-ingress
+
+If required, an traefik deployment can be updated/upgraded with following command. In this example, traefik configuration is updated with an additional TCP port and Node Port for accessing the LDAP/LDAPS port of a specific POD:
+
+1. Use the sample   `OracleUnifiedDirectory/kubernetes/helm/samples/oud-ds-rs_traefik-ingress_values.yaml` that contains the additional ports
+
+
+1. Run the following command to upgrade the ingress:
+
+   ```bash
+   $ cd $WORKDIR$/kubernetes/helm/samples
+   $ helm upgrade --namespace <namespace> \
+   --values oud-ds-rs_traefik-ingress_values.yaml \
+   traefik traefik/traefik 
+   ```
+   
+   Where:
+   * `traefik` is your deployment name
+   * `traefik/traefik` is the chart reference
+
+   For example:
+   
+   ```bash
+   $ cd OracleUnifiedDirectory/kubernetes/helm/samples
+   $ helm upgrade --namespace traefik \
+   --values oud-ds-rs_traefik-ingress_values.yaml \
+   traefik traefik/traefik 
+   ```
+
+1. Next to update the IngressRouteTCP with additional ports. Refer the sample   `OracleUnifiedDirectory/kubernetes/helm/samples/traefik-tcp-ingressroutes.yaml` that contains the additional ports. Issue the following command for applying the additonal ports:
+
+```
+$ kubectl apply -f traefik-tcp-ingressroutes.yaml
+```      
 ### Access to interfaces through ingress
 
 Using the Helm chart, ingress objects are created according to configuration. The following table details the rules configured in ingress object(s) for access to Oracle Unified Directory Interfaces through ingress.
@@ -329,7 +556,7 @@ Using the Helm chart, ingress objects are created according to configuration. Th
 | http/https | 30080/30443 | * | * | /iam/directory | <deployment/release name>-lbr-http:http | oud-ds-rs-lbr-http:http | 
 
 > In the table above, example values are based on the value 'oud-ds-rs' as the deployment/release name for Helm chart installation.<br>
-> The NodePorts mentioned in the table are according to ingress configuration described in previous section.<br>
+> The NodePorts mentioned in the table are according to ingress configuration described in previous section for NGINX/Traefik.<br>
 > When External LoadBalancer is not available/configured, interfaces can be accessed through NodePort on a Kubernetes node.
 
 For LDAP/LDAPS access (based on the updated/upgraded configuration mentioned in previous section)

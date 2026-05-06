@@ -1,10 +1,11 @@
 ---
-title: "a. Using Design Console with NGINX(non-SSL)"
+title: "With non-SSL"
 weight: 1
-description: "Configure Design Console with NGINX(non-SSL)."
+pre: "<b>i. </b>"
+description: "Configure Design Console with Traefik(non-SSL)."
 ---
 
-Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your Kubernetes cluster.
+Configure an Traefik (non-SSL) to allow Design Console to connect to your Kubernetes cluster.
 
 1. [Prerequisites](#prerequisites)
 1. [Setup routing rules for the Design Console ingress](#setup-routing-rules-for-the-design-console-ingress)
@@ -21,9 +22,9 @@ Configure an NGINX ingress (non-SSL) to allow Design Console to connect to your 
 
 ### Prerequisites
 
-If you haven't already configured an NGINX ingress controller (Non-SSL) for OIG, follow [Using an Ingress with NGINX (non-SSL)](../../configure-ingress/ingress-nginx-setup-for-oig-domain-setup-on-k8s).
+If you haven't already configured an Traefik (Non-SSL) for OIG, follow [Using an Ingress with Traefik (non-SSL)](../../../configure-ingress/traefik/ingress-traefik-setup-for-oig-domain-setup-on-k8s).
 
-Make sure you know the hostname and port for the NGINX ingress controller before proceeding e.g `http://${HOSTNAME}:${PORT}`.
+Make sure you know the hostname and port for the Traefik before proceeding e.g `http://${HOSTNAME}:${PORT}`.
 
 **Note**: In all steps below if you are using a load balancer for your ingress instead of NodePort then replace `${HOSTNAME}:${PORT}` with `${LOADBALANCER-HOSTNAME}:${LOADBALANCER-PORT}`.
 
@@ -38,8 +39,8 @@ Make sure you know the hostname and port for the NGINX ingress controller before
    Edit `values.yaml` and ensure that `tls: NONSSL`  and `domainUID: governancedomain` are set, for example:
    
    ```
-   # Load balancer type.  Supported values are: NGINX
-   type: NGINX
+   # Load balancer type.  Supported values are: NGINX,TRAEFIK
+   type: TRAEFIK
    # Type of Configuration Supported Values are : NONSSL,SSL
    # tls: NONSSL
    tls: NONSSL
@@ -60,7 +61,7 @@ Make sure you know the hostname and port for the NGINX ingress controller before
    
    ```bash
    $ cd $WORKDIR
-   $ helm install governancedomain-nginx-designconsole kubernetes/design-console-ingress  --namespace oigns  --values kubernetes/design-console-ingress/values.yaml
+   $ helm install governancedomain-traefik-designconsole kubernetes/design-console-ingress  --namespace oigns  --values kubernetes/design-console-ingress/values.yaml
    ```
   
    For example:
@@ -68,7 +69,7 @@ Make sure you know the hostname and port for the NGINX ingress controller before
    The output will look similar to the following:
 
    ```
-   NAME: governancedomain-nginx-designconsole
+   NAME: governancedomain-traefik-designconsole
    LAST DEPLOYED: <DATE>
    NAMESPACE: oigns
    STATUS: deployed
@@ -79,38 +80,15 @@ Make sure you know the hostname and port for the NGINX ingress controller before
 1. Run the following command to show the ingress is created successfully:
 
    ```bash
-   $ kubectl describe ing governancedomain-nginx-designconsole -n <domain_namespace>
+   $ kubectl describe IngressRoute governancedomain-traefik-designconsole -n <domain_namespace>
    ```
    
    For example:
    
    ```bash
-   $ kubectl describe ing governancedomain-nginx-designconsole -n oigns
+   $ kubectl describe IngressRoute governancedomain-traefik-designconsole -n oigns
    ```
    
-   The output will look similar to the following:
-
-   ```
-   Name:             governancedomain-nginx-designconsole
-   Namespace:        oigns
-   Address:
-   Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
-   Rules:
-     Host        Path  Backends
-     ----        ----  --------
-     *
-                    governancedomain-cluster-oim-cluster:14002 (10.244.1.25:14002)
-   Annotations:  kubernetes.io/ingress.class: nginx
-                 meta.helm.sh/release-name: governancedomain-nginx-designconsole
-                 meta.helm.sh/release-namespace: oigns
-                 nginx.ingress.kubernetes.io/affinity: cookie
-                 nginx.ingress.kubernetes.io/enable-access-log: false
-   Events:
-     Type    Reason  Age   From                      Message
-     ----    ------  ----  ----                      -------
-     Normal  Sync    13s   nginx-ingress-controller  Scheduled for sync
-   ```
-
 ### Update the T3 channel
 
 1. Log in to the WebLogic Console using `http://${HOSTNAME}:${PORT}/console`.
@@ -206,7 +184,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'26> bash
+   $ docker run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'26> bash
    ```
 
    This will take you into a bash shell inside the container:
@@ -304,7 +282,7 @@ The Design Console can be run from a container using X windows emulation.
    For example:
    
    ```bash
-   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<January'26> bash
+   $ podman run -u root -it --name oigdcbase container-registry.oracle.com/middleware/oig_cpu:12.2.1.4-jdk8-ol8-<April'26> bash
    ```
 
    This will take you into a bash shell inside the container:

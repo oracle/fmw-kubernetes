@@ -1,0 +1,146 @@
+#
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+{{- $root := . -}}
+{{- if and (.Values.ingress.enabled) (eq .Values.ingress.type "traefik") -}}
+{{- $fullName := include "oudsm.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- $svcSslPort := .Values.service.sslPort -}}
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $fullName }}-ingress-traefik
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oudsm.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: 'traefik'
+spec:
+  entryPoints:
+{{- if (.Values.ingress.tlsEnabled) }}
+  - websecure
+{{- else }}
+  - web
+{{- end }}
+  routes:
+{{- range $replicaIndex, $replicaN := until (.Values.replicaCount|int) }}
+{{- $replicaIndx := (add $replicaIndex 1) }}
+{{- if ($root.Values.ingress.host) }}
+  {{- if ($root.Values.ingress.domain) }}
+  - match: Host(`{{ $root.Values.ingress.host }}-{{ $replicaIndx }}.{{ $root.Values.ingress.domain }}`) && PathPrefix(`/`)
+  {{ else }}
+  - match: Host(`{{ $root.Values.ingress.host }}-{{ $replicaIndx }}`) && PathPrefix(`/`)
+  {{- end }}
+{{ else }}
+  - match: Host(`{{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}`) && PathPrefix(`/`)
+{{- end }}
+    kind: Rule
+    {{- if ($root.Values.ingress.tlsEnabled) }}
+    middlewares:
+    - name: {{ include "oudsm.fullname" $root }}-proxy-ssl
+      namespace: {{ $root.Release.Namespace }}
+    {{- end }}
+    services:
+    - name: {{ include "oudsm.fullname" $root }}-{{ $replicaIndx }}
+      port: {{ $root.Values.ingress.backendPort }}
+      {{- if eq (lower $root.Values.ingress.backendPort) "http" }}
+      scheme: http
+      {{ else }}
+      scheme: https
+      {{- end }}
+      sticky:
+        cookie:
+          name: sticky-cookie
+          httpOnly: true
+     {{- end }}
+{{- if (.Values.ingress.host) }}
+  {{- if (.Values.ingress.domain) }}
+  - match: Host(`{{ .Values.ingress.host }}.{{ .Values.ingress.domain }}`) && PathPrefix(`/`)
+  {{ else }}
+  - match: Host(`{{ .Values.ingress.host }}`) && PathPrefix(`/`)
+  {{- end }}
+{{ else }}
+  - match: Host(`{{ include "oudsm.fullname" . }}`) && PathPrefix(`/`)
+{{- end }}
+    kind: Rule
+    {{- if (.Values.ingress.tlsEnabled) }}
+    middlewares:
+    - name: {{ include "oudsm.fullname" . }}-proxy-ssl
+      namespace: {{ .Release.Namespace }}
+    {{- end }}
+    services:
+    - name: {{ include "oudsm.fullname" . }}-lbr
+      port: {{ .Values.ingress.backendPort }}
+      {{- if eq (lower .Values.ingress.backendPort) "http" }}
+      scheme: http
+      {{ else }}
+      scheme: https
+      {{- end }}
+      sticky:
+        cookie:
+          name: sticky-cookie
+          httpOnly: true
+  - match: PathPrefix(`/oudsm`)
+    kind: Rule
+    {{- if (.Values.ingress.tlsEnabled) }}
+    middlewares:
+    - name: "{{ include "oudsm.fullname" . }}-proxy-ssl"
+      namespace: {{ .Release.Namespace }}
+    {{- end }}
+    services:
+    - name: {{ include "oudsm.fullname" . }}-lbr
+      port: {{ .Values.ingress.backendPort }}
+      {{- if eq (lower .Values.ingress.backendPort) "http" }}
+      scheme: http
+      {{ else }}
+      scheme: https
+      {{- end }}
+      sticky:
+        cookie:
+          name: sticky-cookie
+          httpOnly: true
+  - match: PathPrefix(`/management`)
+    kind: Rule
+    {{- if (.Values.ingress.tlsEnabled) }}
+    middlewares:
+    - name: "{{ include "oudsm.fullname" . }}-proxy-ssl"
+      namespace: {{ .Release.Namespace }}
+    {{- end }}
+    services:
+    - name: {{ include "oudsm.fullname" . }}-lbr
+      port: {{ .Values.ingress.backendPort }}
+      {{- if eq (lower .Values.ingress.backendPort) "http" }}
+      scheme: http
+      {{ else }}
+      scheme: https
+      {{- end }}
+      sticky:
+        cookie:
+          name: sticky-cookie
+          httpOnly: true
+  tls:
+{{- if (.Values.ingress.tlsSecret) }}
+    secretName: {{ .Values.ingress.tlsSecret }}
+{{- else }}
+    secretName: {{ include "oudsm.fullname" . }}-tls-cert
+{{- end }}
+---
+{{- if (.Values.ingress.tlsEnabled) }}
+#Create Traefik Middleware custom resource for SSL Termination
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: "{{ include "oudsm.fullname" . }}-proxy-ssl"
+  namespace:  {{ .Release.Namespace }}
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"
+      WL-Proxy-SSL: "true"
+    sslRedirect: true
+{{- end }}
+{{- end }}

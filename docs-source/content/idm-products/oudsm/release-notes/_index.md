@@ -10,6 +10,13 @@ Review the latest changes and known issues for Oracle Unified Directory Services
 
 | Date | Version | Change |
 | --- | --- | --- |
+| April, 2026 | 26.2.1 | Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the April 2026 container image which contains the changes for Traefik support, April Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
+| | | If upgrading to April 26 (26.2.1) from October 22 (22.4.1) or later, upgrade as follows:|
+| | | 1. Patch the OUDSM container image to April 26|
+| | | If upgrading to April 26 (26.2.1) from July 22 (22.3.1) or earlier, you must upgrade the following in order:|
+| | | 1. Patch the OUDSM container image to April 26|
+| | | 2. Upgrade Elasticsearch and Kibana.|
+| | | To upgrade to April 26 (26.2.1) you must follow the instructions in [Patch and Upgrade](../patch-and-upgrade).|
 | January, 2026 | 26.1.1 | Supports Oracle Unified Directory Services Manager 12.2.1.4 domain deployment using the January 2026 container image which contains the October Patch Set Update (PSU) and other fixes released with the Critical Patch Update (CPU) program.|
 | | | If upgrading to January 26 (26.1.1) from October 22 (22.4.1) or later, upgrade as follows:|
 | | | 1. Patch the OUDSM container image to January 26|
