@@ -16,7 +16,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "pattern": "^[a-z-_]{1,25}$"
+          "pattern": "^[a-z_-]{1,25}$"
         },
         "managedServers": {
           "type": "object",
@@ -32,7 +32,7 @@
             },
             "name": {
               "type": "string",
-              "pattern": "^[a-z-_]{1,25}$"
+              "pattern": "^[a-z_-]{1,25}$"
             },
             "listentPort": {
               "type": "integer",
@@ -94,7 +94,7 @@
         },
         "domainName": {
           "type": "string",
-          "pattern": "^[a-zA-Z0-9-_]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "maxLength": 99
         },
         "image": {
@@ -106,7 +106,7 @@
           "properties": {
             "repository": {
               "type": "string",
-              "pattern": "^[a-z0-9-_./]+$"
+              "pattern": "^[a-z0-9_./-]+$"
             },
             "pullPolicy": {
               "type": "string",
@@ -122,11 +122,11 @@
         },
         "rootDir": {
           "type": "string",
-          "pattern": "^/([a-zA-z0-9-_]+/*)+$"
+          "pattern": "^/([a-zA-Z0-9_-]+/*)+$"
         },
         "scriptDir": {
           "type": "string",
-          "pattern": "^/([a-zA-z0-9-_]+/*)+$"
+          "pattern": "^/([a-zA-Z0-9_-]+/*)+$"
         },
         "credentials": {
           "type": [
@@ -216,7 +216,7 @@
             "string",
             "null"
           ],
-          "pattern": "^/([a-zA-z0-9-_]+/*)+$"
+          "pattern": "^/([a-zA-Z0-9_-]+/*)+$"
         },
         "includeServerOutInPodLog": {
           "type": [
@@ -253,7 +253,7 @@
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9-_]+$"
+              "pattern": "^[a-zA-Z0-9_-]+$"
             },
             "listenPort": {
               "type": "integer",
@@ -369,7 +369,7 @@
                     },
                     "password": {
                       "type": ["string"],
-                      "pattern": "^[a-zA-Z0-9-_#]{9,30}$",
+                      "pattern": "^[a-zA-Z0-9_#-]{9,30}$",
                       "description": "The domain password must contain at least 2 uppercase, 2 lowercase, 2 numbers, and 2 special and be at least 9 to 30 characters long."
                     }
                   },
@@ -394,7 +394,7 @@
         },
         "url": {
           "type": ["string", "null"],
-          "pattern": "^[a-zA-Z0-9-_.]+:[1-9][0-9]{2,4}/[a-zA-Z0-9-_.]+$"
+          "pattern": "^[a-zA-Z0-9_.-]+:[1-9][0-9]{2,4}/[a-zA-Z0-9_.-]+$"
         },
         "cdb": {
           "type": "string"

@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -45,12 +45,11 @@ spec:
     port: 1521
     protocol: TCP
     targetPort: 1521
-    nodePort: 30011
   selector:
     app.kubernetes.io/instance: dev
     app.kubernetes.io/name: oracle-db
   sessionAffinity: None
-  type: LoadBalancer
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment

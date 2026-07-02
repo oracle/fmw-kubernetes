@@ -1,4 +1,4 @@
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Timeout value required to install all the helm releases
@@ -16,8 +16,8 @@ domain:
 
    credentials:
      secretName:
-     username: weblogic
-     password: Welcome1
+     username: 
+     password: 
    
    sslEnabled: true
    javaOptions: "-Dweblogic.StdoutDebugEnabled=false -Dweblogic.ssl.Enabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true"
@@ -38,7 +38,7 @@ domain:
      credentials:
        secretName:
        username: "SOA"
-       password: "OraDB1_#OraDB1_#"
+       password: ""
 
    storage:
      capacity: 10Gi
@@ -103,7 +103,7 @@ oracledb:
    credentials:
      secretName:
      username: SYS
-     password: "Oradoc_db1"
+     password: ""
    persistence: 
      storageClass: nfs-client
      size: 10Gi 
@@ -150,8 +150,6 @@ loadbalancer:
 # Refer https://github.com/mifonpe/helmfile-example/blob/master/releases/values/common/nginx-ingress-values.yaml for details
 nginx:
    controller:
-     service:
-       type: NodePort
      admissionWebhooks:
        enabled: false
      allowSnippetAnnotations: true
@@ -165,5 +163,3 @@ traefik:
      registry: docker.io 
      repository: traefik
      tag: ""
-   service:
-     type: NodePort
