@@ -45,10 +45,10 @@ adminURL = "t3s://wccinfra-adminserver:9002"
 username = "weblogic"
 
 # password will be passed by command line parameter -password
-password = "Welcome1"
+password = ""
 
 # identityPassword will be passed by command line parameter -identityPassword
-identityPassword = "identityStorePassword" 
+identityPassword = ""
 
 # identityType will be passed by command line parameter -identityType
 identityType = "PKCS12"

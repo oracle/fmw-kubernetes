@@ -10,7 +10,7 @@ echo "Check if the DB Service is ready to accept request "
 connectString=${1:-oracle-db.wcsitesdb-ns.svc.cluster.local:1521/devpdb.k8s}
 schemaPrefix=${2:-WCS1}
 rcuType=${3:-fmw}
-sysPassword=${4:-Oradoc_db1}
+sysPassword=${4}
 
 echo "DB Connection String [$connectString] schemaPrefix [${schemaPrefix}] rcuType[${rcuType}]"
 

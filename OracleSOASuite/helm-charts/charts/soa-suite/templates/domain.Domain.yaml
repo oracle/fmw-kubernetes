@@ -1,4 +1,4 @@
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This is an example of how to define a Domain resource.
@@ -79,7 +79,7 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.domain.domainName }}-domain-pvc
     volumeMounts:
-      - mountPath: {{ .Values.domain.rootDir }}
+      - mountPath: {{ .Values.domain.rootDir | quote }}
         name: weblogic-domain-storage-volume
   # adminServer is used to configure the desired behavior for starting the administration server.
   adminServer:
@@ -111,10 +111,20 @@ spec:
       initContainers: 
       - name: wait-for-domain-created
         image: "{{ .Values.domain.image.repository }}:{{ .Values.domain.image.tag | default .Chart.AppVersion }}"
-        command: ["sh", "-c", "while [[ ! -f \"{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}/domainmarker\" ]]; do echo 'waiting for domain marker' && sleep 5; done"]
+        command:
+        - /bin/bash
+        - -c
+        - |
+          while [[ ! -f "${DOMAIN_HOME_DIR}/domainmarker" ]]; do
+            echo "waiting for domain marker"
+            sleep 5
+          done
+        env:
+        - name: DOMAIN_HOME_DIR
+          value: {{ printf "%s/domains/%s" .Values.domain.rootDir .Values.domain.domainName | quote }}
         volumeMounts:
         - name: weblogic-domain-storage-volume
-          mountPath: {{ .Values.domain.rootDir }}
+          mountPath: {{ .Values.domain.rootDir | quote }}
   # clusters is used to configure the desired behavior for starting member servers of a cluster.  
   # If you use this entry, then the rules will be applied to ALL servers that are members of the named clusters.
   clusters:

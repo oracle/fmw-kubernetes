@@ -1,4 +1,4 @@
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 apiVersion: batch/v1
@@ -32,10 +32,19 @@ spec:
       initContainers:
         - name: fix-pvc-owner
           image: "{{ .Values.domain.image.repository }}:{{ .Values.domain.image.tag | default .Chart.AppVersion }}"
-          command: ["sh", "-c", "chown 1000:0 {{ .Values.domain.rootDir }}/. && find {{ .Values.domain.rootDir }}/. -maxdepth 1 ! -name '.snapshot' ! -name '.' -print0 | xargs -r -0 chown -R 1000:0"]
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              chown 1000:0 -- "${DOMAIN_ROOT_DIR}/."
+              find "${DOMAIN_ROOT_DIR}/." -maxdepth 1 ! -name '.snapshot' ! -name '.' -exec chown -R 1000:0 -- {} +
+          env:
+            - name: DOMAIN_ROOT_DIR
+              value: {{ .Values.domain.rootDir | quote }}
           volumeMounts:
           - name: soa-infra-domain-storage-volume
-            mountPath: {{ .Values.domain.rootDir }}
+            mountPath: {{ .Values.domain.rootDir | quote }}
           securityContext:
             runAsUser: 0
             runAsGroup: 0
@@ -47,21 +56,24 @@ spec:
           ports:
             - containerPort: 7001
           volumeMounts:
-          - mountPath: {{ .Values.domain.scriptDir }}
+          - mountPath: {{ .Values.domain.scriptDir | quote }}
             name: create-soa-infra-domain-job-cm-volume
-          - mountPath: {{ .Values.domain.rootDir }}
+          - mountPath: {{ .Values.domain.rootDir | quote }}
             name: soa-infra-domain-storage-volume
           - mountPath: /weblogic-operator/secrets
             name: soa-infra-credentials-volume
           - mountPath: /weblogic-operator/rcu-secrets
             name: rcu-credentials-volume
-#          command: ["/bin/sh"]
-#          args: ["{{ .Values.domain.scriptDir }}/create-domain-job.sh"]
-#          command: ["/bin/bash", "-c", "sleep infinity" ]
-          command: ["/bin/bash", "-c", "if [[ ! -f \"{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}/domainmarker\" ]]; then /bin/bash {{ .Values.domain.scriptDir }}/create-domain-job.sh; fi"]
+          command:
+            - /bin/bash
+            - -c
+            - |
+              if [[ ! -f "${DOMAIN_HOME_DIR}/domainmarker" ]]; then
+                /bin/bash "${CREATE_DOMAIN_SCRIPT_DIR}/create-domain-job.sh"
+              fi
           env:
             - name: DOMAIN_UID
-              value: "{{ .Values.domain.domainName }}"
+              value: {{ .Values.domain.domainName | quote }}
             - name: ADMIN_SERVER_NAME_SVC
               value: "{{ .Values.domain.admin.name }}"
             - name: T3_CHANNEL_PORT
@@ -71,15 +83,15 @@ spec:
             - name: MANAGED_SERVER_NAME_BASE_SVC
               value: "soa-server"
             - name: CREATE_DOMAIN_SCRIPT_DIR
-              value: "{{ .Values.domain.scriptDir }}"
+              value: {{ .Values.domain.scriptDir | quote }}
             - name: DOMAIN_ROOT_DIR
-              value: "{{ .Values.domain.rootDir }}"
+              value: {{ .Values.domain.rootDir | quote }}
             - name: DOMAIN_HOME_DIR
-              value: "{{ .Values.domain.rootDir }}/domains/{{ .Values.domain.domainName }}"
+              value: {{ printf "%s/domains/%s" .Values.domain.rootDir .Values.domain.domainName | quote }}
             - name: DOMAIN_LOGS_DIR
-              value: "{{ .Values.domain.rootDir }}/logs/{{ .Values.domain.domainName }}"
+              value: {{ printf "%s/logs/%s" .Values.domain.rootDir .Values.domain.domainName | quote }}
             - name: CUSTOM_DOMAIN_NAME
-              value: "{{ .Values.domain.domainName }}"
+              value: {{ .Values.domain.domainName | quote }}
             - name: CUSTOM_ADMIN_LISTEN_PORT
               value: "{{ .Values.domain.admin.listenPort }}"
             - name: CUSTOM_ADMIN_NAME
