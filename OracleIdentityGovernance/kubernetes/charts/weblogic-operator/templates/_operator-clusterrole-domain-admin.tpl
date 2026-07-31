@@ -1,4 +1,4 @@
-# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2024, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 {{- define "operator.operatorClusterRoleDomainAdmin" }}
@@ -23,7 +23,7 @@ rules:
   resources: ["configmaps"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection"]
 - apiGroups: [""]
-  resources: ["secrets", "pods", "events"]
+  resources: ["secrets", "pods"]
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["pods/log"]
@@ -31,10 +31,16 @@ rules:
 - apiGroups: [""]
   resources: ["pods/exec"]
   verbs: ["get", "create"]
+- apiGroups: ["events.k8s.io"]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
 - apiGroups: ["weblogic.oracle"]
   resources: ["domains", "clusters"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection"]
 - apiGroups: ["weblogic.oracle"]
   resources: ["domains/status", "clusters/status"]
   verbs: ["get", "watch"]
+- apiGroups: ["weblogic.oracle"]
+  resources: ["clusters/scale"]
+  verbs: ["update", "patch"]
 {{- end }}

@@ -1,15 +1,15 @@
 #!/bin/bash
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-# Bring up Oracle DB Instance in [default] NameSpace with a NodePort Service
+# Bring up Oracle DB Instance in [default] NameSpace with a NodePort Service 
 
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 source ${scriptDir}/../common/utility.sh
 
 usage() {
-  echo "usage: ${script} [-a <dbasecret>] [-p <nodeport>] [-i <image>] [-s <pullsecret>] [-n <namespace>] [-h]"
+  echo "usage: ${script} [-a <dbasecret>] [-p <nodeport>] [-i <image>] [-s <pullsecret>] [-n <namespace>] [-l <pdb_id>] [-h]"
   echo "  -a DB Sys Account Password Secret Name (optional)"
   echo "      (default: oracle-db-secret, secret must include a key named 'password')"
   echo "      If this secret is not deployed, then the database will not successfully deploy."
@@ -31,6 +31,7 @@ nodeport=30011
 dbimage="container-registry.oracle.com/database/enterprise:12.2.0.1-slim"
 pullsecret="docker-store"
 namespace="default"
+pdbid="devpdb.k8s"
 
 while getopts ":a:p:i:s:n:h:" opt; do
   case $opt in
@@ -63,12 +64,19 @@ fi
 
 echo "NodePort[$nodeport] ImagePullSecret[$pullsecret] Image[${dbimage}] NameSpace[${namespace}] SysSecret[${syssecret}]"
 
-#create unique db yaml file if does not exists
+#unique db yaml file holder
 dbYaml=${scriptDir}/common/oracle.db.${namespace}.yaml
-if [ ! -f "$dbYaml" ]; then
-    echo "$dbYaml does not exist."
-    cp ${scriptDir}/common/oracle.db.yaml ${dbYaml}
+
+# Choose template based on dbimage version
+if echo "$dbimage" | grep -q "12\."; then
+    templateYaml="${scriptDir}/common/oracle.db.yaml"
+else
+    templateYaml="${scriptDir}/common/oracle.db.19plus.yaml"
+    pdbid="devpdb"
 fi
+echo "Using template: $templateYaml"
+cp "$templateYaml" "$dbYaml"
+
 
 # Modify ImagePullSecret and DatabaseImage based on input
 sed -i -e '$d' ${dbYaml}
@@ -80,7 +88,7 @@ sed -i -e "s?namespace:.*?namespace: ${namespace}?g" ${dbYaml}
 # Modify DBA sys password secret based on input
 sed -i -e "s?oracle-db-secret?${syssecret}?g" ${dbYaml}
 
-# Modify the NodePort based on input
+# Modify the NodePort based on input 
 if [ "${nodeport}" = "none" ]; then
   sed -i -e "s? nodePort:? #nodePort:?g" ${dbYaml}
   sed -i -e "s? type:.*NodePort? #type: NodePort?g" ${dbYaml}
@@ -92,6 +100,7 @@ fi
 ${KUBERNETES_CLI:-kubectl} delete service oracle-db -n ${namespace} --ignore-not-found
 
 echo "Applying Kubernetes YAML file '${dbYaml}' to start database."
+cat ${dbYaml}
 ${KUBERNETES_CLI:-kubectl} apply -f ${dbYaml}
 
 detectPod ${namespace}
@@ -107,9 +116,26 @@ checkService oracle-db ${namespace}
 ${KUBERNETES_CLI:-kubectl} get po -n ${namespace}
 ${KUBERNETES_CLI:-kubectl} get service -n ${namespace}
 
-${KUBERNETES_CLI:-kubectl} cp ${scriptDir}/common/checkDbState.sh -n ${namespace} ${dbpod}:/home/oracle/
+logfile="/tmp/setupDB.log"
+max=60
+counter=0
+while [ $counter -le ${max} ]
+do
+ ${KUBERNETES_CLI:-kubectl} logs ${dbpod} -n ${namespace} > $logfile
+ grep -i "DATABASE IS READY" $logfile
+ [[ $? == 0 ]] && break;
+ ((counter++))
+ echo "${KUBERNETES_CLI:-kubectl} describe pod ${dbpod}  -n ${namespace}"
+ ${KUBERNETES_CLI:-kubectl} describe pod ${dbpod}  -n ${namespace}
+ echo "[$counter/${max}] Retrying for Oracle Database Availability..."
+ sleep 60
+done
 
-${KUBERNETES_CLI:-kubectl} exec -it ${dbpod} -n ${namespace} -- /bin/bash /home/oracle/checkDbState.sh
+if [ $counter -gt ${max} ]; then
+ echo "[ERRORR] Oracle DB Service is not ready after [${max}] iterations ..."
+ exit -1
+fi
+
 if [ $? != 0  ]; then
  echo "######################";
  echo "[ERROR] Could not create Oracle DB Service, check the pod log for pod ${dbpod} in namespace ${namespace}";
@@ -122,5 +148,4 @@ if [ ! "${nodeport}" = "none" ]; then
 else
   echo "Oracle DB Service is RUNNING and does not specify a public NodePort"
 fi
-echo "Oracle DB Service URL [oracle-db.${namespace}.svc.cluster.local:1521/devpdb.k8s]"
-
+echo "Oracle DB Service URL [oracle-db.${namespace}.svc.cluster.local:1521/${pdbid}]"

@@ -1,7 +1,8 @@
-# Copyright (c) 2018, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 {{- define "operator.operatorDeployment" }}
+
 ---
 {{- if not .webhookOnly }}
 apiVersion: "apps/v1"
@@ -34,11 +35,9 @@ spec:
       {{- end }}
     spec:
       serviceAccountName: {{ .serviceAccount | quote }}
-      {{- if (ne ( .kubernetesPlatform | default "Generic" ) "OpenShift") }}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-      {{- end }}
       {{- with .nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -51,15 +50,21 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if (hasKey . "priority") }}
+      priority: {{ int .priority }}
+      {{- end }}
+      {{- if (hasKey . "priorityClassName") }}
+      priorityClassName: {{ .priorityClassName | quote }}
+      {{- end }}
       containers:
       - name: "weblogic-operator"
         image: {{ .image | quote }}
         imagePullPolicy: {{ .imagePullPolicy | quote }}
-        command: ["/deployment/operator.sh"]
+        command: ["/operator/operator.sh"]
         lifecycle:
           preStop:
             exec:
-              command: ["/deployment/stop.sh"]
+              command: ["/operator/stop.sh"]
         env:
         - name: "OPERATOR_NAMESPACE"
           valueFrom:
@@ -84,13 +89,22 @@ spec:
           value: "true"
         {{- end }}
         - name: "JAVA_LOGGING_LEVEL"
-          value: {{ .javaLoggingLevel | quote }}
+          value: {{ .javaLoggingLevel | default "INFO" | quote }}
         - name: "JAVA_LOGGING_MAXSIZE"
           value: {{ int64 .javaLoggingFileSizeLimit | default 20000000 | quote }}
         - name: "JAVA_LOGGING_COUNT"
           value: {{ .javaLoggingFileCount | default 10 | quote }}
         - name: "JVM_OPTIONS"
           value: {{ .jvmOptions | default "-XshowSettings:vm -XX:MaxRAMPercentage=70" | quote }}
+        - name: "OPERATOR_INTROSPECTJOB_RECHECK_SKEW"
+          value: {{ .introspectionJobRecheckSkew | default 3 | quote }}
+        {{- if and .operatorLogDir .operatorLogMount }}
+           {{- if not (hasPrefix (toString .operatorLogMount) (toString .operatorLogDir)) }}
+            {{- fail (printf "Error: Invalid Configuration: operatorLogDir %s must start with operatorlogMount %s" .operatorLogDir .operatorLogMount) }}
+          {{- end }}
+        {{- end }}
+        - name: "OPERATOR_LOGDIR"
+          value: {{ .operatorLogDir | default "/logs" | quote }}
         {{- if .remoteDebugNodePortEnabled }}
         - name: "REMOTE_DEBUG_PORT"
           value: {{ .internalDebugHttpPort | quote }}
@@ -117,10 +131,11 @@ spec:
             memory: {{ .memoryLimits }}
             {{- end }}
         securityContext:
-          {{- if (ne ( .kubernetesPlatform | default "Generic" ) "OpenShift") }}
+          {{- if or (hasKey . "runAsUser") (ne ( .kubernetesPlatform | default "Generic" ) "OpenShift") }}
           runAsUser: {{ .runAsUser | default 1000 }}
           {{- end }}
           runAsNonRoot: true
+          readOnlyRootFilesystem: true
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
@@ -133,23 +148,37 @@ spec:
         - name: "weblogic-operator-secrets-volume"
           mountPath: "/deployment/secrets"
           readOnly: true
-        {{- if .elkIntegrationEnabled }}
+        - name: "deployment-volume"
+          mountPath: "/deployment"
+        - name: "tmp-volume"
+          mountPath: "/tmp"
+        {{- if not .elkIntegrationEnabled }}
+        - name: "log-volume"
+          mountPath: "/logs"
+        {{- end }}
+        {{- if and .elkIntegrationEnabled .operatorLogPVC }}
+            {{- fail "Error: elkIntegrationEnabled and opeatorLogPVC cannot be set at the same time."}}
+        {{- else if .elkIntegrationEnabled }}
         - mountPath: "/logs"
+          name: "log-dir"
+          readOnly: false
+        {{- else if .operatorLogPVC }}
+        - mountPath: {{ .operatorLogMount | quote }}
           name: "log-dir"
           readOnly: false
         {{- end }}
         {{- if not .remoteDebugNodePortEnabled }}
         livenessProbe:
           exec:
-            command: ["/probes/livenessProbe.sh"]
-          initialDelaySeconds: 40
-          periodSeconds: 10
-          failureThreshold: 5
+            command: ["/operator/livenessProbe.sh"]
+          initialDelaySeconds: {{ .livenessProbeInitialDelaySeconds | default 40 }}
+          periodSeconds: {{ .livenessProbePeriodSeconds | default 10 }}
+          failureThreshold: {{ .livenessProbeFailureThreshold | default 5 }}
         readinessProbe:
           exec:
-            command: ["/probes/readinessProbe.sh"]
-          initialDelaySeconds: 2
-          periodSeconds: 10
+            command: ["/operator/readinessProbe.sh"]
+          initialDelaySeconds: {{ .readinessProbeInitialDelaySeconds | default 2 }}
+          periodSeconds: {{ .readinessProbePeriodSeconds | default 10 }}
         {{- end }}
       {{- if .elkIntegrationEnabled }}
       - name: "logstash"
@@ -187,6 +216,14 @@ spec:
       - name: "weblogic-operator-secrets-volume"
         secret:
           secretName: "weblogic-operator-secrets"
+      - name: "deployment-volume"
+        emptyDir: {}
+      - name: "tmp-volume"
+        emptyDir: {}
+      {{- if not .elkIntegrationEnabled }}
+      - name: "log-volume"
+        emptyDir: {}
+      {{- end }}
       {{- if .elkIntegrationEnabled }}
       - name: "log-dir"
         emptyDir:
@@ -207,30 +244,50 @@ spec:
         secret:
           secretName: "logstash-certs-secret"
           optional: true
+      {{- else if .operatorLogPVC }}
+      {{- if not (and .operatorLogMount .operatorLogDir) }}
+        {{- fail "Must provide operatorLogMount and operatorLogDir when using operatorLogPVC" }}
       {{- end }}
+      - name: "log-dir"
+        persistentVolumeClaim:
+         claimName: {{ .operatorLogPVC }}
+      {{- end }}
+
 {{- end }}
 ---
-  {{ $chartVersion := .Chart.Version }}
-  {{ $releaseNamespace := .Release.Namespace }}
-  {{ $webhookExists := include "utils.verifyExistingWebhookDeployment" (list $chartVersion $releaseNamespace) | trim }}
-  {{- if and (ne $webhookExists "true") (not .operatorOnly) }}
-    # webhook does not exist or chart version is newer, create a new webhook
-    apiVersion: "v1"
-    kind: "ConfigMap"
-    metadata:
-      labels:
-        weblogic.webhookName: {{ .Release.Namespace | quote }}
-      name: "weblogic-webhook-cm"
-      namespace: {{ .Release.Namespace | quote }}
-    data:
-      serviceaccount: {{ .serviceAccount | quote }}
-      {{- if .featureGates }}
-      featureGates: {{ .featureGates | quote }}
-      {{- end }}
-      {{- if .domainNamespaceSelectionStrategy }}
-      domainNamespaceSelectionStrategy: {{ .domainNamespaceSelectionStrategy | quote }}
-      {{- end }}
+{{ $chartVersion := .Chart.Version }}
+{{ $releaseNamespace := .Release.Namespace }}
+{{ if not .operatorOnly }}
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  labels:
+    weblogic.webhookName: {{ .Release.Namespace | quote }}
+  name: "weblogic-webhook-cm"
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  serviceaccount: {{ .serviceAccount | quote }}
+  {{- if .featureGates }}
+  featureGates: {{ .featureGates | quote }}
+  {{- end }}
+  {{- if (and .domainOnPV (hasKey .domainOnPV "localDeveloperMode")) }}
+  domainOnPVLocalDeveloperMode: {{ .domainOnPV.localDeveloperMode | quote }}
+  {{- end }}
+  {{- if and .domainNamespaceSelectionStrategy (ne .domainNamespaceSelectionStrategy "Dedicated") }}
+  domainNamespaceSelectionStrategy: {{ .domainNamespaceSelectionStrategy | quote }}
+  {{- end }}
+  {{- if and .domainNamespaces (ne .domainNamespaceSelectionStrategy "Dedicated") }}
+  domainNamespaces: {{ .domainNamespaces | uniq | sortAlpha | join "," | quote }}
+  {{- end }}
+  {{- if and .domainNamespaceLabelSelector (ne .domainNamespaceSelectionStrategy "Dedicated") }}
+  domainNamespaceLabelSelector: {{ .domainNamespaceLabelSelector | quote }}
+  {{- end }}
+  {{- if and .domainNamespaceRegExp (ne .domainNamespaceSelectionStrategy "Dedicated") }}
+  domainNamespaceRegExp: {{ .domainNamespaceRegExp | quote }}
+  {{- end }}
 ---
+  {{ $webhookExists := include "utils.verifyExistingWebhookDeployment" (list $chartVersion $releaseNamespace) | trim }}
+  {{- if ne $webhookExists "true" }}
     # webhook does not exist or chart version is newer, create a new webhook
     apiVersion: "apps/v1"
     kind: "Deployment"
@@ -272,11 +329,9 @@ spec:
           {{- end }}
         spec:
           serviceAccountName: {{ .serviceAccount | quote }}
-          {{- if (ne ( .kubernetesPlatform | default "Generic" ) "OpenShift") }}
           securityContext:
             seccompProfile:
               type: RuntimeDefault
-          {{- end }}
           {{- with .nodeSelector }}
           nodeSelector:
             {{- toYaml . | nindent 12 }}
@@ -293,16 +348,20 @@ spec:
           - name: "weblogic-operator-webhook"
             image: {{ .image | quote }}
             imagePullPolicy: {{ .imagePullPolicy | quote }}
-            command: ["/deployment/webhook.sh"]
+            command: ["/operator/webhook.sh"]
             lifecycle:
               preStop:
                 exec:
-                  command: ["/deployment/stop.sh"]
+                  command: ["/operator/stop.sh"]
             env:
             - name: "WEBHOOK_NAMESPACE"
               valueFrom:
                 fieldRef:
                   fieldPath: "metadata.namespace"
+            {{- if eq .domainNamespaceSelectionStrategy "Dedicated" }}
+            - name: "WEBHOOK_DEDICATED_MODE"
+              value: "true"
+            {{- end }}
             - name: "WEBHOOK_POD_NAME"
               valueFrom:
                 fieldRef:
@@ -312,11 +371,18 @@ spec:
                 fieldRef:
                   fieldPath: "metadata.uid"
             - name: "JAVA_LOGGING_LEVEL"
-              value: {{ .javaLoggingLevel | quote }}
+              value: {{ .javaLoggingLevel | default "INFO" | quote }}
             - name: "JAVA_LOGGING_MAXSIZE"
               value: {{ int64 .javaLoggingFileSizeLimit | default 20000000 | quote }}
             - name: "JAVA_LOGGING_COUNT"
               value: {{ .javaLoggingFileCount | default 10 | quote }}
+            {{- if and .operatorLogDir .operatorLogMount }}
+              {{- if not (hasPrefix (toString .operatorLogMount) (toString .operatorLogDir)) }}
+                {{- fail (printf "Error: Invalid Configuration: operatorLogDir %s must start with operatorlogMount %s" .operatorLogDir .operatorLogMount) }}
+              {{- end }}
+            {{- end }}
+            - name: "OPERATOR_LOGDIR"
+              value: {{ .operatorLogDir | default "/logs" | quote }}
             {{- if .remoteDebugNodePortEnabled }}
             - name: "REMOTE_DEBUG_PORT"
               value: {{ .webhookDebugHttpPort | quote }}
@@ -339,12 +405,13 @@ spec:
                 memory: {{ .memoryLimits }}
                 {{- end }}
             securityContext:
-              {{- if (ne ( .kubernetesPlatform | default "Generic" ) "OpenShift") }}
+              {{- if or (hasKey . "runAsUser") (ne ( .kubernetesPlatform | default "Generic" ) "OpenShift") }}
               runAsUser: {{ .runAsUser | default 1000 }}
               {{- end }}
               runAsNonRoot: true
               privileged: false
               allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
               capabilities:
                 drop: ["ALL"]
             volumeMounts:
@@ -353,22 +420,36 @@ spec:
             - name: "weblogic-webhook-secrets-volume"
               mountPath: "/deployment/secrets"
               readOnly: true
-            {{- if .elkIntegrationEnabled }}
+            - name: "deployment-volume"
+              mountPath: "/deployment"
+            - name: "tmp-volume"
+              mountPath: "/tmp"
+            {{- if not .elkIntegrationEnabled }}
+            - name: "log-volume"
+              mountPath: "/logs"
+            {{- end }}
+            {{- if and .elkIntegrationEnabled .operatorLogPVC }}
+                {{- fail "Error: elkIntegrationEnabled and opeatorLogPVC cannot be set at the same time."}}
+            {{- else if .elkIntegrationEnabled }}
             - mountPath: "/logs"
+              name: "log-dir"
+              readOnly: false
+            {{- else if .operatorLogPVC }}
+            - mountPath: {{ .operatorLogMount | quote }}
               name: "log-dir"
               readOnly: false
             {{- end }}
             {{- if not .remoteDebugNodePortEnabled }}
             livenessProbe:
               exec:
-                command: ["/probes/livenessProbe.sh"]
-              initialDelaySeconds: 40
-              periodSeconds: 5
+                command: ["/operator/livenessProbe.sh"]
+              initialDelaySeconds: {{ .livenessProbeInitialDelaySeconds | default 40 }}
+              periodSeconds: {{ .livenessProbePeriodSeconds | default 5 }}
             readinessProbe:
               exec:
-                command: ["/probes/readinessProbe.sh"]
-              initialDelaySeconds: 2
-              periodSeconds: 10
+                command: ["/operator/readinessProbe.sh"]
+              initialDelaySeconds: {{ .readinessProbeInitialDelaySeconds | default 2 }}
+              periodSeconds: {{ .readinessProbePeriodSeconds | default 10 }}
             {{- end }}
           {{- if .elkIntegrationEnabled }}
           - name: "logstash"
@@ -402,6 +483,14 @@ spec:
           - name: "weblogic-webhook-secrets-volume"
             secret:
               secretName: "weblogic-webhook-secrets"
+          - name: "deployment-volume"
+            emptyDir: {}
+          - name: "tmp-volume"
+            emptyDir: {}
+          {{- if not .elkIntegrationEnabled }}
+          - name: "log-volume"
+            emptyDir: {}
+          {{- end }}
           {{- if .elkIntegrationEnabled }}
           - name: "log-dir"
             emptyDir:
@@ -422,6 +511,14 @@ spec:
             secret:
               secretName: "logstash-certs-secret"
               optional: true
+          {{- else if .operatorLogPVC }}
+          {{- if not (and .operatorLogMount .operatorLogDir) }}
+            {{- fail "Must provide operatorLogMount and operatorLogDir when using operatorLogPVC" }}
           {{- end }}
+          - name: "log-dir"
+            persistentVolumeClaim:
+             claimName: {{ .operatorLogPVC }}
+          {{- end }}
+  {{- end }}
   {{- end }}
 {{- end }}
