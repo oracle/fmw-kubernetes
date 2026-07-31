@@ -202,7 +202,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace <sample-kubernetes-operator-ns> \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.2.10 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.3.12 \
    --set serviceAccount=<sample-kubernetes-operator-sa> \
    --set “enableClusterRoleBinding=true” \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
@@ -216,7 +216,7 @@ Oracle Identity Governance domain deployment on Kubernetes leverages the WebLogi
    $ cd $WORKDIR
    $ helm install weblogic-kubernetes-operator kubernetes/charts/weblogic-operator \
    --namespace opns \
-   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.2.10 \
+   --set image=ghcr.io/oracle/weblogic-kubernetes-operator:4.3.12 \
    --set serviceAccount=op-sa \
    --set "enableClusterRoleBinding=true" \
    --set "domainNamespaceSelectionStrategy=LabelSelector" \
